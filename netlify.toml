@@ -5,6 +5,15 @@
   publish = "public"
   command = ""
 
+# The landing page is at / and the app at /build/. Play together invites made before the move
+# point at /?room=CODE: send those straight into the app.
+[[redirects]]
+  from = "/"
+  to = "/build/?room=:room"
+  status = 301
+  force = true
+  query = {room = ":room"}
+
 # Send the old Netlify address to the real domain, so search engines index one site, not two.
 [[redirects]]
   from = "https://bloppit.netlify.app/*"
