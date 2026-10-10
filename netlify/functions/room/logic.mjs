@@ -9,6 +9,51 @@ const MAX_PLAYERS = 4;
 const STALE_MS = 45_000;          // a player not seen for this long can be skipped
 const ROOM_TTL_MS = 3 * 86400_000; // rooms are forgotten after 3 days without activity
 const MAX_MODEL_CHARS = 2_500_000;
+const MAX_CHAT = 60;              // messages kept per room
+const CHAT_LEN = 140;             // characters per message
+const CHAT_GAP_MS = 1000;         // at least this long between one player's messages
+const CHAT_BURST = 6;             // and no more than this many…
+const CHAT_BURST_MS = 20_000;     // …in this window
+
+// ---------- Chat guardrails ----------
+// Bloppit is for families, so chat is for this game only: no links, emails, phone numbers or
+// social accounts (which is how strangers try to move children somewhere else), and rude words
+// are blanked out. This is a basic filter, not full moderation.
+const BLOCK_RULES = [
+  /(https?:\/\/|www\.)/i,
+  /\b[a-z0-9-]+\s*(\.|\(dot\)|\[dot\])\s*(com|net|org|io|co|me|ly|gg|app|xyz|info|biz|uk|us|tv|link|site|online)\b/i,
+  /[^\s@]+\s*@\s*[^\s@]+\.[a-z]{2,}/i,              // emails
+  /(^|\s)@[a-z0-9_.]{2,}/i,                          // @handles
+  /(?:\d[\s\-().]*){7,}/,                            // phone numbers and other long numbers
+  /\b(snap ?chat|insta|instagram|whats ?app|discord|tik ?tok|telegram|kik|facebook|messenger|wechat)\b/i,
+];
+const BAD = new Set(('ass arse asshole arsehole asswipe bastard bitch bitches bollocks boobs bullshit cock cum cunt dick dickhead '
+  + 'dildo fag faggot fck fk fuck fucked fucker fucking fuk motherfucker nigga nigger penis piss porn prick pussy rape '
+  + 'retard retarded sex sexy shit shitty slut stfu tits twat vagina wank wanker whore wtf kys').split(' '));
+const BAD_PREFIX = ['fuck', 'fuk', 'shit', 'bitch', 'cunt', 'wank', 'twat', 'slut', 'whore', 'nigg', 'fagg', 'retard', 'motherf'];
+const LEET = { '0': 'o', '1': 'i', '!': 'i', '3': 'e', '4': 'a', '@': 'a', '5': 's', '$': 's', '7': 't', '8': 'b' };
+const squash = (w) => w.replace(/(.)\1+/g, '$1');
+const BAD_SQUASHED = new Set([...BAD].filter((w) => w.length >= 4).map(squash));
+function isBad(token) {
+  const w = token.toLowerCase().replace(/[01!34@5$78]/g, (c) => LEET[c]).replace(/[^a-z]/g, '');
+  if (!w) return false;
+  if (BAD.has(w) || BAD_PREFIX.some((p) => w.startsWith(p))) return true;
+  const sq = squash(w);
+  return sq.length >= 4 && BAD_SQUASHED.has(sq);
+}
+export function cleanChat(raw) {
+  let t = String(raw || '').normalize('NFKC')
+    .replace(/[\u0000-\u001F\u007F\u200B-\u200F\u2028-\u202E\u2060-\u206F\uFEFF]/g, '')
+    .replace(/\s+/g, ' ').trim();
+  if (!t) return { error: 'Type a message first.' };
+  if (t.length > CHAT_LEN) return { error: `Messages can be up to ${CHAT_LEN} characters.` };
+  const flat = t.toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (BLOCK_RULES.some((re) => re.test(t)) || /killyourself/.test(flat)) {
+    return { error: 'Chat is just for this game, so links, emails, phone numbers and social accounts can’t be sent.' };
+  }
+  t = t.replace(/[^\s.,;:?"'()\-]+/g, (tok) => (isBad(tok) ? '•'.repeat([...tok].length) : tok));
+  return { text: t };
+}
 
 const rand = (n, chars) => { let s = ''; const a = new Uint32Array(n); crypto.getRandomValues(a); for (const v of a) s += chars[v % chars.length]; return s; };
 const newCode = () => rand(5, ALPHABET);
@@ -18,15 +63,18 @@ const cleanCode = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '')
 const roomKey = (c) => `room/${c}`;
 const modelKey = (c) => `model/${c}`;
 
-// What everyone may see: never send player ids (they act as passwords)
-function publicState(s) {
+// What everyone may see: never send player ids (they act as passwords).
+// Chat is only sent to players in the room, not to anyone who just knows the code.
+function publicState(s, withChat = true) {
   const now = Date.now();
-  return {
+  const out = {
     code: s.code, ver: s.ver, started: s.started, finished: s.finished, perTurn: s.perTurn,
     nBricks: s.nBricks, title: s.title, level: s.level, host: s.host, turn: s.turn,
     turnPlaced: s.turnPlaced, turnStart: s.turnStart, moves: s.moves, now,
     players: s.players.map((p) => ({ name: p.name, color: p.color, pen: p.pen, stale: now - p.seen > STALE_MS })),
   };
+  if (withChat) out.chat = (s.chat || []).map((m) => ({ n: m.n, p: m.p, t: m.t, at: m.at }));
+  return out;
 }
 
 function nextTurn(s) {
@@ -79,7 +127,8 @@ export async function handle(method, query, body, store) {
     const r = await readRoom(store, code);
     if (!r) return { status: 404, body: { error: 'That room code wasn’t found. Check it, or start a new game.' } };
     if (query.since && Number(query.since) === r.data.ver) return { status: 200, body: { same: true, ver: r.data.ver } };
-    return { status: 200, body: { state: publicState(r.data) } };
+    const member = !!query.pid && findPlayer(r.data, query.pid) >= 0;
+    return { status: 200, body: { state: publicState(r.data, member) } };
   }
 
   if (method !== 'POST') return { status: 405, body: { error: 'Method not allowed' } };
@@ -148,6 +197,24 @@ export async function handle(method, query, body, store) {
       const i = mine(s);
       if (i < 0) return { error: 'You’re not in this room.', status: 403 };
       s.players[i].pen = mergePen(s.players[i].pen, body.pen);
+      return {};
+    });
+  }
+
+  if (a === 'chat') {
+    const c = cleanChat(body.text);
+    if (c.error) return { status: 400, body: { error: c.error } };
+    return update(store, code, (s) => {
+      const i = mine(s);
+      if (i < 0) return { error: 'You’re not in this room.', status: 403 };
+      const p = s.players[i], now = Date.now();
+      const recent = (p.chatAt || []).filter((t) => now - t < CHAT_BURST_MS);
+      if ((recent.length && now - recent[recent.length - 1] < CHAT_GAP_MS) || recent.length >= CHAT_BURST) {
+        return { error: 'Slow down a little before sending another message.', status: 429 };
+      }
+      p.chatAt = [...recent, now];
+      s.chatN = (s.chatN || 0) + 1;
+      s.chat = [...(s.chat || []), { n: s.chatN, p: i, t: c.text, at: now }].slice(-MAX_CHAT);
       return {};
     });
   }

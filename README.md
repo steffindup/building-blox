@@ -13,6 +13,11 @@ Formerly called Building Blox; the browser save keys still use the old `building
   "Bloppit brand & landing page" design canvas in Claude.
 - `netlify/functions/room/` is the Play together room server: a Netlify Function at `/api/room`
   that keeps each room in Netlify Blobs (store `building-blox-rooms`). Game rules are in `logic.mjs`.
+- **Room chat** (Play together): anyone in a room can type messages (up to 140 characters, last 60 kept).
+  Guardrails live in `cleanChat()` in `logic.mjs`: links, emails, phone numbers, @handles and social app
+  names are refused, rude words are blanked out, and each player can send at most one message a second and
+  six per 20 seconds. Chat is only sent to players in the room (the app sends its player id in an
+  `x-player` header), never to someone who only knows the room code. The word filter is basic, not full moderation.
 
 ## Search and sharing
 

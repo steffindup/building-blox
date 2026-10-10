@@ -20,7 +20,10 @@ function adapter() {
 
 export default async (req: Request) => {
   const url = new URL(req.url);
-  const query = Object.fromEntries(url.searchParams);
+  const query: Record<string, string> = Object.fromEntries(url.searchParams);
+  // The player id comes in a header (not the URL) so it never lands in logs or history.
+  const pid = req.headers.get("x-player");
+  if (pid) query.pid = pid; else delete query.pid;
   let body: any = null;
   if (req.method === "POST") {
     try { body = await req.json(); } catch { return Response.json({ error: "Bad request" }, { status: 400 }); }

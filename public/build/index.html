@@ -315,6 +315,33 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .mp-list .mp-pl i{width:24px;height:24px}
 .mp-room-btns{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .mp-off{background:var(--callout);border-radius:12px;padding:16px;font-size:15px}
+/* Room chat: a button bottom-right while you're in a Play together room, opening a small panel */
+.chat{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.chat-fab{display:flex;align-items:center;gap:8px;min-height:48px;padding:10px 18px 10px 14px;border:0;border-radius:999px;cursor:pointer;
+  background:#0055BF;color:#fff;font-family:var(--f-display);font-size:18px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.22),0 6px 18px var(--shadow)}
+.chat-fab:hover{filter:brightness(1.08)}
+.chat-fab svg{width:22px;height:22px}
+.chat-badge{min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--hi);color:#14202C;font-family:var(--f-body);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.chat-panel{width:min(360px,calc(100vw - 32px));height:min(460px,calc(100vh - 120px));background:var(--page);border:2px solid #0055BF;border-radius:16px;
+  box-shadow:0 12px 32px var(--shadow);display:flex;flex-direction:column;overflow:hidden}
+.chat-head{display:flex;align-items:center;gap:8px;padding:10px 10px 10px 14px;border-bottom:1px solid var(--line)}
+.chat-head strong{font-family:var(--f-display);font-weight:400;font-size:19px}
+.chat-head .ghost{margin-left:auto;min-width:44px;min-height:44px;font-size:20px;line-height:1}
+.chat-log{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px;overscroll-behavior:contain}
+.cm{display:flex;flex-direction:column;gap:2px;max-width:85%;align-self:flex-start}
+.cm.me{align-self:flex-end;align-items:flex-end}
+.cm-who{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:var(--muted)}
+.cm-who i{width:12px;height:12px;border-radius:50%;display:inline-block}
+.cm-t{background:var(--bg);border-radius:14px 14px 14px 4px;padding:8px 12px;font-size:15px;line-height:1.35;overflow-wrap:anywhere;white-space:pre-wrap}
+.cm.me .cm-t{background:var(--callout);border-radius:14px 14px 4px 14px}
+.chat-empty{margin:auto;text-align:center}
+.chat-form{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
+.chat-form .inp{flex:1;min-width:0}
+.chat-form .primary{padding:9px 16px;font-size:16px}
+.chat-foot{padding:0 12px 10px;font-size:12px}
+.chat-foot[data-kind="err"]{color:var(--accent);font-weight:700}
+body.chat-on{padding-bottom:96px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .gamebar{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;background:var(--page);border:2px solid var(--hi);border-radius:14px;padding:10px 14px;margin-bottom:14px}
 .gb-lvl{display:flex;gap:10px;align-items:center}
 .gb-lvl strong{font-family:var(--f-display);font-weight:400;font-size:20px}
@@ -593,6 +620,23 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   <p class="msg" id="mpMsg" hidden></p>
 </section>
 
+<div class="chat" id="chat" hidden>
+  <section class="chat-panel" id="chatPanel" aria-labelledby="chatTitle" hidden>
+    <div class="chat-head"><strong id="chatTitle">Room chat</strong><span class="note" id="chatRoom"></span>
+      <button class="ghost" id="chatClose" type="button" aria-label="Close chat">×</button></div>
+    <div class="chat-log" id="chatLog" aria-live="polite"></div>
+    <form class="chat-form" id="chatForm" autocomplete="off">
+      <label class="sr" for="chatIn">Message</label>
+      <input class="inp" id="chatIn" maxlength="140" placeholder="Say something nice…" enterkeyhint="send">
+      <button class="primary" id="chatSend" type="submit">Send</button>
+    </form>
+    <p class="note chat-foot" id="chatFoot">Be kind. Only people in this room can see the chat.</p>
+  </section>
+  <button class="chat-fab" id="chatFab" type="button" aria-expanded="false" aria-controls="chatPanel">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>
+    <span>Chat</span><b class="chat-badge" id="chatBadge" hidden></b>
+  </button>
+</div>
 <dialog class="windlg" id="mpEndDlg" aria-label="Game finished">
   <div class="win-stars">🏆</div>
   <h2 id="mpEndTitle">Built together!</h2>
@@ -2017,7 +2061,8 @@ $('#gmReset').onclick=()=>{ const b=$('#gmReset'); if(!b.dataset.confirm){ b.dat
 const MP_KEY='building-blox-mp-v1';
 let mp=null, mpAvailable=null, mpPenTimer=null;
 async function mpApi(method,body,query=''){
-  let r; try{ r=await fetch('/api/room'+query,{method,headers:body?{'content-type':'application/json'}:{},body:body?JSON.stringify(body):undefined,cache:'no-store'}); }
+  const headers=body?{'content-type':'application/json'}:{}; if(mp&&mp.playerId) headers['x-player']=mp.playerId;
+  let r; try{ r=await fetch('/api/room'+query,{method,headers,body:body?JSON.stringify(body):undefined,cache:'no-store'}); }
   catch(e){ throw new Error('Couldn’t reach the game server. Check your internet connection.'); }
   let j=null; try{ j=await r.json(); }catch(e){}
   if(!r.ok||!j) throw new Error((j&&j.error)||'The game server didn’t answer. Please try again.');
@@ -2083,7 +2128,7 @@ function mpApply(s){
   }
   if(s.started&&!mp.entered){ mp.entered=true; if(tab!=='build'&&tab!=='box') setTab('build'); }
   document.title=(mpMyTurn()?'● Your turn · ':'')+'Bloppit';
-  updateMpBar(); if(tab==='mp') renderMpView();
+  updateMpBar(); if(tab==='mp') renderMpView(); renderChat();
   if(s.finished&&!mp.ended){ mp.ended=true; setStatus('Finished! You built it together.','ok'); setTimeout(mpShowEnd,1000); }
 }
 function updateMpBar(){
@@ -2125,7 +2170,7 @@ async function mpLoadModel(code){
 }
 async function mpEnter(res,isHost,name){
   mpEndSolo(); dismissResume();
-  mp={code:res.code,playerId:res.playerId,me:res.me,state:null,ver:0,applied:0,pen:{hint:0,auto:0,miss:0},hintSteps:[],local:new Set(),posting:0,fails:0,lastTurn:-1,entered:false,ended:false};
+  mp={code:res.code,playerId:res.playerId,me:res.me,state:null,ver:0,applied:0,pen:{hint:0,auto:0,miss:0},hintSteps:[],local:new Set(),posting:0,fails:0,lastTurn:-1,entered:false,ended:false,chatSeen:chatSeenGet(res.code),chatShown:-1};
   if(!isHost){ try{ await mpLoadModel(res.code); }catch(e){ mp=null; throw e; } }
   if(!model||model.bricks.length!==res.state.nBricks){ mp=null; throw new Error('This room was made with a different version of Bloppit. Refresh the page on every device and try again.'); }
   mpStore({code:res.code,playerId:res.playerId,name});
@@ -2141,7 +2186,7 @@ async function mpEnter(res,isHost,name){
 function mpLeave(){
   if(!mp) return;
   clearInterval(mp.poll); clearInterval(mp.ping);
-  mp=null; mpStore(null); document.title='Bloppit';
+  mp=null; mpStore(null); document.title='Bloppit'; chatOpen=false; renderChat();
   try{ history.replaceState(null,'',location.pathname); }catch(e){}
   $('#mpBar').hidden=true; $('#restart').hidden=false;
   ['hintBtn','autoBtn'].forEach(id=>$('#'+id).disabled=false);
@@ -2227,6 +2272,46 @@ $('#mpSkip').onclick=()=>mpPost({action:'pass'}).then(j=>mpApply(j.state)).catch
 $('#mpCopy').onclick=async()=>{ const url=`${location.origin}${location.pathname}?room=${mp.code}`;
   try{ if(navigator.share) await navigator.share({title:'Bloppit',text:`Build with me! Room ${mp.code}`,url}); else { await navigator.clipboard.writeText(url); $('#mpCopy').textContent='Copied!'; setTimeout(()=>$('#mpCopy').textContent='Copy invite link',2000); } }catch(e){} };
 document.addEventListener('visibilitychange',()=>{ if(mp&&document.visibilityState==='visible'){ mp.ver=0; mpPoll(); } });
+
+/* ---------- Room chat (Play together) ---------- */
+// Messages are checked on the server (no links, emails, phone numbers or social accounts; rude words blanked).
+let chatOpen=false;
+function chatSeenGet(code){ try{ return +localStorage.getItem('bloppit-chat-seen-'+code)||0; }catch(e){ return 0; } }
+function chatSeenSet(){ if(!mp) return; try{ localStorage.setItem('bloppit-chat-seen-'+mp.code,String(mp.chatSeen)); }catch(e){} }
+function chatFoot(t,kind){ const el=$('#chatFoot'); el.textContent=t||'Be kind. Only people in this room can see the chat.'; el.dataset.kind=kind||''; }
+function renderChat(){
+  const box=$('#chat'), s=mp&&mp.state;
+  box.hidden=!s; document.body.classList.toggle('chat-on',!!s); if(!s){ $('#chatPanel').hidden=true; $('#chatFab').setAttribute('aria-expanded','false'); return; }
+  const list=s.chat||[], last=list.length?list[list.length-1].n:0;
+  if(chatOpen&&last>mp.chatSeen){ mp.chatSeen=last; chatSeenSet(); }
+  const unread=list.filter(m=>m.n>mp.chatSeen&&m.p!==mp.me).length;
+  $('#chatBadge').hidden=!unread; $('#chatBadge').textContent=unread>9?'9+':String(unread);
+  $('#chatFab').setAttribute('aria-label',unread?`Chat, ${unread} new message${unread>1?'s':''}`:'Chat');
+  $('#chatRoom').textContent='· '+s.code;
+  if(mp.chatShown===last) return;
+  mp.chatShown=last;
+  const log=$('#chatLog'), nearEnd=log.scrollHeight-log.scrollTop-log.clientHeight<60;
+  log.innerHTML=list.length?list.map(m=>{ const p=s.players[m.p]||{name:'Player',color:'#888'}, me=m.p===mp.me;
+    return `<div class="cm${me?' me':''}"><span class="cm-who"><i style="background:${escapeHTML(p.color)}"></i>${escapeHTML(p.name)}${me?' (you)':''}</span><span class="cm-t">${escapeHTML(m.t)}</span></div>`; }).join('')
+    :'<p class="note chat-empty">No messages yet. Say hi!</p>';
+  if(nearEnd||chatOpen) log.scrollTop=log.scrollHeight;
+}
+function setChatOpen(v){
+  chatOpen=v; $('#chatPanel').hidden=!v; $('#chatFab').setAttribute('aria-expanded',String(v));
+  if(v){ chatFoot(''); renderChat(); const log=$('#chatLog'); log.scrollTop=log.scrollHeight; $('#chatIn').focus(); }
+  else $('#chatFab').focus();
+}
+$('#chatFab').onclick=()=>setChatOpen(!chatOpen);
+$('#chatClose').onclick=()=>setChatOpen(false);
+$('#chatPanel').addEventListener('keydown',e=>{ if(e.key==='Escape'){ e.stopPropagation(); setChatOpen(false); } });
+$('#chatForm').addEventListener('submit',async e=>{
+  e.preventDefault(); if(!mp) return;
+  const inp=$('#chatIn'), text=inp.value.trim(); if(!text) return;
+  const btn=$('#chatSend'); btn.disabled=true; chatFoot('Sending…');
+  try{ const j=await mpPost({action:'chat',text}); inp.value=''; chatFoot(''); mpApply(j.state); }
+  catch(err){ chatFoot(err.message,'err'); }
+  finally{ btn.disabled=false; inp.focus(); }
+});
 
 /* ---------- Save progress (in this browser, on this device) ---------- */
 const SAVE_KEY='building-blox-save-v1';
