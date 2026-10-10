@@ -38,7 +38,7 @@
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
 }
 </script>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='11' width='26' height='17' rx='3' fill='%23D2352B'/%3E%3Crect x='7' y='6' width='7' height='6' rx='2' fill='%23E5463C'/%3E%3Crect x='18' y='6' width='7' height='6' rx='2' fill='%23E5463C'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 175'%3E%3Ccircle cx='42' cy='38' r='16' fill='%238A5A3B'/%3E%3Ccircle cx='158' cy='38' r='16' fill='%238A5A3B'/%3E%3Cellipse cx='100' cy='94' rx='88' ry='74' fill='%238A5A3B'/%3E%3Cellipse cx='100' cy='116' rx='56' ry='40' fill='%23F3DEC0'/%3E%3Cellipse cx='64' cy='88' rx='19' ry='22' fill='%231B1410'/%3E%3Cellipse cx='136' cy='88' rx='19' ry='22' fill='%231B1410'/%3E%3Cpath d='M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z' fill='%233A2418'/%3E%3C/svg%3E">
 <style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
 <title>Build with Bloppit: photo to brick model and instruction booklet</title>
 </head>
@@ -71,9 +71,10 @@ button,select,input{font:inherit;color:inherit}
 
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px;padding-block:14px;max-width:1640px;margin:0 auto;border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-size:24px}
-.brand .mark{width:30px;height:22px;background:var(--accent);border-radius:3px;position:relative;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
-.brand .mark::before,.brand .mark::after{content:"";position:absolute;top:-5px;width:9px;height:5px;background:var(--accent);border-radius:2px 2px 0 0;filter:brightness(1.1)}
-.brand .mark::before{left:4px}.brand .mark::after{right:4px}
+.brand a{display:flex;align-items:center;gap:8px;color:inherit;text-decoration:none;border-radius:10px}
+.brand a:hover span{color:var(--accent)}
+.brand a:focus-visible{outline:3px solid var(--hi);outline-offset:3px}
+.brand svg{display:block;flex:none}
 .tabs{display:flex;gap:6px;flex-wrap:wrap}
 .tab{border:1px solid var(--line);background:var(--page);border-radius:999px;padding:7px 14px 7px 8px;cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:700}
 .tab .n{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--callout);font-family:var(--f-display);font-size:14px}
@@ -198,6 +199,11 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .tool{background:var(--page);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 2px 0 var(--shadow)}
 .tool:hover{border-color:var(--ink)}
 .tool[aria-pressed="true"]{background:var(--hi);border-color:var(--hi);color:#14202C}
+.tool.snd{padding:6px 10px;display:inline-flex;align-items:center;gap:4px}
+.snd-ic{width:18px;height:16px;display:inline-block;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat;--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M2 7h4l5-4v14l-5-4H2z' fill='black'/%3E%3Cpath d='M15 6.5a5 5 0 0 1 0 7M18 4a8.5 8.5 0 0 1 0 12' stroke='black' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")}
+.tool.snd[aria-pressed="false"] .snd-ic{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M2 7h4l5-4v14l-5-4H2z' fill='black'/%3E%3Cpath d='M15 7l6 6M21 7l-6 6' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")}
+.tool.snd[aria-pressed="true"]{background:var(--page);border-color:var(--line);color:var(--ink)}
+.tool.snd[aria-pressed="true"]:hover{border-color:var(--ink)}
 .tool kbd{font-family:var(--f-mono);font-size:11px;border:1px solid currentColor;border-radius:4px;padding:0 4px;opacity:.6;margin-left:2px}
 .status{position:absolute;left:12px;bottom:12px;max-width:calc(100% - 24px);background:var(--page);border:1px solid var(--line);border-radius:10px;padding:7px 12px;font-weight:700;font-size:14px;pointer-events:none;box-shadow:0 2px 0 var(--shadow)}
 .status:empty{display:none}
@@ -438,7 +444,18 @@ body.chat-on{padding-bottom:96px}
 </style>
 
 <header class="top">
-  <h1 class="brand"><span class="mark" aria-hidden="true"></span>Bloppit</h1>
+  <h1 class="brand"><a href="/" aria-label="Bloppit home">
+    <svg viewBox="0 0 200 175" width="40" height="35" aria-hidden="true">
+      <circle cx="42" cy="38" r="16" fill="#8A5A3B"/><circle cx="42" cy="38" r="7" fill="#6B4229"/>
+      <circle cx="158" cy="38" r="16" fill="#8A5A3B"/><circle cx="158" cy="38" r="7" fill="#6B4229"/>
+      <ellipse cx="100" cy="94" rx="88" ry="74" fill="#8A5A3B"/>
+      <ellipse cx="100" cy="116" rx="56" ry="40" fill="#F3DEC0"/>
+      <ellipse cx="64" cy="88" rx="19" ry="22" fill="#1B1410"/><ellipse cx="136" cy="88" rx="19" ry="22" fill="#1B1410"/>
+      <circle cx="70" cy="79" r="7" fill="#FFFFFF"/><circle cx="142" cy="79" r="7" fill="#FFFFFF"/>
+      <path d="M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z" fill="#3A2418"/>
+      <path d="M100 120 q0 8 -9 10 M100 120 q0 8 9 10" stroke="#3A2418" stroke-width="4" stroke-linecap="round" fill="none"/>
+    </svg>
+    <span>Bloppit</span></a></h1>
   <nav class="tabs" role="tablist" aria-label="Steps">
     <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n">1</span>Photos &amp; model</button>
     <button class="tab" role="tab" id="tab-build" data-tab="build" aria-selected="false"><span class="n">2</span>Build</button>
@@ -548,6 +565,7 @@ body.chat-on{padding-bottom:96px}
           <button class="tool" id="rotBtn" type="button">Rotate <kbd>R</kbd></button>
           <button class="tool" id="hintBtn" type="button" aria-pressed="false">Hint</button>
           <button class="tool" id="autoBtn" type="button">Place one for me</button>
+          <button class="tool snd" id="sndBtn" type="button" aria-pressed="true" aria-label="Sound" title="Sound on or off (M)"><span class="snd-ic" aria-hidden="true"></span><kbd>M</kbd></button>
         </div>
         <div class="status" id="status"></div>
         <div class="done-badge" id="doneBadge" hidden>You built it!</div>
@@ -1391,6 +1409,59 @@ function showPage(k){
   $('#bpCard').classList.toggle('ahead',k!==Math.min(cur,N));
   buddyUpdate();
 }
+/* ---------- Sound ---------- */
+// Every sound is made here with Web Audio (no sound files), and each one varies a little so repeats don't grate.
+const sfx=(()=>{
+  let ac=null, out=null, on=true, last={};
+  try{ on=localStorage.getItem('bloppit-sound')!=='off'; }catch(e){}
+  const ctx=()=>{ if(!ac){ const C=window.AudioContext||window.webkitAudioContext; if(!C) return null; ac=new C(); out=ac.createGain(); out.gain.value=.55; out.connect(ac.destination); } if(ac.state==='suspended') ac.resume(); return ac; };
+  const ok=(k,gap)=>{ if(!on||document.hidden) return null; const c=ctx(); if(!c) return null; const n=c.currentTime; if(last[k]&&n-last[k]<gap) return null; last[k]=n; return c; };
+  const jit=(v,f)=>v*(1+(Math.random()*2-1)*f);
+  function tone(c,t,f,d,{type='sine',vol=.3,to=null,att=.004}={}){
+    const o=c.createOscillator(), g=c.createGain(); o.type=type; o.frequency.setValueAtTime(f,t); if(to) o.frequency.exponentialRampToValueAtTime(to,t+d);
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+att); g.gain.exponentialRampToValueAtTime(.0001,t+d);
+    o.connect(g); g.connect(out); o.start(t); o.stop(t+d+.02);
+  }
+  function noise(c,t,d,{vol=.3,freq=3000,q=1,type='bandpass'}={}){
+    const len=Math.ceil(c.sampleRate*d), b=c.createBuffer(1,len,c.sampleRate), x=b.getChannelData(0);
+    for(let i=0;i<len;i++) x[i]=(Math.random()*2-1)*Math.pow(1-i/len,3);
+    const s=c.createBufferSource(), f=c.createBiquadFilter(), g=c.createGain(); s.buffer=b; f.type=type; f.frequency.value=freq; f.Q.value=q; g.gain.value=vol;
+    s.connect(f); f.connect(g); g.connect(out); s.start(t);
+  }
+  return {
+    get on(){ return on; },
+    set(v){ on=!!v; try{ localStorage.setItem('bloppit-sound',on?'on':'off'); }catch(e){} if(on) ctx(); },
+    // A brick snapping in: a hard plastic tick, then a hollow little knock
+    snap(delay=0){ const c=ok('snap',.04); if(!c) return; const t=c.currentTime+delay;
+      noise(c,t,.025,{vol:.5,freq:jit(4200,.15),q:2.5});
+      tone(c,t+.006,jit(1150,.08),.06,{type:'triangle',vol:.22,to:700});
+      tone(c,t+.012,jit(340,.06),.05,{vol:.18,to:220}); },
+    // Wrong spot: a soft, friendly bonk
+    bonk(){ const c=ok('bonk',.25); if(!c) return; const t=c.currentTime;
+      tone(c,t,210,.18,{vol:.28,to:120,att:.01}); tone(c,t+.07,160,.16,{vol:.18,to:95,att:.01}); },
+    // Picking bricks up out of the parts box: a little rattle
+    rattle(n=1){ const c=ok('rattle',.12); if(!c) return; const t=c.currentTime, k=Math.min(2+n,6);
+      for(let i=0;i<k;i++) noise(c,t+i*.028+Math.random()*.012,.02,{vol:.28,freq:jit(3600,.3),q:3}); },
+    // A step done: three rising notes
+    chime(){ const c=ok('chime',.3); if(!c) return; const t=c.currentTime+.05, base=[0,2,4,5][Math.floor(Math.random()*4)];
+      [0,4,7].forEach((st,i)=>{ const f=523.25*Math.pow(2,(st+base)/12); tone(c,t+i*.09,f,.35,{type:'triangle',vol:.2}); tone(c,t+i*.09,f*2,.2,{vol:.05}); }); },
+    // Bloppit's otter chirp
+    chirp(){ const c=ok('chirp',.3); if(!c) return; const t=c.currentTime+.32;
+      [0,.11].forEach((d,i)=>{ const o=c.createOscillator(), g=c.createGain(), lfo=c.createOscillator(), lg=c.createGain();
+        o.type='sine'; o.frequency.setValueAtTime(jit(1500,.05)+i*180,t+d); o.frequency.exponentialRampToValueAtTime(jit(2500,.05)+i*240,t+d+.05); o.frequency.exponentialRampToValueAtTime(1700,t+d+.09);
+        lfo.frequency.value=38; lg.gain.value=90; lfo.connect(lg); lg.connect(o.frequency);
+        g.gain.setValueAtTime(0,t+d); g.gain.linearRampToValueAtTime(.13,t+d+.012); g.gain.exponentialRampToValueAtTime(.0001,t+d+.1);
+        o.connect(g); g.connect(out); o.start(t+d); lfo.start(t+d); o.stop(t+d+.12); lfo.stop(t+d+.12); }); },
+    // The whole model finished: a short fanfare
+    fanfare(){ const c=ok('fan',1); if(!c) return; const t=c.currentTime+.05;
+      [[0,523.25,.14],[.14,659.25,.14],[.28,783.99,.14],[.42,1046.5,.5]].forEach(([d,f,len])=>{ tone(c,t+d,f,len+.1,{type:'square',vol:.07}); tone(c,t+d,f,len+.2,{type:'triangle',vol:.18}); });
+      [523.25,659.25,783.99].forEach(f=>tone(c,t+.42,f/2,.7,{type:'triangle',vol:.08})); }
+  };
+})();
+function syncSoundBtn(){ const b=$('#sndBtn'); b.setAttribute('aria-pressed',sfx.on); b.title=(sfx.on?'Sound is on':'Sound is off')+' (M)'; }
+function toggleSound(){ sfx.set(!sfx.on); syncSoundBtn(); if(sfx.on) sfx.snap(); }
+$('#sndBtn').onclick=toggleSound; syncSoundBtn();
+
 /* ---------- Bloppit, the building buddy ---------- */
 // Points at the step you're on, holds up the bricks it still needs, and cheers each time a step is finished.
 const BUD_CHEERS=['Click! Step {n} done!','Snap! Step {n} is in!','Woohoo, step {n}!','Yes! Step {n} clicked in!','High five! Step {n}!'];
@@ -1428,7 +1499,7 @@ function buddyUpdate(){
   if(fresh){
     const n=done, all=done>=N;
     budSay('cheer', all?'You built it! Every brick is in.':BUD_CHEERS[n%BUD_CHEERS.length].replace('{n}',n));
-    budBurst(); clearTimeout(budCheerT);
+    budBurst(); if(all) sfx.fanfare(); else sfx.chime(); sfx.chirp(); clearTimeout(budCheerT);
     budCheerT=setTimeout(()=>{ budCheerT=0; buddyUpdate(); }, all?3200:1700);
     return;
   }
@@ -1456,6 +1527,7 @@ function setActive(p){
   setGhost();
 }
 function takeToHand(list){
+  if(list.length) sfx.rattle(list.length);
   for(const p of list) if(!hand.includes(p)){ hand.push(p); p.hand=true; }
   // Hold first a brick this step needs, if any were taken.
   setActive(list.find(stepNeeds)||list[0]||held);
@@ -1527,6 +1599,7 @@ function tryPlace(){
   const turned=sel.sx!==sel.sz&&s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o||Math.abs(b.x+o.x-ax)<=2&&Math.abs(b.z+o.z-az)<=2));
   const unused=!s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&Math.min(b.sx,b.sz)===Math.min(sel.sx,sel.sz)&&Math.max(b.sx,b.sz)===Math.max(sel.sx,sel.sz));
   setStatus(unused?`Step ${cur+1} doesn’t use this brick. Put it back and check the booklet.`:turned?'Close. Try turning it with R.':'Not quite. Compare with the picture in the booklet.','err');
+  sfx.bonk();
   const g=ghostGroup.children[0]; if(g){g.material=errMat; setTimeout(()=>{if(g.parent) g.material=ghostMat(sel?sel.c:0);},380);}
 }
 function placeBrick(t,ax,az){
@@ -1535,6 +1608,7 @@ function placeBrick(t,ax,az){
   placedN++; placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz});
   const ms=new THREE.Mesh(brickGeo(t.sx,t.sz),mat(t.c)); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
   if(!reduceMotion){ms.position.y+=2.2; drops.push({m:ms,ty:t.y*1.2,t0:performance.now()});}
+  sfx.snap(reduceMotion?0:.23);  // lands at the end of the drop
   // Take the brick out of the box (from your hand if you were holding one like it).
   const a=Math.min(t.sx,t.sz), l=Math.max(t.sx,t.sz), match=p=>p.a===a&&p.l===l&&p.c===t.c;
   const used=held&&match(held)?held:(hand.find(match)||pieces.find(p=>match(p)&&!p.hand)||pieces.find(match));
@@ -1602,6 +1676,7 @@ document.addEventListener('keydown',e=>{ if(/INPUT|SELECT|TEXTAREA/.test(e.targe
   if(e.key==='p'||e.key==='P'){openBox(); e.preventDefault();}
   if(e.key==='b'||e.key==='B'){toggleBook(); e.preventDefault();}
   if(e.key==='f'||e.key==='F'){frameBuild(true); e.preventDefault();}
+  if(e.key==='m'||e.key==='M'){toggleSound(); e.preventDefault();}
   if(e.key==='Escape') putBack(); });
 
 /* ---------- Parts box (scrapbook) ---------- */
@@ -2235,7 +2310,9 @@ function mpApply(s){
   if(!mp||!s||s.ver<mp.ver) return;
   mp.state=s; mp.ver=s.ver;
   const cur0=cur, n0=placedN;
-  for(let i=mp.applied;i<s.moves.length;i++){ const m=s.moves[i]; if(m.p===mp.me&&mp.local.has(m.b)) continue; applyMoveCore(m); }
+  let heard=0;
+  for(let i=mp.applied;i<s.moves.length;i++){ const m=s.moves[i]; if(m.p===mp.me&&mp.local.has(m.b)) continue; applyMoveCore(m); heard++; }
+  if(heard&&tab==='build') sfx.snap(reduceMotion?0:.23);  // a teammate's brick going in
   mp.applied=s.moves.length;
   if(!mp.posting&&placedN!==s.moves.length) mpResync();
   if(placedN!==n0){ reconcilePieces(); updateBuildUI(); if(cur!==cur0||n0===0) frameBuild(true); }
