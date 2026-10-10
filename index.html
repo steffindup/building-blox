@@ -1548,6 +1548,27 @@ const SAMPLES=[
    x.dot(58,92,10,'#FFFFFF'); x.dot(56,92,5.5,'#1B2A34');
    x.strokeStyle='#0A3463'; x.lineWidth=3; x.beginPath(); x.moveTo(34,108); x.quadraticCurveTo(42,114,50,110); x.stroke();
    return [['front',c]]; }},
+ {name:'Robot',make(){
+   // An original friendly boxy robot: teal body, orange trim
+   const [c,x]=sheet(200,240,'#ffffff');
+   const TL='#008F9B', LT='#36AEBF', OR='#FE8A18', GR='#6C6E68', DG='#1B2A34';
+   x.fillStyle=GR; x.fillRect(97,10,6,22); x.dot(100,10,8,OR);
+   x.fillStyle=TL; x.rr(58,30,84,58,12);
+   x.fillStyle=LT; x.rr(66,40,68,36,9);
+   x.dot(84,58,10,'#FFFFFF'); x.dot(116,58,10,'#FFFFFF'); x.dot(86,59,5,DG); x.dot(118,59,5,DG);
+   x.fillStyle=OR; x.rr(88,74,24,5,2);
+   x.fillStyle=GR; x.rr(48,48,12,22,4); x.rr(140,48,12,22,4);
+   x.fillStyle=GR; x.fillRect(90,88,20,10);
+   x.fillStyle=TL; x.rr(50,96,100,82,14);
+   x.fillStyle=LT; x.rr(66,108,68,52,8);
+   x.dot(84,124,9,OR); x.dot(84,124,4,'#F2CD37');
+   x.fillStyle='#F4F4F4'; x.rr(102,116,24,6,3); x.rr(102,128,24,6,3); x.rr(102,140,24,6,3);
+   x.fillStyle=OR; x.rr(26,100,22,16,6); x.rr(152,100,22,16,6);
+   x.fillStyle=TL; x.rr(28,114,18,48,8); x.rr(154,114,18,48,8);
+   x.fillStyle=GR; x.rr(22,160,30,16,7); x.rr(148,160,30,16,7);
+   x.fillStyle=GR; x.rr(66,176,24,36,6); x.rr(110,176,24,36,6);
+   x.fillStyle=OR; x.rr(58,208,40,22,8); x.rr(102,208,40,22,8);
+   return [['front',c]]; }},
  {name:'Palm tree',make(){ const [c,x]=sheet(200,240,'#ffffff');
    x.fillStyle='#E4CD9E'; x.beginPath(); x.ellipse(100,232,82,22,0,Math.PI,0); x.closePath(); x.fill();
    x.fillStyle='#8A5A34'; x.beginPath(); x.moveTo(86,226); x.quadraticCurveTo(84,150,112,84); x.lineTo(126,88); x.quadraticCurveTo(104,152,108,226); x.closePath(); x.fill();
