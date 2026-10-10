@@ -19,6 +19,15 @@ Formerly called Building Blox; the browser save keys still use the old `building
   six per 20 seconds. Chat is only sent to players in the room (the app sends its player id in an
   `x-player` header), never to someone who only knows the room code. The word filter is basic, not full moderation.
 
+- `netlify/functions/room-cleanup/` deletes rooms (and their shared photos) 3 days after their last activity, daily.
+  When someone joins from the App Store app, the room becomes **quick messages only** (see `QUICK_CHAT` in `logic.mjs`).
+- `public/privacy/` is the privacy policy (bloppit.com/privacy), also used for the App Store listing.
+  Update it if Bloppit starts handling information differently.
+
+## iPhone and iPad app
+
+`mobile/` wraps the app with Capacitor for the App Store; `codemagic.yaml` builds it in the cloud. See `mobile/README.md`.
+
 ## Search and sharing
 
 - `public/robots.txt` allows all crawlers (except `/api/`) and points to `public/sitemap.xml`.

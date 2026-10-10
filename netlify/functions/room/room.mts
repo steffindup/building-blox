@@ -18,7 +18,24 @@ function adapter() {
   };
 }
 
+// The App Store app runs from capacitor://localhost, so it needs CORS to reach this server.
+// Only the app's own origins are allowed; the website calls this from the same origin and needs none.
+const APP_ORIGINS = new Set(["capacitor://localhost", "ionic://localhost", "https://localhost"]);
+function cors(req: Request): Record<string, string> {
+  const o = req.headers.get("origin") || "";
+  if (!APP_ORIGINS.has(o)) return {};
+  return {
+    "access-control-allow-origin": o,
+    "access-control-allow-methods": "GET, POST, OPTIONS",
+    "access-control-allow-headers": "content-type, x-player",
+    "access-control-max-age": "86400",
+    vary: "origin",
+  };
+}
+
 export default async (req: Request) => {
+  const h = cors(req);
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: h });
   const url = new URL(req.url);
   const query: Record<string, string> = Object.fromEntries(url.searchParams);
   // The player id comes in a header (not the URL) so it never lands in logs or history.
@@ -35,14 +52,14 @@ export default async (req: Request) => {
   }
   let body: any = null;
   if (req.method === "POST") {
-    try { body = await req.json(); } catch { return Response.json({ error: "Bad request" }, { status: 400 }); }
+    try { body = await req.json(); } catch { return Response.json({ error: "Bad request" }, { status: 400, headers: h }); }
   }
   try {
     const { status, body: out } = await handle(req.method, query, body, adapter());
-    return Response.json(out, { status, headers: { "cache-control": "no-store" } });
+    return Response.json(out, { status, headers: { "cache-control": "no-store", ...h } });
   } catch (e) {
     console.error("room error", e);
-    return Response.json({ error: "Something went wrong on the server. Please try again." }, { status: 500 });
+    return Response.json({ error: "Something went wrong on the server. Please try again." }, { status: 500, headers: h });
   }
 };
 

@@ -1,0 +1,53 @@
+# Codemagic builds the Bloppit iPhone/iPad app in the cloud (no Mac needed) and uploads it to TestFlight.
+# The app's code is in mobile/ (see mobile/README.md). Builds only run when you start one in Codemagic.
+#
+# One-time setup in Codemagic (codemagic.io), after you've joined the Apple Developer Program:
+#  1. Add this GitHub repo (steffindup/building-blox) as an app.
+#  2. Team settings > Integrations > Developer Portal: connect an App Store Connect API key and name it "Bloppit ASC".
+#  3. In App Store Connect, create the app with bundle ID com.bloppit.app, then copy its "Apple ID" number
+#     (App Information page) into APP_STORE_APPLE_ID below.
+#  4. Start the "iOS to TestFlight" workflow.
+workflows:
+  ios-testflight:
+    name: iOS to TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 45
+    integrations:
+      app_store_connect: Bloppit ASC
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.bloppit.app
+      vars:
+        APP_STORE_APPLE_ID: 0000000000 # replace with the app's Apple ID from App Store Connect
+        XCODE_PROJECT: mobile/ios/App/App.xcodeproj
+        XCODE_SCHEME: App
+      node: 22
+      xcode: latest
+    scripts:
+      - name: Install and package the web app into the iOS project
+        script: |
+          cd mobile
+          npm ci
+          npm run sync
+      - name: Set up code signing
+        script: xcode-project use-profiles --project "$XCODE_PROJECT"
+      - name: Bump the build number
+        script: |
+          LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" || echo 0)
+          sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]*;/CURRENT_PROJECT_VERSION = $((LATEST + 1));/g" "$XCODE_PROJECT/project.pbxproj"
+      - name: Build the .ipa
+        script: xcode-project build-ipa --project "$XCODE_PROJECT" --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+      email:
+        recipients:
+          - steffindup@gmail.com
+        notify:
+          success: true
+          failure: true

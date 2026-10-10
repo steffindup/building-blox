@@ -421,6 +421,13 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .chat-form .primary{padding:9px 16px;font-size:16px}
 .chat-foot{padding:0 12px 10px;font-size:12px}
 .chat-foot[data-kind="err"]{color:var(--accent);font-weight:700}
+.chat-quick{display:flex;flex-wrap:wrap;gap:6px;padding:10px;border-top:1px solid var(--line)}
+.chat-quick button{font:inherit;font-weight:800;font-size:15px;min-height:40px;padding:6px 12px;border-radius:999px;border:2px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.chat-quick button:hover{border-color:var(--ink)}
+.chat-quick button:disabled{opacity:.5}
+.gate-num{font-family:var(--f-body);font-weight:800;font-size:22px;line-height:1.3;text-align:center;margin:12px 0}
+.appfoot{text-align:center;font-size:13px;margin:8px 0 24px}
+.appfoot a{color:var(--muted)}
 body.chat-on{padding-bottom:96px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .gamebar{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;background:var(--page);border:2px solid var(--hi);border-radius:14px;padding:10px 14px;margin-bottom:14px}
@@ -863,6 +870,7 @@ body.chat-on{padding-bottom:96px}
     <div class="chat-head"><strong id="chatTitle">Room chat</strong><span class="note" id="chatRoom"></span>
       <button class="ghost" id="chatClose" type="button" aria-label="Close chat">×</button></div>
     <div class="chat-log" id="chatLog" aria-live="polite"></div>
+    <div class="chat-quick" id="chatQuick" role="group" aria-label="Quick messages" hidden></div>
     <form class="chat-form" id="chatForm" autocomplete="off">
       <label class="sr" for="chatIn">Message</label>
       <input class="inp" id="chatIn" maxlength="140" placeholder="Say something nice…" enterkeyhint="send">
@@ -908,6 +916,17 @@ body.chat-on{padding-bottom:96px}
   <p class="mq-fb" id="mqFb" aria-live="polite"></p>
   <div class="win-btns"><button class="ghost" id="mqLater" type="button">Not now</button><button class="primary sm" id="mqGo" type="button">Check</button></div>
 </dialog>
+<dialog class="windlg mathdlg" id="gateDlg" aria-labelledby="gateTitle">
+  <div class="mq-head"><div><div class="tag">Ask a grown-up</div><h2 id="gateTitle">For grown-ups</h2></div></div>
+  <p class="note" id="gateWhy">This opens something outside Bloppit.</p>
+  <p class="note">To carry on, type this number in digits:</p>
+  <p class="gate-num" id="gateNum"></p>
+  <form class="mq-ans" id="gateForm" autocomplete="off">
+    <input class="inp" id="gateIn" inputmode="numeric" maxlength="4" aria-label="The number in digits" placeholder="?">
+  </form>
+  <p class="mq-fb" id="gateFb" aria-live="polite"></p>
+  <div class="win-btns"><button class="ghost" id="gateNo" type="button">Cancel</button><button class="primary sm" id="gateGo" type="button">Continue</button></div>
+</dialog>
 <dialog class="windlg" id="winDlg" aria-label="Level complete">
   <div class="win-stars" id="winStars"></div>
   <h2 id="winTitle">Level complete!</h2>
@@ -930,11 +949,55 @@ body.chat-on{padding-bottom:96px}
   <div class="pages" id="pages"></div>
 </section>
 </main>
+<p class="appfoot note"><a href="https://bloppit.com/privacy/" id="privacyLink">Privacy policy</a></p>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
 <script>
+/* ---------- App Store app (iPhone/iPad, built with Capacitor from mobile/) ---------- */
+// mobile/scripts/build-www.mjs sets window.BLOPPIT_APP when it packages this page for the app.
+// In the app: Play together talks to bloppit.com; links out of the app and sharing sit behind a
+// grown-ups gate; and room chat is quick messages only (Apple's Kids category rules). The website is unchanged.
+const APP=!!window.BLOPPIT_APP, API_BASE=APP?'https://bloppit.com':'';
+// Keep in step with QUICK_CHAT in netlify/functions/room/logic.mjs.
+const QUICK_CHAT=['Hi!','Nice!','Your turn!','Great build!','Thanks!','Oops!','Good luck!','Almost done!','Well played!','Ready?','👍','🎉'];
+function haptic(kind,delay=0){
+  const H=APP&&window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.Haptics; if(!H) return;
+  const go=()=>{ try{ if(kind==='warn') H.notification({type:'WARNING'}); else if(kind==='win') H.notification({type:'SUCCESS'}); else H.impact({style:kind==='medium'?'MEDIUM':'LIGHT'}); }catch(e){} };
+  delay>0?setTimeout(go,delay*1000):go();
+}
+// Grown-ups gate: type a number written in words (e.g. "six hundred and forty-two") as digits.
+const gate=(()=>{
+  const ONES=['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
+  const TENS=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+  const words=n=>{ const h=Math.floor(n/100), r=n%100; let t=r<20?ONES[r]:TENS[Math.floor(r/10)]+(r%10?'-'+ONES[r%10]:''); return h?ONES[h]+' hundred'+(r?' and '+t:''):t; };
+  let want=0, done=null;
+  const d=()=>document.getElementById('gateDlg');
+  function fresh(msg){ want=200+Math.floor(Math.random()*780); if(want%100<10) want+=13; document.getElementById('gateNum').textContent=words(want); const i=document.getElementById('gateIn'); i.value=''; document.getElementById('gateFb').textContent=msg||''; }
+  function finish(ok){ const f=done; done=null; if(d().open) d().close(); if(f) f(ok); }
+  function check(){ const v=document.getElementById('gateIn').value.replace(/\D/g,''); if(!v) return; if(+v===want) finish(true); else fresh('That’s not it. Here’s a new one.'); }
+  function ask(why){
+    if(!APP) return Promise.resolve(true);
+    return new Promise(res=>{ done=res; document.getElementById('gateWhy').textContent=why||'This opens something outside Bloppit.'; fresh(); d().showModal(); document.getElementById('gateIn').focus(); });
+  }
+  document.getElementById('gateGo').onclick=check;
+  document.getElementById('gateNo').onclick=()=>finish(false);
+  document.getElementById('gateForm').addEventListener('submit',e=>{ e.preventDefault(); check(); });
+  d().addEventListener('cancel',e=>{ e.preventDefault(); finish(false); });
+  return {ask};
+})();
+if(APP){
+  document.documentElement.classList.add('in-app');
+  // Links: the logo stays in the app; anything that leaves the app goes through the grown-ups gate, then opens in Safari.
+  document.addEventListener('click',async e=>{
+    const a=e.target.closest&&e.target.closest('a[href]'); if(!a) return;
+    const href=a.getAttribute('href');
+    if(href==='/'||href==='./'){ e.preventDefault(); if(typeof setTab==='function') setTab('create'); return; }
+    if(/^(https?:|mailto:|tel:)/i.test(href)){ e.preventDefault(); if(await gate.ask('This opens a web page in Safari.')) window.open(href,'_blank'); }
+  },true);
+}
+
 /* ---------- Players (profiles on this device) ---------- */
 // Each player has their own name, age, game scores, math setting and build in progress.
 // The first player ('p1') keeps the original storage keys, so progress from before profiles existed carries over.
@@ -1750,18 +1813,18 @@ const sfx=(()=>{
     get on(){ return on; },
     set(v){ on=!!v; try{ localStorage.setItem('bloppit-sound',on?'on':'off'); }catch(e){} if(on) ctx(); },
     // A brick snapping in: a hard plastic tick, then a hollow little knock
-    snap(delay=0){ const c=ok('snap',.04); if(!c) return; const t=c.currentTime+delay;
+    snap(delay=0){ haptic('light',delay); const c=ok('snap',.04); if(!c) return; const t=c.currentTime+delay;
       noise(c,t,.025,{vol:.5,freq:jit(4200,.15),q:2.5});
       tone(c,t+.006,jit(1150,.08),.06,{type:'triangle',vol:.22,to:700});
       tone(c,t+.012,jit(340,.06),.05,{vol:.18,to:220}); },
     // Wrong spot: a soft, friendly bonk
-    bonk(){ const c=ok('bonk',.25); if(!c) return; const t=c.currentTime;
+    bonk(){ haptic('warn'); const c=ok('bonk',.25); if(!c) return; const t=c.currentTime;
       tone(c,t,210,.18,{vol:.28,to:120,att:.01}); tone(c,t+.07,160,.16,{vol:.18,to:95,att:.01}); },
     // Picking bricks up out of the parts box: a little rattle
     rattle(n=1){ const c=ok('rattle',.12); if(!c) return; const t=c.currentTime, k=Math.min(2+n,6);
       for(let i=0;i<k;i++) noise(c,t+i*.028+Math.random()*.012,.02,{vol:.28,freq:jit(3600,.3),q:3}); },
     // A step done: three rising notes
-    chime(){ const c=ok('chime',.3); if(!c) return; const t=c.currentTime+.05, base=[0,2,4,5][Math.floor(Math.random()*4)];
+    chime(){ haptic('medium'); const c=ok('chime',.3); if(!c) return; const t=c.currentTime+.05, base=[0,2,4,5][Math.floor(Math.random()*4)];
       [0,4,7].forEach((st,i)=>{ const f=523.25*Math.pow(2,(st+base)/12); tone(c,t+i*.09,f,.35,{type:'triangle',vol:.2}); tone(c,t+i*.09,f*2,.2,{vol:.05}); }); },
     // Bloppit's otter chirp
     chirp(){ const c=ok('chirp',.3); if(!c) return; const t=c.currentTime+.32;
@@ -1771,7 +1834,7 @@ const sfx=(()=>{
         g.gain.setValueAtTime(0,t+d); g.gain.linearRampToValueAtTime(.13,t+d+.012); g.gain.exponentialRampToValueAtTime(.0001,t+d+.1);
         o.connect(g); g.connect(out); o.start(t+d); lfo.start(t+d); o.stop(t+d+.12); lfo.stop(t+d+.12); }); },
     // The whole model finished: a short fanfare
-    fanfare(){ const c=ok('fan',1); if(!c) return; const t=c.currentTime+.05;
+    fanfare(){ haptic('win'); const c=ok('fan',1); if(!c) return; const t=c.currentTime+.05;
       [[0,523.25,.14],[.14,659.25,.14],[.28,783.99,.14],[.42,1046.5,.5]].forEach(([d,f,len])=>{ tone(c,t+d,f,len+.1,{type:'square',vol:.07}); tone(c,t+d,f,len+.2,{type:'triangle',vol:.18}); });
       [523.25,659.25,783.99].forEach(f=>tone(c,t+.42,f/2,.7,{type:'triangle',vol:.08})); }
   };
@@ -3231,7 +3294,7 @@ const MP_KEY='building-blox-mp-v1';
 let mp=null, mpAvailable=null, mpPenTimer=null;
 async function mpApi(method,body,query=''){
   const headers=body?{'content-type':'application/json'}:{}; if(mp&&mp.playerId) headers['x-player']=mp.playerId;
-  let r; try{ r=await fetch('/api/room'+query,{method,headers,body:body?JSON.stringify(body):undefined,cache:'no-store'}); }
+  let r; try{ r=await fetch(API_BASE+'/api/room'+query,{method,headers,body:body?JSON.stringify(body):undefined,cache:'no-store'}); }
   catch(e){ throw new Error('Couldn’t reach the game server. Check your internet connection.'); }
   let j=null; try{ j=await r.json(); }catch(e){}
   if(!r.ok||!j) throw new Error((j&&j.error)||'The game server didn’t answer. Please try again.');
@@ -3370,7 +3433,7 @@ function mpLeave(){
   updateGameBar(); updateBuildUI();
 }
 async function mpJoin(code,name,playerId){
-  const res=await mpApi('POST',{action:'join',code,name,playerId});
+  const res=await mpApi('POST',{action:'join',code,name,playerId,app:APP||undefined});
   if(res.waiting){ mpWaitStart(res,name); return; }
   await mpEnter(res,false,name);
 }
@@ -3423,7 +3486,7 @@ async function renderMpView(){
     return;
   }
   if(!s) return;
-  $('#mpBigCode').textContent=s.code; $('#mpSite').textContent=location.host+location.pathname.replace(/\/$/,'');
+  $('#mpBigCode').textContent=s.code; $('#mpSite').textContent=APP?'bloppit.com/build':location.host+location.pathname.replace(/\/$/,'');
   const p0=photos[0]; if(p0) $('#mpThumb').src=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png'));
   $('#mpModelName').textContent=s.title;
   $('#mpModelInfo').textContent=`${s.nBricks} bricks · ${s.perTurn} brick${s.perTurn>1?'s':''} per turn${s.started?` · ${s.moves.length} placed so far`:''}`;
@@ -3452,7 +3515,7 @@ $('#mpCreate').onclick=async()=>{
     if(!model) throw new Error('Pick something to build first.');
     const perTurn=+document.querySelector('input[name=perTurn]:checked').value;
     const level=choice!=='cur'?+choice:(game?game.lvl:null);
-    const res=await mpApi('POST',{action:'create',name,perTurn,nBricks:model.bricks.length,title:choice!=='cur'?LEVELS[+choice].name:model.name,level,
+    const res=await mpApi('POST',{action:'create',app:APP||undefined,name,perTurn,nBricks:model.bricks.length,title:choice!=='cur'?LEVELS[+choice].name:model.name,level,
       model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
     mpRememberName(name);
     await mpEnter(res,true,name); renderMpView();
@@ -3476,7 +3539,8 @@ $('#mpRoomBtn').onclick=()=>setTab('mp');
 $('#mpLeave').onclick=()=>{ mpLeave(); renderMpView(); };
 $('#mpEndTurn').onclick=()=>mpPost({action:'pass'}).then(j=>mpApply(j.state)).catch(e=>setStatus(e.message,'err'));
 $('#mpSkip').onclick=()=>mpPost({action:'pass'}).then(j=>mpApply(j.state)).catch(e=>setStatus(e.message,'err'));
-$('#mpCopy').onclick=async()=>{ const url=`${location.origin}${location.pathname}?room=${mp.code}`;
+$('#mpCopy').onclick=async()=>{ const url=APP?`https://bloppit.com/build/?room=${mp.code}`:`${location.origin}${location.pathname}?room=${mp.code}`;
+  if(APP&&!await gate.ask('Sharing sends the invite link to another app.')) return;
   try{ if(navigator.share) await navigator.share({title:'Bloppit',text:`Build with me! Room ${mp.code}`,url}); else { await navigator.clipboard.writeText(url); $('#mpCopy').textContent='Copied!'; setTimeout(()=>$('#mpCopy').textContent='Copy invite link',2000); } }catch(e){} };
 document.addEventListener('visibilitychange',()=>{ if(mp&&document.visibilityState==='visible'){ mp.ver=0; mpPoll(); } });
 
@@ -3539,7 +3603,7 @@ function voSync(s){
   if(!mp) return;
   const sig=s.sig||[];
   if(vo.sigSeen<0) vo.sigSeen=sig.reduce((a,m)=>Math.max(a,m.n),0);  // ignore old messages from before this visit
-  if(vo.on&&!s.voice){ voLeave(false); setStatus('The host turned voice chat off.'); }
+  if(vo.on&&!s.voice){ voLeave(false); setStatus(s.quick?'Voice chat turned off, because someone joined on the Bloppit app.':'The host turned voice chat off.'); }
   for(const m of sig){ if(m.n<=vo.sigSeen) continue; vo.sigSeen=m.n; if(vo.on) voOnSignal(m.f,m.d); }
   if(vo.on){
     s.players.forEach((p,j)=>{
@@ -3625,6 +3689,9 @@ document.addEventListener('click',e=>{
 function updateVoiceUI(){
   const s=mp&&mp.state, bar=$('#mpVoice'), card=$('#mpVcCard'); if(!bar||!card) return;
   if(!s){ bar.innerHTML=''; card.innerHTML=''; return; }
+  // No voice in the App Store app or in rooms with an app player (Kids category rules)
+  if(APP){ bar.innerHTML=''; card.innerHTML=''; card.hidden=true; return; }
+  if(s.quick){ bar.innerHTML=''; card.innerHTML='<h3>Voice chat</h3><p>Not available in this room, because someone is playing on the Bloppit app.</p>'; return; }
   const host=mp.me===s.host, n=s.players.filter(p=>p.vc>0).length;
   let h='';
   if(!s.voice){ if(host) h=`<button class="vc-btn" type="button" data-vc="on">${MIC_SVG}Turn on voice chat</button>`; }
@@ -3659,7 +3726,8 @@ document.addEventListener('click',e=>{
 let chatOpen=false;
 function chatSeenGet(code){ try{ return +localStorage.getItem('bloppit-chat-seen-'+code)||0; }catch(e){ return 0; } }
 function chatSeenSet(){ if(!mp) return; try{ localStorage.setItem('bloppit-chat-seen-'+mp.code,String(mp.chatSeen)); }catch(e){} }
-function chatFoot(t,kind){ const el=$('#chatFoot'); el.textContent=t||'Be kind. Only people in this room can see the chat.'; el.dataset.kind=kind||''; }
+function chatFoot(t,kind){ const el=$('#chatFoot'), quick=APP||!!(mp&&mp.state&&mp.state.quick);
+  el.textContent=t||(APP?'Tap a message to send it. Only people in this room can see the chat.':quick?'Quick messages only: someone in this room is playing on the Bloppit app.':'Be kind. Only people in this room can see the chat.'); el.dataset.kind=kind||''; }
 function renderChat(){
   const box=$('#chat'), s=mp&&mp.state;
   box.hidden=!s; document.body.classList.toggle('chat-on',!!s); if(!s){ $('#chatPanel').hidden=true; $('#chatFab').setAttribute('aria-expanded','false'); return; }
@@ -3669,6 +3737,10 @@ function renderChat(){
   $('#chatBadge').hidden=!unread; $('#chatBadge').textContent=unread>9?'9+':String(unread);
   $('#chatFab').setAttribute('aria-label',unread?`Chat, ${unread} new message${unread>1?'s':''}`:'Chat');
   $('#chatRoom').textContent='· '+s.code;
+  const quick=APP||!!s.quick;
+  $('#chatForm').hidden=quick; $('#chatQuick').hidden=!quick;
+  if(quick&&!$('#chatQuick').childElementCount) $('#chatQuick').innerHTML=QUICK_CHAT.map(t=>`<button type="button">${escapeHTML(t)}</button>`).join('');
+  if(!$('#chatFoot').dataset.kind&&$('#chatFoot').textContent!=='Sending…') chatFoot('');
   if(mp.chatShown===last) return;
   mp.chatShown=last;
   const log=$('#chatLog'), nearEnd=log.scrollHeight-log.scrollTop-log.clientHeight<60;
@@ -3679,12 +3751,19 @@ function renderChat(){
 }
 function setChatOpen(v){
   chatOpen=v; $('#chatPanel').hidden=!v; $('#chatFab').setAttribute('aria-expanded',String(v));
-  if(v){ chatFoot(''); renderChat(); const log=$('#chatLog'); log.scrollTop=log.scrollHeight; $('#chatIn').focus(); }
+  if(v){ chatFoot(''); renderChat(); const log=$('#chatLog'); log.scrollTop=log.scrollHeight; ($('#chatForm').hidden?$('#chatQuick button'):$('#chatIn')).focus(); }
   else $('#chatFab').focus();
 }
 $('#chatFab').onclick=()=>setChatOpen(!chatOpen);
 $('#chatClose').onclick=()=>setChatOpen(false);
 $('#chatPanel').addEventListener('keydown',e=>{ if(e.key==='Escape'){ e.stopPropagation(); setChatOpen(false); } });
+$('#chatQuick').addEventListener('click',async e=>{
+  const b=e.target.closest('button'); if(!b||!mp) return;
+  const all=[...$('#chatQuick').querySelectorAll('button')]; all.forEach(x=>x.disabled=true); chatFoot('Sending…');
+  try{ const j=await mpPost({action:'chat',text:b.textContent}); chatFoot(''); mpApply(j.state); }
+  catch(err){ chatFoot(err.message,'err'); }
+  finally{ all.forEach(x=>x.disabled=false); }
+});
 $('#chatForm').addEventListener('submit',async e=>{
   e.preventDefault(); if(!mp) return;
   const inp=$('#chatIn'), text=inp.value.trim(); if(!text) return;
