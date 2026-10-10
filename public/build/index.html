@@ -403,6 +403,7 @@ body.chat-on{padding-bottom:96px}
 .gm-head h2{font-size:30px}
 .gm-head .note{max-width:560px;font-size:15px}
 .gm-total{display:grid;justify-items:end;text-align:right}
+.sm-link{border:0;background:none;color:var(--accent);font-weight:800;font-size:13px;padding:2px 0;cursor:pointer;text-decoration:underline}
 .gm-total b{font-family:var(--f-display);font-weight:400;font-size:44px;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
 .gm-rules{display:flex;flex-wrap:wrap;gap:8px}
 .gm-rules span{background:var(--callout);border-radius:999px;padding:6px 12px;font-size:13px}
@@ -476,6 +477,32 @@ body.chat-on{padding-bottom:96px}
 .mathdlg.shake{animation:mq-shake .35s}
 @keyframes mq-shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
 @media (prefers-reduced-motion: reduce){.mathdlg.shake{animation:none}}
+.who{margin-left:auto;display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--page);border-radius:999px;padding:4px 14px 4px 4px;cursor:pointer;color:var(--ink);box-shadow:0 2px 0 var(--shadow);max-width:220px}
+.who:hover{border-color:var(--ink)}
+.who-txt{display:grid;text-align:left;line-height:1.1;min-width:0}
+.who-txt .tag{font-size:10px}
+.who-txt b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:var(--f-display);font-size:18px;flex:none;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+.whodlg{text-align:left;width:min(520px,calc(100vw - 24px))}
+.whodlg h2{margin:0 0 10px}
+.who-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.who-card{position:relative;display:grid;justify-items:center;gap:4px;padding:14px 10px 10px;border:2px solid var(--line);border-radius:16px;background:var(--bg);cursor:pointer;color:var(--ink);text-align:center}
+.who-card:hover{border-color:var(--ink)}
+.who-card.now{border-color:var(--accent);background:var(--page)}
+.who-card .av{width:54px;height:54px;font-size:28px}
+.who-card b{font-size:17px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.who-card .meta{font-size:12px;color:var(--muted);font-weight:700}
+.who-card .now-tag{position:absolute;top:6px;left:8px;font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
+.who-edit{position:absolute;top:4px;right:4px;border:0;background:none;color:var(--muted);font-weight:800;font-size:12px;cursor:pointer;padding:4px 6px;border-radius:6px}
+.who-edit:hover{color:var(--ink);background:var(--callout)}
+.who-form{display:grid;gap:8px;margin-top:6px}
+.who-form h3{margin:0;font-size:18px}
+.who-colors{display:flex;flex-wrap:wrap;gap:8px}
+.who-colors button{width:30px;height:30px;border-radius:50%;border:3px solid transparent;cursor:pointer;box-shadow:0 0 0 1px var(--line)}
+.who-colors button[aria-checked="true"]{border-color:var(--page);box-shadow:0 0 0 3px var(--ink)}
+.ghost.danger{color:var(--accent);margin-right:auto}
+.whodlg .win-btns{margin-top:14px}
+@media (max-width:640px){.who{padding-right:10px}.who-txt .tag{display:none}}
 .windlg::backdrop{background:rgba(10,16,24,.55)}
 .win-stars{font-size:46px;letter-spacing:6px;color:var(--hi);line-height:1}
 .win-stars i{font-style:normal;color:var(--line)}
@@ -517,6 +544,7 @@ body.chat-on{padding-bottom:96px}
     <button class="tab play" role="tab" id="tab-game" data-tab="game" aria-selected="false"><span class="n">★</span>Play the Game</button>
     <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n">⇄</span>Play together</button>
   </nav>
+  <button class="who" id="whoBtn" type="button" title="Who’s playing? Tap to switch player"><span class="av" id="whoAv"></span><span class="who-txt"><span class="tag">Playing</span><b id="whoName"></b></span></button>
 </header>
 
 <main>
@@ -718,7 +746,7 @@ body.chat-on{padding-bottom:96px}
 <section class="view" id="view-game" hidden>
   <div class="gm-head">
     <div><h2>Play the Game</h2><p class="note">Build each picture to finish the level. The levels start tiny and get bigger, so they're worth more points.</p></div>
-    <div class="gm-total"><span class="tag">Your points</span><b id="gmTotal">0</b><span class="note" id="gmDone"></span></div>
+    <div class="gm-total"><span class="tag" id="gmWho">Your points</span><b id="gmTotal">0</b><span class="note" id="gmDone"></span><button class="ghost sm-link" id="gmSwitch" type="button">Switch player</button></div>
   </div>
   <div class="gm-rules">
     <span><b>Finish a level</b> to earn its points</span>
@@ -730,7 +758,7 @@ body.chat-on{padding-bottom:96px}
     <label class="gm-switch"><input type="checkbox" id="mathOn"><span class="sw" aria-hidden="true"></span><b>Maths challenge</b></label>
     <p class="note">Some booklet pages are locked with a maths puzzle from Bloppit. Solve it to open the page and earn <b>+10 points</b>. Puzzles get harder as the levels go up, and higher levels lock more pages.</p>
     <div class="gm-age"><label for="mathAge">Player’s age</label>
-      <select class="inp" id="mathAge"></select>
+      <select class="inp" id="mathAge"></select><span class="note" style="margin:0">for <b id="mathAgeFor"></b></span>
       <span class="tag" id="mathTier"></span></div>
   </div>
   <div class="gm-levels" id="gmLevels"></div>
@@ -805,6 +833,19 @@ body.chat-on{padding-bottom:96px}
   <div class="win-btns"><button class="ghost" id="mpEndClose" type="button">Look at the model</button><button class="primary sm" id="mpEndNew" type="button">New game</button></div>
 </dialog>
 
+<dialog class="windlg whodlg" id="whoDlg" aria-labelledby="whoTitle">
+  <h2 id="whoTitle">Who’s playing?</h2>
+  <p class="note" style="margin:-6px 0 12px">Each player has their own scores, maths level and build in progress on this device.</p>
+  <div class="who-list" id="whoList"></div>
+  <form class="who-form" id="whoForm" hidden autocomplete="off">
+    <h3 id="whoFormTitle">New player</h3>
+    <div class="field"><label for="whoNm">Name</label><input class="inp" id="whoNm" maxlength="16" required placeholder="e.g. Alex"></div>
+    <div class="field"><label for="whoAge">Age</label><select class="inp" id="whoAge"><option value="">Rather not say</option></select></div>
+    <div class="who-colors" id="whoColors" role="radiogroup" aria-label="Colour"></div>
+    <div class="win-btns"><button class="ghost danger" id="whoDel" type="button" hidden>Remove player</button><button class="ghost" id="whoCancel" type="button">Cancel</button><button class="primary sm" type="submit" id="whoSave">Save</button></div>
+  </form>
+  <div class="win-btns" id="whoBtns"><button class="ghost" id="whoAdd" type="button">+ Add a player</button><button class="primary sm" id="whoDone" type="button">Done</button></div>
+</dialog>
 <dialog class="windlg mathdlg" id="mathDlg" aria-labelledby="mqTitle">
   <div class="mq-head"><svg viewBox="0 0 200 175" width="64" height="56" aria-hidden="true"><circle cx="42" cy="38" r="16" fill="#8A5A3B"/><circle cx="42" cy="38" r="7" fill="#6B4229"/><circle cx="158" cy="38" r="16" fill="#8A5A3B"/><circle cx="158" cy="38" r="7" fill="#6B4229"/><ellipse cx="100" cy="94" rx="88" ry="74" fill="#8A5A3B"/><ellipse cx="100" cy="116" rx="56" ry="40" fill="#F3DEC0"/><ellipse cx="64" cy="88" rx="19" ry="22" fill="#1B1410"/><ellipse cx="136" cy="88" rx="19" ry="22" fill="#1B1410"/><circle cx="70" cy="79" r="7" fill="#FFFFFF"/><circle cx="142" cy="79" r="7" fill="#FFFFFF"/><path d="M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z" fill="#3A2418"/><path d="M100 120 q0 8 -9 10 M100 120 q0 8 9 10" stroke="#3A2418" stroke-width="4" stroke-linecap="round" fill="none"/></svg><div><div class="tag" id="mqTag">Maths puzzle</div><h2 id="mqTitle">Page 1 is locked!</h2></div></div>
   <div class="mq-vis" id="mqVis"></div>
@@ -844,6 +885,26 @@ body.chat-on{padding-bottom:96px}
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
 <script>
+/* ---------- Players (profiles on this device) ---------- */
+// Each player has their own name, age, game scores, maths setting and build in progress.
+// The first player ('p1') keeps the original storage keys, so progress from before profiles existed carries over.
+const PLAYERS_KEY='bloppit-players-v1', AV_COLORS=['#D2352B','#0055BF','#237841','#F08A00','#923978','#008F9B','#AA7D55','#1B2A34'];
+const players=(()=>{
+  let o=null; try{ o=JSON.parse(localStorage.getItem(PLAYERS_KEY)); }catch(e){}
+  if(!o||!Array.isArray(o.list)||!o.list.length){
+    let age=null; try{ const g=JSON.parse(localStorage.getItem('building-blox-game-v1')); if(g&&g.math&&g.math.age) age=g.math.age; }catch(e){}
+    let nm=''; try{ nm=localStorage.getItem('building-blox-name')||''; }catch(e){}
+    o={cur:'p1',n:1,list:[{id:'p1',name:nm||'Player 1',age,color:AV_COLORS[0]}]};
+  }
+  if(!o.list.some(p=>p.id===o.cur)) o.cur=o.list[0].id;
+  return o;
+})();
+function playersSave(){ try{ localStorage.setItem(PLAYERS_KEY,JSON.stringify(players)); }catch(e){} }
+const curPlayer=()=>players.list.find(p=>p.id===players.cur);
+const keyFor=(id,k)=>id==='p1'?k:k+':'+id;
+const pkey=k=>keyFor(players.cur,k);
+let leavingPlayer=false;  // set while switching player, so the page-unload save can't write into the new player's slot
+const AGE_OPTS=Array.from({length:12},(_,i)=>i+4).map(a=>`<option value="${a}">${a}${a===15?'+':''}</option>`).join('');
 (() => {
 const $ = s => document.querySelector(s);
 const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
@@ -2375,8 +2436,8 @@ const LEVELS=[
 ];
 const GAME_KEY='building-blox-game-v1';
 let game=null, autoBusy=false, freeS=null;
-function gameStore(){ try{ return JSON.parse(localStorage.getItem(GAME_KEY))||{best:{}}; }catch(e){ return {best:{}}; } }
-function gameStoreSet(g){ try{ localStorage.setItem(GAME_KEY,JSON.stringify(g)); }catch(e){} }
+function gameStore(id){ try{ return JSON.parse(localStorage.getItem(keyFor(id||players.cur,GAME_KEY)))||{best:{}}; }catch(e){ return {best:{}}; } }
+function gameStoreSet(g){ if(leavingPlayer) return; try{ localStorage.setItem(pkey(GAME_KEY),JSON.stringify(g)); }catch(e){} }
 function levelMake(L){ return L.art?levelArt(L.art):SAMPLES.find(s=>s.name===L.sample).make(); }
 function levelThumb(L){ if(!L.thumb) L.thumb=levelMake(L)[0][1].toDataURL('image/png'); return L.thumb; }
 function levelSettings(L){ return {size:L.size,shape:L.shape,thick:L.thick,tol:48,maxColors:L.colors,gray:true}; }
@@ -2454,7 +2515,7 @@ $('#gbMap').onclick=()=>setTab('game');
 function renderGameMap(){
   const g=gameStore(), done=Object.keys(g.best).map(Number), unlocked=done.length?Math.max(...done)+1:0;
   const total=Object.values(g.best).reduce((a,b)=>a+b,0);
-  $('#gmTotal').textContent=total.toLocaleString();
+  $('#gmTotal').textContent=total.toLocaleString(); $('#gmWho').textContent=`${curPlayer().name}’s points`; syncMathUI();
   $('#gmDone').textContent=`${done.length} of ${LEVELS.length} levels done`;
   $('#gmLevels').innerHTML=LEVELS.map((L,i)=>{
     const best=g.best[i], open=i<=unlocked, cur_=game&&game.lvl===i;
@@ -2471,6 +2532,7 @@ function renderGameMap(){
 }
 $('#gmLevels').addEventListener('click',e=>{ const b=e.target.closest('.lvl'); if(!b||b.disabled) return; const i=+b.dataset.i;
   if(game&&game.lvl===i&&model&&cur<model.steps.length){ setTab('build'); return; } startLevel(i); });
+$('#gmSwitch').onclick=openWho;
 $('#gmReset').onclick=()=>{ const b=$('#gmReset'); if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent='Tap again to wipe all scores'; setTimeout(()=>{delete b.dataset.confirm; b.textContent='Reset game progress';},3000); return; }
   delete b.dataset.confirm; b.textContent='Reset game progress'; gameStoreSet({best:{}}); renderGameMap(); };
 
@@ -2480,8 +2542,8 @@ $('#gmReset').onclick=()=>{ const b=$('#gmReset'); if(!b.dataset.confirm){ b.dat
 const MATH_TIERS=['Counting bricks','Adding up to 10','Adding and taking away to 20','Missing numbers to 20','Bigger numbers, and the 2, 5 and 10 times tables',
   'Times tables and dividing','Bigger sums, halves and quarters','Fractions, percentages and order of operations','Simple equations and squares','Equations, square roots and percentages'];
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)), pickOne=a=>a[rnd(0,a.length-1)];
-function mathPrefs(){ const g=gameStore(); return {on:!!(g.math&&g.math.on), age:(g.math&&g.math.age)||8}; }
-function mathPrefsSet(p){ const g=gameStore(); g.math=p; gameStoreSet(g); }
+function mathPrefs(){ const g=gameStore(); return {on:!!(g.math&&g.math.on), age:curPlayer().age||8, set:!!curPlayer().age}; }
+function mathPrefsSet(p){ const g=gameStore(); g.math={on:p.on}; gameStoreSet(g); if(p.set&&p.age){ curPlayer().age=p.age; playersSave(); renderWho(); } }
 const ageTier=age=>clamp(age-4,0,9);
 const mathTier=(age,lvl)=>clamp(ageTier(age)+Math.floor(lvl/5),0,9);
 function mathLocks(lvl,N){
@@ -2590,12 +2652,66 @@ $('#mqLater').onclick=()=>$('#mathDlg').close();
 $('#mathDlg').addEventListener('close',()=>{ $('#mqLater').textContent='Not now'; mq=null; });
 $('#bpUnlock').onclick=()=>openMath(viewPage);
 // Game tab controls
-$('#mathAge').innerHTML=Array.from({length:12},(_,i)=>i+4).map(a=>`<option value="${a}">${a}${a===15?'+':''}</option>`).join('');
-function syncMathUI(){ const p=mathPrefs(); $('#mathOn').checked=p.on; $('#mathAge').value=Math.min(15,p.age); $('#gmMath').classList.toggle('on',p.on);
-  $('#mathTier').textContent=`Starts with: ${MATH_TIERS[mathTier(p.age,0)]}`; }
+$('#mathAge').innerHTML='<option value="" disabled>Age</option>'+AGE_OPTS;
+function syncMathUI(){ const p=mathPrefs(); $('#mathOn').checked=p.on; $('#mathAge').value=p.set?Math.min(15,p.age):''; $('#gmMath').classList.toggle('on',p.on);
+  $('#mathAgeFor').textContent=curPlayer().name;
+  $('#mathTier').textContent=p.set?`Starts with: ${MATH_TIERS[mathTier(p.age,0)]}`:'Choose an age to set how hard the puzzles are'; }
 $('#mathOn').addEventListener('change',e=>{ const p=mathPrefs(); p.on=e.target.checked; mathPrefsSet(p); syncMathUI(); });
-$('#mathAge').addEventListener('change',e=>{ const p=mathPrefs(); p.age=+e.target.value; mathPrefsSet(p); syncMathUI(); });
+$('#mathAge').addEventListener('change',e=>{ const p=mathPrefs(); p.age=+e.target.value; p.set=true; mathPrefsSet(p); syncMathUI(); });
 syncMathUI();
+
+/* ---------- Player picker ---------- */
+$('#whoAge').innerHTML+=AGE_OPTS;
+const initial=n=>escapeHTML((n.trim()[0]||'?').toUpperCase());
+function playerStats(id){ const g=gameStore(id), pts=Object.values(g.best||{}).reduce((a,b)=>a+b,0), lv=Object.keys(g.best||{}).length; return {pts,lv}; }
+function renderWho(){
+  const p=curPlayer(); $('#whoAv').textContent=(p.name.trim()[0]||'?').toUpperCase(); $('#whoAv').style.background=p.color; $('#whoName').textContent=p.name;
+}
+function renderWhoList(){
+  $('#whoList').innerHTML=players.list.map(p=>{ const st=playerStats(p.id);
+    return `<div class="who-card${p.id===players.cur?' now':''}" role="button" tabindex="0" data-id="${p.id}" aria-label="Play as ${escapeHTML(p.name)}">
+      ${p.id===players.cur?'<span class="now-tag">Playing</span>':''}<button class="who-edit" type="button" data-edit="${p.id}" aria-label="Edit ${escapeHTML(p.name)}">Edit</button>
+      <span class="av" style="background:${p.color}">${initial(p.name)}</span><b>${escapeHTML(p.name)}</b>
+      <span class="meta">${p.age?`Age ${p.age}${p.age===15?'+':''} · `:''}${st.pts.toLocaleString()} points</span>
+      <span class="meta">${st.lv} of ${LEVELS.length} levels</span></div>`; }).join('');
+}
+let whoEditing=null, whoColor=AV_COLORS[0];
+function whoForm(p){
+  whoEditing=p?p.id:null; $('#whoForm').hidden=false; $('#whoBtns').hidden=true; $('#whoList').hidden=true;
+  $('#whoFormTitle').textContent=p?`Edit ${p.name}`:'New player';
+  $('#whoNm').value=p?p.name:''; $('#whoAge').value=p&&p.age?String(p.age):'';
+  whoColor=p?p.color:AV_COLORS[players.list.length%AV_COLORS.length];
+  $('#whoColors').innerHTML=AV_COLORS.map(c=>`<button type="button" role="radio" aria-checked="${c===whoColor}" aria-label="Colour" style="background:${c}" data-c="${c}"></button>`).join('');
+  $('#whoDel').hidden=!p||players.list.length<2;
+  setTimeout(()=>$('#whoNm').focus(),30);
+}
+function whoFormClose(){ $('#whoForm').hidden=true; $('#whoBtns').hidden=false; $('#whoList').hidden=false; renderWhoList(); }
+function switchPlayer(id){
+  if(id===players.cur){ $('#whoDlg').close(); return; }
+  try{ saveNow(); }catch(e){}
+  leavingPlayer=true; players.cur=id; playersSave(); location.reload();
+}
+function openWho(){ whoFormClose(); renderWhoList(); $('#whoDlg').showModal(); }
+$('#whoBtn').onclick=openWho;
+$('#whoDone').onclick=()=>$('#whoDlg').close();
+$('#whoAdd').onclick=()=>whoForm(null);
+$('#whoCancel').onclick=whoFormClose;
+$('#whoColors').addEventListener('click',e=>{ const b=e.target.closest('[data-c]'); if(!b) return; whoColor=b.dataset.c; $('#whoColors').querySelectorAll('button').forEach(x=>x.setAttribute('aria-checked',x===b)); });
+$('#whoList').addEventListener('click',e=>{ const ed=e.target.closest('[data-edit]'); if(ed){ whoForm(players.list.find(p=>p.id===ed.dataset.edit)); return; }
+  const c=e.target.closest('.who-card'); if(c) switchPlayer(c.dataset.id); });
+$('#whoList').addEventListener('keydown',e=>{ const c=e.target.closest('.who-card'); if(c&&(e.key==='Enter'||e.key===' ')&&!e.target.closest('[data-edit]')){ e.preventDefault(); switchPlayer(c.dataset.id); } });
+$('#whoForm').addEventListener('submit',e=>{ e.preventDefault();
+  const name=$('#whoNm').value.trim().slice(0,16); if(!name) return; const age=+$('#whoAge').value||null;
+  if(whoEditing){ const p=players.list.find(q=>q.id===whoEditing); Object.assign(p,{name,age,color:whoColor}); playersSave(); renderWho(); syncMathUI(); if(tab==='game') renderGameMap(); whoFormClose(); return; }
+  const id='p'+(++players.n+1); players.list.push({id,name,age,color:whoColor}); playersSave(); switchPlayer(id); });
+$('#whoDel').onclick=()=>{ const b=$('#whoDel'), p=players.list.find(q=>q.id===whoEditing); if(!p) return;
+  if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent=`Tap again to remove ${p.name} and their scores`; setTimeout(()=>{delete b.dataset.confirm; b.textContent='Remove player';},3000); return; }
+  delete b.dataset.confirm; b.textContent='Remove player';
+  try{ localStorage.removeItem(keyFor(p.id,GAME_KEY)); localStorage.removeItem(keyFor(p.id,SAVE_KEY)); }catch(e){}
+  players.list=players.list.filter(q=>q!==p);
+  if(players.cur===p.id){ leavingPlayer=true; players.cur=players.list[0].id; playersSave(); location.reload(); return; }
+  playersSave(); whoFormClose(); };
+renderWho();
 
 /* ---------- Play together (rooms on the Bloppit website) ---------- */
 const MP_KEY='building-blox-mp-v1';
@@ -2613,7 +2729,7 @@ function mpMsg(t,kind){ const el=$('#mpMsg'); el.hidden=!t; el.textContent=t||''
 function mpStored(){ try{ return JSON.parse(localStorage.getItem(MP_KEY))||null; }catch(e){ return null; } }
 function mpStore(o){ try{ o?localStorage.setItem(MP_KEY,JSON.stringify(o)):localStorage.removeItem(MP_KEY); }catch(e){} }
 function mpRememberName(n){ try{ localStorage.setItem('building-blox-name',n); }catch(e){} }
-function mpName(){ try{ return localStorage.getItem('building-blox-name')||''; }catch(e){ return ''; } }
+function mpName(){ const p=curPlayer(); if(p&&!/^Player \d+$/.test(p.name)) return p.name; try{ return localStorage.getItem('building-blox-name')||''; }catch(e){ return ''; } }
 async function mpCheck(){ if(mpAvailable!==null) return mpAvailable; try{ const j=await mpApi('GET',null,'?ping=1'); mpAvailable=!!(j&&j.ok); }catch(e){ mpAvailable=false; } return mpAvailable; }
 const mpMyTurn=()=>!!(mp&&mp.state&&mp.state.started&&!mp.state.finished&&mp.state.turn===mp.me);
 function mpTurnText(){ const s=mp&&mp.state; if(!s||!s.started) return 'Waiting for the game to start.'; if(s.finished) return 'The model is finished!'; return `It’s ${s.players[s.turn].name}’s turn. Get your bricks ready in the parts box.`; }
@@ -2859,9 +2975,9 @@ $('#chatForm').addEventListener('submit',async e=>{
 /* ---------- Save progress (in this browser, on this device) ---------- */
 const SAVE_KEY='building-blox-save-v1';
 let saveOn=false, saveTimer=null, restoring=false, pendingSave=null;
-function storeGet(){ try{ const t=localStorage.getItem(SAVE_KEY); return t?JSON.parse(t):null; }catch(e){ return null; } }
-function storeSet(o){ try{ localStorage.setItem(SAVE_KEY,JSON.stringify(o)); return true; }catch(e){ return false; } }
-function storeClear(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} }
+function storeGet(){ try{ const t=localStorage.getItem(pkey(SAVE_KEY)); return t?JSON.parse(t):null; }catch(e){ return null; } }
+function storeSet(o){ if(leavingPlayer) return false; try{ localStorage.setItem(pkey(SAVE_KEY),JSON.stringify(o)); return true; }catch(e){ return false; } }
+function storeClear(){ if(leavingPlayer) return; try{ localStorage.removeItem(pkey(SAVE_KEY)); }catch(e){} }
 function saveSoon(){ if(!saveOn||restoring||mp) return; clearTimeout(saveTimer); saveTimer=setTimeout(saveNow,400); }
 function snapshot(){
   if(!model) return null;
