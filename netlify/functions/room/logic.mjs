@@ -14,6 +14,15 @@ const CHAT_LEN = 140;             // characters per message
 const CHAT_GAP_MS = 1000;         // at least this long between one player's messages
 const CHAT_BURST = 6;             // and no more than this many…
 const CHAT_BURST_MS = 20_000;     // …in this window
+const MAX_WAITING = 6;            // people waiting for the host to let them in
+const WAIT_STALE_MS = 60_000;     // a waiting person who stops checking in is dropped
+const SIG_KEEP_MS = 60_000;       // voice connection messages are dropped after this
+const SIG_MAX = 40;               // and at most this many are kept
+const SIG_LEN = 16_000;           // characters per voice connection message
+
+// Voice chat: the server only passes on the short connection messages ("offer"/"answer") that let two
+// devices find each other. The audio itself goes directly between the devices (encrypted by the browser)
+// and never reaches this server; nothing is ever recorded or stored.
 
 // ---------- Chat guardrails ----------
 // Bloppit is for families, so chat is for this game only: no links, emails, phone numbers or
@@ -64,17 +73,28 @@ const roomKey = (c) => `room/${c}`;
 const modelKey = (c) => `model/${c}`;
 
 // What everyone may see: never send player ids (they act as passwords).
-// Chat is only sent to players in the room, not to anyone who just knows the code.
-function publicState(s, withChat = true) {
+// Chat, who is waiting to join and voice messages are only sent to players in the room
+// (`viewer` is the asking player's index, or -1), not to anyone who just knows the code.
+function publicState(s, viewer = -1) {
   const now = Date.now();
   const out = {
     code: s.code, ver: s.ver, started: s.started, finished: s.finished, perTurn: s.perTurn,
     nBricks: s.nBricks, title: s.title, level: s.level, host: s.host, turn: s.turn,
-    turnPlaced: s.turnPlaced, turnStart: s.turnStart, moves: s.moves, now,
-    players: s.players.map((p) => ({ name: p.name, color: p.color, pen: p.pen, stale: now - p.seen > STALE_MS })),
+    turnPlaced: s.turnPlaced, turnStart: s.turnStart, moves: s.moves, now, voice: !!s.voice,
+    players: s.players.map((p) => ({ name: p.name, color: p.color, pen: p.pen, stale: now - p.seen > STALE_MS, vc: s.voice ? (p.vc || 0) : 0 })),
   };
-  if (withChat) out.chat = (s.chat || []).map((m) => ({ n: m.n, p: m.p, t: m.t, at: m.at }));
+  if (viewer >= 0) {
+    out.me = viewer;
+    out.chat = (s.chat || []).map((m) => ({ n: m.n, p: m.p, t: m.t, at: m.at }));
+    out.waiting = (s.waiting || []).filter((w) => now - w.seen <= WAIT_STALE_MS).map((w) => ({ k: w.k, name: w.name }));
+    out.sig = (s.sig || []).filter((m) => m.to === viewer).map((m) => ({ n: m.n, f: m.f, d: m.d }));
+  }
   return out;
+}
+function prune(s) {
+  const now = Date.now();
+  if (s.waiting) s.waiting = s.waiting.filter((w) => now - w.seen <= WAIT_STALE_MS);
+  if (s.sig) s.sig = s.sig.filter((m) => now - m.at <= SIG_KEEP_MS).slice(-SIG_MAX);
 }
 
 function nextTurn(s) {
@@ -92,16 +112,17 @@ async function readRoom(store, code) {
 
 // Read-modify-write with an etag check. Only the player whose turn it is
 // places bricks, so collisions are rare; on one we simply re-read and retry.
-async function update(store, code, fn) {
+async function update(store, code, fn, viewerId) {
   for (let i = 0; i < 8; i++) {
     const r = await readRoom(store, code);
     if (!r) return { status: 404, body: { error: 'That room code wasn’t found. Check it, or start a new game.' } };
     const s = r.data;
     const out = fn(s);
     if (out && out.error) return { status: out.status || 400, body: { error: out.error } };
+    prune(s);
     s.ver += 1; s.updated = Date.now();
     const { modified } = await store.set(roomKey(code), s, { onlyIfMatch: r.etag });
-    if (modified) return { status: 200, body: { ...(out || {}), state: publicState(s) } };
+    if (modified) return { status: 200, body: { ...(out || {}), state: publicState(s, viewerId ? findPlayer(s, viewerId) : -1) } };
     await new Promise((res) => setTimeout(res, 40 + Math.random() * 120));
   }
   return { status: 409, body: { error: 'The room was busy. Please try again.' } };
@@ -127,8 +148,12 @@ export async function handle(method, query, body, store) {
     const r = await readRoom(store, code);
     if (!r) return { status: 404, body: { error: 'That room code wasn’t found. Check it, or start a new game.' } };
     if (query.since && Number(query.since) === r.data.ver) return { status: 200, body: { same: true, ver: r.data.ver } };
-    const member = !!query.pid && findPlayer(r.data, query.pid) >= 0;
-    return { status: 200, body: { state: publicState(r.data, member) } };
+    const s = r.data, idx = query.pid ? findPlayer(s, query.pid) : -1;
+    if (idx < 0 && query.pid) {
+      if ((s.waiting || []).some((w) => w.id === query.pid)) return { status: 200, body: { waiting: true, state: publicState(s) } };
+      if ((s.denied || []).includes(query.pid)) return { status: 200, body: { denied: true } };
+    }
+    return { status: 200, body: { state: publicState(s, idx) } };
   }
 
   if (method !== 'POST') return { status: 405, body: { error: 'Method not allowed' } };
@@ -153,7 +178,7 @@ export async function handle(method, query, body, store) {
       const { modified } = await store.set(roomKey(code), s, { onlyIfNew: true });
       if (!modified) continue;
       await store.set(modelKey(code), model, {});
-      return { status: 200, body: { code, playerId: player.id, me: 0, state: publicState(s) } };
+      return { status: 200, body: { code, playerId: player.id, me: 0, state: publicState(s, 0) } };
     }
     return { status: 500, body: { error: 'Couldn’t make a room code. Please try again.' } };
   }
@@ -161,26 +186,42 @@ export async function handle(method, query, body, store) {
   const code = cleanCode(body && body.code);
   if (!code) return { status: 400, body: { error: 'Missing room code.' } };
 
+  // Joining: someone already in the room just comes back in. Anyone new waits until the host lets them in.
   if (a === 'join') {
-    let me = -1, pid = null;
+    let me = -1, pid = null, waiting = false;
     const res = await update(store, code, (s) => {
+      const now = Date.now();
       const idx = body.playerId ? findPlayer(s, body.playerId) : -1;
-      if (idx >= 0) { s.players[idx].seen = Date.now(); me = idx; pid = body.playerId; return {}; }
+      if (idx >= 0) { s.players[idx].seen = now; me = idx; pid = body.playerId; return {}; }
       if (s.finished) return { error: 'That game has already finished.' };
       if (s.players.length >= MAX_PLAYERS) return { error: 'That room is full (4 players).' };
-      const used = new Set(s.players.map((p) => p.color));
-      const p = { id: newId(), name: cleanName(body.name), color: COLORS.find((c) => !used.has(c)) || COLORS[0], pen: { hint: 0, auto: 0, miss: 0 }, seen: Date.now() };
-      s.players.push(p); me = s.players.length - 1; pid = p.id;
+      s.waiting = (s.waiting || []).filter((w) => now - w.seen <= WAIT_STALE_MS);
+      const w0 = body.playerId ? s.waiting.find((w) => w.id === body.playerId) : null;
+      if (w0) { w0.seen = now; pid = w0.id; waiting = true; return {}; }
+      if (s.waiting.length >= MAX_WAITING) return { error: 'Lots of people are already waiting to join. Try again in a minute.' };
+      const w = { id: newId(), k: rand(8, ALPHABET), name: cleanName(body.name), seen: now };
+      s.waiting.push(w); pid = w.id; waiting = true;
       return {};
-    });
-    if (res.status === 200) Object.assign(res.body, { code, playerId: pid, me });
+    }, body.playerId);
+    if (res.status === 200) {
+      Object.assign(res.body, { code, playerId: pid, me, waiting });
+    }
     return res;
+  }
+  // Someone waiting checks in (and can stop waiting)
+  if (a === 'wait' || a === 'cancel') {
+    return update(store, code, (s) => {
+      const w = (s.waiting || []).find((x) => x.id === body.playerId);
+      if (!w) return findPlayer(s, body.playerId) >= 0 ? {} : { error: 'You’re no longer waiting to join this room.', status: 404 };
+      if (a === 'cancel') s.waiting = s.waiting.filter((x) => x !== w); else w.seen = Date.now();
+      return {};
+    }, body.playerId);
   }
 
   const pid = body.playerId;
   const mine = (s) => { const i = findPlayer(s, pid); if (i < 0) return -1; s.players[i].seen = Date.now(); return i; };
 
-  if (a === 'ping') return update(store, code, (s) => (mine(s) < 0 ? { error: 'You’re not in this room.', status: 403 } : {}));
+  if (a === 'ping') return update(store, code, (s) => (mine(s) < 0 ? { error: 'You’re not in this room.', status: 403 } : {}), pid);
 
   if (a === 'start') {
     return update(store, code, (s) => {
@@ -189,7 +230,60 @@ export async function handle(method, query, body, store) {
       if (i !== s.host) return { error: 'Only the player who made the room can start it.', status: 403 };
       if (!s.started) { s.started = true; s.turn = 0; s.turnPlaced = 0; s.turnStart = Date.now(); }
       return {};
-    });
+    }, pid);
+  }
+
+  // Host only: let someone in, or say no
+  if (a === 'admit' || a === 'deny') {
+    return update(store, code, (s) => {
+      const i = mine(s);
+      if (i < 0) return { error: 'You’re not in this room.', status: 403 };
+      if (i !== s.host) return { error: 'Only the player who made the room can let people in.', status: 403 };
+      const w = (s.waiting || []).find((x) => x.k === body.k);
+      if (!w) return { error: 'They’re no longer waiting.', status: 404 };
+      s.waiting = s.waiting.filter((x) => x !== w);
+      if (a === 'deny') { s.denied = [...(s.denied || []), w.id].slice(-20); return {}; }
+      if (s.players.length >= MAX_PLAYERS) return { error: 'The room is full (4 players).', status: 409 };
+      const used = new Set(s.players.map((p) => p.color));
+      s.players.push({ id: w.id, name: w.name, color: COLORS.find((c) => !used.has(c)) || COLORS[0], pen: { hint: 0, auto: 0, miss: 0 }, seen: Date.now() });
+      return {};
+    }, pid);
+  }
+
+  // Voice chat. The host turns it on or off for the room; each player joins and mutes themselves.
+  if (a === 'voice') {
+    return update(store, code, (s) => {
+      const i = mine(s);
+      if (i < 0) return { error: 'You’re not in this room.', status: 403 };
+      if (i !== s.host) return { error: 'Only the player who made the room can turn voice chat on or off.', status: 403 };
+      s.voice = !!body.on;
+      if (!s.voice) { s.players.forEach((p) => { p.vc = 0; }); s.sig = []; }
+      return {};
+    }, pid);
+  }
+  if (a === 'vc') {
+    return update(store, code, (s) => {
+      const i = mine(s);
+      if (i < 0) return { error: 'You’re not in this room.', status: 403 };
+      const v = Math.max(0, Math.min(2, Math.floor(Number(body.state) || 0)));  // 0 out, 1 in but muted, 2 mic on
+      if (v && !s.voice) return { error: 'Voice chat is off for this room.', status: 409 };
+      s.players[i].vc = v;
+      if (!v) s.sig = (s.sig || []).filter((m) => m.f !== i && m.to !== i);
+      return {};
+    }, pid);
+  }
+  if (a === 'signal') {
+    const d = String(body.d || '');
+    if (!d || d.length > SIG_LEN) return { status: 400, body: { error: 'Bad voice message.' } };
+    return update(store, code, (s) => {
+      const i = mine(s);
+      if (i < 0) return { error: 'You’re not in this room.', status: 403 };
+      const to = Math.floor(Number(body.to));
+      if (!s.voice || !(to >= 0 && to < s.players.length) || to === i) return { error: 'Voice chat isn’t available.', status: 409 };
+      s.sigN = (s.sigN || 0) + 1;
+      s.sig = [...(s.sig || []), { n: s.sigN, f: i, to, d, at: Date.now() }];
+      return {};
+    }, pid);
   }
 
   if (a === 'pen') {
@@ -198,7 +292,7 @@ export async function handle(method, query, body, store) {
       if (i < 0) return { error: 'You’re not in this room.', status: 403 };
       s.players[i].pen = mergePen(s.players[i].pen, body.pen);
       return {};
-    });
+    }, pid);
   }
 
   if (a === 'chat') {
@@ -216,7 +310,7 @@ export async function handle(method, query, body, store) {
       s.chatN = (s.chatN || 0) + 1;
       s.chat = [...(s.chat || []), { n: s.chatN, p: i, t: c.text, at: now }].slice(-MAX_CHAT);
       return {};
-    });
+    }, pid);
   }
 
   if (a === 'move') {
@@ -235,7 +329,7 @@ export async function handle(method, query, body, store) {
       if (s.moves.length >= s.nBricks) s.finished = true;
       else if (s.turnPlaced >= s.perTurn) nextTurn(s);
       return {};
-    });
+    }, pid);
   }
 
   if (a === 'pass') {
@@ -247,7 +341,7 @@ export async function handle(method, query, body, store) {
       if (i !== s.turn && Date.now() - cur.seen <= STALE_MS) return { error: `${cur.name} is still playing.`, status: 409 };
       nextTurn(s);
       return {};
-    });
+    }, pid);
   }
 
   return { status: 400, body: { error: 'Unknown action.' } };
