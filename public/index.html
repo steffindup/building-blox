@@ -130,6 +130,14 @@ nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;padding-block:12
 .tag{align-self:flex-start;border-radius:999px;padding:4px 14px;font-weight:800;font-size:14px}
 .chips{display:flex;margin-top:auto;gap:8px}
 .chip{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800}
+.cards.four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.cards.four .card{padding:24px}
+@media (max-width:1100px){.cards.four{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.cards.four{grid-template-columns:minmax(0,1fr)}}
+.names{display:flex;flex-wrap:wrap;gap:6px}
+.names span{background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:2px 10px;font-weight:800;font-size:13px}
+.names .more{background:transparent;border-style:dashed}
+.card-link{margin-top:auto;font-weight:800;text-decoration-thickness:2px;text-underline-offset:3px;padding-block:8px}
 .lvl{background:var(--yellow);border:2px solid var(--ink);font-family:var(--display);font-weight:400}
 .lvl.next{background:var(--white);border-style:dashed}
 .players{gap:0}
@@ -277,12 +285,20 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
   </div>
 
   <section class="wrap section" id="play" aria-labelledby="play-h">
-    <h2 id="play-h">Three ways to bloppit</h2>
-    <div class="cards">
+    <h2 id="play-h">Four ways to bloppit</h2>
+    <div class="cards four">
       <article class="card lift">
         <span class="tag" style="background:var(--blue-soft)">Your photos</span>
         <h3>Build your own</h3>
         <p>Turn the photos that matter to you into models: a birthday surprise, a holiday memory, the family dog.</p>
+        <a class="card-link" href="/build/">Start with a photo →</a>
+      </article>
+      <article class="card lift">
+        <span class="tag" style="background:#DCEFD8">Ready-made models</span>
+        <h3>Pick from the library</h3>
+        <p>No photo handy? Choose a ready-made model and start building straight away. There’s even an otter.</p>
+        <div class="names"><span>Rocket</span><span>Cat</span><span>Dinosaur</span><span>Cottage</span><span class="more">+7 more</span></div>
+        <a class="card-link" href="/build/#library">Browse the library →</a>
       </article>
       <article class="card lift">
         <span class="tag" style="background:var(--cream)">Levels and points</span>
