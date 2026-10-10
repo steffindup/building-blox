@@ -246,6 +246,12 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .lb-nav .ghost{font-size:15px;padding:6px 12px;color:var(--ink)}
 .lb-view{position:relative;width:100%;height:min(66vh,560px);margin-top:8px;cursor:grab;touch-action:none}
 .lb-view canvas{display:block;width:100%;height:100%}
+.resume{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;background:var(--hi);color:#14202C;border-radius:12px;padding:12px 16px;margin-bottom:16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}
+.resume-txt{font-size:15px}
+.resume-txt strong{font-family:var(--f-display);font-weight:400;font-size:19px;margin-right:4px}
+.resume-btns{display:flex;gap:8px;flex-wrap:wrap}
+.resume .ghost{color:#14202C;border-color:rgba(20,32,44,.35);font-weight:700;font-size:14px;padding:8px 14px}
+#saveNote{font-size:12px}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 
@@ -259,6 +265,10 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 </header>
 
 <main>
+<div class="resume" id="resume" hidden>
+  <div class="resume-txt"><strong>Welcome back!</strong> <span id="resumeTxt"></span></div>
+  <div class="resume-btns"><button class="primary sm" id="resumeGo" type="button">Continue building</button><button class="ghost" id="resumeNo" type="button">Start fresh</button></div>
+</div>
 <section class="view" id="view-create">
   <div class="panel">
     <label class="drop" id="drop">
@@ -355,7 +365,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
             <button class="ghost" id="putAll" type="button" hidden>Put all back</button>
           </div>
         </div>
-        <div class="tray-foot"><span class="note">Your first brick can go anywhere on the table. The rest of the model builds out from it. Drag to turn the view.</span><span class="tag" id="progress"></span><button class="ghost" id="restart" type="button">Start over</button></div>
+        <div class="tray-foot"><span class="note">Your first brick can go anywhere on the table. The rest of the model builds out from it. Drag to turn the view.</span><span class="tag" id="progress"></span><span class="note" id="saveNote"></span><button class="ghost" id="restart" type="button">Start over</button></div>
       </div>
     </div>
   </div>
@@ -875,6 +885,7 @@ function rebuild(){
   ].map(([b,s])=>`<div class="stat"><b>${b}</b><span>${s}</span></div>`).join('');
   $('#partsList').innerHTML=partsHTML(m.bricks);
   if(tab==='booklet') makeBooklet();
+  saveSoon();
 }
 
 /* ---------- Tabs ---------- */
@@ -890,6 +901,8 @@ function setTab(t){
   if(t==='booklet'){ renderer.domElement.remove(); makeBooklet(); }
   if(t==='build'||t==='box') updateBuildUI();
   requestAnimationFrame(()=>{resize(); bookResize();});
+  if(t==='build'&&!saveOn) dismissResume();
+  saveSoon();
 }
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.tab!=='create'&&!model) return; setTab(b.dataset.tab);}));
 $('#startBuild').onclick=()=>setTab('build');
@@ -1023,7 +1036,7 @@ function updateBuildUI(){
   $('#doneBadge').hidden=!done;
   ['rotBtn','hintBtn','autoBtn'].forEach(id=>$('#'+id).disabled=done);
   if(follow) viewPage=Math.min(cur,N);
-  renderHints(); showPage(viewPage);
+  renderHints(); showPage(viewPage); saveSoon();
 }
 function stepImage(k){
   if(stepImgsFor!==modelVersion){stepImgs.clear(); stepImgsFor=modelVersion;}
@@ -1180,7 +1193,7 @@ cvs.addEventListener('pointerup',e=>{
 });
 cvs.addEventListener('pointerleave',()=>{ if(tab==='build'&&!downXY) ghostGroup.visible=false; });
 $('#rotBtn').onclick=rotateSel;
-function toggleBook(){ const g=$('.build-grid'), off=!g.classList.toggle('no-book'); $('#bookBtn').setAttribute('aria-pressed',off); requestAnimationFrame(()=>{resize(); bookResize(); frameBuild(true);}); }
+function toggleBook(){ const g=$('.build-grid'), off=!g.classList.toggle('no-book'); $('#bookBtn').setAttribute('aria-pressed',off); saveSoon(); requestAnimationFrame(()=>{resize(); bookResize(); frameBuild(true);}); }
 $('#bookBtn').onclick=toggleBook;
 $('#hintBtn').onclick=()=>{hintOn=!hintOn; renderHints(); if(hintOn) setStatus(curOff()?'Faded bricks show where this step’s parts go.':'Faded bricks show one place to start. Anywhere works.');};
 $('#autoBtn').onclick=autoPlace;
@@ -1258,7 +1271,7 @@ function renderBox(){
     <div class="bin-rs" data-br="${b.id}"></div></div>`).join('')
    +pieces.map(p=>`<button class="piece${p.hand?' hand':''}${chosen.has(p)?' picked':''}" type="button" data-p="${p.id}" aria-label="${pieceName(p)}${p.hand?', in hand':''}" style="width:${p.w}px;height:${p.h}px;transform:${tf(p)};z-index:${p.z}"><img alt="" src="${brickIcon(p.a,p.l,p.c)}"></button>`).join('')
    +(pieces.length?'':'<div class="box-empty">The box is empty</div>');
-  binCounts(); fitBoard();
+  binCounts(); fitBoard(); saveSoon();
 }
 function binCounts(){
   for(const b of bins){const el=board.querySelector(`[data-bc="${b.id}"]`); if(el){const n=pieces.filter(p=>p.bin===b.id).length; el.textContent=n?n:'';}}
@@ -1372,7 +1385,7 @@ function endDrag(){
   if(d.kind==='rs'){ const b=d.b;
     for(const p of pieces){ const cx=p.x+p.w/2, cy=p.y+p.h/2, inside=cx>=b.x&&cx<=b.x+b.w&&cy>=b.y&&cy<=b.y+b.h;
       if(p.bin===b.id&&!inside) p.bin=null; else if(p.bin===null&&inside) p.bin=b.id; } }
-  binCounts(); fitBoard();
+  binCounts(); fitBoard(); saveSoon();
 }
 board.addEventListener('click',e=>{
   const x=e.target.closest('.bin-x');
@@ -1385,7 +1398,7 @@ board.addEventListener('click',e=>{
   if(multi||e.shiftKey||e.metaKey||e.ctrlKey||chosen.size){ chosen.has(p)?chosen.delete(p):chosen.add(p); updatePick(); return; }
   chosen.add(p); takeChosen();
 });
-board.addEventListener('input',e=>{ const id=e.target.dataset&&e.target.dataset.bn; if(id){ const b=binById(+id); if(b) b.name=e.target.value; } });
+board.addEventListener('input',e=>{ const id=e.target.dataset&&e.target.dataset.bn; if(id){ const b=binById(+id); if(b) b.name=e.target.value; saveSoon(); } });
 board.addEventListener('keydown',e=>{ if(e.target.matches('input[data-bn]')&&e.key==='Enter'){ e.target.blur(); e.preventDefault(); } });
 $('#binAdd').onclick=addBin;
 $('#sortColour').onclick=()=>sortInto('colour');
@@ -1644,7 +1657,108 @@ function renderSamples(){
 }
 $('#samples').addEventListener('click',e=>{ const b=e.target.closest('.smp'); if(b) loadSample(+b.dataset.i); });
 
+/* ---------- Save progress (in this browser, on this device) ---------- */
+const SAVE_KEY='building-blox-save-v1';
+let saveOn=false, saveTimer=null, restoring=false, pendingSave=null;
+function storeGet(){ try{ const t=localStorage.getItem(SAVE_KEY); return t?JSON.parse(t):null; }catch(e){ return null; } }
+function storeSet(o){ try{ localStorage.setItem(SAVE_KEY,JSON.stringify(o)); return true; }catch(e){ return false; } }
+function storeClear(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} }
+function saveSoon(){ if(!saveOn||restoring) return; clearTimeout(saveTimer); saveTimer=setTimeout(saveNow,400); }
+function snapshot(){
+  if(!model) return null;
+  const B=model.bricks, idx=new Map(B.map((b,i)=>[b,i]));
+  const pi=new Map(pieces.map((p,i)=>[p,i]));
+  return {
+    v:1, t:Date.now(), name:model.name, nBricks:B.length, sampleIdx,
+    S:{...S},
+    photos:photos.map(p=>({name:p.name,view:p.view,sample:!!p.sample,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))})),
+    cur, placedN, off,
+    placed:[...placed].map(b=>idx.get(b)),
+    cands:cands.map(c=>({x:c.x,z:c.z,used:[...c.used].map(b=>idx.get(b))})),
+    laidOut,
+    pieces:pieces.map(p=>({a:p.a,l:p.l,c:p.c,x:Math.round(p.x),y:Math.round(p.y),r:p.r,z:p.z,bin:p.bin})),
+    bins:bins.map(b=>({...b})),
+    hand:hand.map(p=>pi.get(p)), held:held?pi.get(held):-1, sel:sel?{...sel}:null,
+    noBook:$('.build-grid').classList.contains('no-book')
+  };
+}
+function saveNow(){
+  clearTimeout(saveTimer); if(!saveOn||restoring) return;
+  const o=snapshot(); if(!o) return;
+  const ok=storeSet(o);
+  $('#saveNote').textContent=ok?'Saved on this device':'Couldn’t save on this device';
+}
+addEventListener('pagehide',saveNow);
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') saveNow(); });
+
+function loadPng(src){ return new Promise((res,rej)=>{ const img=new Image(); img.onload=()=>{ const c=document.createElement('canvas'); c.width=img.naturalWidth; c.height=img.naturalHeight; c.getContext('2d').drawImage(img,0,0); res(canvasData(c)); }; img.onerror=rej; img.src=src; }); }
+function setControls(s){
+  Object.assign(S,s);
+  for(const [id,k] of [['size','size'],['thick','thick'],['tol','tol'],['colors','maxColors']]){ const el=$('#'+id); el.value=S[k]; el.dispatchEvent(new Event('input')); }
+  const r=document.querySelector(`input[name=shape][value="${S.shape}"]`); if(r) r.checked=true;
+  $('#gray').checked=S.gray;
+  clearTimeout(timer);
+}
+async function restoreSave(o){
+  restoring=true;
+  try{
+    const ds=await Promise.all(o.photos.map(p=>loadPng(p.png)));
+    photos=o.photos.map((p,i)=>({id:++pid,name:p.name,view:p.view,sample:p.sample,d:ds[i],png:p.png,m:null}));
+    sampleIdx=o.sampleIdx||0;
+    setControls(o.S);
+    photos.forEach(p=>p.m=computeMask(p.d,S.tol));
+    renderPhotos(); clearTimeout(timer);
+    rebuild();
+    if(!model||model.bricks.length!==o.nBricks) throw new Error('model changed');
+    applyProgress(o);
+    return true;
+  }catch(e){ return false; }
+  finally{ restoring=false; }
+}
+function applyProgress(o){
+  const B=model.bricks, at=i=>B[i];
+  cur=o.cur; placedN=o.placedN;
+  if(o.off){ off={x:o.off.x,z:o.off.z}; placed=new Set(o.placed.map(at)); cands=[]; }
+  else { off=null; placed=new Set(); cands=(o.cands||[]).map(c=>({x:c.x,z:c.z,used:new Set(c.used.map(at))})); }
+  // Put the placed bricks back on the table
+  placedGroup.clear(); placedBoxes=[]; drops=[];
+  const o2=off||cands[0], list=off?[...placed]:(cands[0]?[...cands[0].used]:[]);
+  for(const t of list){ const ax=t.x+o2.x, az=t.z+o2.z;
+    const ms=new THREE.Mesh(brickGeo(t.sx,t.sz),mat(t.c)); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
+    placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz}); }
+  // If the save was taken just as a step finished, move on to the next step
+  const used=()=>off?placed:(cands[0]?cands[0].used:new Set());
+  while(cur<model.steps.length&&model.steps[cur].bricks.every(b=>used().has(b))){ if(!off&&cands.length) lock(); cur++; }
+  // Parts box and hand
+  pieces=o.pieces.map(q=>{ const [w,h]=iconDim(q.a,q.l); return {...q,id:++pieceN,w,h,hand:false}; });
+  bins=o.bins.map(b=>({...b})); binN=Math.max(binN,...bins.map(b=>b.id),0); zBin=Math.max(zBin,...bins.map(b=>b.z),1);
+  zTop=Math.max(zTop,...pieces.map(p=>p.z),10000);
+  laidOut=!!o.laidOut; chosen=new Set();
+  hand=(o.hand||[]).map(i=>pieces[i]).filter(Boolean); hand.forEach(p=>p.hand=true);
+  held=null; sel=null; ghostGroup.clear();
+  const h=pieces[o.held]; if(h){ setActive(h); if(o.sel&&o.sel.c===h.c) { sel={...o.sel}; setGhost(); } }
+  $('.build-grid').classList.toggle('no-book',!!o.noBook); $('#bookBtn').setAttribute('aria-pressed',!o.noBook);
+  busy=false; lastAnchor=null; follow=true;
+}
+function dismissResume(){ $('#resume').hidden=true; pendingSave=null; saveOn=true; }
+$('#resumeGo').onclick=async()=>{
+  const o=pendingSave; $('#resumeGo').disabled=true;
+  const ok=o&&await restoreSave(o);
+  dismissResume(); $('#resumeGo').disabled=false;
+  if(ok){ setTab('build'); setStatus(`Welcome back! ${placedN} of ${model.bricks.length} bricks placed.`,'ok'); updateBuildUI(); frameBuild(false); saveNow(); }
+  else showMsg('Sorry, that saved build couldn’t be opened. It was made with an older version of the app.','err');
+};
+$('#resumeNo').onclick=()=>{ storeClear(); dismissResume(); saveNow(); };
+
 loadSample(0); setTab('create'); clearTimeout(timer); rebuild(); requestAnimationFrame(loop);
+{
+  const o=storeGet();
+  if(o&&o.v===1&&(o.placedN>0||o.laidOut)){
+    pendingSave=o;
+    $('#resumeTxt').textContent=`You have a ${o.name} build in progress: ${o.placedN} of ${o.nBricks} bricks placed.`;
+    $('#resume').hidden=false;
+  } else saveOn=true;
+}
 })();
 </script>
 
