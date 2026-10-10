@@ -250,6 +250,38 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .tab.play .n{background:rgba(255,255,255,.22);color:#fff}
 .tab.play[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
 .tab.play[aria-selected="true"] .n{background:var(--hi);color:#14202C}
+.tab.play2{background:#0055BF;color:#fff;border-color:#0055BF}
+.tab.play2 .n{background:rgba(255,255,255,.22);color:#fff}
+.tab.play2[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
+.tab.play2[aria-selected="true"] .n{background:var(--hi);color:#14202C}
+.gamebar.mpbar{position:relative;border-color:#5A93DB}
+.gb-badge.mp-code{width:auto;padding:0 10px;font-size:18px;letter-spacing:.08em;background:#5A93DB;color:#fff}
+.mp-turn{font-family:var(--f-display);font-size:20px;line-height:1.15;min-width:180px}
+.mp-turn small{display:block;font-family:var(--f-body);font-size:13px;font-weight:700;color:var(--muted)}
+.mp-turn.mine{color:var(--accent)}
+.mp-players{display:flex;flex-wrap:wrap;gap:6px}
+.mp-pl{display:flex;align-items:center;gap:6px;border:2px solid var(--line);border-radius:999px;padding:3px 10px 3px 4px;font-size:13px;font-weight:800;background:var(--bg)}
+.mp-pl i{width:18px;height:18px;border-radius:50%;display:inline-block;box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
+.mp-pl.now{border-color:var(--ink);background:var(--page)}
+.mp-pl.away{opacity:.55}
+.mp-pl b{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:800}
+.mpbar .gb-flash{left:auto;right:40%;top:8px}
+#view-mp{gap:16px}
+.mp-forms{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px;align-items:start}
+.inp{border:1px solid var(--line);background:var(--page);border-radius:10px;padding:10px 12px;font-size:16px;width:100%}
+.inp.code{font-family:var(--f-display);font-size:26px;letter-spacing:.2em;text-transform:uppercase}
+.seg4{grid-template-columns:repeat(4,1fr)}
+.mp-room{gap:14px}
+.mp-room-top{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-between;align-items:flex-start}
+.mp-bigcode{font-family:var(--f-display);font-size:54px;letter-spacing:.14em;line-height:1;color:#0055BF}
+.mp-room-model{display:flex;gap:12px;align-items:center}
+.mp-room-model img{width:72px;height:72px;object-fit:contain;border-radius:10px;background:#fff;border:1px solid var(--line)}
+.mp-room h3{font-size:19px;margin-top:4px}
+.mp-list{display:flex;flex-wrap:wrap;gap:8px}
+.mp-list .mp-pl{font-size:15px;padding:6px 14px 6px 6px}
+.mp-list .mp-pl i{width:24px;height:24px}
+.mp-room-btns{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mp-off{background:var(--callout);border-radius:12px;padding:16px;font-size:15px}
 .gamebar{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;background:var(--page);border:2px solid var(--hi);border-radius:14px;padding:10px 14px;margin-bottom:14px}
 .gb-lvl{display:flex;gap:10px;align-items:center}
 .gb-lvl strong{font-family:var(--f-display);font-weight:400;font-size:20px}
@@ -300,6 +332,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .win-rows div{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
 .win-rows .neg{color:var(--accent)}
 .win-rows .tot{border-top:1px solid var(--line);padding-top:6px;margin-top:2px;font-weight:800;font-size:18px}
+.win-rows .first{font-weight:800;font-size:18px}
 .win-best{font-weight:700;margin:10px 0 14px;min-height:1em}
 .win-btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .win-btns .ghost{font-size:14px;font-weight:700;color:var(--ink);padding:9px 14px}
@@ -319,6 +352,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
     <button class="tab" role="tab" id="tab-build" data-tab="build" aria-selected="false"><span class="n">2</span>Build</button>
     <button class="tab" role="tab" id="tab-booklet" data-tab="booklet" aria-selected="false"><span class="n">3</span>Booklet</button>
     <button class="tab play" role="tab" id="tab-game" data-tab="game" aria-selected="false"><span class="n">★</span>Play the Game</button>
+    <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n">⇄</span>Play together</button>
   </nav>
 </header>
 
@@ -328,6 +362,13 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   <div class="gb-score"><div class="tag">Points for this level</div><b id="gbPts">100</b><span class="gb-of" id="gbOf"></span><span class="gb-flash" id="gbFlash"></span></div>
   <div class="gb-costs" id="gbCosts"></div>
   <div class="gb-btns"><button class="ghost" id="gbMap" type="button">Level map</button></div>
+</div>
+<div class="gamebar mpbar" id="mpBar" hidden>
+  <div class="gb-lvl"><span class="gb-badge mp-code" id="mpCodeBadge"></span><div><div class="tag">Room</div><strong id="mpTitle"></strong></div></div>
+  <div class="mp-turn" id="mpTurn"></div>
+  <div class="mp-players" id="mpPlayers"></div>
+  <span class="gb-flash" id="mpFlash"></span>
+  <div class="gb-btns"><button class="ghost" id="mpEndTurn" type="button" hidden>End my turn</button><button class="ghost" id="mpSkip" type="button" hidden>Skip their turn</button><button class="ghost" id="mpRoomBtn" type="button">Room</button></div>
 </div>
 <div class="resume" id="resume" hidden>
   <div class="resume-txt"><strong>Welcome back!</strong> <span id="resumeTxt"></span></div>
@@ -476,6 +517,57 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   <div class="gm-levels" id="gmLevels"></div>
   <div class="gm-foot"><button class="ghost" id="gmReset" type="button">Reset game progress</button></div>
 </section>
+
+<section class="view" id="view-mp" hidden>
+  <div class="gm-head"><div><h2>Play together</h2><p class="note">Build one model together on different phones or iPads. Take turns placing a few bricks each. Everyone sees the model grow live.</p></div></div>
+  <div class="mp-off" id="mpOff" hidden></div>
+  <div class="mp-forms" id="mpForms">
+    <div class="card">
+      <h2>Start a game</h2>
+      <div class="field"><label for="mpName1">Your name</label><input class="inp" id="mpName1" maxlength="16" autocomplete="nickname" placeholder="e.g. Elmar"></div>
+      <div class="field"><label for="mpModel">What to build</label><select class="inp" id="mpModel"></select></div>
+      <div class="field"><span class="lbl">Bricks per turn</span>
+        <div class="seg seg4" role="radiogroup" aria-label="Bricks per turn">
+          <input type="radio" name="perTurn" id="pt1" value="1"><label for="pt1">1</label>
+          <input type="radio" name="perTurn" id="pt3" value="3" checked><label for="pt3">3</label>
+          <input type="radio" name="perTurn" id="pt5" value="5"><label for="pt5">5</label>
+          <input type="radio" name="perTurn" id="pt10" value="10"><label for="pt10">10</label>
+        </div></div>
+      <button class="primary" id="mpCreate" type="button">Make a room</button>
+    </div>
+    <div class="card">
+      <h2>Join a game</h2>
+      <div class="field"><label for="mpCodeIn">Room code</label><input class="inp code" id="mpCodeIn" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCDE"></div>
+      <div class="field"><label for="mpName2">Your name</label><input class="inp" id="mpName2" maxlength="16" autocomplete="nickname" placeholder="e.g. Stian"></div>
+      <button class="primary" id="mpJoin" type="button">Join</button>
+      <p class="note" id="mpRejoinNote" hidden></p>
+    </div>
+  </div>
+  <div class="card mp-room" id="mpRoom" hidden>
+    <div class="mp-room-top">
+      <div><span class="tag">Room code</span><div class="mp-bigcode" id="mpBigCode"></div><p class="note">Others open <b id="mpSite"></b>, tap <b>Play together</b> and enter this code.</p></div>
+      <div class="mp-share"><button class="ghost" id="mpCopy" type="button">Copy invite link</button></div>
+    </div>
+    <div class="mp-room-model"><img id="mpThumb" alt=""><div><strong id="mpModelName"></strong><div class="note" id="mpModelInfo"></div></div></div>
+    <h3>Players</h3>
+    <div class="mp-list" id="mpList"></div>
+    <div class="mp-room-btns">
+      <button class="primary" id="mpStart" type="button" hidden>Start the game</button>
+      <span class="note" id="mpWait"></span>
+      <button class="primary" id="mpGoBuild" type="button" hidden>Back to the build</button>
+      <button class="ghost" id="mpLeave" type="button">Leave room</button>
+    </div>
+  </div>
+  <p class="msg" id="mpMsg" hidden></p>
+</section>
+
+<dialog class="windlg" id="mpEndDlg" aria-label="Game finished">
+  <div class="win-stars">🏆</div>
+  <h2 id="mpEndTitle">Built together!</h2>
+  <div class="win-rows" id="mpEndRows"></div>
+  <p class="win-best" id="mpEndNote"></p>
+  <div class="win-btns"><button class="ghost" id="mpEndClose" type="button">Look at the model</button><button class="primary sm" id="mpEndNew" type="button">New game</button></div>
+</dialog>
 
 <dialog class="windlg" id="winDlg" aria-label="Level complete">
   <div class="win-stars" id="winStars"></div>
@@ -980,7 +1072,9 @@ function rebuild(){
 function setTab(t){
   tab=t;
   document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===(t==='box'?'build':t)));
-  ['create','build','box','booklet','game'].forEach(v=>$('#view-'+v).hidden=v!==t);
+  ['create','build','box','booklet','game','mp'].forEach(v=>$('#view-'+v).hidden=v!==t);
+  $('#mpBar').hidden=!(mp&&mp.state&&mp.state.started&&(t==='build'||t==='box'));
+  if(t==='mp'){ renderer.domElement.remove(); renderMpView(); }
   $('#gameBar').hidden=!(game&&(t==='build'||t==='box'));
   if(t==='game'){ renderer.domElement.remove(); renderGameMap(); }
   controls.enabled=t==='create'; playControls.enabled=t==='build';
@@ -995,8 +1089,10 @@ function setTab(t){
   saveSoon();
 }
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+  if(b.dataset.tab==='create'&&mp){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus('You’re in a Play together room. Tap Photos & model again to leave it.','err'); else showToastLeave(); return; } mpLeave(); }
+  if(b.dataset.tab==='game'&&mp){ setTab('mp'); mpMsg('Leave the Play together room first to play the levels on your own.'); return; }
   if(b.dataset.tab==='create'&&game){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus('You’re in a game level. Tap Photos & model again to leave it.','err'); else showToastLeave(); return; } endGame(); }
-  if(b.dataset.tab!=='create'&&b.dataset.tab!=='game'&&!model) return; setTab(b.dataset.tab);}));
+  if(b.dataset.tab!=='create'&&b.dataset.tab!=='game'&&b.dataset.tab!=='mp'&&!model) return; setTab(b.dataset.tab);}));
 let leaveArmed=false;
 function showToastLeave(){ const t=$('#tab-create'); const o=t.innerHTML; t.innerHTML='<span class="n">1</span>Tap again to leave the level'; setTimeout(()=>{t.innerHTML=o;},3000); }
 $('#startBuild').onclick=()=>setTab('build');
@@ -1131,6 +1227,7 @@ function updateBuildUI(){
   ['rotBtn','hintBtn','autoBtn'].forEach(id=>$('#'+id).disabled=done);
   if(follow) viewPage=Math.min(cur,N);
   renderHints(); showPage(viewPage); saveSoon();
+  if(mp) updateMpBar();
 }
 function stepImage(k){
   if(stepImgsFor!==modelVersion){stepImgs.clear(); stepImgsFor=modelVersion;}
@@ -1190,7 +1287,7 @@ function rotateSel(){ if(!sel||sel.sx===sel.sz) return; [sel.sx,sel.sz]=[sel.sz,
 function renderHints(){
   hintGroup.clear(); $('#hintBtn').setAttribute('aria-pressed',hintOn);
   if(!hintOn||!model||cur>=model.steps.length) return;
-  if(game&&!game.hintSteps.includes(cur)){ game.hintSteps.push(cur); charge('hint',5); }
+  { const g=game||mp; if(g&&!g.hintSteps.includes(cur)){ g.hintSteps.push(cur); charge('hint',5); } }
   const o=curOff()||{x:0,z:0}, u=usedSet();
   for(const b of model.steps[cur].bricks){ if(u.has(b)) continue;
     const h=new THREE.Mesh(brickGeo(b.sx,b.sz),hintMat(b.c)); h.add(new THREE.LineSegments(edgeGeo(b.sx,b.sz),edgeMat));
@@ -1215,6 +1312,8 @@ function placeGhost(px,pz){
 function lock(){ const c=cands[0]; off={x:c.x,z:c.z}; placed=c.used; cands=[]; }
 function tryPlace(){
   if(!sel||!lastAnchor||busy) return;
+  if(mp&&!mpMyTurn()){ setStatus(mpTurnText(),'err'); return; }
+  if(mp&&mp.state.turnPlaced+mp.posting>=mp.state.perTurn){ setStatus('That was your last brick this turn.','ok'); return; }
   const s=model.steps[cur], {ax,az}=lastAnchor;
   const same=b=>b.c===sel.c&&b.sx===sel.sx&&b.sz===sel.sz;
   let t=null;
@@ -1223,7 +1322,7 @@ function tryPlace(){
   } else if(!cands.length){
     // First brick: it can go anywhere. Every brick of this kind in step 1 is a possible match.
     const opts=s.bricks.filter(same);
-    if(opts.length){ cands=opts.map(b=>({x:ax-b.x,z:az-b.z,used:new Set([b])})); t=opts[0]; }
+    if(opts.length){ cands=(mp?opts.slice(0,1):opts).map(b=>({x:ax-b.x,z:az-b.z,used:new Set([b])})); t=opts[0]; }
   } else {
     const keep=[];
     for(const c of cands){ const b=s.bricks.find(b=>!c.used.has(b)&&same(b)&&b.x+c.x===ax&&b.z+c.z===az); if(b){c.used.add(b); keep.push(c); if(!t) t=b;} }
@@ -1233,12 +1332,13 @@ function tryPlace(){
   const o=curOff(), u=usedSet();
   const turned=sel.sx!==sel.sz&&s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o||Math.abs(b.x+o.x-ax)<=2&&Math.abs(b.z+o.z-az)<=2));
   const unused=!s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&Math.min(b.sx,b.sz)===Math.min(sel.sx,sel.sz)&&Math.max(b.sx,b.sz)===Math.max(sel.sx,sel.sz));
-  if(game&&!autoBusy) charge('miss',2);
+  if((game||mp)&&!autoBusy) charge('miss',2);
   setStatus(unused?`Step ${cur+1} doesn’t use this brick. Put it back and check the booklet.`:turned?'Close. Try turning it with R.':'Not quite. Compare with the picture in the booklet.','err');
   const g=ghostGroup.children[0]; if(g){g.material=errMat; setTimeout(()=>{if(g.parent) g.material=ghostMat(sel?sel.c:0);},380);}
 }
 function placeBrick(t,ax,az){
   if(off) placed.add(t);
+  if(mp) mpSendMove(t,ax,az,autoBusy);
   placedN++; placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz});
   const ms=new THREE.Mesh(brickGeo(t.sx,t.sz),mat(t.c)); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
   if(!reduceMotion){ms.position.y+=2.2; drops.push({m:ms,ty:t.y*1.2,t0:performance.now()});}
@@ -1256,13 +1356,14 @@ function placeBrick(t,ax,az){
   if(!off) lock();
   busy=true; ghostGroup.visible=false; lastAnchor=null;
   setStatus(`Step ${cur+1} done!`,'ok'); updateBuildUI();
-  setTimeout(()=>{ busy=false; cur++; follow=true; if(game) hintOn=false;
+  setTimeout(()=>{ busy=false; if(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))) cur++; follow=true; if(game||mp) hintOn=false;
     setStatus(cur>=model.steps.length?'Every step complete. Great build!':`On to step ${cur+1}.${held?'':' Open the parts box for the next brick.'}`, cur>=model.steps.length?'ok':'');
     updateBuildUI(); frameBuild(true);
     if(game&&cur>=model.steps.length) setTimeout(winLevel,700); }, 700);
 }
 function autoPlace(){
   if(busy||!model||cur>=model.steps.length) return;
+  if(mp&&!mpMyTurn()){ setStatus(mpTurnText(),'err'); return; }
   const s=model.steps[cur]; let o,t;
   if(off){ o=off; t=s.bricks.find(b=>!placed.has(b)); }
   else if(cands.length){ o=cands[0]; t=s.bricks.find(b=>!o.used.has(b)); }
@@ -1271,7 +1372,7 @@ function autoPlace(){
   const prev=held, prevSel=sel?{...sel}:null, n0=placedN;
   sel={sx:t.sx,sz:t.sz,c:t.c}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2};
   autoBusy=true; tryPlace(); autoBusy=false;
-  if(game&&placedN>n0) charge('auto',10);
+  if((game||mp)&&placedN>n0) charge('auto',10);
   lastAnchor=null; ghostGroup.visible=false;
   if(prev&&hand.includes(prev)){ held=prev; sel=prevSel; setGhost(); }
   else if(held) setGhost(); else { sel=null; ghostGroup.clear(); }
@@ -1804,14 +1905,15 @@ const levelScore=()=>{ const L=LEVELS[game.lvl], p=game.pen; return Math.max(Mat
 const starsFor=(sc,L)=>sc>=L.pts*.9?3:sc>=L.pts*.6?2:1;
 const starHTML=n=>'★'.repeat(n)+`<i>${'★'.repeat(3-n)}</i>`;
 function charge(kind,n){
-  game.pen[kind]++; updateGameBar();
-  const f=$('#gbFlash'); f.textContent='−'+n; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go');
+  if(mp){ mp.pen[kind]++; mpSendPen(); }
+  else { game.pen[kind]++; updateGameBar(); }
+  const f=$(mp?'#mpFlash':'#gbFlash'); f.textContent='−'+n; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go');
 }
 function updateGameBar(){
   const on=!!game;
   $('#gameBar').hidden=!(on&&(tab==='build'||tab==='box'));
-  $('#hintBtn').textContent=on?'Hint (−5)':'Hint';
-  $('#autoBtn').textContent=on?'Place one for me (−10)':'Place one for me';
+  $('#hintBtn').textContent=(on||mp)?'Hint (−5)':'Hint';
+  $('#autoBtn').textContent=(on||mp)?'Place one for me (−10)':'Place one for me';
   if(!on) return;
   const L=LEVELS[game.lvl], p=game.pen;
   $('#gbBadge').textContent=game.lvl+1; $('#gbNum').textContent=`${game.lvl+1} of ${LEVELS.length}`; $('#gbName').textContent=L.name;
@@ -1881,13 +1983,228 @@ $('#gmLevels').addEventListener('click',e=>{ const b=e.target.closest('.lvl'); i
 $('#gmReset').onclick=()=>{ const b=$('#gmReset'); if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent='Tap again to wipe all scores'; setTimeout(()=>{delete b.dataset.confirm; b.textContent='Reset game progress';},3000); return; }
   delete b.dataset.confirm; b.textContent='Reset game progress'; gameStoreSet({best:{}}); renderGameMap(); };
 
+/* ---------- Play together (rooms on the Building Blox website) ---------- */
+const MP_KEY='building-blox-mp-v1';
+let mp=null, mpAvailable=null, mpPenTimer=null;
+async function mpApi(method,body,query=''){
+  let r; try{ r=await fetch('/api/room'+query,{method,headers:body?{'content-type':'application/json'}:{},body:body?JSON.stringify(body):undefined,cache:'no-store'}); }
+  catch(e){ throw new Error('Couldn’t reach the game server. Check your internet connection.'); }
+  let j=null; try{ j=await r.json(); }catch(e){}
+  if(!r.ok||!j) throw new Error((j&&j.error)||'The game server didn’t answer. Please try again.');
+  return j;
+}
+const mpPost=b=>mpApi('POST',{...b,code:mp.code,playerId:mp.playerId});
+function mpMsg(t,kind){ const el=$('#mpMsg'); el.hidden=!t; el.textContent=t||''; el.dataset.kind=kind||''; }
+function mpStored(){ try{ return JSON.parse(localStorage.getItem(MP_KEY))||null; }catch(e){ return null; } }
+function mpStore(o){ try{ o?localStorage.setItem(MP_KEY,JSON.stringify(o)):localStorage.removeItem(MP_KEY); }catch(e){} }
+function mpRememberName(n){ try{ localStorage.setItem('building-blox-name',n); }catch(e){} }
+function mpName(){ try{ return localStorage.getItem('building-blox-name')||''; }catch(e){ return ''; } }
+async function mpCheck(){ if(mpAvailable!==null) return mpAvailable; try{ const j=await mpApi('GET',null,'?ping=1'); mpAvailable=!!(j&&j.ok); }catch(e){ mpAvailable=false; } return mpAvailable; }
+const mpMyTurn=()=>!!(mp&&mp.state&&mp.state.started&&!mp.state.finished&&mp.state.turn===mp.me);
+function mpTurnText(){ const s=mp&&mp.state; if(!s||!s.started) return 'Waiting for the game to start.'; if(s.finished) return 'The model is finished!'; return `It’s ${s.players[s.turn].name}’s turn. Get your bricks ready in the parts box.`; }
+function mpScores(s){
+  return s.players.map((p,i)=>{ const own=s.moves.filter(m=>m.p===i&&!m.a).length, auto=s.moves.filter(m=>m.p===i&&m.a).length, pen=p.pen||{};
+    return {i,name:p.name,color:p.color,own,auto,hint:pen.hint||0,miss:pen.miss||0,stale:p.stale,score:Math.max(0,own*10-auto*10-(pen.hint||0)*5-(pen.miss||0)*2)}; });
+}
+function mpEndSolo(){ if(game){ game=null; freeS=null; } hintOn=false; updateGameBar(); }
+
+// Placing a brick: one placed by anybody (including this device, when the server echoes it back)
+function applyMoveCore(m){
+  const t=model.bricks[m.b]; if(!t||placed.has(t)) return;
+  if(!off){ off={x:m.x-t.x,z:m.z-t.z}; cands=[]; }
+  placed.add(t); placedN++;
+  const ax=t.x+off.x, az=t.z+off.z;
+  const ms=new THREE.Mesh(brickGeo(t.sx,t.sz),mat(t.c)); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
+  if(!reduceMotion&&tab==='build'){ ms.position.y+=2.2; drops.push({m:ms,ty:t.y*1.2,t0:performance.now()}); }
+  placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz});
+  while(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))){ cur++; hintOn=false; }
+}
+function mpResync(){
+  placedGroup.clear(); placedBoxes=[]; placed=new Set(); off=null; cands=[]; placedN=0; cur=0; drops=[]; busy=false;
+  mp.local=new Set();
+  for(const m of mp.state.moves) applyMoveCore(m);
+  mp.applied=mp.state.moves.length;
+}
+// Keep this device's parts box matching the bricks nobody has placed yet
+function reconcilePieces(){
+  const key=(a,l,c)=>a+'x'+l+'|'+c, need=new Map(), have=new Map();
+  for(const b of model.bricks){ if(placed.has(b)) continue; const k=key(Math.min(b.sx,b.sz),Math.max(b.sx,b.sz),b.c); need.set(k,(need.get(k)||0)+1); }
+  for(const p of pieces){ const k=key(p.a,p.l,p.c); if(!have.has(k)) have.set(k,[]); have.get(k).push(p); }
+  let touched=false;
+  for(const [k,list] of have){ let extra=list.length-(need.get(k)||0); if(extra<=0) continue;
+    for(const p of [...list.filter(p=>!p.hand),...list.filter(p=>p.hand)]){ if(extra<=0) break; pieces.splice(pieces.indexOf(p),1); chosen.delete(p); if(p.hand) dropFromHand(p); extra--; touched=true; } }
+  for(const [k,n] of need){ let miss=n-(have.get(k)||[]).length; if(miss<=0) continue;
+    const [al,c]=k.split('|'), [a,l]=al.split('x').map(Number), [w,h]=iconDim(a,l);
+    while(miss-->0){ pieces.push({id:++pieceN,a,l,c:+c,w,h,x:20+Math.random()*240,y:20+Math.random()*140,r:Math.round((Math.random()-.5)*30),z:++zTop,bin:null,hand:false}); touched=true; } }
+  if(touched&&tab==='box') showBox();
+}
+function mpApply(s){
+  if(!mp||!s||s.ver<mp.ver) return;
+  mp.state=s; mp.ver=s.ver;
+  const cur0=cur, n0=placedN;
+  for(let i=mp.applied;i<s.moves.length;i++){ const m=s.moves[i]; if(m.p===mp.me&&mp.local.has(m.b)) continue; applyMoveCore(m); }
+  mp.applied=s.moves.length;
+  if(!mp.posting&&placedN!==s.moves.length) mpResync();
+  if(placedN!==n0){ reconcilePieces(); updateBuildUI(); if(cur!==cur0||n0===0) frameBuild(true); }
+  if(s.started&&!s.finished&&mp.lastTurn!==s.turn){
+    mp.lastTurn=s.turn;
+    if(s.turn===mp.me) setStatus(`Your turn! Place ${s.perTurn} brick${s.perTurn>1?'s':''}.`,'ok');
+    else setStatus(`${s.players[s.turn].name}’s turn. Get your next bricks ready in the parts box.`);
+  }
+  if(s.started&&!mp.entered){ mp.entered=true; if(tab!=='build'&&tab!=='box') setTab('build'); }
+  document.title=(mpMyTurn()?'● Your turn · ':'')+'Building Blox';
+  updateMpBar(); if(tab==='mp') renderMpView();
+  if(s.finished&&!mp.ended){ mp.ended=true; setStatus('Finished! You built it together.','ok'); setTimeout(mpShowEnd,1000); }
+}
+function updateMpBar(){
+  const s=mp&&mp.state;
+  $('#mpBar').hidden=!(s&&s.started&&(tab==='build'||tab==='box'));
+  $('#restart').hidden=!!mp; if(mp) $('#saveNote').textContent='';
+  updateGameBar();
+  if(!s) return;
+  const done=!model||cur>=model.steps.length;
+  ['hintBtn','autoBtn'].forEach(id=>$('#'+id).disabled=done||!mpMyTurn());
+  $('#mpCodeBadge').textContent=s.code; $('#mpTitle').textContent=s.title;
+  const cp=s.players[s.turn], mine=s.turn===mp.me, left=s.perTurn-s.turnPlaced, el=$('#mpTurn');
+  el.classList.toggle('mine',mine&&!s.finished&&s.started);
+  el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Built together</small>':mine?`Your turn!<small>Place ${left} more brick${left===1?'':'s'}</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} of ${s.perTurn} placed${cp.stale?' · hasn’t been seen for a while':''}</small>`;
+  $('#mpPlayers').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.i===s.turn&&s.started&&!s.finished?' now':''}${p.stale?' away':''}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''} <b>${p.score}</b></span>`).join('');
+  $('#mpEndTurn').hidden=!(mine&&s.started&&!s.finished&&s.turnPlaced>0);
+  $('#mpSkip').hidden=!(!mine&&s.started&&!s.finished&&cp.stale);
+}
+async function mpPoll(){
+  if(!mp||mp.posting||mp.polling) return;
+  mp.polling=true;
+  try{ const j=await mpApi('GET',null,`?code=${mp.code}&since=${mp.ver}`); mp.fails=0; if(!j.same) mpApply(j.state); }
+  catch(e){ if(++mp.fails===4) setStatus('Reconnecting to the room…','err'); }
+  finally{ if(mp) mp.polling=false; }
+}
+function mpRefresh(){ if(!mp) return; mpApi('GET',null,`?code=${mp.code}`).then(j=>{ mp.ver=0; mpApply(j.state); }).catch(()=>{}); }
+function mpSendMove(t,ax,az,auto){
+  const b=model.bricks.indexOf(t); mp.local.add(b); mp.posting++;
+  mp.chain=(mp.chain||Promise.resolve()).then(()=>mpPost({action:'move',b,x:ax,z:az,auto:!!auto,pen:mp.pen}))
+    .then(j=>{ mp.posting--; mpApply(j.state); })
+    .catch(e=>{ if(!mp) return; mp.posting--; mp.local.delete(b); setStatus(e.message,'err'); mp.ver=0; mpRefresh(); });
+}
+function mpSendPen(){ clearTimeout(mpPenTimer); mpPenTimer=setTimeout(()=>{ if(mp) mpPost({action:'pen',pen:mp.pen}).then(j=>mpApply(j.state)).catch(()=>{}); },300); updateMpBar(); }
+async function mpLoadModel(code){
+  const j=await mpApi('GET',null,`?model=1&code=${code}`), m=j.model;
+  const ds=await Promise.all(m.photos.map(p=>loadPng(p.png)));
+  photos=m.photos.map((p,i)=>({id:++pid,name:p.name,view:p.view,sample:true,d:ds[i],png:p.png,m:null}));
+  setControls(m.S); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild();
+}
+async function mpEnter(res,isHost,name){
+  mpEndSolo(); dismissResume();
+  mp={code:res.code,playerId:res.playerId,me:res.me,state:null,ver:0,applied:0,pen:{hint:0,auto:0,miss:0},hintSteps:[],local:new Set(),posting:0,fails:0,lastTurn:-1,entered:false,ended:false};
+  if(!isHost){ try{ await mpLoadModel(res.code); }catch(e){ mp=null; throw e; } }
+  if(!model||model.bricks.length!==res.state.nBricks){ mp=null; throw new Error('This room was made with a different version of Building Blox. Refresh the page on every device and try again.'); }
+  mpStore({code:res.code,playerId:res.playerId,name});
+  const meP=res.state.players[res.me]; if(meP&&meP.pen) mp.pen={...mp.pen,...meP.pen};
+  hand=[]; held=null; sel=null; ghostGroup.clear(); pieces.forEach(p=>p.hand=false);
+  if(res.state.moves.length){ mp.state=res.state; mpResync(); reconcilePieces(); mp.state=null; }
+  mpApply(res.state);
+  updateBuildUI(); frameBuild(false);
+  mp.poll=setInterval(mpPoll,1500);
+  mp.ping=setInterval(()=>{ if(mp) mpPost({action:'ping'}).then(j=>mpApply(j.state)).catch(()=>{}); },15000);
+  try{ history.replaceState(null,'','?room='+res.code); }catch(e){}
+}
+function mpLeave(){
+  if(!mp) return;
+  clearInterval(mp.poll); clearInterval(mp.ping);
+  mp=null; mpStore(null); document.title='Building Blox';
+  try{ history.replaceState(null,'',location.pathname); }catch(e){}
+  $('#mpBar').hidden=true; $('#restart').hidden=false;
+  ['hintBtn','autoBtn'].forEach(id=>$('#'+id).disabled=false);
+  updateGameBar(); updateBuildUI();
+}
+async function mpJoin(code,name,playerId){
+  const res=await mpApi('POST',{action:'join',code,name,playerId});
+  await mpEnter(res,false,name);
+}
+function mpModelOptions(){
+  const sel_=$('#mpModel'), keep=sel_.value;
+  sel_.innerHTML=`<option value="cur">What’s on Photos & model now${model?`: ${escapeHTML(model.name)} (${model.bricks.length} bricks)`:''}</option>`+
+    LEVELS.map((L,i)=>`<option value="${i}">Level ${i+1}: ${L.name}${L.count?` (${L.count} bricks)`:''}</option>`).join('');
+  if(keep) sel_.value=keep;
+}
+async function renderMpView(){
+  const ok=await mpCheck();
+  $('#mpOff').hidden=ok;
+  if(!ok){ $('#mpOff').innerHTML='Play together runs on the Building Blox website. Open <a href="https://building-blox.netlify.app" target="_blank" rel="noopener"><b>building-blox.netlify.app</b></a> on each phone or iPad and tap <b>Play together</b> there.'; $('#mpForms').hidden=true; $('#mpRoom').hidden=true; return; }
+  const s=mp&&mp.state;
+  $('#mpForms').hidden=!!mp; $('#mpRoom').hidden=!mp;
+  if(!mp){
+    mpModelOptions();
+    const nm=mpName(); if(nm){ if(!$('#mpName1').value) $('#mpName1').value=nm; if(!$('#mpName2').value) $('#mpName2').value=nm; }
+    const st=mpStored(), note=$('#mpRejoinNote');
+    note.hidden=!st;
+    if(st){ note.innerHTML=`You were in room <b>${escapeHTML(st.code)}</b>. <button class="ghost" id="mpRejoin" type="button">Rejoin it</button>`;
+      $('#mpRejoin').onclick=async()=>{ try{ mpMsg(''); await mpJoin(st.code,st.name,st.playerId); renderMpView(); }catch(e){ mpMsg(e.message,'err'); if(/wasn’t found|finished/.test(e.message)) { mpStore(null); renderMpView(); } } }; }
+    return;
+  }
+  if(!s) return;
+  $('#mpBigCode').textContent=s.code; $('#mpSite').textContent=location.host;
+  const p0=photos[0]; if(p0) $('#mpThumb').src=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png'));
+  $('#mpModelName').textContent=s.title;
+  $('#mpModelInfo').textContent=`${s.nBricks} bricks · ${s.perTurn} brick${s.perTurn>1?'s':''} per turn${s.started?` · ${s.moves.length} placed so far`:''}`;
+  $('#mpList').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.stale?' away':''}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.i===s.host?' · made the room':''}${s.started?` <b>${p.score}</b>`:''}</span>`).join('');
+  const host=mp.me===s.host;
+  $('#mpStart').hidden=!(host&&!s.started); $('#mpStart').textContent=s.players.length<2?'Start (just you so far)':`Start the game (${s.players.length} players)`;
+  $('#mpGoBuild').hidden=!s.started;
+  $('#mpWait').textContent=s.started?'':host?'Wait for everyone to join, then start.':`Waiting for ${s.players[s.host].name} to start the game…`;
+}
+function mpShowEnd(){
+  if(!mp||!mp.state) return; const s=mp.state, sc=mpScores(s).sort((a,b)=>b.score-a.score), medals=['🥇','🥈','🥉',''];
+  $('#mpEndTitle').textContent=`${s.title}: built together!`;
+  $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span>${p.own} brick${p.own===1?'':'s'} · ${p.score} pts</span></div>`).join('');
+  $('#mpEndNote').textContent=`${s.nBricks} bricks placed by ${s.players.length} player${s.players.length>1?'s':''}. Each brick you place is worth 10 points; hints, “place one for me” and wrong spots cost points.`;
+  $('#mpEndDlg').showModal();
+}
+$('#mpEndClose').onclick=()=>{ $('#mpEndDlg').close(); setTab('build'); };
+$('#mpEndNew').onclick=()=>{ $('#mpEndDlg').close(); mpLeave(); setTab('mp'); };
+$('#mpCreate').onclick=async()=>{
+  const name=$('#mpName1').value.trim(); if(!name){ mpMsg('Type your name first.','err'); $('#mpName1').focus(); return; }
+  const btn=$('#mpCreate'); btn.disabled=true; mpMsg('');
+  try{
+    const choice=$('#mpModel').value;
+    if(choice!=='cur'){ const L=LEVELS[+choice]; mpEndSolo(); photos=levelPhotos(L); setControls(levelSettings(L)); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild(); }
+    if(!model) throw new Error('Pick something to build first.');
+    const perTurn=+document.querySelector('input[name=perTurn]:checked').value;
+    const level=choice!=='cur'?+choice:(game?game.lvl:null);
+    const res=await mpApi('POST',{action:'create',name,perTurn,nBricks:model.bricks.length,title:choice!=='cur'?LEVELS[+choice].name:model.name,level,
+      model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
+    mpRememberName(name);
+    await mpEnter(res,true,name); renderMpView();
+  }catch(e){ mpMsg(e.message,'err'); }
+  finally{ btn.disabled=false; }
+};
+$('#mpJoin').onclick=async()=>{
+  const code=$('#mpCodeIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''), name=$('#mpName2').value.trim();
+  if(code.length!==5){ mpMsg('Room codes have 5 letters and numbers.','err'); $('#mpCodeIn').focus(); return; }
+  if(!name){ mpMsg('Type your name first.','err'); $('#mpName2').focus(); return; }
+  const btn=$('#mpJoin'); btn.disabled=true; mpMsg('Joining…');
+  try{ const st=mpStored(); mpRememberName(name); await mpJoin(code,name,st&&st.code===code?st.playerId:undefined); mpMsg(''); renderMpView(); }
+  catch(e){ mpMsg(e.message,'err'); }
+  finally{ btn.disabled=false; }
+};
+$('#mpCodeIn').addEventListener('input',e=>{ e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
+$('#mpStart').onclick=()=>mpPost({action:'start'}).then(j=>mpApply(j.state)).catch(e=>mpMsg(e.message,'err'));
+$('#mpGoBuild').onclick=()=>setTab('build');
+$('#mpRoomBtn').onclick=()=>setTab('mp');
+$('#mpLeave').onclick=()=>{ mpLeave(); renderMpView(); };
+$('#mpEndTurn').onclick=()=>mpPost({action:'pass'}).then(j=>mpApply(j.state)).catch(e=>setStatus(e.message,'err'));
+$('#mpSkip').onclick=()=>mpPost({action:'pass'}).then(j=>mpApply(j.state)).catch(e=>setStatus(e.message,'err'));
+$('#mpCopy').onclick=async()=>{ const url=`${location.origin}${location.pathname}?room=${mp.code}`;
+  try{ if(navigator.share) await navigator.share({title:'Building Blox',text:`Build with me! Room ${mp.code}`,url}); else { await navigator.clipboard.writeText(url); $('#mpCopy').textContent='Copied!'; setTimeout(()=>$('#mpCopy').textContent='Copy invite link',2000); } }catch(e){} };
+document.addEventListener('visibilitychange',()=>{ if(mp&&document.visibilityState==='visible'){ mp.ver=0; mpPoll(); } });
+
 /* ---------- Save progress (in this browser, on this device) ---------- */
 const SAVE_KEY='building-blox-save-v1';
 let saveOn=false, saveTimer=null, restoring=false, pendingSave=null;
 function storeGet(){ try{ const t=localStorage.getItem(SAVE_KEY); return t?JSON.parse(t):null; }catch(e){ return null; } }
 function storeSet(o){ try{ localStorage.setItem(SAVE_KEY,JSON.stringify(o)); return true; }catch(e){ return false; } }
 function storeClear(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} }
-function saveSoon(){ if(!saveOn||restoring) return; clearTimeout(saveTimer); saveTimer=setTimeout(saveNow,400); }
+function saveSoon(){ if(!saveOn||restoring||mp) return; clearTimeout(saveTimer); saveTimer=setTimeout(saveNow,400); }
 function snapshot(){
   if(!model) return null;
   const B=model.bricks, idx=new Map(B.map((b,i)=>[b,i]));
@@ -1908,7 +2225,7 @@ function snapshot(){
   };
 }
 function saveNow(){
-  clearTimeout(saveTimer); if(!saveOn||restoring) return;
+  clearTimeout(saveTimer); if(!saveOn||restoring||mp) return;
   if(model&&cur>=model.steps.length){ storeClear(); $('#saveNote').textContent=''; return; }
   const o=snapshot(); if(!o) return;
   const ok=storeSet(o);
@@ -1987,6 +2304,14 @@ loadSample(0); setTab('create'); clearTimeout(timer); rebuild(); requestAnimatio
     $('#resumeTxt').textContent=o.game&&LEVELS[o.game.lvl]?`You’re partway through Level ${o.game.lvl+1} (${LEVELS[o.game.lvl].name}): ${o.placedN} of ${o.nBricks} bricks placed.`:`You have a ${o.name} build in progress: ${o.placedN} of ${o.nBricks} bricks placed.`;
     $('#resume').hidden=false;
   } else saveOn=true;
+}
+{
+  const q=(new URLSearchParams(location.search).get('room')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);
+  if(q){
+    $('#mpCodeIn').value=q; setTab('mp');
+    const st=mpStored();
+    if(st&&st.code===q) mpJoin(q,st.name,st.playerId).then(()=>renderMpView()).catch(e=>{ mpMsg(e.message,'err'); mpStore(null); renderMpView(); });
+  }
 }
 })();
 </script>

@@ -1,5 +1,6 @@
 # Netlify config for building-blox.netlify.app
-# Plain static HTML in the repo root, no build step. Every push to main deploys.
+# The app is plain static HTML in /public (no build step). Every push to main deploys.
+# netlify/functions/room holds the "Play together" room server (Netlify Function + Blobs).
 [build]
-  publish = "."
+  publish = "public"
   command = ""
