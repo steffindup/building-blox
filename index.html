@@ -1569,6 +1569,34 @@ const SAMPLES=[
    x.fillStyle=GR; x.rr(66,176,24,36,6); x.rr(110,176,24,36,6);
    x.fillStyle=OR; x.rr(58,208,40,22,8); x.rr(102,208,40,22,8);
    return [['front',c]]; }},
+ {name:'Dinosaur',make(){
+   // An original friendly T. rex, side on, facing left
+   const [c,x]=sheet(240,220,'#ffffff');
+   const G='#4B9F4A', DG='#237841', CR='#F8BB3D', DK='#1B2A34';
+   // tail sweeping down to the right
+   x.fillStyle=G; x.beginPath(); x.moveTo(150,110); x.quadraticCurveTo(210,118,236,190); x.quadraticCurveTo(224,196,214,186); x.quadraticCurveTo(190,150,146,150); x.closePath(); x.fill();
+   // back leg
+   x.oval(142,150,30,36,0,G); x.fillStyle=G; x.rr(130,160,26,44,10); x.fillStyle=DG; x.rr(118,196,48,14,6);
+   // body
+   x.oval(118,124,46,40,-.35,G);
+   // belly
+   x.oval(100,134,22,30,-.35,CR);
+   // front leg
+   x.fillStyle=G; x.rr(88,156,22,42,9); x.fillStyle=DG; x.rr(74,192,40,14,6);
+   // neck and head
+   x.fillStyle=G; x.beginPath(); x.moveTo(84,112); x.quadraticCurveTo(80,80,92,62); x.lineTo(120,70); x.quadraticCurveTo(118,96,128,108); x.closePath(); x.fill();
+   x.fillStyle=G; x.rr(34,30,88,46,20);
+   x.fillStyle=G; x.rr(30,58,70,24,10);
+   x.fillStyle=CR; x.rr(34,72,58,9,4);
+   // little arm
+   x.fillStyle=DG; x.save(); x.translate(86,124); x.rotate(.5); x.rr(-4,0,9,24,4); x.restore();
+   // spots on the back
+   [[136,96,7],[154,108,6],[118,90,5],[172,120,5],[190,138,4]].forEach(([a,b,r])=>x.dot(a,b,r,DG));
+   // eye, nostril, smile and teeth
+   x.dot(86,46,9,'#FFFFFF'); x.dot(84,47,5,DK); x.dot(85.5,45.5,1.6,'#FFFFFF');
+   x.dot(42,42,3,DK);
+   x.fillStyle='#FFFFFF'; for(let i=0;i<4;i++) x.poly([[44+i*12,66],[50+i*12,66],[47+i*12,72]],'#FFFFFF');
+   return [['front',c]]; }},
  {name:'Palm tree',make(){ const [c,x]=sheet(200,240,'#ffffff');
    x.fillStyle='#E4CD9E'; x.beginPath(); x.ellipse(100,232,82,22,0,Math.PI,0); x.closePath(); x.fill();
    x.fillStyle='#8A5A34'; x.beginPath(); x.moveTo(86,226); x.quadraticCurveTo(84,150,112,84); x.lineTo(126,88); x.quadraticCurveTo(104,152,108,226); x.closePath(); x.fill();
