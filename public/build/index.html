@@ -425,6 +425,57 @@ body.chat-on{padding-bottom:96px}
 .gm-foot{display:flex;justify-content:flex-end}
 .gm-foot .ghost{font-size:13px}
 .windlg{border:0;border-radius:18px;padding:22px 22px 18px;width:min(440px,calc(100vw - 32px));background:var(--page);color:var(--ink);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.gm-math{display:grid;gap:6px 18px;grid-template-columns:auto 1fr;align-items:center;background:var(--page);border:2px solid var(--line);border-radius:14px;padding:12px 16px;margin-top:12px}
+.gm-math .note{margin:0;font-size:14px}
+.gm-math.on{border-color:#5A93DB}
+.gm-age{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.gm-age label{font-weight:800;font-size:14px}
+.gm-age select{width:auto;min-width:90px}
+.gm-math:not(.on) .gm-age{display:none}
+@media (max-width:640px){.gm-math{grid-template-columns:1fr}}
+.gm-switch{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:17px}
+.gm-switch input{position:absolute;opacity:0}
+.gm-switch .sw{width:44px;height:26px;border-radius:999px;background:var(--line);position:relative;transition:background .15s;flex:none}
+.gm-switch .sw::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transition:transform .15s}
+.gm-switch input:checked+.sw{background:#0055BF}
+.gm-switch input:checked+.sw::after{transform:translateX(18px)}
+.gm-switch input:focus-visible+.sw{outline:3px solid var(--hi);outline-offset:2px}
+.page.live{position:relative}
+.pg-lock{position:absolute;inset:0;z-index:3;border-radius:6px;background:repeating-linear-gradient(45deg,var(--callout) 0 14px,var(--page) 14px 28px);display:grid;place-content:center;justify-items:center;gap:6px;text-align:center;padding:16px}
+.pg-lock[hidden]{display:none}
+.pg-lock .lk-ic{font-size:44px;line-height:1}
+.pg-lock b{font-family:var(--f-display);font-weight:400;font-size:22px}
+.pg-lock span{color:var(--muted);font-weight:700;font-size:14px;max-width:220px}
+.mathdlg{text-align:left;width:min(480px,calc(100vw - 24px))}
+.mq-head{display:flex;gap:12px;align-items:center}
+.mq-head svg{flex:none}
+.mq-head h2{font-size:24px;margin:2px 0 0}
+.mq-vis{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0 0}
+.mq-vis:empty{display:none}
+.mq-vis img{height:34px}
+.mq-vis .plus{font-family:var(--f-display);font-size:28px;align-self:center;padding:0 4px}
+.mq-q{font-family:var(--f-display);font-size:30px;line-height:1.15;text-align:center;margin:14px 0 12px}
+.mq-q.long{font-family:var(--f-body);font-weight:800;font-size:19px;line-height:1.35}
+.mq-choices{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.mq-choices:empty{display:none}
+.mq-choices button{font-family:var(--f-display);font-size:30px;padding:12px;border-radius:14px;border:2px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;box-shadow:inset 0 -4px 0 rgba(0,0,0,.08)}
+.mq-choices button:hover{border-color:var(--ink)}
+.mq-choices button.no{border-color:var(--accent);opacity:.45}
+.mq-ans{display:grid;gap:8px;justify-items:center}
+.mq-ans[hidden]{display:none}
+.mq-ans .inp{font-family:var(--f-display);font-size:34px;text-align:center;width:min(220px,100%);padding:6px 10px}
+.mq-pad{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:min(300px,100%)}
+.mq-pad button{font-weight:800;font-size:20px;padding:9px 0;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.mq-pad button:hover{border-color:var(--ink)}
+.mq-pad .zero{grid-column:span 3}
+.mq-pad .ok{grid-column:4;grid-row:3/span 2;background:#237841;border-color:#237841;color:#fff;font-size:26px}
+.mq-fb{min-height:1.4em;margin:10px 0 0;font-weight:800;text-align:center}
+.mq-fb[data-kind="err"]{color:var(--accent)}
+.mq-fb[data-kind="ok"]{color:#237841}
+.mq-fb .hint{display:block;font-weight:700;color:var(--muted);font-size:14px;margin-top:4px}
+.mathdlg.shake{animation:mq-shake .35s}
+@keyframes mq-shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@media (prefers-reduced-motion: reduce){.mathdlg.shake{animation:none}}
 .windlg::backdrop{background:rgba(10,16,24,.55)}
 .win-stars{font-size:46px;letter-spacing:6px;color:var(--hi);line-height:1}
 .win-stars i{font-style:normal;color:var(--line)}
@@ -569,6 +620,7 @@ body.chat-on{padding-bottom:96px}
         <div class="pg-top"><div class="pg-step" id="bpStep">1</div><div class="callout" id="bpCallout"></div></div>
         <div class="pg-view" id="bpView" role="img" aria-label="Booklet picture for this step. Drag to turn it."><span class="pg-turn" aria-hidden="true">Drag to turn</span><canvas class="pg-chart" id="bpChart" hidden></canvas></div>
         <div class="pg-foot" id="bpFoot"></div>
+        <div class="pg-lock" id="bpLock" hidden><div class="lk-ic" aria-hidden="true">🔒</div><b>This page is locked</b><span>Solve Bloppit’s maths puzzle to open it.</span><button class="primary sm" id="bpUnlock" type="button">Solve the puzzle</button></div>
       </article>
       <div class="bp-nav">
         <button class="ghost" id="bpPrev" type="button">&lsaquo; Page</button>
@@ -674,6 +726,13 @@ body.chat-on{padding-bottom:96px}
     <span><b>Place one for me</b> costs 10</span>
     <span>★★★ for keeping 90% or more</span>
   </div>
+  <div class="gm-math" id="gmMath">
+    <label class="gm-switch"><input type="checkbox" id="mathOn"><span class="sw" aria-hidden="true"></span><b>Maths challenge</b></label>
+    <p class="note">Some booklet pages are locked with a maths puzzle from Bloppit. Solve it to open the page and earn <b>+10 points</b>. Puzzles get harder as the levels go up, and higher levels lock more pages.</p>
+    <div class="gm-age"><label for="mathAge">Player’s age</label>
+      <select class="inp" id="mathAge"></select>
+      <span class="tag" id="mathTier"></span></div>
+  </div>
   <div class="gm-levels" id="gmLevels"></div>
   <div class="gm-foot"><button class="ghost" id="gmReset" type="button">Reset game progress</button></div>
 </section>
@@ -746,6 +805,18 @@ body.chat-on{padding-bottom:96px}
   <div class="win-btns"><button class="ghost" id="mpEndClose" type="button">Look at the model</button><button class="primary sm" id="mpEndNew" type="button">New game</button></div>
 </dialog>
 
+<dialog class="windlg mathdlg" id="mathDlg" aria-labelledby="mqTitle">
+  <div class="mq-head"><svg viewBox="0 0 200 175" width="64" height="56" aria-hidden="true"><circle cx="42" cy="38" r="16" fill="#8A5A3B"/><circle cx="42" cy="38" r="7" fill="#6B4229"/><circle cx="158" cy="38" r="16" fill="#8A5A3B"/><circle cx="158" cy="38" r="7" fill="#6B4229"/><ellipse cx="100" cy="94" rx="88" ry="74" fill="#8A5A3B"/><ellipse cx="100" cy="116" rx="56" ry="40" fill="#F3DEC0"/><ellipse cx="64" cy="88" rx="19" ry="22" fill="#1B1410"/><ellipse cx="136" cy="88" rx="19" ry="22" fill="#1B1410"/><circle cx="70" cy="79" r="7" fill="#FFFFFF"/><circle cx="142" cy="79" r="7" fill="#FFFFFF"/><path d="M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z" fill="#3A2418"/><path d="M100 120 q0 8 -9 10 M100 120 q0 8 9 10" stroke="#3A2418" stroke-width="4" stroke-linecap="round" fill="none"/></svg><div><div class="tag" id="mqTag">Maths puzzle</div><h2 id="mqTitle">Page 1 is locked!</h2></div></div>
+  <div class="mq-vis" id="mqVis"></div>
+  <p class="mq-q" id="mqQ"></p>
+  <div class="mq-choices" id="mqChoices"></div>
+  <form class="mq-ans" id="mqForm" autocomplete="off">
+    <input class="inp" id="mqIn" inputmode="numeric" aria-label="Your answer" placeholder="?">
+    <div class="mq-pad" id="mqPad"></div>
+  </form>
+  <p class="mq-fb" id="mqFb" aria-live="polite"></p>
+  <div class="win-btns"><button class="ghost" id="mqLater" type="button">Not now</button><button class="primary sm" id="mqGo" type="button">Check</button></div>
+</dialog>
 <dialog class="windlg" id="winDlg" aria-label="Level complete">
   <div class="win-stars" id="winStars"></div>
   <h2 id="winTitle">Level complete!</h2>
@@ -1519,6 +1590,7 @@ function updateBuildUI(){
   if(follow) viewPage=Math.min(cur,N);
   renderHints(); showPage(viewPage); saveSoon();
   if(mp) updateMpBar();
+  if(isLocked(cur)&&mathAsked!==cur&&tab==='build'&&!busy){ mathAsked=cur; setTimeout(()=>{ if(tab==='build'&&isLocked(cur)&&!$('#winDlg').open) openMath(cur); },650); }
 }
 function stepImage(k){
   if(stepImgsFor!==modelVersion){stepImgs.clear(); stepImgsFor=modelVersion;}
@@ -1537,6 +1609,7 @@ function showPage(k){
     $('#bpFoot').textContent=`${TILES?`Row ${s.row+1} of ${model.D}`:`Layer ${s.layer+1} of ${model.H}`}${s.parts>1?` · part ${s.part} of ${s.parts}`:''} · ${k<cur?'done':k===cur?'building now':'coming up'}`;
   }
   showChart('bpChart',k); $('#bpView .pg-turn').hidden=TILES;
+  const lk=isLocked(k); $('#bpLock').hidden=!lk; if(lk) $('#bpCallout').innerHTML='<b style="padding:4px 2px">🔒 Locked</b>';
   $('#bpPage').textContent=`Page ${k+1} of ${N+1}`;
   $('#bpPrev').disabled=k===0; $('#bpNext').disabled=k>=N;
   $('#bpNow').hidden=k===Math.min(cur,N);
@@ -1643,6 +1716,7 @@ function buddyUpdate(){
     budSay('point', viewPage<cur?`That’s a step you’ve done. You’re on step ${cur+1}.`:`That’s coming up later. You’re on step ${cur+1}.`);
     return;
   }
+  if(isLocked(cur)){ budSay('point','This page is locked! Solve my maths puzzle to open it.'); if(budStep!==cur){ budStep=cur; budPing(); } return; }
   const left=stepLeft(cur), total=model.steps[cur].bricks.length;
   const lead=left.length===total?`Step ${cur+1}! You need these:`:left.length===1?'Just one more for this step:':`${left.length} more for this step:`;
   budSay('point', `${lead}<div class="callout">${calloutHTML(left)}</div>`);
@@ -1712,6 +1786,7 @@ function placeGhost(px,pz){
 function lock(){ const c=cands[0]; off={x:c.x,z:c.z}; placed=c.used; cands=[]; }
 function tryPlace(){
   if(!sel||!lastAnchor||busy) return;
+  if(isLocked(cur)){ setStatus('This page is locked. Solve Bloppit’s maths puzzle to open it.','err'); openMath(cur); return; }
   if(mp&&!mpMyTurn()){ setStatus(mpTurnText(),'err'); return; }
   if(mp&&mp.state.turnPlaced+mp.posting>=mp.state.perTurn){ setStatus('That was your last brick this turn.','ok'); return; }
   const s=model.steps[cur], {ax,az}=lastAnchor;
@@ -1764,6 +1839,7 @@ function placeBrick(t,ax,az){
 }
 function autoPlace(){
   if(busy||!model||cur>=model.steps.length) return;
+  if(isLocked(cur)){ setStatus('This page is locked. Solve Bloppit’s maths puzzle to open it.','err'); openMath(cur); return; }
   if(mp&&!mpMyTurn()){ setStatus(mpTurnText(),'err'); return; }
   const s=model.steps[cur]; let o,t;
   if(off){ o=off; t=s.bricks.find(b=>!placed.has(b)); }
@@ -1795,7 +1871,7 @@ cvs.addEventListener('pointerleave',()=>{ if(tab==='build'&&!downXY) ghostGroup.
 $('#rotBtn').onclick=rotateSel;
 function toggleBook(){ const g=$('.build-grid'), off=!g.classList.toggle('no-book'); $('#bookBtn').setAttribute('aria-pressed',off); saveSoon(); requestAnimationFrame(()=>{resize(); bookResize(); frameBuild(true);}); }
 $('#bookBtn').onclick=toggleBook;
-$('#hintBtn').onclick=()=>{hintOn=!hintOn; renderHints(); if(hintOn) setStatus(curOff()?'Faded bricks show where this step’s parts go.':'Faded bricks show one place to start. Anywhere works.');};
+$('#hintBtn').onclick=()=>{ if(isLocked(cur)){ openMath(cur); return; } hintOn=!hintOn; renderHints(); if(hintOn) setStatus(curOff()?'Faded bricks show where this step’s parts go.':'Faded bricks show one place to start. Anywhere works.');};
 $('#autoBtn').onclick=autoPlace;
 $('#fitBtn').onclick=()=>frameBuild(true);
 $('#openBox').onclick=openBox;
@@ -2043,16 +2119,22 @@ function makeBooklet(){
   (function chunk(){
     if(job!==bookletJob||model!==m) return;
     const end=Math.min(N,i+(TILES?12:4));
-    for(;i<end;i++){ const img=$('#pg-'+i); if(img) img.src=TILES?chartURL(i,400,300):snap(i); }
+    for(;i<end;i++){ const img=$('#pg-'+i); if(!img) continue; if(isLocked(i)){ img.src=LOCK_IMG(); img.closest('.page').classList.add('locked'); } else img.src=TILES?chartURL(i,400,300):snap(i); }
     restore(); bar.style.width=(i/N*100)+'%';
     if(i<N) setTimeout(chunk,16); else setTimeout(()=>{$('#bookProg').hidden=true;},400);
   })();
 }
 
+let lockImg=null;
+function LOCK_IMG(){ if(lockImg) return lockImg; const c=document.createElement('canvas'); c.width=400; c.height=300; const x=c.getContext('2d');
+  for(let i=-300;i<400;i+=28){ x.fillStyle='#D6E5F5'; x.beginPath(); x.moveTo(i,0); x.lineTo(i+14,0); x.lineTo(i+314,300); x.lineTo(i+300,300); x.fill(); }
+  x.font='72px system-ui'; x.textAlign='center'; x.fillText('🔒',200,150); x.font='800 22px Nunito,system-ui,sans-serif'; x.fillStyle='#14202C'; x.fillText('Solve the maths puzzle to open',200,210);
+  return lockImg=c.toDataURL(); }
 /* ---------- Booklet page you can turn around ---------- */
 let lbK=0;
 function lbShow(k){
-  const N=model.steps.length; k=clamp(k,0,N); lbK=k; bookK=k; showStep(k,false);
+  const N=model.steps.length; k=clamp(k,0,N);
+  if(isLocked(k)){ $('#bookDlg').close(); openMath(k); return; } lbK=k; bookK=k; showStep(k,false);
   $('#lbStep').textContent=k>=N?'✓':k+1;
   $('#lbCallout').innerHTML=k>=N?'<b style="padding:4px 2px">Finished model</b>':calloutHTML(model.steps[k].bricks);
   $('#lbPrev').disabled=k===0; $('#lbNext').disabled=k>=N;
@@ -2071,7 +2153,9 @@ $('#bookDlg').addEventListener('keydown',e=>{ if(e.key==='ArrowLeft') lbShow(lbK
 $('#bookDlg').addEventListener('click',e=>{ if(e.target===$('#bookDlg')) $('#bookDlg').close(); });
 $('#pages').addEventListener('click',e=>{
   const img=e.target.closest('img.pg-img'); if(!img||!model) return;
-  openLightbox(img.id==='pg-cover'?model.steps.length:+img.id.slice(3));
+  const k=img.id==='pg-cover'?model.steps.length:+img.id.slice(3);
+  if(isLocked(k)){ setTab('build'); openMath(k); return; }
+  openLightbox(k);
 });
 
 /* ---------- Sample models, drawn as photos ---------- */
@@ -2304,7 +2388,7 @@ function levelCount(L){
   const m=buildModel(); photos=keepP; Object.assign(S,keepS);
   return L.count=m&&m.bricks?m.bricks.length:0;
 }
-const levelScore=()=>{ const L=LEVELS[game.lvl], p=game.pen; return Math.max(Math.round(L.pts*.1), L.pts-p.hint*5-p.auto*10); };
+const levelScore=()=>{ const L=LEVELS[game.lvl], p=game.pen; return Math.max(Math.round(L.pts*.1), L.pts-p.hint*5-p.auto*10)+(game.math?game.math.pts:0); };
 const starsFor=(sc,L)=>sc>=L.pts*.9?3:sc>=L.pts*.6?2:1;
 const starHTML=n=>'★'.repeat(n)+`<i>${'★'.repeat(3-n)}</i>`;
 function charge(kind,n){
@@ -2322,6 +2406,7 @@ function updateGameBar(){
   $('#gbBadge').textContent=game.lvl+1; $('#gbNum').textContent=`${game.lvl+1} of ${LEVELS.length}`; $('#gbName').textContent=L.name;
   $('#gbPts').textContent=levelScore(); $('#gbOf').textContent=`of ${L.pts}`;
   const bits=[]; if(p.hint) bits.push(`Hints ${p.hint}× −${p.hint*5}`); if(p.auto) bits.push(`Placed for you ${p.auto}× −${p.auto*10}`);
+  if(game.math) bits.push(`Maths ${game.math.solved.length} of ${game.math.locks.length} pages${game.math.pts?` +${game.math.pts}`:''}`);
   $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>';
 }
 function startLevel(i){
@@ -2332,6 +2417,8 @@ function startLevel(i){
   renderPhotos(); clearTimeout(timer); hintOn=false;
   game={lvl:i,pen:{hint:0,auto:0,miss:0},hintSteps:[]};
   rebuild();
+  const mp_=mathPrefs(); mathAsked=-1;
+  if(mp_.on&&model) game.math={tier:mathTier(mp_.age,i),locks:mathLocks(i,model.steps.length),solved:[],pts:0,q:{}};
   setTab('build'); updateGameBar();
   setStatus(`Level ${i+1}: build the ${L.name}! Open the parts box to pick up bricks.`,'ok');
   saveNow();
@@ -2349,7 +2436,9 @@ function winLevel(){
   const rows=[[`Built the ${L.name}`,L.pts,'']];
   if(p.hint) rows.push([`Hints (${p.hint})`,-p.hint*5,'neg']);
   if(p.auto) rows.push([`Placed for you (${p.auto})`,-p.auto*10,'neg']);
-  if(L.pts-p.hint*5-p.auto*10<sc) rows.push(['Minimum for finishing',sc-(L.pts-p.hint*5-p.auto*10),'']);
+  const mpts=game.math?game.math.pts:0;
+  if(mpts) rows.push([`Maths puzzles solved first time (${mpts/10})`,mpts,'']);
+  if(L.pts-p.hint*5-p.auto*10+mpts<sc) rows.push(['Minimum for finishing',sc-(L.pts-p.hint*5-p.auto*10+mpts),'']);
   $('#winRows').innerHTML=rows.map(([a,b,c])=>`<div class="${c}"><span>${a}</span><span>${b>0?'+':''}${b}</span></div>`).join('')+`<div class="tot"><span>Points</span><span>${sc}</span></div>`;
   const total=Object.values(g.best).reduce((a,b)=>a+b,0);
   $('#winBest').textContent=(sc>prev&&prev?`New best! (was ${prev}) · `:'')+`Total: ${total.toLocaleString()} points`;
@@ -2384,6 +2473,129 @@ $('#gmLevels').addEventListener('click',e=>{ const b=e.target.closest('.lvl'); i
   if(game&&game.lvl===i&&model&&cur<model.steps.length){ setTab('build'); return; } startLevel(i); });
 $('#gmReset').onclick=()=>{ const b=$('#gmReset'); if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent='Tap again to wipe all scores'; setTimeout(()=>{delete b.dataset.confirm; b.textContent='Reset game progress';},3000); return; }
   delete b.dataset.confirm; b.textContent='Reset game progress'; gameStoreSet({best:{}}); renderGameMap(); };
+
+/* ---------- Maths challenge (Play the Game) ---------- */
+// Some booklet pages are locked behind a maths puzzle. How hard the puzzles are comes from the player's
+// age, plus a notch every 5 levels; higher levels also lock more pages. Answers are always whole numbers.
+const MATH_TIERS=['Counting bricks','Adding up to 10','Adding and taking away to 20','Missing numbers to 20','Bigger numbers, and the 2, 5 and 10 times tables',
+  'Times tables and dividing','Bigger sums, halves and quarters','Fractions, percentages and order of operations','Simple equations and squares','Equations, square roots and percentages'];
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)), pickOne=a=>a[rnd(0,a.length-1)];
+function mathPrefs(){ const g=gameStore(); return {on:!!(g.math&&g.math.on), age:(g.math&&g.math.age)||8}; }
+function mathPrefsSet(p){ const g=gameStore(); g.math=p; gameStoreSet(g); }
+const ageTier=age=>clamp(age-4,0,9);
+const mathTier=(age,lvl)=>clamp(ageTier(age)+Math.floor(lvl/5),0,9);
+function mathLocks(lvl,N){
+  const every=[5,4,3,2][Math.min(3,Math.floor(lvl/4))], locks=[];
+  for(let k=0;k<N&&locks.length<15;k+=every) locks.push(k);
+  return locks;
+}
+function isLocked(k){ return !!(game&&game.math&&game.math.locks.includes(k)&&!game.math.solved.includes(k)); }
+function makePuzzle(t){
+  const brickPic=n=>Array.from({length:n},()=>`<img alt="" src="${brickIcon(2,2,4)}">`).join('');
+  const W=(q,a,hint,extra={})=>({q,a,hint,...extra});
+  switch(t){
+    case 0: { if(Math.random()<.5){ const n=rnd(2,7); return W('How many bricks?',n,'Point at each brick and count out loud.',{vis:brickPic(n),choice:true}); }
+      const a=rnd(1,3), b=rnd(1,3); return W(`${a} + ${b} = ?`,a+b,'Count all the bricks together.',{vis:brickPic(a)+'<span class="plus">+</span>'+brickPic(b),choice:true}); }
+    case 1: { const a=rnd(1,8), b=rnd(1,10-a); return W(`${a} + ${b} = ?`,a+b,`Start at ${Math.max(a,b)} and count on ${Math.min(a,b)} more.`,{choice:true}); }
+    case 2: { if(Math.random()<.5){ const a=rnd(3,15), b=rnd(2,20-a); return W(`${a} + ${b} = ?`,a+b,'Make a 10 first, then add the rest.',{choice:true}); }
+      const a=rnd(8,20), b=rnd(2,a-1); return W(`${a} − ${b} = ?`,a-b,`Count back ${b} from ${a}.`,{choice:true}); }
+    case 3: { const r=Math.random();
+      if(r<.35){ const a=rnd(2,12), c=rnd(a+2,20); return W(`${a} + ? = ${c}`,c-a,`What do you add to ${a} to make ${c}?`); }
+      if(r<.7){ const n=rnd(8,20), m=rnd(2,n-2); return W(`A step needs ${n} bricks. You’ve placed ${m}. How many more do you need?`,n-m,`Take ${m} away from ${n}.`,{long:true}); }
+      const a=rnd(4,10); return W(`Double ${a} = ?`,a*2,`Double means ${a} + ${a}.`); }
+    case 4: { const r=Math.random();
+      if(r<.4){ const a=rnd(21,89), b=rnd(11,99-a); return W(`${a} + ${b} = ?`,a+b,'Add the tens, then add the ones.'); }
+      if(r<.65){ const a=rnd(40,99), b=rnd(12,a-10); return W(`${a} − ${b} = ?`,a-b,'Take away the tens first, then the ones.'); }
+      const f=pickOne([2,5,10]), n=rnd(2,12); return W(`${n} × ${f} = ?`,n*f,`Count in ${f}s, ${n} times.`); }
+    case 5: { const r=Math.random(), a=rnd(3,10), b=rnd(3,10);
+      if(r<.4) return W(`${a} × ${b} = ?`,a*b,`Think of ${a} rows of ${b} studs.`);
+      if(r<.75) return W(`${a*b} ÷ ${a} = ?`,b,`What times ${a} makes ${a*b}?`);
+      const w=rnd(2,8), l=rnd(3,10); return W(`A plate is ${w} studs wide and ${l} studs long. How many studs does it have?`,w*l,`Multiply ${w} × ${l}.`,{long:true}); }
+    case 6: { const r=Math.random();
+      if(r<.3){ const a=rnd(120,780), b=rnd(110,999-a); return W(`${a} + ${b} = ?`,a+b,'Add the hundreds, tens and ones separately.'); }
+      if(r<.55){ const a=rnd(12,29), b=rnd(3,9); return W(`${a} × ${b} = ?`,a*b,`Do ${Math.floor(a/10)*10} × ${b}, then ${a%10} × ${b}, and add them.`); }
+      if(r<.8){ const n=rnd(6,40)*2; return W(`Half of ${n} = ?`,n/2,'Split it into two equal parts.'); }
+      const n=rnd(3,20)*4; return W(`A quarter of ${n} = ?`,n/4,'Halve it, then halve it again.'); }
+    case 7: { const r=Math.random();
+      if(r<.3){ const d=pickOne([3,4,5]), nn=pickOne(d===4?[3]:[2,d-1]), tot=d*rnd(3,12); return W(`${nn}/${d} of ${tot} = ?`,tot/d*nn,`Find 1/${d} of ${tot} first, then times by ${nn}.`); }
+      if(r<.55){ const p=pickOne([10,25,50]), tot=(p===10?10:p===25?4:2)*rnd(3,25); return W(`${p}% of ${tot} = ?`,tot*p/100,p===50?'50% is a half.':p===25?'25% is a quarter.':'10% means divide by 10.'); }
+      if(r<.8){ const a=rnd(2,12), b=rnd(2,6), c=rnd(2,9); return W(`${a} + ${b} × ${c} = ?`,a+b*c,'Multiply before you add.'); }
+      const a=rnd(3,15), b=rnd(1,a+8); return W(`−${a} + ${b} = ?`,b-a,'Start below zero and count up.'); }
+    case 8: { const r=Math.random();
+      if(r<.45){ const a=rnd(2,9), x=rnd(1,12), b=rnd(1,20); return W(`${a}x + ${b} = ${a*x+b}.  x = ?`,x,`Take ${b} from both sides, then divide by ${a}.`); }
+      if(r<.75){ const n=rnd(4,15); return W(`${n}² = ?`,n*n,`${n}² means ${n} × ${n}.`); }
+      const p=pickOne([20,30,40,75]), tot=(p===75?4:10)*rnd(2,20); return W(`${p}% of ${tot} = ?`,tot*p/100,p===75?'Find 25%, then times by 3.':`Find 10%, then times by ${p/10}.`); }
+    default: { const r=Math.random();
+      if(r<.35){ const x=rnd(2,12), c=rnd(1,4), a=c+rnd(1,4), b=rnd(1,15), d=(a-c)*x-b; return W(`${a}x − ${b} = ${c}x ${d<0?'−':'+'} ${Math.abs(d)}.  x = ?`,x,`Get all the x’s on one side: ${a-c}x = ${d+b}.`); }
+      if(r<.6){ const n=rnd(6,15); return W(`√${n*n} = ?`,n,'Which number times itself makes this?'); }
+      if(r<.8){ const a=rnd(2,9), b=rnd(2,9); return W(`${a}² + ${b}² = ?`,a*a+b*b,'Square each one, then add.'); }
+      const pr=rnd(2,16)*20, p=pickOne([5,15,25]); return W(`A brick set costs $${pr}. The price goes up ${p}%. What is the new price?`,pr+pr*p/100,`Find ${p}% of ${pr}, then add it on.`,{long:true}); }
+  }
+}
+function puzzleChoices(a){
+  const set=new Set([a]); const opts=a<12?[a+1,a-1,a+2,a-2,a+3]:[a+1,a-1,a+2,a-2,a+10,a-10,a+3];
+  for(const o of opts.sort(()=>Math.random()-.5)){ if(o>=0&&set.size<4) set.add(o); }
+  return [...set].sort((x,y)=>x-y);
+}
+var mq=null, mathAsked=-1;
+function openMath(k){
+  if(!isLocked(k)) return;
+  const g=game.math; g.q=g.q||{};
+  if(!g.q[k]) g.q[k]=makePuzzle(g.tier);
+  const P=g.q[k]; mq={k,P,tries:0};
+  $('#mqTag').textContent=`Maths puzzle · ${MATH_TIERS[g.tier]}`;
+  $('#mqTitle').textContent=`Page ${k+1} is locked!`;
+  $('#mqVis').innerHTML=P.vis||'';
+  $('#mqQ').textContent=P.q; $('#mqQ').classList.toggle('long',!!P.long);
+  $('#mqChoices').innerHTML=P.choice?puzzleChoices(P.a).map(v=>`<button type="button" data-v="${v}">${v}</button>`).join(''):'';
+  $('#mqForm').hidden=!!P.choice; $('#mqGo').hidden=true; $('#mqIn').value='';
+  $('#mqFb').textContent=''; $('#mqFb').dataset.kind='';
+  const d=$('#mathDlg'); if(!d.open) d.showModal();
+  if(!P.choice) setTimeout(()=>$('#mqIn').focus(),50);
+}
+function mathAnswer(v){
+  if(!mq) return; const {k,P}=mq; const fb=$('#mqFb');
+  if(String(v).trim()===''){ fb.textContent='Type your answer first.'; fb.dataset.kind='err'; return; }
+  const n=Number(String(v).replace('−','-').trim());
+  if(n===P.a){
+    const first=mq.tries===0; game.math.solved.push(k); if(first){ game.math.pts+=10; }
+    fb.dataset.kind='ok'; fb.textContent=first?'Yes! Page unlocked. +10 points':'Yes! Page unlocked.';
+    sfx.chime(); sfx.chirp(); mq=null; updateGameBar(); unlockPage(k); saveSoon();
+    setTimeout(()=>{ if($('#mathDlg').open) $('#mathDlg').close(); },900);
+    return;
+  }
+  mq.tries++; sfx.bonk(); const d=$('#mathDlg'); d.classList.remove('shake'); void d.offsetWidth; if(!reduceMotion) d.classList.add('shake');
+  if(P.choice){ const b=$('#mqChoices').querySelector(`[data-v="${n}"]`); if(b){ b.classList.add('no'); b.disabled=true; } }
+  if(mq.tries>=3){
+    game.math.solved.push(k); fb.dataset.kind='ok';
+    fb.innerHTML=`The answer is <b>${P.a}</b>. ${escapeHTML(P.hint)} <span class="hint">Page unlocked. You’ll get the next one!</span>`;
+    mq=null; updateGameBar(); unlockPage(k); saveSoon(); $('#mqLater').textContent='Keep building';
+    return;
+  }
+  fb.dataset.kind='err'; fb.innerHTML=mq.tries===1?'Not quite. Have another go!':`Not quite. <span class="hint">Hint: ${escapeHTML(P.hint)}</span>`;
+  $('#mqIn').select();
+}
+function unlockPage(k){
+  showPage(viewPage); updateBuildUI();
+  const img=$('#pg-'+k); if(img&&bookletFor===modelVersion){ img.src=TILES?chartURL(k,400,300):snap(k); img.closest('.page').classList.remove('locked'); showStep(model.steps.length,false); }
+}
+$('#mqChoices').addEventListener('click',e=>{ const b=e.target.closest('button[data-v]'); if(b) mathAnswer(b.dataset.v); });
+$('#mqForm').addEventListener('submit',e=>{ e.preventDefault(); mathAnswer($('#mqIn').value); });
+$('#mqGo').onclick=()=>mathAnswer($('#mqIn').value);
+$('#mqPad').innerHTML=['7','8','9','⌫','4','5','6','−','1','2','3','✓','0'].map(v=>`<button type="button" data-k="${v}"${v==='✓'?' class="ok" aria-label="Check"':v==='0'?' class="zero"':v==='⌫'?' aria-label="Delete"':v==='−'?' aria-label="Minus"':''}>${v}</button>`).join('');
+$('#mqPad').addEventListener('click',e=>{ const b=e.target.closest('button[data-k]'); if(!b) return; const i=$('#mqIn'), k=b.dataset.k;
+  if(k==='✓'){ mathAnswer(i.value); return; }
+  if(k==='⌫') i.value=i.value.slice(0,-1); else if(k==='−'){ i.value=i.value.startsWith('-')?i.value.slice(1):'-'+i.value; } else i.value+=k; });
+$('#mqLater').onclick=()=>$('#mathDlg').close();
+$('#mathDlg').addEventListener('close',()=>{ $('#mqLater').textContent='Not now'; mq=null; });
+$('#bpUnlock').onclick=()=>openMath(viewPage);
+// Game tab controls
+$('#mathAge').innerHTML=Array.from({length:12},(_,i)=>i+4).map(a=>`<option value="${a}">${a}${a===15?'+':''}</option>`).join('');
+function syncMathUI(){ const p=mathPrefs(); $('#mathOn').checked=p.on; $('#mathAge').value=Math.min(15,p.age); $('#gmMath').classList.toggle('on',p.on);
+  $('#mathTier').textContent=`Starts with: ${MATH_TIERS[mathTier(p.age,0)]}`; }
+$('#mathOn').addEventListener('change',e=>{ const p=mathPrefs(); p.on=e.target.checked; mathPrefsSet(p); syncMathUI(); });
+$('#mathAge').addEventListener('change',e=>{ const p=mathPrefs(); p.age=+e.target.value; mathPrefsSet(p); syncMathUI(); });
+syncMathUI();
 
 /* ---------- Play together (rooms on the Bloppit website) ---------- */
 const MP_KEY='building-blox-mp-v1';
@@ -2667,7 +2879,7 @@ function snapshot(){
     bins:bins.map(b=>({...b})),
     hand:hand.map(p=>pi.get(p)), held:held?pi.get(held):-1, sel:sel?{...sel}:null,
     noBook:$('.build-grid').classList.contains('no-book'),
-    game:game?{lvl:game.lvl,pen:{...game.pen},hintSteps:[...game.hintSteps]}:null
+    game:game?{lvl:game.lvl,pen:{...game.pen},hintSteps:[...game.hintSteps],math:game.math?{tier:game.math.tier,locks:game.math.locks,solved:game.math.solved,pts:game.math.pts}:null}:null
   };
 }
 function saveNow(){
@@ -2731,7 +2943,7 @@ function applyProgress(o){
   const h=pieces[o.held]; if(h){ setActive(h); if(o.sel&&o.sel.c===h.c) { sel={...o.sel}; setGhost(); } }
   $('.build-grid').classList.toggle('no-book',!!o.noBook); $('#bookBtn').setAttribute('aria-pressed',!o.noBook);
   busy=false; lastAnchor=null; follow=true;
-  game=o.game?{lvl:o.game.lvl,pen:{hint:0,auto:0,miss:0,...o.game.pen},hintSteps:[...(o.game.hintSteps||[])]}:null;
+  game=o.game?{lvl:o.game.lvl,pen:{hint:0,auto:0,miss:0,...o.game.pen},hintSteps:[...(o.game.hintSteps||[])],math:o.game.math?{...o.game.math,solved:[...o.game.math.solved],q:{}}:null}:null; mathAsked=-1;
   updateGameBar();
 }
 function dismissResume(){ $('#resume').hidden=true; pendingSave=null; saveOn=true; }
