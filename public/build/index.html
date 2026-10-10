@@ -414,8 +414,8 @@ input[type=range]{width:100%;accent-color:var(--accent)}
       <strong>Add photos</strong>
       <span>Drop, paste or tap to choose. A plain background works best.</span>
     </label>
-    <div class="card">
-      <h2>Or try a sample</h2>
+    <div class="card" id="library">
+      <h2>Or pick from the library</h2>
       <div class="samples" id="samples"></div>
     </div>
     <div class="card">
@@ -1024,7 +1024,7 @@ function renderPhotos(){
     const el=document.createElement('div'); el.className='photo';
     el.appendChild(drawPreview(p));
     const meta=document.createElement('div'); meta.className='meta';
-    meta.innerHTML=`<div class="nm">${p.sample?'Sample: '+escapeHTML(p.name)+(p.view!=='front'?` (${VIEW_LABEL[p.view].toLowerCase()})`:''):escapeHTML(p.name)}</div>
+    meta.innerHTML=`<div class="nm">${p.sample?'Library: '+escapeHTML(p.name)+(p.view!=='front'?` (${VIEW_LABEL[p.view].toLowerCase()})`:''):escapeHTML(p.name)}</div>
       <div class="row"><select id="view-${p.id}" aria-label="Which side this photo shows">${Object.entries(VIEW_LABEL).map(([v,l])=>`<option value="${v}"${p.view===v?' selected':''}>${l}</option>`).join('')}</select>
       <button class="ghost" type="button">Remove</button></div>`;
     meta.querySelector('select').onchange=e=>{p.view=e.target.value; refreshHint(); schedule();};
