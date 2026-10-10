@@ -544,7 +544,6 @@ input[type=range]{width:100%;accent-color:var(--accent)}
     <span><b>Finish a level</b> to earn its points</span>
     <span><b>Hint</b> costs 5 points (it lasts for one step)</span>
     <span><b>Place one for me</b> costs 10</span>
-    <span><b>Wrong spot</b> costs 2</span>
     <span>★★★ for keeping 90% or more</span>
   </div>
   <div class="gm-levels" id="gmLevels"></div>
@@ -1365,7 +1364,6 @@ function tryPlace(){
   const o=curOff(), u=usedSet();
   const turned=sel.sx!==sel.sz&&s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o||Math.abs(b.x+o.x-ax)<=2&&Math.abs(b.z+o.z-az)<=2));
   const unused=!s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&Math.min(b.sx,b.sz)===Math.min(sel.sx,sel.sz)&&Math.max(b.sx,b.sz)===Math.max(sel.sx,sel.sz));
-  if((game||mp)&&!autoBusy) charge('miss',2);
   setStatus(unused?`Step ${cur+1} doesn’t use this brick. Put it back and check the booklet.`:turned?'Close. Try turning it with R.':'Not quite. Compare with the picture in the booklet.','err');
   const g=ghostGroup.children[0]; if(g){g.material=errMat; setTimeout(()=>{if(g.parent) g.material=ghostMat(sel?sel.c:0);},380);}
 }
@@ -1934,7 +1932,7 @@ function levelCount(L){
   const m=buildModel(); photos=keepP; Object.assign(S,keepS);
   return L.count=m&&m.bricks?m.bricks.length:0;
 }
-const levelScore=()=>{ const L=LEVELS[game.lvl], p=game.pen; return Math.max(Math.round(L.pts*.1), L.pts-p.hint*5-p.auto*10-p.miss*2); };
+const levelScore=()=>{ const L=LEVELS[game.lvl], p=game.pen; return Math.max(Math.round(L.pts*.1), L.pts-p.hint*5-p.auto*10); };
 const starsFor=(sc,L)=>sc>=L.pts*.9?3:sc>=L.pts*.6?2:1;
 const starHTML=n=>'★'.repeat(n)+`<i>${'★'.repeat(3-n)}</i>`;
 function charge(kind,n){
@@ -1951,7 +1949,7 @@ function updateGameBar(){
   const L=LEVELS[game.lvl], p=game.pen;
   $('#gbBadge').textContent=game.lvl+1; $('#gbNum').textContent=`${game.lvl+1} of ${LEVELS.length}`; $('#gbName').textContent=L.name;
   $('#gbPts').textContent=levelScore(); $('#gbOf').textContent=`of ${L.pts}`;
-  const bits=[]; if(p.hint) bits.push(`Hints ${p.hint}× −${p.hint*5}`); if(p.auto) bits.push(`Placed for you ${p.auto}× −${p.auto*10}`); if(p.miss) bits.push(`Wrong spots ${p.miss}× −${p.miss*2}`);
+  const bits=[]; if(p.hint) bits.push(`Hints ${p.hint}× −${p.hint*5}`); if(p.auto) bits.push(`Placed for you ${p.auto}× −${p.auto*10}`);
   $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>';
 }
 function startLevel(i){
@@ -1979,8 +1977,7 @@ function winLevel(){
   const rows=[[`Built the ${L.name}`,L.pts,'']];
   if(p.hint) rows.push([`Hints (${p.hint})`,-p.hint*5,'neg']);
   if(p.auto) rows.push([`Placed for you (${p.auto})`,-p.auto*10,'neg']);
-  if(p.miss) rows.push([`Wrong spots (${p.miss})`,-p.miss*2,'neg']);
-  if(L.pts-p.hint*5-p.auto*10-p.miss*2<sc) rows.push(['Minimum for finishing',sc-(L.pts-p.hint*5-p.auto*10-p.miss*2),'']);
+  if(L.pts-p.hint*5-p.auto*10<sc) rows.push(['Minimum for finishing',sc-(L.pts-p.hint*5-p.auto*10),'']);
   $('#winRows').innerHTML=rows.map(([a,b,c])=>`<div class="${c}"><span>${a}</span><span>${b>0?'+':''}${b}</span></div>`).join('')+`<div class="tot"><span>Points</span><span>${sc}</span></div>`;
   const total=Object.values(g.best).reduce((a,b)=>a+b,0);
   $('#winBest').textContent=(sc>prev&&prev?`New best! (was ${prev}) · `:'')+`Total: ${total.toLocaleString()} points`;
@@ -2037,7 +2034,7 @@ const mpMyTurn=()=>!!(mp&&mp.state&&mp.state.started&&!mp.state.finished&&mp.sta
 function mpTurnText(){ const s=mp&&mp.state; if(!s||!s.started) return 'Waiting for the game to start.'; if(s.finished) return 'The model is finished!'; return `It’s ${s.players[s.turn].name}’s turn. Get your bricks ready in the parts box.`; }
 function mpScores(s){
   return s.players.map((p,i)=>{ const own=s.moves.filter(m=>m.p===i&&!m.a).length, auto=s.moves.filter(m=>m.p===i&&m.a).length, pen=p.pen||{};
-    return {i,name:p.name,color:p.color,own,auto,hint:pen.hint||0,miss:pen.miss||0,stale:p.stale,score:Math.max(0,own*10-auto*10-(pen.hint||0)*5-(pen.miss||0)*2)}; });
+    return {i,name:p.name,color:p.color,own,auto,hint:pen.hint||0,miss:pen.miss||0,stale:p.stale,score:Math.max(0,own*10-auto*10-(pen.hint||0)*5)}; });
 }
 function mpEndSolo(){ if(game){ game=null; freeS=null; } hintOn=false; updateGameBar(); }
 
@@ -2190,7 +2187,7 @@ function mpShowEnd(){
   if(!mp||!mp.state) return; const s=mp.state, sc=mpScores(s).sort((a,b)=>b.score-a.score), medals=['🥇','🥈','🥉',''];
   $('#mpEndTitle').textContent=`${s.title}: built together!`;
   $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span>${p.own} brick${p.own===1?'':'s'} · ${p.score} pts</span></div>`).join('');
-  $('#mpEndNote').textContent=`${s.nBricks} bricks placed by ${s.players.length} player${s.players.length>1?'s':''}. Each brick you place is worth 10 points; hints, “place one for me” and wrong spots cost points.`;
+  $('#mpEndNote').textContent=`${s.nBricks} bricks placed by ${s.players.length} player${s.players.length>1?'s':''}. Each brick you place is worth 10 points; hints and “place one for me” cost points. Wrong spots are free: just try again.`;
   $('#mpEndDlg').showModal();
 }
 $('#mpEndClose').onclick=()=>{ $('#mpEndDlg').close(); setTab('build'); };
