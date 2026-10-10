@@ -1,6 +1,24 @@
-# Netlify config for building-blox.netlify.app
+# Netlify config for Bloppit (https://bloppit.com; also bloppit.netlify.app).
 # The app is plain static HTML in /public (no build step). Every push to main deploys.
 # netlify/functions/room holds the "Play together" room server (Netlify Function + Blobs).
 [build]
   publish = "public"
   command = ""
+
+# Send the old Netlify address to the real domain, so search engines index one site, not two.
+[[redirects]]
+  from = "https://bloppit.netlify.app/*"
+  to = "https://bloppit.com/:splat"
+  status = 301
+  force = true
+
+# Keep the room server out of search results.
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    X-Robots-Tag = "noindex"
+
+[[headers]]
+  for = "/site.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json"

@@ -3,11 +3,44 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Turn photos into a brick model and build it yourself, step by step, with an instruction booklet.">
+<meta name="description" content="Bloppit turns your photos into a brick model and a step-by-step instruction booklet, so you can build it yourself. Free to play, with levels and a play-together mode.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://bloppit.com/">
 <meta name="theme-color" content="#D2352B">
+<meta name="application-name" content="Bloppit">
+<meta name="apple-mobile-web-app-title" content="Bloppit">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bloppit">
+<meta property="og:url" content="https://bloppit.com/">
+<meta property="og:title" content="Bloppit: turn your photos into a brick model you build yourself">
+<meta property="og:description" content="Add a photo, get a brick model and an instruction booklet, then build it step by step. Free to play.">
+<meta property="og:image" content="https://bloppit.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bloppit: turn your photos into a brick model you build yourself">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bloppit: turn your photos into a brick model you build yourself">
+<meta name="twitter:description" content="Add a photo, get a brick model and an instruction booklet, then build it step by step. Free to play.">
+<meta name="twitter:image" content="https://bloppit.com/og-image.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Bloppit",
+  "url": "https://bloppit.com/",
+  "description": "Turn your photos into a brick model and a step-by-step instruction booklet, then build it yourself.",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any (runs in a web browser)",
+  "image": "https://bloppit.com/og-image.png",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='11' width='26' height='17' rx='3' fill='%23D2352B'/%3E%3Crect x='7' y='6' width='7' height='6' rx='2' fill='%23E5463C'/%3E%3Crect x='18' y='6' width='7' height='6' rx='2' fill='%23E5463C'/%3E%3C/svg%3E">
 <style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
-<title>Building Blox</title>
+<title>Bloppit: Turn your photos into a brick model you build yourself</title>
 </head>
 <body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -346,7 +379,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 </style>
 
 <header class="top">
-  <div class="brand"><span class="mark" aria-hidden="true"></span>Building Blox</div>
+  <h1 class="brand"><span class="mark" aria-hidden="true"></span>Bloppit</h1>
   <nav class="tabs" role="tablist" aria-label="Steps">
     <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n">1</span>Photos &amp; model</button>
     <button class="tab" role="tab" id="tab-build" data-tab="build" aria-selected="false"><span class="n">2</span>Build</button>
@@ -1630,7 +1663,7 @@ function makeBooklet(){
   ensureThumb();
   const pages=$('#pages'); const total=N+2;
   $('#bookletInfo').textContent=`${total} pages · ${m.bricks.length.toLocaleString()} bricks in ${N} steps`;
-  let html=`<article class="page cover"><div class="pg-top"><div><div class="tag" style="color:inherit;opacity:.85">Building Blox</div><h2>${escapeHTML(m.name)}</h2></div><div class="pcs" style="margin-left:auto">${m.bricks.length.toLocaleString()} pcs</div></div><img class="pg-img" id="pg-cover" alt="Finished model"><div class="pg-foot">${m.W}×${m.D} studs · ${m.H} bricks tall · 1</div></article>`;
+  let html=`<article class="page cover"><div class="pg-top"><div><div class="tag" style="color:inherit;opacity:.85">Bloppit</div><h2>${escapeHTML(m.name)}</h2></div><div class="pcs" style="margin-left:auto">${m.bricks.length.toLocaleString()} pcs</div></div><img class="pg-img" id="pg-cover" alt="Finished model"><div class="pg-foot">${m.W}×${m.D} studs · ${m.H} bricks tall · 1</div></article>`;
   html+=`<article class="page bom"><h3>Parts you need</h3><div class="parts">${partsHTML(m.bricks)}</div><div class="pg-foot">2</div></article>`;
   m.steps.forEach((s,i)=>{html+=`<article class="page"><div class="pg-top"><div class="pg-step">${i+1}</div><div class="callout">${calloutHTML(s.bricks)}</div></div><img class="pg-img" id="pg-${i}" alt="Step ${i+1}"><div class="pg-foot">Layer ${s.layer+1} · page ${i+3}</div></article>`;});
   pages.innerHTML=html;
@@ -1983,7 +2016,7 @@ $('#gmLevels').addEventListener('click',e=>{ const b=e.target.closest('.lvl'); i
 $('#gmReset').onclick=()=>{ const b=$('#gmReset'); if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent='Tap again to wipe all scores'; setTimeout(()=>{delete b.dataset.confirm; b.textContent='Reset game progress';},3000); return; }
   delete b.dataset.confirm; b.textContent='Reset game progress'; gameStoreSet({best:{}}); renderGameMap(); };
 
-/* ---------- Play together (rooms on the Building Blox website) ---------- */
+/* ---------- Play together (rooms on the Bloppit website) ---------- */
 const MP_KEY='building-blox-mp-v1';
 let mp=null, mpAvailable=null, mpPenTimer=null;
 async function mpApi(method,body,query=''){
@@ -2052,7 +2085,7 @@ function mpApply(s){
     else setStatus(`${s.players[s.turn].name}’s turn. Get your next bricks ready in the parts box.`);
   }
   if(s.started&&!mp.entered){ mp.entered=true; if(tab!=='build'&&tab!=='box') setTab('build'); }
-  document.title=(mpMyTurn()?'● Your turn · ':'')+'Building Blox';
+  document.title=(mpMyTurn()?'● Your turn · ':'')+'Bloppit';
   updateMpBar(); if(tab==='mp') renderMpView();
   if(s.finished&&!mp.ended){ mp.ended=true; setStatus('Finished! You built it together.','ok'); setTimeout(mpShowEnd,1000); }
 }
@@ -2097,7 +2130,7 @@ async function mpEnter(res,isHost,name){
   mpEndSolo(); dismissResume();
   mp={code:res.code,playerId:res.playerId,me:res.me,state:null,ver:0,applied:0,pen:{hint:0,auto:0,miss:0},hintSteps:[],local:new Set(),posting:0,fails:0,lastTurn:-1,entered:false,ended:false};
   if(!isHost){ try{ await mpLoadModel(res.code); }catch(e){ mp=null; throw e; } }
-  if(!model||model.bricks.length!==res.state.nBricks){ mp=null; throw new Error('This room was made with a different version of Building Blox. Refresh the page on every device and try again.'); }
+  if(!model||model.bricks.length!==res.state.nBricks){ mp=null; throw new Error('This room was made with a different version of Bloppit. Refresh the page on every device and try again.'); }
   mpStore({code:res.code,playerId:res.playerId,name});
   const meP=res.state.players[res.me]; if(meP&&meP.pen) mp.pen={...mp.pen,...meP.pen};
   hand=[]; held=null; sel=null; ghostGroup.clear(); pieces.forEach(p=>p.hand=false);
@@ -2111,7 +2144,7 @@ async function mpEnter(res,isHost,name){
 function mpLeave(){
   if(!mp) return;
   clearInterval(mp.poll); clearInterval(mp.ping);
-  mp=null; mpStore(null); document.title='Building Blox';
+  mp=null; mpStore(null); document.title='Bloppit';
   try{ history.replaceState(null,'',location.pathname); }catch(e){}
   $('#mpBar').hidden=true; $('#restart').hidden=false;
   ['hintBtn','autoBtn'].forEach(id=>$('#'+id).disabled=false);
@@ -2130,7 +2163,7 @@ function mpModelOptions(){
 async function renderMpView(){
   const ok=await mpCheck();
   $('#mpOff').hidden=ok;
-  if(!ok){ $('#mpOff').innerHTML='Play together runs on the Building Blox website. Open <a href="https://building-blox.netlify.app" target="_blank" rel="noopener"><b>building-blox.netlify.app</b></a> on each phone or iPad and tap <b>Play together</b> there.'; $('#mpForms').hidden=true; $('#mpRoom').hidden=true; return; }
+  if(!ok){ $('#mpOff').innerHTML='Play together runs on the Bloppit website. Open <a href="https://bloppit.com" target="_blank" rel="noopener"><b>bloppit.com</b></a> on each phone or iPad and tap <b>Play together</b> there.'; $('#mpForms').hidden=true; $('#mpRoom').hidden=true; return; }
   const s=mp&&mp.state;
   $('#mpForms').hidden=!!mp; $('#mpRoom').hidden=!mp;
   if(!mp){
@@ -2195,7 +2228,7 @@ $('#mpLeave').onclick=()=>{ mpLeave(); renderMpView(); };
 $('#mpEndTurn').onclick=()=>mpPost({action:'pass'}).then(j=>mpApply(j.state)).catch(e=>setStatus(e.message,'err'));
 $('#mpSkip').onclick=()=>mpPost({action:'pass'}).then(j=>mpApply(j.state)).catch(e=>setStatus(e.message,'err'));
 $('#mpCopy').onclick=async()=>{ const url=`${location.origin}${location.pathname}?room=${mp.code}`;
-  try{ if(navigator.share) await navigator.share({title:'Building Blox',text:`Build with me! Room ${mp.code}`,url}); else { await navigator.clipboard.writeText(url); $('#mpCopy').textContent='Copied!'; setTimeout(()=>$('#mpCopy').textContent='Copy invite link',2000); } }catch(e){} };
+  try{ if(navigator.share) await navigator.share({title:'Bloppit',text:`Build with me! Room ${mp.code}`,url}); else { await navigator.clipboard.writeText(url); $('#mpCopy').textContent='Copied!'; setTimeout(()=>$('#mpCopy').textContent='Copy invite link',2000); } }catch(e){} };
 document.addEventListener('visibilitychange',()=>{ if(mp&&document.visibilityState==='visible'){ mp.ver=0; mpPoll(); } });
 
 /* ---------- Save progress (in this browser, on this device) ---------- */
