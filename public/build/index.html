@@ -158,6 +158,35 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .bp-nav .now{border-color:var(--accent);color:var(--accent);font-weight:700}
 .page.live{outline:3px solid transparent;transition:outline-color .2s}
 .page.live.ahead{outline-color:var(--line)}
+/* Bloppit, the building buddy: sits under the booklet page, points up at the step, holds up the bricks still needed, cheers when a step clicks into place */
+.buddy{display:grid;grid-template-columns:92px minmax(0,1fr);gap:4px;align-items:end;min-height:112px;position:relative}
+.buddy[hidden]{display:none}
+.buddy svg{width:92px;height:auto;display:block;overflow:visible;transform-origin:50% 100%}
+.buddy .arm-point,.buddy .arm-cheer,.buddy .eyes-happy{display:none}
+.buddy.point .arm-point{display:inline}
+.buddy.point .arm-rest{display:none}
+.buddy.cheer .arm-cheer,.buddy.cheer .eyes-happy{display:inline}
+.buddy.cheer .arm-rest,.buddy.cheer .eyes-open{display:none}
+.buddy.cheer svg{animation:bud-jump .55s ease-out 2}
+.buddy.cheer .arm-cheer{transform-origin:210px 200px;animation:bud-wave .3s ease-in-out 6 alternate}
+.buddy.hop svg{animation:bud-hop .32s ease-out}
+.buddy.point .arm-point{transform-origin:210px 200px;animation:bud-nudge 1.6s ease-in-out infinite}
+.bud-say{position:relative;align-self:center;background:var(--page);border:2px solid var(--ink);border-radius:14px;padding:7px 10px;margin-bottom:22px;font-weight:800;font-size:14px;line-height:1.25;box-shadow:0 3px 0 var(--shadow)}
+.bud-say::before{content:"";position:absolute;left:-9px;bottom:12px;width:12px;height:12px;background:var(--page);border-left:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:rotate(45deg)}
+.buddy.cheer .bud-say{background:var(--hi);color:#14202C;border-color:#14202C;font-family:var(--f-display);font-weight:400;font-size:18px}
+.buddy.cheer .bud-say::before{background:var(--hi);border-color:#14202C}
+.bud-say .callout{margin-top:6px;padding:5px 8px;gap:4px 10px;box-shadow:none}
+.bud-say .callout img{height:26px}
+.bud-say .callout b{font-size:12px}
+.pg-step.bud-ping{animation:bud-ping .9s ease-out}
+.bud-bit{position:absolute;left:46px;bottom:84px;width:10px;height:7px;border-radius:2px;pointer-events:none;animation:bud-burst .9s cubic-bezier(.2,.7,.4,1) forwards}
+@keyframes bud-jump{0%,100%{transform:translateY(0)}40%{transform:translateY(-16px) scale(1.04,.97)}70%{transform:translateY(0) scale(1.05,.94)}}
+@keyframes bud-hop{0%,100%{transform:translateY(0)}45%{transform:translateY(-6px)}}
+@keyframes bud-wave{from{transform:rotate(-12deg)}to{transform:rotate(14deg)}}
+@keyframes bud-nudge{0%,70%,100%{transform:rotate(0)}80%{transform:rotate(-7deg)}90%{transform:rotate(3deg)}}
+@keyframes bud-ping{0%{transform:scale(1);color:inherit}30%{transform:scale(1.35);color:var(--accent)}100%{transform:scale(1)}}
+@keyframes bud-burst{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
+@media (prefers-reduced-motion: reduce){.buddy svg,.buddy .arm-cheer,.buddy .arm-point,.pg-step.bud-ping{animation:none!important}}
 .playcol{display:grid;gap:14px;min-width:0}
 #buildStage{height:calc(100vh - 300px);height:calc(100dvh - 300px);min-height:440px}
 .playcol{gap:10px}
@@ -502,6 +531,38 @@ body.chat-on{padding-bottom:96px}
         <div class="pg-view" id="bpView" role="img" aria-label="Booklet picture for this step. Drag to turn it."><span class="pg-turn" aria-hidden="true">Drag to turn</span></div>
         <div class="pg-foot" id="bpFoot"></div>
       </article>
+      <div class="buddy" id="buddy" hidden>
+        <svg viewBox="0 0 300 360" aria-hidden="true" focusable="false">
+          <path d="M208 300 C 272 302 292 248 268 212 C 262 240 240 262 204 270 Z" fill="#6B4229"/>
+          <ellipse cx="150" cy="250" rx="90" ry="96" fill="#8A5A3B"/>
+          <ellipse cx="150" cy="262" rx="58" ry="72" fill="#F3DEC0"/>
+          <ellipse cx="112" cy="340" rx="28" ry="14" fill="#6B4229"/><ellipse cx="188" cy="340" rx="28" ry="14" fill="#6B4229"/>
+          <path d="M86 196 Q 90 236 120 240" stroke="#8A5A3B" stroke-width="28" stroke-linecap="round" fill="none"/>
+          <g class="arm-rest"><path d="M214 196 Q 210 236 180 240" stroke="#8A5A3B" stroke-width="28" stroke-linecap="round" fill="none"/></g>
+          <circle cx="80" cy="66" r="19" fill="#8A5A3B"/><circle cx="80" cy="66" r="9" fill="#6B4229"/>
+          <circle cx="220" cy="66" r="19" fill="#8A5A3B"/><circle cx="220" cy="66" r="9" fill="#6B4229"/>
+          <ellipse cx="150" cy="128" rx="96" ry="80" fill="#8A5A3B"/>
+          <ellipse cx="150" cy="152" rx="60" ry="42" fill="#F3DEC0"/>
+          <g class="eyes-open">
+            <ellipse cx="110" cy="122" rx="21" ry="24" fill="#1B1410"/><ellipse cx="190" cy="122" rx="21" ry="24" fill="#1B1410"/>
+            <circle cx="117" cy="112" r="8" fill="#FFFFFF"/><circle cx="104" cy="132" r="3.5" fill="#FFFFFF"/>
+            <circle cx="197" cy="112" r="8" fill="#FFFFFF"/><circle cx="184" cy="132" r="3.5" fill="#FFFFFF"/>
+          </g>
+          <g class="eyes-happy"><path d="M92 128 Q 110 102 128 128 M172 128 Q 190 102 208 128" stroke="#1B1410" stroke-width="9" stroke-linecap="round" fill="none"/></g>
+          <ellipse cx="92" cy="154" rx="13" ry="8" fill="#F29A8A" opacity=".75"/><ellipse cx="208" cy="154" rx="13" ry="8" fill="#F29A8A" opacity=".75"/>
+          <path d="M137 141 q13 -8 26 0 q-3 13 -13 15 q-10 -2 -13 -15z" fill="#3A2418"/>
+          <path d="M150 156 q0 9 -10 11 M150 156 q0 9 10 11" stroke="#3A2418" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+          <path d="M104 160 L78 155 M104 167 L80 172 M196 160 L222 155 M196 167 L220 172" stroke="#6B4229" stroke-width="2.5" stroke-linecap="round"/>
+          <rect x="116" y="214" width="68" height="44" rx="7" fill="#D2352B"/>
+          <rect x="116" y="248" width="68" height="10" rx="5" fill="#B32A22"/>
+          <rect x="127" y="204" width="18" height="13" rx="4" fill="#E5463C"/><rect x="155" y="204" width="18" height="13" rx="4" fill="#E5463C"/>
+          <ellipse cx="118" cy="238" rx="15" ry="13" fill="#8A5A3B"/>
+          <g class="arm-rest"><ellipse cx="182" cy="238" rx="15" ry="13" fill="#8A5A3B"/></g>
+          <g class="arm-point"><path d="M210 200 Q 244 170 250 112" stroke="#8A5A3B" stroke-width="28" stroke-linecap="round" fill="none"/><ellipse cx="251" cy="100" rx="15" ry="16" fill="#8A5A3B"/><rect x="245" y="62" width="11" height="34" rx="5.5" fill="#8A5A3B"/></g>
+          <g class="arm-cheer"><path d="M210 200 Q 252 168 262 110" stroke="#8A5A3B" stroke-width="28" stroke-linecap="round" fill="none"/><circle cx="264" cy="98" r="17" fill="#8A5A3B"/></g>
+        </svg>
+        <div class="bud-say" id="budSay"></div>
+      </div>
       <div class="bp-nav">
         <button class="ghost" id="bpPrev" type="button">&lsaquo; Page</button>
         <button class="ghost now" id="bpNow" type="button" hidden>Back to my step</button>
@@ -1325,6 +1386,60 @@ function showPage(k){
   $('#bpPrev').disabled=k===0; $('#bpNext').disabled=k>=N;
   $('#bpNow').hidden=k===Math.min(cur,N);
   $('#bpCard').classList.toggle('ahead',k!==Math.min(cur,N));
+  buddyUpdate();
+}
+/* ---------- Bloppit, the building buddy ---------- */
+// Points at the step you're on, holds up the bricks it still needs, and cheers each time a step is finished.
+const BUD_CHEERS=['Click! Step {n} done!','Snap! Step {n} is in!','Woohoo, step {n}!','Yes! Step {n} clicked in!','High five! Step {n}!'];
+let budFor=-1, budDone=0, budPlaced=0, budCheerT=0, budStep=-1;
+function stepsDone(){ return model.steps.reduce((n,s)=>n+(s.bricks.every(b=>placed.has(b))?1:0),0); }
+function stepLeft(k){
+  const s=model.steps[k];
+  if(off) return s.bricks.filter(b=>!placed.has(b));
+  if(cands.length) return s.bricks.filter(b=>!cands[0].used.has(b));
+  return s.bricks;
+}
+function budBurst(){
+  if(reduceMotion) return;
+  const el=$('#buddy'), cols=['#D2352B','#F4BC22','#0055BF','#2E9E4F','#F29A8A'];
+  for(let i=0;i<14;i++){
+    const b=document.createElement('span'); b.className='bud-bit';
+    const a=-Math.PI*(.1+.8*Math.random()), d=50+Math.random()*60;
+    b.style.background=cols[i%cols.length];
+    b.style.setProperty('--dx',(Math.cos(a)*d).toFixed(0)+'px'); b.style.setProperty('--dy',(Math.sin(a)*d).toFixed(0)+'px'); b.style.setProperty('--r',(Math.random()*540-270|0)+'deg');
+    el.appendChild(b); setTimeout(()=>b.remove(),950);
+  }
+}
+function budPing(){ const e=$('#bpStep'); e.classList.remove('bud-ping'); void e.offsetWidth; if(!reduceMotion) e.classList.add('bud-ping'); }
+function budSay(cls,html){ const b=$('#buddy'); b.classList.remove('point','cheer','hop'); if(cls) b.classList.add(cls); $('#budSay').innerHTML=html; }
+function buddyUpdate(){
+  const b=$('#buddy');
+  if(!model){ b.hidden=true; return; }
+  b.hidden=false;
+  const N=model.steps.length, done=stepsDone();
+  if(budFor!==modelVersion){ budFor=modelVersion; budDone=done; budPlaced=placedN; budStep=-1; clearTimeout(budCheerT); budCheerT=0; }
+  // Cheer only when a brick placed just now finished a step (not when a save is restored or a game is resynced).
+  const fresh=placedN>budPlaced&&placedN-budPlaced<=3&&done>budDone;
+  const hopped=placedN>budPlaced&&placedN-budPlaced<=3&&!fresh;
+  budPlaced=placedN; budDone=done;
+  if(fresh){
+    const n=done, all=done>=N;
+    budSay('cheer', all?'You built it! Every brick is in.':BUD_CHEERS[n%BUD_CHEERS.length].replace('{n}',n));
+    budBurst(); clearTimeout(budCheerT);
+    budCheerT=setTimeout(()=>{ budCheerT=0; buddyUpdate(); }, all?3200:1700);
+    return;
+  }
+  if(budCheerT) return;  // let the cheer finish
+  if(cur>=N){ budSay('', 'All done! Want to build it again, or try another model?'); return; }
+  if(viewPage!==cur){
+    budSay('point', viewPage<cur?`That’s a step you’ve done. You’re on step ${cur+1}.`:`That’s coming up later. You’re on step ${cur+1}.`);
+    return;
+  }
+  const left=stepLeft(cur), total=model.steps[cur].bricks.length;
+  const lead=left.length===total?`Step ${cur+1}! You need these:`:left.length===1?'Just one more for this step:':`${left.length} more for this step:`;
+  budSay('point', `${lead}<div class="callout">${calloutHTML(left)}</div>`);
+  if(hopped&&!reduceMotion){ const s=$('#buddy svg'); b.classList.add('hop'); s.addEventListener('animationend',()=>b.classList.remove('hop'),{once:true}); }
+  if(budStep!==cur){ budStep=cur; budPing(); }
 }
 $('#bpPrev').onclick=()=>{follow=false; showPage(viewPage-1);};
 $('#bpNext').onclick=()=>{follow=false; showPage(viewPage+1);};
