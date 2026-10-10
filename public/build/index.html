@@ -111,8 +111,9 @@ main{max-width:1640px;margin:0 auto;padding-block:20px 0}
 .field label,.field .lbl{display:flex;justify-content:space-between;font-weight:700;font-size:14px}
 .field output{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
 input[type=range]{width:100%;accent-color:var(--accent)}
-.seg{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-flow:column;grid-auto-columns:1fr;border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .seg input{position:absolute;opacity:0}
+.seg.two{grid-template-columns:repeat(2,1fr)}
 .seg label{text-align:center;padding:7px 4px;cursor:pointer;font-weight:700;font-size:13px;justify-content:center}
 .seg label+input+label,.seg input+label~label{border-left:1px solid var(--line)}
 .seg input:checked+label{background:var(--ink);color:var(--page)}
@@ -149,6 +150,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .msg[data-kind="err"]{background:color-mix(in srgb,var(--accent) 18%,var(--page))}
 
 /* Build view */
+#settings[data-kind="picture"] .model-only,#settings:not([data-kind="picture"]) .pic-only{display:none}
 .build-grid{display:grid;grid-template-columns:minmax(260px,3fr) minmax(0,9fr);gap:16px;align-items:start}
 .build-grid.no-book{grid-template-columns:minmax(0,1fr)}
 .build-grid.no-book .bookpane{display:none}
@@ -288,6 +290,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 /* Live booklet view */
 .pg-view{position:relative;width:100%;aspect-ratio:4/3;cursor:grab;touch-action:none;border-radius:4px}
 .pg-view canvas{display:block;width:100%;height:100%}
+.pg-chart{position:absolute;inset:0;width:100%;height:100%;background:var(--page);z-index:1;cursor:default}
 .pg-turn{position:absolute;right:6px;bottom:4px;font-size:11px;color:var(--muted);pointer-events:none;font-weight:700}
 .box-grid{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:20px;align-items:start}
 @media (max-width:900px){.box-grid{grid-template-columns:minmax(0,1fr)}#boxBook .pg-view{aspect-ratio:16/9}}
@@ -502,10 +505,26 @@ body.chat-on{padding-bottom:96px}
     <div class="card" id="settings">
       <h2>Model settings</h2>
       <div class="field">
+        <span class="lbl">Make</span>
+        <div class="seg two" role="radiogroup" aria-label="What to make">
+          <input type="radio" name="kind" id="kd-model" value="model" checked><label for="kd-model">3D model</label>
+          <input type="radio" name="kind" id="kd-picture" value="picture"><label for="kd-picture">Picture</label>
+        </div>
+        <p class="note pic-only" style="margin:6px 0 0">A flat mosaic of tiles that looks like your photo. The more tiles, the more lifelike.</p>
+      </div>
+      <div class="field pic-only">
+        <label for="pw">Detail <output id="pwOut"></output></label>
+        <input type="range" id="pw" min="24" max="96" step="4" value="48">
+      </div>
+      <div class="field pic-only">
+        <label for="pcol">Tile colours <output id="pcolOut"></output></label>
+        <input type="range" id="pcol" min="4" max="43" step="1" value="24">
+      </div>
+      <div class="field model-only">
         <label for="size">Height <output id="sizeOut"></output></label>
         <input type="range" id="size" min="4" max="40" step="1" value="16">
       </div>
-      <div class="field" id="shapeField">
+      <div class="field model-only" id="shapeField">
         <span class="lbl">Depth from one photo</span>
         <div class="seg" role="radiogroup" aria-label="Depth style">
           <input type="radio" name="shape" id="sh-puffed" value="puffed" checked><label for="sh-puffed">Rounded</label>
@@ -513,19 +532,19 @@ body.chat-on{padding-bottom:96px}
           <input type="radio" name="shape" id="sh-flat" value="flat"><label for="sh-flat">Flat</label>
         </div>
       </div>
-      <div class="field" id="thickField">
+      <div class="field model-only" id="thickField">
         <label for="thick">Thickness <output id="thickOut"></output></label>
         <input type="range" id="thick" min="0.3" max="1.6" step="0.1" value="1">
       </div>
-      <div class="field">
+      <div class="field model-only">
         <label for="tol">Background removal <output id="tolOut"></output></label>
         <input type="range" id="tol" min="0" max="120" step="2" value="48">
       </div>
-      <div class="field">
+      <div class="field model-only">
         <label for="colors">Brick colours <output id="colorsOut"></output></label>
         <input type="range" id="colors" min="2" max="16" step="1" value="8">
       </div>
-      <label class="check"><input type="checkbox" id="gray" checked><span>Use grey bricks for hidden inside parts. Saves colours and makes bigger bricks.</span></label>
+      <label class="check model-only"><input type="checkbox" id="gray" checked><span>Use grey bricks for hidden inside parts. Saves colours and makes bigger bricks.</span></label>
     </div>
   </div>
   <div class="stage-col">
@@ -548,7 +567,7 @@ body.chat-on{padding-bottom:96px}
       <div class="bp-head"><span class="tag">Instruction booklet</span><span class="tag" id="bpPage"></span></div>
       <article class="page live" id="bpCard">
         <div class="pg-top"><div class="pg-step" id="bpStep">1</div><div class="callout" id="bpCallout"></div></div>
-        <div class="pg-view" id="bpView" role="img" aria-label="Booklet picture for this step. Drag to turn it."><span class="pg-turn" aria-hidden="true">Drag to turn</span></div>
+        <div class="pg-view" id="bpView" role="img" aria-label="Booklet picture for this step. Drag to turn it."><span class="pg-turn" aria-hidden="true">Drag to turn</span><canvas class="pg-chart" id="bpChart" hidden></canvas></div>
         <div class="pg-foot" id="bpFoot"></div>
       </article>
       <div class="bp-nav">
@@ -612,7 +631,7 @@ body.chat-on{padding-bottom:96px}
             <button class="ghost" id="putAll" type="button" hidden>Put all back</button>
           </div>
         </div>
-        <div class="tray-foot"><span class="note">Your first brick can go anywhere on the table. The rest of the model builds out from it. Drag to turn the view.</span><span class="tag" id="progress"></span><span class="note" id="saveNote"></span><button class="ghost" id="restart" type="button">Start over</button></div>
+        <div class="tray-foot"><span class="note" id="trayNote">Your first brick can go anywhere on the table. The rest of the model builds out from it. Drag to turn the view.</span><span class="tag" id="progress"></span><span class="note" id="saveNote"></span><button class="ghost" id="restart" type="button">Start over</button></div>
       </div>
     </div>
   </div>
@@ -738,7 +757,7 @@ body.chat-on{padding-bottom:96px}
 <dialog class="lightbox" id="bookDlg" aria-label="Booklet page">
   <div class="lb-top"><div class="pg-top"><div class="pg-step" id="lbStep"></div><div class="callout" id="lbCallout"></div></div>
     <div class="lb-nav"><button class="ghost" id="lbPrev" type="button">&lsaquo;</button><button class="ghost" id="lbNext" type="button">&rsaquo;</button><button class="ghost" id="lbClose" type="button">Close</button></div></div>
-  <div class="lb-view" id="lbView"><span class="pg-turn" aria-hidden="true">Drag to turn · scroll to zoom</span></div>
+  <div class="lb-view" id="lbView"><canvas class="pg-chart" id="lbChart" hidden></canvas><span class="pg-turn" aria-hidden="true">Drag to turn · scroll to zoom</span></div>
 </dialog>
 
 <section class="view" id="view-booklet" hidden>
@@ -766,7 +785,10 @@ const PALETTE = [
  ['Orange','#FE8A18'],['Dark Orange','#A95500'],['Light Orange','#F8BB3D'],['Yellow','#F2CD37'],['Bright Yellow','#FFF03A'],
  ['Tan','#E4CD9E'],['Dark Tan','#958A73'],['Light Nougat','#F6D7B3'],['Nougat','#D09168'],['Medium Nougat','#AA7D55'],['Reddish Brown','#582A12'],
  ['Lime','#BBE90B'],['Bright Green','#4B9F4A'],['Green','#237841'],['Dark Green','#184632'],['Sand Green','#A0BCAC'],
- ['Light Aqua','#ADC3C0'],['Medium Azure','#36AEBF'],['Dark Turquoise','#008F9B'],['Light Blue','#9FC3E9'],['Medium Blue','#5A93DB'],['Blue','#0055BF'],['Dark Blue','#0A3463']
+ ['Light Aqua','#ADC3C0'],['Medium Azure','#36AEBF'],['Dark Turquoise','#008F9B'],['Light Blue','#9FC3E9'],['Medium Blue','#5A93DB'],['Blue','#0055BF'],['Dark Blue','#0A3463'],
+ // Added for pictures: more in-between shades for fur, skin, foliage and sky. Appended so saved builds keep their colour numbers.
+ ['Olive Green','#9B9A5A'],['Dark Brown','#352100'],['Sand Blue','#6074A1'],['Dark Pink','#C870A0'],['Sand Red','#D67572'],
+ ['Dark Purple','#3F3691'],['Yellowish Green','#DFEEA5'],['Dark Azure','#078BC9'],['Dark Nougat','#AD6140'],['Sand Purple','#845E84']
 ];
 const GREY = 1;
 const hexRgb = h => [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
@@ -778,18 +800,19 @@ function lab(r,g,b){
   return [116*f(Y)-16, 500*(f(X)-f(Y)), 200*(f(Y)-f(Z))];
 }
 const PLAB = PALETTE.map(p => lab(...hexRgb(p[1])));
+const MODEL_COLOURS = 33;  // 3D models use the original colours, so models (and saved builds) come out exactly as before
 const dist2 = (a,b) => (a[0]-b[0])**2+(a[1]-b[1])**2+(a[2]-b[2])**2;
-const nearCache = new Map();
-function nearest(r,g,b){
-  const k=((r>>2)<<12)|((g>>2)<<6)|(b>>2);
-  let v=nearCache.get(k); if(v!==undefined) return v;
+const nearCache = new Map(), nearCacheAll = new Map();
+function nearest(r,g,b,all){
+  const k=((r>>2)<<12)|((g>>2)<<6)|(b>>2), cache=all?nearCacheAll:nearCache, n=all?PLAB.length:MODEL_COLOURS;
+  let v=cache.get(k); if(v!==undefined) return v;
   const L=lab(r,g,b); let best=0,bd=1e9;
-  for(let i=0;i<PLAB.length;i++){const d=dist2(L,PLAB[i]); if(d<bd){bd=d;best=i;}}
-  nearCache.set(k,best); return best;
+  for(let i=0;i<n;i++){const d=dist2(L,PLAB[i]); if(d<bd){bd=d;best=i;}}
+  cache.set(k,best); return best;
 }
 
 /* ---------- Settings & state ---------- */
-const S = { size:16, shape:'puffed', thick:1, tol:48, maxColors:8, gray:true };
+const S = { size:16, shape:'puffed', thick:1, tol:48, maxColors:8, gray:true, kind:'model', pw:48, pcol:24 };
 let photos = [];       // {id,name,d,m,view,sample}
 let model = null, modelVersion = 0, buildStep = 0, tab = 'create';
 let pid = 0;
@@ -883,11 +906,95 @@ function puff(on,W,H,thick){
   return hh;
 }
 
+/* ---------- Picture (flat tile mosaic) ---------- */
+// The whole photo becomes a grid of tiles lying face-up, like a brick art portrait.
+// Colours are chosen in Lab space and gently dithered (error diffusion), so in-between shades read from a distance.
+function buildPicture(front){
+  let d=front.d; const Wt=S.pw, Ht=clamp(Math.round(Wt*d.h/d.w),8,128);
+  // See-through parts of a photo (like the ready-made samples) become a soft white background
+  if(d.px.some((v,i)=>(i&3)===3&&v<250)){ const px=new Uint8ClampedArray(d.px);
+    for(let i=0;i<px.length;i+=4){ const a=px[i+3]/255; px[i]=px[i]*a+244*(1-a); px[i+1]=px[i+1]*a+244*(1-a); px[i+2]=px[i+2]*a+244*(1-a); px[i+3]=255; }
+    d={w:d.w,h:d.h,px}; }
+  const all={mask:new Uint8Array(d.w*d.h).fill(1),bbox:[0,0,d.w-1,d.h-1]};
+  const g=sampleGrid(d,all,Wt,Ht), n=Wt*Ht;
+  const L=new Float32Array(n*3);
+  for(let i=0;i<n;i++){ const v=lab(g.rgb[i*3],g.rgb[i*3+1],g.rgb[i*3+2]); L[i*3]=v[0]; L[i*3+1]=v[1]; L[i*3+2]=v[2]; }
+  // Keep the colours the photo uses most
+  const cnt=new Map();
+  for(let i=0;i<n;i++){ const c=nearest(g.rgb[i*3]|0,g.rgb[i*3+1]|0,g.rgb[i*3+2]|0,true); cnt.set(c,(cnt.get(c)||0)+1); }
+  const kept=[...cnt.entries()].sort((a,b)=>b[1]-a[1]).slice(0,S.pcol).map(e=>e[0]);
+  const idx=new Int16Array(n), K=.6;
+  for(let y=0;y<Ht;y++)for(let x=0;x<Wt;x++){
+    const i=x+y*Wt, v=[L[i*3],L[i*3+1],L[i*3+2]]; let best=kept[0],bd=1e9;
+    for(const c of kept){ const q=dist2(v,PLAB[c]); if(q<bd){bd=q;best=c;} }
+    idx[i]=best;
+    const e=[(v[0]-PLAB[best][0])*K,(v[1]-PLAB[best][1])*K,(v[2]-PLAB[best][2])*K];
+    const push=(xx,yy,w)=>{ if(xx<0||xx>=Wt||yy>=Ht) return; const j=(xx+yy*Wt)*3; L[j]+=e[0]*w; L[j+1]+=e[1]*w; L[j+2]+=e[2]*w; };
+    push(x+1,y,7/16); push(x-1,y+1,3/16); push(x,y+1,5/16); push(x+1,y+1,1/16);
+  }
+  // Merge runs of the same colour along each row into 1×2, 1×3 and 1×4 tiles; one row (or part of a row) per step
+  // Each step is one row of one 16-tile-wide section, so a booklet page stays readable
+  const bricks=[], steps=[], SEC=16, nSec=Math.ceil(Wt/SEC);
+  for(let z=0;z<Ht;z++) for(let sct=0;sct<nSec;sct++){
+    const xa=sct*SEC, xb=Math.min(Wt,xa+SEC), chunk=[];
+    for(let x=xa;x<xb;){ const c=idx[x+z*Wt]; let len=1; while(len<4&&x+len<xb&&idx[x+len+z*Wt]===c) len++;
+      chunk.push({x,y:0,z,sx:len,sz:1,c}); x+=len; }
+    const id=steps.length; chunk.forEach(b=>{b.step=id;bricks.push(b);});
+    steps.push({layer:0,row:z,part:sct+1,parts:nSec,bricks:chunk});
+  }
+  return {kind:'picture',W:Wt,H:1,D:Ht,bricks,steps,name:front.name.replace(/\.[^.]+$/,'')};
+}
+
+// The booklet page for a picture: a pattern chart, like brick-art instructions.
+// It zooms in on the tiles of this step (outlined), with rows already done in full colour, the rest faded,
+// and a small map of the whole picture in the corner showing where you are.
+function drawChart(cv,k){
+  const m=model; if(!m||m.kind!=='picture'||!cv) return;
+  const dpr=Math.min(devicePixelRatio||1,2), r=cv.getBoundingClientRect(), Wc=Math.max(120,r.width), Hc=Math.max(90,r.height);
+  cv.width=Math.round(Wc*dpr); cv.height=Math.round(Hc*dpr);
+  const x=cv.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,Wc,Hc);
+  const N=m.steps.length, fin=k>=N, st=fin?null:m.steps[k];
+  let c0=0,c1=m.W,r0=0,r1=m.D;
+  if(!fin){
+    c0=Math.min(...st.bricks.map(b=>b.x)); c1=Math.max(...st.bricks.map(b=>b.x+b.sx));
+    const need=Math.max(12,c1-c0+2), mid=(c0+c1)/2; c0=Math.max(0,Math.round(mid-need/2)); c1=Math.min(m.W,c0+need); c0=Math.max(0,c1-need);
+    const rows=clamp(Math.round((c1-c0)*Hc*.7/Wc),4,10); r0=Math.max(0,st.row-Math.floor(rows*.6)); r1=Math.min(m.D,r0+rows); r0=Math.max(0,r1-rows);
+  }
+  // Chart on top, a small map of the whole picture underneath
+  const mapH=st?Math.max(28,Hc*.24):0, availH=Hc-(mapH?mapH+10:0);
+  const pad=6, cs=Math.min((Wc-pad*2-18)/(c1-c0),(availH-pad*2)/(r1-r0)), ox=18+(Wc-18-cs*(c1-c0))/2, oy=pad+(availH-pad*2-cs*(r1-r0))/2;
+  x.fillStyle=fin?'#2B2F33':'#DCE3EB'; x.fillRect(ox-2,oy-2,cs*(c1-c0)+4,cs*(r1-r0)+4);
+  const gap=Math.max(.5,cs*.07), mine=new Set(st?st.bricks:[]);
+  for(const b of m.bricks){
+    if(b.z<r0||b.z>=r1||b.x+b.sx<=c0||b.x>=c1) continue;
+    const done=fin||b.step<k;
+    x.globalAlpha=done||mine.has(b)?1:.28; x.fillStyle=PALETTE[b.c][1];
+    x.fillRect(ox+(b.x-c0)*cs+gap/2,oy+(b.z-r0)*cs+gap/2,b.sx*cs-gap,b.sz*cs-gap);
+  }
+  x.globalAlpha=1;
+  if(st){
+    x.lineWidth=Math.max(2,cs*.16); x.strokeStyle='#F4BC22';
+    for(const b of st.bricks) x.strokeRect(ox+(b.x-c0)*cs+gap/2,oy+(b.z-r0)*cs+gap/2,b.sx*cs-gap,b.sz*cs-gap);
+    // row number at the left edge
+    x.font=`800 ${Math.max(10,Math.min(13,cs*.9))}px Nunito,system-ui,sans-serif`; x.textBaseline='middle'; x.fillStyle='#14202C';
+    const ly=oy+(st.row-r0+.5)*cs; x.textAlign='right'; x.fillText(st.row+1,ox-5,ly);
+    // map of the whole picture, beside the chart
+    const ms=Math.min((Wc*.5)/m.W,(mapH-4)/m.D), mw=m.W*ms, mh=m.D*ms, mx=Wc-mw-6, my=Hc-mh-4;
+    x.textAlign='right'; x.font='700 11px Nunito,system-ui,sans-serif'; x.fillStyle='#586777'; x.fillText('Where you are',mx-8,my+mh/2);
+    x.fillStyle='rgba(255,255,255,.92)'; x.fillRect(mx-3,my-3,mw+6,mh+6);
+    for(const b of m.bricks){ x.globalAlpha=b.step<k?1:.3; x.fillStyle=PALETTE[b.c][1]; x.fillRect(mx+b.x*ms,my+b.z*ms,b.sx*ms+.3,ms+.3); }
+    x.globalAlpha=1; x.lineWidth=1.5; x.strokeStyle='#D2352B'; x.strokeRect(mx+c0*ms,my+r0*ms,(c1-c0)*ms,(r1-r0)*ms);
+  }
+}
+function chartURL(k,w,h){ const cv=document.createElement('canvas'); cv.style.cssText=`position:fixed;left:-9999px;width:${w}px;height:${h}px`; document.body.appendChild(cv); drawChart(cv,k); const u=cv.toDataURL('image/png'); cv.remove(); return u; }
+function showChart(id,k){ const cv=$('#'+id), on=TILES&&!!model; cv.hidden=!on; if(on) drawChart(cv,k); }
+
 /* ---------- Model ---------- */
 const SIZES=[[2,4],[2,3],[2,2],[1,4],[1,3],[1,2],[1,1]];
 function buildModel(){
   if(!photos.length) return null;
   const front=photos.find(p=>p.view==='front')||photos[0];
+  if(S.kind==='picture') return buildPicture(front);
   const side=photos.find(p=>p!==front&&p.view==='side');
   const back=photos.find(p=>p!==front&&p.view==='back');
   const H=S.size, fb=front.m.bbox;
@@ -980,8 +1087,8 @@ function partsOf(list){
 const iconCache=new Map();
 function shade(hex,k){const [r,g,b]=hexRgb(hex);const f=v=>Math.round(k<0?v*(1+k):v+(255-v)*k);return `rgb(${f(r)},${f(g)},${f(b)})`;}
 function brickIcon(a,l,c){
-  const key=a+'x'+l+'|'+c; if(iconCache.has(key)) return iconCache.get(key);
-  const sx=l,sz=a,u=11,pad=3,co=Math.cos(Math.PI/6),si=Math.sin(Math.PI/6),h=1.2,st=.2,hex=PALETTE[c][1];
+  const key=(TILES?'t':'')+a+'x'+l+'|'+c; if(iconCache.has(key)) return iconCache.get(key);
+  const sx=l,sz=a,u=11,pad=3,co=Math.cos(Math.PI/6),si=Math.sin(Math.PI/6),h=TILES?TILE_H:1.2,st=TILES?0:.2,hex=PALETTE[c][1];
   const cv=document.createElement('canvas'),dpr=2;
   const W=(sx+sz)*co*u+pad*2, H=(sx+sz)*si*u+(h+st)*u+pad*2;
   cv.width=Math.ceil(W*dpr); cv.height=Math.ceil(H*dpr);
@@ -993,7 +1100,7 @@ function brickIcon(a,l,c){
   poly([[sx,0,0],[sx,0,sz],[sx,h,sz],[sx,h,0]],shade(hex,-.3));
   poly([[0,h,0],[sx,h,0],[sx,h,sz],[0,h,sz]],shade(hex,.12));
   const rx=.3*co*u*Math.SQRT2, ry=.3*si*u*Math.SQRT2, studs=[];
-  for(let i=0;i<sx;i++)for(let j=0;j<sz;j++) studs.push([i+.5,j+.5]);
+  if(!TILES) for(let i=0;i<sx;i++)for(let j=0;j<sz;j++) studs.push([i+.5,j+.5]);
   studs.sort((p,q)=>(p[0]+p[1])-(q[0]+q[1]));
   for(const [i,j] of studs){
     const [bx,by]=P(i,h,j), [tx,ty]=P(i,h+st,j);
@@ -1002,9 +1109,9 @@ function brickIcon(a,l,c){
   }
   const url=cv.toDataURL(); iconCache.set(key,url); return url;
 }
-const partName=p=>`${PALETTE[p.c][0]} brick ${p.a} × ${p.l}`;
+const partName=p=>`${PALETTE[p.c][0]} ${PIECE()} ${p.a} × ${p.l}`;
 const calloutHTML=list=>partsOf(list).map(p=>`<div class="pc" title="${partName(p)}"><img alt="${partName(p)}" src="${brickIcon(p.a,p.l,p.c)}"><b>${p.n}x</b></div>`).join('');
-const partsHTML=list=>partsOf(list).map(p=>`<div class="part-row"><img alt="" src="${brickIcon(p.a,p.l,p.c)}"><div><div class="q">${p.n}x</div><div class="d">${PALETTE[p.c][0]}<br>Brick ${p.a} × ${p.l}</div></div></div>`).join('');
+const partsHTML=list=>partsOf(list).map(p=>`<div class="part-row"><img alt="" src="${brickIcon(p.a,p.l,p.c)}"><div><div class="q">${p.n}x</div><div class="d">${PALETTE[p.c][0]}<br>${TILES?'Tile':'Brick'} ${p.a} × ${p.l}</div></div></div>`).join('');
 
 /* ---------- Three.js scene ---------- */
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
@@ -1025,15 +1132,19 @@ const shadow=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMate
 shadow.rotation.x=-Math.PI/2; scene.add(shadow);
 
 const geoCache=new Map(), edgeCache=new Map(), matCache=new Map();
+// Pictures are made of flat tiles (no studs, a third of a brick tall) instead of bricks
+let TILES=false; const TILE_H=.4;
+const PIECE=()=>TILES?'tile':'brick';
 function brickGeo(sx,sz){
-  const k=sx+'x'+sz; if(geoCache.has(k)) return geoCache.get(k);
+  const k=(TILES?'t':'')+sx+'x'+sz; if(geoCache.has(k)) return geoCache.get(k);
+  if(TILES){ const g=new THREE.BoxGeometry(sx-.06,TILE_H,sz-.06); g.translate(sx/2,TILE_H/2,sz/2); g.computeBoundingSphere(); geoCache.set(k,g); return g; }
   const parts=[]; const body=new THREE.BoxGeometry(sx-.04,1.18,sz-.04); body.translate(sx/2,.59,sz/2); parts.push(body);
   for(let i=0;i<sx;i++)for(let j=0;j<sz;j++){const s=new THREE.CylinderGeometry(.3,.3,.18,16); s.translate(i+.5,1.2+.08,j+.5); parts.push(s);}
   const g=THREE.BufferGeometryUtils.mergeBufferGeometries(parts); g.computeBoundingSphere(); geoCache.set(k,g); return g;
 }
 function edgeGeo(sx,sz){
-  const k=sx+'x'+sz; if(edgeCache.has(k)) return edgeCache.get(k);
-  const b=new THREE.BoxGeometry(sx-.02,1.2,sz-.02); b.translate(sx/2,.6,sz/2);
+  const k=(TILES?'t':'')+sx+'x'+sz; if(edgeCache.has(k)) return edgeCache.get(k);
+  const hh=TILES?TILE_H:1.2, b=new THREE.BoxGeometry(sx-.02,hh,sz-.02); b.translate(sx/2,hh/2,sz/2);
   const e=new THREE.EdgesGeometry(b); edgeCache.set(k,e); return e;
 }
 function mat(c){
@@ -1044,9 +1155,17 @@ function mat(c){
 const edgeMat=new THREE.LineBasicMaterial({color:new THREE.Color('#F4BC22').convertSRGBToLinear()});
 let instanced=[], frameInfo=null, anim=null;
 
+let basePlate=null, playBase=null;
+function makeBase(m){
+  // A dark baseplate under a picture, a little bigger than the tiles, like a frame
+  const g=new THREE.BoxGeometry(m.W+.6,.32,m.D+.6); g.translate(m.W/2,-.16,m.D/2);
+  return new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:new THREE.Color('#2B2F33').convertSRGBToLinear(),roughness:.6}));
+}
 function buildScene(m){
   for(const im of instanced){modelGroup.remove(im); im.dispose&&im.dispose();}
   instanced=[];
+  if(basePlate){ modelGroup.remove(basePlate); basePlate=null; }
+  if(m.kind==='picture'){ basePlate=makeBase(m); modelGroup.add(basePlate); }
   modelGroup.position.set(-m.W/2,0,-m.D/2);
   const groups=new Map();
   for(const b of m.bricks){const k=b.sx+'x'+b.sz+'|'+b.c; if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(b);}
@@ -1060,13 +1179,14 @@ function buildScene(m){
     instanced.push(im); modelGroup.add(im);
   }
   shadow.scale.set(m.W*1.7+4,m.D*1.7+4,1);
-  const size=new THREE.Vector3(m.W,m.H*1.2,m.D);
-  frameInfo={center:new THREE.Vector3(0,m.H*.6,0),r:size.length()/2};
+  const size=new THREE.Vector3(m.W,m.kind==='picture'?TILE_H:m.H*1.2,m.D);
+  frameInfo={center:new THREE.Vector3(0,size.y/2,0),r:m.kind==='picture'?Math.max(m.W,m.D*1.1)/2:size.length()/2};
   frame(cam,controls);
 }
 function frame(c,ctl){
   const {center,r}=frameInfo, dist=r/Math.sin(THREE.MathUtils.degToRad(c.fov/2))*1.02;
-  const dir=new THREE.Vector3(-.62,.5,1).normalize();
+  // Pictures are seen from above and in front, like a picture lying on a table
+  const dir=(TILES?new THREE.Vector3(0,2.2,.7):new THREE.Vector3(-.62,.5,1)).normalize();
   c.position.copy(center).addScaledVector(dir,dist); c.near=dist/100; c.far=dist*10; c.updateProjectionMatrix();
   if(ctl){ctl.target.copy(center); ctl.update();} else c.lookAt(center);
 }
@@ -1128,7 +1248,7 @@ function bookResize(){
   const w=el.clientWidth,h=el.clientHeight; if(!w||!h) return;
   bookR.setSize(w,h,false); bookCam.aspect=w/h; bookCam.updateProjectionMatrix();
 }
-{const bro=new ResizeObserver(bookResize); bro.observe($('#bpView')); bro.observe($('#lbView'));}
+{const bro=new ResizeObserver(()=>{ bookResize(); if(TILES&&model){ if(!$('#bpChart').hidden) drawChart($('#bpChart'),viewPage); if(!$('#lbChart').hidden) drawChart($('#lbChart'),lbK); } }); bro.observe($('#bpView')); bro.observe($('#lbView'));}
 const ro=new ResizeObserver(resize); ro.observe($('#createStage')); ro.observe($('#buildStage'));
 
 /* ---------- UI: photos ---------- */
@@ -1168,6 +1288,7 @@ function refreshHint(){
     hasSide?'Depth is carved from your front and side photos. The side photo should show the object’s right side, taken from the same height.'
     :'One photo: depth is shaped from the outline. Add a photo of the right side to carve the real depth.';
   if(dup) $('#viewHint').textContent+=' Two photos share a view, so only the first of each is used.';
+  if(S.kind==='picture') $('#viewHint').textContent=!photos.length?'Add a photo to start.':'A picture uses your front photo as it is, background and all. Crop it first to make the subject bigger.';
   $('#shapeField').classList.toggle('disabled',hasSide); $('#thickField').classList.toggle('disabled',hasSide);
 }
 const escapeHTML=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -1199,6 +1320,11 @@ bindRange('size','size',v=>`${v} bricks · ${(v*0.96).toFixed(1)} cm`);
 bindRange('thick','thick',v=>`${Math.round(v*100)}%`);
 bindRange('tol','tol',v=>v?`${v}`:'off');
 bindRange('colors','maxColors',v=>`up to ${v}`);
+bindRange('pw','pw',v=>`${v} tiles wide · ${Math.round(v*.8)} cm`);
+bindRange('pcol','pcol',v=>`up to ${v}`);
+function syncKind(){ $('#settings').dataset.kind=S.kind; const r=document.querySelector(`input[name=kind][value="${S.kind}"]`); if(r) r.checked=true; }
+document.querySelectorAll('input[name=kind]').forEach(r=>r.addEventListener('change',()=>{S.kind=r.value; syncKind(); refreshHint(); schedule(60);}));
+syncKind();
 document.querySelectorAll('input[name=shape]').forEach(r=>r.addEventListener('change',()=>{S.shape=r.value;schedule();}));
 $('#gray').addEventListener('change',e=>{S.gray=e.target.checked;schedule();});
 
@@ -1212,14 +1338,16 @@ function rebuild(){
     $('#stats').innerHTML=''; $('#partsList').innerHTML=''; $('#startBuild').disabled=true;
     if(m&&m.error) showMsg(m.error,'err'); return; }
   model=m; modelVersion++; buildStep=0;
+  TILES=m.kind==='picture';
   buildScene(m);
   showStep(m.steps.length,false);
   setupPlay(m);
   $('#startBuild').disabled=false;
   const colors=new Set(m.bricks.map(b=>b.c)).size;
   $('#stats').innerHTML=[
-    [m.bricks.length.toLocaleString(),'bricks'],[m.steps.length,'steps'],[colors,'colours'],
-    [`${m.W}×${m.D}`,'studs wide × deep'],[`${(m.W*.8).toFixed(0)}×${(m.D*.8).toFixed(0)}×${(m.H*.96).toFixed(0)}`,'cm']
+    [m.bricks.length.toLocaleString(),PIECE()+'s'],[m.steps.length,'steps'],[colors,'colours'],
+    ...(TILES?[[`${m.W}×${m.D}`,'tiles wide × tall'],[`${(m.W*.8).toFixed(0)}×${(m.D*.8).toFixed(0)}`,'cm']]
+      :[[`${m.W}×${m.D}`,'studs wide × deep'],[`${(m.W*.8).toFixed(0)}×${(m.D*.8).toFixed(0)}×${(m.H*.96).toFixed(0)}`,'cm']])
   ].map(([b,s])=>`<div class="stat"><b>${b}</b><span>${s}</span></div>`).join('');
   $('#partsList').innerHTML=partsHTML(m.bricks);
   if(tab==='booklet') makeBooklet();
@@ -1334,14 +1462,19 @@ function setupPlay(m){
   const fp=new THREE.Mesh(new THREE.PlaneGeometry(m.W,m.D),new THREE.MeshBasicMaterial({color:0x5a93db,transparent:true,opacity:.08,depthWrite:false,side:THREE.DoubleSide}));
   fp.rotation.x=-Math.PI/2; fp.position.set(m.W/2,0,m.D/2); layerGrid.add(fp);
   playGroup.add(layerGrid);
+  if(playBase){ playGroup.remove(playBase); playBase=null; }
+  if(m.kind==='picture'){ playBase=makeBase(m); playGroup.add(playBase); }
   frame(playCam,playControls); frame(bookCam,bookControls); bookK=-1;
   resetBuild();
 }
 function resetBuild(){
+  $('#trayNote').textContent=TILES?'Tiles go on the dark baseplate. Row 1 is the top of the picture, at the far edge. Follow the yellow outline in the booklet.':'Your first brick can go anywhere on the table. The rest of the model builds out from it. Drag to turn the view.';
   placedGroup.clear(); ghostGroup.clear(); hintGroup.clear();
   placed=new Set(); off=null; cands=[]; placedN=0; placedBoxes=[]; cur=0; viewPage=0; follow=true; sel=null; drops=[]; busy=false; lastAnchor=null;
+  // A picture goes on its baseplate, so where each tile goes is fixed from the start
+  if(model&&model.kind==='picture') off={x:0,z:0};
   if(model) makePieces();
-  setStatus(model?'Open the parts box and pick up a brick to start.':'');
+  setStatus(model?(TILES?'Open the parts box and pick up the tiles for row 1. Row 1 is the top of the picture, at the far edge.':'Open the parts box and pick up a brick to start.'):'');
   updateBuildUI(); frameBuild(false);
 }
 function setStatus(t,kind){const el=$('#status'); el.textContent=t||''; el.dataset.kind=kind||'';}
@@ -1370,7 +1503,7 @@ function renderHand(){
   } else {
     slot.textContent='Empty';
     $('#handTitle').textContent=done?'All done':'Your hand is empty';
-    $('#handNote').textContent=done?'Every brick is in place. Turn the model around and enjoy it.':'Open the parts box and pick up some bricks.';
+    $('#handNote').textContent=done?(TILES?'Every tile is in place. Your picture is finished!':'Every brick is in place. Turn the model around and enjoy it.'):`Open the parts box and pick up some ${PIECE()}s.`;
   }
   $('#openBox').disabled=done&&!pieces.length;
 }
@@ -1401,8 +1534,9 @@ function showPage(k){
   } else {
     const s=model.steps[k];
     $('#bpStep').textContent=k+1; $('#bpCallout').innerHTML=calloutHTML(s.bricks);
-    $('#bpFoot').textContent=`Layer ${s.layer+1} of ${model.H}${s.parts>1?` · part ${s.part} of ${s.parts}`:''} · ${k<cur?'done':k===cur?'building now':'coming up'}`;
+    $('#bpFoot').textContent=`${TILES?`Row ${s.row+1} of ${model.D}`:`Layer ${s.layer+1} of ${model.H}`}${s.parts>1?` · part ${s.part} of ${s.parts}`:''} · ${k<cur?'done':k===cur?'building now':'coming up'}`;
   }
+  showChart('bpChart',k); $('#bpView .pg-turn').hidden=TILES;
   $('#bpPage').textContent=`Page ${k+1} of ${N+1}`;
   $('#bpPrev').disabled=k===0; $('#bpNext').disabled=k>=N;
   $('#bpNow').hidden=k===Math.min(cur,N);
@@ -1498,7 +1632,7 @@ function buddyUpdate(){
   budPlaced=placedN; budDone=done;
   if(fresh){
     const n=done, all=done>=N;
-    budSay('cheer', all?'You built it! Every brick is in.':BUD_CHEERS[n%BUD_CHEERS.length].replace('{n}',n));
+    budSay('cheer', all?`You built it! Every ${PIECE()} is in.`:BUD_CHEERS[n%BUD_CHEERS.length].replace('{n}',n));
     budBurst(); if(all) sfx.fanfare(); else sfx.chime(); sfx.chirp(); clearTimeout(budCheerT);
     budCheerT=setTimeout(()=>{ budCheerT=0; buddyUpdate(); }, all?3200:1700);
     return;
@@ -1752,7 +1886,7 @@ function fitBoard(){
 }
 function showBox(){
   if(!laidOut){ laidOut=true; tipOut(); } else renderBox();
-  $('#boxInfo').textContent=`${pieces.length.toLocaleString()} brick${pieces.length===1?'':'s'} left${hand.length?` · ${hand.length} in your hand`:''}`;
+  $('#boxInfo').textContent=`${pieces.length.toLocaleString()} ${PIECE()}${pieces.length===1?'':'s'} left${hand.length?` · ${hand.length} in your hand`:''}`;
   updatePick();
 }
 function updatePick(){
@@ -1897,10 +2031,10 @@ function makeBooklet(){
   bookletFor=modelVersion; const job=++bookletJob, m=model, N=m.steps.length;
   ensureThumb();
   const pages=$('#pages'); const total=N+2;
-  $('#bookletInfo').textContent=`${total} pages · ${m.bricks.length.toLocaleString()} bricks in ${N} steps`;
-  let html=`<article class="page cover"><div class="pg-top"><div><div class="tag" style="color:inherit;opacity:.85">Bloppit</div><h2>${escapeHTML(m.name)}</h2></div><div class="pcs" style="margin-left:auto">${m.bricks.length.toLocaleString()} pcs</div></div><img class="pg-img" id="pg-cover" alt="Finished model"><div class="pg-foot">${m.W}×${m.D} studs · ${m.H} bricks tall · 1</div></article>`;
+  $('#bookletInfo').textContent=`${total} pages · ${m.bricks.length.toLocaleString()} ${PIECE()}s in ${N} steps`;
+  let html=`<article class="page cover"><div class="pg-top"><div><div class="tag" style="color:inherit;opacity:.85">Bloppit</div><h2>${escapeHTML(m.name)}</h2></div><div class="pcs" style="margin-left:auto">${m.bricks.length.toLocaleString()} pcs</div></div><img class="pg-img" id="pg-cover" alt="Finished model"><div class="pg-foot">${TILES?`${m.W}×${m.D} tiles · ${(m.W*.8).toFixed(0)}×${(m.D*.8).toFixed(0)} cm`:`${m.W}×${m.D} studs · ${m.H} bricks tall`} · 1</div></article>`;
   html+=`<article class="page bom"><h3>Parts you need</h3><div class="parts">${partsHTML(m.bricks)}</div><div class="pg-foot">2</div></article>`;
-  m.steps.forEach((s,i)=>{html+=`<article class="page"><div class="pg-top"><div class="pg-step">${i+1}</div><div class="callout">${calloutHTML(s.bricks)}</div></div><img class="pg-img" id="pg-${i}" alt="Step ${i+1}"><div class="pg-foot">Layer ${s.layer+1} · page ${i+3}</div></article>`;});
+  m.steps.forEach((s,i)=>{html+=`<article class="page"><div class="pg-top"><div class="pg-step">${i+1}</div><div class="callout">${calloutHTML(s.bricks)}</div></div><img class="pg-img" id="pg-${i}" alt="Step ${i+1}"><div class="pg-foot">${TILES?`Row ${s.row+1}`:`Layer ${s.layer+1}`} · page ${i+3}</div></article>`;});
   pages.innerHTML=html;
   const bar=$('#bookProg i'); $('#bookProg').hidden=false; bar.style.width='0';
   const restore=()=>showStep(m.steps.length,false);
@@ -1908,8 +2042,8 @@ function makeBooklet(){
   let i=0;
   (function chunk(){
     if(job!==bookletJob||model!==m) return;
-    const end=Math.min(N,i+4);
-    for(;i<end;i++){ const img=$('#pg-'+i); if(img) img.src=snap(i); }
+    const end=Math.min(N,i+(TILES?12:4));
+    for(;i<end;i++){ const img=$('#pg-'+i); if(img) img.src=TILES?chartURL(i,400,300):snap(i); }
     restore(); bar.style.width=(i/N*100)+'%';
     if(i<N) setTimeout(chunk,16); else setTimeout(()=>{$('#bookProg').hidden=true;},400);
   })();
@@ -1922,13 +2056,14 @@ function lbShow(k){
   $('#lbStep').textContent=k>=N?'✓':k+1;
   $('#lbCallout').innerHTML=k>=N?'<b style="padding:4px 2px">Finished model</b>':calloutHTML(model.steps[k].bricks);
   $('#lbPrev').disabled=k===0; $('#lbNext').disabled=k>=N;
+  requestAnimationFrame(()=>showChart('lbChart',k));
 }
 function openLightbox(k){
   if(!model) return;
   $('#lbView').prepend(bookR.domElement); bookControls.enableZoom=true;
   $('#bookDlg').showModal(); lbShow(k); requestAnimationFrame(bookResize);
 }
-$('#bookDlg').addEventListener('close',()=>{ $('#bpView').prepend(bookR.domElement); bookControls.enableZoom=false; bookK=-1; });
+$('#bookDlg').addEventListener('close',()=>{ $('#lbChart').hidden=true; $('#bpView').prepend(bookR.domElement); bookControls.enableZoom=false; bookK=-1; });
 $('#lbClose').onclick=()=>$('#bookDlg').close();
 $('#lbPrev').onclick=()=>lbShow(lbK-1);
 $('#lbNext').onclick=()=>lbShow(lbK+1);
@@ -2290,6 +2425,7 @@ function applyMoveCore(m){
 function mpResync(){
   placedGroup.clear(); placedBoxes=[]; placed=new Set(); off=null; cands=[]; placedN=0; cur=0; drops=[]; busy=false;
   mp.local=new Set();
+  if(model&&model.kind==='picture') off={x:0,z:0};
   for(const m of mp.state.moves) applyMoveCore(m);
   mp.applied=mp.state.moves.length;
 }
@@ -2547,10 +2683,12 @@ document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==
 function loadPng(src){ return new Promise((res,rej)=>{ const img=new Image(); img.onload=()=>{ const c=document.createElement('canvas'); c.width=img.naturalWidth; c.height=img.naturalHeight; c.getContext('2d').drawImage(img,0,0); res(canvasData(c)); }; img.onerror=rej; img.src=src; }); }
 function setControls(s){
   Object.assign(S,s);
-  for(const [id,k] of [['size','size'],['thick','thick'],['tol','tol'],['colors','maxColors']]){ const el=$('#'+id); el.value=S[k]; el.dispatchEvent(new Event('input')); }
+  S.kind=s.kind||'model'; if(s.pw==null) S.pw=48; if(s.pcol==null) S.pcol=24;
+  for(const [id,k] of [['size','size'],['thick','thick'],['tol','tol'],['colors','maxColors'],['pw','pw'],['pcol','pcol']]){ const el=$('#'+id); el.value=S[k]; el.dispatchEvent(new Event('input')); }
+  syncKind();
   const r=document.querySelector(`input[name=shape][value="${S.shape}"]`); if(r) r.checked=true;
   $('#gray').checked=S.gray;
-  Object.assign(S,s);
+  Object.assign(S,s); S.kind=s.kind||'model';
   clearTimeout(timer);
 }
 async function restoreSave(o){
