@@ -766,7 +766,7 @@ body.chat-on{padding-bottom:96px}
 </section>
 
 <section class="view" id="view-mp" hidden>
-  <div class="gm-head"><div><h2>Play together</h2><p class="note">Build one model together on different phones or iPads. Take turns placing a few bricks each. Everyone sees the model grow live.</p></div></div>
+  <div class="gm-head"><div><h2>Play together</h2><p class="note">Build one model together on different phones, tablets or computers. Take turns placing a few bricks each. Everyone sees the model grow live.</p></div></div>
   <div class="mp-off" id="mpOff" hidden></div>
   <div class="mp-forms" id="mpForms">
     <div class="card">
@@ -2864,7 +2864,7 @@ function mpModelOptions(){
 async function renderMpView(){
   const ok=await mpCheck();
   $('#mpOff').hidden=ok;
-  if(!ok){ $('#mpOff').innerHTML='Play together runs on the Bloppit website. Open <a href="https://bloppit.com/build/" target="_blank" rel="noopener"><b>bloppit.com/build</b></a> on each phone or iPad and tap <b>Play together</b> there.'; $('#mpForms').hidden=true; $('#mpRoom').hidden=true; return; }
+  if(!ok){ $('#mpOff').innerHTML='Play together runs on the Bloppit website. Open <a href="https://bloppit.com/build/" target="_blank" rel="noopener"><b>bloppit.com/build</b></a> on each phone, tablet or computer and tap <b>Play together</b> there.'; $('#mpForms').hidden=true; $('#mpRoom').hidden=true; return; }
   const s=mp&&mp.state;
   $('#mpForms').hidden=!!mp; $('#mpRoom').hidden=!mp;
   if(!mp){
