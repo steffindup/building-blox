@@ -39,10 +39,49 @@
 }
 </script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 175'%3E%3Ccircle cx='42' cy='38' r='16' fill='%238A5A3B'/%3E%3Ccircle cx='158' cy='38' r='16' fill='%238A5A3B'/%3E%3Cellipse cx='100' cy='94' rx='88' ry='74' fill='%238A5A3B'/%3E%3Cellipse cx='100' cy='116' rx='56' ry='40' fill='%23F3DEC0'/%3E%3Cellipse cx='64' cy='88' rx='19' ry='22' fill='%231B1410'/%3E%3Cellipse cx='136' cy='88' rx='19' ry='22' fill='%231B1410'/%3E%3Cpath d='M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z' fill='%233A2418'/%3E%3C/svg%3E">
-<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}
+/* Launch screen: same red as the app's native splash, so the two run together */
+.splash{position:fixed;inset:0;z-index:100;background:#D2352B;color:#fff;display:grid;place-content:center;justify-items:center;gap:6px;text-align:center;font-family:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;cursor:pointer;-webkit-user-select:none;user-select:none;animation:sp-fail .3s ease 5s forwards}
+.splash svg{width:132px;height:116px;animation:sp-pop .5s cubic-bezier(.3,1.6,.5,1) both}
+.splash .sp-word{font-size:52px;line-height:1;letter-spacing:.01em;text-shadow:0 4px 0 rgba(0,0,0,.18);animation:sp-up .4s ease .15s both}
+.splash .sp-tag{display:flex;gap:8px;margin-top:10px}
+.splash .sp-tag span{font-size:17px;padding:6px 11px 8px;border-radius:9px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18);animation:sp-pop .35s cubic-bezier(.3,1.6,.5,1) both}
+.splash .sp-tag span:nth-child(1){background:#F4BC22;color:#14202C;animation-delay:.4s}
+.splash .sp-tag span:nth-child(2){background:#fff;color:#D2352B;animation-delay:.6s}
+.splash .sp-tag span:nth-child(3){background:#0055BF;animation-delay:.8s}
+.splash.out{opacity:0;transition:opacity .3s ease;pointer-events:none}
+@keyframes sp-pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+@keyframes sp-up{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+@keyframes sp-fail{to{opacity:0;visibility:hidden}}
+@media (prefers-reduced-motion: reduce){.splash *{animation:none!important}}
+</style>
 <title>Bloppit · Snap it. Bloppit. Build it.</title>
 </head>
 <body>
+<div class="splash" id="splash" aria-hidden="true">
+  <svg viewBox="0 0 200 175" aria-hidden="true">
+      <circle cx="42" cy="38" r="16" fill="#8A5A3B"/><circle cx="42" cy="38" r="7" fill="#6B4229"/>
+      <circle cx="158" cy="38" r="16" fill="#8A5A3B"/><circle cx="158" cy="38" r="7" fill="#6B4229"/>
+      <ellipse cx="100" cy="94" rx="88" ry="74" fill="#8A5A3B"/>
+      <ellipse cx="100" cy="116" rx="56" ry="40" fill="#F3DEC0"/>
+      <ellipse cx="64" cy="88" rx="19" ry="22" fill="#1B1410"/><ellipse cx="136" cy="88" rx="19" ry="22" fill="#1B1410"/>
+      <circle cx="70" cy="79" r="7" fill="#FFFFFF"/><circle cx="142" cy="79" r="7" fill="#FFFFFF"/>
+      <path d="M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z" fill="#3A2418"/>
+      <path d="M100 120 q0 8 -9 10 M100 120 q0 8 9 10" stroke="#3A2418" stroke-width="4" stroke-linecap="round" fill="none"/>
+  </svg>
+  <div class="sp-word">Bloppit</div>
+  <div class="sp-tag"><span>Snap it.</span><span>Bloppit.</span><span>Build it.</span></div>
+</div>
+<script>
+// Launch screen: once per visit (not again after switching player). Skipped for links straight into a room or a page.
+(function(){ var s=document.getElementById('splash'), seen=false;
+  try{ seen=!!sessionStorage.getItem('bloppit-splash'); }catch(e){}
+  if(seen||/[?&]room=/.test(location.search)||(location.hash&&location.hash!=='#home')){ s.remove(); return; }
+  try{ sessionStorage.setItem('bloppit-splash','1'); }catch(e){}
+  window.BLOPPIT_SPLASH=Date.now();
+  s.onclick=function(){ s.classList.add('out'); setTimeout(function(){ s.remove(); },320); };
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
 <style>
@@ -597,11 +636,48 @@ body.chat-on{padding-bottom:96px}
 .pg-zoom button:disabled{opacity:.4;cursor:default}
 .pg-zoom .zx{font-size:15px}
 .pg-chart{touch-action:none}
+/* Menu: the first page after the launch screen */
+body.on-home .tabs{visibility:hidden}
+.home{max-width:760px;margin:0 auto;display:grid;gap:18px;padding-block:6px 28px}
+.hm-hello{display:flex;align-items:center;gap:14px}
+.hm-hello svg{width:74px;height:65px;flex:none}
+.hm-bubble{position:relative;background:var(--page);border:1px solid var(--line);border-radius:16px;padding:10px 16px 12px;box-shadow:0 2px 0 var(--shadow)}
+.hm-bubble::before{content:"";position:absolute;left:-8px;top:50%;width:14px;height:14px;background:var(--page);border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:translateY(-50%) rotate(45deg)}
+.hm-bubble h2{font-size:26px;line-height:1.1}
+.hm-bubble p{margin:2px 0 0;color:var(--muted);font-size:14px}
+.hm-who{border:0;background:none;padding:0;font:inherit;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:2px}
+.hm-cont{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 14px;width:100%;text-align:left;border:0;border-radius:16px;padding:14px 16px 16px;background:var(--hi);color:#14202C;cursor:pointer;box-shadow:inset 0 -5px 0 rgba(0,0,0,.14);font:inherit}
+.hm-cont b{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.1}
+.hm-cont .sub{grid-column:1;font-size:14px;font-weight:600;opacity:.85}
+.hm-cont .go{grid-row:1 / span 3;grid-column:2;width:52px;height:52px;border-radius:50%;background:#D2352B;color:#fff;display:grid;place-items:center;font-size:24px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
+.hm-cont .bar{grid-column:1;height:10px;border-radius:99px;background:rgba(20,32,44,.18);overflow:hidden}
+.hm-cont .bar i{display:block;height:100%;background:#14202C;border-radius:99px}
+.hm-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px 14px;padding-top:8px}
+.hm-tile{--c:#D2352B;position:relative;display:grid;align-content:end;justify-items:start;gap:2px;min-height:132px;padding:16px;border:0;border-radius:14px;background:var(--c);color:#fff;text-align:left;cursor:pointer;font:inherit;box-shadow:inset 0 -6px 0 rgba(0,0,0,.2);transition:transform .12s ease}
+.hm-tile::before{content:"";position:absolute;left:16px;right:16px;top:-9px;height:12px;border-radius:5px 5px 0 0;background:radial-gradient(circle at 13px 7px,var(--c) 9px,transparent 9.5px) 0 0/34px 12px repeat-x;filter:brightness(1.08)}
+.hm-tile:active{transform:translateY(3px);box-shadow:inset 0 -3px 0 rgba(0,0,0,.2)}
+.hm-tile:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.hm-tile .ic{font-size:30px;line-height:1;margin-bottom:auto;width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.2);display:grid;place-items:center}
+.hm-tile b{font-family:var(--f-display);font-weight:400;font-size:23px;line-height:1.1;margin-top:14px}
+.hm-tile span:not(.ic){font-size:14px;font-weight:600;opacity:.9;line-height:1.3}
+.hm-tile.wide{grid-column:1 / -1;min-height:118px;grid-template-columns:auto 1fr;align-items:center;align-content:center;column-gap:16px}
+.hm-tile.wide .ic{grid-row:1 / span 2;margin:0;width:64px;height:64px;font-size:36px}
+.hm-tile.wide b{margin-top:0;align-self:end}
+.hm-tile.wide span:not(.ic){align-self:start}
+.hm-tile.t-photo{--c:#D2352B;min-height:140px}
+.hm-tile.t-lib{--c:#0055BF}
+.hm-tile.t-game{--c:#237841}
+.hm-tile.t-mp{--c:#923978}
+.view #library{scroll-margin-top:80px}
+.hm-foot{text-align:center;font-size:13px;color:var(--muted)}
+.hm-foot a{color:inherit}
+.in-app .hm-foot{display:none}
+@media (max-width:420px){.hm-tile{min-height:120px;padding:14px}.hm-tile b{font-size:20px}.hm-bubble h2{font-size:22px}.hm-hello svg{width:58px;height:51px}}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 
 <header class="top">
-  <h1 class="brand"><a href="/" aria-label="Bloppit home">
+  <h1 class="brand"><a href="/" id="brandLink" aria-label="Bloppit menu">
     <svg viewBox="0 0 200 175" width="40" height="35" aria-hidden="true">
       <circle cx="42" cy="38" r="16" fill="#8A5A3B"/><circle cx="42" cy="38" r="7" fill="#6B4229"/>
       <circle cx="158" cy="38" r="16" fill="#8A5A3B"/><circle cx="158" cy="38" r="7" fill="#6B4229"/>
@@ -643,7 +719,30 @@ body.chat-on{padding-bottom:96px}
   <div class="resume-txt"><strong>Welcome back!</strong> <span id="resumeTxt"></span></div>
   <div class="resume-btns"><button class="primary sm" id="resumeGo" type="button">Continue building</button><button class="ghost" id="resumeNo" type="button">Start fresh</button></div>
 </div>
-<section class="view" id="view-create">
+<section class="view home" id="view-home">
+  <div class="hm-hello">
+    <svg viewBox="0 0 200 175" aria-hidden="true">
+      <circle cx="42" cy="38" r="16" fill="#8A5A3B"/><circle cx="42" cy="38" r="7" fill="#6B4229"/>
+      <circle cx="158" cy="38" r="16" fill="#8A5A3B"/><circle cx="158" cy="38" r="7" fill="#6B4229"/>
+      <ellipse cx="100" cy="94" rx="88" ry="74" fill="#8A5A3B"/>
+      <ellipse cx="100" cy="116" rx="56" ry="40" fill="#F3DEC0"/>
+      <ellipse cx="64" cy="88" rx="19" ry="22" fill="#1B1410"/><ellipse cx="136" cy="88" rx="19" ry="22" fill="#1B1410"/>
+      <circle cx="70" cy="79" r="7" fill="#FFFFFF"/><circle cx="142" cy="79" r="7" fill="#FFFFFF"/>
+      <path d="M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z" fill="#3A2418"/>
+      <path d="M100 120 q0 8 -9 10 M100 120 q0 8 9 10" stroke="#3A2418" stroke-width="4" stroke-linecap="round" fill="none"/>
+    </svg>
+    <div class="hm-bubble"><h2 id="hmHi">Hi there!</h2><p>What shall we build today?</p></div>
+  </div>
+  <button class="hm-cont" id="hmCont" type="button" hidden><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span><span class="go" aria-hidden="true">▶</span></button>
+  <div class="hm-grid">
+    <button class="hm-tile t-photo wide" data-go="photo" type="button"><span class="ic" aria-hidden="true">📸</span><b>Snap a photo</b><span>Turn your own photo into a brick model</span></button>
+    <button class="hm-tile t-lib" data-go="library" type="button"><span class="ic" aria-hidden="true">📚</span><b>Library</b><span id="hmLibSub">Ready-made models</span></button>
+    <button class="hm-tile t-game" data-go="game" type="button"><span class="ic" aria-hidden="true">⭐</span><b>Play the Game</b><span id="hmGameSub">Build your way up the levels</span></button>
+    <button class="hm-tile t-mp wide" data-go="mp" type="button"><span class="ic" aria-hidden="true">🤝</span><b>Play together</b><span>Build one model with friends, taking turns</span></button>
+  </div>
+  <p class="hm-foot"><a href="/">About Bloppit</a></p>
+</section>
+<section class="view" id="view-create" hidden>
   <div class="panel">
     <label class="drop" id="drop">
       <input type="file" id="file" accept="image/*" multiple>
@@ -1028,7 +1127,7 @@ if(APP){
   document.addEventListener('click',async e=>{
     const a=e.target.closest&&e.target.closest('a[href]'); if(!a) return;
     const href=a.getAttribute('href');
-    if(href==='/'||href==='./'){ e.preventDefault(); if(typeof setTab==='function') setTab('create'); return; }
+    if(href==='/'||href==='./'){ e.preventDefault(); if(window.bloppitHome) window.bloppitHome(); return; }
     if(/^(https?:|mailto:|tel:)/i.test(href)){ e.preventDefault(); if(await gate.ask('This opens a web page in Safari.')) window.open(href,'_blank'); }
   },true);
 }
@@ -1094,7 +1193,7 @@ function nearest(r,g,b,all){
 /* ---------- Settings & state ---------- */
 const S = { size:16, shape:'puffed', thick:1, tol:48, maxColors:8, gray:true, kind:'model', pw:48, pcol:24 };
 let photos = [];       // {id,name,d,m,view,sample}
-let model = null, modelVersion = 0, buildStep = 0, tab = 'create';
+let model = null, modelVersion = 0, buildStep = 0, tab = 'create', homeSeen = false;
 let pid = 0;
 
 /* ---------- Image handling ---------- */
@@ -1686,7 +1785,11 @@ function setTab(t){
   tab=t;
   document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===(t==='box'?'build':t)));
   { const sel=document.querySelector('.tab[aria-selected="true"]'), bar=$('.tabs'); if(sel&&bar.scrollWidth>bar.clientWidth) bar.scrollTo({left:sel.offsetLeft-bar.offsetLeft-24,behavior:'smooth'}); }
-  ['create','build','box','booklet','game','mp'].forEach(v=>$('#view-'+v).hidden=v!==t);
+  ['home','create','build','box','booklet','game','mp'].forEach(v=>$('#view-'+v).hidden=v!==t);
+  document.body.classList.toggle('on-home',t==='home');
+  if(t==='home'){ homeSeen=true; renderer.domElement.remove(); renderHome(); scrollTo(0,0); $('.top').classList.remove('tucked'); }
+  // Once the menu has been shown it offers "Continue building", so the Welcome back banner isn't needed
+  $('#resume').hidden=!pendingSave||homeSeen;
   $('#mpBar').hidden=!(mp&&mp.state&&mp.state.started&&(t==='build'||t==='box'));
   if(t==='mp'){ renderer.domElement.remove(); renderMpView(); }
   $('#gameBar').hidden=!(game&&(t==='build'||t==='box'));
@@ -4009,7 +4112,60 @@ loadSample(0); setTab('create'); clearTimeout(timer); rebuild(); requestAnimatio
     $('#mpCodeIn').value=q; setTab('mp');
     const st=mpStored();
     if(st&&st.code===q) mpJoin(q,st.name,st.playerId).then(()=>renderMpView()).catch(e=>{ mpMsg(e.message,'err'); mpStore(null); renderMpView(); });
-  }
+  } else homeRoute();
+}
+
+/* ---------- Menu (launch screen → menu → the page for what you picked) ---------- */
+function homeContinue(){
+  const bar=(a,b)=>b?Math.round(100*a/b):0;
+  if(game&&model&&LEVELS[game.lvl]) return {t:`Back to Level ${game.lvl+1}`,s:`${LEVELS[game.lvl].name}: ${placedN} of ${model.bricks.length} bricks placed`,p:bar(placedN,model.bricks.length),go:()=>setTab('build')};
+  if(mp) return {t:'Back to your room',s:'Your Play together game is still going',p:-1,go:()=>setTab(mp.state&&mp.state.started?'build':'mp')};
+  if(pendingSave){ const o=pendingSave;
+    return {t:o.game&&LEVELS[o.game.lvl]?`Continue Level ${o.game.lvl+1}`:'Continue building',
+      s:o.game&&LEVELS[o.game.lvl]?`${LEVELS[o.game.lvl].name}: ${o.placedN} of ${o.nBricks} bricks placed`:`Your ${niceName(o.name)}: ${o.placedN} of ${o.nBricks} bricks placed`,
+      p:bar(o.placedN,o.nBricks),go:()=>$('#resumeGo').click()}; }
+  if(model&&placedN>0&&placedN<model.bricks.length) return {t:'Continue building',s:`${placedN} of ${model.bricks.length} bricks placed`,p:bar(placedN,model.bricks.length),go:()=>setTab('build')};
+  return null;
+}
+var homeCont=null;  // var: the menu can open (from the room check above) before this line runs
+function renderHome(){
+  const p=curPlayer(), named=p.name&&!/^Player \d+$/.test(p.name.trim());
+  $('#hmHi').innerHTML=named?`Hi <button class="hm-who" id="hmWho" type="button">${escapeHTML(p.name.trim())}</button>!`:'Hi there!';
+  const w=$('#hmWho'); if(w) w.onclick=()=>$('#whoBtn').click();
+  homeCont=homeContinue(); $('#hmCont').hidden=!homeCont;
+  if(homeCont){ $('#hmContT').textContent=homeCont.t; $('#hmContS').textContent=homeCont.s;
+    $('#hmContBar').hidden=homeCont.p<0; $('#hmContBar i').style.width=Math.max(4,homeCont.p)+'%'; }
+  $('#hmLibSub').textContent=`${SAMPLES.length} ready-made models to build`;
+  const st=playerStats(players.cur);
+  $('#hmGameSub').textContent=st.lv?`${st.lv} of ${LEVELS.length} levels done · ${st.pts} points`:`${LEVELS.length} levels, from tiny to tricky`;
+}
+$('#hmCont').onclick=()=>{ if(homeCont) homeCont.go(); };
+function homeGo(where){
+  if(where==='game'){ if(mp){ setTab('mp'); mpMsg('Leave the Play together room first to play the levels on your own.'); return; } setTab('game'); return; }
+  if(where==='mp'){ setTab('mp'); return; }
+  // Photo or library: start something new, so leave a level or room first
+  if(game) endGame();
+  if(mp) mpLeave();
+  setTab('create');
+  if(where==='photo'){ scrollTo(0,0); $('#file').click(); }
+  else requestAnimationFrame(()=>$('#library').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}));
+}
+document.querySelectorAll('.hm-tile').forEach(b=>b.addEventListener('click',()=>homeGo(b.dataset.go)));
+window.bloppitHome=()=>setTab('home');
+// On the website the logo opens the menu; on the menu itself it goes to bloppit.com's front page. (The app handles its own links above.)
+$('#brandLink').addEventListener('click',e=>{ if(APP||tab==='home') return; e.preventDefault(); setTab('home'); });
+// Links straight to a page: /build/#photos, #library, #game, #together (anything else opens the menu)
+function homeRoute(){
+  const h=location.hash.slice(1).toLowerCase();
+  if(h==='photos'||h==='create') setTab('create');
+  else if(h==='library') homeGo('library');
+  else if(h==='game') setTab('game');
+  else if(h==='together'||h==='play-together') setTab('mp');
+  else setTab('home');
+}
+{ // Launch screen: show it for a moment, then fade to the menu (tap to skip)
+  const sp=document.getElementById('splash');
+  if(sp&&window.BLOPPIT_SPLASH) setTimeout(()=>{ sp.classList.add('out'); setTimeout(()=>sp.remove(),320); },Math.max(0,(reduceMotion?500:1500)-(Date.now()-window.BLOPPIT_SPLASH)));
 }
 })();
 </script>
