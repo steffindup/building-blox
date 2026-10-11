@@ -53,7 +53,7 @@ PLAY THE GAME
 PLAY TOGETHER
 • Build one model together on different iPhones, iPads and computers
 • Take turns placing a few bricks each and watch the model grow
-• Bloppit Blitz: race the clock! Everyone places the same number of bricks, 1 to 3 a turn, and the quickest builder wins
+• Bloppit Blitz: race the clock against Bloppit the otter (Easy, Medium or Hard) or your friends! Everyone places the same number of bricks, 1 to 3 a turn, and the quickest builder wins
 • Chat with friendly quick messages
 
 MADE FOR KIDS AND FAMILIES

@@ -1,7 +1,14 @@
 # Bloppit
 
 Upload photos, turn them into a brick model, and build it yourself with a step-by-step instruction booklet.
-Includes **Play the Game** (levels and points) and **Play together** (take turns on different devices).
+Includes **Play the Game** (levels and points), **Play together** (take turns on different devices) and
+**Bloppit Blitz** (a race against the clock, its own tab and menu tile).
+
+- **Bloppit Blitz** can be played against the computer ("Race Bloppit", Easy / Medium / Hard) or against friends in a room.
+  Racing Bloppit runs entirely on the device (no server, works in the App Store app and offline): `cpuApi()` in
+  `public/build/index.html` stands in for the room server and follows the same Blitz rules as `logic.mjs`, so the same
+  build screen, clocks and results are used. Bloppit's speed and miss rate per level are in `CPU_LEVELS`.
+  Blitz rooms with friends are made and joined on the Blitz page; Play together rooms are always Classic.
 
 Live at https://bloppit.com (bloppit.netlify.app redirects there). Every push to `main` deploys through Netlify.
 Formerly called Building Blox; the browser save keys still use the old `building-blox-*` names so existing saves keep working.
