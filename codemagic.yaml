@@ -23,7 +23,7 @@ workflows:
         XCODE_PROJECT: mobile/ios/App/App.xcodeproj
         XCODE_SCHEME: App
       node: 22
-      xcode: latest
+      xcode: 26.5 # pinned: "latest" has been landing on overloaded build machines
     scripts:
       - name: Install and package the web app into the iOS project
         script: |
