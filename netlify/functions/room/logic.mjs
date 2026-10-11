@@ -19,6 +19,7 @@ const WAIT_STALE_MS = 60_000;     // a waiting person who stops checking in is d
 const SIG_KEEP_MS = 60_000;       // voice connection messages are dropped after this
 const SIG_MAX = 40;               // and at most this many are kept
 const SIG_LEN = 16_000;           // characters per voice connection message
+const BLITZ_PER_TURN = 3;         // Bloppit Blitz: each turn is 1, 2 or 3 bricks (the player taps Done)
 
 // Voice chat: the server only passes on the short connection messages ("offer"/"answer") that let two
 // devices find each other. The audio itself goes directly between the devices (encrypted by the browser)
@@ -92,10 +93,11 @@ const modelKey = (c) => `model/${c}`;
 function publicState(s, viewer = -1) {
   const now = Date.now();
   const out = {
-    code: s.code, ver: s.ver, started: s.started, finished: s.finished, perTurn: s.perTurn,
+    code: s.code, ver: s.ver, started: s.started, finished: s.finished, perTurn: s.perTurn, mode: s.mode || 'classic',
     nBricks: s.nBricks, title: s.title, level: s.level, host: s.host, turn: s.turn,
     turnPlaced: s.turnPlaced, turnStart: s.turnStart, moves: s.moves, now, voice: !!s.voice,
-    players: s.players.map((p) => ({ name: p.name, color: p.color, pen: p.pen, stale: now - p.seen > STALE_MS, vc: s.voice ? (p.vc || 0) : 0 })),
+    players: s.players.map((p) => ({ name: p.name, color: p.color, pen: p.pen, stale: now - p.seen > STALE_MS, vc: s.voice ? (p.vc || 0) : 0,
+      ...(s.mode === 'blitz' ? { ms: p.ms || 0, miss: p.miss || 0 } : {}) })),
     quick: !!s.quick,
   };
   if (viewer >= 0) {
@@ -112,7 +114,16 @@ function prune(s) {
   if (s.sig) s.sig = s.sig.filter((m) => now - m.at <= SIG_KEEP_MS).slice(-SIG_MAX);
 }
 
+// Bloppit Blitz: each player's clock only runs during their own turn. The server keeps the time,
+// so a device's clock can't be used to cheat. Time is added up when a turn ends (or the model is finished).
+const blitz = (s) => s.mode === 'blitz';
+function stopClock(s) {
+  if (!blitz(s) || !s.started) return;
+  const p = s.players[s.turn];
+  if (p) p.ms = (p.ms || 0) + Math.max(0, Date.now() - s.turnStart);
+}
 function nextTurn(s) {
+  stopClock(s);
   s.turn = (s.turn + 1) % s.players.length;
   s.turnPlaced = 0;
   s.turnStart = Date.now();
@@ -180,13 +191,14 @@ export async function handle(method, query, body, store) {
     if (!model || !Array.isArray(model.photos) || !model.photos.length) return { status: 400, body: { error: 'No model to build.' } };
     if (JSON.stringify(model).length > MAX_MODEL_CHARS) return { status: 413, body: { error: 'Those photos are too big to share. Try a smaller model.' } };
     if (!(nBricks > 0 && nBricks < 5000)) return { status: 400, body: { error: 'Bad model size.' } };
-    const perTurn = Math.max(1, Math.min(20, Math.floor(Number(body.perTurn) || 5)));
+    const mode = body.mode === 'blitz' ? 'blitz' : 'classic';
+    const perTurn = mode === 'blitz' ? BLITZ_PER_TURN : Math.max(1, Math.min(20, Math.floor(Number(body.perTurn) || 5)));
     const now = Date.now();
-    const player = { id: newId(), name: cleanName(body.name), color: COLORS[0], pen: { hint: 0, auto: 0, miss: 0 }, seen: now };
+    const player = { id: newId(), name: cleanName(body.name), color: COLORS[0], pen: { hint: 0, auto: 0, miss: 0 }, seen: now, ms: 0, miss: 0 };
     for (let i = 0; i < 10; i++) {
       const code = newCode();
       const s = {
-        code, ver: 1, created: now, updated: now, started: false, finished: false, perTurn, nBricks,
+        code, ver: 1, created: now, updated: now, started: false, finished: false, mode, perTurn, nBricks,
         title: cleanName(body.title).slice(0, 24), level: Number.isInteger(body.level) ? body.level : null,
         host: 0, turn: 0, turnPlaced: 0, turnStart: now, moves: [], players: [player],
       };
@@ -262,7 +274,7 @@ export async function handle(method, query, body, store) {
       if (a === 'deny') { s.denied = [...(s.denied || []), w.id].slice(-20); return {}; }
       if (s.players.length >= MAX_PLAYERS) return { error: 'The room is full (4 players).', status: 409 };
       const used = new Set(s.players.map((p) => p.color));
-      s.players.push({ id: w.id, name: w.name, color: COLORS.find((c) => !used.has(c)) || COLORS[0], pen: { hint: 0, auto: 0, miss: 0 }, seen: Date.now() });
+      s.players.push({ id: w.id, name: w.name, color: COLORS.find((c) => !used.has(c)) || COLORS[0], pen: { hint: 0, auto: 0, miss: 0 }, seen: Date.now(), ms: 0, miss: 0 });
       return {};
     }, pid);
   }
@@ -308,7 +320,18 @@ export async function handle(method, query, body, store) {
     return update(store, code, (s) => {
       const i = mine(s);
       if (i < 0) return { error: 'You’re not in this room.', status: 403 };
-      s.players[i].pen = mergePen(s.players[i].pen, body.pen);
+      if (!blitz(s)) s.players[i].pen = mergePen(s.players[i].pen, body.pen);  // Blitz has no hints to count
+      return {};
+    }, pid);
+  }
+
+  // Bloppit Blitz: a wrong drop adds 3 seconds to the player whose turn it is
+  if (a === 'miss') {
+    return update(store, code, (s) => {
+      const i = mine(s);
+      if (i < 0) return { error: 'You’re not in this room.', status: 403 };
+      if (!blitz(s) || !s.started || s.finished || i !== s.turn) return {};
+      s.players[i].miss = Math.min(9999, (s.players[i].miss || 0) + 1);
       return {};
     }, pid);
   }
@@ -342,10 +365,11 @@ export async function handle(method, query, body, store) {
       const b = Math.floor(Number(body.b));
       if (!(b >= 0 && b < s.nBricks)) return { error: 'Unknown brick.', status: 400 };
       if (s.moves.some((m) => m.b === b)) return { error: 'That brick is already placed.', status: 409 };
+      if (blitz(s) && body.auto) return { error: 'There’s no “place one for me” in Bloppit Blitz.', status: 400 };
       s.moves.push({ p: i, b, x: Math.round(Number(body.x) || 0), z: Math.round(Number(body.z) || 0), a: body.auto ? 1 : 0 });
-      if (body.pen) s.players[i].pen = mergePen(s.players[i].pen, body.pen);
+      if (body.pen && !blitz(s)) s.players[i].pen = mergePen(s.players[i].pen, body.pen);
       s.turnPlaced += 1;
-      if (s.moves.length >= s.nBricks) s.finished = true;
+      if (s.moves.length >= s.nBricks) { stopClock(s); s.finished = true; }
       else if (s.turnPlaced >= s.perTurn) nextTurn(s);
       return {};
     }, pid);
@@ -358,6 +382,8 @@ export async function handle(method, query, body, store) {
       if (!s.started || s.finished) return {};
       const cur = s.players[s.turn];
       if (i !== s.turn && Date.now() - cur.seen <= STALE_MS) return { error: `${cur.name} is still playing.`, status: 409 };
+      // In Blitz you can't dodge the clock by ending a turn without placing a brick
+      if (blitz(s) && i === s.turn && s.turnPlaced < 1) return { error: 'Place at least one brick before you tap Done.', status: 409 };
       nextTurn(s);
       return {};
     }, pid);

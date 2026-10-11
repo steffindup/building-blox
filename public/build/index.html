@@ -344,6 +344,11 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .mp-pl i{width:18px;height:18px;border-radius:50%;display:inline-block;box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
 .mp-pl.now{border-color:var(--ink);background:var(--page)}
 .mp-pl.away{opacity:.55}
+.mp-pl b.clk{color:var(--ink);min-width:3.6em;text-align:right}
+.mp-pl.now b.clk{color:var(--accent)}
+.mp-pl .mi{font-size:11px;font-weight:800;color:#C8372D}
+.blitz-tag{display:inline-block;background:#F4BC22;color:#1B1410;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:800;margin-right:6px;vertical-align:middle}
+.mpbar.blitz #mpEndTurn{background:var(--accent);color:#fff;border-color:var(--accent)}
 .mp-pl b{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:800}
 .mpbar .gb-flash{left:auto;right:40%;top:8px}
 #view-mp{gap:16px}
@@ -823,7 +828,13 @@ body.chat-on{padding-bottom:96px}
       <h2>Start a game</h2>
       <div class="field"><label for="mpName1">Your name</label><input class="inp" id="mpName1" maxlength="16" autocomplete="nickname" placeholder="e.g. Elmar"></div>
       <div class="field"><label for="mpModel">What to build</label><select class="inp" id="mpModel"></select></div>
-      <div class="field"><span class="lbl">Bricks per turn</span>
+      <div class="field"><span class="lbl">Game</span>
+        <div class="seg" style="grid-template-columns:repeat(2,1fr)" role="radiogroup" aria-label="Game">
+          <input type="radio" name="mpMode" id="mdClassic" value="classic" checked><label for="mdClassic">Classic</label>
+          <input type="radio" name="mpMode" id="mdBlitz" value="blitz"><label for="mdBlitz">⚡ Bloppit Blitz</label>
+        </div>
+        <p class="note" id="mpModeNote" style="margin:6px 0 0">Take turns and build it together. Hints are allowed.</p></div>
+      <div class="field" id="mpPerTurnField"><span class="lbl">Bricks per turn</span>
         <div class="seg seg4" role="radiogroup" aria-label="Bricks per turn">
           <input type="radio" name="perTurn" id="pt1" value="1"><label for="pt1">1</label>
           <input type="radio" name="perTurn" id="pt3" value="3" checked><label for="pt3">3</label>
@@ -1744,7 +1755,7 @@ function renderHand(){
   if(held){
     slot.innerHTML=`<img alt="" src="${brickIcon(held.a,held.l,held.c)}">`;
     $('#handTitle').textContent=`${pieceName(held)} in hand`;
-    $('#handNote').textContent=(stepNeeds(held)?'Click where it goes'+(held.a!==held.l?'. Press R to turn it.':'.'):`Step ${cur+1} doesn’t use this one. Check the booklet${hand.length>1?', switch to another brick below,':''} or put it back.`)+(hand.length>1?` You’re holding ${hand.length} bricks; tap one below to switch.`:'');
+    $('#handNote').textContent=mpBlitz()?'Click where it goes'+(held.a!==held.l?'. Press R to turn it.':'.')+(hand.length>1?` You’re holding ${hand.length} bricks; tap one below to switch.`:''):(stepNeeds(held)?'Click where it goes'+(held.a!==held.l?'. Press R to turn it.':'.'):`Step ${cur+1} doesn’t use this one. Check the booklet${hand.length>1?', switch to another brick below,':''} or put it back.`)+(hand.length>1?` You’re holding ${hand.length} bricks; tap one below to switch.`:'');
   } else {
     slot.textContent='Empty';
     $('#handTitle').textContent=done?'All done':'Your hand is empty';
@@ -1891,6 +1902,7 @@ function buddyUpdate(){
     return;
   }
   if(isLocked(cur)){ budSay('point','This page is locked! Solve my math puzzle to open it.'); if(budStep!==cur){ budStep=cur; budPing(); } return; }
+  if(mpBlitz()){ budSay('point', mpMyTurn()?`Step ${cur+1}! Check the booklet. Quick!`:`Step ${cur+1}. Get ready for your turn!`); if(budStep!==cur){ budStep=cur; budPing(); } return; }
   const left=stepLeft(cur), total=model.steps[cur].bricks.length;
   const lead=left.length===total?`Step ${cur+1}! You need these:`:left.length===1?'Just one more for this step:':`${left.length} more for this step:`;
   budSay('point', `${lead}<div class="callout">${calloutHTML(left)}</div>`);
@@ -1978,6 +1990,8 @@ function tryPlace(){
     if(keep.length) cands=keep;
   }
   if(t){ if(cands.length===1) lock(); placeBrick(t,ax,az); return; }
+  if(mpBlitz()){ setStatus('Miss! +3 seconds','err'); sfx.bonk(); mpPost({action:'miss'}).then(j=>mpApply(j.state)).catch(()=>{});
+    const g=ghostGroup.children[0]; if(g){g.material=errMat; setTimeout(()=>{if(g.parent) g.material=ghostMat(sel?sel.c:0);},380);} mpFlash('+3s'); return; }
   const o=curOff(), u=usedSet();
   const turned=sel.sx!==sel.sz&&s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o||Math.abs(b.x+o.x-ax)<=2&&Math.abs(b.z+o.z-az)<=2));
   const unused=!s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&Math.min(b.sx,b.sz)===Math.min(sel.sx,sel.sz)&&Math.max(b.sx,b.sz)===Math.max(sel.sx,sel.sz));
@@ -2012,7 +2026,7 @@ function placeBrick(t,ax,az){
     if(game&&cur>=model.steps.length) setTimeout(winLevel,700); }, 700);
 }
 function autoPlace(){
-  if(busy||!model||cur>=model.steps.length) return;
+  if(busy||!model||cur>=model.steps.length||mpBlitz()) return;
   if(isLocked(cur)){ setStatus('This page is locked. Solve Bloppit’s math puzzle to open it.','err'); openMath(cur); return; }
   if(mp&&!mpMyTurn()){ setStatus(mpTurnText(),'err'); return; }
   const s=model.steps[cur]; let o,t;
@@ -2045,7 +2059,7 @@ cvs.addEventListener('pointerleave',()=>{ if(tab==='build'&&!downXY) ghostGroup.
 $('#rotBtn').onclick=rotateSel;
 function toggleBook(){ const g=$('.build-grid'), off=!g.classList.toggle('no-book'); $('#bookBtn').setAttribute('aria-pressed',off); saveSoon(); requestAnimationFrame(()=>{resize(); bookResize(); frameBuild(true);}); }
 $('#bookBtn').onclick=toggleBook;
-$('#hintBtn').onclick=()=>{ if(isLocked(cur)){ openMath(cur); return; } hintOn=!hintOn; renderHints(); if(hintOn) setStatus(curOff()?'Faded bricks show where this step’s parts go.':'Faded bricks show one place to start. Anywhere works.');};
+$('#hintBtn').onclick=()=>{ if(mpBlitz()) return; if(isLocked(cur)){ openMath(cur); return; } hintOn=!hintOn; renderHints(); if(hintOn) setStatus(curOff()?'Faded bricks show where this step’s parts go.':'Faded bricks show one place to start. Anywhere works.');};
 $('#autoBtn').onclick=autoPlace;
 $('#fitBtn').onclick=()=>frameBuild(true);
 $('#openBox').onclick=openBox;
@@ -2153,7 +2167,8 @@ function takeChosen(){
   chosen.clear(); multi=false;
   takeToHand(list);
   setTab('build');
-  setStatus(list.length>1?`${list.length} bricks in hand. ${held&&stepNeeds(held)?'Click where the first one goes.':'Check the booklet for where they go.'}`:
+  if(mpBlitz()) setStatus(list.length>1?`${list.length} bricks in hand. Check the booklet for where they go.`:`${pieceName(list[0])} in hand. Check the booklet for where it goes.`);
+  else setStatus(list.length>1?`${list.length} bricks in hand. ${held&&stepNeeds(held)?'Click where the first one goes.':'Check the booklet for where they go.'}`:
     stepNeeds(list[0])?`${pieceName(list[0])} in hand. Click where it goes.`:`${pieceName(list[0])} in hand, but step ${cur+1} doesn’t use it.`, held&&stepNeeds(held)?'':'err');
   updateBuildUI();
 }
@@ -3307,10 +3322,19 @@ function mpStore(o){ try{ o?localStorage.setItem(MP_KEY,JSON.stringify(o)):local
 function mpRememberName(n){ try{ localStorage.setItem('building-blox-name',n); }catch(e){} }
 function mpName(){ const p=curPlayer(); if(p&&!/^Player \d+$/.test(p.name)) return p.name; try{ return localStorage.getItem('building-blox-name')||''; }catch(e){ return ''; } }
 async function mpCheck(){ if(mpAvailable!==null) return mpAvailable; try{ const j=await mpApi('GET',null,'?ping=1'); mpAvailable=!!(j&&j.ok); }catch(e){ mpAvailable=false; } return mpAvailable; }
+const mpBlitz=()=>!!(mp&&mp.state&&mp.state.mode==='blitz');
+const MISS_MS=3000;
+// Blitz times: the server's total so far, plus the turn that's running now (using the server's clock)
+function mpTime(s,i){ const p=s.players[i]; let t=(p.ms||0)+(p.miss||0)*MISS_MS;
+  if(s.started&&!s.finished&&s.turn===i&&mp) t+=Math.max(0,Date.now()+(mp.skew||0)-s.turnStart); return t; }
+function fmtTime(ms){ const t=Math.max(0,Math.floor(ms/100)), m=Math.floor(t/600), sec=Math.floor(t/10)%60; return `${m}:${String(sec).padStart(2,'0')}.${t%10}`; }
+function mpFlash(t){ const f=$('#mpFlash'); f.textContent=t; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); }
+function mpTick(){ const s=mp&&mp.state; if(!s||s.mode!=='blitz') return; document.querySelectorAll('[data-clk]').forEach(el=>{ el.textContent=fmtTime(mpTime(s,+el.dataset.clk)); }); }
 const mpMyTurn=()=>!!(mp&&mp.state&&mp.state.started&&!mp.state.finished&&mp.state.turn===mp.me);
 function mpTurnText(){ const s=mp&&mp.state; if(!s||!s.started) return 'Waiting for the game to start.'; if(s.finished) return 'The model is finished!'; return `It’s ${s.players[s.turn].name}’s turn. Get your bricks ready in the parts box.`; }
 function mpScores(s){
   return s.players.map((p,i)=>{ const own=s.moves.filter(m=>m.p===i&&!m.a).length, auto=s.moves.filter(m=>m.p===i&&m.a).length, pen=p.pen||{};
+    if(s.mode==='blitz') return {i,name:p.name,color:p.color,own,miss:p.miss||0,stale:p.stale,ms:mpTime(s,i)};
     return {i,name:p.name,color:p.color,own,auto,hint:pen.hint||0,miss:pen.miss||0,stale:p.stale,score:Math.max(0,own*10-auto*10-(pen.hint||0)*5)}; });
 }
 function mpEndSolo(){ if(game){ game=null; freeS=null; } hintOn=false; updateGameBar(); }
@@ -3348,7 +3372,8 @@ function reconcilePieces(){
 }
 function mpApply(s){
   if(!mp||!s||s.ver<mp.ver) return;
-  mp.state=s; mp.ver=s.ver;
+  mp.state=s; mp.ver=s.ver; if(s.now) mp.skew=s.now-Date.now();
+  if(s.mode==='blitz') hintOn=false;
   const cur0=cur, n0=placedN;
   let heard=0;
   for(let i=mp.applied;i<s.moves.length;i++){ const m=s.moves[i]; if(m.p===mp.me&&mp.local.has(m.b)) continue; applyMoveCore(m); heard++; }
@@ -3358,13 +3383,13 @@ function mpApply(s){
   if(placedN!==n0){ reconcilePieces(); updateBuildUI(); if(cur!==cur0||n0===0) frameBuild(true); }
   if(s.started&&!s.finished&&mp.lastTurn!==s.turn){
     mp.lastTurn=s.turn;
-    if(s.turn===mp.me) setStatus(`Your turn! Place ${s.perTurn} brick${s.perTurn>1?'s':''}.`,'ok');
+    if(s.turn===mp.me) setStatus(s.mode==='blitz'?'Your turn! Your clock is running. Place 1, 2 or 3 bricks, then tap Done.':`Your turn! Place ${s.perTurn} brick${s.perTurn>1?'s':''}.`,'ok');
     else setStatus(`${s.players[s.turn].name}’s turn. Get your next bricks ready in the parts box.`);
   }
   if(s.started&&!mp.entered){ mp.entered=true; if(tab!=='build'&&tab!=='box') setTab('build'); }
   document.title=(mpMyTurn()?'● Your turn · ':'')+'Bloppit';
   updateMpBar(); if(tab==='mp') renderMpView(); renderChat(); renderKnock(); voSync(s);
-  if(s.finished&&!mp.ended){ mp.ended=true; setStatus('Finished! You built it together.','ok'); setTimeout(mpShowEnd,1000); }
+  if(s.finished&&!mp.ended){ mp.ended=true; setStatus(s.mode==='blitz'?'Finished! Let’s see who was quickest.':'Finished! You built it together.','ok'); setTimeout(mpShowEnd,1000); }
 }
 function updateMpBar(){
   const s=mp&&mp.state;
@@ -3373,13 +3398,17 @@ function updateMpBar(){
   updateGameBar();
   if(!s) return;
   const done=!model||cur>=model.steps.length;
-  ['hintBtn','autoBtn'].forEach(id=>$('#'+id).disabled=done||!mpMyTurn());
-  $('#mpCodeBadge').textContent=s.code; $('#mpTitle').textContent=s.title;
+  const bz=s.mode==='blitz';
+  ['hintBtn','autoBtn'].forEach(id=>{ $('#'+id).disabled=done||!mpMyTurn(); $('#'+id).hidden=bz; });
+  $('#mpBar').classList.toggle('blitz',bz);
+  $('#mpCodeBadge').textContent=s.code; $('#mpTitle').innerHTML=(bz?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
   const cp=s.players[s.turn], mine=s.turn===mp.me, left=s.perTurn-s.turnPlaced, el=$('#mpTurn');
   el.classList.toggle('mine',mine&&!s.finished&&s.started);
-  el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Built together</small>':mine?`Your turn!<small>Place ${left} more brick${left===1?'':'s'}</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} of ${s.perTurn} placed${cp.stale?' · hasn’t been seen for a while':''}</small>`;
-  $('#mpPlayers').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.i===s.turn&&s.started&&!s.finished?' now':''}${p.stale?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''} <b>${p.score}</b>${voChip(p.i)}</span>`).join('');
+  if(bz) el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Quickest time wins</small>':mine?`Your turn! Go!<small>${s.turnPlaced?`${s.turnPlaced} placed · up to ${left} more, or tap Done`:'Place 1, 2 or 3 bricks, then tap Done'}</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} placed · their clock is running${cp.stale?' · hasn’t been seen for a while':''}</small>`;
+  else el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Built together</small>':mine?`Your turn!<small>Place ${left} more brick${left===1?'':'s'}</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} of ${s.perTurn} placed${cp.stale?' · hasn’t been seen for a while':''}</small>`;
+  $('#mpPlayers').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.i===s.turn&&s.started&&!s.finished?' now':''}${p.stale?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''} ${bz?`<b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${p.miss?`<span class="mi" title="Misses">✕${p.miss}</span>`:''}`:`<b>${p.score}</b>`}${voChip(p.i)}</span>`).join('');
   updateVoiceUI();
+  $('#mpEndTurn').textContent=bz?'Done':'End my turn';
   $('#mpEndTurn').hidden=!(mine&&s.started&&!s.finished&&s.turnPlaced>0);
   $('#mpSkip').hidden=!(!mine&&s.started&&!s.finished&&cp.stale);
 }
@@ -3420,16 +3449,18 @@ async function mpEnter(res,isHost,name){
   updateBuildUI(); frameBuild(false);
   let tick=0; mp.poll=setInterval(()=>{ tick++; if(tick%3===0||voBusy()) mpPoll(); },500);
   mp.ping=setInterval(()=>{ if(mp) mpPost({action:'ping'}).then(j=>mpApply(j.state)).catch(()=>{}); },15000);
+  mp.tick=setInterval(mpTick,100);
   try{ history.replaceState(null,'','?room='+res.code); }catch(e){}
 }
 function mpLeave(){
   if(!mp) return;
   voLeave(true);
-  clearInterval(mp.poll); clearInterval(mp.ping);
+  clearInterval(mp.poll); clearInterval(mp.ping); clearInterval(mp.tick);
   mp=null; mpStore(null); document.title='Bloppit'; chatOpen=false; renderChat();
   try{ history.replaceState(null,'',location.pathname); }catch(e){}
   $('#mpBar').hidden=true; $('#restart').hidden=false;
-  ['hintBtn','autoBtn'].forEach(id=>$('#'+id).disabled=false);
+  ['hintBtn','autoBtn'].forEach(id=>{ $('#'+id).disabled=false; $('#'+id).hidden=false; });
+  $('#mpBar').classList.remove('blitz');
   updateGameBar(); updateBuildUI();
 }
 async function mpJoin(code,name,playerId){
@@ -3489,8 +3520,10 @@ async function renderMpView(){
   $('#mpBigCode').textContent=s.code; $('#mpSite').textContent=APP?'bloppit.com/build':location.host+location.pathname.replace(/\/$/,'');
   const p0=photos[0]; if(p0) $('#mpThumb').src=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png'));
   $('#mpModelName').textContent=s.title;
-  $('#mpModelInfo').textContent=`${s.nBricks} bricks · ${s.perTurn} brick${s.perTurn>1?'s':''} per turn${s.started?` · ${s.moves.length} placed so far`:''}`;
-  $('#mpList').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.stale?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.i===s.host?' · made the room':''}${s.started?` <b>${p.score}</b>`:''}${voChip(p.i)}</span>`).join('');
+  const bz=s.mode==='blitz';
+  $('#mpModelInfo').innerHTML=bz?`<span class="blitz-tag">⚡ Bloppit Blitz</span>${s.nBricks} bricks · 1 to 3 bricks a turn, against the clock. No hints; each miss adds 3 seconds.${s.started?` ${s.moves.length} placed so far.`:''}`
+    :`${s.nBricks} bricks · ${s.perTurn} brick${s.perTurn>1?'s':''} per turn${s.started?` · ${s.moves.length} placed so far`:''}`;
+  $('#mpList').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.stale?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.i===s.host?' · made the room':''}${s.started?(bz?` <b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>`:` <b>${p.score}</b>`):''}${voChip(p.i)}</span>`).join('');
   const host=mp.me===s.host;
   $('#mpStart').hidden=!(host&&!s.started); $('#mpStart').textContent=s.players.length<2?'Start (just you so far)':`Start the game (${s.players.length} players)`;
   $('#mpGoBuild').hidden=!s.started;
@@ -3498,10 +3531,19 @@ async function renderMpView(){
   renderKnock(); updateVoiceUI();
 }
 function mpShowEnd(){
-  if(!mp||!mp.state) return; const s=mp.state, sc=mpScores(s).sort((a,b)=>b.score-a.score), medals=['🥇','🥈','🥉',''];
+  if(!mp||!mp.state) return;
+  if(mp.state.mode==='blitz') return mpShowBlitzEnd();
+  const s=mp.state, sc=mpScores(s).sort((a,b)=>b.score-a.score), medals=['🥇','🥈','🥉',''];
   $('#mpEndTitle').textContent=`${s.title}: built together!`;
   $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span>${p.own} brick${p.own===1?'':'s'} · ${p.score} pts</span></div>`).join('');
   $('#mpEndNote').textContent=`${s.nBricks} bricks placed by ${s.players.length} player${s.players.length>1?'s':''}. Each brick you place is worth 10 points; hints and “place one for me” cost points. Wrong spots are free: just try again.`;
+  $('#mpEndDlg').showModal();
+}
+function mpShowBlitzEnd(){
+  const s=mp.state, sc=mpScores(s).sort((a,b)=>a.ms-b.ms), medals=['🥇','🥈','🥉',''], w=sc[0];
+  $('#mpEndTitle').textContent=sc.length>1?`⚡ ${w.i===mp.me?'You win':`${w.name} wins`}!`:`⚡ Done in ${fmtTime(w.ms)}!`;
+  $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span><b>${fmtTime(p.ms)}</b> · ${p.own} brick${p.own===1?'':'s'} · ${p.miss} miss${p.miss===1?'':'es'}</span></div>`).join('');
+  $('#mpEndNote').textContent=`${s.title}: ${s.nBricks} bricks. Shortest total time wins. Each clock only ran during that player’s own turns, and every miss added 3 seconds.`;
   $('#mpEndDlg').showModal();
 }
 $('#mpEndClose').onclick=()=>{ $('#mpEndDlg').close(); setTab('build'); };
@@ -3513,9 +3555,9 @@ $('#mpCreate').onclick=async()=>{
     const choice=$('#mpModel').value;
     if(choice!=='cur'){ const L=LEVELS[+choice]; mpEndSolo(); photos=levelPhotos(L); setControls(levelSettings(L)); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild(); }
     if(!model) throw new Error('Pick something to build first.');
-    const perTurn=+document.querySelector('input[name=perTurn]:checked').value;
+    const perTurn=+document.querySelector('input[name=perTurn]:checked').value, mode=document.querySelector('input[name=mpMode]:checked').value;
     const level=choice!=='cur'?+choice:(game?game.lvl:null);
-    const res=await mpApi('POST',{action:'create',app:APP||undefined,name,perTurn,nBricks:model.bricks.length,title:choice!=='cur'?LEVELS[+choice].name:model.name,level,
+    const res=await mpApi('POST',{action:'create',app:APP||undefined,name,mode,perTurn,nBricks:model.bricks.length,title:choice!=='cur'?LEVELS[+choice].name:model.name,level,
       model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
     mpRememberName(name);
     await mpEnter(res,true,name); renderMpView();
@@ -3531,6 +3573,9 @@ $('#mpJoin').onclick=async()=>{
   catch(e){ mpMsg(e.message,'err'); }
   finally{ btn.disabled=false; }
 };
+document.querySelectorAll('input[name=mpMode]').forEach(r=>r.addEventListener('change',()=>{ const bz=$('#mdBlitz').checked;
+  $('#mpPerTurnField').hidden=bz;
+  $('#mpModeNote').textContent=bz?'Race the clock! On your turn place 1, 2 or 3 bricks, then tap Done. No hints, and each miss adds 3 seconds. Shortest total time wins.':'Take turns and build it together. Hints are allowed.'; }));
 $('#mpWaitStop').onclick=()=>{ mpWaitStop(true); renderMpView(); };
 $('#mpCodeIn').addEventListener('input',e=>{ e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
 $('#mpStart').onclick=()=>mpPost({action:'start'}).then(j=>mpApply(j.state)).catch(e=>mpMsg(e.message,'err'));
