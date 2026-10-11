@@ -6,12 +6,31 @@
 #  2. Team settings > Integrations > Developer Portal: connect an App Store Connect API key and name it "Bloppit ASC".
 #  3. In App Store Connect, create the app with bundle ID com.bloppit.app, then copy its "Apple ID" number
 #     (App Information page) into APP_STORE_APPLE_ID below.
-#  4. Start the "iOS to TestFlight" workflow.
+#  4. Start the "iOS to TestFlight" workflow once by hand. After that, every push to main that changes the
+#     app (public/build/ or mobile/) builds it and sends it to TestFlight automatically. Pushes that only
+#     change the home page, the room server or other files are skipped, which saves build minutes.
+#     If automatic builds don't start: Codemagic > this app > Webhooks > "Update webhook".
 workflows:
   ios-testflight:
     name: iOS to TestFlight
     instance_type: mac_mini_m2
     max_build_duration: 45
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+      cancel_previous_builds: true # a newer push replaces a build that's still waiting or running
+    when:
+      changeset: # only build when the app itself changed (codemagic.yaml always counts too)
+        includes:
+          - 'public/build/'
+          - 'mobile/'
+        excludes:
+          - '**/*.md'
+          - 'mobile/store/'
     integrations:
       app_store_connect: Bloppit ASC
     environment:

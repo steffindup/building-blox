@@ -25,7 +25,7 @@ Kids apps must not have third-party ads or analytics (Bloppit has none) and link
 
 ## Promotional text (170)
 
-Turn any photo into a brick model with its own step-by-step instruction booklet, then build it yourself on screen. New: Math challenge and Picture mode!
+Turn any photo into a brick model with its own step-by-step instruction booklet, then build it yourself on screen. New: Bloppit Blitz, a race against the clock!
 
 ## Description (4000)
 
@@ -53,6 +53,7 @@ PLAY THE GAME
 PLAY TOGETHER
 • Build one model together on different iPhones, iPads and computers
 • Take turns placing a few bricks each and watch the model grow
+• Bloppit Blitz: race the clock! Everyone places the same number of bricks, 1 to 3 a turn, and the quickest builder wins
 • Chat with friendly quick messages
 
 MADE FOR KIDS AND FAMILIES
@@ -95,7 +96,7 @@ Data collected (only through Play together, kept on the server until 3 days afte
 | Data type | Collected | Linked to the user's identity | Used for tracking | Purpose |
 |---|---|---|---|---|
 | User Content › Photos or Videos (the photos a shared model is made from) | Yes | No | No | App Functionality |
-| User Content › Gameplay Content (bricks placed, scores) | Yes | No | No | App Functionality |
+| User Content › Gameplay Content (bricks placed, scores, Blitz times) | Yes | No | No | App Functionality |
 | User Content › Other User Content (player nickname, quick messages) | Yes | No | No | App Functionality |
 
 Everything else (contact info, identifiers, location, usage data, diagnostics, etc.): **Not collected**.
@@ -104,6 +105,14 @@ Everything else (contact info, identifiers, location, usage data, diagnostics, e
 
 In `screenshots/`. Upload the `iphone-*` set as the 6.9" iPhone display (1320 × 2868) and the `ipad-*` set as the
 13" iPad display (2064 × 2752). App Store Connect scales them down for smaller devices.
+`iphone-5-blitz` and `ipad-6-blitz` show Bloppit Blitz; drag them earlier in the order if you want Blitz featured.
+
+## Updating the app
+
+Every push to main that changes the app (`public/build/` or `mobile/`) makes a new Codemagic build, which goes to
+TestFlight on its own (see `codemagic.yaml`). Testers get it from there. Each App Store release still needs a
+new version number (e.g. 1.1) and Apple's review: in App Store Connect, add the version, pick a TestFlight build
+and submit it.
 
 ## App icon
 
