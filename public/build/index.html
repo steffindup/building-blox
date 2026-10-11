@@ -1974,7 +1974,7 @@ function tryPlace(){
   if(!sel||!lastAnchor||busy) return;
   if(isLocked(cur)){ setStatus('This page is locked. Solve Bloppit’s math puzzle to open it.','err'); openMath(cur); return; }
   if(mp&&!mpMyTurn()){ setStatus(mpTurnText(),'err'); return; }
-  if(mp&&mp.state.turnPlaced+mp.posting>=mp.state.perTurn){ setStatus('That was your last brick this turn.','ok'); return; }
+  if(mp&&mp.posting>=mpLeft(mp.state)){ setStatus(mpBlitz()&&(mp.state.players[mp.me].n||0)+mp.posting>=mp.state.quota?'That was your last brick. Wait for the others to finish.':'That was your last brick this turn.','ok'); return; }
   const s=model.steps[cur], {ax,az}=lastAnchor;
   const same=b=>b.c===sel.c&&b.sx===sel.sx&&b.sz===sel.sz;
   let t=null;
@@ -3328,13 +3328,15 @@ const MISS_MS=3000;
 function mpTime(s,i){ const p=s.players[i]; let t=(p.ms||0)+(p.miss||0)*MISS_MS;
   if(s.started&&!s.finished&&s.turn===i&&mp) t+=Math.max(0,Date.now()+(mp.skew||0)-s.turnStart); return t; }
 function fmtTime(ms){ const t=Math.max(0,Math.floor(ms/100)), m=Math.floor(t/600), sec=Math.floor(t/10)%60; return `${m}:${String(sec).padStart(2,'0')}.${t%10}`; }
+// Blitz: how many more bricks I may place this turn (my share caps it as well as the 3-a-turn limit)
+function mpLeft(s){ const me=s.players[mp.me]||{}, l=s.perTurn-s.turnPlaced; return s.mode==='blitz'&&s.quota?Math.min(l,s.quota-(me.n||0)):l; }
 function mpFlash(t){ const f=$('#mpFlash'); f.textContent=t; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); }
 function mpTick(){ const s=mp&&mp.state; if(!s||s.mode!=='blitz') return; document.querySelectorAll('[data-clk]').forEach(el=>{ el.textContent=fmtTime(mpTime(s,+el.dataset.clk)); }); }
 const mpMyTurn=()=>!!(mp&&mp.state&&mp.state.started&&!mp.state.finished&&mp.state.turn===mp.me);
 function mpTurnText(){ const s=mp&&mp.state; if(!s||!s.started) return 'Waiting for the game to start.'; if(s.finished) return 'The model is finished!'; return `It’s ${s.players[s.turn].name}’s turn. Get your bricks ready in the parts box.`; }
 function mpScores(s){
   return s.players.map((p,i)=>{ const own=s.moves.filter(m=>m.p===i&&!m.a).length, auto=s.moves.filter(m=>m.p===i&&m.a).length, pen=p.pen||{};
-    if(s.mode==='blitz') return {i,name:p.name,color:p.color,own,miss:p.miss||0,stale:p.stale,ms:mpTime(s,i)};
+    if(s.mode==='blitz') return {i,name:p.name,color:p.color,own,miss:p.miss||0,stale:p.stale,ms:mpTime(s,i),n:p.n||0,done:!!s.quota&&(p.n||0)>=s.quota};
     return {i,name:p.name,color:p.color,own,auto,hint:pen.hint||0,miss:pen.miss||0,stale:p.stale,score:Math.max(0,own*10-auto*10-(pen.hint||0)*5)}; });
 }
 function mpEndSolo(){ if(game){ game=null; freeS=null; } hintOn=false; updateGameBar(); }
@@ -3383,7 +3385,7 @@ function mpApply(s){
   if(placedN!==n0){ reconcilePieces(); updateBuildUI(); if(cur!==cur0||n0===0) frameBuild(true); }
   if(s.started&&!s.finished&&mp.lastTurn!==s.turn){
     mp.lastTurn=s.turn;
-    if(s.turn===mp.me) setStatus(s.mode==='blitz'?'Your turn! Your clock is running. Place 1, 2 or 3 bricks, then tap Done.':`Your turn! Place ${s.perTurn} brick${s.perTurn>1?'s':''}.`,'ok');
+    if(s.turn===mp.me) setStatus(s.mode==='blitz'?(mpLeft(s)<3?`Your turn! Your clock is running. Place ${mpLeft(s)===1?'your last brick':`up to ${mpLeft(s)} bricks`}.`:'Your turn! Your clock is running. Place 1, 2 or 3 bricks, then tap Done.'):`Your turn! Place ${s.perTurn} brick${s.perTurn>1?'s':''}.`,'ok');
     else setStatus(`${s.players[s.turn].name}’s turn. Get your next bricks ready in the parts box.`);
   }
   if(s.started&&!mp.entered){ mp.entered=true; if(tab!=='build'&&tab!=='box') setTab('build'); }
@@ -3402,11 +3404,11 @@ function updateMpBar(){
   ['hintBtn','autoBtn'].forEach(id=>{ $('#'+id).disabled=done||!mpMyTurn(); $('#'+id).hidden=bz; });
   $('#mpBar').classList.toggle('blitz',bz);
   $('#mpCodeBadge').textContent=s.code; $('#mpTitle').innerHTML=(bz?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
-  const cp=s.players[s.turn], mine=s.turn===mp.me, left=s.perTurn-s.turnPlaced, el=$('#mpTurn');
+  const cp=s.players[s.turn], mine=s.turn===mp.me, left=mpLeft(s), el=$('#mpTurn');
   el.classList.toggle('mine',mine&&!s.finished&&s.started);
-  if(bz) el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Quickest time wins</small>':mine?`Your turn! Go!<small>${s.turnPlaced?`${s.turnPlaced} placed · up to ${left} more, or tap Done`:'Place 1, 2 or 3 bricks, then tap Done'}</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} placed · their clock is running${cp.stale?' · hasn’t been seen for a while':''}</small>`;
+  if(bz) el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Quickest time wins</small>':mine?`Your turn! Go!<small>${s.turnPlaced?`${s.turnPlaced} placed · up to ${left} more, or tap Done`:left<3?`Place up to ${left} brick${left===1?'':'s'} (${left===1?'your last one':'your last ones'})`:'Place 1, 2 or 3 bricks, then tap Done'}</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} placed · their clock is running${cp.stale?' · hasn’t been seen for a while':''}</small>`;
   else el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Built together</small>':mine?`Your turn!<small>Place ${left} more brick${left===1?'':'s'}</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} of ${s.perTurn} placed${cp.stale?' · hasn’t been seen for a while':''}</small>`;
-  $('#mpPlayers').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.i===s.turn&&s.started&&!s.finished?' now':''}${p.stale?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''} ${bz?`<b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${p.miss?`<span class="mi" title="Misses">✕${p.miss}</span>`:''}`:`<b>${p.score}</b>`}${voChip(p.i)}</span>`).join('');
+  $('#mpPlayers').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.i===s.turn&&s.started&&!s.finished?' now':''}${p.stale?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''} ${bz?`<b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${s.quota?`<span class="mi" style="color:var(--muted)" title="Bricks placed">${p.done?'✓':`${p.n}/${s.quota}`}</span>`:''}${p.miss?`<span class="mi" title="Misses">✕${p.miss}</span>`:''}`:`<b>${p.score}</b>`}${voChip(p.i)}</span>`).join('');
   updateVoiceUI();
   $('#mpEndTurn').textContent=bz?'Done':'End my turn';
   $('#mpEndTurn').hidden=!(mine&&s.started&&!s.finished&&s.turnPlaced>0);
@@ -3521,7 +3523,7 @@ async function renderMpView(){
   const p0=photos[0]; if(p0) $('#mpThumb').src=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png'));
   $('#mpModelName').textContent=s.title;
   const bz=s.mode==='blitz';
-  $('#mpModelInfo').innerHTML=bz?`<span class="blitz-tag">⚡ Bloppit Blitz</span>${s.nBricks} bricks · 1 to 3 bricks a turn, against the clock. No hints; each miss adds 3 seconds.${s.started?` ${s.moves.length} placed so far.`:''}`
+  $('#mpModelInfo').innerHTML=bz?`<span class="blitz-tag">⚡ Bloppit Blitz</span>${s.nBricks} bricks · ${s.quota?`everyone places ${s.quota}`:`split evenly between ${s.players.length} player${s.players.length===1?'':'s'}: ${Math.floor(s.nBricks/s.players.length)} each`} · 1 to 3 bricks a turn, against the clock. No hints; each miss adds 3 seconds.${s.started?` ${s.moves.length} placed so far.`:''}`
     :`${s.nBricks} bricks · ${s.perTurn} brick${s.perTurn>1?'s':''} per turn${s.started?` · ${s.moves.length} placed so far`:''}`;
   $('#mpList').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.stale?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.i===s.host?' · made the room':''}${s.started?(bz?` <b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>`:` <b>${p.score}</b>`):''}${voChip(p.i)}</span>`).join('');
   const host=mp.me===s.host;
@@ -3543,7 +3545,8 @@ function mpShowBlitzEnd(){
   const s=mp.state, sc=mpScores(s).sort((a,b)=>a.ms-b.ms), medals=['🥇','🥈','🥉',''], w=sc[0];
   $('#mpEndTitle').textContent=sc.length>1?`⚡ ${w.i===mp.me?'You win':`${w.name} wins`}!`:`⚡ Done in ${fmtTime(w.ms)}!`;
   $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span><b>${fmtTime(p.ms)}</b> · ${p.own} brick${p.own===1?'':'s'} · ${p.miss} miss${p.miss===1?'':'es'}</span></div>`).join('');
-  $('#mpEndNote').textContent=`${s.title}: ${s.nBricks} bricks. Shortest total time wins. Each clock only ran during that player’s own turns, and every miss added 3 seconds.`;
+  const extra=s.moves.filter(m=>m.p<0).length;
+  $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and Bloppit put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, and every miss added 3 seconds.`;
   $('#mpEndDlg').showModal();
 }
 $('#mpEndClose').onclick=()=>{ $('#mpEndDlg').close(); setTab('build'); };
@@ -3575,7 +3578,7 @@ $('#mpJoin').onclick=async()=>{
 };
 document.querySelectorAll('input[name=mpMode]').forEach(r=>r.addEventListener('change',()=>{ const bz=$('#mdBlitz').checked;
   $('#mpPerTurnField').hidden=bz;
-  $('#mpModeNote').textContent=bz?'Race the clock! On your turn place 1, 2 or 3 bricks, then tap Done. No hints, and each miss adds 3 seconds. Shortest total time wins.':'Take turns and build it together. Hints are allowed.'; }));
+  $('#mpModeNote').textContent=bz?'Race the clock! Everyone places the same number of bricks, 1, 2 or 3 a turn, then tap Done. No hints, and each miss adds 3 seconds. Shortest total time wins.':'Take turns and build it together. Hints are allowed.'; }));
 $('#mpWaitStop').onclick=()=>{ mpWaitStop(true); renderMpView(); };
 $('#mpCodeIn').addEventListener('input',e=>{ e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
 $('#mpStart').onclick=()=>mpPost({action:'start'}).then(j=>mpApply(j.state)).catch(e=>mpMsg(e.message,'err'));

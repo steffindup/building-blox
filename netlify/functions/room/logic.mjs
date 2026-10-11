@@ -95,9 +95,9 @@ function publicState(s, viewer = -1) {
   const out = {
     code: s.code, ver: s.ver, started: s.started, finished: s.finished, perTurn: s.perTurn, mode: s.mode || 'classic',
     nBricks: s.nBricks, title: s.title, level: s.level, host: s.host, turn: s.turn,
-    turnPlaced: s.turnPlaced, turnStart: s.turnStart, moves: s.moves, now, voice: !!s.voice,
+    turnPlaced: s.turnPlaced, turnStart: s.turnStart, moves: s.moves, now, voice: !!s.voice, quota: s.quota || 0,
     players: s.players.map((p) => ({ name: p.name, color: p.color, pen: p.pen, stale: now - p.seen > STALE_MS, vc: s.voice ? (p.vc || 0) : 0,
-      ...(s.mode === 'blitz' ? { ms: p.ms || 0, miss: p.miss || 0 } : {}) })),
+      ...(s.mode === 'blitz' ? { ms: p.ms || 0, miss: p.miss || 0, n: p.n || 0 } : {}) })),
     quick: !!s.quick,
   };
   if (viewer >= 0) {
@@ -122,9 +122,14 @@ function stopClock(s) {
   const p = s.players[s.turn];
   if (p) p.ms = (p.ms || 0) + Math.max(0, Date.now() - s.turnStart);
 }
+// In Blitz everyone places the same number of bricks (their share), so a player who has placed theirs is skipped.
+const shareDone = (s, i) => blitz(s) && s.quota > 0 && (s.players[i].n || 0) >= s.quota;
 function nextTurn(s) {
   stopClock(s);
-  s.turn = (s.turn + 1) % s.players.length;
+  for (let k = 0; k < s.players.length; k++) {
+    s.turn = (s.turn + 1) % s.players.length;
+    if (!shareDone(s, s.turn)) break;
+  }
   s.turnPlaced = 0;
   s.turnStart = Date.now();
 }
@@ -257,7 +262,14 @@ export async function handle(method, query, body, store) {
       const i = mine(s);
       if (i < 0) return { error: 'You’re not in this room.', status: 403 };
       if (i !== s.host) return { error: 'Only the player who made the room can start it.', status: 403 };
-      if (!s.started) { s.started = true; s.turn = 0; s.turnPlaced = 0; s.turnStart = Date.now(); }
+      if (!s.started) {
+        if (blitz(s)) {
+          s.quota = Math.floor(s.nBricks / s.players.length);
+          if (s.quota < 1) return { error: 'This model doesn’t have enough bricks for everyone. Pick a bigger one.', status: 409 };
+          s.players.forEach((p) => { p.n = 0; p.ms = 0; p.miss = 0; });
+        }
+        s.started = true; s.turn = 0; s.turnPlaced = 0; s.turnStart = Date.now();
+      }
       return {};
     }, pid);
   }
@@ -273,6 +285,7 @@ export async function handle(method, query, body, store) {
       s.waiting = s.waiting.filter((x) => x !== w);
       if (a === 'deny') { s.denied = [...(s.denied || []), w.id].slice(-20); return {}; }
       if (s.players.length >= MAX_PLAYERS) return { error: 'The room is full (4 players).', status: 409 };
+      if (blitz(s) && s.started) return { error: 'Bloppit Blitz has already started, so nobody new can join this game.', status: 409 };
       const used = new Set(s.players.map((p) => p.color));
       s.players.push({ id: w.id, name: w.name, color: COLORS.find((c) => !used.has(c)) || COLORS[0], pen: { hint: 0, auto: 0, miss: 0 }, seen: Date.now(), ms: 0, miss: 0 });
       return {};
@@ -366,11 +379,19 @@ export async function handle(method, query, body, store) {
       if (!(b >= 0 && b < s.nBricks)) return { error: 'Unknown brick.', status: 400 };
       if (s.moves.some((m) => m.b === b)) return { error: 'That brick is already placed.', status: 409 };
       if (blitz(s) && body.auto) return { error: 'There’s no “place one for me” in Bloppit Blitz.', status: 400 };
+      if (shareDone(s, i)) return { error: 'You’ve placed all your bricks.', status: 409 };
       s.moves.push({ p: i, b, x: Math.round(Number(body.x) || 0), z: Math.round(Number(body.z) || 0), a: body.auto ? 1 : 0 });
       if (body.pen && !blitz(s)) s.players[i].pen = mergePen(s.players[i].pen, body.pen);
       s.turnPlaced += 1;
-      if (s.moves.length >= s.nBricks) { stopClock(s); s.finished = true; }
-      else if (s.turnPlaced >= s.perTurn) nextTurn(s);
+      s.players[i].n = (s.players[i].n || 0) + 1;
+      if (blitz(s) && s.players.every((_, k) => shareDone(s, k))) {
+        // Everyone has placed their share. If the bricks didn't divide evenly, Bloppit puts in the last few.
+        stopClock(s);
+        const done = new Set(s.moves.map((m) => m.b));
+        for (let k = 0; k < s.nBricks; k++) if (!done.has(k)) s.moves.push({ p: -1, b: k, x: 0, z: 0, a: 1 });
+        s.finished = true;
+      } else if (s.moves.length >= s.nBricks) { stopClock(s); s.finished = true; }
+      else if (s.turnPlaced >= s.perTurn || shareDone(s, i)) nextTurn(s);
       return {};
     }, pid);
   }
