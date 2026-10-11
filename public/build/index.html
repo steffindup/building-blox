@@ -573,6 +573,30 @@ body.chat-on{padding-bottom:96px}
 .resume-btns{display:flex;gap:8px;flex-wrap:wrap}
 .resume .ghost{color:#14202C;border-color:rgba(20,32,44,.35);font-weight:700;font-size:14px;padding:8px 14px}
 #saveNote{font-size:12px}
+/* Phones and small tablets: one slim header row that tucks away while you scroll down and comes back when you scroll up */
+@media (max-width:900px){
+  .top{flex-wrap:nowrap;gap:8px;padding-block:6px;transition:transform .22s ease}
+  .top::before{content:"";position:absolute;left:-16px;right:-16px;bottom:100%;height:env(safe-area-inset-top,0px);background:var(--bg)}
+  .top.tucked{transform:translateY(calc(-100% - env(safe-area-inset-top,0px) - 2px))}
+  .brand{font-size:19px;gap:6px;flex:none}
+  .brand svg{width:30px;height:26px}
+  .tabs{flex-wrap:nowrap;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-block:2px;mask-image:linear-gradient(90deg,#000 calc(100% - 18px),transparent)}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:none;white-space:nowrap;padding:4px 10px 4px 5px;gap:6px;font-size:13px}
+  .tab .n{width:20px;height:20px;font-size:12px}
+  .who{flex:none;padding:2px;margin-left:0;box-shadow:none}
+  .who .av{width:30px;height:30px;font-size:16px}
+  .who-txt{display:none}
+  main{padding-block:10px 0}
+}
+@media (max-width:560px){.brand span{display:none}}
+/* Booklet zoom */
+.pg-zoom{position:absolute;left:6px;bottom:6px;z-index:2;display:flex;gap:4px}
+.pg-zoom button{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:color-mix(in srgb,var(--page) 88%,transparent);color:var(--ink);font-weight:800;font-size:18px;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0}
+.pg-zoom button:hover{border-color:var(--ink)}
+.pg-zoom button:disabled{opacity:.4;cursor:default}
+.pg-zoom .zx{font-size:15px}
+.pg-chart{touch-action:none}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 
@@ -701,7 +725,7 @@ body.chat-on{padding-bottom:96px}
       <div class="bp-head"><span class="tag">Instruction booklet</span><span class="tag" id="bpPage"></span></div>
       <article class="page live" id="bpCard">
         <div class="pg-top"><div class="pg-step" id="bpStep">1</div><div class="callout" id="bpCallout"></div></div>
-        <div class="pg-view" id="bpView" role="img" aria-label="Booklet picture for this step. Drag to turn it."><span class="pg-turn" aria-hidden="true">Drag to turn</span><canvas class="pg-chart" id="bpChart" hidden></canvas></div>
+        <div class="pg-view" id="bpView" role="img" aria-label="Booklet picture for this step. Drag to turn it, pinch to zoom."><div class="pg-zoom"><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">−</button><button type="button" class="zx" id="bpBig" aria-label="Open this page big" title="Open big">⤢</button></div><span class="pg-turn" aria-hidden="true">Drag to turn · pinch to zoom</span><canvas class="pg-chart" id="bpChart" hidden></canvas></div>
         <div class="pg-foot" id="bpFoot"></div>
         <div class="pg-lock" id="bpLock" hidden><div class="lk-ic" aria-hidden="true">🔒</div><b>This page is locked</b><span>Solve Bloppit’s math puzzle to open it.</span><button class="primary sm" id="bpUnlock" type="button">Solve the puzzle</button></div>
       </article>
@@ -949,7 +973,7 @@ body.chat-on{padding-bottom:96px}
 <dialog class="lightbox" id="bookDlg" aria-label="Booklet page">
   <div class="lb-top"><div class="pg-top"><div class="pg-step" id="lbStep"></div><div class="callout" id="lbCallout"></div></div>
     <div class="lb-nav"><button class="ghost" id="lbPrev" type="button">&lsaquo;</button><button class="ghost" id="lbNext" type="button">&rsaquo;</button><button class="ghost" id="lbClose" type="button">Close</button></div></div>
-  <div class="lb-view" id="lbView"><canvas class="pg-chart" id="lbChart" hidden></canvas><span class="pg-turn" aria-hidden="true">Drag to turn · scroll to zoom</span></div>
+  <div class="lb-view" id="lbView"><div class="pg-zoom"><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">−</button></div><canvas class="pg-chart" id="lbChart" hidden></canvas><span class="pg-turn" aria-hidden="true">Drag to turn · pinch or scroll to zoom</span></div>
 </dialog>
 
 <section class="view" id="view-booklet" hidden>
@@ -1204,6 +1228,7 @@ function buildPicture(front){
 // The booklet page for a picture: a pattern chart, like brick-art instructions.
 // It zooms in on the tiles of this step (outlined), with rows already done in full colour, the rest faded,
 // and a small map of the whole picture in the corner showing where you are.
+let chartZoom=1;
 function drawChart(cv,k){
   const m=model; if(!m||m.kind!=='picture'||!cv) return;
   const dpr=Math.min(devicePixelRatio||1,2), r=cv.getBoundingClientRect(), Wc=Math.max(120,r.width), Hc=Math.max(90,r.height);
@@ -1215,6 +1240,11 @@ function drawChart(cv,k){
     c0=Math.min(...st.bricks.map(b=>b.x)); c1=Math.max(...st.bricks.map(b=>b.x+b.sx));
     const need=Math.max(12,c1-c0+2), mid=(c0+c1)/2; c0=Math.max(0,Math.round(mid-need/2)); c1=Math.min(m.W,c0+need); c0=Math.max(0,c1-need);
     const rows=clamp(Math.round((c1-c0)*Hc*.7/Wc),4,10); r0=Math.max(0,st.row-Math.floor(rows*.6)); r1=Math.min(m.D,r0+rows); r0=Math.max(0,r1-rows);
+  }
+  if(chartZoom!==1){ // zoomed in or out: shrink or grow the window around this step's tiles
+    const cx=st?(Math.min(...st.bricks.map(b=>b.x))+Math.max(...st.bricks.map(b=>b.x+b.sx)))/2:(c0+c1)/2, cz=st?st.row+.5:(r0+r1)/2;
+    const nw=clamp(Math.round((c1-c0)/chartZoom),3,m.W), nh=clamp(Math.round((r1-r0)/chartZoom),2,m.D);
+    c0=clamp(Math.round(cx-nw/2),0,m.W-nw); c1=c0+nw; r0=clamp(Math.round(cz-nh/2),0,m.D-nh); r1=r0+nh;
   }
   // Chart on top, a small map of the whole picture underneath
   const mapH=st?Math.max(28,Hc*.24):0, availH=Hc-(mapH?mapH+10:0);
@@ -1497,8 +1527,39 @@ const bookR=new THREE.WebGLRenderer({antialias:true,alpha:true});
 bookR.setPixelRatio(Math.min(devicePixelRatio||1,2)); bookR.outputEncoding=THREE.sRGBEncoding; bookR.setClearColor(0x000000,0);
 const bookCam=new THREE.PerspectiveCamera(32,4/3,.1,2000);
 const bookControls=new THREE.OrbitControls(bookCam,bookR.domElement);
-bookControls.enableDamping=true; bookControls.dampingFactor=.1; bookControls.enablePan=false; bookControls.enableZoom=false;
+bookControls.enableDamping=true; bookControls.dampingFactor=.1; bookControls.enablePan=false; bookControls.enableZoom=true;
 $('#bpView').prepend(bookR.domElement);
+/* Booklet zoom: pinch (or the + and − buttons, or ctrl/trackpad-pinch scroll) on any booklet page */
+function redrawCharts(){ if(!TILES||!model) return; if(!$('#bpChart').hidden) drawChart($('#bpChart'),viewPage); if(!$('#lbChart').hidden) drawChart($('#lbChart'),lbK); }
+function bookZoom(f){ // f>1 zooms in
+  if(!model) return;
+  if(TILES){ chartZoom=clamp(chartZoom*f,.5,4); redrawCharts(); return; }
+  bookAim(bookCam.position.distanceTo(bookControls.target)/f);
+}
+// Zoomed in, the booklet looks at this step's new bricks; zoomed all the way out, at the whole model
+function bookAim(L){
+  if(!model||!frameInfo) return;
+  const fit=frameInfo.r/Math.sin(THREE.MathUtils.degToRad(bookCam.fov/2));
+  L=clamp(L??bookCam.position.distanceTo(bookControls.target),fit*.15,fit*3);
+  const dir=bookCam.position.clone().sub(bookControls.target).normalize();
+  const zoomed=L<fit*.95&&current.children.length, tgt=zoomed?new THREE.Box3().setFromObject(current).getCenter(new THREE.Vector3()):frameInfo.center;
+  bookControls.target.copy(tgt); bookCam.position.copy(tgt).addScaledVector(dir,L); bookControls.update();
+}
+bookControls.addEventListener('end',()=>bookAim());
+document.querySelectorAll('.pg-zoom [data-z]').forEach(b=>b.addEventListener('click',e=>{ e.stopPropagation(); bookZoom(b.dataset.z==='in'?1.35:1/1.35); }));
+$('#bpBig').addEventListener('click',e=>{ e.stopPropagation(); if(model&&!isLocked(viewPage)) openLightbox(viewPage); });
+// A plain mouse wheel over the small booklet scrolls the page; a trackpad pinch (ctrl+wheel) zooms
+$('#bpView').addEventListener('wheel',e=>{ if(!e.ctrlKey) e.stopPropagation(); },{capture:true});
+// Picture charts: wheel and two-finger pinch
+for(const id of ['bpChart','lbChart']){
+  const cv=$('#'+id), pts=new Map(); let d0=0;
+  cv.addEventListener('wheel',e=>{ if(id==='bpChart'&&!e.ctrlKey) return; e.preventDefault(); bookZoom(Math.exp(-e.deltaY*.004)); },{passive:false});
+  cv.addEventListener('pointerdown',e=>{ pts.set(e.pointerId,[e.clientX,e.clientY]); if(pts.size===2){ const [a,b]=[...pts.values()]; d0=Math.hypot(a[0]-b[0],a[1]-b[1]); } });
+  cv.addEventListener('pointermove',e=>{ if(!pts.has(e.pointerId)) return; pts.set(e.pointerId,[e.clientX,e.clientY]);
+    if(pts.size===2&&d0>0){ const [a,b]=[...pts.values()], d=Math.hypot(a[0]-b[0],a[1]-b[1]); if(Math.abs(d/d0-1)>.08){ bookZoom(d/d0); d0=d; } } });
+  const up=e=>{ pts.delete(e.pointerId); d0=0; };
+  cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up); cv.addEventListener('pointerleave',up);
+}
 function bookResize(){
   const el=bookR.domElement.parentElement; if(!el) return;
   const w=el.clientWidth,h=el.clientHeight; if(!w||!h) return;
@@ -1611,9 +1672,17 @@ function rebuild(){
 }
 
 /* ---------- Tabs ---------- */
+{ // Slim header on phones tucks away while scrolling down, comes back on the way up
+  const top=$('.top'), mq=matchMedia('(max-width:900px)'); let y0=scrollY;
+  addEventListener('scroll',()=>{ const y=scrollY, dy=y-y0; if(Math.abs(dy)<6) return;
+    top.classList.toggle('tucked',mq.matches&&dy>0&&y>60); y0=y; },{passive:true});
+  top.addEventListener('focusin',()=>top.classList.remove('tucked'));
+  mq.addEventListener('change',()=>top.classList.remove('tucked'));
+}
 function setTab(t){
   tab=t;
   document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===(t==='box'?'build':t)));
+  { const sel=document.querySelector('.tab[aria-selected="true"]'), bar=$('.tabs'); if(sel&&bar.scrollWidth>bar.clientWidth) bar.scrollTo({left:sel.offsetLeft-bar.offsetLeft-24,behavior:'smooth'}); }
   ['create','build','box','booklet','game','mp'].forEach(v=>$('#view-'+v).hidden=v!==t);
   $('#mpBar').hidden=!(mp&&mp.state&&mp.state.started&&(t==='build'||t==='box'));
   if(t==='mp'){ renderer.domElement.remove(); renderMpView(); }
@@ -1793,6 +1862,7 @@ function showPage(k){
     $('#bpStep').textContent=k+1; $('#bpCallout').innerHTML=calloutHTML(s.bricks);
     $('#bpFoot').textContent=`${TILES?`Row ${s.row+1} of ${model.D}`:`Layer ${s.layer+1} of ${model.H}`}${s.parts>1?` · part ${s.part} of ${s.parts}`:''} · ${k<cur?'done':k===cur?'building now':'coming up'}`;
   }
+  if(!TILES) bookAim();
   showChart('bpChart',k); $('#bpView .pg-turn').hidden=TILES;
   const lk=isLocked(k); $('#bpLock').hidden=!lk; if(lk) $('#bpCallout').innerHTML='<b style="padding:4px 2px">🔒 Locked</b>';
   $('#bpPage').textContent=`Page ${k+1} of ${N+1}`;
@@ -2323,7 +2393,7 @@ function LOCK_IMG(){ if(lockImg) return lockImg; const c=document.createElement(
 let lbK=0;
 function lbShow(k){
   const N=model.steps.length; k=clamp(k,0,N);
-  if(isLocked(k)){ $('#bookDlg').close(); openMath(k); return; } lbK=k; bookK=k; showStep(k,false);
+  if(isLocked(k)){ $('#bookDlg').close(); openMath(k); return; } lbK=k; bookK=k; showStep(k,false); if(!TILES) bookAim();
   $('#lbStep').textContent=k>=N?'✓':k+1;
   $('#lbCallout').innerHTML=k>=N?'<b style="padding:4px 2px">Finished model</b>':calloutHTML(model.steps[k].bricks);
   $('#lbPrev').disabled=k===0; $('#lbNext').disabled=k>=N;
@@ -2331,10 +2401,10 @@ function lbShow(k){
 }
 function openLightbox(k){
   if(!model) return;
-  $('#lbView').prepend(bookR.domElement); bookControls.enableZoom=true;
+  $('#lbView').prepend(bookR.domElement);
   $('#bookDlg').showModal(); lbShow(k); requestAnimationFrame(bookResize);
 }
-$('#bookDlg').addEventListener('close',()=>{ $('#lbChart').hidden=true; $('#bpView').prepend(bookR.domElement); bookControls.enableZoom=false; bookK=-1; });
+$('#bookDlg').addEventListener('close',()=>{ $('#lbChart').hidden=true; $('#bpView').prepend(bookR.domElement); bookK=-1; });
 $('#lbClose').onclick=()=>$('#bookDlg').close();
 $('#lbPrev').onclick=()=>lbShow(lbK-1);
 $('#lbNext').onclick=()=>lbShow(lbK+1);
