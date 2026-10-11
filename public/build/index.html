@@ -64,7 +64,7 @@
 
 *{box-sizing:border-box}
 html,body{min-height:100%}
-body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:0 32px}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:env(safe-area-inset-top,0px) 32px}
 h1,h2,h3{font-family:var(--f-display);font-weight:400;letter-spacing:.01em;text-wrap:balance;margin:0}
 button,select,input{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--hi);outline-offset:2px}
@@ -1222,7 +1222,7 @@ function buildPicture(front){
     const id=steps.length; chunk.forEach(b=>{b.step=id;bricks.push(b);});
     steps.push({layer:0,row:z,part:sct+1,parts:nSec,bricks:chunk});
   }
-  return {kind:'picture',W:Wt,H:1,D:Ht,bricks,steps,name:front.name.replace(/\.[^.]+$/,'')};
+  return {kind:'picture',W:Wt,H:1,D:Ht,bricks,steps,name:niceName(front.name)};
 }
 
 // The booklet page for a picture: a pattern chart, like brick-art instructions.
@@ -1360,7 +1360,7 @@ function buildModel(){
       steps.push({layer:y,part:s+1,parts:nSteps,bricks:chunk});
     }
   }
-  return {W,H,D,bricks,steps,name:front.name.replace(/\.[^.]+$/,'')};
+  return {W,H,D,bricks,steps,name:niceName(front.name)};
 }
 function partsOf(list){
   const m=new Map();
@@ -1679,6 +1679,9 @@ function rebuild(){
   top.addEventListener('focusin',()=>top.classList.remove('tucked'));
   mq.addEventListener('change',()=>top.classList.remove('tucked'));
 }
+// Photo file names from phones are often codes (IMG_1234, 4D15-9BE2-…); show a friendly name instead
+function niceName(n){ const b=String(n||'').replace(/\.[^.]+$/,'').trim();
+  return !b||/^(img|image|photo|pxl|dsc|screenshot)[\s_-]?\d/i.test(b)||/^[0-9a-f]{4,}(-[0-9a-f]{2,})+/i.test(b)||/^\d+$/.test(b)?'photo':b; }
 function setTab(t){
   tab=t;
   document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===(t==='box'?'build':t)));
@@ -3996,7 +3999,7 @@ loadSample(0); setTab('create'); clearTimeout(timer); rebuild(); requestAnimatio
   const o=storeGet();
   if(o&&o.v===1&&(o.placedN>0||o.laidOut)){
     pendingSave=o;
-    $('#resumeTxt').textContent=o.game&&LEVELS[o.game.lvl]?`You’re partway through Level ${o.game.lvl+1} (${LEVELS[o.game.lvl].name}): ${o.placedN} of ${o.nBricks} bricks placed.`:`You have a ${o.name} build in progress: ${o.placedN} of ${o.nBricks} bricks placed.`;
+    $('#resumeTxt').textContent=o.game&&LEVELS[o.game.lvl]?`You’re partway through Level ${o.game.lvl+1} (${LEVELS[o.game.lvl].name}): ${o.placedN} of ${o.nBricks} bricks placed.`:`You have a ${niceName(o.name)} build in progress: ${o.placedN} of ${o.nBricks} bricks placed.`;
     $('#resume').hidden=false;
   } else saveOn=true;
 }
