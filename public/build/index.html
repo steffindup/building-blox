@@ -783,8 +783,6 @@ body.on-home .tabs{visibility:hidden}
 .daily-stats b{font-family:var(--f-display);font-weight:400;font-size:17px}
 .srcdlg .src-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 12px;margin:22px 0 14px}
 .srcdlg .hm-tile{min-height:140px}
-.chat-quick.emo{display:grid;grid-template-columns:repeat(6,1fr)}
-.chat-quick.emo button{font-size:24px;padding:4px;min-height:48px;border-radius:12px}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 
@@ -1189,20 +1187,20 @@ body.on-home .tabs{visibility:hidden}
 
 <div class="chat" id="chat" hidden>
   <section class="chat-panel" id="chatPanel" aria-labelledby="chatTitle" hidden>
-    <div class="chat-head"><strong id="chatTitle">Emojis</strong><span class="note" id="chatRoom"></span>
+    <div class="chat-head"><strong id="chatTitle">Room chat</strong><span class="note" id="chatRoom"></span>
       <button class="ghost" id="chatClose" type="button" aria-label="Close chat">×</button></div>
     <div class="chat-log" id="chatLog" aria-live="polite"></div>
-    <div class="chat-quick emo" id="chatQuick" role="group" aria-label="Emojis"></div>
-    <form class="chat-form" id="chatForm" autocomplete="off" hidden>
+    <div class="chat-quick" id="chatQuick" role="group" aria-label="Quick messages" hidden></div>
+    <form class="chat-form" id="chatForm" autocomplete="off">
       <label class="sr" for="chatIn">Message</label>
       <input class="inp" id="chatIn" maxlength="140" placeholder="Say something nice…" enterkeyhint="send">
       <button class="primary" id="chatSend" type="submit">Send</button>
     </form>
-    <p class="note chat-foot" id="chatFoot">Tap an emoji to send it. Only people in this room see them.</p>
+    <p class="note chat-foot" id="chatFoot">Be kind. Only people in this room can see the chat.</p>
   </section>
   <button class="chat-fab" id="chatFab" type="button" aria-expanded="false" aria-controls="chatPanel">
     <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>
-    <span>Emojis</span><b class="chat-badge" id="chatBadge" hidden></b>
+    <span>Chat</span><b class="chat-badge" id="chatBadge" hidden></b>
   </button>
 </div>
 <dialog class="windlg" id="trialDlg" aria-labelledby="trTitle">
@@ -1296,10 +1294,10 @@ body.on-home .tabs{visibility:hidden}
 /* ---------- App Store app (iPhone/iPad, built with Capacitor from mobile/) ---------- */
 // mobile/scripts/build-www.mjs sets window.BLOPPIT_APP when it packages this page for the app.
 // In the app: rooms, challenges and the Daily Bloppit talk to bloppit.com; links out of the app and sharing sit
-// behind a grown-ups gate. Rooms everywhere (app and website) only allow emoji messages and have no voice chat.
+// behind a grown-ups gate; and room chat is quick messages only (Apple's Kids category rules). The website has typed chat and voice.
 const APP=!!window.BLOPPIT_APP, API_BASE=APP?'https://bloppit.com':'';
 // Keep in step with QUICK_CHAT in netlify/functions/room/logic.mjs.
-const QUICK_CHAT=['👋','👍','🎉','😮','😂','🔥','💪','🙌','⭐','⏱️','🦦','🤝'];
+const QUICK_CHAT=['Hi!','Nice!','Your turn!','Great build!','Thanks!','Oops!','Good luck!','Almost done!','Well played!','Ready?','👍','🎉'];
 function haptic(kind,delay=0){
   const H=APP&&window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.Haptics; if(!H) return;
   const go=()=>{ try{ if(kind==='warn') H.notification({type:'WARNING'}); else if(kind==='win') H.notification({type:'SUCCESS'}); else H.impact({style:kind==='medium'?'MEDIUM':'LIGHT'}); }catch(e){} };
@@ -3954,7 +3952,7 @@ async function renderMpView(){
   }
   if(!s) return;
   const bz=s.mode==='blitz', cpuOn=!!mp.cpu;
-  $('.mp-room-top').hidden=cpuOn; $('#mpVcCard').hidden=true;  // no voice chat in Bloppit rooms
+  $('.mp-room-top').hidden=cpuOn; $('#mpVcCard').hidden=cpuOn||APP;
   $('#mpBigCode').textContent=s.code; $('#mpSite').textContent=APP?'bloppit.com/build':location.host+location.pathname.replace(/\/$/,'');
   $('#mpWhere').textContent=bz?'⚡ Blitz':'⇄ Together';
   const p0=photos[0]; if(p0) $('#mpThumb').src=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png'));
@@ -4566,9 +4564,8 @@ document.addEventListener('click',e=>{
 function updateVoiceUI(){
   const s=mp&&mp.state, bar=$('#mpVoice'), card=$('#mpVcCard'); if(!bar||!card) return;
   if(!s||mp.cpu){ bar.innerHTML=''; card.innerHTML=''; return; }
-  // No voice chat in Bloppit rooms (made for children: friends join by code and send emojis only).
-  // The code below is kept for rooms made before that rule; the server now refuses to turn voice on.
-  if(APP||!s.voice){ bar.innerHTML=''; card.innerHTML=''; card.hidden=true; return; }
+  // No voice in the App Store app or in rooms with an app player (Kids category rules)
+  if(APP){ bar.innerHTML=''; card.innerHTML=''; card.hidden=true; return; }
   if(s.quick){ bar.innerHTML=''; card.innerHTML='<h3>Voice chat</h3><p>Not available in this room, because someone is playing on the Bloppit app.</p>'; return; }
   const host=mp.me===s.host, n=s.players.filter(p=>p.vc>0).length;
   let h='';
@@ -4599,13 +4596,13 @@ document.addEventListener('click',e=>{
   else if(a==='hear'){ vo.needTap=false; for(const e of vo.pcs.values()) if(e.audio) e.audio.play().catch(()=>{}); updateVoiceUI(); }
 });
 
-/* ---------- Room emojis (Play together and Blitz rooms) ---------- */
-// Rooms only carry emoji messages (QUICK_CHAT); the server refuses anything else. The typing form is kept hidden.
+/* ---------- Room chat (Play together and Blitz rooms) ---------- */
+// Messages are checked on the server (no links, emails, phone numbers or social accounts; rude words blanked).
 let chatOpen=false;
 function chatSeenGet(code){ try{ return +localStorage.getItem('bloppit-chat-seen-'+code)||0; }catch(e){ return 0; } }
 function chatSeenSet(){ if(!mp) return; try{ localStorage.setItem('bloppit-chat-seen-'+mp.code,String(mp.chatSeen)); }catch(e){} }
 function chatFoot(t,kind){ const el=$('#chatFoot'), quick=APP||!!(mp&&mp.state&&mp.state.quick);
-  el.textContent=t||'Tap an emoji to send it. Only people in this room see them.'; el.dataset.kind=kind||''; }
+  el.textContent=t||(APP?'Tap a message to send it. Only people in this room can see the chat.':quick?'Quick messages only: someone in this room is playing on the Bloppit app.':'Be kind. Only people in this room can see the chat.'); el.dataset.kind=kind||''; }
 function renderChat(){
   const box=$('#chat'), s=mp&&!mp.cpu&&mp.state;
   box.hidden=!s; document.body.classList.toggle('chat-on',!!s); if(!s){ $('#chatPanel').hidden=true; $('#chatFab').setAttribute('aria-expanded','false'); return; }
@@ -4615,7 +4612,7 @@ function renderChat(){
   $('#chatBadge').hidden=!unread; $('#chatBadge').textContent=unread>9?'9+':String(unread);
   $('#chatFab').setAttribute('aria-label',unread?`Chat, ${unread} new message${unread>1?'s':''}`:'Chat');
   $('#chatRoom').textContent='· '+s.code;
-  const quick=true;  // emoji messages only, in every room
+  const quick=APP||!!s.quick;
   $('#chatForm').hidden=quick; $('#chatQuick').hidden=!quick;
   if(quick&&!$('#chatQuick').childElementCount) $('#chatQuick').innerHTML=QUICK_CHAT.map(t=>`<button type="button">${escapeHTML(t)}</button>`).join('');
   if(!$('#chatFoot').dataset.kind&&$('#chatFoot').textContent!=='Sending…') chatFoot('');
@@ -4624,7 +4621,7 @@ function renderChat(){
   const log=$('#chatLog'), nearEnd=log.scrollHeight-log.scrollTop-log.clientHeight<60;
   log.innerHTML=list.length?list.map(m=>{ const p=s.players[m.p]||{name:'Player',color:'#888'}, me=m.p===mp.me;
     return `<div class="cm${me?' me':''}"><span class="cm-who"><i style="background:${escapeHTML(p.color)}"></i>${escapeHTML(p.name)}${me?' (you)':''}</span><span class="cm-t">${escapeHTML(m.t)}</span></div>`; }).join('')
-    :'<p class="note chat-empty">No emojis yet. Send a 👋!</p>';
+    :'<p class="note chat-empty">No messages yet. Say hi!</p>';
   if(nearEnd||chatOpen) log.scrollTop=log.scrollHeight;
 }
 function setChatOpen(v){

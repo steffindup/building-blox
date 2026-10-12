@@ -74,11 +74,11 @@ export const cleanName = (s) => {
   return !n || n.split(/[\s.,_\-]+/).some(isBad) || isBad(n) ? 'Player' : n;
 };
 
-// Emoji messages: the only chat allowed in any room. Bloppit is for children, so nobody can type
-// free messages or talk by voice to other players, on the website or in the App Store app.
-export const QUICK_CHAT = ['👋', '👍', '🎉', '😮', '😂', '🔥', '💪', '🙌', '⭐', '⏱️', '🦦', '🤝'];
-// Turn a room emoji-only. Free-typed messages from before this rule are cleared, so nobody sees them.
-// Voice chat is switched off for good too. Every room is made this way; older rooms switch when anyone joins or acts.
+// Quick messages: the only chat allowed in a room once someone joins from the App Store app
+// (Apple's Kids category rules don't allow children to type free messages to each other).
+export const QUICK_CHAT = ['Hi!', 'Nice!', 'Your turn!', 'Great build!', 'Thanks!', 'Oops!', 'Good luck!', 'Almost done!', 'Well played!', 'Ready?', '👍', '🎉'];
+// Turn a room quick-only. Free-typed messages already sent are cleared, so the app never shows them.
+// Voice chat is also switched off for good in these rooms (children talking live isn't allowed in the Kids category).
 const makeQuick = (s) => {
   if (!s.quick) { s.quick = true; s.chat = []; }
   if (s.voice) { s.voice = false; s.players.forEach((p) => { p.vc = 0; }); s.sig = []; }
@@ -207,7 +207,7 @@ export async function handle(method, query, body, store) {
         title: cleanName(body.title).slice(0, 24), level: Number.isInteger(body.level) ? body.level : null,
         host: 0, turn: 0, turnPlaced: 0, turnStart: now, moves: [], players: [player],
       };
-      makeQuick(s);
+      if (body.app) makeQuick(s);
       const { modified } = await store.set(roomKey(code), s, { onlyIfNew: true });
       if (!modified) continue;
       await store.set(modelKey(code), model, {});
@@ -225,7 +225,7 @@ export async function handle(method, query, body, store) {
     const res = await update(store, code, (s) => {
       const now = Date.now();
       const idx = body.playerId ? findPlayer(s, body.playerId) : -1;
-      makeQuick(s);
+      if (body.app) makeQuick(s);
       if (idx >= 0) { s.players[idx].seen = now; me = idx; pid = body.playerId; return {}; }
       if (s.finished) return { error: 'That game has already finished.' };
       if (s.players.length >= MAX_PLAYERS) return { error: 'That room is full (4 players).' };
@@ -298,8 +298,7 @@ export async function handle(method, query, body, store) {
       const i = mine(s);
       if (i < 0) return { error: 'You’re not in this room.', status: 403 };
       if (i !== s.host) return { error: 'Only the player who made the room can turn voice chat on or off.', status: 403 };
-      makeQuick(s);
-      if (body.on) return { error: 'Voice chat isn’t available in Bloppit rooms.', status: 409 };
+      if (body.on && s.quick) return { error: 'Voice chat isn’t available in this room, because someone is playing on the Bloppit app.', status: 409 };
       s.voice = !!body.on;
       if (!s.voice) { s.players.forEach((p) => { p.vc = 0; }); s.sig = []; }
       return {};
@@ -356,8 +355,7 @@ export async function handle(method, query, body, store) {
     return update(store, code, (s) => {
       const i = mine(s);
       if (i < 0) return { error: 'You’re not in this room.', status: 403 };
-      makeQuick(s);
-      if (!QUICK_CHAT.includes(c.text)) return { error: 'Rooms use emoji messages only.', status: 400 };
+      if (s.quick && !QUICK_CHAT.includes(c.text)) return { error: 'This room uses quick messages only, because someone is playing on the Bloppit app.', status: 400 };
       const p = s.players[i], now = Date.now();
       const recent = (p.chatAt || []).filter((t) => now - t < CHAT_BURST_MS);
       if ((recent.length && now - recent[recent.length - 1] < CHAT_GAP_MS) || recent.length >= CHAT_BURST) {

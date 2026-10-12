@@ -7,7 +7,7 @@ Never mention LEGO or other toy brands anywhere in the listing (Apple rejects ot
 
 | Field | Value |
 |---|---|
-| Name (30) | Bloppit: Photo to Bricks |
+| Name (30) | Bloppit: Brick Puzzle Race |
 | Subtitle (30) | Snap it. Bloppit. Build it. |
 | Bundle ID | com.bloppit.app |
 | SKU | bloppit-ios-1 |
@@ -57,7 +57,7 @@ QUICK BUILD
 MADE FOR KIDS AND FAMILIES
 • No ads, no in-app purchases, no accounts
 • No tracking and no analytics
-• No chat and no voice: friends join with a code and can only send emojis
+• Friends join with a code, and chat is friendly preset quick messages only
 • Photos stay on your device unless you share a challenge or room with friends
 • Racing Bloppit and the Trails work offline
 
@@ -81,14 +81,14 @@ Challenges: on the Blitz page tap Make a challenge, build the puzzle, and you ge
 into Got a code? on another device (the website bloppit.com/build works too) to race the same puzzle.
 Daily Bloppit: tap the Daily Bloppit banner on the menu. Only the finishing time is sent, with no name.
 Rooms (Build together, live Blitz): friends join with a 5-letter code and the host lets them in.
-There is no typed chat and no voice anywhere: players can only send emojis from a fixed set.
+Chat in the app is preset quick messages only, and there is no voice chat in the app.
 Links out of the app and sharing an invite are behind a parental gate (type a number written in words as digits).
 
 ## Age rating questionnaire
 
 Answer **None / No** to everything (violence, mature themes, gambling, horror, medical, alcohol, profanity, sexual content,
 contests, unrestricted web access). For "user-generated content / communication between users": there is
-communication between users only through a fixed set of emojis and player nicknames in rooms and challenges;
+communication between users only through preset quick messages and player nicknames in rooms and challenges;
 answer the questions that way. Expected rating: **4+**.
 
 ## App Privacy ("privacy label")
@@ -102,7 +102,7 @@ activity, challenges 30 days after the last player, daily times after a week):
 |---|---|---|---|---|
 | User Content › Photos or Videos (the photos a shared model is made from) | Yes | No | No | App Functionality |
 | User Content › Gameplay Content (bricks placed, scores, Blitz and Daily Bloppit times) | Yes | No | No | App Functionality |
-| User Content › Other User Content (player nickname, emojis sent in a room) | Yes | No | No | App Functionality |
+| User Content › Other User Content (player nickname, quick messages) | Yes | No | No | App Functionality |
 
 Everything else (contact info, identifiers, location, usage data, diagnostics, etc.): **Not collected**.
 

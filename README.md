@@ -28,9 +28,11 @@ Formerly called Building Blox; the browser save keys still use the old `building
   "Bloppit brand & landing page" design canvas in Claude.
 - `netlify/functions/room/` is the Play together room server: a Netlify Function at `/api/room`
   that keeps each room in Netlify Blobs (store `building-blox-rooms`). Game rules are in `logic.mjs`.
-- **Emojis only**: rooms carry no typed chat and no voice, on the website or in the app. Players can send emojis
-  from `QUICK_CHAT` in `logic.mjs` (keep the copy in `index.html` in step); the server refuses anything else and
-  refuses to turn voice on. Friends only join with a code, and the host lets each one in.
+- **Room chat**: anyone in a room can type messages (up to 140 characters, last 60 kept).
+  Guardrails live in `cleanChat()` in `logic.mjs`: links, emails, phone numbers, @handles and social app
+  names are refused, rude words are blanked out, and each player can send at most one message a second and
+  six per 20 seconds. Chat is only sent to players in the room. When someone joins from the App Store app, the
+  room becomes **quick messages only** (`QUICK_CHAT`) and voice chat is switched off. The word filter is basic, not full moderation.
 - `netlify/functions/challenge/` is the challenge and Daily Bloppit server at `/api/challenge`, in the same Blobs store
   (`ch/CODE`, `chmodel/CODE`, `daily/YYYY-MM-DD`). Rules and limits are in its `logic.mjs` (12 players per challenge,
   a minimum time per brick, daily days accepted a day either side of the server's).
