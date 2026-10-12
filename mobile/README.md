@@ -23,12 +23,11 @@ the main script in `public/build/index.html` ("App Store app"):
   Only Play together needs the internet; it talks to `https://bloppit.com/api/room` (the room server allows
   the app's `capacitor://localhost` origin through CORS in `netlify/functions/room/room.mts`).
 - **Grown-ups gate.** Any link out of the app and sharing a room invite first ask for a number written in
-  words to be typed in digits (Apple Kids category rule 1.3).
-- **Quick messages only.** Room chat in the app is a fixed set of messages (`QUICK_CHAT`, in both the app and
-  `logic.mjs`). When an app player creates or joins a room, the server marks it `quick`: earlier typed
-  messages are cleared and nobody, including website players, can type free messages in it.
+  words to be typed in digits. Bloppit isn't in the Kids category, so this is our own safety choice, not an Apple rule.
+- **Chat and voice work as on the website.** Typed room chat goes through the same server filter (`cleanChat()`
+  in `logic.mjs`), and the host can turn on voice chat. The microphone permission text is in `Info.plist`.
 - **Haptics** on brick snaps, wrong spots, finished steps and finished models (`@capacitor/haptics`).
-- **Camera and photos** use the standard iOS picker (Take Photo / Photo Library). The permission texts are in
+- **Camera, photos and microphone** use the standard iOS picker (Take Photo / Photo Library). The permission texts are in
   `ios/App/App/Info.plist`.
 
 ## Icons and launch screen

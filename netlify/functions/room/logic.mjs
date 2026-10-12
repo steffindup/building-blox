@@ -74,15 +74,6 @@ export const cleanName = (s) => {
   return !n || n.split(/[\s.,_\-]+/).some(isBad) || isBad(n) ? 'Player' : n;
 };
 
-// Quick messages: the only chat allowed in a room once someone joins from the App Store app
-// (Apple's Kids category rules don't allow children to type free messages to each other).
-export const QUICK_CHAT = ['Hi!', 'Nice!', 'Your turn!', 'Great build!', 'Thanks!', 'Oops!', 'Good luck!', 'Almost done!', 'Well played!', 'Ready?', '👍', '🎉'];
-// Turn a room quick-only. Free-typed messages already sent are cleared, so the app never shows them.
-// Voice chat is also switched off for good in these rooms (children talking live isn't allowed in the Kids category).
-const makeQuick = (s) => {
-  if (!s.quick) { s.quick = true; s.chat = []; }
-  if (s.voice) { s.voice = false; s.players.forEach((p) => { p.vc = 0; }); s.sig = []; }
-};
 const cleanCode = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5);
 const roomKey = (c) => `room/${c}`;
 const modelKey = (c) => `model/${c}`;
@@ -98,7 +89,6 @@ function publicState(s, viewer = -1) {
     turnPlaced: s.turnPlaced, turnStart: s.turnStart, moves: s.moves, now, voice: !!s.voice, quota: s.quota || 0,
     players: s.players.map((p) => ({ name: p.name, color: p.color, pen: p.pen, stale: now - p.seen > STALE_MS, vc: s.voice ? (p.vc || 0) : 0,
       ...(s.mode === 'blitz' ? { ms: p.ms || 0, miss: p.miss || 0, n: p.n || 0 } : {}) })),
-    quick: !!s.quick,
   };
   if (viewer >= 0) {
     out.me = viewer;
@@ -207,7 +197,6 @@ export async function handle(method, query, body, store) {
         title: cleanName(body.title).slice(0, 24), level: Number.isInteger(body.level) ? body.level : null,
         host: 0, turn: 0, turnPlaced: 0, turnStart: now, moves: [], players: [player],
       };
-      if (body.app) makeQuick(s);
       const { modified } = await store.set(roomKey(code), s, { onlyIfNew: true });
       if (!modified) continue;
       await store.set(modelKey(code), model, {});
@@ -225,7 +214,6 @@ export async function handle(method, query, body, store) {
     const res = await update(store, code, (s) => {
       const now = Date.now();
       const idx = body.playerId ? findPlayer(s, body.playerId) : -1;
-      if (body.app) makeQuick(s);
       if (idx >= 0) { s.players[idx].seen = now; me = idx; pid = body.playerId; return {}; }
       if (s.finished) return { error: 'That game has already finished.' };
       if (s.players.length >= MAX_PLAYERS) return { error: 'That room is full (4 players).' };
@@ -298,7 +286,6 @@ export async function handle(method, query, body, store) {
       const i = mine(s);
       if (i < 0) return { error: 'You’re not in this room.', status: 403 };
       if (i !== s.host) return { error: 'Only the player who made the room can turn voice chat on or off.', status: 403 };
-      if (body.on && s.quick) return { error: 'Voice chat isn’t available in this room, because someone is playing on the Bloppit app.', status: 409 };
       s.voice = !!body.on;
       if (!s.voice) { s.players.forEach((p) => { p.vc = 0; }); s.sig = []; }
       return {};
@@ -355,7 +342,6 @@ export async function handle(method, query, body, store) {
     return update(store, code, (s) => {
       const i = mine(s);
       if (i < 0) return { error: 'You’re not in this room.', status: 403 };
-      if (s.quick && !QUICK_CHAT.includes(c.text)) return { error: 'This room uses quick messages only, because someone is playing on the Bloppit app.', status: 400 };
       const p = s.players[i], now = Date.now();
       const recent = (p.chatAt || []).filter((t) => now - t < CHAT_BURST_MS);
       if ((recent.length && now - recent[recent.length - 1] < CHAT_GAP_MS) || recent.length >= CHAT_BURST) {

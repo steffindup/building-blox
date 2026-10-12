@@ -519,10 +519,6 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .chat-form .primary{padding:9px 16px;font-size:16px}
 .chat-foot{padding:0 12px 10px;font-size:12px}
 .chat-foot[data-kind="err"]{color:var(--accent);font-weight:700}
-.chat-quick{display:flex;flex-wrap:wrap;gap:6px;padding:10px;border-top:1px solid var(--line)}
-.chat-quick button{font:inherit;font-weight:800;font-size:15px;min-height:40px;padding:6px 12px;border-radius:999px;border:2px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
-.chat-quick button:hover{border-color:var(--ink)}
-.chat-quick button:disabled{opacity:.5}
 .gate-num{font-family:var(--f-body);font-weight:800;font-size:22px;line-height:1.3;text-align:center;margin:12px 0}
 .appfoot{text-align:center;font-size:13px;margin:8px 0 24px}
 .appfoot a{color:var(--muted)}
@@ -1221,7 +1217,6 @@ body.on-home .tabs{visibility:hidden}
     <div class="chat-head"><strong id="chatTitle">Room chat</strong><span class="note" id="chatRoom"></span>
       <button class="ghost" id="chatClose" type="button" aria-label="Close chat">×</button></div>
     <div class="chat-log" id="chatLog" aria-live="polite"></div>
-    <div class="chat-quick" id="chatQuick" role="group" aria-label="Quick messages" hidden></div>
     <form class="chat-form" id="chatForm" autocomplete="off">
       <label class="sr" for="chatIn">Message</label>
       <input class="inp" id="chatIn" maxlength="140" placeholder="Say something nice…" enterkeyhint="send">
@@ -1325,10 +1320,8 @@ body.on-home .tabs{visibility:hidden}
 /* ---------- App Store app (iPhone/iPad, built with Capacitor from mobile/) ---------- */
 // mobile/scripts/build-www.mjs sets window.BLOPPIT_APP when it packages this page for the app.
 // In the app: rooms, challenges and the Daily Bloppit talk to bloppit.com; links out of the app and sharing sit
-// behind a grown-ups gate; and room chat is quick messages only (Apple's Kids category rules). The website has typed chat and voice.
+// behind a grown-ups gate. Room chat (typed, filtered on the server) and voice chat work the same as on the website.
 const APP=!!window.BLOPPIT_APP, API_BASE=APP?'https://bloppit.com':'';
-// Keep in step with QUICK_CHAT in netlify/functions/room/logic.mjs.
-const QUICK_CHAT=['Hi!','Nice!','Your turn!','Great build!','Thanks!','Oops!','Good luck!','Almost done!','Well played!','Ready?','👍','🎉'];
 function haptic(kind,delay=0){
   const H=APP&&window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.Haptics; if(!H) return;
   const go=()=>{ try{ if(kind==='warn') H.notification({type:'WARNING'}); else if(kind==='win') H.notification({type:'SUCCESS'}); else H.impact({style:kind==='medium'?'MEDIUM':'LIGHT'}); }catch(e){} };
@@ -3947,7 +3940,7 @@ function mpLeave(){
   updateGameBar(); updateBuildUI();
 }
 async function mpJoin(code,name,playerId){
-  const res=await mpApi('POST',{action:'join',code,name,playerId,app:APP||undefined});
+  const res=await mpApi('POST',{action:'join',code,name,playerId});
   if(res.waiting){ mpWaitStart(res,name); return; }
   await mpEnter(res,false,name);
 }
@@ -4015,7 +4008,7 @@ async function renderMpView(){
   }
   if(!s) return;
   const bz=s.mode==='blitz', cpuOn=!!mp.cpu;
-  $('.mp-room-top').hidden=cpuOn; $('#mpVcCard').hidden=cpuOn||APP;
+  $('.mp-room-top').hidden=cpuOn; $('#mpVcCard').hidden=cpuOn;
   $('#mpBigCode').textContent=s.code; $('#mpSite').textContent=APP?'bloppit.com/build':location.host+location.pathname.replace(/\/$/,'');
   $('#mpWhere').textContent=bz?'⚡ Blitz':'⇄ Together';
   const p0=photos[0]; if(p0) $('#mpThumb').src=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png'));
@@ -4065,7 +4058,7 @@ async function mpMake(mode,name,choice){
   const title=mpUseModel(choice);
   const perTurn=mode==='blitz'?3:+document.querySelector('input[name=perTurn]:checked').value;
   const level=choice!=='cur'?+choice:(game?game.lvl:null);
-  const res=await mpApi('POST',{action:'create',app:APP||undefined,name,mode,perTurn,nBricks:model.bricks.length,title,level,
+  const res=await mpApi('POST',{action:'create',name,mode,perTurn,nBricks:model.bricks.length,title,level,
     model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
   mpRememberName(name);
   await mpEnter(res,true,name); renderMpView();
@@ -4261,7 +4254,7 @@ $('#bzCpuGo').onclick=async()=>{
     if(model.bricks.length<2) throw new Error('This model is too small for a race. Pick a bigger one.');
     const lvl=bzLevel(), me=curPlayer(), pl=(nm,color)=>({name:nm,color,pen:{},stale:false,vc:0,ms:0,miss:0,n:0});
     cpu={timer:null,left:0,s:{code:'VS',ver:1,started:true,finished:false,perTurn:3,mode:'blitz',cpuLevel:lvl,nBricks:model.bricks.length,title,level:null,host:0,
-      turn:0,turnPlaced:0,turnStart:Date.now()+COUNTDOWN_MS,moves:[],voice:false,quick:false,me:0,chat:[],waiting:[],sig:[],quota:Math.floor(model.bricks.length/2),
+      turn:0,turnPlaced:0,turnStart:Date.now()+COUNTDOWN_MS,moves:[],voice:false,me:0,chat:[],waiting:[],sig:[],quota:Math.floor(model.bricks.length/2),
       players:[pl(name,(me&&me.color&&me.color!=='#8A5A3B')?me.color:'#D2352B'),pl(CPU_LEVELS[lvl].name,'#8A5A3B')]}};
     mpRememberName(name);
     await mpEnter({cpu:true,code:'VS',playerId:'me',me:0,state:cpuPub()},true,name);
@@ -4294,7 +4287,7 @@ async function trialStart(info,name){
   if(!model||model.bricks.length<2) throw new Error('This puzzle is too small for a race. Pick a bigger one.');
   const me=curPlayer(), N=model.bricks.length;
   cpu={timer:null,left:0,trial:info,s:{code:'⏱',ver:1,started:true,finished:false,perTurn:N,mode:'blitz',solo:true,label:info.label,cpuLevel:'medium',nBricks:N,title:info.title||niceName(model.name),level:null,host:0,
-    turn:0,turnPlaced:0,turnStart:Date.now()+COUNTDOWN_MS,moves:[],voice:false,quick:true,me:0,chat:[],waiting:[],sig:[],quota:N,
+    turn:0,turnPlaced:0,turnStart:Date.now()+COUNTDOWN_MS,moves:[],voice:false,me:0,chat:[],waiting:[],sig:[],quota:N,
     players:[{name,color:(me&&me.color&&me.color!=='#8A5A3B')?me.color:'#D2352B',pen:{},stale:false,vc:0,ms:0,miss:0,n:0}]}};
   await mpEnter({cpu:true,code:'⏱',playerId:'me',me:0,state:cpuPub()},true,name);
   setTab('build'); cpuCountdown();
@@ -4541,7 +4534,7 @@ function voSync(s){
   if(!mp||mp.cpu) return;
   const sig=s.sig||[];
   if(vo.sigSeen<0) vo.sigSeen=sig.reduce((a,m)=>Math.max(a,m.n),0);  // ignore old messages from before this visit
-  if(vo.on&&!s.voice){ voLeave(false); setStatus(s.quick?'Voice chat turned off, because someone joined on the Bloppit app.':'The host turned voice chat off.'); }
+  if(vo.on&&!s.voice){ voLeave(false); setStatus('The host turned voice chat off.'); }
   for(const m of sig){ if(m.n<=vo.sigSeen) continue; vo.sigSeen=m.n; if(vo.on) voOnSignal(m.f,m.d); }
   if(vo.on){
     s.players.forEach((p,j)=>{
@@ -4627,9 +4620,6 @@ document.addEventListener('click',e=>{
 function updateVoiceUI(){
   const s=mp&&mp.state, bar=$('#mpVoice'), card=$('#mpVcCard'); if(!bar||!card) return;
   if(!s||mp.cpu){ bar.innerHTML=''; card.innerHTML=''; return; }
-  // No voice in the App Store app or in rooms with an app player (Kids category rules)
-  if(APP){ bar.innerHTML=''; card.innerHTML=''; card.hidden=true; return; }
-  if(s.quick){ bar.innerHTML=''; card.innerHTML='<h3>Voice chat</h3><p>Not available in this room, because someone is playing on the Bloppit app.</p>'; return; }
   const host=mp.me===s.host, n=s.players.filter(p=>p.vc>0).length;
   let h='';
   if(!s.voice){ if(host) h=`<button class="vc-btn" type="button" data-vc="on">${MIC_SVG}Turn on voice chat</button>`; }
@@ -4664,8 +4654,8 @@ document.addEventListener('click',e=>{
 let chatOpen=false;
 function chatSeenGet(code){ try{ return +localStorage.getItem('bloppit-chat-seen-'+code)||0; }catch(e){ return 0; } }
 function chatSeenSet(){ if(!mp) return; try{ localStorage.setItem('bloppit-chat-seen-'+mp.code,String(mp.chatSeen)); }catch(e){} }
-function chatFoot(t,kind){ const el=$('#chatFoot'), quick=APP||!!(mp&&mp.state&&mp.state.quick);
-  el.textContent=t||(APP?'Tap a message to send it. Only people in this room can see the chat.':quick?'Quick messages only: someone in this room is playing on the Bloppit app.':'Be kind. Only people in this room can see the chat.'); el.dataset.kind=kind||''; }
+function chatFoot(t,kind){ const el=$('#chatFoot');
+  el.textContent=t||'Be kind. Only people in this room can see the chat.'; el.dataset.kind=kind||''; }
 function renderChat(){
   const box=$('#chat'), s=mp&&!mp.cpu&&mp.state;
   box.hidden=!s; document.body.classList.toggle('chat-on',!!s); if(!s){ $('#chatPanel').hidden=true; $('#chatFab').setAttribute('aria-expanded','false'); return; }
@@ -4675,9 +4665,6 @@ function renderChat(){
   $('#chatBadge').hidden=!unread; $('#chatBadge').textContent=unread>9?'9+':String(unread);
   $('#chatFab').setAttribute('aria-label',unread?`Chat, ${unread} new message${unread>1?'s':''}`:'Chat');
   $('#chatRoom').textContent='· '+s.code;
-  const quick=APP||!!s.quick;
-  $('#chatForm').hidden=quick; $('#chatQuick').hidden=!quick;
-  if(quick&&!$('#chatQuick').childElementCount) $('#chatQuick').innerHTML=QUICK_CHAT.map(t=>`<button type="button">${escapeHTML(t)}</button>`).join('');
   if(!$('#chatFoot').dataset.kind&&$('#chatFoot').textContent!=='Sending…') chatFoot('');
   if(mp.chatShown===last) return;
   mp.chatShown=last;
@@ -4689,19 +4676,12 @@ function renderChat(){
 }
 function setChatOpen(v){
   chatOpen=v; $('#chatPanel').hidden=!v; $('#chatFab').setAttribute('aria-expanded',String(v));
-  if(v){ chatFoot(''); renderChat(); const log=$('#chatLog'); log.scrollTop=log.scrollHeight; ($('#chatForm').hidden?$('#chatQuick button'):$('#chatIn')).focus(); }
+  if(v){ chatFoot(''); renderChat(); const log=$('#chatLog'); log.scrollTop=log.scrollHeight; $('#chatIn').focus(); }
   else $('#chatFab').focus();
 }
 $('#chatFab').onclick=()=>setChatOpen(!chatOpen);
 $('#chatClose').onclick=()=>setChatOpen(false);
 $('#chatPanel').addEventListener('keydown',e=>{ if(e.key==='Escape'){ e.stopPropagation(); setChatOpen(false); } });
-$('#chatQuick').addEventListener('click',async e=>{
-  const b=e.target.closest('button'); if(!b||!mp) return;
-  const all=[...$('#chatQuick').querySelectorAll('button')]; all.forEach(x=>x.disabled=true); chatFoot('Sending…');
-  try{ const j=await mpPost({action:'chat',text:b.textContent}); chatFoot(''); mpApply(j.state); }
-  catch(err){ chatFoot(err.message,'err'); }
-  finally{ all.forEach(x=>x.disabled=false); }
-});
 $('#chatForm').addEventListener('submit',async e=>{
   e.preventDefault(); if(!mp) return;
   const inp=$('#chatIn'), text=inp.value.trim(); if(!text) return;

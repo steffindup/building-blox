@@ -42,8 +42,8 @@ Formerly called Building Blox; the browser save keys still use the old `building
 - **Room chat**: anyone in a room can type messages (up to 140 characters, last 60 kept).
   Guardrails live in `cleanChat()` in `logic.mjs`: links, emails, phone numbers, @handles and social app
   names are refused, rude words are blanked out, and each player can send at most one message a second and
-  six per 20 seconds. Chat is only sent to players in the room. When someone joins from the App Store app, the
-  room becomes **quick messages only** (`QUICK_CHAT`) and voice chat is switched off. The word filter is basic, not full moderation.
+  six per 20 seconds. Chat is only sent to players in the room, and works the same on the website and in the App Store app.
+  The word filter is basic, not full moderation.
 - `netlify/functions/challenge/` is the challenge and Daily Bloppit server at `/api/challenge`, in the same Blobs store
   (`ch/CODE`, `chmodel/CODE`, `daily/YYYY-MM-DD`). Rules and limits are in its `logic.mjs` (12 players per challenge,
   a minimum time per brick, daily days accepted a day either side of the server's).
