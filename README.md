@@ -1,4 +1,4 @@
-# Bloppit
+# Bloppit: Brick Puzzle Game
 
 A brick-building puzzle game for kids 8–13. Any photo (or a library model) becomes a brick puzzle with a step-by-step
 instruction booklet, and you build it on screen. The menu is game-first:

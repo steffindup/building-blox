@@ -7,11 +7,11 @@ Never mention LEGO or other toy brands anywhere in the listing (Apple rejects ot
 
 | Field | Value |
 |---|---|
-| Name (30) | Bloppit: Brick Puzzle Race |
+| Name (30) | Bloppit: Brick Puzzle Game |
 | Subtitle (30) | Snap it. Bloppit. Build it. |
 | Bundle ID | com.bloppit.app |
 | SKU | bloppit-ios-1 |
-| Primary category | Games, with Kids category (see below) |
+| Primary category | Games (not in the Kids category, see below) |
 | Secondary category | Education |
 | Content rights | Does not contain, show or access third-party content |
 | Privacy policy URL | https://bloppit.com/privacy/ |
@@ -20,8 +20,8 @@ Never mention LEGO or other toy brands anywhere in the listing (Apple rejects ot
 | Copyright | 2026 Bloppit |
 | Price | Free |
 
-**Kids category:** turn on "Made for Kids" and choose the age band **Ages 6–8** (or 9–11 if you'd rather aim older).
-Kids apps must not have third-party ads or analytics (Bloppit has none) and links out need a parental gate (done).
+**Kids category:** Bloppit is **not** in the Kids category. Leave "Made for Kids" off; the age rating is **4+**.
+The home-screen name stays **Bloppit** (set by `CFBundleDisplayName` in the iOS project).
 
 ## Promotional text (170)
 

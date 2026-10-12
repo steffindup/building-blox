@@ -1,5 +1,7 @@
 # Bloppit for iPhone and iPad
 
+On the App Store as **Bloppit: Brick Puzzle Game**; the name under the home-screen icon is **Bloppit**.
+
 The App Store app is the web app (`public/build/index.html`) wrapped with [Capacitor 8](https://capacitorjs.com).
 There's no separate app code: change the web app, then rebuild.
 
