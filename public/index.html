@@ -25,7 +25,9 @@
 <meta name="twitter:title" content="Bloppit: Brick Puzzle Game">
 <meta name="twitter:description" content="Turn any photo into a brick puzzle, then race Bloppit, challenge a friend or play the Daily Bloppit.">
 <meta name="twitter:image" content="https://bloppit.com/og-image.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <script type="application/ld+json">
@@ -35,7 +37,8 @@
     {
       "@type": "WebSite",
       "name": "Bloppit",
-      "url": "https://bloppit.com/"
+      "url": "https://bloppit.com/",
+      "sameAs": ["https://www.tiktok.com/@playbloppit", "https://www.instagram.com/playbloppit/", "https://www.youtube.com/@bloppit", "https://x.com/playbloppit", "https://www.facebook.com/playbloppit"]
     },
     {
       "@type": "WebApplication",
@@ -52,9 +55,13 @@
 }
 </script>
 <script>
-/* Launch screen: once per visit (shared with /build/, so the game doesn't show it again), skipped for links to a section. */
-(function(){ var seen=false; try{ seen=!!sessionStorage.getItem('bloppit-splash'); sessionStorage.setItem('bloppit-splash','1'); }catch(e){}
-  if(!seen&&!location.hash) document.documentElement.classList.add('sp-on'); })();
+/* Launch screen: shows when you arrive at bloppit.com or refresh the page. It's skipped when you come from another
+   bloppit.com page (or go Back/Forward), and for links to a section. /build/ uses the same rule. */
+(function(){ var nav='', inside=false;
+  try{ var e=performance.getEntriesByType('navigation')[0]; nav=e?e.type:''; }catch(x){}
+  try{ inside=!!document.referrer&&new URL(document.referrer).origin===location.origin; }catch(x){}
+  var show=nav==='reload'||(!inside&&nav!=='back_forward');
+  if(show&&!location.hash) document.documentElement.classList.add('sp-on'); })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -184,6 +191,10 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 .foot{display:flex;flex-wrap:wrap;align-items:center;gap:12px 28px;padding-block:28px;font-size:15px;color:var(--muted)}
 .foot .name{font-family:var(--display);font-size:24px;color:var(--red)}
 .foot .legal{margin-left:auto}
+.foot .social{display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%;order:9}
+.foot .social span{font-weight:800;color:var(--ink);margin-right:4px}
+.foot .social a{display:inline-block;padding:5px 12px;border-radius:999px;border:2px solid var(--line,#E2D9CC);color:var(--ink);font-weight:800;font-size:14px;text-decoration:none}
+.foot .social a:hover,.foot .social a:focus-visible{border-color:var(--red);color:var(--red)}
 /* Launch screen (same as the app's): quick and cute, then the front page */
 .splash{display:none;position:fixed;inset:0;z-index:100;background:var(--red);color:var(--white);display:grid;place-content:center;justify-items:center;gap:6px;
   text-align:center;font-family:var(--display);cursor:pointer;-webkit-user-select:none;user-select:none;animation:sp-fail .3s ease 4s forwards}
@@ -398,6 +409,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
     <span class="name">Bloppit</span>
     <span>Snap it. Bloppit. Build it.</span>
     <span class="legal">© 2026 Bloppit · An independent project, not affiliated with any toy brick brand. · <a href="/privacy/">Privacy</a></span>
+    <nav class="social" aria-label="Bloppit on social media"><span>Follow Bloppit</span><a href="https://www.tiktok.com/@playbloppit" rel="me noopener" target="_blank" aria-label="Bloppit on TikTok (@playbloppit)">TikTok</a><a href="https://www.instagram.com/playbloppit/" rel="me noopener" target="_blank" aria-label="Bloppit on Instagram (@playbloppit)">Instagram</a><a href="https://www.youtube.com/@bloppit" rel="me noopener" target="_blank" aria-label="Bloppit on YouTube (@bloppit)">YouTube</a><a href="https://x.com/playbloppit" rel="me noopener" target="_blank" aria-label="Bloppit on X (@playbloppit)">X</a><a href="https://www.facebook.com/playbloppit" rel="me noopener" target="_blank" aria-label="Bloppit on Facebook (playbloppit)">Facebook</a></nav>
   </div>
 </footer>
 

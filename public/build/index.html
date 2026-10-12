@@ -39,7 +39,9 @@
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
 }
 </script>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 175'%3E%3Ccircle cx='42' cy='38' r='16' fill='%238A5A3B'/%3E%3Ccircle cx='158' cy='38' r='16' fill='%238A5A3B'/%3E%3Cellipse cx='100' cy='94' rx='88' ry='74' fill='%238A5A3B'/%3E%3Cellipse cx='100' cy='116' rx='56' ry='40' fill='%23F3DEC0'/%3E%3Cellipse cx='64' cy='88' rx='19' ry='22' fill='%231B1410'/%3E%3Cellipse cx='136' cy='88' rx='19' ry='22' fill='%231B1410'/%3E%3Cpath d='M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z' fill='%233A2418'/%3E%3C/svg%3E">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
+<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
 <style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}
 /* Launch screen: same red as the app's native splash, so the two run together */
 .splash{position:fixed;inset:0;z-index:100;background:#D2352B;color:#fff;display:grid;place-content:center;justify-items:center;gap:6px;text-align:center;font-family:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;cursor:pointer;-webkit-user-select:none;user-select:none;animation:sp-fail .3s ease 5s forwards}
@@ -81,10 +83,12 @@
 <script>
 // Launch screen: once per visit, on the website and in the app (not again after switching player).
 // Skipped for links straight into a room, a challenge or a page.
-(function(){ var s=document.getElementById('splash'), seen=false;
-  try{ seen=!!sessionStorage.getItem('bloppit-splash'); }catch(e){}
-  if(seen||/[?&](room|ch|code)=/.test(location.search)||(location.hash&&location.hash!=='#home')){ s.remove(); return; }
-  try{ sessionStorage.setItem('bloppit-splash','1'); }catch(e){}
+(function(){ var s=document.getElementById('splash'), nav='', inside=false;
+  // Same rule as the front page: show on arrival or refresh, not when coming from another bloppit.com page or going Back
+  try{ var e=performance.getEntriesByType('navigation')[0]; nav=e?e.type:''; }catch(x){}
+  try{ inside=!!document.referrer&&new URL(document.referrer).origin===location.origin; }catch(x){}
+  var show=nav==='reload'||(!inside&&nav!=='back_forward');
+  if(!show||/[?&](room|ch|code)=/.test(location.search)||(location.hash&&location.hash!=='#home')){ s.remove(); return; }
   window.BLOPPIT_SPLASH=Date.now();
   s.onclick=function(){ s.classList.add('out'); setTimeout(function(){ s.remove(); },320); };
 })();

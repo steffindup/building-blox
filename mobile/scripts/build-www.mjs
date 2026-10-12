@@ -40,7 +40,7 @@ swap('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/
 swap('<link rel="preconnect" href="https://fonts.googleapis.com">\n', '');
 html = html.replace(/<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.com[^>]*>/, '<link rel="stylesheet" href="vendor/fonts.css">');
 // Website-only bits the app doesn't need (search, share previews, web manifest).
-html = html.replace(/<link rel="(canonical|manifest|apple-touch-icon)"[^>]*>\n/g, '')
+html = html.replace(/<link rel="(canonical|manifest|apple-touch-icon|icon)"[^>]*>\n/g, '')
   .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>\n/, '');
 // Switch on app mode (see "App Store app" at the top of the main script). It goes first in <body> so the
 // launch screen script, which runs before everything else and only shows in the app, can see it.
