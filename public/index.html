@@ -50,6 +50,11 @@
   ]
 }
 </script>
+<script>
+/* Launch screen: once per visit (shared with /build/, so the game doesn't show it again), skipped for links to a section. */
+(function(){ var seen=false; try{ seen=!!sessionStorage.getItem('bloppit-splash'); sessionStorage.setItem('bloppit-splash','1'); }catch(e){}
+  if(!seen&&!location.hash) document.documentElement.classList.add('sp-on'); })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;700;800&display=swap">
@@ -174,9 +179,56 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 .foot{display:flex;flex-wrap:wrap;align-items:center;gap:12px 28px;padding-block:28px;font-size:15px;color:var(--muted)}
 .foot .name{font-family:var(--display);font-size:24px;color:var(--red)}
 .foot .legal{margin-left:auto}
+/* Launch screen (same as the app's): quick and cute, then the front page */
+.splash{display:none;position:fixed;inset:0;z-index:100;background:var(--red);color:var(--white);display:grid;place-content:center;justify-items:center;gap:6px;
+  text-align:center;font-family:var(--display);cursor:pointer;-webkit-user-select:none;user-select:none;animation:sp-fail .3s ease 4s forwards}
+.sp-on .splash{display:grid}
+.sp-on{overflow:hidden}
+.splash svg{width:132px;height:116px;overflow:visible;animation:sp-pop .5s cubic-bezier(.3,1.6,.5,1) both}
+.splash .sp-head{transform-origin:100px 150px;animation:sp-tilt .5s ease-in-out .55s both}
+.splash .sp-eye{transform-box:fill-box;transform-origin:center;animation:sp-blink .18s ease-in-out .75s both}
+.splash .sp-word{font-size:52px;line-height:1;letter-spacing:.01em;text-shadow:0 4px 0 rgba(0,0,0,.18);animation:sp-up .35s ease .1s both}
+.splash .sp-tag{display:flex;gap:8px;margin-top:10px}
+.splash .sp-tag span{font-size:17px;padding:6px 11px 8px;border-radius:9px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18);animation:sp-pop .3s cubic-bezier(.3,1.6,.5,1) both}
+.splash .sp-tag span:nth-child(1){background:var(--yellow);color:var(--ink);animation-delay:.25s}
+.splash .sp-tag span:nth-child(2){background:var(--white);color:var(--red);animation-delay:.4s}
+.splash .sp-tag span:nth-child(3){background:#0055BF;animation-delay:.55s}
+.splash.out{opacity:0;transform:scale(1.04);transition:opacity .3s ease,transform .3s ease;pointer-events:none}
+@keyframes sp-pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+@keyframes sp-up{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+@keyframes sp-tilt{0%,100%{transform:none}35%{transform:rotate(-8deg)}70%{transform:rotate(5deg)}}
+@keyframes sp-blink{0%,100%{transform:none}50%{transform:scaleY(.1)}}
+@keyframes sp-fail{to{opacity:0;visibility:hidden}}
+@media (prefers-reduced-motion: reduce){.splash *,.splash{animation:none!important}}
 </style>
 </head>
 <body>
+<div class="splash" id="splash" aria-hidden="true">
+  <svg viewBox="0 0 200 175" aria-hidden="true"><g class="sp-head">
+    <circle cx="42" cy="38" r="16" fill="#8A5A3B"/><circle cx="42" cy="38" r="7" fill="#6B4229"/>
+    <circle cx="158" cy="38" r="16" fill="#8A5A3B"/><circle cx="158" cy="38" r="7" fill="#6B4229"/>
+    <ellipse cx="100" cy="94" rx="88" ry="74" fill="#8A5A3B"/>
+    <ellipse cx="100" cy="116" rx="56" ry="40" fill="#F3DEC0"/>
+    <g class="sp-eye"><ellipse cx="64" cy="88" rx="19" ry="22" fill="#1B1410"/><circle cx="70" cy="79" r="7" fill="#FFFFFF"/></g>
+    <g class="sp-eye"><ellipse cx="136" cy="88" rx="19" ry="22" fill="#1B1410"/><circle cx="142" cy="79" r="7" fill="#FFFFFF"/></g>
+    <ellipse cx="44" cy="118" rx="12" ry="7" fill="#F29A8A" opacity=".7"/><ellipse cx="156" cy="118" rx="12" ry="7" fill="#F29A8A" opacity=".7"/>
+    <path d="M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z" fill="#3A2418"/>
+    <path d="M100 120 q0 8 -9 10 M100 120 q0 8 9 10" stroke="#3A2418" stroke-width="4" stroke-linecap="round" fill="none"/>
+  </g></svg>
+  <div class="sp-word">Bloppit</div>
+  <div class="sp-tag"><span>Snap it.</span><span>Bloppit.</span><span>Build it.</span></div>
+</div>
+<script>
+(function(){ var s=document.getElementById('splash'), h=document.documentElement;
+  if(!h.classList.contains('sp-on')){ s.remove(); return; }
+  var t0=Date.now(), done=false, rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function go(){ if(done) return; done=true; s.classList.add('out'); setTimeout(function(){ s.remove(); h.classList.remove('sp-on'); },320); }
+  s.onclick=go;
+  // Quick: about 1.2 seconds, counted from when the page started, so a slow connection doesn't add to it
+  function later(){ setTimeout(go,Math.max(150,(rm?400:1200)-(Date.now()-t0))); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',later); else later();
+})();
+</script>
 <a class="skip" href="#main">Skip to content</a>
 
 <header>
