@@ -10,7 +10,7 @@ instruction booklet, and you build it on screen. The menu is game-first:
   (`best` and `bbest` in the game save).
 - **Blitz**: **vs Bloppit** (Baby, River or Champion Bloppit; take turns, 1 to 3 bricks a turn) and **vs Friend**:
   *Make a challenge* builds the whole puzzle against the clock and gives a 6-character code; friends type it into
-  *Got a code?* (or open `/build/?ch=CODE`) and race the same puzzle later. Live Blitz rooms (5-character codes) are still there.
+  *Got a code?* (or open the share link `bloppit.com/join/CODE`) and race the same puzzle later. Live Blitz rooms (5-character codes) are still there.
 - **Build together** (Play together): take turns building one model in a room.
 - Every finish screen offers **Build it for real**, which opens the printable booklet.
 
@@ -24,6 +24,12 @@ Formerly called Building Blox; the browser save keys still use the old `building
 - `public/index.html` is the landing page at bloppit.com (static HTML, no build step).
 - `public/build/index.html` is the whole app, at bloppit.com/build/ (no build step).
   Old invite links (`/?room=CODE`) redirect into the app via `netlify.toml`.
+- **Flow.** The website and the App Store app share one flow from the menu on. Differences: the website starts at the
+  front page (bloppit.com → *Play now* → menu) and has no launch screen; the app opens with the launch screen, then the
+  menu. On the website each page has its own address (`/build/` is the menu, then `#blitz`, `#daily`, `#trails`,
+  `#together`, `#photos`, `#build`, `#booklet`) so the browser's Back button steps back through Bloppit (`navNote()`).
+- **Share links** are `bloppit.com/join/CODE`: `netlify.toml` sends them to `/build/?code=CODE`, which opens the room
+  (5 characters) or challenge (6 characters) straight away. The older `/build/?room=CODE` and `?ch=CODE` still work.
 - The brand (Bloppit the otter, catchphrase "Snap it. Bloppit. Build it.", colours) is on the
   "Bloppit brand & landing page" design canvas in Claude.
 - `netlify/functions/room/` is the Play together room server: a Netlify Function at `/api/room`

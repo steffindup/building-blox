@@ -42,8 +42,9 @@ html = html.replace(/<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.c
 // Website-only bits the app doesn't need (search, share previews, web manifest).
 html = html.replace(/<link rel="(canonical|manifest|apple-touch-icon)"[^>]*>\n/g, '')
   .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>\n/, '');
-// Switch on app mode (see "App Store app" at the top of the main script).
-swap('<script>\n/* ---------- App Store app', '<script>window.BLOPPIT_APP=true;</script>\n<script>\n/* ---------- App Store app');
+// Switch on app mode (see "App Store app" at the top of the main script). It goes first in <body> so the
+// launch screen script, which runs before everything else and only shows in the app, can see it.
+swap('<body>\n', '<body>\n<script>window.BLOPPIT_APP=true;</script>\n');
 
 if (/https:\/\/(cdn|fonts)\./.test(html)) throw new Error('build-www: the app still loads something from a CDN');
 writeFileSync(join(www, 'index.html'), html);

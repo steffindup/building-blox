@@ -14,6 +14,14 @@
   force = true
   query = {room = ":room"}
 
+# Short share links: bloppit.com/join/CODE opens that room (5 characters) or challenge (6 characters) in the app,
+# skipping the front page and the menu.
+[[redirects]]
+  from = "/join/:code"
+  to = "/build/?code=:code"
+  status = 302
+  force = true
+
 # Send the old Netlify address to the real domain, so search engines index one site, not two.
 [[redirects]]
   from = "https://bloppit.netlify.app/*"

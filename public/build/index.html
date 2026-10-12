@@ -73,10 +73,11 @@
   <div class="sp-tag"><span>Snap it.</span><span>Bloppit.</span><span>Build it.</span></div>
 </div>
 <script>
-// Launch screen: once per visit (not again after switching player). Skipped for links straight into a room or a page.
+// Launch screen: App Store app only, once per visit (not again after switching player). Skipped for links straight
+// into a room or a page. The website goes straight to the menu: bloppit.com's front page already did the hello.
 (function(){ var s=document.getElementById('splash'), seen=false;
   try{ seen=!!sessionStorage.getItem('bloppit-splash'); }catch(e){}
-  if(seen||/[?&]room=/.test(location.search)||(location.hash&&location.hash!=='#home')){ s.remove(); return; }
+  if(!window.BLOPPIT_APP||seen||/[?&](room|ch|code)=/.test(location.search)||(location.hash&&location.hash!=='#home')){ s.remove(); return; }
   try{ sessionStorage.setItem('bloppit-splash','1'); }catch(e){}
   window.BLOPPIT_SPLASH=Date.now();
   s.onclick=function(){ s.classList.add('out'); setTimeout(function(){ s.remove(); },320); };
@@ -2012,7 +2013,39 @@ function setTab(t){
   requestAnimationFrame(()=>{resize(); bookResize();});
   if(t==='build'&&!saveOn) dismissResume();
   saveSoon();
+  navNote(t);
 }
+/* Browser Back and Forward on the website: each page gets its own address (/build/ is the menu, /build/#blitz, #daily, …),
+   so Back goes to the page before instead of leaving Bloppit. The App Store app has no Back button, so it skips this. */
+const NAV_HASH={home:'',create:'photos',build:'build',box:'build',booklet:'booklet',game:'trails',mp:'together',blitz:'blitz',daily:'daily'};
+var navReady=false, navFromBack=false;  // var: setTab runs during start-up, before this line
+function navNote(t){
+  if(APP||!navReady||navFromBack) return;
+  const h=NAV_HASH[t]; if(h===undefined) return;
+  const want=h?'#'+h:'', cur=location.hash==='#home'?'':location.hash;
+  if(cur===want) return;
+  try{ history.pushState({bloppit:t},'',location.pathname+location.search+want); }catch(e){}
+}
+function navStart(){
+  if(APP) return;
+  const h=NAV_HASH[tab]; try{ history.replaceState({bloppit:tab},'',location.pathname+location.search+(h?'#'+h:'')); }catch(e){}
+  navReady=true;
+}
+window.addEventListener('popstate',()=>{
+  if(APP||!navReady) return;
+  const h=location.hash.slice(1).toLowerCase();
+  let t={photos:'create',create:'create',build:'build',booklet:'booklet',game:'game',trails:'game',otter:'game',brain:'game',
+    together:'mp','play-together':'mp',blitz:'blitz',daily:'daily'}[h]||'home';
+  if((t==='build'||t==='booklet')&&!model) t='home';
+  // Going back to the puzzle page would leave a room or a level; show the menu instead (it offers "Continue").
+  if(t==='create'&&(mp||game)) t='home';
+  if(t==='game'&&mp) t=mpHomeTab();
+  document.querySelectorAll('dialog[open]').forEach(d=>{ try{ d.close(); }catch(e){} });
+  navFromBack=true; try{ if(t!==tab) setTab(t); } finally{ navFromBack=false; }
+  // If we ended up somewhere other than the address says, fix the address (without adding a history step).
+  const want=NAV_HASH[tab]?'#'+NAV_HASH[tab]:'';
+  if((location.hash==='#home'?'':location.hash)!==want) try{ history.replaceState({bloppit:tab},'',location.pathname+location.search+want); }catch(e){}
+});
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
   if(b.dataset.tab==='create'&&mp){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus(`You’re in ${mpWhat()}. Tap Puzzle again to leave it.`,'err'); else showToastLeave(); return; } mpLeave(); }
   if(b.dataset.tab==='game'&&mp){ setTab(mpHomeTab()); mpMsg(`Leave ${mpWhat()} first to play the levels on your own.`); return; }
@@ -4034,7 +4067,7 @@ $('#mpRoomBtn').onclick=()=>setTab(mpHomeTab());
 $('#mpLeave').onclick=()=>{ mpLeave(); renderMpView(); };
 $('#mpEndTurn').onclick=()=>mpPost({action:'pass'}).then(j=>mpApply(j.state)).catch(e=>setStatus(e.message,'err'));
 $('#mpSkip').onclick=()=>mpPost({action:'pass'}).then(j=>mpApply(j.state)).catch(e=>setStatus(e.message,'err'));
-$('#mpCopy').onclick=async()=>{ const url=APP?`https://bloppit.com/build/?room=${mp.code}`:`${location.origin}${location.pathname}?room=${mp.code}`;
+$('#mpCopy').onclick=async()=>{ const url=APP?`https://bloppit.com/join/${mp.code}`:`${location.origin}/join/${mp.code}`;
   if(APP&&!await gate.ask('Sharing sends the invite link to another app.')) return;
   try{ if(navigator.share) await navigator.share({title:'Bloppit',text:`Build with me! Room ${mp.code}`,url}); else { await navigator.clipboard.writeText(url); $('#mpCopy').textContent='Copied!'; setTimeout(()=>$('#mpCopy').textContent='Copy invite link',2000); } }catch(e){} };
 document.addEventListener('visibilitychange',()=>{ if(mp&&document.visibilityState==='visible'){ mp.ver=0; mpPoll(); } });
@@ -4257,7 +4290,7 @@ function chRemember(code,title,runId){ const l=chMine().filter(c=>c.code!==code)
   try{ localStorage.setItem(pkey(CH_KEY),JSON.stringify(l.slice(0,8))); }catch(e){} }
 function chRows(c){ const medals=['🥇','🥈','🥉'];
   return c.runs.map((r,k)=>`<div${r.me?' class="first"':''}><span>${medals[k]||`${k+1}.`} ${escapeHTML(r.name)}${r.me?' (you)':''}${r.maker?' · made it':''}</span><span><b>${fmtTime(totalMs(r))}</b>${r.miss?` · ${r.miss} miss${r.miss===1?'':'es'}`:''}</span></div>`).join(''); }
-function chShareUrl(code){ return `https://bloppit.com/build/?ch=${code}`; }
+function chShareUrl(code){ return `https://bloppit.com/join/${code}`; }
 async function chShare(code){
   if(APP&&!await gate.ask('Sharing sends your challenge code to another app.')) return;
   const url=chShareUrl(code), text=`Can you beat my Bloppit time? Challenge code ${code}`;
@@ -4761,8 +4794,13 @@ loadSample(0); setTab('create'); clearTimeout(timer); rebuild(); requestAnimatio
   } else saveOn=true;
 }
 {
-  const q=(new URLSearchParams(location.search).get('room')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);
-  const chq=(new URLSearchParams(location.search).get('ch')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+  // Share links: bloppit.com/join/CODE (netlify.toml sends it here as ?code=CODE; 5 characters is a room, 6 a challenge),
+  // plus the older /build/?room=CODE and /build/?ch=CODE.
+  const usp=new URLSearchParams(location.search), clean=v=>(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const code=clean(usp.get('code'));
+  const q=(clean(usp.get('room'))||(code.length===5?code:'')).slice(0,5);
+  const chq=(clean(usp.get('ch'))||(code.length===6?code:'')).slice(0,6);
+  if(code&&!q&&!chq) try{ history.replaceState(null,'',location.pathname); }catch(e){}
   if(chq.length===6&&!q){ setTab('blitz'); $('#bzCodeIn').value=chq; setTimeout(()=>chOpen(chq),0); try{ history.replaceState(null,'',location.pathname); }catch(e){} }
   else if(q){
     $('#mpCodeIn').value=q; setTab('mp');
@@ -4818,7 +4856,7 @@ window.bloppitHome=()=>setTab('home');
 // On the website the logo opens the menu; on the menu itself it goes to bloppit.com's front page. (The app handles its own links above.)
 $('#brandLink').addEventListener('click',e=>{ if(APP||tab==='home') return; e.preventDefault(); setTab('home'); });
 // Links straight to a page: /build/#photos, #library, #trails, #otter, #brain, #together, #blitz, #daily (anything else opens the menu).
-// A challenge link (/build/?ch=CODE) opens Blitz with that challenge.
+// Share links (bloppit.com/join/CODE, or the older /build/?room=CODE and ?ch=CODE) skip the menu and open the room or challenge.
 function homeRoute(){
   const h=location.hash.slice(1).toLowerCase();
   if(h==='photos'||h==='create') setTab('create');
@@ -4834,6 +4872,7 @@ function homeRoute(){
   const sp=document.getElementById('splash');
   if(sp&&window.BLOPPIT_SPLASH) setTimeout(()=>{ sp.classList.add('out'); setTimeout(()=>sp.remove(),320); },Math.max(0,(reduceMotion?500:1500)-(Date.now()-window.BLOPPIT_SPLASH)));
 }
+navStart();  // from here on, each page change on the website is a step for the browser's Back button
 })();
 </script>
 
