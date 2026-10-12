@@ -1691,22 +1691,49 @@ function buildModel(){
     let best=kept[0],bd=1e9; for(const k of kept){const d=dist2(PLAB[c],PLAB[k]); if(d<bd){bd=d;best=k;}} remap.set(c,best); }
   for(let i=0;i<vox.length;i++){ if(vox[i]<0) continue; vox[i]=vox[i]===1000?GREY:remap.get(vox[i]); }
 
-  // merge cubes into bricks, layer by layer, alternating direction so layers interlock
-  const bricks=[], steps=[];
+  // Real bricks can't float. Working from the top down, a cube may stick out at most one stud past the layer
+  // below it; anything further out gets a cube put underneath it (same colour), so overhangs step down like stairs.
+  { const dist=new Int16Array(W*D), q=new Int32Array(W*D);
+    for(let y=H-1;y>=1;y--){
+      let qh=0,qt=0; dist.fill(-1);
+      for(let z=0;z<D;z++)for(let x=0;x<W;x++) if(vox[vi(x,y,z)]>=0&&vox[vi(x,y-1,z)]>=0){ dist[x+z*W]=0; q[qt++]=x+z*W; }
+      while(qh<qt){ const i=q[qh++], x=i%W, z=(i/W)|0;
+        for(const [nx,nz] of [[x+1,z],[x-1,z],[x,z+1],[x,z-1]]){ if(nx<0||nz<0||nx>=W||nz>=D) continue; const j=nx+nz*W;
+          if(dist[j]<0&&vox[vi(nx,y,nz)]>=0){ dist[j]=dist[i]+1; q[qt++]=j; } } }
+      for(let z=0;z<D;z++)for(let x=0;x<W;x++){ const c=vox[vi(x,y,z)];
+        if(c>=0&&(dist[x+z*W]<0||dist[x+z*W]>1)) vox[vi(x,y-1,z)]=c; }
+    } }
+
+  // merge cubes into bricks, layer by layer, alternating direction so layers interlock.
+  // Each brick should sit on at least one stud of the layer below, so bricks that do are tried first.
+  const bricks=[], steps=[], layers=[], occ=[];
   for(let y=0;y<H;y++){
     const used=new Uint8Array(W*D), opts=[];
     for(const [a,b] of SIZES){ if(a===b) opts.push([a,b]); else if(y%2===0) opts.push([b,a],[a,b]); else opts.push([a,b],[b,a]); }
-    const layer=[];
+    const below=y?occ[y-1]:null, layer=[];
+    const fits=(x,z,sx,sz,c)=>{ if(x+sx>W||z+sz>D) return false;
+      for(let dz=0;dz<sz;dz++)for(let dx=0;dx<sx;dx++){const xx=x+dx,zz=z+dz; if(used[xx+zz*W]||vox[vi(xx,y,zz)]!==c) return false;} return true; };
+    const rests=(x,z,sx,sz)=>{ if(!below) return true; for(let dz=0;dz<sz;dz++)for(let dx=0;dx<sx;dx++) if(below[x+dx+(z+dz)*W]) return true; return false; };
     for(let z=0;z<D;z++)for(let x=0;x<W;x++){
       const c=vox[vi(x,y,z)]; if(c<0||used[x+z*W]) continue;
-      for(const [sx,sz] of opts){
-        if(x+sx>W||z+sz>D) continue; let ok=true;
-        for(let dz=0;dz<sz&&ok;dz++)for(let dx=0;dx<sx;dx++){const xx=x+dx,zz=z+dz; if(used[xx+zz*W]||vox[vi(xx,y,zz)]!==c){ok=false;break;}}
-        if(!ok) continue;
-        for(let dz=0;dz<sz;dz++)for(let dx=0;dx<sx;dx++) used[x+dx+(z+dz)*W]=1;
-        layer.push({x,y,z,sx,sz,c}); break;
-      }
+      let pick=null;
+      for(const [sx,sz] of opts) if(fits(x,z,sx,sz,c)&&rests(x,z,sx,sz)){ pick=[sx,sz]; break; }
+      if(!pick) for(const [sx,sz] of opts) if(fits(x,z,sx,sz,c)){ pick=[sx,sz]; break; }
+      const [sx,sz]=pick;
+      for(let dz=0;dz<sz;dz++)for(let dx=0;dx<sx;dx++) used[x+dx+(z+dz)*W]=1;
+      layer.push({x,y,z,sx,sz,c});
     }
+    layers.push(layer); occ.push(used);
+  }
+  // Any brick still resting on nothing gets a 1×1 of the same colour under it, down to whatever holds it up
+  for(let y=1;y<H;y++) for(const b of [...layers[y]]){
+    let ok=false; for(let dz=0;dz<b.sz&&!ok;dz++)for(let dx=0;dx<b.sx;dx++) if(occ[y-1][b.x+dx+(b.z+dz)*W]){ ok=true; break; }
+    if(ok) continue;
+    for(let yy=y-1;yy>=0;yy--){ const i=b.x+b.z*W; if(occ[yy][i]) break;
+      occ[yy][i]=1; layers[yy].push({x:b.x,y:yy,z:b.z,sx:1,sz:1,c:b.c}); if(yy===0||occ[yy-1][i]) break; }
+  }
+  for(let y=0;y<H;y++){
+    const layer=layers[y];
     if(!layer.length) continue;
     layer.sort((a,b)=>a.z-b.z||a.x-b.x);
     const nSteps=Math.ceil(layer.length/8), per=Math.ceil(layer.length/nSteps);
@@ -1865,7 +1892,7 @@ function loop(now){
   }
   if(tab==='build'&&onStage){
     drops=drops.filter(d=>{const t=clamp((now-d.t0)/260,0,1); d.m.position.y=d.ty+(1-t*t)*2.2; return t<1;});
-    { const g=ghostGroup.children[0]; if(g&&ghostGroup.visible) g.position.y=ghostLift()+(reduceMotion?0:Math.sin(now/260)*.1); }
+    { const g=ghostGroup.children[0]; if(g&&ghostGroup.visible&&g.material!==errMat) g.material.opacity=reduceMotion?.6:.5+Math.sin(now/240)*.15; }
     if(camAnim){ const t=clamp((now-camAnim.t0)/650,0,1), e=1-Math.pow(1-t,3);
       playControls.target.lerpVectors(camAnim.t1,camAnim.t2,e); playCam.position.lerpVectors(camAnim.p1,camAnim.p2,e);
       if(t>=1) camAnim=null; }
@@ -2476,17 +2503,12 @@ function setGhost(){
   ghostGroup.clear(); if(!sel){ padSync(); return; }
   const g=new THREE.Mesh(brickGeo(sel.sx,sel.sz),ghostMat(sel.c)); g.add(new THREE.LineSegments(edgeGeo(sel.sx,sel.sz),ghostEdge));
   g.position.y=ghostLift(); ghostGroup.add(g);
-  // Footprint on the layer: where the brick will land
-  const f=new THREE.Mesh(new THREE.PlaneGeometry(sel.sx-.08,sel.sz-.08),footMat(sel.c)); f.rotation.x=-Math.PI/2; f.position.set(sel.sx/2,.03,sel.sz/2);
-  f.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(sel.sx-.04,sel.sz-.04)),footEdge)); ghostGroup.add(f);
   if(lastAnchor) placeGhost(lastAnchor.px,lastAnchor.pz);
   else if(model&&cur<model.steps.length){ const c=ghostHome(); placeGhost(c.px,c.pz); }
   else ghostGroup.visible=false;
   padSync();
 }
-const ghostLift=()=>TILES?.25:.55;
-const footMats=new Map(), footEdge=new THREE.LineBasicMaterial({color:0x14202c,transparent:true,opacity:.8});
-const footMat=c=>{ if(!footMats.has(c)) footMats.set(c,new THREE.MeshBasicMaterial({color:new THREE.Color(PALETTE[c][1]).convertSRGBToLinear(),transparent:true,opacity:.45,depthWrite:false,side:THREE.DoubleSide})); return footMats.get(c); };
+const ghostLift=()=>0;
 // Where a newly picked-up brick first appears: the middle of what's built so far (or the middle of the table)
 function ghostHome(){
   if(placedBoxes.length){ let x=0,z=0; for(const b of placedBoxes){ x+=b.x+b.sx/2; z+=b.z+b.sz/2; } return {px:x/placedBoxes.length,pz:z/placedBoxes.length}; }
@@ -2563,7 +2585,9 @@ function tryPlace(){
     if(keep.length) cands=keep;
   }
   if(t){ if(cands.length===1) lock(); placeBrick(t,ax,az); return; }
-  if(mpBlitz()){ setStatus('Miss! +1 second','err'); sfx.bonk(); mpPost({action:'miss'}).then(j=>mpApply(j.state)).catch(()=>{});
+  if(mpBlitz()){ const o0=curOff(), u0=usedSet();
+    const turn0=sel.sx!==sel.sz&&s.bricks.some(b=>!u0.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o0||Math.abs(b.x+o0.x-ax)<=2&&Math.abs(b.z+o0.z-az)<=2));
+    setStatus(turn0?'Miss! +1 second. Try turning it.':'Miss! +1 second','err'); sfx.bonk(); mpPost({action:'miss'}).then(j=>mpApply(j.state)).catch(()=>{});
     const g=ghostGroup.children[0]; if(g){g.material=errMat; setTimeout(()=>{if(g.parent) g.material=ghostMat(sel?sel.c:0);},380);} mpFlash('+1s'); return; }
   const o=curOff(), u=usedSet();
   const turned=sel.sx!==sel.sz&&s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o||Math.abs(b.x+o.x-ax)<=2&&Math.abs(b.z+o.z-az)<=2));
@@ -2629,7 +2653,8 @@ function onGhost(e){
   return (ray.intersectObject(ghostGroup,true).length||overFoot)?p:null;
 }
 cvs.addEventListener('pointerdown',e=>{
-  if(tab!=='build'||!model||cur>=model.steps.length||busy||e.button>0) return;
+  // With a mouse the brick already follows the pointer, so a mouse drag always turns the view.
+  if(tab!=='build'||!model||cur>=model.steps.length||busy||e.button>0||e.pointerType==='mouse') return;
   const p=onGhost(e); if(!p) return;
   e.stopImmediatePropagation(); e.preventDefault();
   ghostDrag={id:e.pointerId,x:e.clientX,y:e.clientY,moved:false,dx:p.px-(lastAnchor.ax+sel.sx/2),dz:p.pz-(lastAnchor.az+sel.sz/2)};
