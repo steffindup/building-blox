@@ -16,7 +16,7 @@ export const DAILY_KEEP_DAYS = 7;               // daily times are kept for a we
 const MAX_RUNS = 12;                            // players per challenge
 const MAX_MODEL_CHARS = 2_500_000;
 const MAX_DAILY = 20_000;                       // times kept per day
-const MISS_MS = 3000;                           // each miss adds 3 seconds (same as Blitz)
+const MISS_MS = 1000;                           // each miss adds 1 second (same as Blitz)
 const MIN_MS_PER_BRICK = 300;                   // faster than this per brick isn't a real build
 const MAX_MS = 3 * 3600_000;
 

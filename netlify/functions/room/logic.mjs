@@ -325,7 +325,7 @@ export async function handle(method, query, body, store) {
     }, pid);
   }
 
-  // Bloppit Blitz: a wrong drop adds 3 seconds to the player whose turn it is
+  // Bloppit Blitz: a wrong drop adds 1 second to the player whose turn it is
   if (a === 'miss') {
     return update(store, code, (s) => {
       const i = mine(s);

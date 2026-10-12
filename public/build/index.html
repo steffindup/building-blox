@@ -893,7 +893,7 @@ body.on-home .tabs{visibility:hidden}
 </section>
 <section class="view" id="view-create" hidden>
   <div class="panel">
-    <div class="pick-banner" id="pickBanner" hidden><span>⚡ Choose a puzzle for <b>Blitz</b>, then tap <b>Use this puzzle</b>.</span><button class="ghost" id="pickCancel" type="button">Back to Blitz</button></div>
+    <div class="pick-banner" id="pickBanner" hidden><span>⚡ Choose a puzzle for <b>Blitz</b>, then tap <b>Use this puzzle</b>. Big puzzles are made smaller (up to 30 bricks) so the race stays quick.</span><button class="ghost" id="pickCancel" type="button">Back to Blitz</button></div>
     <label class="drop" id="drop">
       <input type="file" id="file" accept="image/*" multiple>
       <strong>Add photos</strong>
@@ -1152,7 +1152,7 @@ body.on-home .tabs{visibility:hidden}
 </section>
 
 <section class="view" id="view-blitz" hidden>
-  <div class="gm-head"><div><h2>⚡ Bloppit Blitz</h2><p class="note">A race against the clock. No hints, and each brick in the wrong spot adds 3 seconds. Shortest time wins.</p></div></div>
+  <div class="gm-head"><div><h2>⚡ Bloppit Blitz</h2><p class="note">A race against the clock. No hints, and each brick in the wrong spot adds 1 second. Shortest time wins.</p></div></div>
   <div id="bzForms" style="display:grid;gap:16px">
     <div class="card bz-setup">
       <div class="field"><label for="bzName">Your name</label><input class="inp" id="bzName" maxlength="16" autocomplete="nickname" placeholder="e.g. Elmar"></div>
@@ -2019,6 +2019,7 @@ function setTab(t){
   // Once the menu has been shown it offers "Continue building", so the Welcome back banner isn't needed
   $('#resume').hidden=!pendingSave||homeSeen;
   $('#mpBar').hidden=!(mp&&mp.state&&mp.state.started&&(t==='build'||t==='box'));
+  if(t==='blitz') blitzDefault();
   if(t==='mp'||t==='blitz'){ renderer.domElement.remove(); renderMpView(); }
   $('#gameBar').hidden=!(game&&(t==='build'||t==='box'));
   if(t==='game'){ renderer.domElement.remove(); renderGameMap(); }
@@ -2084,7 +2085,29 @@ function pickPuzzle(forWhat,src){
   else requestAnimationFrame(()=>$('#library').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}));
 }
 $('#pickCancel').onclick=()=>{ pickFor=null; setTab('blitz'); };
-$('#startBuild').onclick=()=>{ if(pickFor==='blitz'&&model){ pickFor=null; mpModelOptions('#bzModel'); $('#bzModel').value='cur'; setTab('blitz'); return; } setTab('build'); };
+$('#startBuild').onclick=()=>{ if(pickFor==='blitz'&&model){ pickFor=null; blitzFit(); bzKeepPick=true; mpModelOptions('#bzModel'); $('#bzModel').value='cur'; setTab('blitz'); return; } setTab('build'); };
+// Blitz races should be quick: a puzzle picked for Blitz is shrunk to at most BLITZ_MAX bricks,
+// and opening Blitz without a small puzzle ready starts on a small Trail level instead.
+const BLITZ_MAX=30, BLITZ_DEFAULT_LEVEL=3;  // Trail level 4, the Toadstool (about 22 bricks)
+let bzKeepPick=false;
+function blitzFit(){
+  if(!model||(S.kind!=='picture'&&model.bricks.length<=BLITZ_MAX)) return;
+  // Pictures (flat tile mosaics) have hundreds of tiles, so a Blitz picture is built as a small model instead
+  const keep={...S}, base={...S,kind:'model',shape:S.kind==='picture'?'puffed':S.shape}; let best=null;
+  for(let size=S.kind==='picture'?16:S.size-1;size>=4;size--){
+    Object.assign(S,base,{size}); const m=buildModel(), k=m&&!m.error&&m.bricks?m.bricks.length:0;
+    if(k>=2){ best=size; if(k<=BLITZ_MAX) break; } }
+  Object.assign(S,keep);
+  if(best==null) return;
+  setControls({...base,size:best}); rebuild();
+}
+function blitzDefault(){
+  if(bzKeepPick){ bzKeepPick=false; return; }
+  const v=$('#bzModel').value;
+  if(mp||(v!==''&&v!=='cur')||(model&&model.bricks.length<=BLITZ_MAX)) return;  // keep a Trail level they chose
+  levelCount(LEVELS[BLITZ_DEFAULT_LEVEL]);  // so the brick count shows
+  mpModelOptions('#bzModel'); $('#bzModel').value=String(BLITZ_DEFAULT_LEVEL); renderBzPuzzle();
+}
 
 /* ---------- Build it yourself ---------- */
 const PAD=2;
@@ -2441,8 +2464,8 @@ function tryPlace(){
     if(keep.length) cands=keep;
   }
   if(t){ if(cands.length===1) lock(); placeBrick(t,ax,az); return; }
-  if(mpBlitz()){ setStatus('Miss! +3 seconds','err'); sfx.bonk(); mpPost({action:'miss'}).then(j=>mpApply(j.state)).catch(()=>{});
-    const g=ghostGroup.children[0]; if(g){g.material=errMat; setTimeout(()=>{if(g.parent) g.material=ghostMat(sel?sel.c:0);},380);} mpFlash('+3s'); return; }
+  if(mpBlitz()){ setStatus('Miss! +1 second','err'); sfx.bonk(); mpPost({action:'miss'}).then(j=>mpApply(j.state)).catch(()=>{});
+    const g=ghostGroup.children[0]; if(g){g.material=errMat; setTimeout(()=>{if(g.parent) g.material=ghostMat(sel?sel.c:0);},380);} mpFlash('+1s'); return; }
   const o=curOff(), u=usedSet();
   const turned=sel.sx!==sel.sz&&s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o||Math.abs(b.x+o.x-ax)<=2&&Math.abs(b.z+o.z-az)<=2));
   const unused=!s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&Math.min(b.sx,b.sz)===Math.min(sel.sx,sel.sz)&&Math.max(b.sx,b.sz)===Math.max(sel.sx,sel.sz));
@@ -3792,7 +3815,7 @@ const mpBlitz=()=>!!(mp&&mp.state&&mp.state.mode==='blitz');
 // Which page a game's lobby lives on, and how to talk about it
 const mpHomeTab=()=>mp&&(mp.cpu||mpBlitz())?'blitz':'mp';
 const mpWhat=()=>mp&&mp.state&&mp.state.solo?'your timed build':mp&&mp.cpu?'your race against Bloppit':mpBlitz()?'your Blitz room':'your Play together room';
-const MISS_MS=3000;
+const MISS_MS=1000;
 // Blitz times: the server's total so far, plus the turn that's running now (using the server's clock)
 function mpTime(s,i){ const p=s.players[i]; let t=(p.ms||0)+(p.miss||0)*MISS_MS;
   if(s.started&&!s.finished&&s.turn===i&&mp) t+=Math.max(0,Date.now()+(mp.skew||0)-s.turnStart); return t; }
@@ -4013,9 +4036,9 @@ async function renderMpView(){
   $('#mpWhere').textContent=bz?'⚡ Blitz':'⇄ Together';
   const p0=photos[0]; if(p0) $('#mpThumb').src=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png'));
   $('#mpModelName').textContent=s.title;
-  $('#mpModelInfo').innerHTML=s.solo?`<span class="blitz-tag">${escapeHTML(s.label)}</span>${s.nBricks} bricks, all yours. Your clock runs until the last brick is in. No hints; each miss adds 3 seconds.${s.started?` ${s.moves.length} placed so far.`:''}`
-    :cpuOn?`<span class="blitz-tag">⚡ vs ${CPU_LEVELS[s.cpuLevel].name}</span>${s.nBricks} bricks · you each place ${s.quota} · 1 to 3 bricks a turn. No hints; each miss adds 3 seconds.${s.started?` ${s.moves.length} placed so far.`:''}`
-    :bz?`<span class="blitz-tag">⚡ Bloppit Blitz</span>${s.nBricks} bricks · ${s.quota?`everyone places ${s.quota}`:`split evenly between ${s.players.length} player${s.players.length===1?'':'s'}: ${Math.floor(s.nBricks/s.players.length)} each`} · 1 to 3 bricks a turn, against the clock. No hints; each miss adds 3 seconds.${s.started?` ${s.moves.length} placed so far.`:''}`
+  $('#mpModelInfo').innerHTML=s.solo?`<span class="blitz-tag">${escapeHTML(s.label)}</span>${s.nBricks} bricks, all yours. Your clock runs until the last brick is in. No hints; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
+    :cpuOn?`<span class="blitz-tag">⚡ vs ${CPU_LEVELS[s.cpuLevel].name}</span>${s.nBricks} bricks · you each place ${s.quota} · 1 to 3 bricks a turn. No hints; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
+    :bz?`<span class="blitz-tag">⚡ Bloppit Blitz</span>${s.nBricks} bricks · ${s.quota?`everyone places ${s.quota}`:`split evenly between ${s.players.length} player${s.players.length===1?'':'s'}: ${Math.floor(s.nBricks/s.players.length)} each`} · 1 to 3 bricks a turn, against the clock. No hints; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
     :`${s.nBricks} bricks · ${s.perTurn} brick${s.perTurn>1?'s':''} per turn${s.started?` · ${s.moves.length} placed so far`:''}`;
   $('#mpList').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.stale?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.i===s.host&&!cpuOn?' · made the room':''}${s.started?(bz?` <b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>`:` <b>${p.score}</b>`):''}${voChip(p.i)}</span>`).join('');
   const host=mp.me===s.host;
@@ -4042,7 +4065,7 @@ function mpShowBlitzEnd(){
   $('#mpEndNew').textContent=mp.cpu?'Race again':'New game';
   $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span><b>${fmtTime(p.ms)}</b> · ${p.own} brick${p.own===1?'':'s'} · ${p.miss} miss${p.miss===1?'':'es'}</span></div>`).join('');
   const extra=s.moves.filter(m=>m.p<0).length;
-  $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and Bloppit put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, and every miss added 3 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Legend Bloppit. Amazing!':' Ready to race a faster Bloppit?'):' Practice makes perfect. Try again?'):''}`;
+  $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and Bloppit put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, and every miss added 1 second.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Legend Bloppit. Amazing!':' Ready to race a faster Bloppit?'):' Practice makes perfect. Try again?'):''}`;
   $('#mpEndDlg').showModal();
 }
 $('#mpEndClose').onclick=()=>{ $('#mpEndDlg').close(); setTab('build'); };
@@ -4115,7 +4138,7 @@ $('#mpToBlitz').onclick=e=>{ e.preventDefault(); setTab('blitz'); };
 
 /* ---------- Bloppit Blitz: race the computer (everything happens on this device) ---------- */
 // The race uses the same rules and screens as a Blitz room, but the "room" lives here instead of on the server.
-// Bloppit takes a few seconds to find and place each brick, and sometimes misses (+3 seconds, like everyone).
+// Bloppit takes a few seconds to find and place each brick, and sometimes misses (+1 second, like everyone).
 // Three Bloppits to race: each one is quicker and makes fewer mistakes than the last.
 const CPU_LEVELS={
   easy:  {name:'Pup Bloppit',     ms:[7000,11000],miss:.25,turn:[1,2],note:'Pup Bloppit is still learning. He takes his time and makes plenty of mistakes. Great for a first race.'},
@@ -4221,9 +4244,9 @@ function cpuStep(extra=0){
     if(!cpu||cpu.s!==s) return; cpu.timer=null;
     if(!mp||!mp.cpu||s.finished||s.turn!==1){ cpuAimGroup.clear(); return; }
     if(miss){
-      s.players[1].miss++; cpuSend(); mpFlash('+3s'); if(tab==='build') sfx.bonk();
+      s.players[1].miss++; cpuSend(); mpFlash('+1s'); if(tab==='build') sfx.bonk();
       const g=cpuAimGroup.children[0]; if(g) g.material=errMat;
-      cpuSay('oops','Oops, wrong spot! +3 seconds for me.');
+      cpuSay('oops','Oops, wrong spot! +1 second for me.');
       cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; cpuAimGroup.clear(); if(!s.finished&&s.turn===1) cpuStep(); },1300);
       return;
     }
@@ -4326,7 +4349,7 @@ function trialDialog(o){
 async function trialEnd(){
   const info=cpu&&cpu.trial; if(!info) return;
   const r=trialResult(), t=totalMs(r), name=mp.state.players[0].name, timeRow=`<div class="tot"><span>Your time</span><span>${fmtTime(t)}</span></div>`;
-  const missRow=r.miss?`<div class="neg"><span>Misses (${r.miss} × 3 seconds)</span><span>+${r.miss*3}s</span></div>`:'';
+  const missRow=r.miss?`<div class="neg"><span>Misses (${r.miss} × 1 second)</span><span>+${r.miss}s</span></div>`:'';
   const send=async()=>{
     if(info.kind==='make'){
       trialDialog({icon:'📨',title:'Making your challenge…',rows:missRow+timeRow,note:'Sending your time and puzzle to Bloppit.'});
@@ -4344,7 +4367,7 @@ async function trialEnd(){
         chRemember(info.code,info.title,j.runId);
         const c=j.challenge, k=c.runs.findIndex(x=>x.me&&x.ms===r.ms), place=k+1;
         trialDialog({icon:place===1?'🏆':'⚡',title:place===1?'You’re in the lead!':`You came ${ordinal(place)} of ${c.runs.length}`,rows:chRows(c),
-          note:`${c.title}: ${c.nBricks} bricks. Each miss added 3 seconds. Share the code ${c.code} with more friends, or try again to beat your time.`});
+          note:`${c.title}: ${c.nBricks} bricks. Each miss added 1 second. Share the code ${c.code} with more friends, or try again to beat your time.`});
       }catch(e){ trialDialog({icon:'😕',title:'Couldn’t send your time',rows:missRow+timeRow,note:e.message,retry:true}); }
     } else if(info.kind==='daily'){
       const D=dailyStore(), first=!D.days[info.day];
@@ -4393,7 +4416,7 @@ async function chOpen(code){
     box.hidden=false;
     box.innerHTML=`<div class="ch-top"><img alt="" src="${photos[0].png}"><div><span class="tag">Challenge ${c.code}</span><h2>${escapeHTML(maker.name)} challenged you!</h2><p class="note" style="margin:0">${escapeHTML(c.title)} · ${c.nBricks} bricks · build the whole puzzle as fast as you can</p></div></div>
       <div class="win-rows">${chRows(c)}</div>
-      <p class="note" style="margin:0">Time to beat: <b>${fmtTime(totalMs(best))}</b>. No hints, and each miss adds 3 seconds.</p>
+      <p class="note" style="margin:0">Time to beat: <b>${fmtTime(totalMs(best))}</b>. No hints, and each miss adds 1 second.</p>
       <div class="win-btns" style="justify-content:flex-start">${c.full?'<span class="note">This challenge is full (12 players).</span>':'<button class="primary" id="chGo" type="button">Race it! ⚡</button>'}<button class="ghost" id="chShareBtn" type="button">Share</button><button class="ghost" id="chClose" type="button">Close</button></div>`;
     box.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'});
     $('#chClose').onclick=()=>{ box.hidden=true; };
@@ -4453,7 +4476,7 @@ async function renderDaily(){
   const day=dayStr(), o=dailyPuzzle(day), me=dailyStore().days[day], streak=dailyStreak();
   $('#dyImg').src=o.thumb; $('#dyName').textContent=o.name;
   $('#dyDate').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
-  $('#dyInfo').textContent=`${o.n} bricks · ${o.theme} · build the whole puzzle as fast as you can. No hints; each miss adds 3 seconds.`;
+  $('#dyInfo').textContent=`${o.n} bricks · ${o.theme} · build the whole puzzle as fast as you can. No hints; each miss adds 1 second.`;
   const st=[]; if(me) st.push(`<span>Your best today <b>${fmtTime(me.best)}</b></span>`); if(me&&me.rank) st.push(`<span>Ranked <b>${ordinal(me.rank)}</b> of ${me.n}</span>`);
   st.push(`<span>Streak <b>${streak}</b> 🔥</span>`); st.push(`<span id="dyCount">${dailyPeek&&dailyPeek.day===day?`<b>${dailyPeek.n}</b> played today`:'&nbsp;'}</span>`);
   $('#dyStats').innerHTML=st.join('');

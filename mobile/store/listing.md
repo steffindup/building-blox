@@ -37,7 +37,7 @@ BLOPPIT BLITZ
 • Race Bloppit the otter: Pup, Splash or Legend Bloppit, each one faster and sharper than the last
 • Challenge a friend: build a puzzle as fast as you can, get a 6-letter code, and see if they can beat your time whenever they like
 • Or race live, taking turns on your own devices
-• No hints, and every brick in the wrong spot adds 3 seconds
+• No hints, and every brick in the wrong spot adds 1 second
 
 DAILY BLOPPIT
 • One new puzzle every day, the same for everyone
