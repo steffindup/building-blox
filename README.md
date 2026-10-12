@@ -22,6 +22,9 @@ Live at https://bloppit.com (bloppit.netlify.app redirects there). Every push to
 Formerly called Building Blox; the browser save keys still use the old `building-blox-*` names so existing saves keep working.
 
 - `public/index.html` is the landing page at bloppit.com (static HTML, no build step).
+- The front page is: hero ("The brick puzzle game."), Meet Bloppit, Four ways to play. **How it works**, **FAQ** and
+  **About us** are separate pages (`public/how-it-works/`, `public/faq/`, `public/about/`), linked only from the top
+  ribbon; they share `public/site.css`. Keep their facts in step with the game (levels, limits, privacy promises).
 - `public/build/index.html` is the whole app, at bloppit.com/build/ (no build step).
   Old invite links (`/?room=CODE`) redirect into the app via `netlify.toml`.
 - **Flow.** The website and the App Store app share one flow from the menu on. Differences: the website starts at the

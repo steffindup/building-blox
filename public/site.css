@@ -1,0 +1,101 @@
+/* Shared look for bloppit.com's info pages (How it works, FAQ, About us). The front page has its own copy inline. */
+:root{
+  --paper:#FBF7EE; --dot:#E2DAC6; --ink:#14202C; --muted:#3B4957; --white:#FFFFFF;
+  --red:#D2352B; --red-dark:#B32A22; --cream:#FFF4D6; --blue:#0055BF; --blue-soft:#D6E5F5; --green:#237841; --yellow:#F4BC22;
+  --display:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;
+  --body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--paper);background-image:radial-gradient(var(--dot) 1.6px,transparent 1.6px);background-size:28px 28px;
+  font-family:var(--body);color:var(--ink);font-size:17px;line-height:1.6;overflow-x:hidden}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;line-height:1.1;text-wrap:balance}
+p{margin:0}
+a{color:var(--red-dark)}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+.wrap{max-width:1000px;margin:0 auto;padding-inline:24px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--white);padding:8px 14px;border:2px solid var(--ink);border-radius:8px;z-index:10}
+.skip:focus{left:8px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;text-decoration:none;font-weight:800;font-size:19px;
+  padding:14px 28px;border-radius:999px;border:2px solid var(--ink);box-shadow:0 5px 0 var(--ink);color:var(--ink);background:var(--white);
+  transition:transform .08s ease,box-shadow .08s ease}
+.btn:hover{transform:translateY(2px);box-shadow:0 3px 0 var(--ink);color:var(--ink)}
+.btn:active{transform:translateY(5px);box-shadow:0 0 0 var(--ink)}
+.btn.primary{background:var(--red);color:var(--white)}
+.btn.primary:hover{color:var(--white)}
+.btn.sm{font-size:16px;min-height:44px;padding:8px 20px;box-shadow:0 3px 0 var(--ink)}
+.btn.sm:hover{box-shadow:0 1px 0 var(--ink)}
+
+/* Top ribbon */
+header{border-bottom:2px solid var(--ink);background:var(--paper);position:sticky;top:0;z-index:5}
+nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;padding-block:12px;max-width:1200px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--red)}
+.logo span{font-family:var(--display);font-size:32px;line-height:1}
+.nav-links{display:flex;flex-wrap:wrap;align-items:center;gap:4px 22px;margin-left:auto;font-weight:800}
+.nav-links a:not(.btn){color:var(--ink);text-decoration:none;padding:10px 0;border-bottom:3px solid transparent}
+.nav-links a:not(.btn):hover{color:var(--red-dark)}
+.nav-links a[aria-current="page"]{border-bottom-color:var(--red);color:var(--red-dark)}
+@media (max-width:640px){nav{gap:2px 16px}.logo span{font-size:28px}
+  .nav-links{display:contents;font-size:15px}
+  .nav-links .btn{order:1;margin-left:auto}
+  nav::after{content:"";order:1;flex-basis:100%;height:0}
+  .nav-links a:not(.btn){order:2;padding:4px 0 6px}}
+
+/* Page heading */
+.page-head{display:flex;align-items:center;gap:24px;padding-block:56px 36px}
+.page-head svg{flex:none;width:110px;height:auto}
+.page-head h1{font-size:clamp(2.6rem,6vw,4rem)}
+.page-head p{font-size:20px;color:var(--muted);margin-top:8px;max-width:620px}
+@media (max-width:640px){.page-head{padding-block:36px 24px;gap:16px}.page-head svg{width:72px}}
+main{padding-bottom:72px}
+.stack{display:grid;gap:22px}
+
+/* Cards */
+.card{background:var(--white);border:2px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink);padding:28px}
+@media (max-width:640px){.card{padding:22px 18px}}
+.card h2{font-size:30px}
+.card p+p,.card p+ul,.card ul+p{margin-top:10px}
+.card ul{margin:10px 0 0;padding-left:22px}
+.card li+li{margin-top:6px}
+.card.cream{background:var(--cream)}
+.note{background:var(--cream);border-radius:14px;padding:12px 16px;font-size:16px}
+
+/* How it works steps: booklet pages */
+.step{display:grid;grid-template-columns:auto 1fr;gap:6px 22px;align-items:start}
+.step .n{grid-row:1 / span 3;width:64px;height:64px;border-radius:14px;color:var(--white);display:grid;place-items:center;
+  font-family:var(--display);font-size:34px;box-shadow:inset 0 -5px 0 rgba(0,0,0,.2);position:relative}
+.step .n::before{content:"";position:absolute;left:9px;right:9px;top:-7px;height:9px;border-radius:4px 4px 0 0;
+  background:radial-gradient(circle at 8px 6px,var(--c) 6px,transparent 6.5px) 0 0/23px 9px repeat-x}
+.step .n.red{background:var(--red);--c:var(--red)} .step .n.blue{background:var(--blue);--c:var(--blue)}
+.step .n.green{background:var(--green);--c:var(--green)} .step .n.yellow{background:var(--yellow);--c:var(--yellow);color:var(--ink)}
+@media (max-width:640px){.step{grid-template-columns:1fr}.step .n{grid-row:auto;width:52px;height:52px;font-size:28px}}
+.modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}
+@media (max-width:760px){.modes{grid-template-columns:minmax(0,1fr)}}
+.mode{background:var(--paper);border:2px solid var(--ink);border-radius:16px;padding:16px}
+.mode h3{font-size:22px;margin-bottom:4px}
+.mode p{font-size:15.5px}
+.mode a{font-weight:800}
+
+/* FAQ */
+.faq-group h2{font-size:30px;margin:12px 0 12px}
+details{background:var(--white);border:2px solid var(--ink);border-radius:16px;box-shadow:0 4px 0 var(--ink)}
+details+details{margin-top:12px}
+summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;font-weight:800;font-size:18px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";flex:none;width:32px;height:32px;border-radius:50%;background:var(--red);color:var(--white);display:grid;place-items:center;
+  font-family:var(--display);font-size:22px;line-height:1;transition:transform .15s ease}
+details[open] summary::after{content:"–"}
+details .a{padding:0 20px 18px;display:grid;gap:10px}
+details .a ul{margin:0;padding-left:22px}
+
+/* Closing call to action */
+.cta{background:var(--red);color:var(--white);border:2px solid var(--ink);border-radius:28px;box-shadow:0 8px 0 var(--ink);
+  padding:40px 28px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;margin-top:36px}
+.cta h2{font-size:clamp(2rem,4vw,3rem)}
+
+footer{border-top:2px solid var(--ink);background:var(--paper)}
+.foot{display:flex;flex-wrap:wrap;align-items:center;gap:12px 28px;padding-block:28px;font-size:15px;color:var(--muted);max-width:1200px}
+.foot .name{font-family:var(--display);font-size:24px;color:var(--red)}
+.foot .legal{margin-left:auto}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}

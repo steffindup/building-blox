@@ -97,7 +97,11 @@ nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;padding-block:12
 .nav-links{display:flex;flex-wrap:wrap;align-items:center;gap:4px 22px;margin-left:auto;font-weight:800}
 .nav-links a:not(.btn){color:var(--ink);text-decoration:none;padding:10px 0}
 .nav-links a:not(.btn):hover{color:var(--red-dark)}
-@media (max-width:640px){.nav-links a:not(.btn){display:none}}
+@media (max-width:640px){nav{gap:2px 16px}.logo span{font-size:28px}
+  .nav-links{display:contents;font-size:15px}
+  .nav-links .btn{order:1;margin-left:auto}
+  nav::after{content:"";order:1;flex-basis:100%;height:0}
+  .nav-links a:not(.btn){order:2;padding:4px 0 6px}}
 
 /* Hero */
 .hero{display:flex;flex-wrap:wrap;align-items:center;gap:48px;padding-block:64px 80px}
@@ -114,7 +118,6 @@ nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;padding-block:12
 .race-chip{position:absolute;left:-16px;top:-18px;z-index:1;background:var(--ink);color:var(--white);border-radius:999px;padding:6px 14px;
   font-weight:800;font-size:16px;font-variant-numeric:tabular-nums;box-shadow:0 3px 0 rgba(0,0,0,.25);transform:rotate(-3deg)}
 .race-chip b{color:var(--yellow)}
-.bonus{display:flex;align-items:center;gap:12px;justify-content:center;text-align:center;font-size:17px}
 .actions{display:flex;flex-wrap:wrap;gap:14px}
 .hero-visual{flex:1 1 460px;min-width:0;display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap}
 .polaroid{margin:0;background:var(--white);padding:12px 12px 40px;border:2px solid var(--ink);border-radius:10px;box-shadow:0 6px 0 var(--ink);
@@ -132,6 +135,7 @@ nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;padding-block:12
 /* Sections */
 .band{background:var(--white);border-block:2px solid var(--ink)}
 .band.cream{background:var(--cream)}
+.band.cream + .section{padding-top:76px}
 .section{padding-block:76px;display:flex;flex-direction:column;gap:36px}
 .section h2{text-align:center;font-size:clamp(2.2rem,4vw,3.2rem);line-height:1.05}
 .cards{display:flex;flex-wrap:wrap;gap:24px}
@@ -247,9 +251,9 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
       <span>Bloppit</span>
     </a>
     <div class="nav-links">
-      <a href="#how">How it works</a>
-      <a href="#play">Ways to play</a>
-      <a href="#meet">Meet Bloppit</a>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/about/">About us</a>
       <a class="btn primary sm" href="/build/">Play now</a>
     </div>
   </nav>
@@ -259,9 +263,9 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
   <section class="wrap hero">
     <div class="hero-text">
       <span class="pill">Free · Works in your browser · No sign-up</span>
-      <h1>The brick<br>puzzle <span class="accent">race.</span></h1>
+      <h1>The brick<br>puzzle <span class="accent">game.</span></h1>
       <div class="tagline" aria-label="Snap it. Bloppit. Build it."><span>Snap it.</span><span>Bloppit.</span><span>Build it.</span></div>
-      <p>Follow the booklet and build the puzzle faster than Bloppit the otter, your friends, or everyone on today’s Daily Bloppit. Pick from 64 puzzles, or turn your own photo into one.</p>
+      <p>Pick a puzzle, or turn your own photo into one, then build it brick by brick from the instruction booklet. Climb the Trails, race Bloppit the otter, take on today’s Daily Bloppit, or build together with friends.</p>
       <div class="actions">
         <a class="btn primary" href="/build/">Play now</a>
         <a class="btn" href="/build/#daily">Today’s Daily Bloppit</a>
@@ -284,7 +288,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
       </figure>
       <svg viewBox="0 0 60 30" width="60" height="30" aria-hidden="true" fill="none" stroke="#14202C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15 H52 M40 4 L54 15 L40 26"/></svg>
       <div class="model">
-        <span class="race-chip">⏱ 0:47 · <b>You beat Bloppit!</b></span>
+        <span class="race-chip">⭐ <b>Puzzle complete!</b></span>
         <div class="mosaic" id="mosaic" role="img" aria-label="The same boat as a brick model"></div>
         <svg class="buddy" viewBox="0 0 300 360" aria-hidden="true">
           <path d="M208 300 C 272 302 292 248 268 212 C 262 240 240 262 204 270 Z" fill="#6B4229"/>
@@ -308,72 +312,6 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
         </svg>
       </div>
     </div>
-  </section>
-
-  <div class="band" id="how">
-    <section class="wrap section" aria-labelledby="how-h">
-      <h2 id="how-h">How it works</h2>
-      <div class="cards">
-        <article class="card">
-          <div class="step-head">
-            <span class="num">1</span>
-            <svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true" stroke="#14202C" stroke-width="2.5"><rect x="4" y="4" width="18" height="18" rx="3" fill="#D2352B"/><rect x="26" y="4" width="18" height="18" rx="3" fill="#0055BF"/><rect x="4" y="26" width="18" height="18" rx="3" fill="#F4BC22"/><rect x="26" y="26" width="18" height="18" rx="3" fill="#237841"/></svg>
-          </div>
-          <h3>Pick a puzzle</h3>
-          <p>Today’s Daily Bloppit, the next level on the Trails, one of 64 library puzzles, from dragons to a Bermuda moongate, or a photo of your own.</p>
-        </article>
-        <article class="card cream">
-          <div class="step-head">
-            <span class="num red">2</span>
-            <svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true" fill="none" stroke="#14202C" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="27" r="16" fill="#FFFFFF"/><path d="M24 27 V17 M19 5 h10 M24 5 v6 M38 12 l3 -3"/></svg>
-          </div>
-          <h3 style="color:var(--red-dark)">Race to build it</h3>
-          <p>Follow the booklet step by step and click the bricks into place. In Blitz you take turns, 1 to 3 bricks at a time. Every brick in the wrong spot adds 3 seconds.</p>
-        </article>
-        <article class="card">
-          <div class="step-head">
-            <span class="num">3</span>
-            <svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true" stroke="#14202C" stroke-width="2.5" stroke-linejoin="round"><path d="M14 6 h20 v12 a10 10 0 0 1 -20 0 z" fill="#F4BC22"/><path d="M14 10 h-6 a6 6 0 0 0 6 10 M34 10 h6 a6 6 0 0 1 -6 10" fill="none"/><path d="M24 28 v8 M16 42 h16 v-6 h-16 z" fill="#F4BC22"/></svg>
-          </div>
-          <h3>Beat the clock</h3>
-          <p>Beat Baby, River and then Champion Bloppit. Climb the Trails, rank on the Daily and keep your streak, or send a friend a code and dare them to beat your time.</p>
-        </article>
-      </div>
-      <p class="bonus"><span aria-hidden="true">📖</span><span><b>Bonus:</b> every finish has a <b>Build it for real</b> button. Print the booklet and parts list and build it with your own bricks.</span></p>
-    </section>
-  </div>
-
-  <section class="wrap section" id="play" aria-labelledby="play-h">
-    <h2 id="play-h">Four ways to play</h2>
-    <div class="cards four">
-      <article class="card lift">
-        <span class="tag" style="background:#D3F0F2">New every day</span>
-        <h3>📅 Daily Bloppit</h3>
-        <p>One puzzle a day, the same for everybody. Race it, see where your first time ranks against everyone else, and keep your streak going.</p>
-        <a class="card-link" href="/build/#daily">Play today’s puzzle →</a>
-      </article>
-      <article class="card lift">
-        <span class="tag" style="background:var(--cream)">Solo</span>
-        <h3>🦦 Trails &amp; Quick Build</h3>
-        <p>Swim up <b>Otter Trail</b>, 14 levels from tiny to tricky. <b>Brain Trail</b> is the same levels with math puzzles that match the player’s age. Or pick any puzzle in <b>Quick Build</b> and go at your own pace.</p>
-        <div class="chips" aria-hidden="true"><span class="chip lvl">1</span><span class="chip lvl">2</span><span class="chip lvl next">3</span></div>
-        <a class="card-link" href="/build/#trails">Start the Trails →</a>
-      </article>
-      <article class="card lift">
-        <span class="tag" style="background:#FFE7B8">Against the clock</span>
-        <h3>⚡ Bloppit Blitz</h3>
-        <p>Like chess with bricks: take turns placing 1 to 3 bricks against Baby, River or Champion Bloppit. Or race a friend live, or send a challenge code so they can try to beat your time later.</p>
-        <a class="card-link" href="/build/#blitz">Start a race →</a>
-      </article>
-      <article class="card lift">
-        <span class="tag" style="background:var(--blue-soft)">With friends</span>
-        <h3>🧩 Build together</h3>
-        <p>Make a room, share the code, and take turns building one model together, with chat. Got a code from a friend? Type it in to jump straight into their game.</p>
-        <div class="chips players" aria-hidden="true"><span class="chip" style="background:#D2352B">A</span><span class="chip" style="background:#0055BF">B</span><span class="chip" style="background:#F4BC22;color:#14202C">C</span></div>
-        <a class="card-link" href="/build/#together">Make a room →</a>
-      </article>
-    </div>
-    <p class="math-note" style="margin-top:20px"><b>Safe for kids:</b> friends only join with a code, and the host lets each one in. In the app, chat is preset quick messages only. No accounts, no ads.</p>
   </section>
 
   <div class="band cream" id="meet">
@@ -412,9 +350,42 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
     </section>
   </div>
 
+  <section class="wrap section" id="play" aria-labelledby="play-h">
+    <h2 id="play-h">Four ways to play</h2>
+    <div class="cards four">
+      <article class="card lift">
+        <span class="tag" style="background:#D3F0F2">New every day</span>
+        <h3>📅 Daily Bloppit</h3>
+        <p>One puzzle a day, the same for everybody. Race it, see where your first time ranks against everyone else, and keep your streak going.</p>
+        <a class="card-link" href="/build/#daily">Play today’s puzzle →</a>
+      </article>
+      <article class="card lift">
+        <span class="tag" style="background:var(--cream)">Solo</span>
+        <h3>🦦 Trails &amp; Quick Build</h3>
+        <p>Swim up <b>Otter Trail</b>, 14 levels from tiny to tricky. <b>Brain Trail</b> is the same levels with math puzzles that match the player’s age. Or pick any puzzle in <b>Quick Build</b> and go at your own pace.</p>
+        <div class="chips" aria-hidden="true"><span class="chip lvl">1</span><span class="chip lvl">2</span><span class="chip lvl next">3</span></div>
+        <a class="card-link" href="/build/#trails">Start the Trails →</a>
+      </article>
+      <article class="card lift">
+        <span class="tag" style="background:#FFE7B8">Against the clock</span>
+        <h3>⚡ Bloppit Blitz</h3>
+        <p>Like chess with bricks: take turns placing 1 to 3 bricks against Baby, River or Champion Bloppit. Or race a friend live, or send a challenge code so they can try to beat your time later.</p>
+        <a class="card-link" href="/build/#blitz">Start a race →</a>
+      </article>
+      <article class="card lift">
+        <span class="tag" style="background:var(--blue-soft)">With friends</span>
+        <h3>🧩 Build together</h3>
+        <p>Make a room, share the code, and take turns building one model together, with chat. Got a code from a friend? Type it in to jump straight into their game.</p>
+        <div class="chips players" aria-hidden="true"><span class="chip" style="background:#D2352B">A</span><span class="chip" style="background:#0055BF">B</span><span class="chip" style="background:#F4BC22;color:#14202C">C</span></div>
+        <a class="card-link" href="/build/#together">Make a room →</a>
+      </article>
+    </div>
+    <p class="math-note" style="margin-top:20px"><b>Safe for kids:</b> friends only join with a code, and the host lets each one in. In the app, chat is preset quick messages only. No accounts, no ads.</p>
+  </section>
+
   <section class="wrap" style="padding-block:80px" aria-labelledby="cta-h">
     <div class="cta">
-      <h2 id="cta-h">Ready to race? Let’s bloppit!</h2>
+      <h2 id="cta-h">Ready to build? Let’s bloppit!</h2>
       <p>It’s free, it runs in your browser, and there’s nothing to sign up for.</p>
       <a class="btn" href="/build/">Play now</a>
     </div>
