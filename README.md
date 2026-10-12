@@ -25,8 +25,8 @@ Formerly called Building Blox; the browser save keys still use the old `building
 - `public/build/index.html` is the whole app, at bloppit.com/build/ (no build step).
   Old invite links (`/?room=CODE`) redirect into the app via `netlify.toml`.
 - **Flow.** The website and the App Store app share one flow from the menu on. Differences: the website starts at the
-  front page (bloppit.com → *Play now* → menu) and has no launch screen; the app opens with the launch screen, then the
-  menu. On the website each page has its own address (`/build/` is the menu, then `#blitz`, `#daily`, `#trails`,
+  front page (bloppit.com → *Play now* → launch screen → menu); the app opens with the launch screen, then the menu.
+  The launch screen shows once per visit and is skipped for links straight into a page, room or challenge. On the website each page has its own address (`/build/` is the menu, then `#blitz`, `#daily`, `#trails`,
   `#together`, `#photos`, `#build`, `#booklet`) so the browser's Back button steps back through Bloppit (`navNote()`).
 - **Share links** are `bloppit.com/join/CODE`: `netlify.toml` sends them to `/build/?code=CODE`, which opens the room
   (5 characters) or challenge (6 characters) straight away. The older `/build/?room=CODE` and `?ch=CODE` still work.

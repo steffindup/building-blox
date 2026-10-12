@@ -73,11 +73,11 @@
   <div class="sp-tag"><span>Snap it.</span><span>Bloppit.</span><span>Build it.</span></div>
 </div>
 <script>
-// Launch screen: App Store app only, once per visit (not again after switching player). Skipped for links straight
-// into a room or a page. The website goes straight to the menu: bloppit.com's front page already did the hello.
+// Launch screen: once per visit, on the website and in the app (not again after switching player).
+// Skipped for links straight into a room, a challenge or a page.
 (function(){ var s=document.getElementById('splash'), seen=false;
   try{ seen=!!sessionStorage.getItem('bloppit-splash'); }catch(e){}
-  if(!window.BLOPPIT_APP||seen||/[?&](room|ch|code)=/.test(location.search)||(location.hash&&location.hash!=='#home')){ s.remove(); return; }
+  if(seen||/[?&](room|ch|code)=/.test(location.search)||(location.hash&&location.hash!=='#home')){ s.remove(); return; }
   try{ sessionStorage.setItem('bloppit-splash','1'); }catch(e){}
   window.BLOPPIT_SPLASH=Date.now();
   s.onclick=function(){ s.classList.add('out'); setTimeout(function(){ s.remove(); },320); };
