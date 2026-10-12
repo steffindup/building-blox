@@ -88,7 +88,7 @@ function publicState(s, viewer = -1) {
     nBricks: s.nBricks, title: s.title, level: s.level, host: s.host, turn: s.turn,
     turnPlaced: s.turnPlaced, turnStart: s.turnStart, moves: s.moves, now, voice: !!s.voice, quota: s.quota || 0,
     players: s.players.map((p) => ({ name: p.name, color: p.color, pen: p.pen, stale: now - p.seen > STALE_MS, vc: s.voice ? (p.vc || 0) : 0,
-      ...(s.mode === 'blitz' ? { ms: p.ms || 0, miss: p.miss || 0, n: p.n || 0 } : {}) })),
+      ...(s.mode === 'blitz' ? { ms: p.ms || 0, miss: p.miss || 0, hint: p.hint || 0, n: p.n || 0 } : {}) })),
   };
   if (viewer >= 0) {
     out.me = viewer;
@@ -254,7 +254,7 @@ export async function handle(method, query, body, store) {
         if (blitz(s)) {
           s.quota = Math.floor(s.nBricks / s.players.length);
           if (s.quota < 1) return { error: 'This model doesn’t have enough bricks for everyone. Pick a bigger one.', status: 409 };
-          s.players.forEach((p) => { p.n = 0; p.ms = 0; p.miss = 0; });
+          s.players.forEach((p) => { p.n = 0; p.ms = 0; p.miss = 0; p.hint = 0; });
         }
         s.started = true; s.turn = 0; s.turnPlaced = 0; s.turnStart = Date.now();
       }
@@ -321,6 +321,17 @@ export async function handle(method, query, body, store) {
       const i = mine(s);
       if (i < 0) return { error: 'You’re not in this room.', status: 403 };
       if (!blitz(s)) s.players[i].pen = mergePen(s.players[i].pen, body.pen);  // Blitz has no hints to count
+      return {};
+    }, pid);
+  }
+
+  // Bloppit Blitz: a hint adds 5 seconds to the player whose turn it is (one charge per step, counted by the app)
+  if (a === 'hint') {
+    return update(store, code, (s) => {
+      const i = mine(s);
+      if (i < 0) return { error: 'You’re not in this room.', status: 403 };
+      if (!blitz(s) || !s.started || s.finished || i !== s.turn) return {};
+      s.players[i].hint = Math.min(9999, (s.players[i].hint || 0) + 1);
       return {};
     }, pid);
   }

@@ -17,6 +17,7 @@ const MAX_RUNS = 12;                            // players per challenge
 const MAX_MODEL_CHARS = 2_500_000;
 const MAX_DAILY = 20_000;                       // times kept per day
 const MISS_MS = 1000;                           // each miss adds 1 second (same as Blitz)
+const HINT_MS = 5000;                           // each hint adds 5 seconds (same as Blitz)
 const MIN_MS_PER_BRICK = 300;                   // faster than this per brick isn't a real build
 const MAX_MS = 3 * 3600_000;
 
@@ -25,7 +26,7 @@ const cleanCode = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '')
 const chKey = (c) => `ch/${c}`;
 const chModelKey = (c) => `chmodel/${c}`;
 const dayKey = (d) => `daily/${d}`;
-export const total = (r) => r.ms + r.miss * MISS_MS;
+export const total = (r) => r.ms + r.miss * MISS_MS + (r.hint || 0) * HINT_MS;
 
 // UTC calendar day, as YYYY-MM-DD
 export const dayOf = (t) => new Date(t).toISOString().slice(0, 10);
@@ -33,17 +34,18 @@ export const dayOf = (t) => new Date(t).toISOString().slice(0, 10);
 const dayOk = (d, now) => [-1, 0, 1].some((k) => dayOf(now + k * 86400_000) === d);
 
 function cleanRun(body, nBricks) {
-  const ms = Math.round(Number(body.ms)), miss = Math.floor(Number(body.miss) || 0);
+  const ms = Math.round(Number(body.ms)), miss = Math.floor(Number(body.miss) || 0), hint = Math.floor(Number(body.hint) || 0);
   if (!(ms >= 0 && ms <= MAX_MS)) return { error: 'That time doesn’t look right.' };
   if (!(miss >= 0 && miss <= 9999)) return { error: 'That number of misses doesn’t look right.' };
+  if (!(hint >= 0 && hint <= 9999)) return { error: 'That number of hints doesn’t look right.' };
   if (nBricks && ms < nBricks * MIN_MS_PER_BRICK) return { error: 'That was too quick to be a real build.' };
-  return { ms, miss };
+  return { ms, miss, hint };
 }
 
 // What anyone with the code may see. Run ids act as passwords, so only a flag says which run is yours.
 function publicChallenge(c, mine) {
   const runs = [...c.runs].sort((a, b) => total(a) - total(b) || a.at - b.at)
-    .map((r) => ({ name: r.name, ms: r.ms, miss: r.miss, at: r.at, ...(mine && mine.includes(r.id) ? { me: true } : {}), ...(r.id === c.runs[0].id ? { maker: true } : {}) }));
+    .map((r) => ({ name: r.name, ms: r.ms, miss: r.miss, hint: r.hint || 0, at: r.at, ...(mine && mine.includes(r.id) ? { me: true } : {}), ...(r.id === c.runs[0].id ? { maker: true } : {}) }));
   return { code: c.code, title: c.title, nBricks: c.nBricks, created: c.created, runs, full: c.runs.length >= MAX_RUNS };
 }
 
@@ -92,7 +94,7 @@ export async function handle(method, query, body, store) {
     for (let i = 0; i < 10; i++) {
       const code = rand(6, ALPHABET);
       const c = { code, created: now, updated: now, title: cleanName(body.title).slice(0, 24), nBricks,
-        runs: [{ id, name: cleanName(body.name), ms: run.ms, miss: run.miss, at: now }] };
+        runs: [{ id, name: cleanName(body.name), ms: run.ms, miss: run.miss, hint: run.hint, at: now }] };
       const { modified } = await store.set(chKey(code), c, { onlyIfNew: true });
       if (!modified) continue;
       await store.set(chModelKey(code), model, {});
@@ -113,7 +115,7 @@ export async function handle(method, query, body, store) {
       const run = cleanRun(body, c.nBricks);
       if (run.error) return { status: 400, body: { error: run.error } };
       if (c.runs.length >= MAX_RUNS) return { status: 409, body: { error: `This challenge is full (${MAX_RUNS} players).` } };
-      c.runs.push({ id, name: cleanName(body.name), ms: run.ms, miss: run.miss, at: now });
+      c.runs.push({ id, name: cleanName(body.name), ms: run.ms, miss: run.miss, hint: run.hint, at: now });
       c.updated = now;
       const { modified } = await store.set(chKey(code), c, { onlyIfMatch: r.etag });
       const mine = [id, ...String(body.runs || '').split(',').filter(Boolean)];

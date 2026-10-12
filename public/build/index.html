@@ -295,6 +295,18 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .tool kbd{font-family:var(--f-mono);font-size:11px;border:1px solid currentColor;border-radius:4px;padding:0 4px;opacity:.6;margin-left:2px}
 .status{position:absolute;left:12px;bottom:12px;max-width:calc(100% - 24px);background:var(--page);border:1px solid var(--line);border-radius:10px;padding:7px 12px;font-weight:700;font-size:14px;pointer-events:none;box-shadow:0 2px 0 var(--shadow)}
 .status:empty{display:none}
+/* Moving the brick in hand: arrows nudge it one stud, Turn rotates it, Place drops it where the see-through brick is */
+.place-pad{display:flex;align-items:flex-end;justify-content:flex-end;gap:12px;padding-top:4px}
+.pp-act{display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:150px}
+.place-pad[hidden]{display:none}
+.pp-arrows{display:grid;grid-template-columns:repeat(3,40px);grid-template-rows:repeat(2,40px);gap:4px}
+.pp-arrows button,.pp-turn{font:inherit;font-weight:800;font-size:16px;border:2px solid var(--ink);border-radius:10px;background:var(--page);color:var(--ink);cursor:pointer;box-shadow:0 2px 0 var(--shadow);touch-action:manipulation}
+.pp-arrows button:active,.pp-turn:active{transform:translateY(1px)}
+.pp-up{grid-column:2}.pp-left{grid-column:1;grid-row:2}.pp-down{grid-column:2;grid-row:2}.pp-right{grid-column:3;grid-row:2}
+.pp-turn{height:40px;padding:0 12px}
+.pp-place{height:52px;padding:0 20px;font-size:20px;touch-action:manipulation}
+.pp-place:disabled{opacity:.5;cursor:default}
+@media (max-width:560px){.place-pad{justify-content:space-between}.pp-act{min-width:0;flex:1}.pp-arrows{grid-template-columns:repeat(3,42px);grid-template-rows:repeat(2,42px)}}
 .status[data-kind="ok"]{background:var(--hi);border-color:var(--hi);color:#14202C}
 .status[data-kind="err"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .tray-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
@@ -307,7 +319,10 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .tp small{color:var(--muted);font-size:11px;line-height:1.2}
 .tray-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .callout{background:var(--callout);border-radius:10px;padding:8px 12px;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:flex-end;max-width:min(520px,100%);box-shadow:0 2px 0 var(--shadow)}
-.callout .pc{display:flex;flex-direction:column;align-items:center;gap:0}
+.callout .pc{display:flex;flex-direction:column;align-items:center;gap:0;cursor:pointer;border-radius:8px}
+.callout .pc:hover,.callout .pc:focus-visible{background:rgba(255,255,255,.45);outline:none}
+.brick-tip{position:fixed;z-index:200;background:#1B1410;color:#fff;font-weight:800;font-size:14px;padding:6px 12px;border-radius:999px;pointer-events:none;box-shadow:0 6px 18px rgba(0,0,0,.25);white-space:nowrap}
+.brick-tip[hidden]{display:none}
 .callout img{height:38px;width:auto;display:block}
 .callout b{font-family:var(--f-body);font-weight:800;font-size:14px;font-variant-numeric:tabular-nums}
 .done-badge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--hi);color:#14202C;font-family:var(--f-display);font-size:30px;padding:10px 22px;border-radius:14px;pointer-events:none;box-shadow:inset 0 -5px 0 rgba(0,0,0,.15)}
@@ -1040,7 +1055,19 @@ body.on-home .tabs{visibility:hidden}
             <button class="ghost" id="putAll" type="button" hidden>Put all back</button>
           </div>
         </div>
-        <div class="tray-foot"><span class="note" id="trayNote">Your first brick can go anywhere on the table. The rest of the model builds out from it. Drag to turn the view.</span><span class="tag" id="progress"></span><span class="note" id="saveNote"></span><button class="ghost" id="restart" type="button">Start over</button></div>
+        <div class="place-pad" id="placePad" hidden>
+          <div class="pp-arrows" role="group" aria-label="Move the brick">
+            <button type="button" class="pp-up" data-mv="up" aria-label="Move the brick away from you">▲</button>
+            <button type="button" class="pp-left" data-mv="left" aria-label="Move the brick left">◀</button>
+            <button type="button" class="pp-down" data-mv="down" aria-label="Move the brick towards you">▼</button>
+            <button type="button" class="pp-right" data-mv="right" aria-label="Move the brick right">▶</button>
+          </div>
+          <div class="pp-act">
+            <button type="button" class="pp-turn" id="ppTurn">⟲ Turn</button>
+            <button type="button" class="primary pp-place" id="ppPlace">✓ Place</button>
+          </div>
+        </div>
+        <div class="tray-foot"><span class="note" id="trayNote">Your first brick can go anywhere on the table. The rest of the model builds out from it. Drag the see-through brick to move it; drag anywhere else to turn the view.</span><span class="tag" id="progress"></span><span class="note" id="saveNote"></span><button class="ghost" id="restart" type="button">Start over</button></div>
       </div>
     </div>
   </div>
@@ -1152,7 +1179,7 @@ body.on-home .tabs{visibility:hidden}
 </section>
 
 <section class="view" id="view-blitz" hidden>
-  <div class="gm-head"><div><h2>⚡ Bloppit Blitz</h2><p class="note">A race against the clock. No hints, and each brick in the wrong spot adds 1 second. Shortest time wins.</p></div></div>
+  <div class="gm-head"><div><h2>⚡ Bloppit Blitz</h2><p class="note">A race against the clock. A hint adds 5 seconds, and each brick in the wrong spot adds 1 second. Shortest time wins.</p></div></div>
   <div id="bzForms" style="display:grid;gap:16px">
     <div class="card bz-setup">
       <div class="field"><label for="bzName">Your name</label><input class="inp" id="bzName" maxlength="16" autocomplete="nickname" placeholder="e.g. Elmar"></div>
@@ -1721,7 +1748,9 @@ function brickIcon(a,l,c){
   const url=cv.toDataURL(); iconCache.set(key,url); return url;
 }
 const partName=p=>`${PALETTE[p.c][0]} ${PIECE()} ${p.a} × ${p.l}`;
-const calloutHTML=list=>partsOf(list).map(p=>`<div class="pc" title="${partName(p)}"><img alt="${partName(p)}" src="${brickIcon(p.a,p.l,p.c)}"><b>${p.n}x</b></div>`).join('');
+// Short name for a brick, as kids would say it: "Light Blue 1×2 brick"
+const brickLabel=(c,a,l)=>`${PALETTE[c][0]} ${Math.min(a,l)}×${Math.max(a,l)} ${PIECE()}`;
+const calloutHTML=list=>partsOf(list).map(p=>`<div class="pc" role="button" tabindex="0" data-name="${brickLabel(p.c,p.a,p.l)}" title="${brickLabel(p.c,p.a,p.l)}"><img alt="${brickLabel(p.c,p.a,p.l)}" src="${brickIcon(p.a,p.l,p.c)}"><b>${p.n}x</b></div>`).join('');
 const partsHTML=list=>partsOf(list).map(p=>`<div class="part-row"><img alt="" src="${brickIcon(p.a,p.l,p.c)}"><div><div class="q">${p.n}x</div><div class="d">${PALETTE[p.c][0]}<br>${TILES?'Tile':'Brick'} ${p.a} × ${p.l}</div></div></div>`).join('');
 
 /* ---------- Three.js scene ---------- */
@@ -1786,7 +1815,7 @@ function buildScene(m){
     const b0=list[0], im=new THREE.InstancedMesh(brickGeo(b0.sx,b0.sz),mat(b0.c),list.length);
     list.forEach((b,i)=>{M.makeTranslation(b.x,b.y*1.2,b.z); im.setMatrixAt(i,M);});
     im.instanceMatrix.needsUpdate=true; im.frustumCulled=false;
-    im.userData.steps=Int32Array.from(list,b=>b.step);
+    im.userData.steps=Int32Array.from(list,b=>b.step); im.userData.bricks=list;
     instanced.push(im); modelGroup.add(im);
   }
   shadow.scale.set(m.W*1.7+4,m.D*1.7+4,1);
@@ -1812,7 +1841,7 @@ function showStep(k,animate){
   model.steps[k].bricks.forEach((b,i)=>{
     const ms=new THREE.Mesh(brickGeo(b.sx,b.sz),mat(b.c));
     ms.add(new THREE.LineSegments(edgeGeo(b.sx,b.sz),edgeMat));
-    ms.position.set(b.x,b.y*1.2,b.z); ms.userData.ty=b.y*1.2; ms.userData.i=i;
+    ms.position.set(b.x,b.y*1.2,b.z); ms.userData.ty=b.y*1.2; ms.userData.i=i; ms.userData.b=b;
     current.add(ms);
   });
   if(animate&&!reduceMotion){anim={t0:performance.now()}; current.children.forEach(ms=>ms.position.y=ms.userData.ty+5);}
@@ -1832,6 +1861,7 @@ function loop(now){
   }
   if(tab==='build'&&onStage){
     drops=drops.filter(d=>{const t=clamp((now-d.t0)/260,0,1); d.m.position.y=d.ty+(1-t*t)*2.2; return t<1;});
+    { const g=ghostGroup.children[0]; if(g&&ghostGroup.visible) g.position.y=ghostLift()+(reduceMotion?0:Math.sin(now/260)*.1); }
     if(camAnim){ const t=clamp((now-camAnim.t0)/650,0,1), e=1-Math.pow(1-t,3);
       playControls.target.lerpVectors(camAnim.t1,camAnim.t2,e); playCam.position.lerpVectors(camAnim.p1,camAnim.p2,e);
       if(t>=1) camAnim=null; }
@@ -1884,6 +1914,33 @@ for(const id of ['bpChart','lbChart']){
     if(pts.size===2&&d0>0){ const [a,b]=[...pts.values()], d=Math.hypot(a[0]-b[0],a[1]-b[1]); if(Math.abs(d/d0-1)>.08){ bookZoom(d/d0); d0=d; } } });
   const up=e=>{ pts.delete(e.pointerId); d0=0; };
   cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up); cv.addEventListener('pointerleave',up);
+}
+/* ---------- Brick names in the booklet: tap a part (or a brick in the 3D picture) to see what it is ---------- */
+const brickTip=document.createElement('div'); brickTip.className='brick-tip'; brickTip.setAttribute('role','status'); brickTip.hidden=true; document.body.append(brickTip);
+let brickTipT=0;
+function showBrickTip(name,x,y,from){
+  // Inside an open dialog (the big booklet page) the tip must live in the dialog to show above it
+  const host=(from&&from.closest('dialog[open]'))||document.body; if(brickTip.parentNode!==host) host.append(brickTip);
+  brickTip.textContent=name; brickTip.hidden=false;
+  const w=brickTip.offsetWidth, h=brickTip.offsetHeight;
+  brickTip.style.left=clamp(x-w/2,8,innerWidth-w-8)+'px'; brickTip.style.top=(y-h-14<8?y+18:y-h-14)+'px';
+  clearTimeout(brickTipT); brickTipT=setTimeout(()=>brickTip.hidden=true,2600);
+}
+function tipFromPart(el){ const r=el.getBoundingClientRect(); showBrickTip(el.dataset.name,r.left+r.width/2,r.top,el); }
+document.addEventListener('click',e=>{ const pc=e.target.closest('.pc[data-name]'); if(!pc){ if(e.target!==bookR.domElement) brickTip.hidden=true; return; } e.stopPropagation(); tipFromPart(pc); },{capture:true});
+document.addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('.pc[data-name]')){ e.preventDefault(); tipFromPart(e.target); } });
+document.addEventListener('scroll',()=>{ brickTip.hidden=true; },{capture:true,passive:true});
+{ const bray=new THREE.Raycaster(), bv=new THREE.Vector2(); let bdown=null;
+  bookR.domElement.addEventListener('pointerdown',e=>{ bdown=[e.clientX,e.clientY]; });
+  bookR.domElement.addEventListener('pointerup',e=>{
+    if(!bdown||!model||TILES) return; const d=Math.hypot(e.clientX-bdown[0],e.clientY-bdown[1]); bdown=null; if(d>6) return;
+    const r=bookR.domElement.getBoundingClientRect(); bv.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);
+    bray.setFromCamera(bv,bookCam);
+    const hit=bray.intersectObjects([...current.children,...instanced],false).find(h=>h.object.userData.b||(h.instanceId!=null&&h.instanceId<h.object.count));
+    if(!hit){ brickTip.hidden=true; return; }
+    const b=hit.object.userData.b||hit.object.userData.bricks[hit.instanceId];
+    showBrickTip(brickLabel(b.c,b.sx,b.sz),e.clientX,e.clientY,bookR.domElement);
+  });
 }
 function bookResize(){
   const el=bookR.domElement.parentElement; if(!el) return;
@@ -2024,7 +2081,7 @@ function setTab(t){
   $('#gameBar').hidden=!(game&&(t==='build'||t==='box'));
   if(t==='game'){ renderer.domElement.remove(); renderGameMap(); }
   if(t==='daily'){ renderer.domElement.remove(); renderDaily(); }
-  controls.enabled=t==='create'; playControls.enabled=t==='build';
+  controls.enabled=t==='create'; playControls.enabled=t==='build'; if(typeof padSync==='function') padSync();
   if(t==='create'){ $('#createStage').prepend(renderer.domElement); if(model) showStep(model.steps.length,false); }
   if(t==='build'){ $('#buildStage').prepend(renderer.domElement); if(!placedN) requestAnimationFrame(()=>{resize(); frameBuild(false);}); }
   if(t==='box'){ renderer.domElement.remove(); $('#boxBook').append($('.bookpane')); }
@@ -2194,7 +2251,7 @@ function setupPlay(m){
   resetBuild();
 }
 function resetBuild(){
-  $('#trayNote').textContent=TILES?'Tiles go on the dark baseplate. Row 1 is the top of the picture, at the far edge. Follow the yellow outline in the booklet.':'Your first brick can go anywhere on the table. The rest of the model builds out from it. Drag to turn the view.';
+  $('#trayNote').textContent=TILES?'Tiles go on the dark baseplate. Row 1 is the top of the picture, at the far edge. Follow the yellow outline in the booklet.':'Your first brick can go anywhere on the table. The rest of the model builds out from it. Drag the see-through brick to move it; drag anywhere else to turn the view.';
   placedGroup.clear(); ghostGroup.clear(); hintGroup.clear();
   placed=new Set(); off=null; cands=[]; placedN=0; placedBoxes=[]; cur=0; viewPage=0; follow=true; sel=null; drops=[]; busy=false; lastAnchor=null;
   // A picture goes on its baseplate, so where each tile goes is fixed from the start
@@ -2225,7 +2282,7 @@ function renderHand(){
   if(held){
     slot.innerHTML=`<img alt="" src="${brickIcon(held.a,held.l,held.c)}">`;
     $('#handTitle').textContent=`${pieceName(held)} in hand`;
-    $('#handNote').textContent=mpBlitz()?'Click where it goes'+(held.a!==held.l?'. Press R to turn it.':'.')+(hand.length>1?` You’re holding ${hand.length} bricks; tap one below to switch.`:''):(stepNeeds(held)?'Click where it goes'+(held.a!==held.l?'. Press R to turn it.':'.'):`Step ${cur+1} doesn’t use this one. Check the booklet${hand.length>1?', switch to another brick below,':''} or put it back.`)+(hand.length>1?` You’re holding ${hand.length} bricks; tap one below to switch.`:'');
+    $('#handNote').textContent=mpBlitz()?'Move it where it goes, then press Place'+(held.a!==held.l?'. Turn it if it needs turning.':'.')+(hand.length>1?` You’re holding ${hand.length} bricks; tap one below to switch.`:''):(stepNeeds(held)?'Move it where it goes, then press Place'+(held.a!==held.l?'. Turn it if it needs turning.':'.'):`Step ${cur+1} doesn’t use this one. Check the booklet${hand.length>1?', switch to another brick below,':''} or put it back.`)+(hand.length>1?` You’re holding ${hand.length} bricks; tap one below to switch.`:'');
   } else {
     slot.textContent='Empty';
     $('#handTitle').textContent=done?'All done':'Your hand is empty';
@@ -2235,6 +2292,7 @@ function renderHand(){
 }
 function updateBuildUI(){
   if(!model) return;
+  padSync();
   const N=model.steps.length, done=cur>=N, s=done?null:model.steps[cur];
   renderHand();
   $('#progress').textContent=`${placedN} of ${model.bricks.length} placed`;
@@ -2388,7 +2446,7 @@ $('#bpNow').onclick=()=>{follow=true; showPage(Math.min(cur,model.steps.length))
 
 function setActive(p){
   held=p||null;
-  if(!p){ sel=null; ghostGroup.clear(); return; }
+  if(!p){ sel=null; ghostGroup.clear(); padSync(); return; }
   const keepTurn=sel&&sel.c===p.c&&Math.min(sel.sx,sel.sz)===p.a&&Math.max(sel.sx,sel.sz)===p.l;
   if(!keepTurn) sel={sx:p.l,sz:p.a,c:p.c};
   setGhost();
@@ -2411,16 +2469,52 @@ function putAllBack(){
   hand.forEach(p=>p.hand=false); hand=[]; setActive(null); setStatus('Everything is back in the box.'); updateBuildUI();
 }
 function setGhost(){
-  ghostGroup.clear(); if(!sel) return;
+  ghostGroup.clear(); if(!sel){ padSync(); return; }
   const g=new THREE.Mesh(brickGeo(sel.sx,sel.sz),ghostMat(sel.c)); g.add(new THREE.LineSegments(edgeGeo(sel.sx,sel.sz),ghostEdge));
-  ghostGroup.add(g);
-  if(lastAnchor) placeGhost(lastAnchor.px,lastAnchor.pz); else ghostGroup.visible=false;
+  g.position.y=ghostLift(); ghostGroup.add(g);
+  // Footprint on the layer: where the brick will land
+  const f=new THREE.Mesh(new THREE.PlaneGeometry(sel.sx-.08,sel.sz-.08),footMat(sel.c)); f.rotation.x=-Math.PI/2; f.position.set(sel.sx/2,.03,sel.sz/2);
+  f.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(sel.sx-.04,sel.sz-.04)),footEdge)); ghostGroup.add(f);
+  if(lastAnchor) placeGhost(lastAnchor.px,lastAnchor.pz);
+  else if(model&&cur<model.steps.length){ const c=ghostHome(); placeGhost(c.px,c.pz); }
+  else ghostGroup.visible=false;
+  padSync();
 }
-function rotateSel(){ if(!sel||sel.sx===sel.sz) return; [sel.sx,sel.sz]=[sel.sz,sel.sx]; setGhost(); }
+const ghostLift=()=>TILES?.25:.55;
+const footMats=new Map(), footEdge=new THREE.LineBasicMaterial({color:0x14202c,transparent:true,opacity:.8});
+const footMat=c=>{ if(!footMats.has(c)) footMats.set(c,new THREE.MeshBasicMaterial({color:new THREE.Color(PALETTE[c][1]).convertSRGBToLinear(),transparent:true,opacity:.45,depthWrite:false,side:THREE.DoubleSide})); return footMats.get(c); };
+// Where a newly picked-up brick first appears: the middle of what's built so far (or the middle of the table)
+function ghostHome(){
+  if(placedBoxes.length){ let x=0,z=0; for(const b of placedBoxes){ x+=b.x+b.sx/2; z+=b.z+b.sz/2; } return {px:x/placedBoxes.length,pz:z/placedBoxes.length}; }
+  return {px:model.W/2,pz:model.D/2};
+}
+// Nudge the brick one stud. "Up" means away from you, whichever way the view is turned.
+function nudgeGhost(dir){
+  if(!sel||!model||cur>=model.steps.length) return;
+  if(!lastAnchor){ const c=ghostHome(); placeGhost(c.px,c.pz); }
+  const f=new THREE.Vector3().subVectors(playControls.target,playCam.position); f.y=0; if(f.lengthSq()<1e-6) f.set(0,0,-1); f.normalize();
+  const r=new THREE.Vector3(-f.z,0,f.x);  // right of the forward direction
+  const v=dir==='up'?f:dir==='down'?f.clone().negate():dir==='right'?r:r.clone().negate();
+  const dx=Math.abs(v.x)>=Math.abs(v.z)?Math.sign(v.x):0, dz=dx?0:Math.sign(v.z);
+  placeGhost(lastAnchor.ax+sel.sx/2+dx,lastAnchor.az+sel.sz/2+dz); sfx.tick&&sfx.tick();
+}
+function padSync(){
+  const on=tab==='build'&&!!sel&&!!model&&cur<model.steps.length;
+  $('#placePad').hidden=!on;
+  if(!on) return;
+  $('#ppTurn').hidden=!sel||sel.sx===sel.sz;
+  $('#ppPlace').disabled=busy||!lastAnchor||!ghostGroup.visible;
+}
+function rotateSel(){ if(!sel||sel.sx===sel.sz) return; [sel.sx,sel.sz]=[sel.sz,sel.sx];
+  // Turn around the same middle point, so the brick doesn't jump
+  if(lastAnchor){ const cx=lastAnchor.ax+sel.sz/2, cz=lastAnchor.az+sel.sx/2; lastAnchor={...lastAnchor,px:cx,pz:cz}; }
+  setGhost(); }
 function renderHints(){
   hintGroup.clear(); $('#hintBtn').setAttribute('aria-pressed',hintOn);
   if(!hintOn||!model||cur>=model.steps.length) return;
-  { const g=game||mp; if(g&&!g.hintSteps.includes(cur)){ g.hintSteps.push(cur); charge('hint',5); } }
+  { const g=game||mp; if(g&&!g.hintSteps.includes(cur)){ g.hintSteps.push(cur);
+      if(mpBlitz()){ mpPost({action:'hint'}).then(j=>mpApply(j.state)).catch(()=>{}); mpFlash('+5s'); }
+      else charge('hint',5); } }
   const o=curOff()||{x:0,z:0}, u=usedSet();
   for(const b of model.steps[cur].bricks){ if(u.has(b)) continue;
     const h=new THREE.Mesh(brickGeo(b.sx,b.sz),hintMat(b.c)); h.add(new THREE.LineSegments(edgeGeo(b.sx,b.sz),edgeMat));
@@ -2441,6 +2535,7 @@ function placeGhost(px,pz){
   const ax=clamp(Math.round(px-sel.sx/2),cx-REACH,cx+REACH-sel.sx), az=clamp(Math.round(pz-sel.sz/2),cz-REACH,cz+REACH-sel.sz);
   lastAnchor={px,pz,ax,az};
   ghostGroup.position.set(ax,model.steps[cur].layer*1.2,az); ghostGroup.visible=true;
+  padSync();
 }
 function lock(){ const c=cands[0]; off={x:c.x,z:c.z}; placed=c.used; cands=[]; }
 function tryPlace(){
@@ -2518,22 +2613,57 @@ function autoPlace(){
   updateBuildUI();
 }
 function openBox(){ if(!model) return; setTab('box'); showBox(); }
-const cvs=renderer.domElement; let downXY=null;
+const cvs=renderer.domElement; let downXY=null, ghostDrag=null;
+// Grab the see-through brick (or the spot under it) and drag it around. This runs before the view-turning
+// controls see the press, so dragging the brick moves the brick instead of turning the view.
+function onGhost(e){
+  if(!sel||!lastAnchor||!ghostGroup.visible) return null;
+  const r=renderer.domElement.getBoundingClientRect(); ndc.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);
+  ray.setFromCamera(ndc,playCam);
+  const p=pointToPlate(e), {ax,az}=lastAnchor, pad=e.pointerType==='mouse'?0:.9;  // fingers are bigger than mice
+  const overFoot=p&&p.px>=ax-pad&&p.px<=ax+sel.sx+pad&&p.pz>=az-pad&&p.pz<=az+sel.sz+pad;
+  return (ray.intersectObject(ghostGroup,true).length||overFoot)?p:null;
+}
+cvs.addEventListener('pointerdown',e=>{
+  if(tab!=='build'||!model||cur>=model.steps.length||busy||e.button>0) return;
+  const p=onGhost(e); if(!p) return;
+  e.stopImmediatePropagation(); e.preventDefault();
+  ghostDrag={id:e.pointerId,x:e.clientX,y:e.clientY,moved:false,dx:p.px-(lastAnchor.ax+sel.sx/2),dz:p.pz-(lastAnchor.az+sel.sz/2)};
+  try{ cvs.setPointerCapture(e.pointerId); }catch(err){}
+},{capture:true});
 cvs.addEventListener('pointerdown',e=>{downXY=[e.clientX,e.clientY];});
 cvs.addEventListener('pointermove',e=>{ if(tab!=='build'||!sel||!model||cur>=model.steps.length) return;
+  if(ghostDrag&&e.pointerId===ghostDrag.id){
+    if(Math.hypot(e.clientX-ghostDrag.x,e.clientY-ghostDrag.y)>6) ghostDrag.moved=true;
+    if(ghostDrag.moved){ const p=pointToPlate(e); if(p) placeGhost(p.px-ghostDrag.dx,p.pz-ghostDrag.dz); }
+    return; }
   if(e.pointerType==='mouse'&&!e.buttons){const p=pointToPlate(e); if(p) placeGhost(p.px,p.pz);} });
 cvs.addEventListener('pointerup',e=>{
+  if(ghostDrag&&e.pointerId===ghostDrag.id){ const g=ghostDrag; ghostDrag=null;
+    if(!g.moved) tryPlace();  // a tap on the brick puts it down
+    else setStatus(e.pointerType==='mouse'?'Happy with it? Click it or press ✓ Place.':'Happy with it? Tap it or press ✓ Place.');
+    return; }
   if(tab!=='build'||!downXY||!model) return;
   const d=Math.hypot(e.clientX-downXY[0],e.clientY-downXY[1]); downXY=null;
   if(d>6||cur>=model.steps.length) return;
   if(!sel){ setStatus('Open the parts box and pick up a brick first.'); return; }
-  const p=pointToPlate(e); if(!p) return; placeGhost(p.px,p.pz); tryPlace();
+  const p=pointToPlate(e); if(!p) return; placeGhost(p.px,p.pz);
+  // With a mouse the brick already follows the pointer, so a click puts it down.
+  // With a finger, a tap only moves it there, so you can check it before pressing Place.
+  if(e.pointerType==='mouse') tryPlace();
+  else setStatus('Drag the brick or use the arrows to adjust it, then press ✓ Place.');
 });
-cvs.addEventListener('pointerleave',()=>{ if(tab==='build'&&!downXY) ghostGroup.visible=false; });
+cvs.addEventListener('pointercancel',()=>{ ghostDrag=null; downXY=null; });
+document.querySelectorAll('#placePad [data-mv]').forEach(b=>b.addEventListener('click',()=>nudgeGhost(b.dataset.mv)));
+$('#ppTurn').onclick=rotateSel;
+$('#ppPlace').onclick=()=>tryPlace();
 $('#rotBtn').onclick=rotateSel;
 function toggleBook(){ const g=$('.build-grid'), off=!g.classList.toggle('no-book'); $('#bookBtn').setAttribute('aria-pressed',off); saveSoon(); requestAnimationFrame(()=>{resize(); bookResize(); frameBuild(true);}); }
 $('#bookBtn').onclick=toggleBook;
-$('#hintBtn').onclick=()=>{ if(mpBlitz()) return; if(isLocked(cur)){ openMath(cur); return; } hintOn=!hintOn; renderHints(); if(hintOn) setStatus(curOff()?'Faded bricks show where this step’s parts go.':'Faded bricks show one place to start. Anywhere works.');};
+$('#hintBtn').onclick=()=>{
+  if(mpBlitz()&&!hintOn&&!mpMyTurn()){ setStatus(mpTurnText(),'err'); return; }
+  if(mpBlitz()&&!hintOn&&mp.cpu&&Date.now()<mp.state.turnStart){ setStatus('Wait for Go!','err'); return; }
+  if(isLocked(cur)){ openMath(cur); return; } hintOn=!hintOn; renderHints(); if(hintOn) setStatus(curOff()?'Faded bricks show where this step’s parts go.':'Faded bricks show one place to start. Anywhere works.');};
 $('#autoBtn').onclick=autoPlace;
 $('#fitBtn').onclick=()=>frameBuild(true);
 $('#openBox').onclick=openBox;
@@ -2545,6 +2675,9 @@ document.addEventListener('keydown',e=>{ if(/INPUT|SELECT|TEXTAREA/.test(e.targe
   if(tab==='box'){ if(e.key==='Escape'){ if(chosen.size){chosen.clear(); updatePick();} else setTab('build'); e.preventDefault(); } return; }
   if(tab!=='build') return;
   if(e.key==='r'||e.key==='R'){rotateSel(); e.preventDefault();}
+  const mv={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'}[e.key];
+  if(mv&&sel){ nudgeGhost(mv); e.preventDefault(); }
+  if(e.key==='Enter'&&sel&&!/BUTTON|A/.test(e.target.tagName)){ tryPlace(); e.preventDefault(); }
   if(e.key==='p'||e.key==='P'){openBox(); e.preventDefault();}
   if(e.key==='b'||e.key==='B'){toggleBook(); e.preventDefault();}
   if(e.key==='f'||e.key==='F'){frameBuild(true); e.preventDefault();}
@@ -3532,7 +3665,7 @@ function charge(kind,n){
 function updateGameBar(){
   const on=!!game;
   $('#gameBar').hidden=!(on&&(tab==='build'||tab==='box'));
-  $('#hintBtn').textContent=(on||mp)?'Hint (−5)':'Hint';
+  $('#hintBtn').textContent=(mp&&mp.state&&mp.state.mode==='blitz')?(mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'):(on||mp)?'Hint (−5)':'Hint';
   $('#autoBtn').textContent=(on||mp)?'Place one for me (−10)':'Place one for me';
   if(!on) return;
   const L=LEVELS[game.lvl], p=game.pen;
@@ -3815,9 +3948,9 @@ const mpBlitz=()=>!!(mp&&mp.state&&mp.state.mode==='blitz');
 // Which page a game's lobby lives on, and how to talk about it
 const mpHomeTab=()=>mp&&(mp.cpu||mpBlitz())?'blitz':'mp';
 const mpWhat=()=>mp&&mp.state&&mp.state.solo?'your timed build':mp&&mp.cpu?'your race against Bloppit':mpBlitz()?'your Blitz room':'your Play together room';
-const MISS_MS=1000;
+const MISS_MS=1000, HINT_MS=5000;  // Blitz: a wrong brick adds 1 second, a hint adds 5 seconds
 // Blitz times: the server's total so far, plus the turn that's running now (using the server's clock)
-function mpTime(s,i){ const p=s.players[i]; let t=(p.ms||0)+(p.miss||0)*MISS_MS;
+function mpTime(s,i){ const p=s.players[i]; let t=(p.ms||0)+(p.miss||0)*MISS_MS+(p.hint||0)*HINT_MS;
   if(s.started&&!s.finished&&s.turn===i&&mp) t+=Math.max(0,Date.now()+(mp.skew||0)-s.turnStart); return t; }
 function fmtTime(ms){ const t=Math.max(0,Math.floor(ms/100)), m=Math.floor(t/600), sec=Math.floor(t/10)%60; return `${m}:${String(sec).padStart(2,'0')}.${t%10}`; }
 // Blitz: how many more bricks I may place this turn (my share caps it as well as the 3-a-turn limit)
@@ -3828,7 +3961,7 @@ const mpMyTurn=()=>!!(mp&&mp.state&&mp.state.started&&!mp.state.finished&&mp.sta
 function mpTurnText(){ const s=mp&&mp.state; if(!s||!s.started) return 'Waiting for the game to start.'; if(s.finished) return 'The model is finished!'; return `It’s ${s.players[s.turn].name}’s turn. Get your bricks ready in the parts box.`; }
 function mpScores(s){
   return s.players.map((p,i)=>{ const own=s.moves.filter(m=>m.p===i&&!m.a).length, auto=s.moves.filter(m=>m.p===i&&m.a).length, pen=p.pen||{};
-    if(s.mode==='blitz') return {i,name:p.name,color:p.color,own,miss:p.miss||0,stale:p.stale,ms:mpTime(s,i),n:p.n||0,done:!!s.quota&&(p.n||0)>=s.quota};
+    if(s.mode==='blitz') return {i,name:p.name,color:p.color,own,miss:p.miss||0,hint:p.hint||0,stale:p.stale,ms:mpTime(s,i),n:p.n||0,done:!!s.quota&&(p.n||0)>=s.quota};
     return {i,name:p.name,color:p.color,own,auto,hint:pen.hint||0,miss:pen.miss||0,stale:p.stale,score:Math.max(0,own*10-auto*10-(pen.hint||0)*5)}; });
 }
 function mpEndSolo(){ if(game){ game=null; freeS=null; } hintOn=false; updateGameBar(); }
@@ -3867,7 +4000,6 @@ function reconcilePieces(){
 function mpApply(s){
   if(!mp||!s||s.ver<mp.ver) return;
   mp.state=s; mp.ver=s.ver; if(s.now) mp.skew=s.now-Date.now();
-  if(s.mode==='blitz') hintOn=false;
   const cur0=cur, n0=placedN;
   let heard=0;
   for(let i=mp.applied;i<s.moves.length;i++){ const m=s.moves[i]; if(m.p===mp.me&&mp.local.has(m.b)) continue; applyMoveCore(m); heard++; }
@@ -3894,7 +4026,9 @@ function updateMpBar(){
   if(!s) return;
   const done=!model||cur>=model.steps.length;
   const bz=s.mode==='blitz';
-  ['hintBtn','autoBtn'].forEach(id=>{ $('#'+id).disabled=done||!mpMyTurn(); $('#'+id).hidden=bz; });
+  ['hintBtn','autoBtn'].forEach(id=>{ $('#'+id).disabled=done||!mpMyTurn(); });
+  $('#autoBtn').hidden=bz; $('#hintBtn').hidden=false;
+  if(bz){ $('#hintBtn').textContent=mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'; $('#hintBtn').disabled=done||(!mpMyTurn()&&!hintOn); }
   $('#mpBar').classList.toggle('blitz',bz);
   $('#mpCodeBadge').textContent=s.solo?'⏱':mp.cpu?'VS':s.code; $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?`vs ${CPU_LEVELS[s.cpuLevel].name}`:'Room'; $('#mpRoomBtn').textContent=mp.cpu?'Race':'Room'; $('#mpTitle').innerHTML=(bz?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
   const cp=s.players[s.turn], mine=s.turn===mp.me, left=mpLeft(s), el=$('#mpTurn');
@@ -3902,7 +4036,7 @@ function updateMpBar(){
   if(bz&&s.solo) el.innerHTML=s.finished?'Finished!<small>Let’s see your time</small>':`Go go go!<small>${(s.players[0].n||0)} of ${s.quota} placed</small>`;
   else if(bz) el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Quickest time wins</small>':mine?`Your turn! Go!<small>${s.turnPlaced?`${s.turnPlaced} placed · up to ${left} more, or tap Done`:left<3?`Place up to ${left} brick${left===1?'':'s'} (${left===1?'your last one':'your last ones'})`:'Place 1, 2 or 3 bricks, then tap Done'}</small>`:mp.cpu?`Bloppit’s turn<small>${s.turnPlaced?`${s.turnPlaced} placed · `:'Thinking… '}Bloppit’s clock is running</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} placed · their clock is running${cp.stale?' · hasn’t been seen for a while':''}</small>`;
   else el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Built together</small>':mine?`Your turn!<small>Place ${left} more brick${left===1?'':'s'}</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} of ${s.perTurn} placed${cp.stale?' · hasn’t been seen for a while':''}</small>`;
-  $('#mpPlayers').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.i===s.turn&&s.started&&!s.finished?' now':''}${p.stale?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''} ${bz?`<b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${s.quota?`<span class="mi" style="color:var(--muted)" title="Bricks placed">${p.done?'✓':`${p.n}/${s.quota}`}</span>`:''}${p.miss?`<span class="mi" title="Misses">✕${p.miss}</span>`:''}`:`<b>${p.score}</b>`}${voChip(p.i)}</span>`).join('');
+  $('#mpPlayers').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.i===s.turn&&s.started&&!s.finished?' now':''}${p.stale?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''} ${bz?`<b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${s.quota?`<span class="mi" style="color:var(--muted)" title="Bricks placed">${p.done?'✓':`${p.n}/${s.quota}`}</span>`:''}${p.miss?`<span class="mi" title="Misses">✕${p.miss}</span>`:''}${p.hint?`<span class="mi" title="Hints" style="color:var(--muted)">💡${p.hint}</span>`:''}`:`<b>${p.score}</b>`}${voChip(p.i)}</span>`).join('');
   updateVoiceUI();
   turnBanner(s);
   $('#mpEndTurn').textContent=bz?'Done':'End my turn';
@@ -4036,9 +4170,9 @@ async function renderMpView(){
   $('#mpWhere').textContent=bz?'⚡ Blitz':'⇄ Together';
   const p0=photos[0]; if(p0) $('#mpThumb').src=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png'));
   $('#mpModelName').textContent=s.title;
-  $('#mpModelInfo').innerHTML=s.solo?`<span class="blitz-tag">${escapeHTML(s.label)}</span>${s.nBricks} bricks, all yours. Your clock runs until the last brick is in. No hints; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
-    :cpuOn?`<span class="blitz-tag">⚡ vs ${CPU_LEVELS[s.cpuLevel].name}</span>${s.nBricks} bricks · you each place ${s.quota} · 1 to 3 bricks a turn. No hints; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
-    :bz?`<span class="blitz-tag">⚡ Bloppit Blitz</span>${s.nBricks} bricks · ${s.quota?`everyone places ${s.quota}`:`split evenly between ${s.players.length} player${s.players.length===1?'':'s'}: ${Math.floor(s.nBricks/s.players.length)} each`} · 1 to 3 bricks a turn, against the clock. No hints; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
+  $('#mpModelInfo').innerHTML=s.solo?`<span class="blitz-tag">${escapeHTML(s.label)}</span>${s.nBricks} bricks, all yours. Your clock runs until the last brick is in. A hint adds 5 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
+    :cpuOn?`<span class="blitz-tag">⚡ vs ${CPU_LEVELS[s.cpuLevel].name}</span>${s.nBricks} bricks · you each place ${s.quota} · 1 to 3 bricks a turn. A hint adds 5 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
+    :bz?`<span class="blitz-tag">⚡ Bloppit Blitz</span>${s.nBricks} bricks · ${s.quota?`everyone places ${s.quota}`:`split evenly between ${s.players.length} player${s.players.length===1?'':'s'}: ${Math.floor(s.nBricks/s.players.length)} each`} · 1 to 3 bricks a turn, against the clock. A hint adds 5 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
     :`${s.nBricks} bricks · ${s.perTurn} brick${s.perTurn>1?'s':''} per turn${s.started?` · ${s.moves.length} placed so far`:''}`;
   $('#mpList').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.stale?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.i===s.host&&!cpuOn?' · made the room':''}${s.started?(bz?` <b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>`:` <b>${p.score}</b>`):''}${voChip(p.i)}</span>`).join('');
   const host=mp.me===s.host;
@@ -4063,9 +4197,9 @@ function mpShowBlitzEnd(){
   const s=mp.state, sc=mpScores(s).sort((a,b)=>a.ms-b.ms), medals=['🥇','🥈','🥉',''], w=sc[0];
   $('#mpEndTitle').textContent=sc.length>1?`⚡ ${w.i===mp.me?'You win':`${w.name} wins`}!`:`⚡ Done in ${fmtTime(w.ms)}!`;
   $('#mpEndNew').textContent=mp.cpu?'Race again':'New game';
-  $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span><b>${fmtTime(p.ms)}</b> · ${p.own} brick${p.own===1?'':'s'} · ${p.miss} miss${p.miss===1?'':'es'}</span></div>`).join('');
+  $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span><b>${fmtTime(p.ms)}</b> · ${p.own} brick${p.own===1?'':'s'} · ${p.miss} miss${p.miss===1?'':'es'}${p.hint?` · ${p.hint} hint${p.hint===1?'':'s'}`:''}</span></div>`).join('');
   const extra=s.moves.filter(m=>m.p<0).length;
-  $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and Bloppit put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, and every miss added 1 second.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Legend Bloppit. Amazing!':' Ready to race a faster Bloppit?'):' Practice makes perfect. Try again?'):''}`;
+  $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and Bloppit put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, every miss added 1 second and every hint 5 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Legend Bloppit. Amazing!':' Ready to race a faster Bloppit?'):' Practice makes perfect. Try again?'):''}`;
   $('#mpEndDlg').showModal();
 }
 $('#mpEndClose').onclick=()=>{ $('#mpEndDlg').close(); setTab('build'); };
@@ -4212,6 +4346,7 @@ async function cpuApi(method,body,query){
     if(cpuShareDone(me)) throw new Error('You’ve placed all your bricks.');
     cpuPlace(me,b,Math.round(Number(body.x)||0),Math.round(Number(body.z)||0));
   } else if(a==='miss'){ if(s.finished||s.turn!==me) return {state:cpuPub()}; s.players[me].miss++; }
+  else if(a==='hint'){ if(s.finished||s.turn!==me) return {state:cpuPub()}; s.players[me].hint=(s.players[me].hint||0)+1; }
   else if(a==='pass'){
     if(s.finished||s.turn!==me) return {state:cpuPub()};
     if(s.turnPlaced<1) throw new Error('Place at least one brick before you tap Done.');
@@ -4275,7 +4410,7 @@ $('#bzCpuGo').onclick=async()=>{
     if(mp) mpLeave();
     const title=mpUseModel($('#bzModel').value);
     if(model.bricks.length<2) throw new Error('This model is too small for a race. Pick a bigger one.');
-    const lvl=bzLevel(), me=curPlayer(), pl=(nm,color)=>({name:nm,color,pen:{},stale:false,vc:0,ms:0,miss:0,n:0});
+    const lvl=bzLevel(), me=curPlayer(), pl=(nm,color)=>({name:nm,color,pen:{},stale:false,vc:0,ms:0,miss:0,hint:0,n:0});
     cpu={timer:null,left:0,s:{code:'VS',ver:1,started:true,finished:false,perTurn:3,mode:'blitz',cpuLevel:lvl,nBricks:model.bricks.length,title,level:null,host:0,
       turn:0,turnPlaced:0,turnStart:Date.now()+COUNTDOWN_MS,moves:[],voice:false,me:0,chat:[],waiting:[],sig:[],quota:Math.floor(model.bricks.length/2),
       players:[pl(name,(me&&me.color&&me.color!=='#8A5A3B')?me.color:'#D2352B'),pl(CPU_LEVELS[lvl].name,'#8A5A3B')]}};
@@ -4311,12 +4446,12 @@ async function trialStart(info,name){
   const me=curPlayer(), N=model.bricks.length;
   cpu={timer:null,left:0,trial:info,s:{code:'⏱',ver:1,started:true,finished:false,perTurn:N,mode:'blitz',solo:true,label:info.label,cpuLevel:'medium',nBricks:N,title:info.title||niceName(model.name),level:null,host:0,
     turn:0,turnPlaced:0,turnStart:Date.now()+COUNTDOWN_MS,moves:[],voice:false,me:0,chat:[],waiting:[],sig:[],quota:N,
-    players:[{name,color:(me&&me.color&&me.color!=='#8A5A3B')?me.color:'#D2352B',pen:{},stale:false,vc:0,ms:0,miss:0,n:0}]}};
+    players:[{name,color:(me&&me.color&&me.color!=='#8A5A3B')?me.color:'#D2352B',pen:{},stale:false,vc:0,ms:0,miss:0,hint:0,n:0}]}};
   await mpEnter({cpu:true,code:'⏱',playerId:'me',me:0,state:cpuPub()},true,name);
   setTab('build'); cpuCountdown();
 }
-function trialResult(){ const p=mp.state.players[0]; return {ms:Math.round(p.ms||0),miss:p.miss||0}; }
-const totalMs=r=>r.ms+r.miss*MISS_MS;
+function trialResult(){ const p=mp.state.players[0]; return {ms:Math.round(p.ms||0),miss:p.miss||0,hint:p.hint||0}; }
+const totalMs=r=>r.ms+r.miss*MISS_MS+(r.hint||0)*HINT_MS;
 const ordinal=n=>n+(n%100>=11&&n%100<=13?'th':['th','st','nd','rd'][n%10]||'th');
 async function chApi(method,body,query=''){
   let r; try{ r=await fetch(API_BASE+'/api/challenge'+query,{method,headers:body?{'content-type':'application/json'}:{},body:body?JSON.stringify(body):undefined,cache:'no-store'}); }
@@ -4332,7 +4467,7 @@ function chRemember(code,title,runId){ const l=chMine().filter(c=>c.code!==code)
   l.unshift({code,title,runs:[...new Set([runId,...(old?old.runs:[])])].slice(0,6),at:Date.now()});
   try{ localStorage.setItem(pkey(CH_KEY),JSON.stringify(l.slice(0,8))); }catch(e){} }
 function chRows(c){ const medals=['🥇','🥈','🥉'];
-  return c.runs.map((r,k)=>`<div${r.me?' class="first"':''}><span>${medals[k]||`${k+1}.`} ${escapeHTML(r.name)}${r.me?' (you)':''}${r.maker?' · made it':''}</span><span><b>${fmtTime(totalMs(r))}</b>${r.miss?` · ${r.miss} miss${r.miss===1?'':'es'}`:''}</span></div>`).join(''); }
+  return c.runs.map((r,k)=>`<div${r.me?' class="first"':''}><span>${medals[k]||`${k+1}.`} ${escapeHTML(r.name)}${r.me?' (you)':''}${r.maker?' · made it':''}</span><span><b>${fmtTime(totalMs(r))}</b>${r.miss?` · ${r.miss} miss${r.miss===1?'':'es'}`:''}${r.hint?` · ${r.hint} hint${r.hint===1?'':'s'}`:''}</span></div>`).join(''); }
 function chShareUrl(code){ return `https://bloppit.com/join/${code}`; }
 async function chShare(code){
   if(APP&&!await gate.ask('Sharing sends your challenge code to another app.')) return;
@@ -4349,12 +4484,13 @@ function trialDialog(o){
 async function trialEnd(){
   const info=cpu&&cpu.trial; if(!info) return;
   const r=trialResult(), t=totalMs(r), name=mp.state.players[0].name, timeRow=`<div class="tot"><span>Your time</span><span>${fmtTime(t)}</span></div>`;
-  const missRow=r.miss?`<div class="neg"><span>Misses (${r.miss} × 1 second)</span><span>+${r.miss}s</span></div>`:'';
+  const missRow=(r.miss?`<div class="neg"><span>Misses (${r.miss} × 1 second)</span><span>+${r.miss}s</span></div>`:'')
+    +(r.hint?`<div class="neg"><span>Hints (${r.hint} × 5 seconds)</span><span>+${r.hint*5}s</span></div>`:'');
   const send=async()=>{
     if(info.kind==='make'){
       trialDialog({icon:'📨',title:'Making your challenge…',rows:missRow+timeRow,note:'Sending your time and puzzle to Bloppit.'});
       try{
-        const j=await chApi('POST',{action:'create',name,title:info.title,nBricks:model.bricks.length,ms:r.ms,miss:r.miss,
+        const j=await chApi('POST',{action:'create',name,title:info.title,nBricks:model.bricks.length,ms:r.ms,miss:r.miss,hint:r.hint,
           model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
         chRemember(j.code,info.title,j.runId);
         trialDialog({icon:'📨',title:'Your challenge is ready!',code:j.code,rows:missRow+timeRow,note:`Send this code to a friend. They type it into Got a code? on the Blitz page and race your ${fmtTime(t)}. Up to 12 people can play it, for 30 days.`});
@@ -4363,7 +4499,7 @@ async function trialEnd(){
       trialDialog({icon:'⏱',title:'Sending your time…',rows:missRow+timeRow});
       try{
         const mine=(chMine().find(c=>c.code===info.code)||{runs:[]}).runs;
-        const j=await chApi('POST',{action:'run',code:info.code,name,ms:r.ms,miss:r.miss,runs:mine.join(',')});
+        const j=await chApi('POST',{action:'run',code:info.code,name,ms:r.ms,miss:r.miss,hint:r.hint,runs:mine.join(',')});
         chRemember(info.code,info.title,j.runId);
         const c=j.challenge, k=c.runs.findIndex(x=>x.me&&x.ms===r.ms), place=k+1;
         trialDialog({icon:place===1?'🏆':'⚡',title:place===1?'You’re in the lead!':`You came ${ordinal(place)} of ${c.runs.length}`,rows:chRows(c),
@@ -4376,7 +4512,7 @@ async function trialEnd(){
       if(!first){ trialDialog({icon:'📅',title:t<prev.best?'New personal best!':'Nice practice!',rows:missRow+timeRow+`<div><span>Your best today</span><span>${fmtTime(best)}</span></div>`,note:'Only your first try each day counts for the ranking. Come back tomorrow for a new puzzle!'}); return; }
       trialDialog({icon:'📅',title:'Daily Bloppit done!',rows:missRow+timeRow,note:'Checking how everyone else did…'});
       try{
-        const j=await chApi('POST',{action:'daily',day:info.day,ms:r.ms,miss:r.miss,nBricks:model.bricks.length});
+        const j=await chApi('POST',{action:'daily',day:info.day,ms:r.ms,miss:r.miss,hint:r.hint,nBricks:model.bricks.length});
         const pct=j.n>1?Math.round(100*(j.n-j.rank)/(j.n-1)):100;
         D.days[info.day].rank=j.rank; D.days[info.day].n=j.n; dailyStoreSet(D);
         trialDialog({icon:j.rank===1?'🏆':'📅',title:j.rank===1?'Fastest today so far!':`You came ${ordinal(j.rank)} of ${j.n}`,
@@ -4416,7 +4552,7 @@ async function chOpen(code){
     box.hidden=false;
     box.innerHTML=`<div class="ch-top"><img alt="" src="${photos[0].png}"><div><span class="tag">Challenge ${c.code}</span><h2>${escapeHTML(maker.name)} challenged you!</h2><p class="note" style="margin:0">${escapeHTML(c.title)} · ${c.nBricks} bricks · build the whole puzzle as fast as you can</p></div></div>
       <div class="win-rows">${chRows(c)}</div>
-      <p class="note" style="margin:0">Time to beat: <b>${fmtTime(totalMs(best))}</b>. No hints, and each miss adds 1 second.</p>
+      <p class="note" style="margin:0">Time to beat: <b>${fmtTime(totalMs(best))}</b>. A hint adds 5 seconds, and each miss adds 1 second.</p>
       <div class="win-btns" style="justify-content:flex-start">${c.full?'<span class="note">This challenge is full (12 players).</span>':'<button class="primary" id="chGo" type="button">Race it! ⚡</button>'}<button class="ghost" id="chShareBtn" type="button">Share</button><button class="ghost" id="chClose" type="button">Close</button></div>`;
     box.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'});
     $('#chClose').onclick=()=>{ box.hidden=true; };
@@ -4476,7 +4612,7 @@ async function renderDaily(){
   const day=dayStr(), o=dailyPuzzle(day), me=dailyStore().days[day], streak=dailyStreak();
   $('#dyImg').src=o.thumb; $('#dyName').textContent=o.name;
   $('#dyDate').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
-  $('#dyInfo').textContent=`${o.n} bricks · ${o.theme} · build the whole puzzle as fast as you can. No hints; each miss adds 1 second.`;
+  $('#dyInfo').textContent=`${o.n} bricks · ${o.theme} · build the whole puzzle as fast as you can. A hint adds 5 seconds; each miss adds 1 second.`;
   const st=[]; if(me) st.push(`<span>Your best today <b>${fmtTime(me.best)}</b></span>`); if(me&&me.rank) st.push(`<span>Ranked <b>${ordinal(me.rank)}</b> of ${me.n}</span>`);
   st.push(`<span>Streak <b>${streak}</b> 🔥</span>`); st.push(`<span id="dyCount">${dailyPeek&&dailyPeek.day===day?`<b>${dailyPeek.n}</b> played today`:'&nbsp;'}</span>`);
   $('#dyStats').innerHTML=st.join('');

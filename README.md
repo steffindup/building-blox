@@ -9,7 +9,7 @@ instruction booklet, and you build it on screen. The menu is game-first:
   **Brain Trail** (the same levels, with math puzzles locking booklet pages). Each trail keeps its own scores
   (`best` and `bbest` in the game save).
 - **Blitz** races are kept short: a puzzle picked for Blitz is shrunk to at most 30 bricks (`BLITZ_MAX`), opening Blitz
-  without a small puzzle starts on the Toadstool Trail level, and each wrong brick adds 1 second (`MISS_MS`).
+  without a small puzzle starts on the Toadstool Trail level, each wrong brick adds 1 second (`MISS_MS`) and each hint 5 seconds (`HINT_MS`, charged once per step).
 - **Blitz**: **vs Bloppit** (Pup, Splash or Legend Bloppit; take turns, 1 to 3 bricks a turn) and **vs Friend**:
   *Make a challenge* builds the whole puzzle against the clock and gives a 6-character code; friends type it into
   *Got a code?* (or open the share link `bloppit.com/join/CODE`) and race the same puzzle later. Live Blitz rooms (5-character codes) are still there.
