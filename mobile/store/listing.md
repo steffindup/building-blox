@@ -25,79 +25,84 @@ Kids apps must not have third-party ads or analytics (Bloppit has none) and link
 
 ## Promotional text (170)
 
-Turn any photo into a brick model with its own step-by-step instruction booklet, then build it yourself on screen. New: Bloppit Blitz, a race against the clock!
+The brick-building puzzle game! Race Bloppit the otter, challenge a friend with a code, and play a new Daily Bloppit puzzle every day.
 
 ## Description (4000)
 
 Snap it. Bloppit. Build it.
 
-Take a photo of anything: your cat, a toy, a sailboat, your own drawing. Bloppit turns it into a 3D brick model and makes a step-by-step instruction booklet, just like the ones in a real brick set. Then you build it yourself, brick by brick.
+Bloppit is a brick-building puzzle game. Turn any photo into a puzzle (your cat, a toy, your own drawing) or pick one from the library, then build it brick by brick against the clock, up the levels, or with friends.
 
-BUILD IT YOURSELF
-• Open the parts box, pick up the right bricks and snap them into place
-• Bloppit the otter cheers you on and shows what you need for each step
-• Stuck? Ask for a hint, or let Bloppit place one for you
-• Turn and zoom the model with your fingers
+BLOPPIT BLITZ
+• Race Bloppit the otter: Baby, River or Champion Bloppit, each one faster and sharper than the last
+• Challenge a friend: build a puzzle as fast as you can, get a 6-letter code, and see if they can beat your time whenever they like
+• Or race live, taking turns on your own devices
+• No hints, and every brick in the wrong spot adds 3 seconds
 
-YOUR OWN INSTRUCTION BOOKLET
-• Every model comes with a full booklet: numbered steps, bricks for each step and a parts list
-• Choose how tall the model is and how many colours it uses
-• Picture mode turns a photo into a flat tile mosaic, like a brick-art portrait
+DAILY BLOPPIT
+• One new puzzle every day, the same for everyone
+• See how your time compares and keep your streak going
 
-PLAY THE GAME
-• 14 levels, from a tiny heart to a 364-brick otter
+TRAILS
+• Otter Trail: 14 levels, from a tiny heart to a 364-brick otter
+• Brain Trail: the same levels, with math puzzles that unlock booklet pages, matched to the player's age
 • Earn points and stars for building without help
-• Math challenge: booklet pages unlock with math puzzles that match the player's age
 • Separate profiles, so brothers and sisters each keep their own scores
 
-PLAY TOGETHER
-• Build one model together on different iPhones, iPads and computers
-• Take turns placing a few bricks each and watch the model grow
-• Bloppit Blitz: race the clock against Bloppit the otter (Easy, Medium or Hard) or your friends! Everyone places the same number of bricks, 1 to 3 a turn, and the quickest builder wins
-• Chat with friendly quick messages
+QUICK BUILD
+• Turn your own photos into 3D brick models or flat tile mosaics
+• 64 ready-made puzzles in 11 themes
+• Every puzzle comes with a full instruction booklet, so you can build it for real too
 
 MADE FOR KIDS AND FAMILIES
 • No ads, no in-app purchases, no accounts
 • No tracking and no analytics
-• Photos stay on your device (Play together shares the model only with players in your room)
-• Works offline, apart from Play together
+• No chat and no voice: friends join with a code and can only send emojis
+• Photos stay on your device unless you share a challenge or room with friends
+• Racing Bloppit and the Trails work offline
 
 Bloppit is an independent project and is not affiliated with any toy brick brand.
 
 ## Keywords (100)
 
-bricks,build,building,blocks,kids,photo,model,instructions,3D,mosaic,math,family,creative,otter,toy
+bricks,build,puzzle,blocks,kids,race,daily,challenge,photo,3D,math,family,otter,brain,game
 
 ## What's New (version 1.0)
 
 Bloppit's first App Store release.
 
+(Next version:) Bloppit is now a game first! Race Baby, River or Champion Bloppit, send challenge codes to friends, play the new Daily Bloppit, and climb the Otter Trail or the Brain Trail.
+
 ## App Review notes
 
-Bloppit turns a photo into a brick model and instruction booklet that children build on screen.
-No account or login is needed. To try it quickly: tap Photos & model, pick Cat from the library, then tap Build.
-Play together: tap Play together, type a name, Create room; a second device can join with the room code
-(the website bloppit.com/build works as the second player). Chat in the app is preset quick messages only.
+Bloppit is a brick-building puzzle game for children. No account or login is needed.
+To try it quickly: on the menu tap vs Bloppit, type a name and tap Start the race (works offline).
+Challenges: on the Blitz page tap Make a challenge, build the puzzle, and you get a 6-letter code; type that code
+into Got a code? on another device (the website bloppit.com/build works too) to race the same puzzle.
+Daily Bloppit: tap the Daily Bloppit banner on the menu. Only the finishing time is sent, with no name.
+Rooms (Build together, live Blitz): friends join with a 5-letter code and the host lets them in.
+There is no typed chat and no voice anywhere: players can only send emojis from a fixed set.
 Links out of the app and sharing an invite are behind a parental gate (type a number written in words as digits).
 
 ## Age rating questionnaire
 
 Answer **None / No** to everything (violence, mature themes, gambling, horror, medical, alcohol, profanity, sexual content,
 contests, unrestricted web access). For "user-generated content / communication between users": there is
-communication between users only through preset quick messages and player nicknames in Play together rooms;
+communication between users only through a fixed set of emojis and player nicknames in rooms and challenges;
 answer the questions that way. Expected rating: **4+**.
 
 ## App Privacy ("privacy label")
 
 Data used to track you: **No**.
 
-Data collected (only through Play together, kept on the server until 3 days after the room's last activity):
+Data collected (only through rooms, Blitz challenges and the Daily Bloppit; rooms are deleted 3 days after their last
+activity, challenges 30 days after the last player, daily times after a week):
 
 | Data type | Collected | Linked to the user's identity | Used for tracking | Purpose |
 |---|---|---|---|---|
 | User Content › Photos or Videos (the photos a shared model is made from) | Yes | No | No | App Functionality |
-| User Content › Gameplay Content (bricks placed, scores, Blitz times) | Yes | No | No | App Functionality |
-| User Content › Other User Content (player nickname, quick messages) | Yes | No | No | App Functionality |
+| User Content › Gameplay Content (bricks placed, scores, Blitz and Daily Bloppit times) | Yes | No | No | App Functionality |
+| User Content › Other User Content (player nickname, emojis sent in a room) | Yes | No | No | App Functionality |
 
 Everything else (contact info, identifiers, location, usage data, diagnostics, etc.): **Not collected**.
 

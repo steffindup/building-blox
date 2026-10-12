@@ -1,14 +1,22 @@
 # Bloppit
 
-Upload photos, turn them into a brick model, and build it yourself with a step-by-step instruction booklet.
-Includes **Play the Game** (levels and points), **Play together** (take turns on different devices) and
-**Bloppit Blitz** (a race against the clock, its own tab and menu tile).
+A brick-building puzzle game for kids 8–13. Any photo (or a library model) becomes a brick puzzle with a step-by-step
+instruction booklet, and you build it on screen. The menu is game-first:
 
-- **Bloppit Blitz** can be played against the computer ("Race Bloppit", Easy / Medium / Hard) or against friends in a room.
-  Racing Bloppit runs entirely on the device (no server, works in the App Store app and offline): `cpuApi()` in
-  `public/build/index.html` stands in for the room server and follows the same Blitz rules as `logic.mjs`, so the same
-  build screen, clocks and results are used. Bloppit's speed and miss rate per level are in `CPU_LEVELS`.
-  Blitz rooms with friends are made and joined on the Blitz page; Play together rooms are always Classic.
+- **Daily Bloppit**: one library puzzle a day, picked from the date so everyone gets the same one. You build it against
+  the clock; your first time each day goes to the server (no name) and you see your rank. Streaks are kept on the device.
+- **Solo**: **Quick Build** (pick Library or Your photo, build at your own pace), **Otter Trail** (the 14 levels) and
+  **Brain Trail** (the same levels, with math puzzles locking booklet pages). Each trail keeps its own scores
+  (`best` and `bbest` in the game save).
+- **Blitz**: **vs Bloppit** (Baby, River or Champion Bloppit; take turns, 1 to 3 bricks a turn) and **vs Friend**:
+  *Make a challenge* builds the whole puzzle against the clock and gives a 6-character code; friends type it into
+  *Got a code?* (or open `/build/?ch=CODE`) and race the same puzzle later. Live Blitz rooms (5-character codes) are still there.
+- **Build together** (Play together): take turns building one model in a room.
+- Every finish screen offers **Build it for real**, which opens the printable booklet.
+
+- Racing Bloppit, challenges and the Daily Bloppit all run on the device: `cpuApi()` in `public/build/index.html`
+  stands in for the room server and follows the same Blitz rules as `logic.mjs`. A challenge or daily run is the same
+  engine with one player (`s.solo`); `trialEnd()` sends the time. Bloppit's speed and miss rate per level are in `CPU_LEVELS`.
 
 Live at https://bloppit.com (bloppit.netlify.app redirects there). Every push to `main` deploys through Netlify.
 Formerly called Building Blox; the browser save keys still use the old `building-blox-*` names so existing saves keep working.
@@ -20,14 +28,15 @@ Formerly called Building Blox; the browser save keys still use the old `building
   "Bloppit brand & landing page" design canvas in Claude.
 - `netlify/functions/room/` is the Play together room server: a Netlify Function at `/api/room`
   that keeps each room in Netlify Blobs (store `building-blox-rooms`). Game rules are in `logic.mjs`.
-- **Room chat** (Play together): anyone in a room can type messages (up to 140 characters, last 60 kept).
-  Guardrails live in `cleanChat()` in `logic.mjs`: links, emails, phone numbers, @handles and social app
-  names are refused, rude words are blanked out, and each player can send at most one message a second and
-  six per 20 seconds. Chat is only sent to players in the room (the app sends its player id in an
-  `x-player` header), never to someone who only knows the room code. The word filter is basic, not full moderation.
+- **Emojis only**: rooms carry no typed chat and no voice, on the website or in the app. Players can send emojis
+  from `QUICK_CHAT` in `logic.mjs` (keep the copy in `index.html` in step); the server refuses anything else and
+  refuses to turn voice on. Friends only join with a code, and the host lets each one in.
+- `netlify/functions/challenge/` is the challenge and Daily Bloppit server at `/api/challenge`, in the same Blobs store
+  (`ch/CODE`, `chmodel/CODE`, `daily/YYYY-MM-DD`). Rules and limits are in its `logic.mjs` (12 players per challenge,
+  a minimum time per brick, daily days accepted a day either side of the server's).
 
-- `netlify/functions/room-cleanup/` deletes rooms (and their shared photos) 3 days after their last activity, daily.
-  When someone joins from the App Store app, the room becomes **quick messages only** (see `QUICK_CHAT` in `logic.mjs`).
+- `netlify/functions/room-cleanup/` runs daily: it deletes rooms (and their shared photos) 3 days after their last
+  activity, challenges 30 days after their last run, and daily times after a week. The privacy policy promises this.
 - `public/privacy/` is the privacy policy (bloppit.com/privacy), also used for the App Store listing.
   Update it if Bloppit starts handling information differently.
 
