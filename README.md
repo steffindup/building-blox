@@ -8,7 +8,7 @@ instruction booklet, and you build it on screen. The menu is game-first:
 - **Solo**: **Quick Build** (pick Library or Your photo, build at your own pace), **Otter Trail** (the 14 levels) and
   **Brain Trail** (the same levels, with math puzzles locking booklet pages). Each trail keeps its own scores
   (`best` and `bbest` in the game save).
-- **Blitz**: **vs Bloppit** (Baby, River or Champion Bloppit; take turns, 1 to 3 bricks a turn) and **vs Friend**:
+- **Blitz**: **vs Bloppit** (Pup, Splash or Legend Bloppit; take turns, 1 to 3 bricks a turn) and **vs Friend**:
   *Make a challenge* builds the whole puzzle against the clock and gives a 6-character code; friends type it into
   *Got a code?* (or open the share link `bloppit.com/join/CODE`) and race the same puzzle later. Live Blitz rooms (5-character codes) are still there.
 - **Build together** (Play together): take turns building one model in a room.

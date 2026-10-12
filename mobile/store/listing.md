@@ -34,7 +34,7 @@ Snap it. Bloppit. Build it.
 Bloppit is a brick-building puzzle game. Turn any photo into a puzzle (your cat, a toy, your own drawing) or pick one from the library, then build it brick by brick against the clock, up the levels, or with friends.
 
 BLOPPIT BLITZ
-• Race Bloppit the otter: Baby, River or Champion Bloppit, each one faster and sharper than the last
+• Race Bloppit the otter: Pup, Splash or Legend Bloppit, each one faster and sharper than the last
 • Challenge a friend: build a puzzle as fast as you can, get a 6-letter code, and see if they can beat your time whenever they like
 • Or race live, taking turns on your own devices
 • No hints, and every brick in the wrong spot adds 3 seconds
@@ -71,7 +71,7 @@ bricks,build,puzzle,blocks,kids,race,daily,challenge,photo,3D,math,family,otter,
 
 Bloppit's first App Store release.
 
-(Next version:) Bloppit is now a game first! Race Baby, River or Champion Bloppit, send challenge codes to friends, play the new Daily Bloppit, and climb the Otter Trail or the Brain Trail.
+(Next version:) Bloppit is now a game first! Race Pup, Splash or Legend Bloppit, send challenge codes to friends, play the new Daily Bloppit, and climb the Otter Trail or the Brain Trail.
 
 ## App Review notes
 

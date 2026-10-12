@@ -883,7 +883,7 @@ body.on-home .tabs{visibility:hidden}
   </div>
   <h3 class="hm-sec">⚡ Blitz</h3>
   <div class="hm-grid">
-    <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true">🏁</span><b>vs Bloppit</b><span>Race Baby, River or Champion Bloppit</span></button>
+    <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true">🏁</span><b>vs Bloppit</b><span>Race Pup, Splash or Legend Bloppit</span></button>
     <button class="hm-tile t-friend" data-go="friend" type="button"><span class="ic" aria-hidden="true">🤝</span><b>vs Friend</b><span>Send a challenge code, or race live</span></button>
   </div>
   <h3 class="hm-sec">🧩 Together</h3>
@@ -1171,9 +1171,9 @@ body.on-home .tabs{visibility:hidden}
         <p class="note" style="margin:0">Take turns placing 1, 2 or 3 bricks, then tap Done. Your clock only runs on your turn. Works without internet.</p>
         <div class="field"><span class="lbl">Which Bloppit?</span>
           <div class="seg" style="grid-template-columns:repeat(3,1fr)" role="radiogroup" aria-label="Which Bloppit?">
-            <input type="radio" name="bzLevel" id="bzEasy" value="easy"><label for="bzEasy">🍼 Baby</label>
-            <input type="radio" name="bzLevel" id="bzMed" value="medium" checked><label for="bzMed">🌊 River</label>
-            <input type="radio" name="bzLevel" id="bzHard" value="hard"><label for="bzHard">🏆 Champion</label>
+            <input type="radio" name="bzLevel" id="bzEasy" value="easy"><label for="bzEasy">🦦 Pup</label>
+            <input type="radio" name="bzLevel" id="bzMed" value="medium" checked><label for="bzMed">💦 Splash</label>
+            <input type="radio" name="bzLevel" id="bzHard" value="hard"><label for="bzHard">🏆 Legend</label>
           </div>
           <p class="note" id="bzLevelNote" style="margin:6px 0 0"></p></div>
         <button class="primary" id="bzCpuGo" type="button">Start the race</button>
@@ -4048,7 +4048,7 @@ function mpShowBlitzEnd(){
   $('#mpEndNew').textContent=mp.cpu?'Race again':'New game';
   $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span><b>${fmtTime(p.ms)}</b> · ${p.own} brick${p.own===1?'':'s'} · ${p.miss} miss${p.miss===1?'':'es'}</span></div>`).join('');
   const extra=s.moves.filter(m=>m.p<0).length;
-  $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and Bloppit put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, and every miss added 3 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Champion Bloppit. Amazing!':' Ready to race a faster Bloppit?'):' Practice makes perfect. Try again?'):''}`;
+  $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and Bloppit put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, and every miss added 3 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Legend Bloppit. Amazing!':' Ready to race a faster Bloppit?'):' Practice makes perfect. Try again?'):''}`;
   $('#mpEndDlg').showModal();
 }
 $('#mpEndClose').onclick=()=>{ $('#mpEndDlg').close(); setTab('build'); };
@@ -4122,11 +4122,11 @@ $('#mpToBlitz').onclick=e=>{ e.preventDefault(); setTab('blitz'); };
 /* ---------- Bloppit Blitz: race the computer (everything happens on this device) ---------- */
 // The race uses the same rules and screens as a Blitz room, but the "room" lives here instead of on the server.
 // Bloppit takes a few seconds to find and place each brick, and sometimes misses (+3 seconds, like everyone).
-// Three Bloppits to race, like chess bots: each one is quicker and makes fewer mistakes than the last.
+// Three Bloppits to race: each one is quicker and makes fewer mistakes than the last.
 const CPU_LEVELS={
-  easy:  {name:'Baby Bloppit',    ms:[7000,11000],miss:.25,turn:[1,2],note:'Baby Bloppit is still learning. He takes his time and makes plenty of mistakes. Great for a first race.'},
-  medium:{name:'River Bloppit',   ms:[4500,7500], miss:.12,turn:[1,3],note:'River Bloppit is quick, but not perfect. A fair race.'},
-  hard:  {name:'Champion Bloppit',ms:[2500,4500], miss:.05,turn:[2,3],note:'Champion Bloppit is fast and hardly ever misses. Can you beat him?'}};
+  easy:  {name:'Pup Bloppit',     ms:[7000,11000],miss:.25,turn:[1,2],note:'Pup Bloppit is still learning. He takes his time and makes plenty of mistakes. Great for a first race.'},
+  medium:{name:'Splash Bloppit',   ms:[4500,7500], miss:.12,turn:[1,3],note:'Splash Bloppit is quick, but not perfect. A fair race.'},
+  hard:  {name:'Legend Bloppit',  ms:[2500,4500], miss:.05,turn:[2,3],note:'Legend Bloppit is fast and hardly ever misses. Can you beat him?'}};
 const CPU_IDS={easy:'#bzEasy',medium:'#bzMed',hard:'#bzHard'}, COUNTDOWN_MS=3000;
 let cpu=null;
 const rndIn=(a,b)=>a+Math.random()*(b-a);
