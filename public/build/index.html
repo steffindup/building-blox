@@ -575,7 +575,8 @@ body.chat-on{padding-bottom:96px}
 .gm-levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:14px}
 .lvl{position:relative;display:grid;gap:4px;justify-items:center;text-align:center;padding:12px 10px 12px;border:2px solid var(--line);border-radius:14px;background:var(--page);cursor:pointer;font:inherit;color:inherit}
 .lvl:hover:not(:disabled){border-color:var(--ink);transform:translateY(-2px)}
-.lvl:disabled{cursor:default;opacity:.55}
+.lvl:disabled{cursor:default;background:color-mix(in srgb,var(--line) 35%,var(--page))}
+.lvl:disabled>*{opacity:.5}
 .lvl.next{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
 .lvl .ln{position:absolute;left:10px;top:10px;width:30px;height:30px;border-radius:8px;background:var(--hi);color:#14202C;display:grid;place-items:center;font-family:var(--f-display);font-size:17px}
 .lvl:disabled .ln{background:var(--line);color:var(--muted)}
@@ -795,8 +796,8 @@ body.on-home .tabs{visibility:hidden}
 .trail-pick button#trBrain[aria-selected="true"]{background:#0055BF}
 .trail-pick button:focus-visible{outline:3px solid var(--hi)}
 .gm-mt{font-size:17px}
-.gm-levels.river{position:relative;padding:14px;border-radius:18px;background:linear-gradient(180deg,color-mix(in srgb,#5A93DB 22%,var(--page)),color-mix(in srgb,#36AEBF 16%,var(--page)));
-  background-image:radial-gradient(ellipse 22px 6px at 30px 12px,rgba(255,255,255,.55) 98%,transparent),radial-gradient(ellipse 16px 5px at 110px 44px,rgba(255,255,255,.4) 98%,transparent),linear-gradient(180deg,color-mix(in srgb,#5A93DB 22%,var(--page)),color-mix(in srgb,#36AEBF 16%,var(--page)));background-size:160px 64px,160px 64px,auto}
+.gm-levels.river{position:relative;padding:14px;border-radius:18px;background:linear-gradient(180deg,color-mix(in srgb,#5A93DB 12%,var(--page)),color-mix(in srgb,#36AEBF 9%,var(--page)));
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='90'%3E%3Cpath d='M10 30q15-8 30 0t30 0M140 72q15-8 30 0t30 0' fill='none' stroke='%2336AEBF' stroke-opacity='.22' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"),linear-gradient(180deg,color-mix(in srgb,#5A93DB 12%,var(--page)),color-mix(in srgb,#36AEBF 9%,var(--page)));background-size:240px 90px,auto}
 .brain .gm-levels.river{background-image:radial-gradient(circle 3px at 20px 14px,rgba(0,85,191,.25) 98%,transparent),linear-gradient(180deg,color-mix(in srgb,#0055BF 14%,var(--page)),color-mix(in srgb,#AC78BA 14%,var(--page)));background-size:40px 40px,auto}
 .bz-puzzle{display:grid;gap:8px}
 .bzp{display:flex;align-items:center;gap:12px;background:var(--bg);border-radius:12px;padding:8px}
@@ -1097,14 +1098,14 @@ body.on-home .tabs{visibility:hidden}
     <div id="boxBook"></div>
     <div class="box-main">
       <div class="pick-bar">
-        <button class="tool" id="multiBtn" type="button" aria-pressed="false">Pick several</button>
+        <button class="tool" id="multiBtn" type="button" aria-pressed="false" title="Pick several bricks, then take them all at once (S)">Pick several <kbd>S</kbd></button>
         <span class="note" id="pickNote">Tap a brick to pick it up.</span>
         <button class="ghost" id="pickClear" type="button" hidden>Clear</button>
-        <button class="primary sm" id="takeBtn" type="button" hidden>Take 0 to build</button>
+        <button class="primary sm" id="takeBtn" type="button" title="Take the picked bricks to the build (Enter)" hidden>Take 0 to build</button>
         <button class="ghost" id="boxBack" type="button">Back to build</button>
       </div>
       <div class="board-wrap" id="boardWrap"><div class="board" id="board"></div><div class="piece-tip" id="pieceTip" role="status" aria-live="polite" hidden></div></div>
-      <p class="note">Drag bricks into segments to sort them. Drag a segment by its name bar to move it with its bricks, and by the corner to resize. To pick several: turn on Pick several, Shift-click, drag a box around them with the mouse, or use All on a segment.</p>
+      <p class="note">Drag bricks into segments to sort them. Drag a segment by its name bar to move it with its bricks, and by the corner to resize. To pick several: turn on Pick several (or press S), Shift-click, drag a box around them with the mouse, or use All on a segment. Press Enter to take them to the build.</p>
     </div>
   </div>
 </section>
@@ -2809,7 +2810,13 @@ $('#putAll').onclick=putAllBack;
 $('#restart').onclick=()=>{ if($('#restart').dataset.confirm){ delete $('#restart').dataset.confirm; $('#restart').textContent='Start over'; resetBuild(); }
   else { $('#restart').dataset.confirm='1'; $('#restart').textContent='Tap again to clear your build'; setTimeout(()=>{delete $('#restart').dataset.confirm; $('#restart').textContent='Start over';},3000);} };
 document.addEventListener('keydown',e=>{ if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
-  if(tab==='box'){ if(e.key==='Escape'){ if(chosen.size){chosen.clear(); updatePick();} else setTab('build'); e.preventDefault(); } return; }
+  if(tab==='box'){
+    if(e.key==='Escape'){ if(chosen.size){chosen.clear(); updatePick();} else setTab('build'); e.preventDefault(); }
+    else if(/^(INPUT|TEXTAREA)$/.test(e.target.tagName)||e.metaKey||e.ctrlKey||e.altKey) return;
+    else if(e.key==='s'||e.key==='S'){ multi=!multi; updatePick(); e.preventDefault(); }          // S: pick several on/off
+    else if(e.key==='Enter'&&chosen.size&&!/BUTTON|A/.test(e.target.tagName)){ takeChosen(); e.preventDefault(); }  // Enter: take them
+    else if(e.key==='p'||e.key==='P'){ setTab('build'); e.preventDefault(); }                   // P again: back to the build
+    return; }
   if(tab!=='build') return;
   if(e.key==='r'||e.key==='R'){rotateSel(); e.preventDefault();}
   const mv={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'}[e.key];
