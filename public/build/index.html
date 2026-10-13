@@ -545,6 +545,16 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .chat-foot[data-kind="err"]{color:var(--accent);font-weight:700}
 .gate-num{font-family:var(--f-body);font-weight:800;font-size:22px;line-height:1.3;text-align:center;margin:12px 0}
 .appfoot{text-align:center;font-size:13px;margin:8px 0 24px}
+/* Puzzle page: once you've picked a puzzle, a ribbon pins under the top bar (or to the very top while the bar is tucked away) */
+.usebar{position:fixed;left:50%;transform:translateX(-50%);top:calc(var(--topH,64px) + 8px);z-index:19;width:min(640px,calc(100% - 24px));display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:8px 8px 8px 10px;border-radius:16px;background:var(--ink);color:var(--page);box-shadow:0 8px 24px rgba(0,0,0,.25);transition:top .22s ease,opacity .2s}
+.top.tucked ~ main .usebar{top:calc(env(safe-area-inset-top,0px) + 8px)}
+.usebar[hidden]{display:none}
+.usebar img{width:44px;height:44px;border-radius:10px;background:#fff;object-fit:contain;padding:2px}
+.ub-txt{display:grid;min-width:0;line-height:1.2}
+.ub-txt b{font-family:var(--f-display);font-weight:400;font-size:19px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ub-txt span{font-size:13px;font-weight:600;opacity:.75}
+.usebar .primary{white-space:nowrap}
+body.ub-on #view-create{padding-top:64px}
 body:not(.on-home) .appfoot{display:none}  /* the privacy policy link lives on the menu */
 .appfoot a{color:var(--muted)}
 body.chat-on{padding-bottom:96px}
@@ -979,6 +989,7 @@ li.hd-empty::before{content:none!important}
 </div>
 </section>
 <section class="view" id="view-create" hidden>
+  <div class="usebar" id="useBar" hidden><img id="ubImg" alt=""><span class="ub-txt"><b id="ubName"></b><span id="ubInfo"></span></span><button class="primary sm" id="ubGo" type="button">Use this puzzle ▶</button></div>
   <div class="panel">
     <div class="pick-banner" id="pickBanner" hidden><span>⚡ Choose a puzzle for <b>Blitz</b>, then tap <b>Use this puzzle</b>. Big puzzles are made smaller (up to 30 bricks) so the race stays quick.</span><button class="ghost" id="pickCancel" type="button">Back to Blitz</button></div>
     <label class="drop" id="drop">
@@ -2201,6 +2212,7 @@ function refreshHint(){
 }
 const escapeHTML=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function addFiles(files){
+  usePicked=true;
   const imgs=[...files].filter(f=>f.type.startsWith('image/')); if(!imgs.length) return;
   photos=photos.filter(p=>!p.sample);
   let left=imgs.length;
@@ -2245,7 +2257,7 @@ function rebuild(){
   if(!m||m.error){ model=null; for(const im of instanced){modelGroup.remove(im);} instanced=[]; showStep(0);
     $('#stats').innerHTML=''; $('#partsList').innerHTML=''; $('#startBuild').disabled=true;
     if(m&&m.error) showMsg(m.error,'err'); return; }
-  model=m; modelVersion++; buildStep=0;
+  model=m; modelVersion++; buildStep=0; syncUseBar();
   TILES=m.kind==='picture';
   buildScene(m);
   showStep(m.steps.length,false);
@@ -2378,7 +2390,22 @@ let leaveArmed=false;
 function showToastLeave(){ const t=$('#tab-create'); const o=t.innerHTML; t.innerHTML='<span class="n">🧱</span>Tap again to leave'; setTimeout(()=>{t.innerHTML=o;},3000); }
 // Choosing a puzzle for Blitz: the Puzzle page shows a banner, and its main button hands the puzzle back to Blitz
 var pickFor=null;
-function syncPick(){ const on=pickFor==='blitz'&&tab==='create'; $('#pickBanner').hidden=!on; $('#startBuild').textContent=on?'Use this puzzle ⚡':'Start building'; }
+function syncPick(){ const on=pickFor==='blitz'&&tab==='create'; $('#pickBanner').hidden=!on; $('#startBuild').textContent=on?'Use this puzzle ⚡':'Start building'; syncUseBar(); }
+function syncUseBar(){
+  const bar=$('#useBar'); if(!bar) return;
+  const on=tab==='create'&&usePicked&&!!model&&!startSeen;
+  bar.hidden=!on; document.body.classList.toggle('ub-on',tab==='create'&&usePicked&&!!model);
+  if(!on) return;
+  $('#ubName').textContent=niceName(model.name||'Your puzzle');
+  $('#ubInfo').textContent=`${model.bricks.length} ${PIECE()}${model.bricks.length===1?'':'s'} · ${model.steps.length} steps`;
+  const p0=photos.find(p=>p.view==='front')||photos[0]; if(p0&&p0.d){ if(!p0.png) p0.png=p0.d.canvas.toDataURL('image/png'); $('#ubImg').src=p0.png; }
+  $('#ubGo').textContent=pickFor==='blitz'?'Use this puzzle ⚡':'Use this puzzle ▶';
+}
+$('#ubGo').onclick=()=>$('#startBuild').click();
+// Hide the ribbon while the page's own Start building button is on screen
+if('IntersectionObserver' in window) new IntersectionObserver(es=>{ startSeen=es[0].isIntersecting; syncUseBar(); }).observe($('#startBuild'));
+{ const top=$('.top'), setH=()=>document.documentElement.style.setProperty('--topH',top.offsetHeight+'px'); setH();
+  if('ResizeObserver' in window) new ResizeObserver(setH).observe(top); }
 function pickPuzzle(forWhat,src){
   if(game) endGame();
   if(mp) mpLeave();
@@ -2427,6 +2454,7 @@ let floor=null, layerGrid=null, cur=0, viewPage=0, follow=true, placed=new Set()
 // Until the first step is finished, `cands` holds every position the model could be in that fits what's been placed so far.
 let off=null, cands=[], placedN=0;
 let reveal=null;  // the finish animation, while it plays (see playReveal)
+var usePicked=false, startSeen=false;  // the "Use this puzzle" ribbon: shown once a puzzle has been picked, while Start building is off screen
 const stepImgs=new Map(); let stepImgsFor=-1;
 const tMat=(hex,op)=>new THREE.MeshStandardMaterial({color:new THREE.Color(hex).convertSRGBToLinear(),roughness:.4,transparent:true,opacity:op,depthWrite:false});
 const ghostMats=new Map(), hintMats=new Map();
@@ -3912,7 +3940,7 @@ function renderSamples(){
     return `<button class="smp" type="button" data-i="${i}" aria-pressed="${on&&i===sampleIdx}"><img alt="" src="${s.thumb}" loading="lazy">${s.name}${s.two?'<small>2 photos</small>':''}</button>`; }).join('');
 }
 $('#libThemes').addEventListener('click',e=>{ const b=e.target.closest('[data-t]'); if(!b) return; libTheme=b.dataset.t; renderSamples(); $('#samples').scrollTop=0; });
-$('#samples').addEventListener('click',e=>{ const b=e.target.closest('.smp'); if(b) loadSample(+b.dataset.i); });
+$('#samples').addEventListener('click',e=>{ const b=e.target.closest('.smp'); if(b){ loadSample(+b.dataset.i); usePicked=true; } });
 
 /* ---------- Play the Game ---------- */
 function levelArt(kind){
