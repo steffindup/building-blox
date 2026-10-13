@@ -991,7 +991,7 @@ li.hd-empty::before{content:none!important}
 <section class="view" id="view-create" hidden>
   <div class="usebar" id="useBar" hidden><img id="ubImg" alt=""><span class="ub-txt"><b id="ubName"></b><span id="ubInfo"></span></span><button class="primary sm" id="ubGo" type="button">Use this puzzle ▶</button></div>
   <div class="panel">
-    <div class="pick-banner" id="pickBanner" hidden><span>⚡ Choose a puzzle for <b>Blitz</b>, then tap <b>Use this puzzle</b>. Big puzzles are made smaller (up to 30 bricks) so the race stays quick.</span><button class="ghost" id="pickCancel" type="button">Back to Blitz</button></div>
+    <div class="pick-banner" id="pickBanner" hidden><span id="pickTxt"></span><button class="ghost" id="pickCancel" type="button">Back</button></div>
     <label class="drop" id="drop">
       <input type="file" id="file" accept="image/*" multiple>
       <strong>Add photos</strong>
@@ -1232,7 +1232,11 @@ li.hd-empty::before{content:none!important}
     <div class="card" id="mpStartCard">
       <h2>Start a game</h2>
       <div class="field"><label for="mpName1">Your name</label><input class="inp" id="mpName1" maxlength="16" autocomplete="nickname" placeholder="e.g. Elmar"></div>
-      <div class="field"><label for="mpModel">What to build</label><select class="inp" id="mpModel"></select></div>
+      <div class="field bz-puzzle"><span class="lbl">Puzzle</span>
+        <div class="bzp"><img id="mpPzThumb" alt=""><div class="bzp-txt"><b id="mpPzName"></b><span class="note" id="mpPzInfo"></span></div></div>
+        <div class="bzp-btns"><button class="ghost" id="mpLib" type="button">📚 Library</button><button class="ghost" id="mpPhoto" type="button">📸 Your photo</button>
+          <label class="sr" for="mpModel">Or a ready-made puzzle</label><select class="inp" id="mpModel"></select></div>
+      </div>
       <div class="field" id="mpPerTurnField"><span class="lbl">Bricks per turn</span>
         <div class="seg seg4" role="radiogroup" aria-label="Bricks per turn">
           <input type="radio" name="perTurn" id="pt1" value="1"><label for="pt1">1</label>
@@ -2390,7 +2394,11 @@ let leaveArmed=false;
 function showToastLeave(){ const t=$('#tab-create'); const o=t.innerHTML; t.innerHTML='<span class="n">🧱</span>Tap again to leave'; setTimeout(()=>{t.innerHTML=o;},3000); }
 // Choosing a puzzle for Blitz: the Puzzle page shows a banner, and its main button hands the puzzle back to Blitz
 var pickFor=null;
-function syncPick(){ const on=pickFor==='blitz'&&tab==='create'; $('#pickBanner').hidden=!on; $('#startBuild').textContent=on?'Use this puzzle ⚡':'Start building'; syncUseBar(); }
+function syncPick(){ const on=!!pickFor&&pickFor!=='quick'&&tab==='create'; $('#pickBanner').hidden=!on;
+  if(on) $('#pickTxt').innerHTML=pickFor==='blitz'?'⚡ Choose a puzzle for <b>Blitz</b>, then tap <b>Use this puzzle</b>. Big puzzles are made smaller (up to 30 bricks) so the race stays quick.'
+    :'🧩 Choose a puzzle to <b>build together</b>, then tap <b>Use this puzzle</b>.';
+  $('#pickCancel').textContent=pickFor==='blitz'?'Back to Blitz':'Back to Together';
+  $('#startBuild').textContent=on?(pickFor==='blitz'?'Use this puzzle ⚡':'Use this puzzle 🧩'):'Start building'; syncUseBar(); }
 function syncUseBar(){
   const bar=$('#useBar'); if(!bar) return;
   const on=tab==='create'&&usePicked&&!!model&&!startSeen;
@@ -2399,7 +2407,7 @@ function syncUseBar(){
   $('#ubName').textContent=niceName(model.name||'Your puzzle');
   $('#ubInfo').textContent=`${model.bricks.length} ${PIECE()}${model.bricks.length===1?'':'s'} · ${model.steps.length} steps`;
   const p0=photos.find(p=>p.view==='front')||photos[0]; if(p0&&p0.d){ if(!p0.png) p0.png=p0.d.canvas.toDataURL('image/png'); $('#ubImg').src=p0.png; }
-  $('#ubGo').textContent=pickFor==='blitz'?'Use this puzzle ⚡':'Use this puzzle ▶';
+  $('#ubGo').textContent=pickFor==='blitz'?'Use this puzzle ⚡':pickFor==='together'?'Use this puzzle 🧩':'Use this puzzle ▶';
 }
 $('#ubGo').onclick=()=>$('#startBuild').click();
 // Hide the ribbon while the page's own Start building button is on screen
@@ -2414,8 +2422,11 @@ function pickPuzzle(forWhat,src){
   else if(src==='top') scrollTo(0,0);
   else requestAnimationFrame(()=>$('#library').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}));
 }
-$('#pickCancel').onclick=()=>{ pickFor=null; setTab('blitz'); };
-$('#startBuild').onclick=()=>{ if(pickFor==='blitz'&&model){ pickFor=null; blitzFit(); bzKeepPick=true; mpModelOptions('#bzModel'); $('#bzModel').value='cur'; setTab('blitz'); return; } setTab('build'); };
+$('#pickCancel').onclick=()=>{ const f=pickFor; pickFor=null; if(f==='together') setTab('mp','start'); else setTab('blitz'); };
+$('#startBuild').onclick=()=>{
+  if(pickFor==='blitz'&&model){ pickFor=null; blitzFit(); bzKeepPick=true; mpModelOptions('#bzModel'); $('#bzModel').value='cur'; setTab('blitz'); return; }
+  if(pickFor==='together'&&model){ pickFor=null; mpKeepPick=true; setTab('mp','start'); return; }
+  setTab('build'); };
 // Blitz races should be quick: a puzzle picked for Blitz is shrunk to at most BLITZ_MAX bricks,
 // and opening Blitz without a small puzzle ready starts on a ready-made race (BLITZ_PICKS) instead.
 const BLITZ_MAX=30;
@@ -4011,8 +4022,21 @@ const BLITZ_PICKS=[
  {name:'Rocket',    sample:'Rocket',      size:8,  shape:'puffed', thick:.7, colors:5, diff:'Hard'},
 ];
 const BLITZ_DEFAULT_PICK='p3';  // the Duck
+// Ready-made Build together puzzles: bigger than races, since everyone takes turns
+const TOGETHER_PICKS=[
+ {name:'Duck',      art:'duck',         size:7,  shape:'flat',   thick:1,  colors:3, diff:'Small'},
+ {name:'Toadstool', sample:'Toadstool', size:8,  shape:'flat',   thick:1,  colors:4, diff:'Small'},
+ {name:'Rocket',    sample:'Rocket',    size:10, shape:'puffed', thick:.7, colors:5, diff:'Small'},
+ {name:'Palm tree', sample:'Palm tree', size:12, shape:'puffed', thick:.9, colors:5, diff:'Medium'},
+ {name:'Fish',      sample:'Fish',      size:7,  shape:'puffed', thick:.6, colors:4, diff:'Medium'},
+ {name:'Cat',       sample:'Cat',       size:10, shape:'puffed', thick:.8, colors:5, diff:'Medium'},
+ {name:'Robot',     sample:'Robot',     size:14, shape:'puffed', thick:1,  colors:7, diff:'Big'},
+ {name:'Dog',       sample:'Dog',       size:12, shape:'puffed', thick:1,  colors:6, diff:'Big'},
+ {name:'Cottage',   sample:'Cottage',   size:11, shape:'puffed', thick:1,  colors:8, diff:'Big'},
+];
+const TOGETHER_DEFAULT_PICK='t1';  // the Toadstool
 // A puzzle choice from a dropdown: 'p3' is a Blitz race puzzle, a plain number is a Trail level (Build together)
-const pickOf=v=>/^p\d+$/.test(v)?BLITZ_PICKS[+v.slice(1)]:OTTER_LEVELS[+v];
+const pickOf=v=>/^p\d+$/.test(v)?BLITZ_PICKS[+v.slice(1)]:/^t\d+$/.test(v)?TOGETHER_PICKS[+v.slice(1)]:OTTER_LEVELS[+v];
 const GAME_KEY='building-blox-game-v1';
 let game=null, autoBusy=false, freeS=null, winLvl=0;
 // Two trails, each with its own levels: Otter Trail (just building) and Brain Trail (math puzzles lock some pages).
@@ -4620,7 +4644,8 @@ function mpModelOptions(id='#mpModel'){
     // Blitz: a few ready-made races, easy to hard
     sel_.innerHTML=mine+['Easy','Medium','Hard'].map(d=>`<optgroup label="${d}">`+BLITZ_PICKS.map((L,i)=>L.diff!==d?'':
       `<option value="p${i}">${L.name} (${levelCount(L)} bricks)</option>`).join('')+'</optgroup>').join('');
-  } else sel_.innerHTML=mine+OTTER_LEVELS.map((L,i)=>`<option value="${i}">Trail level ${i+1}: ${L.name}${L.count?` (${L.count} bricks)`:''}</option>`).join('');
+  } else sel_.innerHTML=mine+['Small','Medium','Big'].map(d=>`<optgroup label="${d}">`+TOGETHER_PICKS.map((L,i)=>L.diff!==d?'':
+      `<option value="t${i}">${L.name} (${levelCount(L)} bricks)</option>`).join('')+'</optgroup>').join('');
   if(keep) sel_.value=keep;
 }
 async function renderMpView(){
@@ -4649,6 +4674,9 @@ async function renderMpView(){
     const nm=mpName();
     if(bzv){ mpModelOptions('#bzModel'); if(nm&&!$('#bzName').value) $('#bzName').value=nm; bzLevelNote(); renderBzPuzzle(); if(ok) renderChMine(); return; }
     mpModelOptions();
+    // Start on a ready-made puzzle, unless you've just picked your own (or had one picked already)
+    if(mpKeepPick){ mpKeepPick=false; $('#mpModel').value='cur'; } else if(!usePicked&&$('#mpModel').value==='cur') $('#mpModel').value=TOGETHER_DEFAULT_PICK;
+    renderMpPuzzle();
     if(nm){ if(!$('#mpName1').value) $('#mpName1').value=nm; if(!$('#mpName2').value) $('#mpName2').value=nm; }
     const st=mpStored(), note=$('#mpRejoinNote');
     note.hidden=!st;
@@ -4707,7 +4735,7 @@ function mpUseModel(choice){
 async function mpMake(mode,name,choice){
   const title=mpUseModel(choice);
   const perTurn=mode==='blitz'?3:+document.querySelector('input[name=perTurn]:checked').value;
-  const level=choice!=='cur'?+choice:(game?game.lvl:null);
+  const level=/^\d+$/.test(choice)?+choice:(game?game.lvl:null);
   const res=await mpApi('POST',{action:'create',name,mode,perTurn,nBricks:model.bricks.length,title,level,
     model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
   mpRememberName(name);
@@ -4921,10 +4949,23 @@ function renderBzPuzzle(){
   if(v==='cur'||v===''){ const p0=photos[0];
     name=model?niceName(model.name):'No puzzle yet'; info=model?`${model.bricks.length} bricks`:'Pick one from the library or use a photo';
     if(p0) thumb=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png')); }
-  else { const L=pickOf(v); name=L.name; thumb=levelThumb(L); info=L.diff?`${L.diff} race · ${levelCount(L)} bricks`:`Trail level ${+v+1}${L.count?` · ${L.count} bricks`:''}`; }
+  else { const L=pickOf(v); name=L.name; thumb=levelThumb(L); info=`${L.diff} race · ${levelCount(L)} bricks`; }
   $('#bzPzName').textContent=name; $('#bzPzInfo').textContent=info; const im=$('#bzThumb'); im.hidden=!thumb; if(thumb) im.src=thumb;
 }
 $('#bzModel').addEventListener('change',renderBzPuzzle);
+/* ---------- Build together: the puzzle you're building ---------- */
+function renderMpPuzzle(){
+  const v=$('#mpModel').value; let name, thumb='', info;
+  if(v==='cur'||v===''){ const p0=photos.find(p=>p.view==='front')||photos[0];
+    name=model?niceName(model.name):'No puzzle yet'; info=model?`Your puzzle · ${model.bricks.length} bricks`:'Pick one from the library or use a photo';
+    if(p0&&p0.d) thumb=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png')); }
+  else { const L=pickOf(v); name=L.name; thumb=levelThumb(L); info=`${L.diff} · ${levelCount(L)} bricks`; }
+  $('#mpPzName').textContent=name; $('#mpPzInfo').textContent=info; const im=$('#mpPzThumb'); im.hidden=!thumb; if(thumb) im.src=thumb;
+}
+$('#mpModel').addEventListener('change',renderMpPuzzle);
+$('#mpLib').onclick=()=>pickPuzzle('together','library');
+$('#mpPhoto').onclick=()=>pickPuzzle('together','photo');
+var mpKeepPick=false;
 $('#bzLib').onclick=()=>pickPuzzle('blitz','library');
 $('#bzPhoto').onclick=()=>pickPuzzle('blitz','photo');
 
