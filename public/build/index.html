@@ -215,6 +215,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 @media (max-width:900px){.bookpane{position:static}}
 .bp-head,.bp-nav{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .bp-nav .now{border-color:var(--accent);color:var(--accent);font-weight:700}
+.bp-nav .final{font-weight:700}
 .page.live{outline:3px solid transparent;transition:outline-color .2s}
 .page.live.ahead{outline-color:var(--line)}
 /* Bloppit, the building buddy: stands in the corner of the build stage, points at the model, holds up the bricks the step still needs, cheers when a step clicks into place */
@@ -1003,6 +1004,7 @@ body.on-home .tabs{visibility:hidden}
       </article>
       <div class="bp-nav">
         <button class="ghost" id="bpPrev" type="button">&lsaquo; Page</button>
+        <button class="ghost final" id="bpFinal" type="button" title="Jump to the finished model (Back to my step brings you back)">See final build</button>
         <button class="ghost now" id="bpNow" type="button" hidden>Back to my step</button>
         <button class="ghost" id="bpNext" type="button">Page &rsaquo;</button>
       </div>
@@ -2453,6 +2455,7 @@ function showPage(k){
   $('#bpPage').textContent=`Page ${k+1} of ${N+1}`;
   $('#bpPrev').disabled=k===0; $('#bpNext').disabled=k>=N;
   $('#bpNow').hidden=k===Math.min(cur,N);
+  $('#bpFinal').hidden=k>=N;
   $('#bpCard').classList.toggle('ahead',k!==Math.min(cur,N));
   buddyUpdate();
 }
@@ -2569,6 +2572,7 @@ function buddyUpdate(){
 $('#bpPrev').onclick=()=>{follow=false; showPage(viewPage-1);};
 $('#bpNext').onclick=()=>{follow=false; showPage(viewPage+1);};
 $('#bpNow').onclick=()=>{follow=true; showPage(Math.min(cur,model.steps.length));};
+$('#bpFinal').onclick=()=>{ if(!model) return; follow=false; showPage(model.steps.length); };
 
 function setActive(p){
   held=p||null;
@@ -3391,12 +3395,13 @@ const SAMPLES=[
    x.strokeStyle='#C91A09'; x.lineWidth=5; for(const s of [-1,1]){ x.beginPath(); x.moveTo(120+s*14,84); x.lineTo(120+s*20,62); x.stroke(); x.dot(120+s*20,58,9,'#F4F4F4'); x.dot(120+s*20,58,5,'#1B2A34'); }
    return [['front',c]]; }},
  {name:'Jellyfish',theme:'Ocean',make(){ const [c,x]=sheet(180,230,'#ffffff');
-   x.strokeStyle='#AC78BA'; x.lineWidth=7; x.lineCap='round';
-   for(const a of [46,66,90,114,134]){ x.beginPath(); x.moveTo(a,96); x.bezierCurveTo(a-14,140,a+14,170,a,214); x.stroke(); }
-   x.fillStyle='#E4ADC8'; x.beginPath(); x.ellipse(90,96,62,64,0,Math.PI,0); x.closePath(); x.fill();
-   for(let k=0;k<6;k++) x.dot(38+k*21,98,11,'#E4ADC8');
-   x.oval(70,62,12,8,-.5,'#F4F4F4');
-   x.dot(72,86,5,'#1B2A34'); x.dot(108,86,5,'#1B2A34');
+   // Thick tentacles with gentle curves, so they stay whole as bricks
+   x.strokeStyle='#AC78BA'; x.lineWidth=13; x.lineCap='round';
+   for(const [a,s] of [[48,1],[76,-1],[104,1],[132,-1]]){ x.beginPath(); x.moveTo(a,96); x.bezierCurveTo(a+10*s,140,a-10*s,170,a,212); x.stroke(); }
+   x.fillStyle='#E4ADC8'; x.beginPath(); x.ellipse(90,96,64,66,0,Math.PI,0); x.closePath(); x.fill();
+   for(let k=0;k<6;k++) x.dot(36+k*21.6,98,12,'#E4ADC8');
+   x.oval(66,58,13,9,-.5,'#F4F4F4');
+   x.dot(70,84,8,'#1B2A34'); x.dot(110,84,8,'#1B2A34');
    return [['front',c]]; }},
  {name:'Astronaut',theme:'Space',make(){ const [c,x]=sheet(200,240,'#14213D');
    x.fillStyle='#A0A5A9'; x.rr(54,96,92,84,20);
@@ -3450,18 +3455,31 @@ const SAMPLES=[
    for(const a of [64,196]){ x.dot(a,150,44,'#1B2A34'); x.dot(a,150,20,'#6C6E68'); x.dot(a,150,8,'#A0A5A9');
      x.strokeStyle='#3A3A3A'; x.lineWidth=5; for(let k=0;k<12;k++){ const t=k/12*Math.PI*2; x.beginPath(); x.moveTo(a+Math.cos(t)*36,150+Math.sin(t)*36); x.lineTo(a+Math.cos(t)*44,150+Math.sin(t)*44); x.stroke(); } }
    return [['front',c]]; }},
- {name:'Plane',theme:'Vehicles',make(){ const [c,x]=sheet(270,170,'#BFE3F5');
-   x.poly([[206,80],[250,30],[262,30],[244,84]],'#C91A09');
-   x.strokeStyle='#1B2A34'; x.lineWidth=6; x.beginPath(); x.moveTo(62,104); x.lineTo(62,128); x.moveTo(150,104); x.lineTo(150,128); x.stroke();
-   x.dot(62,134,9,'#1B2A34'); x.dot(144,134,9,'#1B2A34'); x.dot(158,134,9,'#1B2A34');
-   x.poly([[104,96],[150,94],[186,120],[166,122]],'#A0A5A9');
-   x.fillStyle='#6C6E68'; x.rr(112,104,40,16,7);
+ {name:'Plane',theme:'Vehicles',make(){
+   // Side-on, plus a nose-on view so the wings, engines and tailplane stick out sideways in 3D. The model is
+   // carved where both pictures agree, so the wing sits just under the belly and the tailplane on top of the fin
+   // (at heights the body doesn't reach). Both pictures share the same top (y=30) and bottom (y=147).
+   const [c,x]=sheet(270,170,'#BFE3F5');
+   // Wheels only under the wing: anything else at wing height would grow a wing of its own
+   x.strokeStyle='#1B2A34'; x.lineWidth=10; x.beginPath(); x.moveTo(118,110); x.lineTo(118,132); x.moveTo(170,110); x.lineTo(170,132); x.stroke();
+   x.dot(118,138,9,'#1B2A34'); x.dot(170,138,9,'#1B2A34');
+   x.poly([[206,80],[250,36],[262,36],[244,84]],'#C91A09');
+   x.fillStyle='#A0A5A9'; x.fillRect(236,30,30,6);
    x.fillStyle='#F4F4F4'; x.beginPath(); x.moveTo(18,96); x.quadraticCurveTo(20,70,60,68); x.lineTo(236,70); x.quadraticCurveTo(258,72,258,86); x.lineTo(236,100); x.lineTo(60,108); x.quadraticCurveTo(22,108,18,96); x.closePath(); x.fill();
-   x.poly([[118,82],[168,82],[136,30],[114,30]],'#A0A5A9');
+   x.poly([[100,107],[160,104],[188,110],[188,117],[100,117]],'#A0A5A9');
+   x.fillStyle='#6C6E68'; x.rr(126,117,36,12,6);
    x.fillStyle='#0055BF'; for(let k=0;k<8;k++) x.rr(70+k*18,78,10,10,3);
    x.poly([[22,84],[48,74],[48,90]],'#1B2A34');
-   x.fillStyle='#C91A09'; x.fillRect(60,96,176,5);
-   return [['front',c]]; }},
+   x.fillStyle='#C91A09'; x.fillRect(60,92,176,4);
+   const [n,y]=sheet(230,170,'#BFE3F5');
+   y.strokeStyle='#1B2A34'; y.lineWidth=10; y.beginPath(); y.moveTo(97,104); y.lineTo(97,132); y.moveTo(133,104); y.lineTo(133,132); y.stroke();
+   y.dot(97,138,9,'#1B2A34'); y.dot(133,138,9,'#1B2A34');
+   y.fillStyle='#C91A09'; y.fillRect(110,36,10,48);
+   y.fillStyle='#A0A5A9'; y.fillRect(80,30,70,6);
+   y.fillStyle='#A0A5A9'; y.rr(10,110,210,7,3);
+   y.dot(66,123,6,'#6C6E68'); y.dot(164,123,6,'#6C6E68');
+   y.dot(115,88,20,'#F4F4F4');
+   return [['front',c],['side',n]]; }},
  {name:'Helicopter',theme:'Vehicles',make(){ const [c,x]=sheet(270,190,'#BFE3F5');
    x.fillStyle='#1B2A34'; x.fillRect(20,22,230,7); x.fillRect(128,26,8,22);
    x.fillStyle='#F2CD37'; x.fillRect(150,90,94,16); x.poly([[240,66],[256,66],[256,106],[244,106]],'#F2CD37');
