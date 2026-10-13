@@ -747,6 +747,17 @@ body.on-home .tabs{visibility:hidden}
 .hm-cont .bar{grid-column:1;height:10px;border-radius:99px;background:rgba(20,32,44,.18);overflow:hidden}
 .hm-cont .bar i{display:block;height:100%;background:#14202C;border-radius:99px}
 .hm-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px 14px;padding-top:8px}
+/* Trails, Blitz and Together: a hub page with the two games, then each game on a page of its own */
+.hub-grid{max-width:720px;margin-top:6px}
+.crumb{justify-self:start;border:0;background:none;color:var(--muted);font:inherit;font-weight:700;font-size:14px;padding:2px 0;cursor:pointer}
+.crumb:hover{color:var(--ink)}
+.view[data-sub="hub"]>:not(.hub){display:none!important}
+.view:not([data-sub="hub"])>.hub{display:none}
+.view.in-room>.crumb{display:none}
+#view-blitz[data-sub="cpu"]:not(.in-room) #bzFriendCard,#view-blitz[data-sub="cpu"] #chPreview,#view-blitz[data-sub="cpu"] #chMine{display:none!important}
+#view-blitz[data-sub="friend"]:not(.in-room) #bzCpuCard{display:none!important}
+#view-blitz:not([data-sub="hub"]):not(.in-room) .mp-forms,#view-mp:not([data-sub="hub"]):not(.in-room) .mp-forms{grid-template-columns:1fr}
+#view-mp[data-sub="start"] #mpJoinCard,#view-mp[data-sub="join"] #mpStartCard{display:none!important}
 .hm-tile{--c:#D2352B;position:relative;display:grid;align-content:end;justify-items:start;gap:2px;min-height:132px;padding:16px;border:0;border-radius:14px;background:var(--c);color:#fff;text-align:left;cursor:pointer;font:inherit;box-shadow:inset 0 -6px 0 rgba(0,0,0,.2);transition:transform .12s ease}
 .hm-tile::before{content:"";position:absolute;left:16px;right:16px;top:-9px;height:12px;border-radius:5px 5px 0 0;background:radial-gradient(circle at 13px 7px,var(--c) 9px,transparent 9.5px) 0 0/34px 12px repeat-x;filter:brightness(1.08)}
 .hm-tile:active{transform:translateY(3px);box-shadow:inset 0 -3px 0 rgba(0,0,0,.2)}
@@ -865,14 +876,12 @@ body.on-home .tabs{visibility:hidden}
       <path d="M100 120 q0 8 -9 10 M100 120 q0 8 9 10" stroke="#3A2418" stroke-width="4" stroke-linecap="round" fill="none"/>
     </svg>
     <span>Bloppit</span></a></h1>
-  <nav class="tabs" role="tablist" aria-label="Steps">
-    <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n">1</span>Puzzle</button>
-    <button class="tab" role="tab" id="tab-build" data-tab="build" aria-selected="false"><span class="n">2</span>Build</button>
-    <button class="tab" role="tab" id="tab-booklet" data-tab="booklet" aria-selected="false"><span class="n">3</span>Booklet</button>
+  <nav class="tabs" role="tablist" aria-label="Games">
+    <button class="tab play4" role="tab" id="tab-daily" data-tab="daily" aria-selected="false"><span class="n">📅</span>Daily</button>
+    <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n">🧱</span>Quick Build</button>
     <button class="tab play" role="tab" id="tab-game" data-tab="game" aria-selected="false"><span class="n">🦦</span>Trails</button>
     <button class="tab play3" role="tab" id="tab-blitz" data-tab="blitz" aria-selected="false"><span class="n">⚡</span>Blitz</button>
-    <button class="tab play4" role="tab" id="tab-daily" data-tab="daily" aria-selected="false"><span class="n">📅</span>Daily</button>
-    <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n">⇄</span>Together</button>
+    <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n">🧩</span>Together</button>
   </nav>
   <button class="who" id="whoBtn" type="button" title="Who’s playing? Tap to switch player"><span class="av" id="whoAv"></span><span class="who-txt"><span class="tag">Playing</span><b id="whoName"></b></span></button>
 </header>
@@ -933,7 +942,6 @@ body.on-home .tabs{visibility:hidden}
     <button class="hm-tile t-join" data-go="code" type="button"><span class="ic" aria-hidden="true">🔑</span><b>Join a game</b><span>Got a code? Type it in to play</span></button>
   </div>
 </div>
-  <p class="hm-foot"><a href="/">About Bloppit</a></p>
 </section>
 <section class="view" id="view-create" hidden>
   <div class="panel">
@@ -1130,10 +1138,18 @@ body.on-home .tabs{visibility:hidden}
 </section>
 
 <section class="view" id="view-game" hidden>
-  <div class="trail-pick" role="tablist" aria-label="Which trail">
+  <div class="hub" data-hub>
+    <div class="gm-head"><div><h2>🦦 Trails</h2><p class="note">Climb 14 levels, from tiny to tricky. Each trail has its own puzzles and keeps its own points.</p></div></div>
+    <div class="hm-grid hub-grid">
+      <button class="hm-tile t-game" data-sub="otter" type="button"><span class="ic" aria-hidden="true">🦦</span><b>Otter Trail</b><span id="hubOtterSub">Levels from tiny to tricky</span></button>
+      <button class="hm-tile t-brain" data-sub="brain" type="button"><span class="ic" aria-hidden="true">🧠</span><b>Brain Trail</b><span id="hubBrainSub">Levels with math puzzles</span></button>
+    </div>
+  </div>
+  <div class="trail-pick" role="tablist" aria-label="Which trail" hidden>
     <button type="button" role="tab" data-trail="otter" id="trOtter">🦦 Otter Trail</button>
     <button type="button" role="tab" data-trail="brain" id="trBrain">🧠 Brain Trail</button>
   </div>
+  <button class="crumb" data-up type="button">‹ Trails</button>
   <div class="gm-head">
     <div><h2 id="gmTitle">Otter Trail</h2><p class="note" id="gmIntro">Swim up the river one level at a time. The levels start tiny and get bigger, so they’re worth more points.</p></div>
     <div class="gm-total"><span class="tag" id="gmWho">Your points</span><b id="gmTotal">0</b><span class="note" id="gmDone"></span><button class="ghost sm-link" id="gmSwitch" type="button">Switch player</button></div>
@@ -1156,10 +1172,18 @@ body.on-home .tabs{visibility:hidden}
 </section>
 
 <section class="view" id="view-mp" hidden>
-  <div class="gm-head"><div><h2>🧩 Build together</h2><p class="note">Build one puzzle together on different phones, tablets or computers. Take turns placing a few bricks each. Everyone sees the model grow live. Friends join with the room code, and you let them in.</p></div></div>
+  <div class="hub" data-hub>
+    <div class="gm-head"><div><h2>🧩 Together</h2><p class="note">Play with friends on different phones, tablets or computers.</p></div></div>
+    <div class="hm-grid hub-grid">
+      <button class="hm-tile t-together" data-sub="start" type="button"><span class="ic" aria-hidden="true">🧩</span><b>Build together</b><span>One puzzle, taking turns with friends</span></button>
+      <button class="hm-tile t-join" data-sub="join" type="button"><span class="ic" aria-hidden="true">🔑</span><b>Join a game</b><span>Got a code? Type it in to play</span></button>
+    </div>
+  </div>
+  <button class="crumb" data-up type="button">‹ Together</button>
+  <div class="gm-head sub-head"><div><h2 id="mpHeadT">🧩 Build together</h2><p class="note">Build one puzzle together on different phones, tablets or computers. Take turns placing a few bricks each. Everyone sees the model grow live. Friends join with the room code, and you let them in.</p></div></div>
   <div class="mp-off" id="mpOff" hidden></div>
   <div class="mp-forms" id="mpForms">
-    <div class="card">
+    <div class="card" id="mpStartCard">
       <h2>Start a game</h2>
       <div class="field"><label for="mpName1">Your name</label><input class="inp" id="mpName1" maxlength="16" autocomplete="nickname" placeholder="e.g. Elmar"></div>
       <div class="field"><label for="mpModel">What to build</label><select class="inp" id="mpModel"></select></div>
@@ -1172,7 +1196,7 @@ body.on-home .tabs{visibility:hidden}
         </div></div>
       <button class="primary" id="mpCreate" type="button">Make a room</button>
     </div>
-    <div class="card">
+    <div class="card" id="mpJoinCard">
       <h2>Join a game</h2>
       <div class="field"><label for="mpCodeIn">Room code</label><input class="inp code" id="mpCodeIn" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCDE"></div>
       <div class="field"><label for="mpName2">Your name</label><input class="inp" id="mpName2" maxlength="16" autocomplete="nickname" placeholder="e.g. Stian"></div>
@@ -1189,7 +1213,7 @@ body.on-home .tabs{visibility:hidden}
   </div>
   <div class="card mp-room" id="mpRoom" hidden>
     <div class="mp-room-top">
-      <div><span class="tag">Room code</span><div class="mp-bigcode" id="mpBigCode"></div><p class="note">Others open <b id="mpSite"></b>, tap <b id="mpWhere">⇄ Together</b> and enter this code.</p></div>
+      <div><span class="tag">Room code</span><div class="mp-bigcode" id="mpBigCode"></div><p class="note">Others open <b id="mpSite"></b>, tap <b id="mpWhere">🧩 Together</b> and enter this code.</p></div>
       <div class="mp-share"><button class="ghost" id="mpCopy" type="button">Copy invite link</button></div>
     </div>
     <div class="mp-room-model"><img id="mpThumb" alt=""><div><strong id="mpModelName"></strong><div class="note" id="mpModelInfo"></div></div></div>
@@ -1209,7 +1233,15 @@ body.on-home .tabs{visibility:hidden}
 </section>
 
 <section class="view" id="view-blitz" hidden>
-  <div class="gm-head"><div><h2>⚡ Bloppit Blitz</h2><p class="note">A race against the clock. A hint adds 5 seconds, and each brick in the wrong spot adds 1 second. Shortest time wins.</p></div></div>
+  <div class="hub" data-hub>
+    <div class="gm-head"><div><h2>⚡ Bloppit Blitz</h2><p class="note">A head-to-head brick race. Fastest clean build wins.</p></div></div>
+    <div class="hm-grid hub-grid">
+      <button class="hm-tile t-blitz" data-sub="cpu" type="button"><span class="ic" aria-hidden="true">🏁</span><b>vs Bloppit</b><span>Race Pup, Splash or Legend Bloppit</span></button>
+      <button class="hm-tile t-friend" data-sub="friend" type="button"><span class="ic" aria-hidden="true">🤝</span><b>vs Friend</b><span>Send a challenge code, or race live</span></button>
+    </div>
+  </div>
+  <button class="crumb" data-up type="button">‹ Blitz</button>
+  <div class="gm-head sub-head"><div><h2 id="bzHeadT">⚡ Bloppit Blitz</h2><p class="note">A race against the clock. A hint adds 5 seconds, and each brick in the wrong spot adds 1 second. Shortest time wins.</p></div></div>
   <div id="bzForms" style="display:grid;gap:16px">
     <div class="card bz-setup">
       <div class="field"><label for="bzName">Your name</label><input class="inp" id="bzName" maxlength="16" autocomplete="nickname" placeholder="e.g. Elmar"></div>
@@ -2209,10 +2241,33 @@ function rebuild(){
 // Photo file names from phones are often codes (IMG_1234, 4D15-9BE2-…); show a friendly name instead
 function niceName(n){ const b=String(n||'').replace(/\.[^.]+$/,'').trim();
   return !b||/^(img|image|photo|pxl|dsc|screenshot)[\s_-]?\d/i.test(b)||/^[0-9a-f]{4,}(-[0-9a-f]{2,})+/i.test(b)||/^\d+$/.test(b)?'photo':b; }
-function setTab(t){
+// Trails, Blitz and Together each have a hub page ('hub') and a page per game. setTab(t) keeps the page the
+// section was last on; setTab(t,'hub') or setTab('blitz','cpu') picks one.
+var subOf={game:'hub',blitz:'hub',mp:'hub'};
+const SUB_OK={game:['hub','otter','brain'],blitz:['hub','cpu','friend'],mp:['hub','start','join']};
+// Which top-bar game a page belongs to (the build screen belongs to whatever you're playing)
+function sectionOf(t){
+  if(t==='build'||t==='box'||t==='booklet'){ if(game) return 'game'; if(mp) return trialOn&&trialOn()&&mp.state&&/Daily/.test(mp.state.label||'')?'daily':mpHomeTab(); return 'create'; }
+  return t==='home'?'':t;
+}
+function syncSub(t){
+  if(!SUB_OK[t]) return;
+  let s=subOf[t];
+  if(mp||mpw){ if(t==='blitz') s=mp&&mp.cpu?'cpu':'friend'; if(t==='mp') s='start'; }
+  if(t==='game'&&s!=='hub') setTrail(s);
+  const v=$('#view-'+t); v.dataset.sub=s; v.classList.toggle('in-room',!!(mp||mpw));
+  if(t==='blitz') $('#bzHeadT').textContent=s==='cpu'?'⚡ Blitz vs Bloppit':s==='friend'?'⚡ Blitz vs Friend':'⚡ Bloppit Blitz';
+  if(t==='mp') $('#mpHeadT').textContent=s==='join'?'🔑 Join a game':'🧩 Build together';
+  if(t==='game'&&s==='hub'){ const st=playerStats(players.cur);
+    $('#hubOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
+    $('#hubBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} new levels, with math puzzles`; }
+}
+function setTab(t,sub){
   if(t!=='build'&&reveal) endReveal(true);
+  if(sub&&SUB_OK[t]&&SUB_OK[t].includes(sub)) subOf[t]=sub;
   tab=t;
-  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===(t==='box'?'build':t)));
+  { const sec=sectionOf(t); document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===sec)); }
+  syncSub(t);
   { const sel=document.querySelector('.tab[aria-selected="true"]'), bar=$('.tabs'); if(sel&&bar.scrollWidth>bar.clientWidth) bar.scrollTo({left:sel.offsetLeft-bar.offsetLeft-24,behavior:'smooth'}); }
   ['home','create','build','box','booklet','game','mp','blitz','daily'].forEach(v=>$('#view-'+v).hidden=v!==t);
   if(t!=='create'&&pickFor) pickFor=null;
@@ -2242,41 +2297,53 @@ function setTab(t){
 /* Browser Back and Forward on the website: each page gets its own address (/build/ is the menu, /build/#blitz, #daily, …),
    so Back goes to the page before instead of leaving Bloppit. The App Store app has no Back button, so it skips this. */
 const NAV_HASH={home:'',create:'photos',build:'build',box:'build',booklet:'booklet',game:'trails',mp:'together',blitz:'blitz',daily:'daily'};
+const SUB_HASH={game:{hub:'trails',otter:'otter',brain:'brain'},blitz:{hub:'blitz',cpu:'blitz-bloppit',friend:'blitz-friend'},mp:{hub:'together',start:'together-start',join:'together-join'}};
+const navHash=t=>SUB_HASH[t]?SUB_HASH[t][subOf[t]]:NAV_HASH[t];
+// Address → [page, part]
+function hashPage(h){
+  for(const [t,m] of Object.entries(SUB_HASH)) for(const [s,hh] of Object.entries(m)) if(h===hh) return [t,s];
+  const t={photos:'create',create:'create',quick:'create',build:'build',booklet:'booklet',game:['game','hub'],'play-together':['mp','hub'],daily:'daily'}[h];
+  return Array.isArray(t)?t:[t||'home'];
+}
 var navReady=false, navFromBack=false;  // var: setTab runs during start-up, before this line
 function navNote(t){
   if(APP||!navReady||navFromBack) return;
-  const h=NAV_HASH[t]; if(h===undefined) return;
+  const h=navHash(t); if(h===undefined) return;
   const want=h?'#'+h:'', cur=location.hash==='#home'?'':location.hash;
   if(cur===want) return;
   try{ history.pushState({bloppit:t},'',location.pathname+location.search+want); }catch(e){}
 }
 function navStart(){
   if(APP) return;
-  const h=NAV_HASH[tab]; try{ history.replaceState({bloppit:tab},'',location.pathname+location.search+(h?'#'+h:'')); }catch(e){}
+  const h=navHash(tab); try{ history.replaceState({bloppit:tab},'',location.pathname+location.search+(h?'#'+h:'')); }catch(e){}
   navReady=true;
 }
 window.addEventListener('popstate',()=>{
   if(APP||!navReady) return;
   const h=location.hash.slice(1).toLowerCase();
-  let t={photos:'create',create:'create',build:'build',booklet:'booklet',game:'game',trails:'game',otter:'game',brain:'game',
-    together:'mp','play-together':'mp',blitz:'blitz',daily:'daily'}[h]||'home';
+  let [t,sub]=hashPage(h);
   if((t==='build'||t==='booklet')&&!model) t='home';
   // Going back to the puzzle page would leave a room or a level; show the menu instead (it offers "Continue").
   if(t==='create'&&(mp||game)) t='home';
   if(t==='game'&&mp) t=mpHomeTab();
   document.querySelectorAll('dialog[open]').forEach(d=>{ try{ d.close(); }catch(e){} });
-  navFromBack=true; try{ if(t!==tab) setTab(t); } finally{ navFromBack=false; }
+  navFromBack=true; try{ if(t!==tab||(sub&&sub!==subOf[t])) setTab(t,sub); } finally{ navFromBack=false; }
   // If we ended up somewhere other than the address says, fix the address (without adding a history step).
-  const want=NAV_HASH[tab]?'#'+NAV_HASH[tab]:'';
+  const want=navHash(tab)?'#'+navHash(tab):'';
   if((location.hash==='#home'?'':location.hash)!==want) try{ history.replaceState({bloppit:tab},'',location.pathname+location.search+want); }catch(e){}
 });
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
-  if(b.dataset.tab==='create'&&mp){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus(`You’re in ${mpWhat()}. Tap Puzzle again to leave it.`,'err'); else showToastLeave(); return; } mpLeave(); }
+  if(b.dataset.tab==='create'&&mp){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus(`You’re in ${mpWhat()}. Tap Quick Build again to leave it.`,'err'); else showToastLeave(); return; } mpLeave(); }
   if(b.dataset.tab==='game'&&mp){ setTab(mpHomeTab()); mpMsg(`Leave ${mpWhat()} first to play the levels on your own.`); return; }
-  if(b.dataset.tab==='create'&&game){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus('You’re in a Trail level. Tap Puzzle again to leave it.','err'); else showToastLeave(); return; } endGame(); }
-  if(!['create','game','mp','blitz','daily'].includes(b.dataset.tab)&&!model) return; setTab(b.dataset.tab);}));
+  if(b.dataset.tab==='create'&&game){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus('You’re in a Trail level. Tap Quick Build again to leave it.','err'); else showToastLeave(); return; } endGame(); }
+  setTab(b.dataset.tab,SUB_OK[b.dataset.tab]&&!(mp||mpw)?'hub':undefined);}));
+// Hub tiles and the "‹ Blitz" links
+document.querySelectorAll('.view .hub [data-sub]').forEach(b=>b.addEventListener('click',()=>{ const t=b.closest('.view').id.slice(5);
+  if(t==='game'&&mp){ mpMsg(`Leave ${mpWhat()} first to play the Trails on your own.`); setTab(mpHomeTab()); return; }
+  setTab(t,b.dataset.sub); if(t==='mp'&&b.dataset.sub==='join') requestAnimationFrame(()=>{ const i=$('#mpCodeIn'); if(i) i.focus(); }); }));
+document.querySelectorAll('.view>.crumb[data-up]').forEach(b=>b.addEventListener('click',()=>setTab(b.closest('.view').id.slice(5),'hub')));
 let leaveArmed=false;
-function showToastLeave(){ const t=$('#tab-create'); const o=t.innerHTML; t.innerHTML='<span class="n">1</span>Tap again to leave the level'; setTimeout(()=>{t.innerHTML=o;},3000); }
+function showToastLeave(){ const t=$('#tab-create'); const o=t.innerHTML; t.innerHTML='<span class="n">🧱</span>Tap again to leave'; setTimeout(()=>{t.innerHTML=o;},3000); }
 // Choosing a puzzle for Blitz: the Puzzle page shows a banner, and its main button hands the puzzle back to Blitz
 var pickFor=null;
 function syncPick(){ const on=pickFor==='blitz'&&tab==='create'; $('#pickBanner').hidden=!on; $('#startBuild').textContent=on?'Use this puzzle ⚡':'Start building'; }
@@ -3920,7 +3987,7 @@ function startLevel(i){
   dismissResume();
   photos=levelPhotos(L); setControls(levelSettings(L)); photos.forEach(p=>p.m=computeMask(p.d,S.tol));
   renderPhotos(); clearTimeout(timer); hintOn=false;
-  game={lvl:i,trail,pen:{hint:0,auto:0,miss:0},hintSteps:[]};
+  game={lvl:i,trail,pen:{hint:0,auto:0,miss:0},hintSteps:[]}; subOf.game=trail;
   rebuild();
   const mp_=mathPrefs(); mathAsked=-1;
   if(trail==='brain'&&model) game.math={tier:mathTier(mp_.age,i),locks:mathLocks(i,model.steps.length),solved:[],pts:0,q:{}};
@@ -4050,7 +4117,7 @@ function renderGameMap(){
   const total=Object.values(B).reduce((a,b)=>a+b,0), T=TRAILS[trail];
   $('#view-game').classList.toggle('brain',trail==='brain');
   $('#trOtter').setAttribute('aria-selected',trail==='otter'); $('#trBrain').setAttribute('aria-selected',trail==='brain');
-  $('#gmTitle').textContent=T.name;
+  $('#gmTitle').textContent=`${T.icon} ${T.name}`;
   $('#gmIntro').textContent=trail==='brain'?'A different set of puzzles, with Bloppit’s math puzzles locking some booklet pages. Solve them to keep building and earn bonus points.':'Swim up the river one level at a time. The levels start tiny and get bigger, so they’re worth more points.';
   $('#gmTotal').textContent=total.toLocaleString(); $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} points`; syncMathUI();
   $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} levels done`;
@@ -4481,6 +4548,7 @@ function mpModelOptions(id='#mpModel'){
 async function renderMpView(){
   // The room lobby (waiting, players, start) is shared: it sits on Play together or on Blitz, whichever is showing
   if(mp&&mp.state&&tab!==mpHomeTab()&&(tab==='mp'||tab==='blitz')){ setTab(mpHomeTab()); return; }
+  syncSub(tab);  // joining or leaving a room changes what the page shows
   const bzv=tab==='blitz', view=$(bzv?'#view-blitz':'#view-mp'), sh=$('#mpShared');
   if(sh.parentNode!==view) view.append(sh);
   const F=$(bzv?'#bzForms':'#mpForms');
@@ -4514,7 +4582,7 @@ async function renderMpView(){
   const bz=s.mode==='blitz', cpuOn=!!mp.cpu;
   $('.mp-room-top').hidden=cpuOn; $('#mpVcCard').hidden=cpuOn;
   $('#mpBigCode').textContent=s.code; $('#mpSite').textContent=APP?'bloppit.com/build':location.host+location.pathname.replace(/\/$/,'');
-  $('#mpWhere').textContent=bz?'⚡ Blitz':'⇄ Together';
+  $('#mpWhere').textContent=bz?'⚡ Blitz':'🧩 Together';
   const p0=photos[0]; if(p0) $('#mpThumb').src=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png'));
   $('#mpModelName').textContent=s.title;
   $('#mpModelInfo').innerHTML=s.solo?`<span class="blitz-tag">${escapeHTML(s.label)}</span>${s.nBricks} bricks, all yours. Your clock runs until the last brick is in. A hint adds 5 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
@@ -5353,15 +5421,13 @@ function renderHome(){
 }
 $('#hmCont').onclick=()=>{ if(homeCont) homeCont.go(); };
 function homeGo(where){
-  if(where==='otter'||where==='brain'||where==='game'){ if(where!=='game') setTrail(where); if(mp){ setTab(mpHomeTab()); mpMsg(`Leave ${mpWhat()} first to play the Trails on your own.`); return; } setTab('game'); return; }
+  if(where==='otter'||where==='brain'||where==='game'){ if(mp){ setTab(mpHomeTab()); mpMsg(`Leave ${mpWhat()} first to play the Trails on your own.`); return; } setTab('game',where==='game'?'hub':where); return; }
   if(where==='quick'){ $('#srcDlg').showModal(); return; }
   if(where==='daily'){ setTab('daily'); return; }
-  if(where==='mp'||where==='blitz'){ setTab(where); return; }
-  if(where==='cpu'||where==='friend'||where==='code'){
-    setTab('blitz'); if(mp) return;
-    const card=$(where==='cpu'?'#bzCpuCard':'#bzFriendCard'); card.classList.add('hl'); setTimeout(()=>card.classList.remove('hl'),2200);
-    requestAnimationFrame(()=>{ card.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'}); if(where==='code') $('#bzCodeIn').focus({preventScroll:true}); });
-    return; }
+  if(where==='blitz'){ setTab('blitz',mp?undefined:'hub'); return; }
+  if(where==='mp'){ setTab('mp',mp?undefined:'start'); return; }
+  if(where==='code'){ setTab('mp',mp?undefined:'join'); if(!mp) requestAnimationFrame(()=>{ const i=$('#mpCodeIn'); if(i) i.focus(); }); return; }
+  if(where==='cpu'||where==='friend'){ setTab('blitz',mp?undefined:where); if(!mp) scrollTo(0,0); return; }
   // Photo or library: start something new, so leave a level or room first
   pickPuzzle('quick',where==='photo'?'photo':'library');
 }
@@ -5375,12 +5441,8 @@ function homeRoute(){
   const h=location.hash.slice(1).toLowerCase();
   if(h==='photos'||h==='create') setTab('create');
   else if(h==='library') homeGo('library');
-  else if(h==='game'||h==='trails') setTab('game');
   else if(h==='otter'||h==='brain') homeGo(h);
-  else if(h==='together'||h==='play-together') setTab('mp');
-  else if(h==='blitz') setTab('blitz');
-  else if(h==='daily') setTab('daily');
-  else setTab('home');
+  else { const [t,sub]=hashPage(h); if(t==='build'||t==='booklet'||t==='create') setTab('home'); else setTab(t,sub); }
 }
 { // Launch screen: show it for a moment, then fade to the menu (tap to skip)
   const sp=document.getElementById('splash');
