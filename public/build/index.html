@@ -858,8 +858,6 @@ body.on-home .tabs{visibility:hidden}
 .daily-stats{display:flex;flex-wrap:wrap;gap:8px}
 .daily-stats span{background:var(--bg);border-radius:999px;padding:6px 12px;font-weight:700;font-size:14px}
 .daily-stats b{font-family:var(--f-display);font-weight:400;font-size:17px}
-.srcdlg .src-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 12px;margin:22px 0 14px}
-.srcdlg .hm-tile{min-height:140px}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 
@@ -1325,14 +1323,6 @@ body.on-home .tabs{visibility:hidden}
   <div class="win-rows" id="trRows"></div>
   <p class="win-best" id="trNote"></p>
   <div class="win-btns"><button class="ghost" id="trBook" type="button">📖 Build it for real</button><button class="ghost" id="trShare" type="button" hidden>Share the code</button><button class="ghost" id="trRetry" type="button" hidden>Try sending again</button><button class="primary sm" id="trDone" type="button">Done</button></div>
-</dialog>
-<dialog class="windlg srcdlg" id="srcDlg" aria-labelledby="srcTitle">
-  <h2 id="srcTitle">Pick your puzzle</h2>
-  <div class="src-grid">
-    <button class="hm-tile t-lib" type="button" data-src="library"><span class="ic" aria-hidden="true">📚</span><b>Library</b><span id="srcLibSub">Ready-made puzzles</span></button>
-    <button class="hm-tile t-photo" type="button" data-src="photo"><span class="ic" aria-hidden="true">📸</span><b>Your photo</b><span>Turn a photo into a puzzle</span></button>
-  </div>
-  <div class="win-btns"><button class="ghost" id="srcCancel" type="button">Cancel</button></div>
 </dialog>
 <dialog class="windlg" id="mpEndDlg" aria-label="Game finished">
   <div class="win-stars">🏆</div>
@@ -2352,6 +2342,7 @@ function pickPuzzle(forWhat,src){
   if(mp) mpLeave();
   pickFor=forWhat; setTab('create');
   if(src==='photo'){ scrollTo(0,0); $('#file').click(); }
+  else if(src==='top') scrollTo(0,0);
   else requestAnimationFrame(()=>$('#library').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}));
 }
 $('#pickCancel').onclick=()=>{ pickFor=null; setTab('blitz'); };
@@ -5047,8 +5038,6 @@ $('#dyGo').onclick=async()=>{
 $('#dyBook').onclick=()=>{ const o=dailyPuzzle(dayStr()); if(mp) mpLeave(); if(game) endGame(); dailyLoad(o); setTab('booklet'); };
 
 /* ---------- Quick Build: pick a puzzle source ---------- */
-$('#srcDlg').addEventListener('click',e=>{ const b=e.target.closest('[data-src]'); if(!b) return; $('#srcDlg').close(); pickPuzzle('quick',b.dataset.src); });
-$('#srcCancel').onclick=()=>$('#srcDlg').close();
 
 /* ---------- Letting people in (host) ---------- */
 let knockSeen=new Set();
@@ -5411,7 +5400,6 @@ function renderHome(){
   homeCont=homeContinue(); $('#hmCont').hidden=!homeCont;
   if(homeCont){ $('#hmContT').textContent=homeCont.t; $('#hmContS').textContent=homeCont.s;
     $('#hmContBar').hidden=homeCont.p<0; $('#hmContBar i').style.width=Math.max(4,homeCont.p)+'%'; }
-  $('#srcLibSub').textContent=`${SAMPLES.length} ready-made puzzles`;
   const st=playerStats(players.cur);
   $('#hmOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
   $('#hmBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} new levels, with math puzzles`;
@@ -5422,7 +5410,7 @@ function renderHome(){
 $('#hmCont').onclick=()=>{ if(homeCont) homeCont.go(); };
 function homeGo(where){
   if(where==='otter'||where==='brain'||where==='game'){ if(mp){ setTab(mpHomeTab()); mpMsg(`Leave ${mpWhat()} first to play the Trails on your own.`); return; } setTab('game',where==='game'?'hub':where); return; }
-  if(where==='quick'){ $('#srcDlg').showModal(); return; }
+  if(where==='quick'){ pickPuzzle('quick','top'); return; }  // the puzzle page has both: add a photo at the top, the library below
   if(where==='daily'){ setTab('daily'); return; }
   if(where==='blitz'){ setTab('blitz',mp?undefined:'hub'); return; }
   if(where==='mp'){ setTab('mp',mp?undefined:'start'); return; }
