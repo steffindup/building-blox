@@ -798,7 +798,7 @@ body.on-home .tabs{visibility:hidden}
 .gm-mt{font-size:17px}
 .gm-levels.river{position:relative;padding:14px;border-radius:18px;background:linear-gradient(180deg,color-mix(in srgb,#5A93DB 12%,var(--page)),color-mix(in srgb,#36AEBF 9%,var(--page)));
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='90'%3E%3Cpath d='M10 30q15-8 30 0t30 0M140 72q15-8 30 0t30 0' fill='none' stroke='%2336AEBF' stroke-opacity='.22' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"),linear-gradient(180deg,color-mix(in srgb,#5A93DB 12%,var(--page)),color-mix(in srgb,#36AEBF 9%,var(--page)));background-size:240px 90px,auto}
-.brain .gm-levels.river{background-image:radial-gradient(circle 3px at 20px 14px,rgba(0,85,191,.25) 98%,transparent),linear-gradient(180deg,color-mix(in srgb,#0055BF 14%,var(--page)),color-mix(in srgb,#AC78BA 14%,var(--page)));background-size:40px 40px,auto}
+.brain .gm-levels.river{background-image:radial-gradient(circle 2px at 20px 14px,rgba(0,85,191,.1) 98%,transparent),linear-gradient(180deg,color-mix(in srgb,#0055BF 14%,var(--page)),color-mix(in srgb,#AC78BA 14%,var(--page)));background-size:40px 40px,auto}
 .bz-puzzle{display:grid;gap:8px}
 .bzp{display:flex;align-items:center;gap:12px;background:var(--bg);border-radius:12px;padding:8px}
 .bzp img{width:56px;height:56px;border-radius:10px;background:#fff;object-fit:contain;flex:none}
@@ -2286,7 +2286,7 @@ function blitzDefault(){
   if(bzKeepPick){ bzKeepPick=false; return; }
   const v=$('#bzModel').value;
   if(mp||(v!==''&&v!=='cur')||(model&&model.bricks.length<=BLITZ_MAX)) return;  // keep a Trail level they chose
-  levelCount(LEVELS[BLITZ_DEFAULT_LEVEL]);  // so the brick count shows
+  levelCount(OTTER_LEVELS[BLITZ_DEFAULT_LEVEL]);  // so the brick count shows
   mpModelOptions('#bzModel'); $('#bzModel').value=String(BLITZ_DEFAULT_LEVEL); renderBzPuzzle();
 }
 
@@ -3804,8 +3804,16 @@ function levelArt(kind){
     x.oval(84,82,52,30,0,'#F2CD37'); x.dot(46,44,26,'#F2CD37'); x.poly([[14,44],[30,36],[30,54]],'#FE8A18');
     x.dot(42,38,5,'#1B2A34'); x.oval(92,74,24,12,-.3,'#F8BB3D');
     return [['front',c]]; }
+  if(kind==='star'){ const [c,x]=sheet(120,116,'#ffffff');
+    const pts=[]; for(let k=0;k<10;k++){ const r=k%2?24:56, a=-Math.PI/2+k*Math.PI/5; pts.push([60+r*Math.cos(a),62+r*Math.sin(a)]); }
+    x.poly(pts,'#F2CD37'); return [['front',c]]; }
+  if(kind==='apple'){ const [c,x]=sheet(120,130,'#ffffff');
+    x.fillStyle='#582A12'; x.fillRect(56,10,8,24);
+    x.oval(80,22,18,9,-.5,'#4B9F4A');
+    x.oval(42,78,36,44,0,'#C91A09'); x.oval(78,78,36,44,0,'#C91A09');
+    return [['front',c]]; }
 }
-const LEVELS=[
+const OTTER_LEVELS=[
  {name:'Heart',      art:'heart',  size:6,  shape:'flat',    thick:.5, colors:2,  pts:100},
  {name:'Duck',       art:'duck',   size:7,  shape:'flat',    thick:1,  colors:3,  pts:120},
  {name:'Smiley',     art:'smiley', size:7,  shape:'flat',    thick:.5, colors:2,  pts:150},
@@ -3821,9 +3829,27 @@ const LEVELS=[
  {name:'Cottage',    sample:'Cottage',   size:11, shape:'puffed', thick:1,  colors:8, pts:750},
  {name:'Otter',      sample:'Otter',     size:11, shape:'puffed', thick:1,  colors:8, pts:1000},
 ];
+// Brain Trail has its own puzzles (same climb from tiny to tricky, same points), so the two trails feel different
+const BRAIN_LEVELS=[
+ {name:'Star',          art:'star',              size:7,  shape:'flat',   thick:.5, colors:2, pts:100},
+ {name:'Apple',         art:'apple',             size:9,  shape:'flat',   thick:1,  colors:3, pts:120},
+ {name:'Ice cream',     sample:'Ice cream',      size:13, shape:'flat',   thick:.5, colors:4, pts:150},
+ {name:'Lighthouse',    sample:'Lighthouse',     size:10, shape:'flat',   thick:.5, colors:4, pts:180},
+ {name:'Ghost',         sample:'Ghost',          size:7,  shape:'puffed', thick:.6, colors:3, pts:220},
+ {name:'Bunny',         sample:'Bunny',          size:11, shape:'puffed', thick:.7, colors:4, pts:260},
+ {name:'Penguin',       sample:'Penguin',        size:8,  shape:'puffed', thick:.7, colors:4, pts:300},
+ {name:'Guitar',        sample:'Guitar',         size:14, shape:'puffed', thick:.7, colors:5, pts:350},
+ {name:'Owl',           sample:'Owl',            size:10, shape:'puffed', thick:.9, colors:6, pts:400},
+ {name:'Frog',          sample:'Frog',           size:10, shape:'puffed', thick:1,  colors:6, pts:450},
+ {name:'Crab',          sample:'Crab',           size:14, shape:'puffed', thick:1,  colors:6, pts:500},
+ {name:'Turtle',        sample:'Turtle',         size:11, shape:'puffed', thick:1,  colors:6, pts:600},
+ {name:'Castle',        sample:'Castle',         size:13, shape:'puffed', thick:1,  colors:7, pts:750},
+ {name:'Treasure chest',sample:'Treasure chest', size:13, shape:'puffed', thick:1,  colors:8, pts:1000},
+];
+const levelsOf=tr=>tr==='brain'?BRAIN_LEVELS:OTTER_LEVELS;
 const GAME_KEY='building-blox-game-v1';
 let game=null, autoBusy=false, freeS=null, winLvl=0;
-// Two trails over the same levels: Otter Trail (just building) and Brain Trail (math puzzles lock some pages).
+// Two trails, each with its own levels: Otter Trail (just building) and Brain Trail (math puzzles lock some pages).
 // Each keeps its own scores: Otter Trail in g.best (where the levels have always been saved), Brain Trail in g.bbest.
 const TRAILS={otter:{name:'Otter Trail',icon:'🦦'},brain:{name:'Brain Trail',icon:'🧠'}};
 let trail=(()=>{ try{ return localStorage.getItem('bloppit-trail')==='brain'?'brain':'otter'; }catch(e){ return 'otter'; } })();
@@ -3843,7 +3869,7 @@ function levelCount(L){
   const m=buildModel(); photos=keepP; Object.assign(S,keepS);
   return L.count=m&&m.bricks?m.bricks.length:0;
 }
-const levelScore=()=>{ const L=LEVELS[game.lvl], p=game.pen; return Math.max(Math.round(L.pts*.1), L.pts-p.hint*5-p.auto*10)+(game.math?game.math.pts:0); };
+const levelScore=()=>{ const L=levelsOf(gameTrail())[game.lvl], p=game.pen; return Math.max(Math.round(L.pts*.1), L.pts-p.hint*5-p.auto*10)+(game.math?game.math.pts:0); };
 const starsFor=(sc,L)=>sc>=L.pts*.9?3:sc>=L.pts*.6?2:1;
 const starHTML=n=>'★'.repeat(n)+`<i>${'★'.repeat(3-n)}</i>`;
 function charge(kind,n){
@@ -3857,15 +3883,15 @@ function updateGameBar(){
   $('#hintBtn').textContent=(mp&&mp.state&&mp.state.mode==='blitz')?(mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'):(on||mp)?'Hint (−5)':'Hint';
   $('#autoBtn').textContent=(on||mp)?'Place one for me (−10)':'Place one for me';
   if(!on) return;
-  const L=LEVELS[game.lvl], p=game.pen;
-  $('#gbBadge').textContent=game.lvl+1; $('#gbNum').textContent=`${game.lvl+1} of ${LEVELS.length}`; $('#gbName').textContent=L.name;
+  const LV=levelsOf(gameTrail()), L=LV[game.lvl], p=game.pen;
+  $('#gbBadge').textContent=game.lvl+1; $('#gbNum').textContent=`${game.lvl+1} of ${LV.length}`; $('#gbName').textContent=L.name;
   $('#gbPts').textContent=levelScore(); $('#gbOf').textContent=`of ${L.pts}`;
   const bits=[]; if(p.hint) bits.push(`Hints ${p.hint}× −${p.hint*5}`); if(p.auto) bits.push(`Placed for you ${p.auto}× −${p.auto*10}`);
   if(game.math) bits.push(`Math ${game.math.solved.length} of ${game.math.locks.length} pages${game.math.pts?` +${game.math.pts}`:''}`);
   $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>';
 }
 function startLevel(i){
-  const L=LEVELS[i]; if(!L) return;
+  const L=levelsOf(trail)[i]; if(!L) return;
   if(!game) freeS={...S};
   dismissResume();
   photos=levelPhotos(L); setControls(levelSettings(L)); photos.forEach(p=>p.m=computeMask(p.d,S.tol));
@@ -3884,7 +3910,7 @@ function endGame(){
 }
 function winLevel(){
   if(!game) return;
-  const i=game.lvl, L=LEVELS[i], p=game.pen, sc=levelScore(), st=starsFor(sc,L), tr=gameTrail();
+  const LV=levelsOf(gameTrail()), i=game.lvl, L=LV[i], p=game.pen, sc=levelScore(), st=starsFor(sc,L), tr=gameTrail();
   const g=gameStore(), B=bestOf(g,tr), prev=B[i]||0; if(sc>prev) B[i]=sc; gameStoreSet(g);
   setTrail(tr); winLvl=i;
   $('#winStars').innerHTML=starHTML(st);
@@ -3898,8 +3924,8 @@ function winLevel(){
   $('#winRows').innerHTML=rows.map(([a,b,c])=>`<div class="${c}"><span>${a}</span><span>${b>0?'+':''}${b}</span></div>`).join('')+`<div class="tot"><span>Points</span><span>${sc}</span></div>`;
   const total=Object.values(B).reduce((a,b)=>a+b,0);
   $('#winBest').textContent=(sc>prev&&prev?`New best! (was ${prev}) · `:'')+`${TRAILS[tr].name}: ${total.toLocaleString()} points`;
-  const last=i>=LEVELS.length-1;
-  $('#winNext').textContent=last?'All levels done!':`Level ${i+2}: ${LEVELS[i+1].name}`; $('#winNext').disabled=last;
+  const last=i>=LV.length-1;
+  $('#winNext').textContent=last?'All levels done!':`Level ${i+2}: ${LV[i+1].name}`; $('#winNext').disabled=last;
   game=null; updateGameBar(); storeClear();
   $('#winDlg').showModal();
 }
@@ -3914,10 +3940,10 @@ function renderGameMap(){
   $('#view-game').classList.toggle('brain',trail==='brain');
   $('#trOtter').setAttribute('aria-selected',trail==='otter'); $('#trBrain').setAttribute('aria-selected',trail==='brain');
   $('#gmTitle').textContent=T.name;
-  $('#gmIntro').textContent=trail==='brain'?'The same levels, with Bloppit’s math puzzles locking some booklet pages. Solve them to keep building and earn bonus points.':'Swim up the river one level at a time. The levels start tiny and get bigger, so they’re worth more points.';
+  $('#gmIntro').textContent=trail==='brain'?'A different set of puzzles, with Bloppit’s math puzzles locking some booklet pages. Solve them to keep building and earn bonus points.':'Swim up the river one level at a time. The levels start tiny and get bigger, so they’re worth more points.';
   $('#gmTotal').textContent=total.toLocaleString(); $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} points`; syncMathUI();
-  $('#gmDone').textContent=`${done.length} of ${LEVELS.length} levels done`;
-  $('#gmLevels').innerHTML=LEVELS.map((L,i)=>{
+  $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} levels done`;
+  $('#gmLevels').innerHTML=levelsOf(trail).map((L,i)=>{
     const best=B[i], open=i<=unlocked, cur_=game&&game.lvl===i&&gameTrail()===trail;
     const st=best?starsFor(best,L):0;
     return `<button class="lvl${i===unlocked&&!best?' next':''}" type="button" data-i="${i}" ${open?'':'disabled'}>
@@ -3928,7 +3954,7 @@ function renderGameMap(){
       ${best?`<span class="ls">${starHTML(st)}</span><span class="lb">Best: ${best}</span>`:open?'<span class="lb">Not played yet</span>':`<span class="lb">Finish level ${i} to unlock</span>`}
     </button>`; }).join('');
   // Work out brick counts a few at a time so the map appears straight away
-  let k=0; (function next(){ if(tab!=='game'||k>=LEVELS.length) return; const L=LEVELS[k], el=document.querySelector(`[data-c="${k}"]`); if(el&&!L.count){ levelCount(L); el.textContent=`${L.count} bricks`; } k++; setTimeout(next,0); })();
+  let k=0; (function next(){ if(tab!=='game'||k>=levelsOf(trail).length) return; const L=levelsOf(trail)[k], el=document.querySelector(`[data-c="${k}"]`); if(el&&!L.count){ levelCount(L); el.textContent=`${L.count} bricks`; } k++; setTimeout(next,0); })();
 }
 $('#gmLevels').addEventListener('click',e=>{ const b=e.target.closest('.lvl'); if(!b||b.disabled) return; const i=+b.dataset.i;
   if(game&&game.lvl===i&&gameTrail()===trail&&model&&cur<model.steps.length){ setTab('build'); return; } startLevel(i); });
@@ -4074,7 +4100,7 @@ function renderWhoList(){
       ${p.id===players.cur?'<span class="now-tag">Playing</span>':''}<button class="who-edit" type="button" data-edit="${p.id}" aria-label="Edit ${escapeHTML(p.name)}">Edit</button>
       <span class="av" style="background:${p.color}">${initial(p.name)}</span><b>${escapeHTML(p.name)}</b>
       <span class="meta">${p.age?`Age ${p.age}${p.age===15?'+':''} · `:''}${st.pts.toLocaleString()} points</span>
-      <span class="meta">🦦 ${st.lv} · 🧠 ${st.blv} of ${LEVELS.length} levels</span></div>`; }).join('');
+      <span class="meta">🦦 ${st.lv} · 🧠 ${st.blv} of ${OTTER_LEVELS.length} levels</span></div>`; }).join('');
 }
 let whoEditing=null, whoColor=AV_COLORS[0];
 function whoForm(p){
@@ -4338,7 +4364,7 @@ function mpWaitStop(forget){
 function mpModelOptions(id='#mpModel'){
   const sel_=$(id), keep=sel_.value;
   sel_.innerHTML=`<option value="cur">${model?`Your puzzle: ${escapeHTML(niceName(model.name))} (${model.bricks.length} bricks)`:'Your puzzle'}</option>`+
-    LEVELS.map((L,i)=>`<option value="${i}">Trail level ${i+1}: ${L.name}${L.count?` (${L.count} bricks)`:''}</option>`).join('');
+    OTTER_LEVELS.map((L,i)=>`<option value="${i}">Trail level ${i+1}: ${L.name}${L.count?` (${L.count} bricks)`:''}</option>`).join('');
   if(keep) sel_.value=keep;
 }
 async function renderMpView(){
@@ -4417,9 +4443,9 @@ $('#mpEndBook').onclick=()=>{ $('#mpEndDlg').close(); setTab('booklet'); };
 $('#mpEndNew').onclick=()=>{ $('#mpEndDlg').close(); const to=mpHomeTab(); mpLeave(); setTab(to); };
 // Load what to build: a level, or whatever is on Photos & model now
 function mpUseModel(choice){
-  if(choice!=='cur'){ const L=LEVELS[+choice]; mpEndSolo(); photos=levelPhotos(L); setControls(levelSettings(L)); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild(); }
+  if(choice!=='cur'){ const L=OTTER_LEVELS[+choice]; mpEndSolo(); photos=levelPhotos(L); setControls(levelSettings(L)); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild(); }
   if(!model) throw new Error('Pick something to build first.');
-  return choice!=='cur'?LEVELS[+choice].name:model.name;
+  return choice!=='cur'?OTTER_LEVELS[+choice].name:model.name;
 }
 async function mpMake(mode,name,choice){
   const title=mpUseModel(choice);
@@ -4638,7 +4664,7 @@ function renderBzPuzzle(){
   if(v==='cur'||v===''){ const p0=photos[0];
     name=model?niceName(model.name):'No puzzle yet'; info=model?`${model.bricks.length} bricks`:'Pick one from the library or use a photo';
     if(p0) thumb=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png')); }
-  else { const L=LEVELS[+v]; name=L.name; thumb=levelThumb(L); info=`Trail level ${+v+1}${L.count?` · ${L.count} bricks`:''}`; }
+  else { const L=OTTER_LEVELS[+v]; name=L.name; thumb=levelThumb(L); info=`Trail level ${+v+1}${L.count?` · ${L.count} bricks`:''}`; }
   $('#bzPzName').textContent=name; $('#bzPzInfo').textContent=info; const im=$('#bzThumb'); im.hidden=!thumb; if(thumb) im.src=thumb;
 }
 $('#bzModel').addEventListener('change',renderBzPuzzle);
@@ -5166,7 +5192,7 @@ loadSample(0); setTab('create'); clearTimeout(timer); rebuild(); requestAnimatio
   const o=storeGet();
   if(o&&o.v===1&&(o.placedN>0||o.laidOut)){
     pendingSave=o;
-    $('#resumeTxt').textContent=o.game&&LEVELS[o.game.lvl]?`You’re partway through ${TRAILS[o.game.trail==='brain'?'brain':'otter'].name} level ${o.game.lvl+1} (${LEVELS[o.game.lvl].name}): ${o.placedN} of ${o.nBricks} bricks placed.`:`You have a ${niceName(o.name)} build in progress: ${o.placedN} of ${o.nBricks} bricks placed.`;
+    $('#resumeTxt').textContent=o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`You’re partway through ${TRAILS[o.game.trail==='brain'?'brain':'otter'].name} level ${o.game.lvl+1} (${levelsOf(o.game&&o.game.trail)[o.game.lvl].name}): ${o.placedN} of ${o.nBricks} bricks placed.`:`You have a ${niceName(o.name)} build in progress: ${o.placedN} of ${o.nBricks} bricks placed.`;
     $('#resume').hidden=false;
   } else saveOn=true;
 }
@@ -5189,11 +5215,11 @@ loadSample(0); setTab('create'); clearTimeout(timer); rebuild(); requestAnimatio
 /* ---------- Menu (launch screen → menu → the page for what you picked) ---------- */
 function homeContinue(){
   const bar=(a,b)=>b?Math.round(100*a/b):0;
-  if(game&&model&&LEVELS[game.lvl]) return {t:`Back to ${TRAILS[gameTrail()].name} level ${game.lvl+1}`,s:`${LEVELS[game.lvl].name}: ${placedN} of ${model.bricks.length} bricks placed`,p:bar(placedN,model.bricks.length),go:()=>setTab('build')};
+  if(game&&model&&levelsOf(gameTrail())[game.lvl]) return {t:`Back to ${TRAILS[gameTrail()].name} level ${game.lvl+1}`,s:`${levelsOf(gameTrail())[game.lvl].name}: ${placedN} of ${model.bricks.length} bricks placed`,p:bar(placedN,model.bricks.length),go:()=>setTab('build')};
   if(mp) return {t:mp.cpu?'Back to your race':'Back to your room',s:mp.state&&mp.state.solo?`Your ${mp.state.label} is still going`:mp.cpu?'Your Blitz race against Bloppit is still going':mpBlitz()?'Your Bloppit Blitz game is still going':'Your Play together game is still going',p:-1,go:()=>setTab(mp.state&&mp.state.started?'build':mpHomeTab())};
   if(pendingSave){ const o=pendingSave;
-    return {t:o.game&&LEVELS[o.game.lvl]?`Continue ${TRAILS[o.game.trail==='brain'?'brain':'otter'].name} level ${o.game.lvl+1}`:'Continue building',
-      s:o.game&&LEVELS[o.game.lvl]?`${LEVELS[o.game.lvl].name}: ${o.placedN} of ${o.nBricks} bricks placed`:`Your ${niceName(o.name)}: ${o.placedN} of ${o.nBricks} bricks placed`,
+    return {t:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`Continue ${TRAILS[o.game.trail==='brain'?'brain':'otter'].name} level ${o.game.lvl+1}`:'Continue building',
+      s:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`${levelsOf(o.game&&o.game.trail)[o.game.lvl].name}: ${o.placedN} of ${o.nBricks} bricks placed`:`Your ${niceName(o.name)}: ${o.placedN} of ${o.nBricks} bricks placed`,
       p:bar(o.placedN,o.nBricks),go:()=>$('#resumeGo').click()}; }
   if(model&&placedN>0&&placedN<model.bricks.length) return {t:'Continue building',s:`${placedN} of ${model.bricks.length} bricks placed`,p:bar(placedN,model.bricks.length),go:()=>setTab('build')};
   return null;
@@ -5208,8 +5234,8 @@ function renderHome(){
     $('#hmContBar').hidden=homeCont.p<0; $('#hmContBar i').style.width=Math.max(4,homeCont.p)+'%'; }
   $('#srcLibSub').textContent=`${SAMPLES.length} ready-made puzzles`;
   const st=playerStats(players.cur);
-  $('#hmOtterSub').textContent=st.lv?`${st.lv} of ${LEVELS.length} levels done`:`${LEVELS.length} levels, from tiny to tricky`;
-  $('#hmBrainSub').textContent=st.blv?`${st.blv} of ${LEVELS.length} levels done`:'The levels, with math puzzles';
+  $('#hmOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
+  $('#hmBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} new levels, with math puzzles`;
   try{ const day=dayStr(), o=dailyPuzzle(day), me=dailyStore().days[day], k=dailyStreak();
     $('#hmDailyImg').src=o.thumb; $('#hmDailyT').textContent=me?`${o.name}: done ✓`:`Today: ${o.name}`;
     $('#hmDailyS').textContent=me?`Your time ${fmtTime(me.best)}${me.rank?` · ${ordinal(me.rank)} of ${me.n}`:''}${k?` · ${k} day streak 🔥`:''}`:`${o.n} bricks · everyone races the same puzzle${k?` · ${k} day streak 🔥`:''}`; }catch(e){}

@@ -45,7 +45,7 @@ DAILY BLOPPIT
 
 TRAILS
 • Otter Trail: 14 levels, from a tiny heart to a 364-brick otter
-• Brain Trail: the same levels, with math puzzles that unlock booklet pages, matched to the player's age
+• Brain Trail: 14 different levels, with math puzzles that unlock booklet pages, matched to the player's age
 • Earn points and stars for building without help
 • Separate profiles, so brothers and sisters each keep their own scores
 
