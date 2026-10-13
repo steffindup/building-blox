@@ -1486,6 +1486,15 @@ function computeMask(d,tol){
     border.forEach(visit);
     while(st.length){const i=st.pop(),x=i%w,y=(i-x)/w;
       if(x>0)visit(i-1); if(x<w-1)visit(i+1); if(y>0)visit(i-w); if(y<h-1)visit(i+w);}
+    // Enclosed patches of exactly the background colour (the sky through an arch, a donut's hole) are background too.
+    // Only near-exact matches, and only sizeable patches, so a white belly on a white page stays.
+    { const t3=Math.min(t2,14*14), near=i=>{const a=px[i*4]-br,b=px[i*4+1]-bgc,c=px[i*4+2]-bb;return a*a+b*b+c*c<t3;};
+      const seen=new Uint8Array(n), fg=mask.reduce((a,v)=>a+v,0);
+      for(let i=0;i<n;i++){ if(!mask[i]||seen[i]||!near(i)) continue;
+        const reg=[i]; seen[i]=1;
+        for(let k=0;k<reg.length;k++){ const j=reg[k], x=j%w, y=(j-x)/w;
+          for(const q of [x>0?j-1:-1,x<w-1?j+1:-1,y>0?j-w:-1,y<h-1?j+w:-1]) if(q>=0&&!seen[q]&&mask[q]&&near(q)){ seen[q]=1; reg.push(q); } }
+        if(reg.length>=Math.max(40,fg*.015)) for(const j of reg) mask[j]=0; } }
     // drop specks: keep components at least 3% of the largest
     const lab_=new Int32Array(n).fill(-1), sizes=[];
     for(let i=0;i<n;i++){ if(!mask[i]||lab_[i]>=0) continue;
@@ -1505,16 +1514,24 @@ function computeMask(d,tol){
 }
 function sampleGrid(d,m,Gw,Gh){
   const {w,px}=d,[x0,y0,x1,y1]=m.bbox,bw=x1-x0+1,bh=y1-y0+1;
-  const on=new Uint8Array(Gw*Gh), rgb=new Float32Array(Gw*Gh*3);
+  const on=new Uint8Array(Gw*Gh), rgb=new Float32Array(Gw*Gh*3), binN=new Int32Array(512), binUsed=[];
   for(let gy=0;gy<Gh;gy++){
     const ya=Math.floor(y0+gy*bh/Gh), yb=Math.max(ya+1,Math.floor(y0+(gy+1)*bh/Gh));
     for(let gx=0;gx<Gw;gx++){
       const xa=Math.floor(x0+gx*bw/Gw), xb=Math.max(xa+1,Math.floor(x0+(gx+1)*bw/Gw));
-      let t=0,k=0,r=0,g=0,b=0,ar=0,ag=0,ab=0;
+      let t=0,k=0,r=0,g=0,b=0,ar=0,ag=0,ab=0, top=-1;
       for(let y=ya;y<yb;y++)for(let x=xa;x<xb;x++){const i=x+y*w,p=i*4; t++; ar+=px[p];ag+=px[p+1];ab+=px[p+2];
-        if(m.mask[i]){k++;r+=px[p];g+=px[p+1];b+=px[p+2];}}
+        if(m.mask[i]){k++;r+=px[p];g+=px[p+1];b+=px[p+2];
+          const q=(px[p]>>5)<<6|(px[p+1]>>5)<<3|(px[p+2]>>5); if(!binN[q]++) binUsed.push(q); if(top<0||binN[q]>binN[top]) top=q; }}
       const c=gx+gy*Gw; on[c]=k>0&&k/t>=.5?1:0;
-      if(k){rgb[c*3]=r/k;rgb[c*3+1]=g/k;rgb[c*3+2]=b/k;} else {rgb[c*3]=ar/t;rgb[c*3+1]=ag/t;rgb[c*3+2]=ab/t;}
+      if(k&&binN[top]>=k*.45){
+        // One colour covers most of this stud (a drawing, or a flat patch of a photo): use it, so the line
+        // where red meets blue stays red and blue instead of a row of purple
+        let n2=0; r=g=b=0;
+        for(let y=ya;y<yb;y++)for(let x=xa;x<xb;x++){const i=x+y*w,p=i*4; if(!m.mask[i]||((px[p]>>5)<<6|(px[p+1]>>5)<<3|(px[p+2]>>5))!==top) continue; n2++; r+=px[p];g+=px[p+1];b+=px[p+2];}
+        rgb[c*3]=r/n2;rgb[c*3+1]=g/n2;rgb[c*3+2]=b/n2;
+      } else if(k){rgb[c*3]=r/k;rgb[c*3+1]=g/k;rgb[c*3+2]=b/k;} else {rgb[c*3]=ar/t;rgb[c*3+1]=ag/t;rgb[c*3+2]=ab/t;}
+      for(const q of binUsed) binN[q]=0; binUsed.length=0;
     }
   }
   return {on,rgb,w:Gw,h:Gh};
@@ -1694,6 +1711,45 @@ function buildModel(){
   for(const c of ranked){ if(kept.includes(c)){remap.set(c,c);continue;}
     let best=kept[0],bd=1e9; for(const k of kept){const d=dist2(PLAB[c],PLAB[k]); if(d<bd){bd=d;best=k;}} remap.set(c,best); }
   for(let i=0;i<vox.length;i++){ if(vox[i]<0) continue; vox[i]=vox[i]===1000?GREY:remap.get(vox[i]); }
+
+  // One model, not several. Pieces that came apart (a fin tip, a wingtip, a thin diagonal stick whose cubes only
+  // touch at their corners) are joined to the rest by the shortest bridge of their own colour across the gap,
+  // nearest pieces first, so a diagonal line gets stitched together cube by cube. Nothing needs a post to the
+  // floor. Crumbs of one or two cubes that are more than a couple of studs from everything are dropped.
+  { const N=W*H*D, lab=new Int32Array(N).fill(-1), comps=[];
+    const nb6=v=>{ const x=v%W, z=((v/W)|0)%D, y=(v/(W*D))|0, r=[];
+      if(x>0) r.push(v-1); if(x<W-1) r.push(v+1); if(z>0) r.push(v-W); if(z<D-1) r.push(v+W); if(y>0) r.push(v-W*D); if(y<H-1) r.push(v+W*D); return r; };
+    for(let v=0;v<N;v++){ if(vox[v]<0||lab[v]>=0) continue;
+      const id=comps.length, list=[v]; lab[v]=id;
+      for(let k=0;k<list.length;k++) for(const u of nb6(list[k])) if(vox[u]>=0&&lab[u]<0){ lab[u]=id; list.push(u); }
+      comps.push(list); }
+    if(comps.length>1){
+      let main=0; comps.forEach((c,i)=>{ if(c.length>comps[main].length) main=i; });
+      const inMain=new Uint8Array(N); for(const v of comps[main]) inMain[v]=1;
+      let left=comps.filter((c,i)=>i!==main);
+      const dist=new Int32Array(N), par=new Int32Array(N);
+      for(let round=0;left.length&&round<5000;round++){
+        // Distance from the main model through empty space
+        dist.fill(-1); const q=[];
+        for(let v=0;v<N;v++) if(inMain[v]){ dist[v]=0; q.push(v); }
+        for(let k=0;k<q.length;k++){ const v=q[k]; for(const u of nb6(v)) if(dist[u]<0&&vox[u]<0){ dist[u]=dist[v]+1; par[u]=v; q.push(u); } }
+        // How long a bridge each piece needs, and where it starts
+        const need=left.map(list=>{ let best=1e9, at=-1; for(const v of list) for(const u of nb6(v)) if(vox[u]<0&&dist[u]>0&&dist[u]<best){ best=dist[u]; at=u; } return {best,at}; });
+        const m=Math.min(...need.map(n=>n.best));
+        if(m>2&&left.some(l=>l.length<=2)){ for(const l of left) if(l.length<=2) for(const v of l) vox[v]=-1; left=left.filter(l=>l.length>2); continue; }
+        const still=[];
+        left.forEach((list,k)=>{ const {best,at}=need[k];
+          if(best!==m||at<0){ still.push(list); return; }
+          let col=-1; for(const u of nb6(at)) if(vox[u]>=0&&!inMain[u]&&list.includes(u)){ col=vox[u]; break; }
+          if(col<0) col=vox[list[0]];
+          for(let v=at;v>=0&&!inMain[v];v=par[v]){ vox[v]=col; inMain[v]=1; }
+          for(const v of list) inMain[v]=1; });
+        left=still;
+      }
+      // If a dropped crumb was the lowest thing, settle the model back down onto the table
+      let low=H; for(let v=0;v<N;v++) if(vox[v]>=0){ low=(v/(W*D))|0; break; }
+      if(low>0&&low<H){ for(let y=0;y<H;y++)for(let z=0;z<D;z++)for(let x=0;x<W;x++) vox[vi(x,y,z)]=y+low<H?vox[vi(x,y+low,z)]:-1; }
+    } }
 
   // merge cubes into bricks, layer by layer, alternating direction so layers interlock.
   // Each brick should sit on at least one stud of the layer below, so bricks that do are tried first.
@@ -3396,9 +3452,12 @@ const SAMPLES=[
    return [['front',c]]; }},
  {name:'Plane',theme:'Vehicles',make(){ const [c,x]=sheet(270,170,'#BFE3F5');
    x.poly([[206,80],[250,30],[262,30],[244,84]],'#C91A09');
-   x.poly([[110,92],[160,92],[120,156],[96,156]],'#A0A5A9');
+   x.strokeStyle='#1B2A34'; x.lineWidth=6; x.beginPath(); x.moveTo(62,104); x.lineTo(62,128); x.moveTo(150,104); x.lineTo(150,128); x.stroke();
+   x.dot(62,134,9,'#1B2A34'); x.dot(144,134,9,'#1B2A34'); x.dot(158,134,9,'#1B2A34');
+   x.poly([[104,96],[150,94],[186,120],[166,122]],'#A0A5A9');
+   x.fillStyle='#6C6E68'; x.rr(112,104,40,16,7);
    x.fillStyle='#F4F4F4'; x.beginPath(); x.moveTo(18,96); x.quadraticCurveTo(20,70,60,68); x.lineTo(236,70); x.quadraticCurveTo(258,72,258,86); x.lineTo(236,100); x.lineTo(60,108); x.quadraticCurveTo(22,108,18,96); x.closePath(); x.fill();
-   x.poly([[118,82],[168,82],[136,30],[114,30]],'#E4E4E4');
+   x.poly([[118,82],[168,82],[136,30],[114,30]],'#A0A5A9');
    x.fillStyle='#0055BF'; for(let k=0;k<8;k++) x.rr(70+k*18,78,10,10,3);
    x.poly([[22,84],[48,74],[48,90]],'#1B2A34');
    x.fillStyle='#C91A09'; x.fillRect(60,96,176,5);
@@ -3622,12 +3681,13 @@ const SAMPLES=[
    x.strokeStyle='#F4F4F4'; x.lineWidth=1.5; for(const d of [-6,-2,2,6]){ x.beginPath(); x.moveTo(85+d,20); x.lineTo(85+d,226); x.stroke(); }
    x.oval(70,200,10,20,.4,'#E05A4A');
    return [['front',c]]; }},
- {name:'Drum',theme:'Gaming & music',make(){ const [c,x]=sheet(220,210,'#ffffff');
+ {name:'Drum',theme:'Gaming & music',make(){ const [c,x]=sheet(220,210,'#BFE3F5');
    x.fillStyle='#0055BF'; x.fillRect(30,70,160,110); x.oval(110,180,80,20,0,'#0055BF');
-   x.strokeStyle='#F2CD37'; x.lineWidth=5; for(let k=0;k<7;k++){ const a=36+k*25; x.beginPath(); x.moveTo(a,74); x.lineTo(a+(k%2?-12:12),178); x.stroke(); }
-   x.fillStyle='#F4F4F4'; x.fillRect(30,74,160,10); x.fillRect(30,168,160,10);
-   x.oval(110,70,80,22,0,'#E4E4E4'); x.oval(110,70,70,16,0,'#F4F4F4');
-   x.strokeStyle='#958A73'; x.lineWidth=8; x.lineCap='round';
+   x.strokeStyle='#F2CD37'; x.lineWidth=12; x.lineJoin='round'; x.beginPath(); x.moveTo(40,80);
+   for(let k=1;k<=4;k++) x.lineTo(40+k*35,k%2?172:80); x.stroke();
+   x.fillStyle='#C91A09'; x.fillRect(30,74,160,14); x.fillRect(30,164,160,14);
+   x.oval(110,70,80,22,0,'#C91A09'); x.oval(110,70,70,16,0,'#F4F4F4');
+   x.strokeStyle='#958A73'; x.lineWidth=12; x.lineCap='round';
    x.beginPath(); x.moveTo(52,8); x.lineTo(96,62); x.stroke(); x.beginPath(); x.moveTo(170,8); x.lineTo(126,62); x.stroke();
    x.dot(96,62,7,'#958A73'); x.dot(126,62,7,'#958A73');
    return [['front',c]]; }},
@@ -3653,7 +3713,7 @@ const SAMPLES=[
    x.poly([[124,96],[128,96],[126,104]],'#F4F4F4'); x.poly([[132,96],[136,96],[134,104]],'#F4F4F4');
    return [['front',c]]; }},
  {name:'Longtail',theme:'Bermuda',make(){ const [c,x]=sheet(270,170,'#BFE3F5');
-   x.strokeStyle='#F4F4F4'; x.lineWidth=5; x.lineCap='round'; x.beginPath(); x.moveTo(176,92); x.quadraticCurveTo(220,100,266,130); x.stroke(); x.beginPath(); x.moveTo(176,96); x.quadraticCurveTo(216,110,256,148); x.stroke();
+   x.strokeStyle='#F4F4F4'; x.lineWidth=9; x.lineCap='round'; x.beginPath(); x.moveTo(176,92); x.quadraticCurveTo(220,100,266,130); x.stroke(); x.beginPath(); x.moveTo(176,96); x.quadraticCurveTo(216,110,256,148); x.stroke();
    x.poly([[110,84],[30,24],[70,30],[100,46],[150,76]],'#F4F4F4'); x.poly([[150,84],[226,30],[196,34],[160,58],[120,78]],'#F4F4F4');
    x.poly([[40,30],[70,30],[56,40]],'#1B2A34'); x.poly([[220,34],[196,34],[210,44]],'#1B2A34');
    x.oval(140,92,44,20,-.05,'#F4F4F4'); x.dot(96,86,16,'#F4F4F4');
