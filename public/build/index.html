@@ -2564,6 +2564,27 @@ function placeGhost(px,pz){
   padSync();
 }
 function lock(){ const c=cands[0]; off={x:c.x,z:c.z}; placed=c.used; cands=[]; }
+// Which brick of the model does a brick of this kind at (ax,az) fill? Bricks of the same kind are
+// interchangeable, so it fills ANY unplaced matching spot in the current step, never one particular brick.
+// The model also has no baseplate, so until step 1 is done every placement that fits is kept in `cands`.
+// Used for this device's own bricks and for everyone else's (Blitz, Together, Bloppit), so all agree.
+function fitBrick(c,sx,sz,ax,az){
+  const s=model&&model.steps[cur]; if(!s) return null;
+  const same=b=>b.c===c&&b.sx===sx&&b.sz===sz;
+  let t=null;
+  if(off){
+    t=s.bricks.find(b=>!placed.has(b)&&same(b)&&b.x+off.x===ax&&b.z+off.z===az)||null;
+  } else if(!cands.length){
+    // First brick: it can go anywhere. Every brick of this kind in step 1 is a possible match.
+    const opts=s.bricks.filter(same);
+    if(opts.length){ cands=opts.map(b=>({x:ax-b.x,z:az-b.z,used:new Set([b])})); t=opts[0]; }
+  } else {
+    const keep=[];
+    for(const k of cands){ const b=s.bricks.find(b=>!k.used.has(b)&&same(b)&&b.x+k.x===ax&&b.z+k.z===az); if(b){k.used.add(b); keep.push(k); if(!t) t=b;} }
+    if(keep.length) cands=keep;
+  }
+  return t;
+}
 function tryPlace(){
   if(!sel||!lastAnchor||busy) return;
   if(isLocked(cur)){ setStatus('This page is locked. Solve Bloppit’s math puzzle to open it.','err'); openMath(cur); return; }
@@ -2571,19 +2592,7 @@ function tryPlace(){
   if(mp&&mp.cpu&&Date.now()<mp.state.turnStart){ setStatus('Wait for Go!','err'); return; }
   if(mp&&mp.posting>=mpLeft(mp.state)){ setStatus(mpBlitz()&&(mp.state.players[mp.me].n||0)+mp.posting>=mp.state.quota?'That was your last brick. Wait for the others to finish.':'That was your last brick this turn.','ok'); return; }
   const s=model.steps[cur], {ax,az}=lastAnchor;
-  const same=b=>b.c===sel.c&&b.sx===sel.sx&&b.sz===sel.sz;
-  let t=null;
-  if(off){
-    t=s.bricks.find(b=>!placed.has(b)&&same(b)&&b.x+off.x===ax&&b.z+off.z===az);
-  } else if(!cands.length){
-    // First brick: it can go anywhere. Every brick of this kind in step 1 is a possible match.
-    const opts=s.bricks.filter(same);
-    if(opts.length){ cands=(mp?opts.slice(0,1):opts).map(b=>({x:ax-b.x,z:az-b.z,used:new Set([b])})); t=opts[0]; }
-  } else {
-    const keep=[];
-    for(const c of cands){ const b=s.bricks.find(b=>!c.used.has(b)&&same(b)&&b.x+c.x===ax&&b.z+c.z===az); if(b){c.used.add(b); keep.push(c); if(!t) t=b;} }
-    if(keep.length) cands=keep;
-  }
+  const t=fitBrick(sel.c,sel.sx,sel.sz,ax,az);
   if(t){ if(cands.length===1) lock(); placeBrick(t,ax,az); return; }
   if(mpBlitz()){ const o0=curOff(), u0=usedSet();
     const turn0=sel.sx!==sel.sz&&s.bricks.some(b=>!u0.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o0||Math.abs(b.x+o0.x-ax)<=2&&Math.abs(b.z+o0.z-az)<=2));
@@ -3996,15 +4005,35 @@ function mpScores(s){
 function mpEndSolo(){ if(game){ game=null; freeS=null; } hintOn=false; updateGameBar(); }
 
 // Placing a brick: one placed by anybody (including this device, when the server echoes it back)
+// A move's brick number only says what KIND of brick it was (see mpToken); where it went decides which spot it fills.
 function applyMoveCore(m){
-  const t=model.bricks[m.b]; if(!t||placed.has(t)) return;
-  if(!off){ off={x:m.x-t.x,z:m.z-t.z}; cands=[]; }
-  placed.add(t); placedN++;
-  const ax=t.x+off.x, az=t.z+off.z;
+  const t0=model.bricks[m.b]; if(!t0) return;
+  let t=fitBrick(t0.c,t0.sx,t0.sz,m.x,m.z);
+  if(t&&!off&&cands.length===1) lock();
+  if(!t){
+    // Bloppit filling in the leftover bricks at the end, or a move from an older app: put a brick of
+    // that kind where it belongs.
+    if(!off&&cands.length) lock();
+    if(!off) off={x:m.x-t0.x,z:m.z-t0.z};
+    t=model.bricks.find(b=>!placed.has(b)&&b.c===t0.c&&b.sx===t0.sx&&b.sz===t0.sz)||null;
+    if(!t) return;
+  }
+  if(off) placed.add(t);
+  placedN++;
+  const o=curOff(), ax=t.x+o.x, az=t.z+o.z;
   const ms=new THREE.Mesh(brickGeo(t.sx,t.sz),mat(t.c)); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
   if(!reduceMotion&&tab==='build'){ ms.position.y+=2.2; drops.push({m:ms,ty:t.y*1.2,t0:performance.now()}); }
   placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz});
+  if(!off&&cands.length&&cands[0].used.size>=model.steps[cur].bricks.length) lock();
   while(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))){ cur++; hintOn=false; }
+}
+// The brick number sent for a move. The server only needs it to be one nobody has used yet,
+// so send any unused brick of exactly the same kind; it doesn't have to be the spot it filled.
+function mpToken(t,moves,pending){
+  const taken=new Set(moves.map(m=>m.b)); if(pending) for(const b of pending) taken.add(b);
+  const i=model.bricks.indexOf(t); if(!taken.has(i)) return i;
+  const j=model.bricks.findIndex((b,k)=>!taken.has(k)&&b.c===t.c&&b.sx===t.sx&&b.sz===t.sz);
+  return j>=0?j:i;
 }
 function mpResync(){
   placedGroup.clear(); placedBoxes=[]; placed=new Set(); off=null; cands=[]; placedN=0; cur=0; drops=[]; busy=false;
@@ -4016,7 +4045,8 @@ function mpResync(){
 // Keep this device's parts box matching the bricks nobody has placed yet
 function reconcilePieces(){
   const key=(a,l,c)=>a+'x'+l+'|'+c, need=new Map(), have=new Map();
-  for(const b of model.bricks){ if(placed.has(b)) continue; const k=key(Math.min(b.sx,b.sz),Math.max(b.sx,b.sz),b.c); need.set(k,(need.get(k)||0)+1); }
+  const u=usedSet();
+  for(const b of model.bricks){ if(u.has(b)) continue; const k=key(Math.min(b.sx,b.sz),Math.max(b.sx,b.sz),b.c); need.set(k,(need.get(k)||0)+1); }
   for(const p of pieces){ const k=key(p.a,p.l,p.c); if(!have.has(k)) have.set(k,[]); have.get(k).push(p); }
   let touched=false;
   for(const [k,list] of have){ let extra=list.length-(need.get(k)||0); if(extra<=0) continue;
@@ -4081,7 +4111,7 @@ async function mpPoll(){
 }
 function mpRefresh(){ if(!mp) return; mpApi('GET',null,`?code=${mp.code}`).then(j=>{ mp.ver=0; mpApply(j.state); }).catch(()=>{}); }
 function mpSendMove(t,ax,az,auto){
-  const b=model.bricks.indexOf(t); mp.local.add(b); mp.posting++;
+  const b=mpToken(t,(mp.state&&mp.state.moves)||[],mp.local); mp.local.add(b); mp.posting++;
   mp.chain=(mp.chain||Promise.resolve()).then(()=>mpPost({action:'move',b,x:ax,z:az,auto:!!auto,pen:mp.pen}))
     .then(j=>{ mp.posting--; mpApply(j.state); })
     .catch(e=>{ if(!mp) return; mp.posting--; mp.local.delete(b); setStatus(e.message,'err'); mp.ver=0; mpRefresh(); });
@@ -4386,12 +4416,13 @@ async function cpuApi(method,body,query){
 }
 // Bloppit's next brick: one still needed for the earliest unfinished step
 function cpuPick(){
-  const s=cpu.s, done=new Set(s.moves.map(m=>m.b)), o=off||{x:0,z:0}, idx=new Map(model.bricks.map((b,i)=>[b,i]));
+  const s=cpu.s, o=curOff()||{x:0,z:0}, u=usedSet();
+  if(s.moves.length>=s.nBricks) return null;
   let list=[];
-  for(let k=Math.min(cur,model.steps.length);k<model.steps.length&&!list.length;k++) list=model.steps[k].bricks.filter(b=>!done.has(idx.get(b)));
-  if(!list.length){ const i=model.bricks.findIndex((b,i)=>!done.has(i)); if(i<0) return null; list=[model.bricks[i]]; }
+  for(let k=Math.min(cur,model.steps.length);k<model.steps.length&&!list.length;k++) list=model.steps[k].bricks.filter(b=>!u.has(b));
+  if(!list.length) return null;
   const t=list[Math.floor(Math.random()*list.length)];
-  return {b:idx.get(t),x:t.x+o.x,z:t.z+o.z};
+  return {b:mpToken(t,s.moves),x:t.x+o.x,z:t.z+o.z};
 }
 function cpuKick(){
   const s=cpu&&cpu.s; if(!s||cpu.timer||!s.started||s.finished||s.turn!==1||!mp||!mp.cpu) return;
