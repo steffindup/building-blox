@@ -79,7 +79,7 @@ Bloppit is a brick-building puzzle game for children. No account or login is nee
 To try it quickly: on the menu tap vs Bloppit, type a name and tap Start the race (works offline).
 Challenges: on the Blitz page tap Make a challenge, build the puzzle, and you get a 6-letter code; type that code
 into Got a code? on another device (the website bloppit.com/build works too) to race the same puzzle.
-Daily Bloppit: tap the Daily Bloppit banner on the menu. Only the finishing time is sent, with no name.
+Daily Bloppit: tap the Daily Bloppit banner on the menu. The finishing time and the player's nickname are sent for the day's scoreboard (top 50; letters only, rude words become "Player"; can be turned off so it shows "A player"). Deleted after a week.
 Rooms (Build together, live Blitz): friends join with a 5-letter code and the host lets them in.
 Room chat is typed and filtered (no links, emails, phone numbers or social accounts; rude words hidden). The host can turn on voice chat; each player chooses whether to join it, and audio is never recorded.
 Links out of the app and sharing an invite are behind a parental gate (type a number written in words as digits).
@@ -103,7 +103,7 @@ activity, challenges 30 days after the last player, daily times after a week):
 |---|---|---|---|---|
 | User Content › Photos or Videos (the photos a shared model is made from) | Yes | No | No | App Functionality |
 | User Content › Gameplay Content (bricks placed, scores, Blitz and Daily Bloppit times) | Yes | No | No | App Functionality |
-| User Content › Other User Content (player nickname, chat messages) | Yes | No | No | App Functionality |
+| User Content › Other User Content (player nickname, chat messages, Daily scoreboard name) | Yes | No | No | App Functionality |
 
 Everything else (contact info, identifiers, location, usage data, diagnostics, etc.): **Not collected**.
 

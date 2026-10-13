@@ -801,6 +801,29 @@ body.on-home .tabs{visibility:hidden}
 .hm-daily b{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.1}
 .hm-daily .hd-txt>span:last-child{font-size:14px;font-weight:600;opacity:.9}
 .hm-side,.hm-main{display:grid;gap:18px;align-content:start;min-width:0}
+/* Daily stats under the Daily card on the menu */
+.hm-dstats{display:grid;gap:12px;padding:14px 16px;border-radius:16px;background:var(--page);border:1px solid var(--line)}
+.hd-nums{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hd-nums div{display:grid;justify-items:center;gap:0;padding:8px;border-radius:12px;background:var(--bg)}
+.hd-nums b{font-family:var(--f-display);font-weight:400;font-size:30px;line-height:1.1;color:#008F9B}
+.hd-nums span{font-size:12px;font-weight:700;color:var(--muted)}
+.hd-top ol,.dy-list{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px;counter-reset:r}
+.hd-top li,.dy-list li{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:8px;padding:6px 8px;border-radius:10px;background:var(--bg);font-weight:700;font-size:14px;counter-increment:r}
+.hd-top li::before,.dy-list li::before{content:counter(r);font-family:var(--f-display);font-size:16px;text-align:center;color:var(--muted)}
+.hd-top li:nth-child(1)::before,.dy-list li:nth-child(1)::before{content:"🥇"}
+.hd-top li:nth-child(2)::before,.dy-list li:nth-child(2)::before{content:"🥈"}
+.hd-top li:nth-child(3)::before,.dy-list li:nth-child(3)::before{content:"🥉"}
+.hd-top li span,.dy-list li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hd-top li b,.dy-list li b{font-variant-numeric:tabular-nums}
+li.hd-empty{display:block;color:var(--muted);font-weight:600;background:none;padding:2px 0}
+li.hd-empty::before{content:none!important}
+.dy-list li.me{background:color-mix(in srgb,#008F9B 22%,var(--bg));outline:2px solid #008F9B}
+.hd-link{justify-self:start;border:0;background:none;padding:0;font:inherit;font-weight:800;color:#008F9B;cursor:pointer}
+.hd-link:hover{text-decoration:underline}
+.dy-board{display:grid;gap:8px}
+.dy-board-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.dy-list{max-height:520px;overflow:auto}
+.dy-show{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;flex-wrap:wrap}
 /* Laptops and big tablets: the menu spreads out like a game launcher. Hello, Continue and today's Daily
    on the left; the Solo, Blitz and Together tiles fill the rest of the screen. */
 @media (min-width:1000px){
@@ -921,6 +944,11 @@ body.on-home .tabs{visibility:hidden}
   </div>
   <button class="hm-cont" id="hmCont" type="button" hidden><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span><span class="go" aria-hidden="true">▶</span></button>
   <button class="hm-daily" data-go="daily" type="button"><img id="hmDailyImg" alt=""><span class="hd-txt"><span class="tag">📅 Daily Bloppit</span><b id="hmDailyT">Today’s puzzle</b><span id="hmDailyS">One puzzle, everyone races it</span></span><span class="go" aria-hidden="true">▶</span></button>
+  <div class="hm-dstats" id="hmDstats">
+    <div class="hd-nums"><div><b id="hdStreak">0</b><span>day streak 🔥</span></div><div><b id="hdTotal">0</b><span>Dailies played</span></div></div>
+    <div class="hd-top"><span class="tag">Today’s fastest</span><ol id="hdTop"><li class="hd-empty">Loading…</li></ol></div>
+    <button class="hd-link" id="hdBoard" type="button">See the scoreboard ›</button>
+  </div>
 </div>
 <div class="hm-main">
   <h3 class="hm-sec">Solo</h3>
@@ -1296,7 +1324,12 @@ body.on-home .tabs{visibility:hidden}
       <p class="msg" id="dyMsg" hidden></p>
     </div>
   </div>
-  <p class="note">Only your time is sent to Bloppit, never your name. Times are kept for a week.</p>
+  <div class="card dy-board" id="dyBoardCard">
+    <div class="dy-board-head"><h2>🏆 Today’s scoreboard</h2><span class="note" id="dyBoardN"></span></div>
+    <ol class="dy-list" id="dyBoard"><li class="hd-empty">Loading…</li></ol>
+    <label class="dy-show"><input type="checkbox" id="dyShowName" checked> Show my name on the scoreboard <span class="note" id="dyShowAs"></span></label>
+  </div>
+  <p class="note">Your first try each day counts. Bloppit keeps your time and the name you play as (a first name or nickname; rude words, numbers and links become “Player”), or “A player” if you turn your name off. The scoreboard shows the fastest 50, and each day’s list is deleted after a week.</p>
 </section>
 
 <div class="chat" id="chat" hidden>
@@ -4915,11 +4948,12 @@ async function trialEnd(){
     } else if(info.kind==='daily'){
       const D=dailyStore(), first=!D.days[info.day];
       const prev=D.days[info.day], best=prev?Math.min(prev.best,t):t;
-      D.days[info.day]={...(prev||{}),best,first:prev?prev.first:t,at:Date.now()}; dailyStoreSet(D);
+      D.days[info.day]={...(prev||{}),best,first:prev?prev.first:t,at:Date.now()}; if(first) D.total=dailyTotal()+1; dailyStoreSet(D);
       if(!first){ trialDialog({icon:'📅',title:t<prev.best?'New personal best!':'Nice practice!',rows:missRow+timeRow+`<div><span>Your best today</span><span>${fmtTime(best)}</span></div>`,note:'Only your first try each day counts for the ranking. Come back tomorrow for a new puzzle!'}); return; }
       trialDialog({icon:'📅',title:'Daily Bloppit done!',rows:missRow+timeRow,note:'Checking how everyone else did…'});
       try{
-        const j=await chApi('POST',{action:'daily',day:info.day,ms:r.ms,miss:r.miss,hint:r.hint,nBricks:model.bricks.length});
+        const j=await chApi('POST',{action:'daily',day:info.day,ms:r.ms,miss:r.miss,hint:r.hint,nBricks:model.bricks.length,name:curPlayer().name||'',anon:!!D.anon});
+        D.days[info.day].board={name:j.name||'Player',t}; dailyPeek={day:info.day,n:j.n,best:j.best,top:j.top||[]};
         const pct=j.n>1?Math.round(100*(j.n-j.rank)/(j.n-1)):100;
         D.days[info.day].rank=j.rank; D.days[info.day].n=j.n; dailyStoreSet(D);
         trialDialog({icon:j.rank===1?'🏆':'📅',title:j.rank===1?'Fastest today so far!':`You came ${ordinal(j.rank)} of ${j.n}`,
@@ -5015,6 +5049,36 @@ function dailyStoreSet(o){ const keys=Object.keys(o.days).sort().slice(-60); o.d
 function dailyStreak(){ const D=dailyStore().days; let n=0; const d=new Date(); if(!D[dayStr(d)]) d.setDate(d.getDate()-1);
   while(D[dayStr(d)]){ n++; d.setDate(d.getDate()-1); } return n; }
 let dailyPeek=null;
+// How many Dailies this player has done (the day list only keeps the last 60, so there's a running total too)
+function dailyTotal(){ const o=dailyStore(); return Math.max(o.total||0,Object.values(o.days).filter(d=>d.first!=null).length); }
+const dailyAnon=()=>!!dailyStore().anon;
+const topLi=(e,me)=>`<li${me?' class="me"':''}><span>${escapeHTML(e.name)}${me?' (you)':''}</span><b>${fmtTime(e.t)}</b></li>`;
+const isMine=(e,mine)=>!!mine&&e.t===mine.t&&e.name===mine.name;
+async function dailyFetch(board){
+  const day=dayStr(); const j=await chApi('GET',null,`?daily=${day}${board?'&board=1':''}`); dailyPeek=j; return j;
+}
+async function renderHomeDaily(){
+  $('#hdStreak').textContent=dailyStreak(); $('#hdTotal').textContent=dailyTotal();
+  const el=$('#hdTop'), day=dayStr(), mine=(dailyStore().days[day]||{}).board;
+  const show=j=>{ const top=(j.top||[]).slice(0,3);
+    el.innerHTML=top.length?top.map(e=>topLi(e,isMine(e,mine))).join(''):'<li class="hd-empty">No times yet today. Be the first!</li>'; };
+  if(dailyPeek&&dailyPeek.day===day&&dailyPeek.top) show(dailyPeek);
+  try{ show(await dailyFetch(false)); }catch(e){ if(!(dailyPeek&&dailyPeek.day===day)) el.innerHTML='<li class="hd-empty">Scores show up when you’re online.</li>'; }
+}
+async function renderDailyBoard(){
+  const el=$('#dyBoard'), day=dayStr(), mine=(dailyStore().days[day]||{}).board;
+  $('#dyShowName').checked=!dailyAnon();
+  // Same rule as the server (netlify/functions/challenge/logic.mjs boardName): plain letters only, up to 12
+  const raw=curPlayer().name||'', shown=/@|www|https?:|\.(com|net|org|io|gg|tv|me)\b|\d{3,}/i.test(raw)?'Player':(raw.replace(/[^\p{L}\p{M} '\-]/gu,'').replace(/\s+/g,' ').trim().slice(0,12)||'Player');
+  $('#dyShowAs').textContent=dailyAnon()?'(you’ll show as “A player”)':`(as “${shown}”)`;
+  try{ const j=await dailyFetch(true); if(tab!=='daily') return;
+    $('#dyBoardN').textContent=j.n?`${j.n} played today`:'';
+    el.innerHTML=(j.top||[]).length?j.top.map(e=>topLi(e,isMine(e,mine))).join(''):'<li class="hd-empty">No times yet today. Be the first!</li>';
+    if(mine&&!j.top.some(e=>isMine(e,mine))){ const r=dailyStore().days[day].rank; if(r) el.insertAdjacentHTML('beforeend',`<li class="me hd-you"><span>${escapeHTML(mine.name)} (you, ${ordinal(r)})</span><b>${fmtTime(mine.t)}</b></li>`); }
+  }catch(e){ el.innerHTML='<li class="hd-empty">The scoreboard shows up when you’re online.</li>'; }
+}
+$('#dyShowName').addEventListener('change',e=>{ const o=dailyStore(); o.anon=!e.target.checked; dailyStoreSet(o); renderDailyBoard(); });
+$('#hdBoard').onclick=()=>{ setTab('daily'); requestAnimationFrame(()=>$('#dyBoardCard').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'})); };
 async function renderDaily(){
   const day=dayStr(), o=dailyPuzzle(day), me=dailyStore().days[day], streak=dailyStreak();
   $('#dyImg').src=o.thumb; $('#dyName').textContent=o.name;
@@ -5025,7 +5089,7 @@ async function renderDaily(){
   $('#dyStats').innerHTML=st.join('');
   $('#dyGo').textContent=me?'Race it again (practice)':'Start today’s race'; $('#dyBook').hidden=!me;
   $('#dyMsg').hidden=true;
-  try{ const j=await chApi('GET',null,`?daily=${day}`); dailyPeek=j; const el=$('#dyCount'); if(el&&tab==='daily') el.innerHTML=`<b>${j.n}</b> played today`; }catch(e){}
+  renderDailyBoard().then(()=>{ const el=$('#dyCount'); if(el&&tab==='daily'&&dailyPeek&&dailyPeek.day===day) el.innerHTML=`<b>${dailyPeek.n}</b> played today`; });
 }
 $('#dyGo').onclick=async()=>{
   const b=$('#dyGo'); b.disabled=true;
@@ -5405,6 +5469,7 @@ function renderHome(){
   $('#hmBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} new levels, with math puzzles`;
   try{ const day=dayStr(), o=dailyPuzzle(day), me=dailyStore().days[day], k=dailyStreak();
     $('#hmDailyImg').src=o.thumb; $('#hmDailyT').textContent=me?`${o.name}: done ✓`:`Today: ${o.name}`;
+    renderHomeDaily();
     $('#hmDailyS').textContent=me?`Your time ${fmtTime(me.best)}${me.rank?` · ${ordinal(me.rank)} of ${me.n}`:''}${k?` · ${k} day streak 🔥`:''}`:`${o.n} bricks · everyone races the same puzzle${k?` · ${k} day streak 🔥`:''}`; }catch(e){}
 }
 $('#hmCont').onclick=()=>{ if(homeCont) homeCont.go(); };

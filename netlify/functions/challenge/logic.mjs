@@ -15,7 +15,8 @@ export const CHALLENGE_TTL_MS = 30 * 86400_000; // challenges are forgotten 30 d
 export const DAILY_KEEP_DAYS = 7;               // daily times are kept for a week
 const MAX_RUNS = 12;                            // players per challenge
 const MAX_MODEL_CHARS = 2_500_000;
-const MAX_DAILY = 20_000;                       // times kept per day
+const MAX_DAILY = 20_000;
+const DAILY_BOARD = 50;                          // names shown on each day's scoreboard                       // times kept per day
 const MISS_MS = 1000;                           // each miss adds 1 second (same as Blitz)
 const HINT_MS = 5000;                           // each hint adds 5 seconds (same as Blitz)
 const MIN_MS_PER_BRICK = 300;                   // faster than this per brick isn't a real build
@@ -56,6 +57,17 @@ async function readChallenge(store, code) {
   return r;
 }
 
+// Daily scoreboard names are seen by every player, so they're stricter than room names: a first name or nickname
+// in plain letters (no numbers, @handles or web addresses), rude words become "Player", and anyone can play as
+// "A player" instead.
+export function boardName(s) {
+  const raw = String(s || '');
+  if (/@|www|https?:|\.(com|net|org|io|gg|tv|me)\b|\d{3,}/i.test(raw)) return 'Player';
+  const n = cleanName(raw.normalize('NFKC').replace(/[^\p{L}\p{M} '\-]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 12));
+  return n || 'Player';
+}
+const dailyTop = (d, k) => (d.board || []).slice(0, k).map((e) => ({ name: e.name, t: e.t }));
+
 export async function handle(method, query, body, store) {
   const now = Date.now();
   if (method === 'GET') {
@@ -64,7 +76,8 @@ export async function handle(method, query, body, store) {
       const day = String(query.daily);
       if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return { status: 400, body: { error: 'Bad day.' } };
       const r = await store.get(dayKey(day));
-      return { status: 200, body: { day, n: r ? r.data.times.length : 0, best: r && r.data.times.length ? r.data.times[0] : null } };
+      const d = r ? r.data : { times: [] };
+      return { status: 200, body: { day, n: d.times.length, best: d.times.length ? d.times[0] : null, top: dailyTop(d, query.board ? DAILY_BOARD : 3) } };
     }
     const code = cleanCode(query.code);
     if (code.length !== 6) return { status: 400, body: { error: 'Challenge codes have 6 letters and numbers.' } };
@@ -139,8 +152,13 @@ export async function handle(method, query, body, store) {
       // Keep the list sorted; once it's very long, only the fastest times are kept
       let k = 0, hi = d.times.length; while (k < hi) { const m = (k + hi) >> 1; if (d.times[m] < t) k = m + 1; else hi = m; }
       d.times.splice(k, 0, t); if (d.times.length > MAX_DAILY) d.times.length = MAX_DAILY;
+      // The scoreboard: the fastest few, with the name each player chose (or "A player")
+      const name = body.anon ? 'A player' : boardName(body.name);
+      const b = d.board || (d.board = []);
+      let j = 0; while (j < b.length && b[j].t <= t) j++;
+      if (j < DAILY_BOARD) { b.splice(j, 0, { name, t }); if (b.length > DAILY_BOARD) b.length = DAILY_BOARD; }
       const { modified } = await store.set(dayKey(day), d, r ? { onlyIfMatch: r.etag } : { onlyIfNew: true });
-      if (modified) return { status: 200, body: { day, rank: k + 1, n: d.times.length, best: d.times[0] } };
+      if (modified) return { status: 200, body: { day, rank: k + 1, n: d.times.length, best: d.times[0], top: dailyTop(d, 3), name } };
       await new Promise((res) => setTimeout(res, 40 + Math.random() * 120));
     }
     return { status: 409, body: { error: 'Lots of people are playing right now. Please try again.' } };
