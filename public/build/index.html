@@ -406,6 +406,10 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .pick-bar .ghost{padding:7px 12px;font-size:14px;font-weight:700;color:var(--ink)}
 .piece.picked{outline:3px solid var(--accent);outline-offset:3px;border-radius:8px}
 .piece.picked::after{content:"✓";position:absolute;right:-8px;top:-8px;width:20px;height:20px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font:800 12px/20px var(--f-body);text-align:center}
+.piece-tip{position:absolute;left:0;top:0;z-index:100000;pointer-events:none;display:flex;align-items:center;gap:7px;white-space:nowrap;background:var(--ink);color:var(--page);font:800 13px/1.2 var(--f-body);padding:5px 10px 5px 6px;border-radius:999px;box-shadow:0 3px 10px rgba(0,0,0,.22);transform:translate(-50%,-100%);transition:opacity .12s}
+.piece-tip[hidden]{display:flex;opacity:0}
+.piece-tip i{width:16px;height:16px;border-radius:50%;border:2px solid color-mix(in srgb,var(--page) 70%,transparent);flex:none}
+.piece-tip small{font-weight:700;opacity:.7}
 .lasso{position:absolute;border:2px dashed var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent);border-radius:4px;pointer-events:none;z-index:99999}
 .bin-all{border:1px solid color-mix(in srgb,var(--tint) 60%,var(--line));background:var(--page);border-radius:999px;font-size:11px;font-weight:800;padding:1px 8px;cursor:pointer;color:var(--ink)}
 .bin-all:hover{border-color:var(--ink)}
@@ -1097,7 +1101,7 @@ body.on-home .tabs{visibility:hidden}
         <button class="primary sm" id="takeBtn" type="button" hidden>Take 0 to build</button>
         <button class="ghost" id="boxBack" type="button">Back to build</button>
       </div>
-      <div class="board-wrap" id="boardWrap"><div class="board" id="board"></div></div>
+      <div class="board-wrap" id="boardWrap"><div class="board" id="board"></div><div class="piece-tip" id="pieceTip" role="status" aria-live="polite" hidden></div></div>
       <p class="note">Drag bricks into segments to sort them. Drag a segment by its name bar to move it with its bricks, and by the corner to resize. To pick several: turn on Pick several, Shift-click, drag a box around them with the mouse, or use All on a segment.</p>
     </div>
   </div>
@@ -2776,6 +2780,7 @@ function addBin(){
 }
 const tf=p=>`translate(${p.x.toFixed(1)}px,${p.y.toFixed(1)}px) rotate(${p.r}deg)`;
 function renderBox(){
+  tipHide();
   board.innerHTML=bins.map(b=>`<div class="bin" data-b="${b.id}" style="--tint:${b.tint};left:${b.x}px;top:${b.y}px;width:${b.w}px;height:${b.h}px;z-index:${b.z}">
     <div class="bin-head"><span class="bin-grip" aria-hidden="true">⋮⋮</span><input data-bn="${b.id}" value="${escapeHTML(b.name)}" aria-label="Segment name" spellcheck="false"><span class="cnt" data-bc="${b.id}"></span><button class="bin-all" type="button" data-ba="${b.id}" title="Pick every brick in this segment">All</button><button class="bin-x" type="button" data-bx="${b.id}" aria-label="Remove segment">×</button></div>
     <div class="bin-rs" data-br="${b.id}"></div></div>`).join('')
@@ -2805,8 +2810,33 @@ function updatePick(){
   $('#takeBtn').hidden=!n; $('#takeBtn').textContent=`Take ${n} to build`;
   $('#pickClear').hidden=!n;
   $('#boxBack').hidden=!!n;
-  $('#pickNote').textContent=n?`${n} picked${multi?'. Tap more, or tap a picked one to drop it.':'.'}`:multi?'Tap bricks to pick them.':'Tap a brick to pick it up.';
+  $('#pickNote').textContent=n?`${n===1?'Picked':`${n} picked`}: ${pickedSummary()}.${multi?' Tap more, or tap a picked one to drop it.':''}`:multi?`Tap ${PIECE()}s to pick them.`:`Tap a ${PIECE()} to pick it up.`;
 }
+// Name and colour of a part, shown above it when you hover over it, press it, drag it or tab to it
+const partLabel=p=>`${PALETTE[p.c][0]} ${p.a}×${p.l} ${PIECE()}`;
+function pickedSummary(){
+  const groups=new Map();
+  for(const p of chosen){ const k=partLabel(p); groups.set(k,(groups.get(k)||0)+1); }
+  const list=[...groups].map(([k,n])=>n>1?`${n}× ${k}`:k);
+  return list.length>3?`${list.slice(0,3).join(', ')} and ${list.length-3} more kind${list.length-3===1?'':'s'}`:list.join(', ');
+}
+let tipHover=null;
+function tipShow(p){
+  const tip=$('#pieceTip'); if(!p||!pieces.includes(p)){ tipHide(); return; }
+  const same=pieces.filter(q=>q.a===p.a&&q.l===p.l&&q.c===p.c).length;
+  tip.innerHTML=`<i style="background:${PALETTE[p.c][1]}"></i>${escapeHTML(partLabel(p))}${p.hand?' <small>in hand</small>':same>1?` <small>×${same} in box</small>`:''}`;
+  const x=Math.max(70,p.x+p.w/2), y=p.y-6;
+  tip.style.transform=`translate(${x.toFixed(1)}px,${Math.max(30,y).toFixed(1)}px) translate(-50%,-100%)`;
+  tip.hidden=false;
+}
+function tipHide(){ const tip=$('#pieceTip'); if(tip) tip.hidden=true; }
+board.addEventListener('pointerover',e=>{ if(e.pointerType==='touch'||drag) return; const pe=e.target.closest('.piece'); if(!pe) return;
+  tipHover=pieceById(+pe.dataset.p); tipShow(tipHover); });
+board.addEventListener('pointerout',e=>{ const pe=e.target.closest('.piece'); if(!pe||pe.contains(e.relatedTarget)) return;
+  tipHover=null; if(!drag) tipHide(); });
+board.addEventListener('focusin',e=>{ const pe=e.target.closest('.piece'); if(pe) tipShow(pieceById(+pe.dataset.p)); });
+board.addEventListener('focusout',()=>{ if(!tipHover&&!drag) tipHide(); });
+boardWrap.addEventListener('scroll',()=>{ if(!drag&&!tipHover) tipHide(); },{passive:true});
 function takeChosen(){
   const list=[...chosen].filter(p=>pieces.includes(p)); if(!list.length) return;
   chosen.clear(); multi=false;
@@ -2855,7 +2885,7 @@ function onDrag(e){
     drag.el.style.transform=tf(p)+' scale(1.08)';
     const mx=p.x-drag.x0, my=p.y-drag.y0;
     for(const [q,x0,y0,el] of drag.group){ q.x=Math.max(0,x0+mx); q.y=Math.max(0,y0+my); if(el) el.style.transform=tf(q)+' scale(1.08)'; }
-    grow(p.x+p.w,p.y+p.h);
+    grow(p.x+p.w,p.y+p.h); tipShow(p);
   } else if(drag.kind==='bin'){ const b=drag.b;
     b.x=Math.max(0,drag.x0+dx); b.y=Math.max(0,drag.y0+dy); drag.el.style.left=b.x+'px'; drag.el.style.top=b.y+'px';
     const mx=b.x-drag.x0, my=b.y-drag.y0;
@@ -2880,6 +2910,7 @@ function grow(r,b){
 function endDrag(){
   removeEventListener('pointermove',onDrag); removeEventListener('pointerup',endDrag); removeEventListener('pointercancel',endDrag);
   const d=drag; drag=null; if(!d) return;
+  if(d.kind==='piece'&&(!tipHover||tipHover!==d.p)) tipHide(); else if(d.kind==='piece') tipShow(d.p);
   if(d.kind==='lasso'){
     if(d.el) d.el.remove();
     if(!d.add) chosen.clear();
@@ -2906,7 +2937,7 @@ board.addEventListener('click',e=>{
     list.forEach(p=>every?chosen.delete(p):chosen.add(p)); updatePick(); return; }
   const pe=e.target.closest('.piece'); if(!pe||performance.now()<noClickUntil) return;
   const p=pieceById(+pe.dataset.p); if(!p) return;
-  if(multi||e.shiftKey||e.metaKey||e.ctrlKey||chosen.size){ chosen.has(p)?chosen.delete(p):chosen.add(p); updatePick(); return; }
+  if(multi||e.shiftKey||e.metaKey||e.ctrlKey||chosen.size){ chosen.has(p)?chosen.delete(p):chosen.add(p); updatePick(); if(chosen.has(p)) tipShow(p); else if(tipHover!==p) tipHide(); return; }
   chosen.add(p); takeChosen();
 });
 board.addEventListener('input',e=>{ const id=e.target.dataset&&e.target.dataset.bn; if(id){ const b=binById(+id); if(b) b.name=e.target.value; saveSoon(); } });
