@@ -545,6 +545,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .chat-foot[data-kind="err"]{color:var(--accent);font-weight:700}
 .gate-num{font-family:var(--f-body);font-weight:800;font-size:22px;line-height:1.3;text-align:center;margin:12px 0}
 .appfoot{text-align:center;font-size:13px;margin:8px 0 24px}
+body:not(.on-home) .appfoot{display:none}  /* the privacy policy link lives on the menu */
 .appfoot a{color:var(--muted)}
 body.chat-on{padding-bottom:96px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -568,6 +569,14 @@ body.chat-on{padding-bottom:96px}
 .gm-head h2{font-size:30px}
 .gm-head .note{max-width:560px;font-size:15px}
 .gm-total{display:grid;justify-items:end;text-align:right}
+/* On a phone the points sit in one tidy card under the title, left to right */
+@media (max-width:640px){
+  .gm-total{width:100%;grid-template-columns:auto 1fr auto;grid-template-areas:"tag tag tag" "pts done sw";justify-items:start;align-items:center;column-gap:12px;row-gap:2px;text-align:left;background:var(--page);border:1px solid var(--line);border-radius:14px;padding:10px 14px}
+  .gm-total .tag{grid-area:tag}
+  .gm-total b{grid-area:pts;font-size:34px}
+  .gm-total .note{grid-area:done;margin:0}
+  .gm-total .sm-link{grid-area:sw;justify-self:end}
+}
 .sm-link{border:0;background:none;color:var(--accent);font-weight:800;font-size:13px;padding:2px 0;cursor:pointer;text-decoration:underline}
 .gm-total b{font-family:var(--f-display);font-weight:400;font-size:44px;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
 .gm-rules{display:flex;flex-wrap:wrap;gap:8px}
@@ -1274,7 +1283,7 @@ li.hd-empty::before{content:none!important}
       <div class="field bz-puzzle"><span class="lbl">Puzzle</span>
         <div class="bzp"><img id="bzThumb" alt=""><div class="bzp-txt"><b id="bzPzName"></b><span class="note" id="bzPzInfo"></span></div></div>
         <div class="bzp-btns"><button class="ghost" id="bzLib" type="button">📚 Library</button><button class="ghost" id="bzPhoto" type="button">📸 Your photo</button>
-          <label class="sr" for="bzModel">Or a Trail level</label><select class="inp" id="bzModel"></select></div>
+          <label class="sr" for="bzModel">Or a ready-made race</label><select class="inp" id="bzModel"></select></div>
       </div>
     </div>
     <div class="mp-forms">
@@ -2381,8 +2390,8 @@ function pickPuzzle(forWhat,src){
 $('#pickCancel').onclick=()=>{ pickFor=null; setTab('blitz'); };
 $('#startBuild').onclick=()=>{ if(pickFor==='blitz'&&model){ pickFor=null; blitzFit(); bzKeepPick=true; mpModelOptions('#bzModel'); $('#bzModel').value='cur'; setTab('blitz'); return; } setTab('build'); };
 // Blitz races should be quick: a puzzle picked for Blitz is shrunk to at most BLITZ_MAX bricks,
-// and opening Blitz without a small puzzle ready starts on a small Trail level instead.
-const BLITZ_MAX=30, BLITZ_DEFAULT_LEVEL=3;  // Trail level 4, the Toadstool (about 22 bricks)
+// and opening Blitz without a small puzzle ready starts on a ready-made race (BLITZ_PICKS) instead.
+const BLITZ_MAX=30;
 let bzKeepPick=false;
 function blitzFit(){
   if(!model||(S.kind!=='picture'&&model.bricks.length<=BLITZ_MAX)) return;
@@ -2398,9 +2407,8 @@ function blitzFit(){
 function blitzDefault(){
   if(bzKeepPick){ bzKeepPick=false; return; }
   const v=$('#bzModel').value;
-  if(mp||(v!==''&&v!=='cur')||(model&&model.bricks.length<=BLITZ_MAX)) return;  // keep a Trail level they chose
-  levelCount(OTTER_LEVELS[BLITZ_DEFAULT_LEVEL]);  // so the brick count shows
-  mpModelOptions('#bzModel'); $('#bzModel').value=String(BLITZ_DEFAULT_LEVEL); renderBzPuzzle();
+  if(mp||(v!==''&&v!=='cur')||(model&&model.bricks.length<=BLITZ_MAX)) return;  // keep a race they chose
+  mpModelOptions('#bzModel'); $('#bzModel').value=BLITZ_DEFAULT_PICK; renderBzPuzzle();
 }
 
 /* ---------- Build it yourself ---------- */
@@ -3962,6 +3970,21 @@ const BRAIN_LEVELS=[
  {name:'Treasure chest',sample:'Treasure chest', size:13, shape:'puffed', thick:1,  colors:8, pts:1000},
 ];
 const levelsOf=tr=>tr==='brain'?BRAIN_LEVELS:OTTER_LEVELS;
+// Ready-made Blitz races, small enough to be quick (Blitz keeps races to 30 bricks or fewer)
+const BLITZ_PICKS=[
+ {name:'Heart',     art:'heart',          size:6,  shape:'flat',   thick:.5, colors:2, diff:'Easy'},
+ {name:'Star',      art:'star',           size:7,  shape:'flat',   thick:.5, colors:2, diff:'Easy'},
+ {name:'Toadstool', sample:'Toadstool',   size:7,  shape:'flat',   thick:1,  colors:4, diff:'Easy'},
+ {name:'Duck',      art:'duck',           size:7,  shape:'flat',   thick:1,  colors:3, diff:'Medium'},
+ {name:'Ice cream', sample:'Ice cream',   size:11, shape:'flat',   thick:.5, colors:4, diff:'Medium'},
+ {name:'Cat',       sample:'Cat',         size:6,  shape:'puffed', thick:.8, colors:5, diff:'Medium'},
+ {name:'Fish',      sample:'Fish',        size:5,  shape:'puffed', thick:.6, colors:4, diff:'Hard'},
+ {name:'Penguin',   sample:'Penguin',     size:7,  shape:'puffed', thick:.7, colors:4, diff:'Hard'},
+ {name:'Rocket',    sample:'Rocket',      size:8,  shape:'puffed', thick:.7, colors:5, diff:'Hard'},
+];
+const BLITZ_DEFAULT_PICK='p3';  // the Duck
+// A puzzle choice from a dropdown: 'p3' is a Blitz race puzzle, a plain number is a Trail level (Build together)
+const pickOf=v=>/^p\d+$/.test(v)?BLITZ_PICKS[+v.slice(1)]:OTTER_LEVELS[+v];
 const GAME_KEY='building-blox-game-v1';
 let game=null, autoBusy=false, freeS=null, winLvl=0;
 // Two trails, each with its own levels: Otter Trail (just building) and Brain Trail (math puzzles lock some pages).
@@ -4564,9 +4587,12 @@ function mpWaitStop(forget){
   mpw=null;
 }
 function mpModelOptions(id='#mpModel'){
-  const sel_=$(id), keep=sel_.value;
-  sel_.innerHTML=`<option value="cur">${model?`Your puzzle: ${escapeHTML(niceName(model.name))} (${model.bricks.length} bricks)`:'Your puzzle'}</option>`+
-    OTTER_LEVELS.map((L,i)=>`<option value="${i}">Trail level ${i+1}: ${L.name}${L.count?` (${L.count} bricks)`:''}</option>`).join('');
+  const sel_=$(id), keep=sel_.value, mine=`<option value="cur">${model?`Your puzzle: ${escapeHTML(niceName(model.name))} (${model.bricks.length} bricks)`:'Your puzzle'}</option>`;
+  if(id==='#bzModel'){
+    // Blitz: a few ready-made races, easy to hard
+    sel_.innerHTML=mine+['Easy','Medium','Hard'].map(d=>`<optgroup label="${d}">`+BLITZ_PICKS.map((L,i)=>L.diff!==d?'':
+      `<option value="p${i}">${L.name} (${levelCount(L)} bricks)</option>`).join('')+'</optgroup>').join('');
+  } else sel_.innerHTML=mine+OTTER_LEVELS.map((L,i)=>`<option value="${i}">Trail level ${i+1}: ${L.name}${L.count?` (${L.count} bricks)`:''}</option>`).join('');
   if(keep) sel_.value=keep;
 }
 async function renderMpView(){
@@ -4646,9 +4672,9 @@ $('#mpEndBook').onclick=()=>{ $('#mpEndDlg').close(); setTab('booklet'); };
 $('#mpEndNew').onclick=()=>{ $('#mpEndDlg').close(); const to=mpHomeTab(); mpLeave(); setTab(to); };
 // Load what to build: a level, or whatever is on Photos & model now
 function mpUseModel(choice){
-  if(choice!=='cur'){ const L=OTTER_LEVELS[+choice]; mpEndSolo(); photos=levelPhotos(L); setControls(levelSettings(L)); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild(); }
+  if(choice!=='cur'){ const L=pickOf(choice); mpEndSolo(); photos=levelPhotos(L); setControls(levelSettings(L)); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild(); }
   if(!model) throw new Error('Pick something to build first.');
-  return choice!=='cur'?OTTER_LEVELS[+choice].name:model.name;
+  return choice!=='cur'?pickOf(choice).name:model.name;
 }
 async function mpMake(mode,name,choice){
   const title=mpUseModel(choice);
@@ -4867,7 +4893,7 @@ function renderBzPuzzle(){
   if(v==='cur'||v===''){ const p0=photos[0];
     name=model?niceName(model.name):'No puzzle yet'; info=model?`${model.bricks.length} bricks`:'Pick one from the library or use a photo';
     if(p0) thumb=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png')); }
-  else { const L=OTTER_LEVELS[+v]; name=L.name; thumb=levelThumb(L); info=`Trail level ${+v+1}${L.count?` · ${L.count} bricks`:''}`; }
+  else { const L=pickOf(v); name=L.name; thumb=levelThumb(L); info=L.diff?`${L.diff} race · ${levelCount(L)} bricks`:`Trail level ${+v+1}${L.count?` · ${L.count} bricks`:''}`; }
   $('#bzPzName').textContent=name; $('#bzPzInfo').textContent=info; const im=$('#bzThumb'); im.hidden=!thumb; if(thumb) im.src=thumb;
 }
 $('#bzModel').addEventListener('change',renderBzPuzzle);
