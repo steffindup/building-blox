@@ -1695,19 +1695,6 @@ function buildModel(){
     let best=kept[0],bd=1e9; for(const k of kept){const d=dist2(PLAB[c],PLAB[k]); if(d<bd){bd=d;best=k;}} remap.set(c,best); }
   for(let i=0;i<vox.length;i++){ if(vox[i]<0) continue; vox[i]=vox[i]===1000?GREY:remap.get(vox[i]); }
 
-  // Real bricks can't float. Working from the top down, a cube may stick out at most one stud past the layer
-  // below it; anything further out gets a cube put underneath it (same colour), so overhangs step down like stairs.
-  { const dist=new Int16Array(W*D), q=new Int32Array(W*D);
-    for(let y=H-1;y>=1;y--){
-      let qh=0,qt=0; dist.fill(-1);
-      for(let z=0;z<D;z++)for(let x=0;x<W;x++) if(vox[vi(x,y,z)]>=0&&vox[vi(x,y-1,z)]>=0){ dist[x+z*W]=0; q[qt++]=x+z*W; }
-      while(qh<qt){ const i=q[qh++], x=i%W, z=(i/W)|0;
-        for(const [nx,nz] of [[x+1,z],[x-1,z],[x,z+1],[x,z-1]]){ if(nx<0||nz<0||nx>=W||nz>=D) continue; const j=nx+nz*W;
-          if(dist[j]<0&&vox[vi(nx,y,nz)]>=0){ dist[j]=dist[i]+1; q[qt++]=j; } } }
-      for(let z=0;z<D;z++)for(let x=0;x<W;x++){ const c=vox[vi(x,y,z)];
-        if(c>=0&&(dist[x+z*W]<0||dist[x+z*W]>1)) vox[vi(x,y-1,z)]=c; }
-    } }
-
   // merge cubes into bricks, layer by layer, alternating direction so layers interlock.
   // Each brick should sit on at least one stud of the layer below, so bricks that do are tried first.
   const bricks=[], steps=[], layers=[], occ=[];
@@ -1718,35 +1705,73 @@ function buildModel(){
     const fits=(x,z,sx,sz,c)=>{ if(x+sx>W||z+sz>D) return false;
       for(let dz=0;dz<sz;dz++)for(let dx=0;dx<sx;dx++){const xx=x+dx,zz=z+dz; if(used[xx+zz*W]||vox[vi(xx,y,zz)]!==c) return false;} return true; };
     const rests=(x,z,sx,sz)=>{ if(!below) return true; for(let dz=0;dz<sz;dz++)for(let dx=0;dx<sx;dx++) if(below[x+dx+(z+dz)*W]) return true; return false; };
+    const lay=(x,z,sx,sz,c)=>{ for(let dz=0;dz<sz;dz++)for(let dx=0;dx<sx;dx++) used[x+dx+(z+dz)*W]=1; layer.push({x,y,z,sx,sz,c}); };
+    // Cubes sticking out over nothing go first, each in a brick (in any position over it) that reaches back to a stud
+    if(below) for(let z=0;z<D;z++)for(let x=0;x<W;x++){
+      const c=vox[vi(x,y,z)]; if(c<0||used[x+z*W]||vox[vi(x,y-1,z)]>=0) continue;
+      search: for(const [sx,sz] of opts) for(let oz=0;oz<sz;oz++)for(let ox=0;ox<sx;ox++){ const x0=x-ox, z0=z-oz;
+        if(x0>=0&&z0>=0&&fits(x0,z0,sx,sz,c)&&rests(x0,z0,sx,sz)){ lay(x0,z0,sx,sz,c); break search; } }
+    }
     for(let z=0;z<D;z++)for(let x=0;x<W;x++){
       const c=vox[vi(x,y,z)]; if(c<0||used[x+z*W]) continue;
       let pick=null;
       for(const [sx,sz] of opts) if(fits(x,z,sx,sz,c)&&rests(x,z,sx,sz)){ pick=[sx,sz]; break; }
       if(!pick) for(const [sx,sz] of opts) if(fits(x,z,sx,sz,c)){ pick=[sx,sz]; break; }
-      const [sx,sz]=pick;
-      for(let dz=0;dz<sz;dz++)for(let dx=0;dx<sx;dx++) used[x+dx+(z+dz)*W]=1;
-      layer.push({x,y,z,sx,sz,c});
+      lay(x,z,pick[0],pick[1],c);
     }
     layers.push(layer); occ.push(used);
   }
-  // Any brick still resting on nothing gets a 1×1 of the same colour under it, down to whatever holds it up
-  for(let y=1;y<H;y++) for(const b of [...layers[y]]){
-    let ok=false; for(let dz=0;dz<b.sz&&!ok;dz++)for(let dx=0;dx<b.sx;dx++) if(occ[y-1][b.x+dx+(b.z+dz)*W]){ ok=true; break; }
-    if(ok) continue;
-    for(let yy=y-1;yy>=0;yy--){ const i=b.x+b.z*W; if(occ[yy][i]) break;
-      occ[yy][i]=1; layers[yy].push({x:b.x,y:yy,z:b.z,sx:1,sz:1,c:b.c}); if(yy===0||occ[yy-1][i]) break; }
-  }
-  for(let y=0;y<H;y++){
-    const layer=layers[y];
-    if(!layer.length) continue;
-    layer.sort((a,b)=>a.z-b.z||a.x-b.x);
-    const nSteps=Math.ceil(layer.length/8), per=Math.ceil(layer.length/nSteps);
-    for(let s=0;s<nSteps;s++){
-      const chunk=layer.slice(s*per,(s+1)*per); if(!chunk.length) continue;
-      const idx=steps.length; chunk.forEach(b=>{b.step=idx;bricks.push(b);});
-      steps.push({layer:y,part:s+1,parts:nSteps,bricks:chunk});
+  // No floating bricks. Like real LEGO, a brick can sit on studs below it OR clip onto the underside of a brick
+  // above it, so overhangs (a toadstool's cap, a dog's ears) keep the gap under them. A brick boxed in by other
+  // colours (a stripe, a spot) can also lean on the brick right beside it. Only a piece out in mid-air,
+  // touching nothing at all, gets a thin post: 1×1s under its spot with the shortest drop.
+  const around=(b,f)=>{ for(let dz=0;dz<b.sz;dz++){ f(b.x-1,b.z+dz); f(b.x+b.sx,b.z+dz); } for(let dx=0;dx<b.sx;dx++){ f(b.x+dx,b.z-1); f(b.x+dx,b.z+b.sz); } };
+  const all=()=>layers.flat();
+  for(let guard=0;guard<500;guard++){
+    const B=all(), at=new Map();
+    B.forEach((b,k)=>{ for(let dz=0;dz<b.sz;dz++)for(let dx=0;dx<b.sx;dx++) at.set((b.x+dx)+','+b.y+','+(b.z+dz),k); });
+    const par=B.map((_,k)=>k), find=k=>{ while(par[k]!==k){ par[k]=par[par[k]]; k=par[k]; } return k; };
+    B.forEach((b,k)=>{ for(let dz=0;dz<b.sz;dz++)for(let dx=0;dx<b.sx;dx++){ const j=at.get((b.x+dx)+','+(b.y-1)+','+(b.z+dz)); if(j!==undefined) par[find(k)]=find(j); }
+      around(b,(x,z)=>{ const j=at.get(x+','+b.y+','+z); if(j!==undefined) par[find(k)]=find(j); }); });
+    const grounded=new Set(); B.forEach((b,k)=>{ if(b.y===0) grounded.add(find(k)); });
+    const comp=new Map(); B.forEach((b,k)=>{ const r=find(k); if(grounded.has(r)) return; if(!comp.has(r)) comp.set(r,[]); comp.get(r).push(b); });
+    if(!comp.size) break;
+    for(const list of comp.values()){
+      let best=null, bd=1e9;
+      for(const b of list) for(let dz=0;dz<b.sz;dz++)for(let dx=0;dx<b.sx;dx++){ const x=b.x+dx, z=b.z+dz;
+        if(at.has(x+','+(b.y-1)+','+z)) continue;
+        let d=1; while(b.y-d>=0&&!occ[b.y-d][x+z*W]) d++;
+        if(d<bd){ bd=d; best={x,z,y:b.y,c:b.c}; } }
+      if(!best) continue;
+      for(let yy=best.y-1;yy>=0&&!occ[yy][best.x+best.z*W];yy--){ occ[yy][best.x+best.z*W]=1; layers[yy].push({x:best.x,y:yy,z:best.z,sx:1,sz:1,c:best.c}); }
     }
   }
+  // Build order: layer by layer from the bottom. A brick goes in once there's a brick under it to sit on;
+  // one that hangs goes in right after the brick above it that it clips onto.
+  const cells=new Map(), placed=new Set();
+  for(const L of layers) for(const b of L) for(let dz=0;dz<b.sz;dz++)for(let dx=0;dx<b.sx;dx++) cells.set((b.x+dx)+','+b.y+','+(b.z+dz),b);
+  const touches=(b,dy)=>{ for(let dz=0;dz<b.sz;dz++)for(let dx=0;dx<b.sx;dx++){ const o=cells.get((b.x+dx)+','+(b.y+dy)+','+(b.z+dz)); if(o&&placed.has(o)) return true; } return false; };
+  const beside=b=>{ let ok=false; around(b,(x,z)=>{ const o=cells.get(x+','+b.y+','+z); if(o&&placed.has(o)) ok=true; }); return ok; };
+  const addSteps=(list,y,hang)=>{
+    if(!list.length) return;
+    list.sort((a,b)=>a.z-b.z||a.x-b.x);
+    const nSteps=Math.ceil(list.length/8), per=Math.ceil(list.length/nSteps);
+    for(let s=0;s<nSteps;s++){
+      const chunk=list.slice(s*per,(s+1)*per); if(!chunk.length) continue;
+      const idx=steps.length; chunk.forEach(b=>{b.step=idx;bricks.push(b);placed.add(b);});
+      steps.push(hang?{layer:y,part:s+1,parts:nSteps,bricks:chunk,hang:true}:{layer:y,part:s+1,parts:nSteps,bricks:chunk});
+    }
+  };
+  for(let y=0;y<H;y++){
+    for(let more=true;more;){ more=false;
+      // (a brick that just went in hanging can also be something for a brick in an earlier layer to sit on)
+      for(let yy=0;yy<=y;yy++){ const up=layers[yy].filter(b=>!placed.has(b)&&(yy===0||touches(b,-1))); if(up.length){ addSteps(up,yy,false); more=true; } }
+      for(let yy=y-1;yy>=0;yy--){ const hang=layers[yy].filter(b=>!placed.has(b)&&touches(b,1)); if(hang.length){ addSteps(hang,yy,true); more=true; } }
+      // Last resort: bricks held only by the brick beside them
+      if(!more) for(let yy=0;yy<=y;yy++){ const side=layers[yy].filter(b=>!placed.has(b)&&beside(b)); if(side.length){ addSteps(side,yy,false); more=true; break; } }
+    }
+  }
+  for(let y=0;y<H;y++) addSteps(layers[y].filter(b=>!placed.has(b)),y,false);  // can't happen, but never lose a brick
   return {W,H,D,bricks,steps,name:niceName(front.name)};
 }
 function partsOf(list){
@@ -1867,24 +1892,29 @@ function frame(c,ctl){
 }
 function below(arr,k){let lo=0,hi=arr.length;while(lo<hi){const m=(lo+hi)>>1;if(arr[m]<k)lo=m+1;else hi=m;}return lo;}
 let sceneK=-1, bookK=-1;
+// Bricks that clip on underneath are hidden by the brick above, so the booklet shows them through it
+const xrayMats=new Map();
+function xrayMat(c){ if(!xrayMats.has(c)){ const m=mat(c).clone(); m.depthTest=false; m.transparent=true; m.opacity=.88; xrayMats.set(c,m); } return xrayMats.get(c); }
+const hangNote=s=>s&&s.hang?' · clip on underneath':'';
 function showStep(k,animate){
   sceneK=k;
   for(const im of instanced) im.count=below(im.userData.steps,k);
   while(current.children.length) current.remove(current.children[0]);
   anim=null;
   if(!model||k>=model.steps.length) return;
+  const hang=!!model.steps[k].hang;
   model.steps[k].bricks.forEach((b,i)=>{
-    const ms=new THREE.Mesh(brickGeo(b.sx,b.sz),mat(b.c));
+    const ms=new THREE.Mesh(brickGeo(b.sx,b.sz),hang?xrayMat(b.c):mat(b.c)); if(hang) ms.renderOrder=5;
     ms.add(new THREE.LineSegments(edgeGeo(b.sx,b.sz),edgeMat));
     ms.position.set(b.x,b.y*1.2,b.z); ms.userData.ty=b.y*1.2; ms.userData.i=i; ms.userData.b=b;
     current.add(ms);
   });
-  if(animate&&!reduceMotion){anim={t0:performance.now()}; current.children.forEach(ms=>ms.position.y=ms.userData.ty+5);}
+  if(animate&&!reduceMotion){anim={t0:performance.now(),dir:hang?-1:1}; current.children.forEach(ms=>ms.position.y=ms.userData.ty+5*anim.dir);}
 }
 function stepAnim(now){
   if(!anim) return; let done=true;
   for(const ms of current.children){const t=clamp((now-anim.t0-ms.userData.i*70)/380,0,1),e=1-Math.pow(1-t,3);
-    ms.position.y=ms.userData.ty+(1-e)*5; if(t<1) done=false;}
+    ms.position.y=ms.userData.ty+(1-e)*5*(anim.dir||1); if(t<1) done=false;}
   if(done) anim=null;
 }
 function loop(now){
@@ -1895,7 +1925,7 @@ function loop(now){
     stepAnim(now); controls.update(); renderer.render(scene,cam);
   }
   if(tab==='build'&&onStage){
-    drops=drops.filter(d=>{const t=clamp((now-d.t0)/260,0,1); d.m.position.y=d.ty+(1-t*t)*2.2; return t<1;});
+    drops=drops.filter(d=>{const t=clamp((now-d.t0)/260,0,1); d.m.position.y=d.ty+(1-t*t)*2.2*(d.dir||1); return t<1;});
     { const g=ghostGroup.children[0]; if(g&&ghostGroup.visible&&g.material!==errMat) g.material.opacity=reduceMotion?.6:.5+Math.sin(now/240)*.15; }
     if(camAnim){ const t=clamp((now-camAnim.t0)/650,0,1), e=1-Math.pow(1-t,3);
       playControls.target.lerpVectors(camAnim.t1,camAnim.t2,e); playCam.position.lerpVectors(camAnim.p1,camAnim.p2,e);
@@ -2219,10 +2249,14 @@ let off=null, cands=[], placedN=0;
 const stepImgs=new Map(); let stepImgsFor=-1;
 const tMat=(hex,op)=>new THREE.MeshStandardMaterial({color:new THREE.Color(hex).convertSRGBToLinear(),roughness:.4,transparent:true,opacity:op,depthWrite:false});
 const ghostMats=new Map(), hintMats=new Map();
-const ghostMat=c=>{if(!ghostMats.has(c)) ghostMats.set(c,tMat(PALETTE[c][1],.6)); return ghostMats.get(c);};
-const hintMat=c=>{if(!hintMats.has(c)) hintMats.set(c,tMat(PALETTE[c][1],.28)); return hintMats.get(c);};
+const ghostMat=c=>{if(!ghostMats.has(c)) ghostMats.set(c,xrayFix(tMat(PALETTE[c][1],.6))); return ghostMats.get(c);};
+const hintMat=c=>{if(!hintMats.has(c)) hintMats.set(c,xrayFix(tMat(PALETTE[c][1],.28))); return hintMats.get(c);};
 const errMat=tMat('#E03A2F',.7);
 const ghostEdge=new THREE.LineBasicMaterial({color:0x14202c,transparent:true,opacity:.5});
+// On a step whose bricks clip on underneath, the ghost and hints show through the bricks above them
+let xrayOn=false;
+const xrayFix=m=>{ m.depthTest=!xrayOn; return m; };
+function setXray(on){ if(on===xrayOn) return; xrayOn=on; for(const m of [...ghostMats.values(),...hintMats.values(),errMat,ghostEdge]) m.depthTest=!on; }
 const FLOOR=72, REACH=34;
 
 function floorTexture(){
@@ -2333,6 +2367,7 @@ function updateBuildUI(){
   $('#progress').textContent=`${placedN} of ${model.bricks.length} placed`;
   const o=curOff();
   layerGrid.visible=!done&&!!o; if(layerGrid.visible) layerGrid.position.set(o.x,s.layer*1.2+.004,o.z);
+  setXray(!!(s&&s.hang));
   $('#doneBadge').hidden=!done;
   ['rotBtn','hintBtn','autoBtn'].forEach(id=>$('#'+id).disabled=done);
   if(follow) viewPage=Math.min(cur,N);
@@ -2354,7 +2389,7 @@ function showPage(k){
   } else {
     const s=model.steps[k];
     $('#bpStep').textContent=k+1; $('#bpCallout').innerHTML=calloutHTML(s.bricks);
-    $('#bpFoot').textContent=`${TILES?`Row ${s.row+1} of ${model.D}`:`Layer ${s.layer+1} of ${model.H}`}${s.parts>1?` · part ${s.part} of ${s.parts}`:''} · ${k<cur?'done':k===cur?'building now':'coming up'}`;
+    $('#bpFoot').textContent=`${TILES?`Row ${s.row+1} of ${model.D}`:`Layer ${s.layer+1} of ${model.H}`}${hangNote(s)}${s.parts>1?` · part ${s.part} of ${s.parts}`:''} · ${k<cur?'done':k===cur?'building now':'coming up'}`;
   }
   if(!TILES) bookAim();
   showChart('bpChart',k); $('#bpView .pg-turn').hidden=TILES;
@@ -2614,7 +2649,7 @@ function placeBrick(t,ax,az){
   if(mp) mpSendMove(t,ax,az,autoBusy);
   placedN++; placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz});
   const ms=new THREE.Mesh(brickGeo(t.sx,t.sz),mat(t.c)); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
-  if(!reduceMotion){ms.position.y+=2.2; drops.push({m:ms,ty:t.y*1.2,t0:performance.now()});}
+  if(!reduceMotion){ const dir=model.steps[cur]&&model.steps[cur].hang?-1:1; ms.position.y+=2.2*dir; drops.push({m:ms,ty:t.y*1.2,t0:performance.now(),dir}); }
   sfx.snap(reduceMotion?0:.23);  // lands at the end of the drop
   // Take the brick out of the box (from your hand if you were holding one like it).
   const a=Math.min(t.sx,t.sz), l=Math.max(t.sx,t.sz), match=p=>p.a===a&&p.l===l&&p.c===t.c;
@@ -2631,7 +2666,7 @@ function placeBrick(t,ax,az){
   busy=true; ghostGroup.visible=false; lastAnchor=null;
   setStatus(`Step ${cur+1} done!`,'ok'); updateBuildUI();
   setTimeout(()=>{ busy=false; if(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))) cur++; follow=true; if(game||mp) hintOn=false;
-    setStatus(cur>=model.steps.length?'Every step complete. Great build!':`On to step ${cur+1}.${held?'':' Open the parts box for the next brick.'}`, cur>=model.steps.length?'ok':'');
+    setStatus(cur>=model.steps.length?'Every step complete. Great build!':`On to step ${cur+1}.${model.steps[cur].hang?' These clip on underneath the bricks above.':''}${held?'':' Open the parts box for the next brick.'}`, cur>=model.steps.length?'ok':'');
     updateBuildUI(); frameBuild(true);
     if(game&&cur>=model.steps.length) setTimeout(winLevel,700); }, 700);
 }
@@ -2975,7 +3010,7 @@ function makeBooklet(){
   $('#bookletInfo').textContent=`${total} pages · ${m.bricks.length.toLocaleString()} ${PIECE()}s in ${N} steps`;
   let html=`<article class="page cover"><div class="pg-top"><div><div class="tag" style="color:inherit;opacity:.85">Bloppit</div><h2>${escapeHTML(m.name)}</h2></div><div class="pcs" style="margin-left:auto">${m.bricks.length.toLocaleString()} pcs</div></div><img class="pg-img" id="pg-cover" alt="Finished model"><div class="pg-foot">${TILES?`${m.W}×${m.D} tiles · ${(m.W*.8).toFixed(0)}×${(m.D*.8).toFixed(0)} cm`:`${m.W}×${m.D} studs · ${m.H} bricks tall`} · 1</div></article>`;
   html+=`<article class="page bom"><h3>Parts you need</h3><div class="parts">${partsHTML(m.bricks)}</div><div class="pg-foot">2</div></article>`;
-  m.steps.forEach((s,i)=>{html+=`<article class="page"><div class="pg-top"><div class="pg-step">${i+1}</div><div class="callout">${calloutHTML(s.bricks)}</div></div><img class="pg-img" id="pg-${i}" alt="Step ${i+1}"><div class="pg-foot">${TILES?`Row ${s.row+1}`:`Layer ${s.layer+1}`} · page ${i+3}</div></article>`;});
+  m.steps.forEach((s,i)=>{html+=`<article class="page"><div class="pg-top"><div class="pg-step">${i+1}</div><div class="callout">${calloutHTML(s.bricks)}</div></div><img class="pg-img" id="pg-${i}" alt="Step ${i+1}"><div class="pg-foot">${TILES?`Row ${s.row+1}`:`Layer ${s.layer+1}${hangNote(s)}`} · page ${i+3}</div></article>`;});
   pages.innerHTML=html;
   const bar=$('#bookProg i'); $('#bookProg').hidden=false; bar.style.width='0';
   const restore=()=>showStep(m.steps.length,false);
@@ -4053,7 +4088,7 @@ function applyMoveCore(m){
   placedN++;
   const o=curOff(), ax=t.x+o.x, az=t.z+o.z;
   const ms=new THREE.Mesh(brickGeo(t.sx,t.sz),mat(t.c)); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
-  if(!reduceMotion&&tab==='build'){ ms.position.y+=2.2; drops.push({m:ms,ty:t.y*1.2,t0:performance.now()}); }
+  if(!reduceMotion&&tab==='build'){ const dir=model.steps[t.step]&&model.steps[t.step].hang?-1:1; ms.position.y+=2.2*dir; drops.push({m:ms,ty:t.y*1.2,t0:performance.now(),dir}); }
   placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz});
   if(!off&&cands.length&&cands[0].used.size>=model.steps[cur].bricks.length) lock();
   while(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))){ cur++; hintOn=false; }
