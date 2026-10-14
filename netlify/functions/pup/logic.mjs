@@ -80,7 +80,8 @@ export function merge(server, incoming) {
     const pupName = [wb.pupName, wa.pupName].map(num).find((v) => v != null && v >= 0) ?? -1;
     out.world = { xp: Math.max(num(wa.xp) ?? 0, num(wb.xp) ?? 0), bonus: Math.max(num(wa.bonus) ?? 0, num(wb.bonus) ?? 0), builds: kept, log: keep,
       decor: [...new Set([...(wa.decor || []), ...(wb.decor || [])].filter((d) => typeof d === 'string' && d.length <= 20))],
-      free: [...new Set([...(wa.free || []), ...(wb.free || [])].filter((d) => typeof d === 'string' && d.length <= 20))], pupName: pupName >= 0 ? pupName : -1, pupAsked: !!(wa.pupAsked || wb.pupAsked) };
+      free: [...new Set([...(wa.free || []), ...(wb.free || [])].filter((d) => typeof d === 'string' && d.length <= 20))],
+      slot: Object.fromEntries(Object.entries({ ...obj(wa.slot), ...obj(wb.slot) }).filter(([k, v]) => kept[k] && Number.isInteger(v) && v >= 0 && v < 12)), pupName: pupName >= 0 ? pupName : -1, pupAsked: !!(wa.pupAsked || wb.pupAsked) };
   }
   for (const key of ['stars', 'xp']) out[key] = Math.max(num(a[key]) ?? 0, num(b[key]) ?? 0) || undefined;
   if (out.stars === undefined) delete out.stars;

@@ -65,3 +65,15 @@ test('crew: create → join (pending) → approve → contribute → post → re
   assert.equal((await group('GET', { pid: B, mine: 1 }, null, store)).body.groups.length, 0);
   assert.equal(PHRASES.length, 8);
 });
+
+import { handle as challenge } from '../netlify/functions/challenge/logic.mjs';
+test('weekly board: entries only with the switch, generated names, clean first then stars, me flagged', async () => {
+  mem.clear();
+  const week = weekOf(Date.now()), A = 'a'.repeat(24), B = 'b'.repeat(24);
+  await challenge('POST', {}, { action: 'weekly', week, ms: 60000, miss: 2, hint: 0, nBricks: 20 }, store);                       // no switch: counted, not listed
+  await challenge('POST', { pid: A }, { action: 'weekly', week, ms: 60000, miss: 1, hint: 0, nBricks: 20, board: true, stars: 2 }, store);
+  const r = await challenge('POST', { pid: B }, { action: 'weekly', week, ms: 90000, miss: 0, hint: 0, nBricks: 20, board: true, stars: 3 }, store);
+  assert.equal(r.body.n, 3); assert.equal(r.body.board.length, 2); assert.equal(r.body.board[0].me, true); assert.equal(r.body.board[0].clean, true); assert.equal(r.body.board[1].stars, 2);
+  const g = await challenge('GET', { weekly: week, board: '1', pid: A }, null, store); assert.equal(g.body.board[1].me, true); assert.match(g.body.board[0].name, /^[A-Z][a-z]+ [A-Z][a-z]+ \d{3}$/);
+  const plain = await challenge('GET', { weekly: week }, null, store); assert.equal(plain.body.board, undefined);
+});
