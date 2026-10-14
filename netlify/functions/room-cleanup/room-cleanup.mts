@@ -9,6 +9,7 @@ const ROOM_TTL_MS = 3 * 86400_000; // keep in step with ROOM_TTL_MS in ../room/l
 import { CHALLENGE_TTL_MS, WEEKLY_KEEP_WEEKS, weekOf } from "../challenge/logic.mjs";
 import { PUP_TTL_MS } from "../pup/logic.mjs";
 import { EVENT_KEEP_DAYS } from "../event/logic.mjs";
+import { GROUP_TTL_MS } from "../group/logic.mjs";
 
 export default async () => {
   const store = getStore({ name: "building-blox-rooms", consistency: "strong" });
@@ -73,7 +74,22 @@ export default async () => {
   const oldestEv = new Date(now - EVENT_KEEP_DAYS * 86400_000).toISOString().slice(0, 10);
   const { blobs: evs } = await store.list({ prefix: "ev/" });
   for (const { key } of evs) if (key.slice("ev/".length) < oldestEv) { await store.delete(key); deleted++; }
-  console.log(`room-cleanup: ${livePups} pups kept`);
+  // Crews nobody has built in for GROUP_TTL_MS, and the membership lists that point at nothing
+  const { blobs: groups } = await store.list({ prefix: "group/" });
+  const liveGroups = new Set<string>();
+  for (const { key } of groups) {
+    const g = (await store.get(key, { type: "json" })) as { updated?: number } | null;
+    if (g && typeof g.updated === "number" && now - g.updated <= GROUP_TTL_MS) { liveGroups.add(key.slice("group/".length)); continue; }
+    await store.delete(key); deleted++;
+  }
+  const { blobs: gms } = await store.list({ prefix: "gmember/" });
+  for (const { key } of gms) {
+    const m = (await store.get(key, { type: "json" })) as { codes?: string[] } | null;
+    const codes = (m && m.codes || []).filter((c) => liveGroups.has(c));
+    if (!codes.length) { await store.delete(key); deleted++; }
+    else if (codes.length !== (m!.codes || []).length) await store.setJSON(key, { codes, updated: now });
+  }
+  console.log(`room-cleanup: ${livePups} pups kept, ${liveGroups.size} crews kept`);
   console.log(`room-cleanup: ${live.size} rooms and ${liveCh.size} challenges kept, ${deleted} blobs deleted`);
 };
 

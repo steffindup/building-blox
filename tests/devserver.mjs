@@ -9,6 +9,7 @@ const mods = {
   '/api/room': await import(ROOT + '/netlify/functions/room/logic.mjs'),
   '/api/challenge': await import(ROOT + '/netlify/functions/challenge/logic.mjs'),
   '/api/pup': await import(ROOT + '/netlify/functions/pup/logic.mjs'),
+  '/api/group': await import(ROOT + '/netlify/functions/group/logic.mjs'),
   '/api/event': await import(ROOT + '/netlify/functions/event/logic.mjs'),
 };
 export const mem = new Map();

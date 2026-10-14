@@ -39,3 +39,29 @@ test('weekly: the week key is the Monday, boundary at 08:00 New York', () => {
   assert.equal(weekOf(new Date('2026-11-09T12:30:00Z')), '2026-11-02');   // after the DST change, 07:30 EST
   assert.equal(weekOf(new Date('2026-11-09T13:01:00Z')), '2026-11-09');
 });
+
+import { handle as group, PHRASES } from '../netlify/functions/group/logic.mjs';
+test('crew: create → join (pending) → approve → contribute → post → report ×3 mutes → parent leaves', async () => {
+  mem.clear();
+  const A = 'a'.repeat(24), B = 'b'.repeat(24), C = 'c'.repeat(24);
+  const c = await group('POST', { pid: A }, { action: 'create', name: 2 }, store); assert.equal(c.status, 200);
+  const code = c.body.group.code; assert.equal(c.body.group.name, 'Lighthouse Builders'); assert.equal(c.body.group.me.creator, true);
+  const j = await group('POST', { pid: B }, { action: 'join', code }, store); assert.equal(j.body.group.pendingMe, true); assert.equal(j.body.group.me, null);
+  const g1 = await group('GET', { pid: A, code }, null, store); assert.equal(g1.body.group.pending.length, 1);
+  const ap = await group('POST', { pid: A }, { action: 'approve', code, k: g1.body.group.pending[0].k }, store); assert.equal(ap.body.group.members.length, 2);
+  const mine = await group('GET', { pid: B, mine: 1 }, null, store); assert.equal(mine.body.groups.length, 1);
+  const ct = await group('POST', { pid: B }, { action: 'contribute', code, bricks: 48 }, store); assert.equal(ct.body.group.total, 48); assert.equal(ct.body.group.pct, 2);
+  const p = await group('POST', { pid: B }, { action: 'post', code, phrase: 0 }, store); assert.equal(p.body.group.posts[0].phrase, 0); assert.match(p.body.group.posts[0].label, /^[A-Z][a-z]+ [A-Z][a-z]+ \d{3}$/);
+  const postId = p.body.group.posts[0].id;
+  const r1 = await group('POST', { pid: A }, { action: 'report', code, post: postId }, store); assert.equal(r1.body.group.posts.length, 0);   // hidden for the reporter
+  await group('POST', { pid: A }, { action: 'approve', code, k: (await (async () => { await group('POST', { pid: C }, { action: 'join', code }, store); return (await group('GET', { pid: A, code }, null, store)).body.group.pending[0].k; })()) }, store);
+  await group('POST', { pid: C }, { action: 'report', code, post: postId }, store);
+  const p2 = await group('POST', { pid: B }, { action: 'post', code, sticker: 1 }, store);
+  await group('POST', { pid: A }, { action: 'report', code, post: p2.body.group.posts.find((x) => x.sticker === 1).id }, store);
+  const muted = await group('POST', { pid: B }, { action: 'post', code, phrase: 1 }, store); assert.equal(muted.status, 403);
+  const un = await group('POST', { pid: A }, { action: 'unmute', code, label: (await group('GET', { pid: A, code }, null, store)).body.group.members.find((m) => m.muted).label }, store); assert.equal(un.status, 200);
+  const ok = await group('POST', { pid: B }, { action: 'post', code, phrase: 1 }, store); assert.equal(ok.status, 200);
+  const lv = await group('POST', { pid: B }, { action: 'leave', code }, store); assert.equal(lv.body.group.members.length, 2);
+  assert.equal((await group('GET', { pid: B, mine: 1 }, null, store)).body.groups.length, 0);
+  assert.equal(PHRASES.length, 8);
+});

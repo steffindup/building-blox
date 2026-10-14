@@ -817,6 +817,25 @@ body.on-home .tabs{visibility:hidden}
 .is-stage{font-family:var(--f-display);font-size:22px}.is-stage small{display:block;font-family:var(--f-body);font-size:13px;font-weight:700;color:var(--muted)}
 .is-next{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--muted)}
 .is-next .bar{width:140px;height:8px;border-radius:4px;background:var(--bg);overflow:hidden}.is-next .bar i{display:block;height:100%;background:#008F9B}
+.crew-card{display:grid;gap:14px}
+.crew-list{display:grid;gap:10px}.crew-list:empty{display:none}
+.crew-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:var(--bg)}
+.crew-row svg{width:44px;height:60px}
+.crew-row b{font-size:17px}.crew-row .bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:4px}.crew-row .bar i{display:block;height:100%;background:#008F9B}
+.crew-forms{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.crew-open{display:grid;gap:14px}
+.crew-head{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.crew-head svg{width:96px;height:130px}
+.crew-head h2{font-size:26px;margin:0}.crew-head .cc{font-family:var(--f-mono);font-weight:700;background:var(--bg);padding:2px 8px;border-radius:8px}
+.crew-head .bar{height:12px;border-radius:6px;background:var(--bg);overflow:hidden;margin:6px 0}.crew-head .bar i{display:block;height:100%;background:#F4BC22;border-radius:6px}
+.crew-members{display:flex;flex-wrap:wrap;gap:6px}.crew-members span{padding:5px 10px;border-radius:999px;background:var(--bg);font-size:13px;font-weight:700}.crew-members span.me{background:#14202C;color:#fff}.crew-members span.muted{opacity:.5}
+.crew-feed{display:grid;gap:6px;max-height:280px;overflow:auto;padding:4px}
+.crew-post{display:flex;justify-content:flex-start;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:var(--page);border:1px solid var(--line);text-align:left}.crew-post .who{flex:none}.crew-post .what{flex:1}
+.crew-post.me{background:#E8F1F8}.crew-post .who{font-size:12px;font-weight:800;color:var(--muted)}.crew-post .what{font-weight:800}.crew-post .what.st{font-size:26px;line-height:1}
+.crew-post .rep{margin-left:auto;background:none;border:0;color:var(--muted);cursor:pointer;font-size:12px;font-weight:700}.crew-post .rep:hover{color:var(--accent)}
+.crew-say{display:flex;flex-wrap:wrap;gap:6px}.crew-say button{font:inherit;font-weight:800;font-size:13px;padding:7px 11px;border-radius:999px;border:2px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer}.crew-say button.st{font-size:20px;padding:3px 9px}
+.crew-pending{display:grid;gap:6px}.crew-pending div{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;background:#FFF6D6}
+.crew-grown{display:grid;gap:6px}.crew-grown div{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px;border-radius:10px;background:var(--bg);font-size:14px;font-weight:700}
 .decor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
 .decor-grid button{display:grid;justify-items:center;gap:6px;padding:12px 8px 10px;border-radius:14px;border:2px solid var(--line);background:var(--page);color:var(--ink);font:inherit;font-weight:800;font-size:14px;cursor:pointer}
 .decor-grid button svg{width:72px;height:72px}
@@ -1205,6 +1224,18 @@ body.on-home .tabs{visibility:hidden}
       <button class="hm-tile t-together" data-sub="start" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="0" y="16" width="66" height="58"/><use href="#bh2" x="58" y="28" width="58" height="51"/><rect x="34" y="80" width="52" height="28" rx="5" fill="#D2352B"/><rect x="40" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="66" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="34" y="100" width="52" height="8" rx="4" fill="#B32A22"/><ellipse cx="34" cy="90" rx="8" ry="7" fill="#8A5A3B"/><ellipse cx="86" cy="90" rx="8" ry="7" fill="#C08A5E"/></svg></span><b>Build together</b><span>One puzzle, taking turns with friends</span></button>
       <button class="hm-tile t-join" data-sub="join" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a game</b><span>Got a code? Type it in to play</span></button>
     </div>
+    <div class="card crew-card" id="crewCard">
+      <div class="gm-head sub-head"><div><h2>🏮 Crews</h2><p class="note">A crew builds a lighthouse together: every brick anyone in the crew finishes adds to it. Any player can make a crew; the maker lets each friend in. Crews only pass fixed phrases and stickers, under generated names.</p></div></div>
+      <div class="crew-list" id="crewList"></div>
+      <div class="crew-forms">
+        <div class="field"><label for="crewName">Make a crew</label><div style="display:flex;gap:8px;flex-wrap:wrap"><select class="inp" id="crewName" style="flex:1;min-width:180px"></select><button class="primary sm" id="crewMake" type="button">Make it</button></div></div>
+        <div class="field"><label for="crewCodeIn">Got a crew code?</label><div style="display:flex;gap:8px;flex-wrap:wrap"><input class="inp code" id="crewCodeIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC123" style="flex:1;min-width:140px"><button class="primary sm" id="crewJoin" type="button">Ask to join</button></div></div>
+      </div>
+      <p class="note" id="crewMsg" hidden></p>
+    </div>
+    <div class="card crew-open" id="crewOpen" hidden></div>
+    <div class="hm-grid hub-grid" hidden>
+    </div>
   </div>
   <button class="crumb" data-up type="button">‹ Together</button>
   <div class="gm-head sub-head"><div><h2 id="mpHeadT">🧩 Build together</h2><p class="note">Build one puzzle together on different phones, tablets or computers. Take turns placing a few bricks each. Everyone sees the model grow live. Friends join with the room code, and you let them in.</p></div></div>
@@ -1410,6 +1441,11 @@ body.on-home .tabs{visibility:hidden}
       <button class="primary sm" type="submit" id="grownClaimGo">Bring here</button>
     </form>
     <p class="note" id="grownClaimNote" hidden></p>
+  </section>
+  <section class="grown-sec">
+    <h3>Crews this player is in</h3>
+    <p class="note">A crew is a group with a shared building goal. Members see each other as generated names and can only send fixed phrases and stickers. You can take this player out of any crew here.</p>
+    <div class="crew-grown" id="grownCrews"><p class="note">Loading…</p></div>
   </section>
   <section class="grown-sec">
     <h3>Delete saved progress</h3>
@@ -2365,6 +2401,7 @@ function setTab(t,sub){
   { const sel=document.querySelector('.tab[aria-selected="true"]'), bar=$('.tabs'); if(sel&&bar.scrollWidth>bar.clientWidth) bar.scrollTo({left:sel.offsetLeft-bar.offsetLeft-24,behavior:'smooth'}); }
   ['home','create','build','box','booklet','game','mp','blitz','daily','island'].forEach(v=>$('#view-'+v).hidden=v!==t);
   if(t==='island') renderIsland();
+  if(t==='mp'&&(sub==='hub'||subOf.mp==='hub')) renderCrews(true);
   if(t!=='create'&&pickFor) pickFor=null;
   syncPick();
   document.body.classList.toggle('on-home',t==='home');
@@ -4612,7 +4649,7 @@ async function openGrown(){
   if(!(await gate.ask('The Grown-ups corner is for parents.'))) return;
   $('#whoDlg').close(); renderGrown();
   $('#grownCode').hidden=true; $('#grownXferNote').hidden=true; $('#grownClaimNote').hidden=true; $('#grownClaimIn').value='';
-  familyCode=''; renderFamily();
+  familyCode=''; renderFamily(); renderGrownCrews();
   const b=$('#grownDel'); delete b.dataset.confirm; b.textContent='Delete from the server';
   $('#grownDlg').showModal();
 }
@@ -4685,7 +4722,7 @@ function buildStarted(kind){
 // Called when a build is finished (every build, any mode)
 function buildFinished(kind){
   const o=evStore(); o.finished=(o.finished||0)+1; evStoreSet(o);
-  try{ worldLast=worldFinish(welcomeOn()?'welcome':kind); worldStrips(); }catch(e){ console.warn('world',e); }
+  try{ worldLast=worldFinish(welcomeOn()?'welcome':kind); worldStrips(); if(model) crewContribute(model.bricks.length); }catch(e){ console.warn('world',e); }
   track('build_completed','build_completed:'+kind);
   if(o.finished===1) track('first_build_completed','activation'+evChannel());
 }
@@ -6050,6 +6087,91 @@ function renderFamily(){ const u=familyUrl(); $('#familyUrl').textContent=u.repl
 $('#familyCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(familyUrl()); $('#familyCopy').textContent='Copied!'; setTimeout(()=>$('#familyCopy').textContent='Copy link',2000); track('family_link_copied'); }catch(e){} };
 $('#familyShare').onclick=async()=>{ if(APP&&!await gate.ask('Sharing sends a link to another app.')) return; track('family_link_shared');
   const url=familyUrl(), text='Bloppit, a calm brick puzzle game. Open this on the device they play on:'; try{ if(navigator.share) await navigator.share({title:'Bloppit',text,url}); else await navigator.clipboard.writeText(`${text} ${url}`); }catch(e){} };
+
+/* ---------- Crews: a shared lighthouse for an approved group (friends, a family, a class) ----------
+   Identity is the pup (x-pup). The maker approves every join; builds add bricks to the crew's lighthouse; only
+   fixed phrases and stickers pass, under generated names; a report hides the post for you and three reports
+   pause the sender; a parent sees every crew and can take a player out from the Grown-ups corner. */
+const CREW_NAMES=['Otter Crew','Brick Buddies','Lighthouse Builders','Harbour Gang','Snap Squad','Island Crew','Reef Builders','Sandcastle Club','Tide Team','Puffin Patrol','Starfish Society','Clean Build Club'];
+const CREW_PHRASES=['Nice clean build!','Race you!','Let’s bloppit!','Great relay!','Welcome to the crew!','Good night, builders!','Almost there!','Snap!'];
+const CREW_STICKERS=['🦦','🧱','⭐','🏝️','🎉','👏','🔥','🌊'];
+let crewMine=[], crewMineAt=0, crewOpenCode='';
+async function crewApi(method,body,query=''){
+  const me=curPlayer(); if(!me||!me.pup){ await pupSync(); }
+  const pid=curPlayer()&&curPlayer().pup; if(!pid) throw new Error('Finish one build first; then you can make or join a crew.');
+  const headers=body?{'content-type':'application/json','x-pup':pid}:{'x-pup':pid};
+  let r; try{ r=await fetch(API_BASE+'/api/group'+query,{method,headers,body:body?JSON.stringify(body):undefined,cache:'no-store'}); }
+  catch(e){ throw new Error('Couldn’t reach Bloppit. Check your internet connection.'); }
+  let j=null; try{ j=await r.json(); }catch(e){}
+  if(!r.ok||!j) throw new Error((j&&j.error)||'Bloppit didn’t answer. Please try again.');
+  return j;
+}
+// The crew lighthouse, drawn by how far along the goal is
+function lighthouseSVG(pct){
+  const st=pct>=100?4:pct>=75?3:pct>=50?2:pct>=25?1:0;
+  return `<svg viewBox="0 0 60 84" aria-label="Lighthouse, ${pct}% built">
+    <ellipse cx="30" cy="80" rx="26" ry="4" fill="#000" opacity=".1"/><rect x="8" y="70" width="44" height="10" rx="3" fill="#9AA3AD"/>
+    ${st>=1?'<path d="M16 70 L20 36 L40 36 L44 70 Z" fill="#F4F4F4" stroke="#B9C2CF" stroke-width="1.5"/>':'<path d="M16 70 L20 36 L40 36 L44 70 Z" fill="none" stroke="#B9C2CF" stroke-width="1.5" stroke-dasharray="3 3"/>'}
+    ${st>=2?'<path d="M18 62 h24 M19.5 50 h21" stroke="#D2352B" stroke-width="7"/>':''}
+    ${st>=3?'<rect x="17" y="28" width="26" height="8" fill="#5B6778"/><rect x="21" y="16" width="18" height="12" fill="#FFF0B0" stroke="#5B6778" stroke-width="1.5"/><path d="M18 16 L30 6 L42 16 Z" fill="#D2352B"/>':''}
+    ${st>=4?'<path d="M39 20 L60 10 L60 30 Z" fill="#F4BC22" opacity=".55"/><path d="M21 20 L0 10 L0 30 Z" fill="#F4BC22" opacity=".55"/><rect x="29" y="0" width="2" height="8" fill="#14202C"/><path d="M31 1 l8 3 l-8 3z" fill="#008F9B"/>':''}
+  </svg>`;
+}
+function crewMsg(t,kind){ const el=$('#crewMsg'); el.hidden=!t; el.textContent=t||''; el.dataset.kind=kind||''; }
+async function renderCrews(force){
+  const sel=$('#crewName'); if(!sel.options.length) sel.innerHTML=CREW_NAMES.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
+  const me=curPlayer(); if(!me||!me.pup){ $('#crewList').innerHTML=''; crewMsg('Finish one build first; then you can make or join a crew.'); return; }
+  if(!force&&Date.now()-crewMineAt<4000) return; crewMineAt=Date.now();
+  try{ const j=await crewApi('GET',null,'?mine=1'); crewMine=j.groups; crewMsg(''); }catch(e){ crewMsg(e.message,'err'); return; }
+  $('#crewList').innerHTML=crewMine.map(g=>`<div class="crew-row">${lighthouseSVG(g.pct)}<div><b>${escapeHTML(g.name)}</b> <span class="note">· ${g.members.length} builder${g.members.length===1?'':'s'}${g.pendingMe?' · waiting to be let in':''}</span><div class="bar"><i style="width:${Math.max(2,g.pct)}%"></i></div><span class="note">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks${g.pending&&g.pending.length?` · <b>${g.pending.length} waiting to join</b>`:''}</span></div><button class="ghost" type="button" data-crew="${g.code}">Open</button></div>`).join('');
+  if(crewOpenCode){ const g=crewMine.find(x=>x.code===crewOpenCode); if(g) renderCrew(g); }
+}
+function renderCrew(g){
+  crewOpenCode=g.code; const box=$('#crewOpen'); box.hidden=false;
+  const mine=!!g.me, maker=mine&&g.me.creator;
+  box.innerHTML=`<div class="crew-head">${lighthouseSVG(g.pct)}<div><h2>${escapeHTML(g.name)} <span class="cc">${g.code}</span></h2>
+      <p class="note" style="margin:4px 0 0">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks · ${g.builds} build${g.builds===1?'':'s'} · ${g.pct>=100?'The lighthouse is lit! 🏮':g.pct>=75?'The lamp room is on. Light it!':g.pct>=50?'The tower has its stripes.':g.pct>=25?'The tower is rising.':'Lay the foundation: finish builds.'}</p>
+      <div class="bar"><i style="width:${Math.max(2,g.pct)}%"></i></div>
+      <div class="win-btns" style="justify-content:flex-start">${mine?`<button class="ghost" type="button" data-crew-share="${g.code}">Share the code</button>`:g.pendingMe?'<span class="note">Waiting for the crew’s maker to let you in.</span>':`<button class="primary sm" type="button" data-crew-join="${g.code}">Ask to join</button>`}<button class="ghost" type="button" id="crewClose">Close</button></div></div></div>
+    ${maker&&g.pending&&g.pending.length?`<div class="crew-pending"><b>Waiting to join</b>${g.pending.map(w=>`<div><span>🚪 ${escapeHTML(w.label)}</span><button class="primary sm" type="button" data-crew-ok="${w.k}">Let in</button><button class="ghost" type="button" data-crew-no="${w.k}">Not this time</button></div>`).join('')}</div>`:''}
+    <div><b>Builders</b><div class="crew-members" style="margin-top:6px">${g.members.map(m=>`<span class="${m.me?'me':''}${m.muted?' muted':''}">${escapeHTML(m.label)}${m.me?' (you)':''}${m.creator?' · maker':''} · ${m.bricks}${maker&&!m.me?` <button class="rep" type="button" data-crew-kick="${escapeHTML(m.label)}" title="Take out of the crew">✕</button>`:''}${maker&&m.muted?` <button class="rep" type="button" data-crew-unmute="${escapeHTML(m.label)}">unpause</button>`:''}</span>`).join('')}</div></div>
+    ${mine?`<div><b>Crew board</b><div class="crew-feed" id="crewFeed">${g.posts.length?g.posts.slice().reverse().map(p=>`<div class="crew-post${p.me?' me':''}"><span class="who">${p.me?'You':escapeHTML(p.label)}</span><span class="what${p.sticker!=null?' st':''}">${p.sticker!=null?CREW_STICKERS[p.sticker]||'':escapeHTML(CREW_PHRASES[p.phrase]||'')}</span>${p.me?'':`<button class="rep" type="button" data-crew-report="${p.id}">Report</button>`}</div>`).join(''):'<p class="note">Nothing on the board yet.</p>'}</div>
+      ${g.me.muted?'<p class="note">Your posts here are paused while a report is looked at.</p>':`<div class="crew-say">${CREW_PHRASES.map((t,i)=>`<button type="button" data-crew-say="${i}">${escapeHTML(t)}</button>`).join('')}${CREW_STICKERS.map((t,i)=>`<button class="st" type="button" data-crew-st="${i}">${t}</button>`).join('')}</div>`}
+      <p class="note" style="margin:6px 0 0">Only these phrases and stickers can be sent. Report hides a post for you and tells the crew’s maker; three reports pause the sender.</p></div>`:''}`;
+  box.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});
+}
+async function crewDo(body,ok){ try{ const j=await crewApi('POST',body); crewMineAt=0; await renderCrews(true); if(j.group) renderCrew(j.group); else { $('#crewOpen').hidden=true; crewOpenCode=''; } if(ok) ok(j); }catch(e){ crewMsg(e.message,'err'); } }
+$('#crewMake').onclick=()=>{ track('crew_made'); crewDo({action:'create',name:+$('#crewName').value}); };
+$('#crewJoin').onclick=async()=>{ const code=$('#crewCodeIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''); if(code.length!==6){ crewMsg('Crew codes have 6 letters and numbers.','err'); return; }
+  try{ const j=await crewApi('GET',null,`?code=${code}`); renderCrew(j.group); }catch(e){ crewMsg(e.message,'err'); } };
+$('#crewCodeIn').addEventListener('input',e=>{ e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
+$('#crewList').addEventListener('click',e=>{ const b=e.target.closest('[data-crew]'); if(!b) return; const g=crewMine.find(x=>x.code===b.dataset.crew); if(g) renderCrew(g); });
+$('#crewOpen').addEventListener('click',async e=>{
+  const t=e.target.closest('button'); if(!t) return; const code=crewOpenCode;
+  if(t.id==='crewClose'){ $('#crewOpen').hidden=true; crewOpenCode=''; return; }
+  if(t.dataset.crewShare){ if(APP&&!await gate.ask('Sharing sends your crew code to another app.')) return; const text=`Join my Bloppit crew! Code ${code}`, url=`https://bloppit.com/build/#together`; try{ if(navigator.share) await navigator.share({title:'Bloppit crew',text,url}); else { await navigator.clipboard.writeText(`${text} ${url}`); t.textContent='Copied!'; } }catch(x){} return; }
+  if(t.dataset.crewJoin){ track('crew_join_asked'); crewDo({action:'join',code}); return; }
+  if(t.dataset.crewOk){ crewDo({action:'approve',code,k:t.dataset.crewOk}); return; }
+  if(t.dataset.crewNo){ crewDo({action:'deny',code,k:t.dataset.crewNo}); return; }
+  if(t.dataset.crewKick){ if(!t.dataset.confirm){ t.dataset.confirm='1'; t.textContent='sure?'; setTimeout(()=>{ delete t.dataset.confirm; t.textContent='✕'; },3000); return; } crewDo({action:'remove',code,label:t.dataset.crewKick}); return; }
+  if(t.dataset.crewUnmute){ crewDo({action:'unmute',code,label:t.dataset.crewUnmute}); return; }
+  if(t.dataset.crewSay!=null){ track('crew_post'); crewDo({action:'post',code,phrase:+t.dataset.crewSay}); return; }
+  if(t.dataset.crewSt!=null){ track('crew_post'); crewDo({action:'post',code,sticker:+t.dataset.crewSt}); return; }
+  if(t.dataset.crewReport){ if(!t.dataset.confirm){ t.dataset.confirm='1'; t.textContent='Report this?'; setTimeout(()=>{ delete t.dataset.confirm; t.textContent='Report'; },3000); return; } track('crew_report'); crewDo({action:'report',code,post:t.dataset.crewReport}); return; }
+});
+// Every finished build adds its bricks to each crew the player is in
+async function crewContribute(n){ const me=curPlayer(); if(!me||!me.pup||!(n>0)) return;
+  try{ const j=await crewApi('GET',null,'?mine=1'); crewMine=j.groups; crewMineAt=Date.now(); for(const g of crewMine) if(g.me) await crewApi('POST',{action:'contribute',code:g.code,bricks:n}).catch(()=>{}); }catch(e){} }
+// The Grown-ups corner: every crew, with a way out
+async function renderGrownCrews(){
+  const el=$('#grownCrews'); const me=curPlayer(); if(!me||!me.pup){ el.innerHTML='<p class="note">No crews: this player hasn’t finished a build yet.</p>'; return; }
+  try{ const j=await crewApi('GET',null,'?mine=1'); crewMine=j.groups;
+    el.innerHTML=j.groups.length?j.groups.map(g=>`<div><span>${escapeHTML(g.name)} · ${g.code} · ${g.members.length} builders${g.pendingMe?' · waiting':''}</span><button class="ghost" type="button" data-grown-leave="${g.code}">Take out</button></div>`).join(''):'<p class="note">Not in any crew.</p>';
+  }catch(e){ el.innerHTML=`<p class="note">${escapeHTML(e.message)}</p>`; }
+}
+$('#grownCrews').addEventListener('click',async e=>{ const b=e.target.closest('[data-grown-leave]'); if(!b) return; b.disabled=true; try{ await crewApi('POST',{action:'leave',code:b.dataset.grownLeave}); track('crew_left_by_parent'); }catch(x){} renderGrownCrews(); });
+
+setTimeout(()=>{ const me=curPlayer(); if(me&&me.pup) renderCrews(true).catch(()=>{}); },4000);
 
 /* ---------- Relay builds: a friend code where one builds the first pages and the other finishes ----------
    The first player builds pages 1..half of a model, the record (model + their moves) goes up under a 6-character
