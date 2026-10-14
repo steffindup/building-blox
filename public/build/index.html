@@ -4895,7 +4895,13 @@ function cpuAim(m,wrong){
   h.position.set(m.x+(wrong?wrong.x:0),t.y*1.2+.9,m.z+(wrong?wrong.z:0)); cpuAimGroup.add(h);
 }
 // The banner across the top of the build: whose turn it is, with their clock
-const OTTER_HEAD='<svg viewBox="0 0 200 175" aria-hidden="true"><circle cx="42" cy="38" r="16" fill="#6B4229"/><circle cx="158" cy="38" r="16" fill="#6B4229"/><ellipse cx="100" cy="94" rx="88" ry="74" fill="#6B4229"/><ellipse cx="100" cy="116" rx="56" ry="40" fill="#F3DEC0"/><ellipse cx="64" cy="88" rx="19" ry="22" fill="#1B1410"/><ellipse cx="136" cy="88" rx="19" ry="22" fill="#1B1410"/><circle cx="70" cy="79" r="7" fill="#fff"/><circle cx="142" cy="79" r="7" fill="#fff"/><path d="M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z" fill="#3A2418"/></svg>';
+// The Gulls (placeholder art until the character sheet is drawn): white head, grey wing tips, yellow beak, and one
+// tell each so they read apart at a glance: Scraps' stuck-up feather, Swoop's goggles, Squint's monocle and narrowed eye.
+const GULL_HEAD=(lvl)=>{ const tell={easy:'<path d="M118 22 q10 -18 26 -14 q-8 6 -10 22" fill="#F4F1EC" stroke="#9AA3AD" stroke-width="4" stroke-linejoin="round"/>',
+    medium:'<rect x="48" y="60" width="104" height="26" rx="13" fill="none" stroke="#1B2A34" stroke-width="7"/><circle cx="72" cy="73" r="12" fill="#5A93DB"/><circle cx="128" cy="73" r="12" fill="#5A93DB"/>',
+    hard:'<circle cx="128" cy="78" r="20" fill="none" stroke="#1B2A34" stroke-width="5"/><path d="M146 92 l14 18" stroke="#1B2A34" stroke-width="5" stroke-linecap="round"/>'}[lvl]||'';
+  const eyes=lvl==='hard'?'<path d="M60 76 h24" stroke="#1B2A34" stroke-width="7" stroke-linecap="round"/><circle cx="128" cy="78" r="7" fill="#1B2A34"/>':lvl==='medium'?'':'<circle cx="72" cy="78" r="9" fill="#1B2A34"/><circle cx="128" cy="78" r="9" fill="#1B2A34"/><circle cx="75" cy="75" r="3" fill="#fff"/><circle cx="131" cy="75" r="3" fill="#fff"/>';
+  return `<svg viewBox="0 0 200 175" aria-hidden="true"><ellipse cx="100" cy="98" rx="78" ry="66" fill="#F4F1EC" stroke="#9AA3AD" stroke-width="4"/><path d="M22 110 q-14 20 4 34" fill="none" stroke="#9AA3AD" stroke-width="10" stroke-linecap="round"/><path d="M178 110 q14 20 -4 34" fill="none" stroke="#9AA3AD" stroke-width="10" stroke-linecap="round"/>${eyes}<path d="M86 104 l28 0 l-14 26 z" fill="#E8A317"/>${tell}</svg>`; };
 let bannerKey='';
 $('#turnBanner').addEventListener('click',e=>{ if(e.target.closest('#tbDone')&&!$('#mpEndTurn').hidden) $('#mpEndTurn').click(); });
 function turnBanner(s){
@@ -4905,7 +4911,7 @@ function turnBanner(s){
   const bot=s.turn===1, p=s.players[s.turn], left=mpLeft(s), key=bot+'|'+s.turnPlaced;
   el.hidden=false; el.className='turn-banner '+(bot?'cpu':'you');
   if(s.solo){ el.innerHTML=`<span class="tb-av"><i style="background:${escapeHTML(p.color)}"></i></span><span class="tb-txt">Go go go!<small>${p.n||0} of ${s.quota} placed</small></span><b class="clk" data-clk="0">${fmtTime(mpTime(s,0))}</b>`; bannerKey=key; return; }
-  el.innerHTML=bot?`<span class="tb-av">${OTTER_HEAD}</span><span class="tb-txt">Bloppit’s turn<small>${s.turnPlaced?`${s.turnPlaced} placed. Get your next bricks ready!`:'He’s choosing. Get your next bricks ready!'}</small></span><b class="clk" data-clk="1">${fmtTime(mpTime(s,1))}</b>`
+  el.innerHTML=bot?`<span class="tb-av">${GULL_HEAD(s.cpuLevel)}</span><span class="tb-txt">${escapeHTML(p.name)}’s turn<small>${s.turnPlaced?`${s.turnPlaced} placed. Get your next bricks ready!`:'He’s choosing. Get your next bricks ready!'}</small></span><b class="clk" data-clk="1">${fmtTime(mpTime(s,1))}</b>`
     :`<span class="tb-av"><i style="background:${escapeHTML(p.color)}"></i></span><span class="tb-txt">Your turn!<small>${s.turnPlaced?(left>0?`${s.turnPlaced} placed. Place ${left===1?'1 more':`up to ${left} more`}, or tap Done`:'That’s all for this turn'):left<3?`Place up to ${left} (your last ${left===1?'one':'ones'})`:'Place 1, 2 or 3 bricks, then tap Done'}</small></span><b class="clk" data-clk="0">${fmtTime(mpTime(s,0))}</b>${s.turnPlaced>0&&left>0?'<button class="tb-done" id="tbDone" type="button" title="Give the turn to Bloppit">Done ✓</button>':''}`;
   if(bannerKey.split('|')[0]!==String(bot)&&!reduceMotion){ el.classList.add('pop'); if(bannerKey&&bot) sfx.chirp(); }
   bannerKey=key;
@@ -4934,7 +4940,7 @@ async function cpuApi(method,body,query){
   const a=body&&body.action, me=0;
   if(a==='move'){
     if(s.finished) throw new Error('The model is already finished.');
-    if(s.turn!==me) throw new Error('It’s Bloppit’s turn.');
+    if(s.turn!==me) throw new Error(`It’s ${s.players[s.turn].name}’s turn.`);
     const b=Math.floor(Number(body.b));
     if(!(b>=0&&b<s.nBricks)||s.moves.some(m=>m.b===b)) throw new Error('That brick is already placed.');
     if(cpuShareDone(me)) throw new Error('You’ve placed all your bricks.');
@@ -4985,7 +4991,7 @@ function cpuStep(extra=0){
     cpuPlace(1,pick.b,pick.x,pick.z); cpu.left--;
     cpu.say={cls:'hop',html:['Click! Got it.','Snap! In it goes.','Yes! That one fits.'][s.players[1].n%3]};
     cpuSend();
-    if(s.finished||s.turn!==1) return;     // Bloppit placed 3, or his last one
+    if(s.finished||s.turn!==1) return;     // the Gull placed 3, or his last one
     if(cpu.left>0){ cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(!s.finished&&s.turn===1) cpuStep(); },700); return; }
     cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(s.finished||s.turn!==1) return; cpuSay('think','Done! Your turn. Go go go!'); cpuNextTurn(); cpuSend(); },rndIn(500,900));
   },wait);
@@ -5008,7 +5014,7 @@ $('#bzCpuGo').onclick=async()=>{
     const lvl=bzLevel(), me=curPlayer(), pl=(nm,color)=>({name:nm,color,pen:{},stale:false,ms:0,miss:0,hint:0,n:0});
     cpu={timer:null,left:0,s:{code:'VS',ver:1,started:true,finished:false,perTurn:3,mode:'blitz',cpuLevel:lvl,nBricks:model.bricks.length,title,level:null,host:0,
       turn:0,turnPlaced:0,turnStart:Date.now()+COUNTDOWN_MS,moves:[],me:0,waiting:[],quota:Math.floor(model.bricks.length/2),
-      players:[pl(name,(me&&me.color&&me.color!=='#8A5A3B')?me.color:'#D2352B'),pl(CPU_LEVELS[lvl].name,'#8A5A3B')]}};
+      players:[pl(name,(me&&me.color&&me.color!=='#8A5A3B')?me.color:'#D2352B'),pl(CPU_LEVELS[lvl].name,'#9AA3AD')]}};
     mpRememberName(name);
     await mpEnter({cpu:true,code:'VS',playerId:'me',me:0,state:cpuPub()},true,name);
     cpuCountdown();
