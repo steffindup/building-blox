@@ -130,3 +130,37 @@ test('a relay: one friend builds half, the other finishes, both islands get the 
   const wa = JSON.parse(await a.page.evaluate(() => localStorage.getItem('bloppit-world-v1'))); assert.equal(wa.log.length, 1);
   assert.deepEqual(a.errors, []); await a.ctx.close();
 });
+
+test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the board, a report hides it', { skip: skip() }, async () => {
+  // Each player needs a pup: a finished build mints one
+  const mkPlayer = async () => { const t = await open('?nosplash=1'); await t.page.evaluate(() => document.getElementById('hmCont').click()); await t.page.waitForTimeout(1200); await autoPlace(t.page, 6); await t.page.waitForTimeout(3500);
+    await t.page.evaluate(() => document.getElementById('welcomeDlg').close()); await t.page.waitForTimeout(2500); return t; };
+  const a = await mkPlayer(), b = await mkPlayer();
+  const hub = async (t) => { await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => { location.hash = '#together'; document.getElementById('tab-mp').click(); }); await t.page.waitForTimeout(1500); };
+  await hub(a);
+  await a.page.evaluate(() => { document.getElementById('crewName').value = '2'; document.getElementById('crewMake').click(); }); await a.page.waitForTimeout(1500);
+  const code = await a.page.evaluate(() => document.querySelector('#crewOpen .cc')?.textContent); assert.match(code || '', /^[A-Z0-9]{6}$/);
+  assert.match(await a.text('#crewOpen h2'), /Lighthouse Builders/);
+  await hub(b);
+  await b.page.evaluate((c) => { document.getElementById('crewCodeIn').value = c; document.getElementById('crewJoin').click(); }, code); await b.page.waitForTimeout(1200);
+  await b.page.evaluate(() => document.querySelector('[data-crew-join]').click()); await b.page.waitForTimeout(1200);
+  assert.match(await b.text('#crewOpen'), /Waiting for the crew’s maker/);
+  await hub(a); await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);
+  await a.page.evaluate(() => document.querySelector('[data-crew-ok]').click()); await a.page.waitForTimeout(1500);
+  assert.equal(await a.page.evaluate(() => document.querySelectorAll('#crewOpen .crew-members span').length), 2);
+  // B finishes a Trail level: bricks go to the lighthouse
+  await b.page.evaluate(() => window.bloppitHome()); await b.page.evaluate(() => document.querySelector('[data-go="otter"]').click()); await b.page.waitForTimeout(500);
+  await b.page.evaluate(() => [...document.querySelectorAll('#view-game button')].find((x) => /Heart/.test(x.textContent) && x.offsetParent).click()); await b.page.waitForTimeout(800);
+  await b.page.evaluate(() => [...document.querySelectorAll('button')].find((x) => /^(Play|Start|Build)/.test(x.textContent.trim()) && x.offsetParent)?.click()); await b.page.waitForTimeout(800);
+  for (let i = 0; i < 40; i++) { await autoPlace(b.page, 1); if (await b.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; }
+  await b.page.waitForTimeout(3500); await b.page.evaluate(() => document.getElementById('winDlg').close());
+  await hub(b); await b.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await b.page.waitForTimeout(800);
+  assert.match(await b.text('#crewOpen'), /10 of 2,000 bricks/);
+  await b.page.evaluate(() => document.querySelector('[data-crew-say="0"]').click()); await b.page.waitForTimeout(1200);
+  assert.match(await b.text('#crewFeed'), /Nice clean build!/);
+  await hub(a); await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);
+  assert.match(await a.text('#crewFeed'), /Nice clean build!/);
+  await a.page.evaluate(() => document.querySelector('[data-crew-report]').click()); await a.page.evaluate(() => document.querySelector('[data-crew-report]').click()); await a.page.waitForTimeout(1200);
+  assert.doesNotMatch(await a.text('#crewFeed'), /Nice clean build!/);
+  assert.deepEqual(a.errors, []); assert.deepEqual(b.errors, []); await a.ctx.close(); await b.ctx.close();
+});

@@ -125,15 +125,15 @@ Challenges: on the Blitz page tap Make a challenge, build the puzzle, and you ge
 into Got a code? on another device (the website bloppit.com/build works too) to race the same puzzle.
 Weekly Bloppit: tap the Weekly Bloppit banner on the menu. Only a finish and whether it was clean are sent (two counts per week, no name, no time). Deleted after 8 weeks.
 Progress (scores, finished models, stars, the pup's name as a number from a fixed list) is saved under an anonymous pup code minted by our server; nothing typed by a child is sent. Grown-ups corner (behind the parental gate) shows the transfer code and the Family Link QR, and can delete the record.
-Rooms (Build together, live Blitz): friends join with a 5-letter code and the host lets them in. Players appear under generated labels ("Brave Otter 214"); typed names never leave the device. Relays: one friend builds half a model, the other finishes it from a code.
+Rooms (Build together, live Blitz): friends join with a 5-letter code and the host lets them in. Players appear under generated labels ("Brave Otter 214"); typed names never leave the device. Relays: one friend builds half a model, the other finishes it from a code. Crews (Together page): a shared lighthouse goal for an approved group; the maker lets each member in; the board only takes fixed phrases and stickers under generated names; report on every post; parents can remove a player from any crew in the Grown-ups corner.
 There is no chat and no voice: players in a room only place bricks.
 Links out of the app and sharing an invite are behind a parental gate (type a number written in words as digits).
 
 ## Age rating questionnaire
 
 Answer **None / No** to everything (violence, mature themes, gambling, horror, medical, alcohol, profanity, sexual content,
-contests, unrestricted web access). For "user-generated content / messaging and chat": **No** since October 2026. There is no
-typed chat and no voice anywhere in the app; players in a room only place bricks. Rooms are invite-only (a code, and
+contests, unrestricted web access). For "user-generated content / messaging and chat": **No**. There is no typed chat and no voice anywhere in the app; crews can
+only exchange phrases and stickers from a fixed list, under generated names, with a report button on every post. Rooms are invite-only (a code, and
 the host lets each player in), and there is no way to find or message strangers. The rating should come out at **4+**.
 
 ## App Privacy ("privacy label")
