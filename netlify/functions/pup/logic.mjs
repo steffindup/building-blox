@@ -15,7 +15,8 @@ const CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';   // no 0/O or 1/I/L
 export const PUP_TTL_MS = 365 * 86400_000;              // a pup not played for a year is deleted (privacy policy)
 export const XFER_TTL_MS = 72 * 3600_000;               // a transfer code lasts 72 hours
 const MAX_CHARS = 64_000;                               // a pup record is small: scores and dates
-const ALLOWED = new Set(['game', 'daily', 'weekly', 'trail', 'bz', 'pupStage', 'stars', 'xp', 'island']);
+const ALLOWED = new Set(['game', 'daily', 'weekly', 'trail', 'bz', 'pupStage', 'stars', 'xp', 'island', 'world']);
+const WORLD_BUILDS_MAX = 400;                           // distinct finished models kept per pup
 
 const rand = (n, chars) => { let s = ''; const a = new Uint32Array(n); crypto.getRandomValues(a); for (const v of a) s += chars[v % chars.length]; return s; };
 const newId = () => rand(24, ID_CHARS);
@@ -60,6 +61,25 @@ export function merge(server, incoming) {
     const total = Math.max(num(da.total) ?? 0, num(db.total) ?? 0, Object.values(days).filter((v) => v && v.first != null).length);
     if (total) d.total = total;
     if (Object.keys(d).length) out[key] = d;
+  }
+  // The world (Bloppitopia Lite): builds are joined keeping the best stars and the earliest finish; XP and bonus
+  // stars take the higher count; decorations bought are joined; the pup's name (an index) is the latest set.
+  if (a.world || b.world) {
+    const obj = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v : {});
+    const wa = obj(a.world), wb = obj(b.world), builds = { ...obj(wa.builds) };
+    for (const k of Object.keys(obj(wb.builds))) {
+      const x = builds[k], y = wb.builds[k];
+      if (!y || typeof y !== 'object') continue;
+      builds[k] = x ? { ...x, ...y, s: Math.max(num(x.s) ?? 0, num(y.s) ?? 0), t: Math.min(num(x.t) ?? Infinity, num(y.t) ?? Infinity), c: Math.max(num(x.c) ?? 1, num(y.c) ?? 1) } : y;
+    }
+    const seen = new Set(), log = [];
+    for (const k of [...(wa.log || []), ...(wb.log || [])]) if (builds[k] && !seen.has(k)) { seen.add(k); log.push(k); }
+    for (const k of Object.keys(builds)) if (!seen.has(k)) { seen.add(k); log.push(k); }
+    const keep = log.slice(-WORLD_BUILDS_MAX), kept = {};
+    for (const k of keep) kept[k] = builds[k];
+    const pupName = [wb.pupName, wa.pupName].map(num).find((v) => v != null && v >= 0) ?? -1;
+    out.world = { xp: Math.max(num(wa.xp) ?? 0, num(wb.xp) ?? 0), bonus: Math.max(num(wa.bonus) ?? 0, num(wb.bonus) ?? 0), builds: kept, log: keep,
+      decor: [...new Set([...(wa.decor || []), ...(wb.decor || [])].filter((d) => typeof d === 'string' && d.length <= 20))], pupName: pupName >= 0 ? pupName : -1, pupAsked: !!(wa.pupAsked || wb.pupAsked) };
   }
   for (const key of ['stars', 'xp']) out[key] = Math.max(num(a[key]) ?? 0, num(b[key]) ?? 0) || undefined;
   if (out.stars === undefined) delete out.stars;

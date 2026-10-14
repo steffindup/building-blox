@@ -627,6 +627,32 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 @media (max-width:640px){.who{padding-right:10px}.who-txt .tag{display:none}}
 .windlg::backdrop{background:rgba(10,16,24,.55)}
 .windlg .wc-pic{display:block;width:auto;height:140px;margin:-6px auto 2px}
+.windlg .pup-pic{height:150px;border-radius:50%;width:150px;object-fit:cover;object-position:center 20%;background:#E8F1F8;border:4px solid #fff;box-shadow:0 4px 0 var(--shadow)}
+.pup-names{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 14px}
+.pup-names button{font:inherit;font-weight:800;font-size:15px;padding:10px 6px;border-radius:12px;border:2px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer}
+.pup-names button:hover{border-color:var(--ink)}
+.world-strip:empty{display:none}
+.world-strip{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 12px;margin:8px 0 2px;padding:8px 12px;border-radius:12px;background:#FFF6D6;color:#14202C;font-weight:800;font-size:14px}
+.world-strip .ws-stars{font-size:22px;letter-spacing:3px;color:#E9A800;line-height:1}
+.world-strip .ws-stars i{font-style:normal;color:#D9D2B8}
+.world-strip .ws-up{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:#14202C;color:#fff;font-size:13px}
+.world-strip .ws-up img{width:22px;height:22px;border-radius:50%;object-fit:cover;object-position:center 20%}
+.world-toast{position:absolute;left:50%;top:60px;transform:translateX(-50%);z-index:4;display:flex;align-items:center;gap:10px;padding:8px 16px;border-radius:999px;background:#14202C;color:#fff;font-weight:800;font-size:15px;box-shadow:0 8px 24px rgba(0,0,0,.25);animation:tb-pop .45s ease-out;white-space:nowrap;max-width:calc(100% - 24px)}
+.world-toast[hidden]{display:none}
+.world-toast .ws-stars{font-size:22px;letter-spacing:3px;color:#F4BC22;line-height:1}
+.world-toast .ws-stars i{font-style:normal;color:rgba(255,255,255,.3)}
+.hm-world{display:grid;grid-template-columns:auto 1fr;gap:12px 14px;align-items:center;padding:12px 14px;border-radius:16px;background:var(--page);border:1px solid var(--line);box-shadow:0 2px 0 var(--shadow)}
+.hm-world .pup{width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:center 20%;background:#E8F1F8;border:3px solid #fff;box-shadow:0 2px 0 var(--shadow)}
+.hm-world .pup.splash{width:76px;height:76px}.hm-world .pup.legend{width:88px;height:88px;border-color:#F4BC22}
+.hm-world .wt{display:grid;gap:3px;min-width:0}
+.hm-world .wt b{font-family:var(--f-display);font-weight:400;font-size:22px;line-height:1.1}
+.hm-world .wt .sub{font-size:13px;font-weight:700;color:var(--muted)}
+.hm-world .wt .bar{height:8px;border-radius:4px;background:var(--bg);overflow:hidden}.hm-world .wt .bar i{display:block;height:100%;background:#008F9B;border-radius:4px}
+.hm-world .wn{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.hm-world .wn div{display:grid;justify-items:center;padding:6px;border-radius:12px;background:var(--bg)}
+.hm-world .wn b{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.1;color:#14202C}.hm-world .wn b.st{color:#E9A800}
+.hm-world .wn span{font-size:11px;font-weight:700;color:var(--muted)}
+.hm-world .wname{background:none;border:0;padding:0;font:inherit;font-family:var(--f-display);font-size:22px;color:inherit;cursor:pointer;text-align:left;border-bottom:2px dashed var(--line)}
 .wc-btns{flex-direction:column;align-items:stretch}.wc-btns button{width:100%}
 .win-stars{font-size:46px;letter-spacing:6px;color:var(--hi);line-height:1}
 .win-pic{display:block;margin:0 auto 6px;max-width:150px;max-height:110px;object-fit:contain;filter:drop-shadow(0 6px 10px rgba(0,0,0,.3));animation:rvBob 2.4s ease-in-out infinite}
@@ -692,7 +718,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 body.on-home .tabs{visibility:hidden}
 .home{max-width:760px;margin:0 auto;display:grid;gap:18px;padding-block:6px 28px}
 .hm-hello{display:flex;align-items:center;gap:14px}
-.hm-hello svg{width:74px;height:65px;flex:none}
+.hm-hello img{width:66px;height:66px;flex:none;border-radius:50%}
 .hm-bubble{position:relative;background:var(--page);border:1px solid var(--line);border-radius:16px;padding:10px 16px 12px;box-shadow:0 2px 0 var(--shadow)}
 .hm-bubble::before{content:"";position:absolute;left:-8px;top:50%;width:14px;height:14px;background:var(--page);border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:translateY(-50%) rotate(45deg)}
 .hm-bubble h2{font-size:26px;line-height:1.1}
@@ -875,16 +901,7 @@ body.on-home .tabs{visibility:hidden}
 <section class="view home" id="view-home">
 <div class="hm-side">
   <div class="hm-hello">
-    <svg viewBox="0 0 200 175" aria-hidden="true">
-      <circle cx="42" cy="38" r="16" fill="#8A5A3B"/><circle cx="42" cy="38" r="7" fill="#6B4229"/>
-      <circle cx="158" cy="38" r="16" fill="#8A5A3B"/><circle cx="158" cy="38" r="7" fill="#6B4229"/>
-      <ellipse cx="100" cy="94" rx="88" ry="74" fill="#8A5A3B"/>
-      <ellipse cx="100" cy="116" rx="56" ry="40" fill="#F3DEC0"/>
-      <ellipse cx="64" cy="88" rx="19" ry="22" fill="#1B1410"/><ellipse cx="136" cy="88" rx="19" ry="22" fill="#1B1410"/>
-      <circle cx="70" cy="79" r="7" fill="#FFFFFF"/><circle cx="142" cy="79" r="7" fill="#FFFFFF"/>
-      <path d="M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z" fill="#3A2418"/>
-      <path d="M100 120 q0 8 -9 10 M100 120 q0 8 9 10" stroke="#3A2418" stroke-width="4" stroke-linecap="round" fill="none"/>
-    </svg>
+    <img src="/art/head-bloppit.png" alt="" width="256" height="256">
     <div class="hm-bubble"><h2 id="hmHi">Hi there!</h2><p>What shall we build today?</p></div>
   </div>
   <button class="hm-cont" id="hmCont" type="button" hidden><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span><span class="go" aria-hidden="true">▶</span></button>
@@ -893,6 +910,7 @@ body.on-home .tabs{visibility:hidden}
     <div class="hd-nums"><div><b id="hdStreak">0</b><span>week streak 🔥</span></div><div><b id="hdTotal">0</b><span>Weeklies built</span></div></div>
     <p class="note" id="hdClean" style="margin:0"></p>
   </div>
+  <div class="hm-world" id="hmWorld" hidden></div>
 </div>
 <div class="hm-main">
   <h3 class="hm-sec">Solo</h3>
@@ -1020,6 +1038,7 @@ body.on-home .tabs{visibility:hidden}
         </div>
         <div class="status" id="status"></div>
         <div class="done-badge" id="doneBadge" hidden>You built it!</div>
+        <div class="world-toast" id="worldToast" hidden></div>
         <div class="turn-banner" id="turnBanner" hidden aria-live="polite"></div>
           <div class="buddy" id="buddy" hidden>
             <span class="bud-art" aria-hidden="true"><img class="st-rest" src="/art/bud-3q.png" alt="" width="300" height="398"><img class="st-cheer" src="/art/bud-happy.png" alt="" width="300" height="398"><img class="st-think" src="/art/bud-focused.png" alt="" width="300" height="398"><img class="st-oops" src="/art/bud-oops.png" alt="" width="300" height="398"></span>
@@ -1253,6 +1272,7 @@ body.on-home .tabs{visibility:hidden}
   <h2 id="trTitle">Done!</h2>
   <div class="ch-code" id="trCode" hidden></div>
   <div class="win-rows" id="trRows"></div>
+  <div class="world-strip" data-ws></div>
   <p class="win-best" id="trNote"></p>
   <div class="win-btns"><button class="ghost" id="trBook" type="button">📖 Build it for real</button><button class="ghost" id="trShare" type="button" hidden>Share the code</button><button class="ghost" id="trRetry" type="button" hidden>Try sending again</button><button class="primary sm" id="trDone" type="button">Done</button></div>
 </dialog>
@@ -1260,6 +1280,7 @@ body.on-home .tabs{visibility:hidden}
   <div class="win-stars">🏆</div>
   <h2 id="mpEndTitle">Built together!</h2>
   <div class="win-rows" id="mpEndRows"></div>
+  <div class="world-strip" data-ws></div>
   <p class="win-best" id="mpEndNote"></p>
   <div class="win-btns"><button class="ghost" id="mpEndClose" type="button">Look at the model</button><button class="ghost" id="mpEndBook" type="button">📖 Build it for real</button><button class="primary sm" id="mpEndNew" type="button">New game</button></div>
 </dialog>
@@ -1336,6 +1357,7 @@ body.on-home .tabs{visibility:hidden}
   <div class="win-stars" id="winStars"></div>
   <h2 id="winTitle">Level complete!</h2>
   <div class="win-rows" id="winRows"></div>
+  <div class="world-strip" data-ws></div>
   <p class="win-best" id="winBest"></p>
   <div class="win-btns"><button class="ghost" id="winBook" type="button">📖 Build it for real</button><button class="ghost" id="winReplay" type="button">Play again</button><button class="ghost" id="winMap" type="button">Level map</button><button class="primary sm" id="winNext" type="button">Next level</button></div>
 </dialog>
@@ -1343,8 +1365,16 @@ body.on-home .tabs{visibility:hidden}
 <dialog class="windlg" id="welcomeDlg" aria-labelledby="wcTitle">
   <img class="wc-pic" src="/art/bud-happy.png" alt="" width="300" height="398">
   <h2 id="wcTitle">You built it!</h2>
+  <div class="world-strip" data-ws></div>
   <p class="win-best" id="wcNote">Your first Bloppit. What next?</p>
   <div class="win-btns wc-btns"><button class="primary sm" id="wcTrail" type="button">Keep building</button><button class="ghost" id="wcWeekly" type="button">📅 This week’s Bloppit</button><button class="ghost" id="wcLibrary" type="button">Explore builds</button></div>
+</dialog>
+<dialog class="windlg" id="pupDlg" aria-labelledby="pupTitle">
+  <img class="wc-pic pup-pic" src="/art/pup.png" alt="" width="239" height="300">
+  <h2 id="pupTitle">Meet your pup!</h2>
+  <p class="win-best" style="margin-top:0">Your own little otter. Pick a name, or name it later.</p>
+  <div class="pup-names" id="pupNames" role="group" aria-label="Pup names"></div>
+  <div class="win-btns"><button class="ghost" id="pupLater" type="button">Name it later</button></div>
 </dialog>
 <dialog class="lightbox" id="bookDlg" aria-label="Booklet page">
   <div class="lb-top"><div class="pg-top"><div class="pg-step" id="lbStep"></div><div class="callout" id="lbCallout"></div></div>
@@ -2373,7 +2403,7 @@ const playControls=new THREE.OrbitControls(playCam,renderer.domElement);
 playControls.enableDamping=true; playControls.dampingFactor=.1; playControls.enabled=false;
 const playGroup=new THREE.Group(), placedGroup=new THREE.Group(), ghostGroup=new THREE.Group(), hintGroup=new THREE.Group();
 playGroup.add(placedGroup,ghostGroup,hintGroup); playScene.add(playGroup);
-let floor=null, layerGrid=null, cur=0, viewPage=0, follow=true, placed=new Set(), sel=null, hintOn=false, drops=[], busy=false, lastAnchor=null;
+let floor=null, layerGrid=null, cur=0, viewPage=0, follow=true, placed=new Set(), sel=null, hintOn=false, drops=[], busy=false, lastAnchor=null, run={miss:0,hints:new Set(),auto:0};
 // The model has no baseplate: the first brick goes anywhere and fixes where the model sits.
 // Until the first step is finished, `cands` holds every position the model could be in that fits what's been placed so far.
 let off=null, cands=[], placedN=0;
@@ -2457,6 +2487,7 @@ function resetBuild(){
   placedGroup.clear(); ghostGroup.clear(); hintGroup.clear();
   endReveal(true);
   placed=new Set(); off=null; cands=[]; placedN=0; placedBoxes=[]; cur=0; viewPage=0; follow=true; sel=null; drops=[]; busy=false; lastAnchor=null;
+  run={miss:0,hints:new Set(),auto:0};  // this attempt's misses, hinted steps and placed-for-me bricks (the clean score)
   // A picture goes on its baseplate, so where each tile goes is fixed from the start
   if(model&&model.kind==='picture') off={x:0,z:0};
   if(model) makePieces();
@@ -2716,6 +2747,7 @@ function rotateSel(){ if(!sel||sel.sx===sel.sz) return; [sel.sx,sel.sz]=[sel.sz,
 function renderHints(){
   hintGroup.clear(); $('#hintBtn').setAttribute('aria-pressed',hintOn);
   if(!hintOn||!model||cur>=model.steps.length) return;
+  run.hints.add(cur);
   { const g=game||mp; if(g&&!g.hintSteps.includes(cur)){ g.hintSteps.push(cur);
       if(mpBlitz()){ mpPost({action:'hint'}).then(j=>mpApply(j.state)).catch(()=>{}); mpFlash('+5s'); }
       else charge('hint',5); } }
@@ -2779,6 +2811,7 @@ function tryPlace(){
   const o=curOff(), u=usedSet();
   const turned=sel.sx!==sel.sz&&s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o||Math.abs(b.x+o.x-ax)<=2&&Math.abs(b.z+o.z-az)<=2));
   const unused=!s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&Math.min(b.sx,b.sz)===Math.min(sel.sx,sel.sz)&&Math.max(b.sx,b.sz)===Math.max(sel.sx,sel.sz));
+  if(!autoBusy) run.miss++;
   setStatus(unused?`Step ${cur+1} doesn’t use this brick. Put it back and check the booklet.`:turned?'Close. Try turning it with R.':'Not quite. Compare with the picture in the booklet.','err');
   sfx.bonk();
   const g=ghostGroup.children[0]; if(g){g.material=errMat; setTimeout(()=>{if(g.parent) g.material=ghostMat(sel?sel.c:0);},380);}
@@ -2807,7 +2840,7 @@ function placeBrick(t,ax,az){
   setTimeout(()=>{ busy=false; if(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))) cur++; follow=true; if(game||mp) hintOn=false;
     setStatus(cur>=model.steps.length?'Every step complete. Great build!':`On to step ${cur+1}.${model.steps[cur].hang?' These clip on underneath the bricks above.':''}${held?'':' Open the parts box for the next brick.'}`, cur>=model.steps.length?'ok':'');
     updateBuildUI(); frameBuild(true);
-    if(cur>=model.steps.length&&!mp){ buildFinished(game?'trail':'quick'); setTimeout(()=>playReveal(game?winLevel:welcomeOn()?welcomeDone:null),350); } }, 700);
+    if(cur>=model.steps.length&&!mp){ buildFinished(game?'trail':'quick'); setTimeout(()=>playReveal(game?winLevel:welcomeOn()?welcomeDone:worldAfterQuick),350); } }, 700);
 }
 function autoPlace(){
   if(busy||!model||cur>=model.steps.length||mpBlitz()) return;
@@ -2821,6 +2854,7 @@ function autoPlace(){
   const prev=held, prevSel=sel?{...sel}:null, n0=placedN;
   sel={sx:t.sx,sz:t.sz,c:t.c}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2};
   autoBusy=true; tryPlace(); autoBusy=false;
+  if(placedN>n0) run.auto++;
   if((game||mp)&&placedN>n0) charge('auto',10);
   lastAnchor=null; ghostGroup.visible=false;
   if(prev&&hand.includes(prev)){ held=prev; sel=prevSel; setGhost(); }
@@ -4385,7 +4419,7 @@ renderWho();
 // Each player profile on this device gets a pup id, minted by the server at the first finish. Scores and dates
 // (trail levels, Weekly Bloppit record) are kept under it, so progress survives a lost iPad or cleared site data.
 // Nothing typed by a child goes up: the name and age stay on this device. The id travels in a header, never a URL.
-const PUP_FIELDS=['game','daily','weekly'];
+const PUP_FIELDS=['game','daily','weekly','world'];
 let pupTimer=null, pupBusy=false, pupAgain=false;
 async function pupApi(method,body,pid){
   const headers=body?{'content-type':'application/json'}:{}; if(pid) headers['x-pup']=pid;
@@ -4396,14 +4430,15 @@ async function pupApi(method,body,pid){
   return j;
 }
 function pupLocal(id){
-  const d={}; for(const k of PUP_FIELDS){ try{ const v=JSON.parse(localStorage.getItem(keyFor(id||players.cur,{game:GAME_KEY,daily:DAILY_KEY,weekly:WEEKLY_KEY}[k]))); if(v) d[k]=v; }catch(e){} }
+  const d={}; for(const k of PUP_FIELDS){ try{ const v=JSON.parse(localStorage.getItem(keyFor(id||players.cur,{game:GAME_KEY,daily:DAILY_KEY,weekly:WEEKLY_KEY,world:WORLD_KEY}[k]))); if(v) d[k]=v; }catch(e){} }
   return d;
 }
 function pupApply(id,d){
   if(!d) return;
-  for(const k of PUP_FIELDS){ if(d[k]) try{ localStorage.setItem(keyFor(id||players.cur,{game:GAME_KEY,daily:DAILY_KEY,weekly:WEEKLY_KEY}[k]),JSON.stringify(d[k])); }catch(e){} }
+  if(d.world) d={...d,world:worldMerge(worldStore(),d.world)};  // what this device did since the push wins
+  for(const k of PUP_FIELDS){ if(d[k]) try{ localStorage.setItem(keyFor(id||players.cur,{game:GAME_KEY,daily:DAILY_KEY,weekly:WEEKLY_KEY,world:WORLD_KEY}[k]),JSON.stringify(d[k])); }catch(e){} }
 }
-function pupHasProgress(d){ return !!((d.game&&((d.game.best&&Object.keys(d.game.best).length)||(d.game.bbest&&Object.keys(d.game.bbest).length)))||(d.daily&&Object.keys(d.daily.days||{}).length)||(d.weekly&&Object.keys(d.weekly.days||{}).length)); }
+function pupHasProgress(d){ if(d.world&&d.world.builds&&Object.keys(d.world.builds).length) return true; return !!((d.game&&((d.game.best&&Object.keys(d.game.best).length)||(d.game.bbest&&Object.keys(d.game.bbest).length)))||(d.daily&&Object.keys(d.daily.days||{}).length)||(d.weekly&&Object.keys(d.weekly.days||{}).length)); }
 // Push this device's record; the server merges it with what it holds and sends the merged record back.
 function pupPush(){ if(leavingPlayer) return; clearTimeout(pupTimer); pupTimer=setTimeout(pupSync,1500); }
 async function pupSync(){
@@ -4500,6 +4535,7 @@ function buildStarted(kind){
 // Called when a build is finished (every build, any mode)
 function buildFinished(kind){
   const o=evStore(); o.finished=(o.finished||0)+1; evStoreSet(o);
+  try{ worldLast=worldFinish(welcomeOn()?'welcome':kind); worldStrips(); }catch(e){ console.warn('world',e); }
   track('build_completed','build_completed:'+kind);
   if(o.finished===1) track('first_build_completed','activation'+evChannel());
 }
@@ -4618,7 +4654,7 @@ function mpApply(s){
   if(s.started&&!mp.entered){ mp.entered=true; if(tab!=='build'&&tab!=='box') setTab('build'); }
   document.title=(mpMyTurn()?'● Your turn · ':'')+'Bloppit';
   updateMpBar(); if(tab==='mp'||tab==='blitz') renderMpView(); renderChat(); renderKnock(); voSync(s);
-  if(s.finished&&!mp.ended){ mp.ended=true; setStatus(s.mode==='blitz'?'Finished! Let’s see who was quickest.':'Finished! You built it together.','ok'); setTimeout(mpShowEnd,1000); }
+  if(s.finished&&!mp.ended){ mp.ended=true; if(!mp.cpu) buildFinished(s.mode==='blitz'?'blitz':'room'); setStatus(s.mode==='blitz'?'Finished! Let’s see who was quickest.':'Finished! You built it together.','ok'); setTimeout(mpShowEnd,1000); }
 }
 function updateMpBar(){
   const s=mp&&mp.state;
@@ -5428,6 +5464,129 @@ loadSample(0); setTab('create'); clearTimeout(timer); rebuild(); requestAnimatio
     $('#resume').hidden=false;
   } else saveOn=true;
 }
+/* ---------- Your world (Bloppitopia Lite): XP, Build Stars and the pup ----------
+   Two currencies and no more (Build Stars draft, Oct 2026). XP measures how much you have built; Build Stars how
+   well. Every finished model earns XP once (10 short / 20 medium / 35 long) and up to three stars: one for
+   finishing, one for no hints, one for clean (no wrong placements either). Stars on a model are the best of all
+   attempts. The Weekly's first finish adds +10 XP and a bonus star; a Blitz win against a Gull is 10 XP and one
+   star, never clean stars. Nothing is bought, sold, traded or lost. The record lives per player on this device
+   and under the pup on the server (the world field); nothing in it is typed by a child: the pup's name is an
+   index into a fixed list, and a photo build is keyed by a hash of its file name. */
+var WORLD_KEY='bloppit-world-v1', worldLast=null;
+var PUP_NAMES=['Pebble','Kelp','Sandy','Bubbles','Coral','Finn','Misty','Shelly','Ripple','Dash','Mango','Tide'];
+var PUP_STAGES=[{name:'Pup',at:0},{name:'Splash',at:10},{name:'Legend',at:40}];
+var ISLAND_STAGES=[{name:'Beach',at:0,slots:0},{name:'Hut',at:1,slots:1},{name:'Workshop',at:3,slots:3},{name:'Village',at:10,slots:6}];
+var DECOR=[{id:'flag',name:'Flag',cost:3},{id:'campfire',name:'Campfire',cost:3},{id:'bench',name:'Bench',cost:3},{id:'lantern',name:'Lantern',cost:5},{id:'signpost',name:'Signpost',cost:5},{id:'rockpool',name:'Rock pool',cost:5},
+  {id:'sandcastle',name:'Sandcastle',cost:5},{id:'hammock',name:'Hammock',cost:8},{id:'kite',name:'Kite',cost:5},{id:'palm',name:'Palm',cost:8},{id:'crab',name:'Crab',cost:3},{id:'buoy',name:'Buoy',cost:8}];
+function worldStore(){ try{ const o=JSON.parse(localStorage.getItem(pkey(WORLD_KEY))); if(o&&o.builds) return o; }catch(e){} return {xp:0,bonus:0,builds:{},log:[],decor:[],pupName:-1}; }
+// Join two world records (same rules as the server): best stars per model, higher XP, decorations and the name kept.
+function worldMerge(a,b){
+  a=a||{}; b=b||{}; const builds={...(a.builds||{})};
+  for(const k of Object.keys(b.builds||{})){ const x=builds[k], y=b.builds[k]; builds[k]=x?{...x,...y,s:Math.max(x.s||0,y.s||0),t:Math.min(x.t||Infinity,y.t||Infinity),c:Math.max(x.c||1,y.c||1)}:y; }
+  const log=[]; for(const k of [...(a.log||[]),...(b.log||[]),...Object.keys(builds)]) if(builds[k]&&!log.includes(k)) log.push(k);
+  const pn=[a.pupName,b.pupName].find(v=>typeof v==='number'&&v>=0);
+  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],pupName:pn==null?-1:pn,pupAsked:!!(a.pupAsked||b.pupAsked)};
+}
+function worldSet(o){ try{ localStorage.setItem(pkey(WORLD_KEY),JSON.stringify(o)); }catch(e){} pupPush(); }
+const worldCount=o=>o.log.length;                                   // distinct models finished
+const worldStarsEarned=o=>Object.values(o.builds).reduce((a,b)=>a+(b.s||0),0)+(o.bonus||0);
+const worldStarsSpent=o=>(o.decor||[]).reduce((a,id)=>{ const d=DECOR.find(x=>x.id===id); return a+(d?d.cost:0); },0);
+const worldStars=o=>worldStarsEarned(o)-worldStarsSpent(o);
+const stageOf=(list,n)=>{ let k=0; list.forEach((st,i)=>{ if(n>=st.at) k=i; }); return k; };
+const pupStage=o=>stageOf(PUP_STAGES,worldCount(o)), islandStage=o=>stageOf(ISLAND_STAGES,worldCount(o));
+const pupName=o=>o.pupName>=0&&PUP_NAMES[o.pupName]||'';
+function hash32(str){ let h=2166136261; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0).toString(36); }
+// A model's key: catalogue models by name, photo models by a hash (the file name never leaves the device)
+function modelKey(){ if(!model) return ''; const n=model.bricks.length;
+  if(game){ const L=levelsOf(gameTrail())[game.lvl]; return `t:${gameTrail()}:${game.lvl}:${L?L.name:''}`; }
+  if(mp&&mp.cpu&&mp.state&&mp.state.solo&&cpu&&cpu.trial&&cpu.trial.kind==='weekly') return `w:${cpu.trial.week}`;
+  if(photos.length&&photos.every(p=>p.sample)) return `m:${photos[0].name}:${n}`;
+  return `p:${hash32((photos[0]&&photos[0].name||'')+':'+n)}`;
+}
+function worldFinish(kind){
+  if(!model) return null;
+  const o=worldStore(), N=model.bricks.length;
+  let miss=run.miss, hint=run.hints.size, auto=run.auto, won=true;
+  if(mp&&mp.state){ const p=mp.state.players[mp.me]||{};
+    if(mp.state.mode==='blitz'){ miss=p.miss||0; hint=p.hint||0; auto=0;
+      if(mp.cpu&&!mp.state.solo){ const sc=mpScores(mp.state).sort((a,b)=>a.ms-b.ms); won=sc[0]&&sc[0].i===mp.me; } }
+    else { hint=(mp.pen&&mp.pen.hint)||0; auto=(mp.pen&&mp.pen.auto)||0; } }
+  if(kind==='welcome'){ hint=0; auto=0; }
+  const blitz=kind==='blitz'&&mp&&mp.cpu&&!mp.state.solo;
+  if(blitz&&!won) return null;
+  const key=modelKey(), prev=o.builds[key], first=!prev;
+  const noHint=hint+auto===0, clean=noHint&&miss===0;
+  const stars=blitz?1:1+(noHint?1:0)+(clean?1:0);
+  let xp=first?(blitz?10:N<=20?10:N<=40?20:35):0, bonus=0;
+  if(kind==='weekly'&&first){ xp+=10; bonus=1; }
+  const before={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
+  const rec=prev?{...prev,s:Math.max(prev.s||0,stars),c:(prev.c||1)+1}:{n:N,s:stars,k:kind,t:Date.now(),c:1};
+  o.builds[key]=rec; if(first) o.log.push(key); o.xp=(o.xp||0)+xp; o.bonus=(o.bonus||0)+bonus;
+  worldSet(o);
+  worldThumbSave(key);
+  const after={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
+  const r={key,kind,stars,best:rec.s,gained:first?stars+bonus:Math.max(0,stars-(prev.s||0)),xp,bonus,first,clean,noHint,miss,hint:hint+auto,before,after,
+    pupUp:after.pup>before.pup,islandUp:after.island>before.island,total:worldStars(o),count:after.n};
+  track('world_finish:'+stars+'star'+(first?'':'_again'), r.pupUp?'pup_stage:'+PUP_STAGES[after.pup].name.toLowerCase():'', r.islandUp?'island_stage:'+ISLAND_STAGES[after.island].name.toLowerCase():'');
+  return r;
+}
+// A small transparent picture of the finished model, kept on this device for the island (never sent up)
+const THUMB_KEY='bloppit-thumbs-v1'; let worldThumbR=null;
+function worldThumbs(){ try{ return JSON.parse(localStorage.getItem(THUMB_KEY))||{}; }catch(e){ return {}; } }
+function worldThumbSave(key){
+  try{
+    if(!model) return;
+    if(!worldThumbR){ worldThumbR=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true}); worldThumbR.setPixelRatio(1); worldThumbR.setSize(240,180); worldThumbR.outputEncoding=THREE.sRGBEncoding; worldThumbR.setClearColor(0x000000,0); }
+    const cam=new THREE.PerspectiveCamera(30,4/3,.1,2000); frame(cam,null);
+    showStep(model.steps.length,false); worldThumbR.render(scene,cam);
+    const url=worldThumbR.domElement.toDataURL('image/png');
+    const t=worldThumbs(); t[key]={u:url,t:Date.now()};
+    const keys=Object.keys(t).sort((a,b)=>t[b].t-t[a].t).slice(0,40); const keep={}; for(const k of keys) keep[k]=t[k];
+    localStorage.setItem(THUMB_KEY,JSON.stringify(keep));
+  }catch(e){}
+}
+function worldThumb(key){ const t=worldThumbs()[key]; if(t) return t.u; const m=/^m:(.+):\d+$/.exec(key)||/^t:[a-z]+:\d+:(.+)$/.exec(key); if(m){ const smp=SAMPLES.find(x=>x.name===m[1]); if(smp){ if(!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png'); return smp.thumb; } } return ''; }
+const wsStars=n=>`<span class="ws-stars" aria-label="${n} of 3 stars">${'★'.repeat(n)}<i>${'★'.repeat(Math.max(0,3-n))}</i></span>`;
+function worldStripHTML(r){
+  if(!r) return '';
+  const o=worldStore(), what=r.kind==='blitz'?'Race won':r.clean?'Clean build!':r.noHint?'No hints!':'Finished!';
+  const parts=[wsStars(r.stars),`<span>${what}</span>`];
+  if(r.xp) parts.push(`<span>+${r.xp} XP</span>`); else if(!r.first) parts.push('<span>Built before · best kept</span>');
+  if(r.bonus) parts.push('<span>+1 Weekly star</span>');
+  if(r.pupUp) parts.push(`<span class="ws-up"><img src="/art/pup.png" alt="">${pupName(o)||'Your pup'} is a ${PUP_STAGES[r.after.pup].name}!</span>`);
+  else if(r.islandUp) parts.push(`<span class="ws-up">🏝️ ${ISLAND_STAGES[r.after.island].name} built!</span>`);
+  return parts.join('');
+}
+function worldStrips(){ const h=worldStripHTML(worldLast); document.querySelectorAll('[data-ws]').forEach(el=>{ el.innerHTML=h; }); }
+function worldToast(){
+  const r=worldLast, el=$('#worldToast'); if(!r){ el.hidden=true; return; }
+  el.innerHTML=worldStripHTML(r); el.hidden=false; clearTimeout(worldToast.t); worldToast.t=setTimeout(()=>{ el.hidden=true; },6000);
+}
+// After a Quick Build's reveal: the stars, and on the first ever finish the pup
+function worldAfterQuick(){ worldToast(); pupMaybe(); }
+function pupMaybe(then){ const o=worldStore(); if(o.pupName>=0||worldCount(o)!==1||o.pupAsked){ if(then) then(); return; } o.pupAsked=true; worldSet(o); pupOpen(then); }
+function pupOpen(then){
+  const d=$('#pupDlg'); $('#pupNames').innerHTML=PUP_NAMES.map((n,i)=>`<button type="button" data-pup="${i}">${n}</button>`).join('');
+  d.onclose=()=>{ d.onclose=null; renderHome(); if(then) then(); };
+  if(!d.open) d.showModal();
+}
+$('#pupNames').addEventListener('click',e=>{ const b=e.target.closest('[data-pup]'); if(!b) return; const o=worldStore(); o.pupName=+b.dataset.pup; worldSet(o); track('pup_named'); sfx.chime(); $('#pupDlg').close(); });
+$('#pupLater').onclick=()=>{ track('pup_name_later'); $('#pupDlg').close(); };
+$('#pupDlg').addEventListener('cancel',e=>{ e.preventDefault(); $('#pupDlg').close(); });
+function renderHomeWorld(){
+  const el=$('#hmWorld'), o=worldStore(), n=worldCount(o);
+  if(!n){ el.hidden=true; return; }
+  const ps=pupStage(o), is=islandStage(o), next=PUP_STAGES[ps+1], inext=ISLAND_STAGES[is+1];
+  const pct=next?Math.round(100*(n-PUP_STAGES[ps].at)/(next.at-PUP_STAGES[ps].at)):100;
+  el.hidden=false;
+  el.innerHTML=`<img class="pup ${PUP_STAGES[ps].name.toLowerCase()}" src="/art/pup.png" alt="">
+    <div class="wt">${o.pupName>=0?`<b>${PUP_NAMES[o.pupName]} <span class="sub">· ${PUP_STAGES[ps].name}</span></b>`:`<button class="wname" id="wName" type="button">Name your pup</button>`}
+      <span class="sub">${next?`${next.at-n} more build${next.at-n===1?'':'s'} to ${next.name}`:'Legend of Otter Island'}</span><span class="bar"><i style="width:${Math.max(4,pct)}%"></i></span></div>
+    <div class="wn"><div><b>${n}</b><span>build${n===1?'':'s'}</span></div><div><b class="st">${worldStars(o)}</b><span>Build Stars</span></div><div><b>${o.xp||0}</b><span>XP</span></div></div>
+    <span class="sub" style="grid-column:1/-1;font-size:13px;font-weight:700;color:var(--muted)">🏝️ Otter Island: ${ISLAND_STAGES[is].name}${inext?` · ${inext.at-n} more to the ${inext.name}`:''}</span>`;
+  const w=$('#wName'); if(w) w.onclick=()=>pupOpen();
+}
+
 /* ---------- First session: Bloppit hands over the bricks for one small build ----------
    A first visit (no build started or finished on this device, nothing to resume) skips the menu and opens an
    six-brick tree on the build stage. Bloppit puts each step's brick straight into the player's hand and the
@@ -5467,7 +5626,7 @@ function welcomeOffer(left){
 }
 function welcomeDone(){
   welcomeVer=-1; track('welcome_build_completed'); if(welcomeBook){ welcomeBook=false; toggleBook(); }
-  const d=$('#welcomeDlg'); if(d.open) return; d.showModal();
+  pupMaybe(()=>{ const d=$('#welcomeDlg'); if(!d.open) d.showModal(); });
 }
 { const d=$('#welcomeDlg'), go=f=>{ d.close(); endReveal(true); f(); };
   $('#wcTrail').onclick=()=>go(()=>{ track('welcome_fork:trail'); homeGo('otter'); });
@@ -5508,7 +5667,8 @@ function renderHome(){
   const p=curPlayer(), named=p.name&&!/^Player \d+$/.test(p.name.trim());
   $('#hmHi').innerHTML=named?`Hi <button class="hm-who" id="hmWho" type="button">${escapeHTML(p.name.trim())}</button>!`:'Hi there!';
   const w=$('#hmWho'); if(w) w.onclick=()=>$('#whoBtn').click();
-  homeCont=homeContinue(); $('#hmCont').hidden=!homeCont;
+  homeCont=homeContinue(); $('#hmCont').hidden=!homeCont; renderHomeWorld();
+  if(tab==='home') pupMaybe();  // the first finish anywhere (a Trail level, a race) meets the pup on the way back to the menu
   if(homeCont){ $('#hmContT').textContent=homeCont.t; $('#hmContS').textContent=homeCont.s;
     $('#hmContBar').hidden=homeCont.p<0; $('#hmContBar i').style.width=Math.max(4,homeCont.p)+'%'; }
   const st=playerStats(players.cur);
