@@ -33,10 +33,11 @@ test('first visit: the menu shows Start here; one tap opens the six-brick build;
   assert.equal(await t.view(), 'view-build'); assert.match(await t.text('#progress'), /0 of 6/); assert.match(await t.text('#budSay'), /I’m Bloppit/);
   assert.equal(await t.page.evaluate(() => document.getElementById('buddy').className), 'buddy offer');
   await autoPlace(t.page, 6); await t.page.waitForTimeout(4000);
-  assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), true);
-  await t.page.evaluate(() => document.querySelector('[data-pup="0"]').click()); await t.page.waitForTimeout(400);
-  assert.equal(await t.page.evaluate(() => document.getElementById('welcomeDlg').open), true);
+  assert.equal(await t.page.evaluate(() => document.getElementById('welcomeDlg').open), true);   // one screen: stars, the pup's name, the fork
   assert.match(await t.text('#welcomeDlg [data-ws]'), /\+10 XP.*Hut built/);
+  assert.equal(await t.page.evaluate(() => document.getElementById('wcPup').hidden), false);
+  await t.page.evaluate(() => document.querySelector('#wcNames [data-pup="0"]').click()); await t.page.waitForTimeout(300);
+  assert.match(await t.text('#wcPupSub'), /Pebble it is/);
   await t.page.evaluate(() => document.getElementById('wcTrail').click()); await t.page.waitForTimeout(500);
   assert.equal(await t.view(), 'view-game');
   await t.page.evaluate(() => document.getElementById('tab-island').click()); await t.page.waitForTimeout(800);
