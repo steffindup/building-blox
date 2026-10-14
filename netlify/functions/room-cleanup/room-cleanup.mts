@@ -8,6 +8,7 @@ import { getStore } from "@netlify/blobs";
 const ROOM_TTL_MS = 3 * 86400_000; // keep in step with ROOM_TTL_MS in ../room/logic.mjs
 import { CHALLENGE_TTL_MS, WEEKLY_KEEP_WEEKS, weekOf } from "../challenge/logic.mjs";
 import { PUP_TTL_MS } from "../pup/logic.mjs";
+import { EVENT_KEEP_DAYS } from "../event/logic.mjs";
 
 export default async () => {
   const store = getStore({ name: "building-blox-rooms", consistency: "strong" });
@@ -68,6 +69,10 @@ export default async () => {
     if (x && typeof x.exp === "number" && now <= x.exp) continue;
     await store.delete(key); deleted++;
   }
+  // Usage counts older than EVENT_KEEP_DAYS
+  const oldestEv = new Date(now - EVENT_KEEP_DAYS * 86400_000).toISOString().slice(0, 10);
+  const { blobs: evs } = await store.list({ prefix: "ev/" });
+  for (const { key } of evs) if (key.slice("ev/".length) < oldestEv) { await store.delete(key); deleted++; }
   console.log(`room-cleanup: ${livePups} pups kept`);
   console.log(`room-cleanup: ${live.size} rooms and ${liveCh.size} challenges kept, ${deleted} blobs deleted`);
 };

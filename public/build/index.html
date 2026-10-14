@@ -2163,6 +2163,7 @@ const escapeHTML=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','
 function addFiles(files){
   usePicked=true;
   const imgs=[...files].filter(f=>f.type.startsWith('image/')); if(!imgs.length) return;
+  track('creator_started');
   photos=photos.filter(p=>!p.sample);
   let left=imgs.length;
   imgs.forEach(f=>{
@@ -2205,8 +2206,8 @@ function rebuild(){
   const m=buildModel();
   if(!m||m.error){ model=null; for(const im of instanced){modelGroup.remove(im);} instanced=[]; showStep(0);
     $('#stats').innerHTML=''; $('#partsList').innerHTML=''; $('#startBuild').disabled=true;
-    if(m&&m.error) showMsg(m.error,'err'); return; }
-  model=m; modelVersion++; buildStep=0; syncUseBar();
+    if(m&&m.error) showMsg(m.error,'err'); if(photos.some(p=>!p.sample)) track('build_failure:creator'); return; }
+  model=m; if(photos.some(p=>!p.sample)) track('creator_succeeded'); modelVersion++; buildStep=0; syncUseBar();
   TILES=m.kind==='picture';
   buildScene(m);
   showStep(m.steps.length,false);
@@ -2826,7 +2827,7 @@ function placeBrick(t,ax,az){
   const s=model.steps[cur];
   const done=off?s.bricks.every(b=>placed.has(b)):cands[0].used.size>=s.bricks.length;
   if(!done){
-    const first=placedN===1;
+    const first=placedN===1; if(first) buildStarted(game?'trail':mp?(mp.state&&mp.state.calm?'weekly':mp.cpu?'blitz':'room'):'quick');
     setStatus(first?'First brick down. The model builds out from here.':(['Nice!','Snapped in.','Perfect fit.','Got it.'][placedN%4])+(hand.length?'':' Your hand is empty.'),'ok');
     updateBuildUI(); if(first) frameBuild(true); return;
   }
@@ -2836,7 +2837,7 @@ function placeBrick(t,ax,az){
   setTimeout(()=>{ busy=false; if(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))) cur++; follow=true; if(game||mp) hintOn=false;
     setStatus(cur>=model.steps.length?'Every step complete. Great build!':`On to step ${cur+1}.${model.steps[cur].hang?' These clip on underneath the bricks above.':''}${held?'':' Open the parts box for the next brick.'}`, cur>=model.steps.length?'ok':'');
     updateBuildUI(); frameBuild(true);
-    if(cur>=model.steps.length&&!mp) setTimeout(()=>playReveal(game?winLevel:null),350); }, 700);
+    if(cur>=model.steps.length&&!mp){ buildFinished(game?'trail':'quick'); setTimeout(()=>playReveal(game?winLevel:null),350); } }, 700);
 }
 function autoPlace(){
   if(busy||!model||cur>=model.steps.length||mpBlitz()) return;
@@ -4420,7 +4421,7 @@ $('#grownXfer').onclick=async()=>{
   try{
     if(!me.pup){ await pupSync(); if(!me.pup){ note.textContent='Finish one build first, then make a code.'; return; } }
     note.textContent='Making a code…';
-    const j=await pupApi('POST',{action:'transfer'},me.pup);
+    const j=await pupApi('POST',{action:'transfer'},me.pup); track('transfer_made');
     out.textContent=j.code; out.hidden=false;
     note.textContent=`Type this on the other device within 72 hours. It works once.`;
   }catch(e){ note.textContent=e.message; }
@@ -4430,7 +4431,7 @@ $('#grownClaimForm').addEventListener('submit',async e=>{
   if(code.length!==8){ note.textContent='A transfer code has 8 letters and numbers.'; return; }
   $('#grownClaimGo').disabled=true; note.textContent='Bringing the player here…';
   try{
-    const j=await pupApi('POST',{action:'claim',code});
+    const j=await pupApi('POST',{action:'claim',code}); track('transfer_claimed');
     if(players.list.some(p=>p.pup===j.pup)){ note.textContent='That player is already on this device.'; return; }
     const id='p'+(++players.n+1), n=players.list.length+1;
     players.list.push({id,name:'Player '+n,age:null,color:AV_COLORS[(n-1)%AV_COLORS.length],pup:j.pup}); pupApply(id,j.data); playersSave();
@@ -4450,6 +4451,43 @@ $('#grownDel').onclick=async()=>{
 };
 // On load: if this player already has a pup, send what this device holds and take back the merged record.
 if(curPlayer()&&curPlayer().pup) pupPush();
+
+/* ---------- First-party usage counts ---------- */
+// A handful of named events, one count per day per country on the server, with no identifier for the player or
+// the device (netlify/functions/event). The questions they answer: do strangers finish a first build, and do they
+// start a second one by choice. The device remembers only how many builds it has started and finished, and which
+// short link it arrived by, so "first" and "second" can be told apart without the server knowing anyone.
+const EV_KEY='bloppit-ev-v1';
+function evStore(){ try{ return JSON.parse(localStorage.getItem(EV_KEY))||{}; }catch(e){ return {}; } }
+function evStoreSet(o){ try{ localStorage.setItem(EV_KEY,JSON.stringify(o)); }catch(e){} }
+let evQueue=[], evTimer=null;
+function track(...names){
+  for(const n of names) if(n&&!evQueue.includes(n)) evQueue.push(n);
+  clearTimeout(evTimer); evTimer=setTimeout(evFlush,800);
+}
+function evFlush(){
+  const events=evQueue.splice(0,5); if(!events.length) return;
+  const body=JSON.stringify({events});
+  try{ if(!APP&&navigator.sendBeacon&&navigator.sendBeacon(API_BASE+'/api/event',new Blob([body],{type:'application/json'}))) return; }catch(e){}
+  fetch(API_BASE+'/api/event',{method:'POST',headers:{'content-type':'application/json'},body,keepalive:true}).catch(()=>{});
+  if(evQueue.length) evTimer=setTimeout(evFlush,800);
+}
+const evChannel=()=>{ const c=evStore().channel; return c?':'+c:''; };
+// Called when the first brick of a build goes in (one count per build)
+function buildStarted(kind){
+  const o=evStore(); o.started=(o.started||0)+1; evStoreSet(o);
+  track('build_started','build_started:'+kind);
+  if(o.started===1) track('first_build_started');
+  if((o.finished||0)===1&&!o.second) { o.second=true; evStoreSet(o); track('second_build_started_by_choice'); }
+}
+// Called when a build is finished (every build, any mode)
+function buildFinished(kind){
+  const o=evStore(); o.finished=(o.finished||0)+1; evStoreSet(o);
+  track('build_completed','build_completed:'+kind);
+  if(o.finished===1) track('first_build_completed','activation'+evChannel());
+}
+// A short link (bloppit.com/go/CHANNEL) brings a visit count and is remembered for the activation, first touch only
+try{ const go=new URLSearchParams(location.search).get('go'); if(go&&/^[a-z0-9_-]{1,20}$/i.test(go)){ const o=evStore(); if(!o.channel){ o.channel=go.toLowerCase(); evStoreSet(o); } track('visit:'+go.toLowerCase()); history.replaceState(null,'',location.pathname+location.hash); } }catch(e){}
 
 /* ---------- Play together (rooms on the Bloppit website) ---------- */
 const MP_KEY='building-blox-mp-v1';
@@ -4888,6 +4926,7 @@ function cpuPlace(i,b,x,z){
     s.finished=true;
   } else if(s.moves.length>=s.nBricks){ cpuStopClock(); s.finished=true; }
   else if(s.turnPlaced>=s.perTurn||cpuShareDone(i)) cpuNextTurn();
+  if(s.finished&&!s.solo) buildFinished('blitz');
 }
 async function cpuApi(method,body,query){
   const s=cpu&&cpu.s; if(!s) throw new Error('The race has ended.');
@@ -5052,6 +5091,7 @@ function trialDialog(o){
 }
 async function trialEnd(){
   const info=cpu&&cpu.trial; if(!info) return;
+  buildFinished(info.kind==='weekly'?'weekly':'challenge'); if(info.kind==='weekly'){ const rr=trialResult(); track('weekly_completed'); if(rr.miss===0&&rr.hint===0) track('weekly_completed_clean'); }
   const r=trialResult(), t=totalMs(r), name=mp.state.players[0].name, timeRow=`<div class="tot"><span>Your time</span><span>${fmtTime(t)}</span></div>`;
   const missRow=(r.miss?`<div class="neg"><span>Misses (${r.miss} × 1 second)</span><span>+${r.miss}s</span></div>`:'')
     +(r.hint?`<div class="neg"><span>Hints (${r.hint} × 5 seconds)</span><span>+${r.hint*5}s</span></div>`:'');

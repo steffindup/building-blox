@@ -39,3 +39,12 @@
   for = "/site.webmanifest"
   [headers.values]
     Content-Type = "application/manifest+json"
+
+# Per-channel short links for the November plan: bloppit.com/go/hs, /go/daddit, /go/mommit, /go/act-CODE…
+# The app records one "visit:<channel>" count and remembers the channel on the device, so the first finished
+# build can be credited to the channel. Nothing identifies the person.
+[[redirects]]
+  from = "/go/:channel"
+  to = "/build/?go=:channel"
+  status = 302
+  force = true
