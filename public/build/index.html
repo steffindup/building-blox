@@ -5604,7 +5604,11 @@ function worldMerge(a,b){
 }
 function worldSet(o){ try{ localStorage.setItem(pkey(WORLD_KEY),JSON.stringify(o)); }catch(e){} pupPush(); }
 const worldCount=o=>o.log.length;                                   // distinct models finished
-const worldStarsEarned=o=>Object.values(o.builds).reduce((a,b)=>a+(b.s||0),0)+(o.bonus||0);
+// XP and bonus stars are worked out from the builds themselves (size, Weekly, From Memory), so two devices
+// playing the same pup add up correctly after a merge instead of keeping the larger of two running totals.
+const buildXP=(k,b)=>(b.k==='blitz'?10:b.n<=20?10:b.n<=40?20:35)+(k.startsWith('w:')?10:0)+(b.m?5:0);
+const worldXP=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+buildXP(k,b),0);
+const worldStarsEarned=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+(b.s||0)+(k.startsWith('w:')?1:0)+(b.m?1:0),0);
 const worldStarsSpent=o=>(o.decor||[]).reduce((a,id)=>{ const d=DECOR.find(x=>x.id===id); return a+(d?d.cost:0); },0);
 const worldStars=o=>worldStarsEarned(o)-worldStarsSpent(o);
 const stageOf=(list,n)=>{ let k=0; list.forEach((st,i)=>{ if(n>=st.at) k=i; }); return k; };
@@ -5637,7 +5641,7 @@ function worldFinish(kind){
   const memory=!!run.memory&&!mp&&!blitz&&clean&&!(prev&&prev.m); if(memory){ xp+=5; bonus+=1; }
   const before={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
   const rec=prev?{...prev,s:Math.max(prev.s||0,stars),c:(prev.c||1)+1}:{n:N,s:stars,k:kind,t:Date.now(),c:1}; if(memory) rec.m=1;
-  o.builds[key]=rec; if(first) o.log.push(key); o.xp=(o.xp||0)+xp; o.bonus=(o.bonus||0)+bonus;
+  o.builds[key]=rec; if(first) o.log.push(key); o.xp=worldXP(o); o.bonus=worldStarsEarned(o)-Object.values(o.builds).reduce((a,b)=>a+(b.s||0),0);  // kept for older readers; derived
   worldSet(o);
   worldThumbSave(key);
   const after={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
@@ -5699,7 +5703,7 @@ function renderHomeWorld(){
   el.innerHTML=`<img class="pup ${PUP_STAGES[ps].name.toLowerCase()}" src="/art/pup.png" alt="">
     <div class="wt">${o.pupName>=0?`<b>${PUP_NAMES[o.pupName]} <span class="sub">· ${PUP_STAGES[ps].name}</span></b>`:`<span class="wname" id="wName" role="button" tabindex="0">Name your pup</span>`}
       <span class="sub">${next?`${next.at-n} more build${next.at-n===1?'':'s'} to ${next.name}`:'Legend of Otter Island'}</span><span class="bar"><i style="width:${Math.max(4,pct)}%"></i></span></div>
-    <div class="wn"><div><b>${n}</b><span>build${n===1?'':'s'}</span></div><div><b class="st">${worldStars(o)}</b><span>Build Stars</span></div><div><b>${o.xp||0}</b><span>XP</span></div></div>
+    <div class="wn"><div><b>${n}</b><span>build${n===1?'':'s'}</span></div><div><b class="st">${worldStars(o)}</b><span>Build Stars</span></div><div><b>${worldXP(o)}</b><span>XP</span></div></div>
     <span class="sub" style="grid-column:1/-1;font-size:13px;font-weight:700;color:var(--muted)">🏝️ Otter Island: ${ISLAND_STAGES[is].name}${inext?` · ${inext.at-n} more to the ${inext.name}`:''}</span>`;
   const w=$('#wName'); if(w) w.onclick=e=>{ e.stopPropagation(); pupOpen(); };
 }
