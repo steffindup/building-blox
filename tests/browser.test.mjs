@@ -47,7 +47,7 @@ test('first visit: the menu shows Start here; one tap opens the six-brick build;
   assert.equal(await t.page.evaluate(() => document.getElementById('pupErr').hidden), false);
   await t.page.fill('#pupIn', 'Captain Fizz!7'); await t.page.press('#pupIn', 'Enter'); await t.page.waitForTimeout(1200);
   assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), false);
-  // then Otter Island is introduced, with the next steps on its card
+  // then Bloppitopia is introduced, with the next steps on its card
   assert.equal(await t.view(), 'view-island'); assert.equal(await t.page.evaluate(() => document.getElementById('isIntro').hidden), false);
   assert.match(await t.text('#iiTxt'), /Captain Fizz lives here/); assert.match(await t.text('#iiNext'), /Keep building.*Heart/);
   assert.equal(await t.page.evaluate(() => document.querySelectorAll('#island .is-bob path[opacity]').length), 1);   // the pup on the island holds its brick
@@ -185,16 +185,33 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   assert.deepEqual(a.errors, []); assert.deepEqual(b.errors, []); await a.ctx.close(); await b.ctx.close();
 });
 
-test('island: drag a model onto another stand swaps them; the weekly board shows when a grown-up switches it on', { skip: skip() }, async () => {
-  const t = await open('?nosplash=1#island', { init: { fn: () => { const builds = {}, log = []; for (let i = 0; i < 3; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1 }; log.push(k); }
-    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); localStorage.setItem('bloppit-board-v1', '1'); } } });
-  const before = await t.page.evaluate(() => [...document.querySelectorAll('#island g.is-model')].map((g) => g.dataset.slot + ':' + g.dataset.key));
-  assert.equal(before.length, 3);
-  const box = async (slot) => t.page.evaluate((s) => { const g = document.querySelector(`#island g.is-model[data-slot="${s}"]`); const r = g.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; }, slot);
-  const a = await box(0), b = await box(2);
-  await t.page.mouse.move(a.x, a.y); await t.page.mouse.down(); await t.page.mouse.move(a.x + 20, a.y + 10); await t.page.mouse.move(b.x, b.y, { steps: 8 }); await t.page.mouse.up(); await t.page.waitForTimeout(500);
+test('island: tap anything for its card; drag a model anywhere on the sand; put away and back; the weekly board shows when a grown-up switches it on', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1#island', { init: { fn: () => { const builds = {}, log = []; for (let i = 0; i < 3; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1, d: 95000 }; log.push(k); }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: ['flag'], pupName: 3, pupAsked: true, isle: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); localStorage.setItem('bloppit-board-v1', '1'); } } });
+  const models = () => t.page.evaluate(() => [...document.querySelectorAll('#island g.is-model')].map((g) => g.dataset.key));
+  assert.equal((await models()).length, 3);
+  const center = (sel) => t.page.evaluate((q) => { const r = document.querySelector(q).getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height * 0.6 }; }, sel);
+  const tap = async (sel) => { const c = await center(sel); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(300); return t.text('#isTip'); };
+  // places, Bloppit, the pup, a decoration: each says what it is, its level and what's next
+  assert.match(await tap('#island [data-info="place:workshop"]'), /workshop.*Level2 of 3: Workshop.*Built/);
+  assert.match(await tap('#island [data-info="bloppit"]'), /Bloppit.*build buddy/);
+  assert.match(await tap('#island [data-info="pup"]'), /Bubbles.*Pup.*1 stud.*Change name or colour/);
+  assert.match(await tap('#island [data-info="decor:flag"]'), /Flag/);
+  // a model: where it came from, when, stars, best time; then put it away
+  const key = (await models())[0];
+  const card = await tap(`#island g.is-model[data-key="${key}"]`);
+  assert.match(card, /From.*Quick Build.*First built.*Best time1:35.*Bricks/);
+  await t.page.evaluate(() => [...document.querySelectorAll('#isTip [data-a]')].find((b) => /Put away/.test(b.textContent)).click()); await t.page.waitForTimeout(400);
+  assert.equal((await models()).includes(key), false);
+  await t.page.evaluate((k) => document.querySelector(`#buildsGrid [data-mkey="${k}"]`).click(), key); await t.page.waitForTimeout(300);
+  await t.page.evaluate(() => [...document.querySelectorAll('#isTip [data-a]')].find((b) => /Put on Bloppitopia/.test(b.textContent)).click()); await t.page.waitForTimeout(400);
+  assert.equal((await models()).includes(key), true);
+  // drag it to a new spot: it stays where it's dropped, on the sand
+  const a = await center(`#island g.is-model[data-key="${key}"]`);
+  await t.page.mouse.move(a.x, a.y); await t.page.mouse.down(); await t.page.mouse.move(a.x - 30, a.y + 10, { steps: 4 }); await t.page.mouse.move(a.x - 90, a.y + 25, { steps: 8 }); await t.page.mouse.up(); await t.page.waitForTimeout(500);
   const w = JSON.parse(await t.page.evaluate(() => localStorage.getItem('bloppit-world-v1')));
-  assert.equal(w.slot['m:Model2:12'], 2); assert.equal(w.slot['m:Model0:10'], 0);   // newest was on stand 0, oldest on stand 2; swapped
+  assert.ok(Array.isArray(w.pos[key]) && w.pos[key][1] > 280 && w.pos[key][1] < 540, JSON.stringify(w.pos));
+  assert.equal(await t.page.evaluate(() => document.getElementById('isTip').hidden), true);   // a drag is not a tap
   // the board on the Weekly page
   await t.page.evaluate(() => document.getElementById('tab-daily').click()); await t.page.waitForTimeout(1200);
   assert.equal(await t.page.evaluate(() => document.getElementById('dyBoard').hidden), false);

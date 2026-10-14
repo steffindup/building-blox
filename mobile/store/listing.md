@@ -86,7 +86,7 @@ A new puzzle every week, a library to explore, and Blitz races against the Longt
 Free, no ads, no tracking, no account needed.
 
 YOUR ISLAND
-• Every finished model lands on Otter Island: a hut after the first build, a workshop after three, a village after ten
+• Every finished model lands on Bloppitopia: a hut after the first build, a workshop after three, a village after ten
 • Your pup grows with you: Pup, Splash, Legend
 • Build Stars buy the island's decorations. Nothing is ever for sale, and nothing is ever lost
 
@@ -105,7 +105,7 @@ In `screenshots/`: six per device in the 1.1 order, captioned, ready to upload. 
 
 | # | Caption (1.1) | Screen |
 |---|---|---|
-| 1 | Every build you finish grows your island. | Otter Island at the Village stage with the pup |
+| 1 | Every build you finish grows Bloppitopia. | Bloppitopia at the Village stage with the pup |
 | 2 | Snap bricks into place, page by page. | A build in progress with Bloppit |
 | 3 | Finish clean. Earn three stars. | The first-finish card: stars, the pup, Play Next |
 | 4 | A new puzzle every week. See how many built it clean. | The Weekly page |
@@ -120,7 +120,7 @@ retake them after any visual change. Preview video: capture the snap, a finish a
 
 **1.0:** Bloppit's first App Store release.
 
-**1.1:** Your island! Every build you finish grows Otter Island, and your pup grows with you. Build Stars buy decorations. Plus the From Memory star and four new Weeklies.
+**1.1:** Your island! Every build you finish grows Bloppitopia, and your pup grows with you. Build Stars buy decorations. Plus the From Memory star and four new Weeklies.
 
 ## App Review notes
 
