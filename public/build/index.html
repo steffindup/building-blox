@@ -1434,6 +1434,19 @@ body.on-home .tabs{visibility:hidden}
     <p class="note" id="grownXferNote" hidden></p>
   </section>
   <section class="grown-sec">
+    <h3>Family key</h3>
+    <p class="note">A family key is your own 12-character key, shown once: keep it in your password manager. Players attached to it can be seen, brought to any device or deleted from the server with the key alone, with no transfer code. Nothing about you is stored, only which players belong together.</p>
+    <div class="win-btns" style="justify-content:flex-start"><button class="ghost" id="famMake" type="button">Make a family key</button><button class="ghost" id="famAttach" type="button">Attach this player</button></div>
+    <p class="gate-num" id="famKeyOut" hidden></p>
+    <form class="mq-ans" id="famForm" autocomplete="off" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+      <label class="sr" for="famKeyIn">Family key</label>
+      <input class="inp" id="famKeyIn" maxlength="14" placeholder="12-character family key" autocapitalize="characters" spellcheck="false" style="flex:1;min-width:200px;text-transform:uppercase">
+      <button class="primary sm" type="submit" id="famGo">Show the family</button>
+    </form>
+    <p class="note" id="famNote" hidden></p>
+    <div class="crew-grown" id="famList"></div>
+  </section>
+  <section class="grown-sec">
     <h3>Family Link: send Bloppit to another device</h3>
     <p class="note">Scan this with the child’s iPad, phone or Chromebook, or send the link. It opens Bloppit’s first build. Nothing personal crosses. To bring this player’s progress along too, make a transfer code above first; it is added to the link while it lasts.</p>
     <div class="family"><div class="qr" id="familyQr" aria-label="QR code for the Family Link"></div>
@@ -4661,7 +4674,7 @@ async function openGrown(){
   if(!(await gate.ask('The Grown-ups corner is for parents.'))) return;
   $('#whoDlg').close(); renderGrown();
   $('#grownCode').hidden=true; $('#grownXferNote').hidden=true; $('#grownClaimNote').hidden=true; $('#grownClaimIn').value='';
-  familyCode=''; renderFamily(); renderGrownCrews(); $('#grownBoard').checked=boardOn();
+  familyCode=''; renderFamily(); renderGrownCrews(); $('#grownBoard').checked=boardOn(); $('#famKeyIn').value=famStored(); $('#famKeyOut').hidden=true; $('#famList').innerHTML=''; famNote('');
   const b=$('#grownDel'); delete b.dataset.confirm; b.textContent='Delete from the server';
   $('#grownDlg').showModal();
 }
@@ -6127,7 +6140,31 @@ $('#familyCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(fam
 $('#familyShare').onclick=async()=>{ if(APP&&!await gate.ask('Sharing sends a link to another app.')) return; track('family_link_shared');
   const url=familyUrl(), text='Bloppit, a calm brick puzzle game. Open this on the device they play on:'; try{ if(navigator.share) await navigator.share({title:'Bloppit',text,url}); else await navigator.clipboard.writeText(`${text} ${url}`); }catch(e){} };
 
-/* ---------- The Weekly top-100 board, behind a parent switch (per player, on this device) ---------- */
+/* ---------- Family key: a parent's own key that players attach to (Grown-ups corner) ---------- */
+const FAM_KEY='bloppit-family-v1';
+function famStored(){ try{ return localStorage.getItem(FAM_KEY)||''; }catch(e){ return ''; } }
+function famNote(t,kind){ const el=$('#famNote'); el.hidden=!t; el.textContent=t||''; el.dataset.kind=kind||''; }
+$('#famMake').onclick=async()=>{ const out=$('#famKeyOut'); try{ famNote('Making a key…'); const j=await pupApi('POST',{action:'family-create'}); out.textContent=j.key; out.hidden=false; $('#famKeyIn').value=j.key; try{ localStorage.setItem(FAM_KEY,j.key); }catch(e){}
+    famNote('This is your family key. It is shown once: copy it into your password manager now. Then tap Attach this player.'); track('family_key_made'); }catch(e){ famNote(e.message,'err'); } };
+$('#famAttach').onclick=async()=>{ const key=$('#famKeyIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''); if(key.length!==12){ famNote('Type or make a family key first.','err'); return; }
+  try{ const me=curPlayer(); if(!me.pup){ await pupSync(); if(!me.pup){ famNote('Finish one build first, then attach the player.','err'); return; } }
+    const j=await pupApi('POST',{action:'family-attach',key},me.pup); try{ localStorage.setItem(FAM_KEY,key); }catch(e){} famNote(`Attached. ${j.n} player${j.n===1?'':'s'} in this family.`); track('family_attached'); famList(key); }catch(e){ famNote(e.message,'err'); } };
+$('#famForm').addEventListener('submit',e=>{ e.preventDefault(); const key=$('#famKeyIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''); if(key.length!==12){ famNote('A family key has 12 letters and numbers.','err'); return; } famList(key); });
+async function famList(key){
+  const el=$('#famList'); el.innerHTML='<p class="note">Loading…</p>';
+  try{ const j=await pupApi('POST',{action:'family-list',key}); try{ localStorage.setItem(FAM_KEY,key); }catch(e){}
+    const here=new Set(players.list.map(p=>p.pup).filter(Boolean));
+    el.innerHTML=j.pups.length?j.pups.map(p=>`<div><span>${p.pupName>=0?escapeHTML(PUP_NAMES[p.pupName]||'')+' · ':''}${escapeHTML(p.label)} · ${p.builds} build${p.builds===1?'':'s'}${here.has(p.pup)?' · on this device':''}</span><span>${here.has(p.pup)?'':`<button class="ghost" type="button" data-fam-bring="${p.pup}">Bring here</button>`}<button class="ghost danger" type="button" data-fam-del="${p.pup}">Delete</button></span></div>`).join(''):'<p class="note">No players attached to this key yet.</p>';
+    famNote(''); }catch(e){ el.innerHTML=''; famNote(e.message,'err'); }
+}
+$('#famList').addEventListener('click',async e=>{
+  const key=$('#famKeyIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''), b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.famBring){ b.disabled=true; try{ const j=await pupApi('POST',{action:'family-restore',key,pup:b.dataset.famBring}); if(!players.list.some(p=>p.pup===j.pup)){ const id='p'+(++players.n+1), n=players.list.length+1; players.list.push({id,name:'Player '+n,age:null,color:AV_COLORS[(n-1)%AV_COLORS.length],pup:j.pup}); pupApply(id,j.data); playersSave(); renderWhoList(); } track('family_restored'); famList(key); }catch(x){ famNote(x.message,'err'); b.disabled=false; } return; }
+  if(b.dataset.famDel){ if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent='Tap again to delete'; setTimeout(()=>{ delete b.dataset.confirm; b.textContent='Delete'; },3000); return; }
+    try{ await pupApi('POST',{action:'family-delete',key,pup:b.dataset.famDel}); players.list.forEach(p=>{ if(p.pup===b.dataset.famDel) delete p.pup; }); playersSave(); track('family_deleted'); famList(key); }catch(x){ famNote(x.message,'err'); } }
+});
+
+/* ---------- The Weekly top-100 board, behind a parent switch (per player, on this device) ---------- *//* ---------- The Weekly top-100 board, behind a parent switch (per player, on this device) ---------- */
 const BOARD_KEY='bloppit-board-v1';
 function boardOn(){ try{ return localStorage.getItem(pkey(BOARD_KEY))==='1'; }catch(e){ return false; } }
 function boardSet(on){ try{ localStorage.setItem(pkey(BOARD_KEY),on?'1':'0'); }catch(e){} track(on?'board_on':'board_off'); renderBoard(); }

@@ -181,3 +181,21 @@ test('island: drag a model onto another stand swaps them; the weekly board shows
   assert.match(await t.text('#dyBoardList'), /Nobody on the board yet/);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
+
+test('family key: make, attach a player, bring the player to another device', { skip: skip() }, async () => {
+  const a = await open('?nosplash=1'); await a.page.evaluate(() => document.getElementById('hmCont').click()); await a.page.waitForTimeout(1200); await autoPlace(a.page, 6); await a.page.waitForTimeout(3500);
+  await a.page.evaluate(() => { document.querySelector('#wcNames [data-pup="5"]').click(); document.getElementById('welcomeDlg').close(); }); await a.page.waitForTimeout(2500);
+  const grown = async (t) => { await t.page.evaluate(() => document.getElementById('whoBtn').click()); await t.page.waitForTimeout(300); await t.page.evaluate(() => document.getElementById('whoGrown').click()); await t.page.waitForTimeout(1200); };
+  await grown(a);
+  await a.page.evaluate(() => document.getElementById('famMake').click()); await a.page.waitForTimeout(1200);
+  const key = await a.text('#famKeyOut'); assert.match(key, /^[A-Z0-9]{12}$/);
+  await a.page.evaluate(() => document.getElementById('famAttach').click()); await a.page.waitForTimeout(1500);
+  assert.match(await a.text('#famList'), /Finn .* 1 build .* on this device/);
+  await a.ctx.close();
+  const b = await open('?nosplash=1&welcome=0'); await grown(b);
+  await b.page.evaluate((k) => { document.getElementById('famKeyIn').value = k; document.getElementById('famGo').click(); }, key); await b.page.waitForTimeout(1500);
+  await b.page.evaluate(() => document.querySelector('[data-fam-bring]').click()); await b.page.waitForTimeout(1500);
+  assert.match(await b.text('#famList'), /on this device/);
+  assert.equal(await b.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-players-v1')).list.filter((p) => p.pup).length), 1);
+  assert.deepEqual(b.errors, []); await b.ctx.close();
+});
