@@ -466,6 +466,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .bz-off{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;margin:0}
 .gamebar.mpbar{position:relative;border-color:#5A93DB}
 .gb-badge.mp-code{width:auto;padding:0 10px;font-size:18px;letter-spacing:.08em;background:#5A93DB;color:#fff}
+.gb-badge.mp-code.face{width:44px;height:44px;padding:0;background:#E8F1F8;overflow:hidden;border-radius:12px}.gb-badge.mp-code.face img{width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block}
 .mp-turn{font-family:var(--f-display);font-size:20px;line-height:1.15;min-width:180px}
 .mp-turn small{display:block;font-family:var(--f-body);font-size:13px;font-weight:700;color:var(--muted)}
 .mp-turn.mine{color:var(--accent)}
@@ -650,7 +651,29 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .family .qr svg{display:block;width:100%;height:100%}
 .family-txt{display:grid;gap:8px;min-width:0}
 .family-txt code{font-size:14px;font-weight:700;word-break:break-all}
-.windlg .pup-pic{height:150px;border-radius:50%;width:150px;object-fit:cover;object-position:center 20%;background:#E8F1F8;border:4px solid #fff;box-shadow:0 4px 0 var(--shadow)}
+.windlg .pup-pic{height:150px;border-radius:50%;width:150px;overflow:hidden;background:#E8F1F8;border:4px solid #fff;box-shadow:0 4px 0 var(--shadow);margin:0 auto 6px}
+.windlg .pup-pic svg{width:100%;height:100%;display:block}
+.pupdlg .pup-lead{margin:2px 0 8px}
+.pup-cols{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 0 14px}
+.pup-cols button{width:36px;height:36px;border-radius:50%;border:3px solid #fff;background:var(--c);box-shadow:0 0 0 2px var(--line);cursor:pointer;padding:0}
+.pup-cols button[aria-checked="true"]{box-shadow:0 0 0 3px var(--ink);transform:scale(1.08)}
+.pup-own{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;text-align:left;margin:0 0 10px}
+.pup-own label{font-family:var(--f-display);font-size:20px}
+.pup-own>div{display:flex;gap:8px}.pup-own>div button{flex:none;width:auto;margin:0}
+.pup-own input{flex:1;min-width:0;font:inherit;font-weight:800;font-size:18px;padding:10px 12px;border-radius:12px;border:2px solid var(--ink);background:var(--page);color:var(--ink)}
+.pup-err{margin:0;font-size:13px;font-weight:700;color:#B32A22}
+.pupdlg .pup-pick-t{width:100%;margin:0 0 8px}
+.pupdlg .pup-names{margin:0 0 8px}
+.pup-later{background:none;border:0;font:inherit;font-weight:700;font-size:14px;color:var(--muted);text-decoration:underline;cursor:pointer;padding:8px}
+.is-intro{display:grid;gap:10px;border:3px solid #008F9B}
+.is-intro .ii-head{display:flex;gap:12px;align-items:center}
+.is-intro .ii-pup{width:72px;height:72px;flex:none;border-radius:50%;overflow:hidden;background:#E8F1F8;border:3px solid #fff;box-shadow:0 2px 0 var(--shadow)}
+.is-intro .ii-pup svg{width:100%;height:100%;display:block}
+.is-intro h2{margin:0;font-size:24px}.is-intro p{margin:2px 0 0}
+.is-intro .ii-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0;padding:0;list-style:none}
+.is-intro .ii-steps li{display:grid;justify-items:center;padding:8px 4px;border-radius:12px;background:var(--bg);font-size:13px;font-weight:700;color:var(--muted);text-align:center}
+.is-intro .ii-steps b{font-family:var(--f-display);font-weight:400;font-size:22px;color:var(--ink)}.is-intro .ii-steps li.done{background:#D9F2EF;color:#00616A}.is-intro .ii-steps li.done b{color:#008F9B}
+.is-intro .ii-btns{display:flex;flex-wrap:wrap;gap:8px}
 .pup-names{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 14px}
 .wc-pup{margin:10px 0 4px;padding:10px 12px 4px;border-radius:14px;background:#E8F1F8;text-align:left}
 .wc-pup-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
@@ -665,7 +688,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .world-strip .ws-stars{font-size:22px;letter-spacing:3px;color:#E9A800;line-height:1}
 .world-strip .ws-stars i{font-style:normal;color:#D9D2B8}
 .world-strip .ws-up{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:#14202C;color:#fff;font-size:13px}
-.world-strip .ws-up img{width:22px;height:22px;border-radius:50%;object-fit:cover;object-position:center 20%}
+.world-strip .ws-up img,.world-strip .ws-up svg{width:22px;height:22px;border-radius:50%;object-fit:cover;object-position:center 20%;background:#E8F1F8}
 .world-toast{position:absolute;left:50%;top:60px;transform:translateX(-50%);z-index:4;display:flex;align-items:center;gap:10px;padding:8px 16px;border-radius:999px;background:#14202C;color:#fff;font-weight:800;font-size:15px;box-shadow:0 8px 24px rgba(0,0,0,.25);animation:tb-pop .45s ease-out;white-space:nowrap;max-width:calc(100% - 24px)}
 .world-toast[hidden]{display:none}
 .world-toast{cursor:pointer}.world-toast .ws-go{color:#F4BC22;margin-left:4px}
@@ -673,8 +696,11 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .world-toast .ws-stars i{font-style:normal;color:rgba(255,255,255,.3)}
 .hm-world{display:grid;grid-template-columns:auto 1fr;gap:12px 14px;align-items:center;padding:12px 14px;border-radius:16px;background:var(--page);border:1px solid var(--line);box-shadow:0 2px 0 var(--shadow);width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}
 .hm-world:hover{border-color:var(--ink)}
-.hm-world .pup{width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:center 20%;background:#E8F1F8;border:3px solid #fff;box-shadow:0 2px 0 var(--shadow)}
-.hm-world .pup.splash{width:76px;height:76px}.hm-world .pup.legend{width:88px;height:88px;border-color:#F4BC22}
+.hm-world .pup{display:block;width:64px;height:64px;border-radius:50%;overflow:hidden;background:#E8F1F8;border:3px solid #fff;box-shadow:0 2px 0 var(--shadow)}.hm-world .pup svg{width:100%;height:100%;display:block}
+.hm-world .hw-isle{grid-column:1/-1;display:block;margin:-12px -14px 0;border-radius:16px 16px 0 0;overflow:hidden;background:#A9D8F2;position:relative}.hm-world .hw-isle svg{display:block;width:100%;height:auto}
+.hm-world .hw-isle .hw-tag{position:absolute;left:10px;top:10px;padding:4px 12px;border-radius:999px;background:rgba(20,32,44,.82);color:#fff;font-family:var(--f-display);font-size:18px}
+.hm-world.lead{border:3px solid #008F9B}
+.hm-world .pup.ps-splash{width:76px;height:76px}.hm-world .pup.ps-legend{width:88px;height:88px;border-color:#F4BC22}
 .hm-world .wt{display:grid;gap:3px;min-width:0}
 .hm-world .wt b{font-family:var(--f-display);font-weight:400;font-size:22px;line-height:1.1}
 .hm-world .wt .sub{font-size:13px;font-weight:700;color:var(--muted)}
@@ -808,21 +834,21 @@ body.on-home .tabs{visibility:hidden}
 .is-card{padding:0;overflow:hidden}
 .island{position:relative;background:#CFE9F7}
 .island svg{display:block;width:100%;height:auto}
-.island .slot-empty{opacity:.35}
+.island .slot-empty,.hw-isle .slot-empty{opacity:.35}
 .island g.is-model{cursor:grab}.island g.is-model.dragging{cursor:grabbing;opacity:.85}
 .island svg{touch-action:none}
-.island .ghost-build{opacity:.28}
+.island .ghost-build,.hw-isle .ghost-build{opacity:.28}
 .island .is-pop{animation:is-pop .6s cubic-bezier(.3,1.6,.5,1) both;transform-box:fill-box;transform-origin:50% 100%}
 @keyframes is-pop{from{transform:scale(.2);opacity:0}to{transform:none;opacity:1}}
-.island .is-bob{animation:is-bob 3s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+.island .is-bob,.hw-isle .is-bob{animation:is-bob 3s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
 @keyframes is-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-.island .is-wave{animation:is-wave 6s ease-in-out infinite}
+.island .is-wave,.hw-isle .is-wave{animation:is-wave 6s ease-in-out infinite}
 @keyframes is-wave{0%,100%{transform:translateX(0)}50%{transform:translateX(-18px)}}
-.island .is-smoke{animation:is-smoke 4s ease-out infinite;transform-box:fill-box;transform-origin:50% 100%}
-.island .is-drift{animation:is-drift 14s linear infinite}
+.island .is-smoke,.hw-isle .is-smoke{animation:is-smoke 4s ease-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+.island .is-drift,.hw-isle .is-drift{animation:is-drift 14s linear infinite}
 @keyframes is-drift{from{transform:translateX(0)}50%{transform:translateX(60px) translateY(-6px)}to{transform:translateX(0)}}
 @keyframes is-smoke{0%{transform:translateY(0) scale(.6);opacity:.7}100%{transform:translateY(-34px) scale(1.4);opacity:0}}
-@media (prefers-reduced-motion: reduce){.island *{animation:none!important}}
+@media (prefers-reduced-motion: reduce){.island *,.hw-isle *{animation:none!important}}
 .is-foot{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;justify-content:space-between;padding:12px 16px 14px;border-top:1px solid var(--line)}
 .is-stage{font-family:var(--f-display);font-size:22px}.is-stage small{display:block;font-family:var(--f-body);font-size:13px;font-weight:700;color:var(--muted)}
 .is-next{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--muted)}
@@ -996,13 +1022,13 @@ body.on-home .tabs{visibility:hidden}
     <img src="/art/head-bloppit.png" alt="" width="256" height="256">
     <div class="hm-bubble"><h2 id="hmHi">Hi there!</h2><p>What shall we build today?</p></div>
   </div>
+  <button class="hm-world" id="hmWorld" data-go="island" type="button" hidden></button>
   <button class="hm-cont" id="hmCont" type="button" hidden><img class="hc-pic" src="/art/bud-offer.png" alt="" width="300" height="398"><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span><span class="go" aria-hidden="true">▶</span></button>
   <button class="hm-daily" data-go="daily" type="button"><img id="hmDailyImg" alt=""><span class="hd-txt"><span class="tag">📅 Weekly Bloppit</span><b id="hmDailyT">This week’s puzzle</b><span id="hmDailyS">One puzzle, the same for everyone</span></span><span class="go" aria-hidden="true">▶</span></button>
   <div class="hm-dstats" id="hmDstats">
     <div class="hd-nums"><div><b id="hdStreak">0</b><span>week streak 🔥</span></div><div><b id="hdTotal">0</b><span>Weeklies built</span></div></div>
     <p class="note" id="hdClean" style="margin:0"></p>
   </div>
-  <button class="hm-world" id="hmWorld" data-go="island" type="button" hidden></button>
 </div>
 <div class="hm-main">
   <h3 class="hm-sec">Solo</h3>
@@ -1378,6 +1404,12 @@ body.on-home .tabs{visibility:hidden}
 <section class="view" id="view-island" hidden>
   <div class="gm-head"><div><h2>🏝️ Bloppitopia · Otter Island</h2><p class="note" id="isNote">Every build you finish grows your island.</p></div>
     <div class="is-btns"><button class="ghost" id="isDecor" type="button">✨ Decorate</button><button class="ghost" id="isCard" type="button" hidden>📮 Postcard</button></div></div>
+  <div class="card is-intro" id="isIntro" hidden>
+    <div class="ii-head"><span class="ii-pup" id="iiPup"></span><div><h2 id="iiTitle">Welcome to Otter Island</h2><p id="iiTxt">Your pup lives here with Bloppit.</p></div></div>
+    <p style="margin:0">Every build you finish grows the island, and your models stand on it. Build Stars buy decorations.</p>
+    <ol class="ii-steps" id="iiSteps"></ol>
+    <div class="ii-btns"><button class="primary sm" id="iiNext" type="button">Keep building</button><button class="ghost" id="iiWeekly" type="button">📅 This week’s Bloppit</button><button class="ghost" id="iiLook" type="button">Look around</button></div>
+  </div>
   <div class="card is-card"><div class="island" id="island"></div>
     <div class="is-foot"><div class="is-stage" id="isStage"></div><div class="is-next" id="isNext"></div></div></div>
   <div class="card"><div class="gm-head sub-head"><div><h2>🗺️ Bloppitopia</h2><p class="note">The other islands grow with what you do there. Tap one to go.</p></div></div><div class="dest-grid" id="destGrid"></div></div>
@@ -1534,19 +1566,22 @@ body.on-home .tabs{visibility:hidden}
   <img class="wc-pic" src="/art/bud-hug.png" alt="" width="300" height="398">
   <h2 id="wcTitle">You built it!</h2>
   <div class="world-strip" data-ws></div>
-  <div class="wc-pup" id="wcPup" hidden>
-    <div class="wc-pup-head"><img src="/art/pup.png" alt="" width="239" height="300"><div><b>A pup hatched on your island!</b><span id="wcPupSub">Pick a name, or name it later.</span></div></div>
-    <div class="pup-names" id="wcNames" role="group" aria-label="Pup names"></div>
-  </div>
   <p class="win-best" id="wcNote">What next?</p>
-  <div class="win-btns wc-btns"><button class="primary sm" id="wcTrail" type="button">Keep building</button><button class="ghost" id="wcWeekly" type="button">📅 This week’s Bloppit</button><button class="ghost" id="wcLibrary" type="button">Explore builds</button></div>
+  <div class="win-btns wc-btns"><button class="primary sm" id="wcPupGo" type="button" hidden>🥚 Meet your pup</button><button class="primary sm" id="wcTrail" type="button">Keep building</button><button class="ghost" id="wcWeekly" type="button">📅 This week’s Bloppit</button><button class="ghost" id="wcLibrary" type="button">Explore builds</button></div>
 </dialog>
-<dialog class="windlg" id="pupDlg" aria-labelledby="pupTitle">
-  <img class="wc-pic pup-pic" src="/art/pup.png" alt="" width="239" height="300">
+<dialog class="windlg pupdlg" id="pupDlg" aria-labelledby="pupTitle">
+  <div class="pup-pic" id="pupPic"></div>
   <h2 id="pupTitle">Meet your pup!</h2>
-  <p class="win-best" style="margin-top:0">Your own little otter. Pick a name, or name it later.</p>
-  <div class="pup-names" id="pupNames" role="group" aria-label="Pup names"></div>
-  <div class="win-btns"><button class="ghost" id="pupLater" type="button">Name it later</button></div>
+  <p class="win-best pup-lead" id="pupLead">Your own little otter, with its own brick. Pick its colour:</p>
+  <div class="pup-cols" id="pupCols" role="radiogroup" aria-label="Brick colour"></div>
+  <form class="pup-own" id="pupOwn" autocomplete="off">
+    <label for="pupIn">Name it yourself</label>
+    <div><input id="pupIn" type="text" maxlength="14" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done" placeholder="Type a name"><button class="primary sm" type="submit">That’s it!</button></div>
+    <p class="pup-err" id="pupErr" hidden>Use letters for its name.</p>
+  </form>
+  <button class="ghost pup-pick-t" id="pupPickT" type="button" aria-expanded="false" aria-controls="pupNames">Pick a name</button>
+  <div class="pup-names" id="pupNames" role="group" aria-label="Pup names" hidden></div>
+  <button class="pup-later" id="pupLater" type="button">Pick later</button>
 </dialog>
 <dialog class="windlg" id="shareDlg" aria-labelledby="shTitle">
   <img class="share-pic" id="shPic" alt="" hidden>
@@ -4661,6 +4696,7 @@ async function pupApi(method,body,pid){
 }
 function pupLocal(id){
   const d={}; for(const k of PUP_FIELDS){ try{ const v=JSON.parse(localStorage.getItem(keyFor(id||players.cur,{game:GAME_KEY,daily:DAILY_KEY,weekly:WEEKLY_KEY,world:WORLD_KEY}[k]))); if(v) d[k]=v; }catch(e){} }
+  if(d.world&&d.world.pupText){ d.world={...d.world}; delete d.world.pupText; }   // a name the child typed stays on this device
   return d;
 }
 function pupApply(id,d){
@@ -4900,7 +4936,7 @@ function updateMpBar(){
   if(bz){ $('#hintBtn').textContent=s.calm?'Hint':mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'; $('#hintBtn').disabled=done||(!mpMyTurn()&&!hintOn); }
   $('#mpBar').classList.toggle('calm',!!s.calm);
   $('#mpBar').classList.toggle('blitz',bz);
-  $('#mpCodeBadge').textContent=s.solo?'⏱':mp.cpu?'VS':s.code; $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?`vs ${CPU_LEVELS[s.cpuLevel].name}`:'Room'; $('#mpRoomBtn').textContent=mp.cpu?'Race':'Room'; $('#mpTitle').innerHTML=(bz?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
+  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?`vs ${CPU_LEVELS[s.cpuLevel].name}`:'Room'; $('#mpRoomBtn').textContent=mp.cpu?'Race':'Room'; $('#mpTitle').innerHTML=(bz?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
   const cp=s.players[s.turn], mine=s.turn===mp.me, left=mpLeft(s), el=$('#mpTurn');
   el.classList.toggle('mine',mine&&!s.finished&&s.started);
   if(bz&&s.solo&&s.calm) el.innerHTML=s.finished?'Finished!<small>Let’s see how clean it was</small>':`Build it clean<small>${(s.players[0].n||0)} of ${s.quota} placed</small>`;
@@ -5181,7 +5217,7 @@ function cpuAim(m,wrong){
 // The banner across the top of the build: whose turn it is, with their clock
 // The Longtails, from the character sheet (public/art): Scraps' stuck-up feather, Swoop's goggles, Squint's monocle.
 const GULL_ART={easy:'scraps',medium:'swoop',hard:'squint'};
-const GULL_HEAD=(lvl)=>`<img src="/art/head-${GULL_ART[lvl]||'swoop'}.png" alt="" width="256" height="256">`;
+function GULL_HEAD(lvl){ return `<img src="/art/head-${({easy:'scraps',medium:'swoop',hard:'squint'})[lvl]||'swoop'}.png" alt="" width="256" height="256">`; }
 let bannerKey='';
 $('#turnBanner').addEventListener('click',e=>{ if(e.target.closest('#tbDone')&&!$('#mpEndTurn').hidden) $('#mpEndTurn').click(); });
 function turnBanner(s){
@@ -5716,17 +5752,35 @@ loadSample(0); setTab('create'); clearTimeout(timer); rebuild(); requestAnimatio
 var WORLD_KEY='bloppit-world-v1', worldLast=null;
 var PUP_NAMES=['Pebble','Kelp','Sandy','Bubbles','Coral','Finn','Misty','Shelly','Ripple','Dash','Mango','Tide'];
 var PUP_STAGES=[{name:'Pup',at:0},{name:'Splash',at:10},{name:'Legend',at:40}];
+// The pup's own brick: never red (red is Bloppit's), in the colour the child picks, with one stud per stage
+// (Pup 1, Splash 2, Legend 3). The drawing is three layers: the pup, the brick (drawn here), the paws holding it.
+var PUP_COLORS=[{n:'Blue',c:'#0055BF'},{n:'Yellow',c:'#F2CD37'},{n:'Green',c:'#237841'},{n:'Orange',c:'#FE8A18'},{n:'Purple',c:'#81007B'},{n:'Teal',c:'#008F9B'},{n:'Lime',c:'#A5CA18'},{n:'Pink',c:'#FF698F'}];
+var PUP_BRICK={"top":"M121.0 177.5 L180.5 161.5 L213.0 183.5 L145.5 203.0Z","front":"M145.5 203.0 L213.0 183.5 L212.0 212.5 L145.0 230.5Z","side":"M121.0 177.5 L145.5 203.0 L145.0 230.5 L121.0 204.0Z","studs":{"1":[{"side":"M150.3 177.2 L150.6 179.6 L151.7 182.0 L153.5 184.4 L156.0 186.6 L159.1 188.4 L162.6 189.9 L166.2 190.9 L170.0 191.4 L173.6 191.3 L176.8 190.7 L179.6 189.6 L181.7 188.0 L183.1 186.0 L183.7 183.8 L183.7 177.8 L183.4 175.4 L182.3 173.0 L180.5 170.6 L178.0 168.4 L174.9 166.6 L171.4 165.1 L167.8 164.1 L164.0 163.6 L160.4 163.7 L157.2 164.3 L154.4 165.4 L152.3 167.0 L150.9 169.0 L150.3 171.2Z","cap":"M180.5 170.6 L178.0 168.4 L174.9 166.6 L171.4 165.1 L167.8 164.1 L164.0 163.6 L160.4 163.7 L157.2 164.3 L154.4 165.4 L152.3 167.0 L150.9 169.0 L150.3 171.2 L150.6 173.6 L151.7 176.0 L153.5 178.4 L156.0 180.6 L159.1 182.4 L162.6 183.9 L166.2 184.9 L170.0 185.4 L173.6 185.3 L176.8 184.7 L179.6 183.6 L181.7 182.0 L183.1 180.0 L183.7 177.8 L183.4 175.4 L182.3 173.0Z","hi":"M168.8 171.1 L167.5 170.0 L166.0 169.1 L164.2 168.5 L162.4 168.2 L160.6 168.1 L159.0 168.4 L157.7 169.0 L156.7 169.8 L156.2 170.8 L156.1 172.0 L156.6 173.2 L157.4 174.3 L158.7 175.4 L160.3 176.3 L162.0 176.9 L163.8 177.2 L165.6 177.3 L167.2 177.0 L168.6 176.4 L169.5 175.6 L170.0 174.6 L170.1 173.4 L169.6 172.2Z"}],"2":[{"side":"M137.6 182.1 L137.9 184.1 L138.8 186.2 L140.3 188.2 L142.5 190.0 L145.1 191.6 L148.0 192.9 L151.2 193.7 L154.3 194.1 L157.4 194.1 L160.1 193.6 L162.5 192.6 L164.3 191.3 L165.5 189.6 L166.0 187.7 L166.0 181.7 L165.8 179.7 L164.9 177.6 L163.3 175.6 L161.1 173.7 L158.5 172.1 L155.6 170.9 L152.5 170.0 L149.3 169.6 L146.2 169.7 L143.5 170.2 L141.1 171.2 L139.3 172.5 L138.1 174.2 L137.6 176.1Z","cap":"M163.3 175.6 L161.1 173.7 L158.5 172.1 L155.6 170.9 L152.5 170.0 L149.3 169.6 L146.2 169.7 L143.5 170.2 L141.1 171.2 L139.3 172.5 L138.1 174.2 L137.6 176.1 L137.9 178.1 L138.8 180.2 L140.3 182.2 L142.5 184.0 L145.1 185.6 L148.0 186.9 L151.2 187.7 L154.3 188.1 L157.4 188.1 L160.1 187.6 L162.5 186.6 L164.3 185.3 L165.5 183.6 L166.0 181.7 L165.8 179.7 L164.9 177.6Z","hi":"M152.7 175.7 L151.7 174.8 L150.3 174.1 L148.9 173.5 L147.3 173.2 L145.8 173.2 L144.4 173.4 L143.3 173.9 L142.5 174.6 L142.0 175.5 L142.0 176.5 L142.4 177.5 L143.1 178.5 L144.2 179.4 L145.5 180.1 L147.0 180.6 L148.5 180.9 L150.1 181.0 L151.4 180.7 L152.5 180.2 L153.4 179.5 L153.8 178.7 L153.8 177.7 L153.5 176.7Z"},{"side":"M168.0 173.3 L168.2 175.3 L169.1 177.4 L170.7 179.4 L172.9 181.3 L175.5 182.9 L178.4 184.1 L181.5 185.0 L184.7 185.4 L187.8 185.3 L190.5 184.8 L192.9 183.8 L194.7 182.5 L195.9 180.8 L196.4 178.9 L196.4 172.9 L196.1 170.9 L195.2 168.8 L193.7 166.8 L191.5 165.0 L188.9 163.4 L186.0 162.1 L182.8 161.3 L179.7 160.9 L176.6 160.9 L173.9 161.4 L171.5 162.4 L169.7 163.7 L168.5 165.4 L168.0 167.3Z","cap":"M193.7 166.8 L191.5 165.0 L188.9 163.4 L186.0 162.1 L182.8 161.3 L179.7 160.9 L176.6 160.9 L173.9 161.4 L171.5 162.4 L169.7 163.7 L168.5 165.4 L168.0 167.3 L168.2 169.3 L169.1 171.4 L170.7 173.4 L172.9 175.3 L175.5 176.9 L178.4 178.1 L181.5 179.0 L184.7 179.4 L187.8 179.3 L190.5 178.8 L192.9 177.8 L194.7 176.5 L195.9 174.8 L196.4 172.9 L196.1 170.9 L195.2 168.8Z","hi":"M183.1 166.9 L182.0 166.0 L180.7 165.3 L179.2 164.7 L177.7 164.5 L176.2 164.4 L174.8 164.7 L173.7 165.1 L172.9 165.8 L172.4 166.7 L172.4 167.7 L172.7 168.7 L173.5 169.7 L174.5 170.6 L175.9 171.3 L177.4 171.9 L178.9 172.2 L180.4 172.2 L181.8 171.9 L182.9 171.5 L183.7 170.8 L184.2 169.9 L184.2 168.9 L183.9 167.9Z"}],"3":[{"side":"M133.4 184.1 L133.6 185.9 L134.4 187.7 L135.8 189.5 L137.7 191.1 L140.0 192.5 L142.6 193.7 L145.3 194.4 L148.1 194.8 L150.8 194.7 L153.3 194.2 L155.3 193.4 L156.9 192.2 L158.0 190.8 L158.4 189.1 L158.4 183.1 L158.2 181.3 L157.4 179.4 L156.0 177.7 L154.1 176.0 L151.8 174.6 L149.2 173.5 L146.5 172.8 L143.7 172.4 L141.0 172.5 L138.6 172.9 L136.5 173.8 L134.9 175.0 L133.8 176.4 L133.4 178.1Z","cap":"M156.0 177.7 L154.1 176.0 L151.8 174.6 L149.2 173.5 L146.5 172.8 L143.7 172.4 L141.0 172.5 L138.6 172.9 L136.5 173.8 L134.9 175.0 L133.8 176.4 L133.4 178.1 L133.6 179.9 L134.4 181.7 L135.8 183.5 L137.7 185.1 L140.0 186.5 L142.6 187.7 L145.3 188.4 L148.1 188.8 L150.8 188.7 L153.3 188.2 L155.3 187.4 L156.9 186.2 L158.0 184.8 L158.4 183.1 L158.2 181.3 L157.4 179.4Z","hi":"M146.3 177.6 L145.3 176.8 L144.2 176.1 L142.8 175.6 L141.5 175.4 L140.1 175.4 L138.9 175.6 L137.9 176.0 L137.2 176.6 L136.8 177.4 L136.8 178.2 L137.1 179.1 L137.8 180.0 L138.7 180.8 L139.9 181.5 L141.2 181.9 L142.6 182.2 L143.9 182.2 L145.1 182.0 L146.1 181.6 L146.8 181.0 L147.2 180.2 L147.2 179.3 L146.9 178.4Z"},{"side":"M154.5 178.0 L154.7 179.8 L155.5 181.6 L156.9 183.4 L158.8 185.1 L161.1 186.5 L163.7 187.6 L166.4 188.3 L169.2 188.7 L171.9 188.6 L174.3 188.2 L176.4 187.3 L178.0 186.1 L179.1 184.7 L179.5 183.0 L179.5 177.0 L179.3 175.2 L178.5 173.4 L177.1 171.6 L175.2 169.9 L172.9 168.5 L170.3 167.4 L167.6 166.7 L164.8 166.3 L162.1 166.4 L159.7 166.8 L157.6 167.7 L156.0 168.9 L154.9 170.3 L154.5 172.0Z","cap":"M177.1 171.6 L175.2 169.9 L172.9 168.5 L170.3 167.4 L167.6 166.7 L164.8 166.3 L162.1 166.4 L159.7 166.8 L157.6 167.7 L156.0 168.9 L154.9 170.3 L154.5 172.0 L154.7 173.8 L155.5 175.6 L156.9 177.4 L158.8 179.1 L161.1 180.5 L163.7 181.6 L166.4 182.3 L169.2 182.7 L171.9 182.6 L174.3 182.2 L176.4 181.3 L178.0 180.1 L179.1 178.7 L179.5 177.0 L179.3 175.2 L178.5 173.4Z","hi":"M167.4 171.5 L166.4 170.7 L165.2 170.0 L163.9 169.6 L162.6 169.3 L161.2 169.3 L160.0 169.5 L159.0 169.9 L158.3 170.5 L157.9 171.3 L157.9 172.1 L158.2 173.0 L158.9 173.9 L159.8 174.7 L161.0 175.4 L162.3 175.8 L163.7 176.1 L165.0 176.1 L166.2 175.9 L167.2 175.5 L167.9 174.9 L168.3 174.1 L168.3 173.2 L168.0 172.3Z"},{"side":"M175.6 171.9 L175.8 173.7 L176.6 175.6 L178.0 177.3 L179.9 179.0 L182.2 180.4 L184.8 181.5 L187.5 182.2 L190.3 182.6 L193.0 182.5 L195.4 182.1 L197.5 181.2 L199.1 180.0 L200.2 178.6 L200.6 176.9 L200.6 170.9 L200.4 169.1 L199.6 167.3 L198.2 165.5 L196.3 163.9 L194.0 162.5 L191.4 161.3 L188.7 160.6 L185.9 160.2 L183.2 160.3 L180.7 160.8 L178.7 161.6 L177.1 162.8 L176.0 164.2 L175.6 165.9Z","cap":"M198.2 165.5 L196.3 163.9 L194.0 162.5 L191.4 161.3 L188.7 160.6 L185.9 160.2 L183.2 160.3 L180.7 160.8 L178.7 161.6 L177.1 162.8 L176.0 164.2 L175.6 165.9 L175.8 167.7 L176.6 169.6 L178.0 171.3 L179.9 173.0 L182.2 174.4 L184.8 175.5 L187.5 176.2 L190.3 176.6 L193.0 176.5 L195.4 176.1 L197.5 175.2 L199.1 174.0 L200.2 172.6 L200.6 170.9 L200.4 169.1 L199.6 167.3Z","hi":"M188.5 165.4 L187.5 164.6 L186.3 163.9 L185.0 163.5 L183.7 163.2 L182.3 163.2 L181.1 163.4 L180.1 163.8 L179.4 164.4 L179.0 165.2 L179.0 166.1 L179.3 167.0 L179.9 167.8 L180.9 168.6 L182.1 169.3 L183.4 169.7 L184.7 170.0 L186.1 170.0 L187.3 169.8 L188.3 169.4 L189.0 168.8 L189.4 168.0 L189.4 167.1 L189.1 166.2Z"}]}};
+function pupShade(hex,k){ const n=parseInt(hex.slice(1),16), f=c=>Math.round(k>0?c+(255-c)*k:c*(1+k)); return `rgb(${f(n>>16)},${f(n>>8&255)},${f(n&255)})`; }
+function pupBrick(n,ci){ const c=(PUP_COLORS[ci]||PUP_COLORS[0]).c, B=PUP_BRICK, ln='stroke="#3B2314" stroke-width="1.4" stroke-linejoin="round"';
+  return `<path d="${B.side}" fill="${pupShade(c,-.35)}" ${ln}/><path d="${B.front}" fill="${pupShade(c,-.12)}" ${ln}/><path d="${B.top}" fill="${pupShade(c,.18)}" ${ln}/>`
+    +B.studs[Math.min(3,Math.max(1,n))].map(t=>`<path d="${t.side}" fill="${pupShade(c,-.2)}" ${ln}/><path d="${t.cap}" fill="${pupShade(c,.28)}" ${ln}/><path d="${t.hi}" fill="#fff" opacity=".35"/>`).join(''); }
+var PUP_ROUND='-10 -5 260 260';  // a round badge: head and brick both inside the circle
+function pupColorOf(o){ return o&&Number.isInteger(o.pupColor)&&o.pupColor>=0&&o.pupColor<PUP_COLORS.length?o.pupColor:0; }
+// The layers alone (for the island, which places them itself), and as a picture. opt: ci colour, n studs, vb crop.
+function pupLayers(ci,n){ return `<image href="/art/pup-body.png" width="239" height="300"/>${pupBrick(n,ci)}<image href="/art/pup-paws.png" width="239" height="300"/>`; }
+function pupFig(o,opt){ opt=opt||{}; const ci=opt.ci!=null?opt.ci:pupColorOf(o), n=opt.n||(o&&o.log?pupStage(o)+1:1);
+  return `<svg class="pupfig${opt.cls?' '+opt.cls:''}" viewBox="${opt.vb||'0 0 239 300'}" preserveAspectRatio="${opt.par||'xMidYMid meet'}" aria-hidden="true" focusable="false">${pupLayers(ci,n)}</svg>`; }
+// A name the child typed: letters in any language, spaces, ' and -, at most 14 characters (same rule as the server)
+function cleanPupText(v){ return typeof v!=='string'?'':v.normalize('NFC').replace(/[^\p{L}\p{M} '\-]/gu,'').replace(/\s+/g,' ').trim().slice(0,14).trim(); }
 var ISLAND_STAGES=[{name:'Beach',at:0,slots:0},{name:'Hut',at:1,slots:1},{name:'Workshop',at:3,slots:3},{name:'Village',at:10,slots:6}];
 var DECOR=[{id:'flag',name:'Flag',cost:3},{id:'campfire',name:'Campfire',cost:3},{id:'bench',name:'Bench',cost:3},{id:'lantern',name:'Lantern',cost:5},{id:'signpost',name:'Signpost',cost:5},{id:'rockpool',name:'Rock pool',cost:5},
   {id:'sandcastle',name:'Sandcastle',cost:5},{id:'hammock',name:'Hammock',cost:8},{id:'kite',name:'Kite',cost:5},{id:'palm',name:'Palm',cost:8},{id:'crab',name:'Crab',cost:3},{id:'buoy',name:'Buoy',cost:8}];
-function worldStore(){ try{ const o=JSON.parse(localStorage.getItem(pkey(WORLD_KEY))); if(o&&o.builds) return o; }catch(e){} return {xp:0,bonus:0,builds:{},log:[],decor:[],free:[],pupName:-1}; }
+function worldStore(){ try{ const o=JSON.parse(localStorage.getItem(pkey(WORLD_KEY))); if(o&&o.builds) return o; }catch(e){} return {xp:0,bonus:0,builds:{},log:[],decor:[],free:[],pupName:-1,pupColor:-1}; }
 // Join two world records (same rules as the server): best stars per model, higher XP, decorations and the name kept.
 function worldMerge(a,b){
   a=a||{}; b=b||{}; const builds={...(a.builds||{})};
   for(const k of Object.keys(b.builds||{})){ const x=builds[k], y=b.builds[k]; builds[k]=x?{...x,...y,s:Math.max(x.s||0,y.s||0),t:Math.min(x.t||Infinity,y.t||Infinity),c:Math.max(x.c||1,y.c||1),...((x.m||y.m)?{m:1}:{})}:y; }
   const log=[]; for(const k of [...(a.log||[]),...(b.log||[]),...Object.keys(builds)]) if(builds[k]&&!log.includes(k)) log.push(k);
-  const pn=[a.pupName,b.pupName].find(v=>typeof v==='number'&&v>=0);
-  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},draw:[...new Map([...(b.draw||[]),...(a.draw||[])].map(d=>[d.id,d])).values()].sort((x,y)=>(y.t||0)-(x.t||0)).slice(0,12),pupName:pn==null?-1:pn,pupAsked:!!(a.pupAsked||b.pupAsked)};
+  // The name (typed or picked) and brick colour: whichever was set last (pupAt); a later 'no name yet' never wipes one
+  const later=(b.pupAt||0)>(a.pupAt||0)?b:a, other=later===b?a:b, named=w=>(cleanPupText(w.pupText)||w.pupName>=0)?w:null, nw=named(later)||named(other)||{};
+  const pn=typeof nw.pupName==='number'&&nw.pupName>=0?nw.pupName:null, pc=[later.pupColor,other.pupColor].find(v=>Number.isInteger(v)&&v>=0);
+  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},draw:[...new Map([...(b.draw||[]),...(a.draw||[])].map(d=>[d.id,d])).values()].sort((x,y)=>(y.t||0)-(x.t||0)).slice(0,12),pupName:pn==null?-1:pn,pupText:cleanPupText(nw.pupText),pupAt:Math.max(a.pupAt||0,b.pupAt||0),pupColor:pc==null?-1:pc,isle:(a.isle||b.isle)?1:0,pupAsked:!!(a.pupAsked||b.pupAsked)};
 }
 function worldSet(o){ try{ localStorage.setItem(pkey(WORLD_KEY),JSON.stringify(o)); }catch(e){} pupPush(); }
 const worldCount=o=>o.log.length;                                   // distinct models finished
@@ -5739,7 +5793,7 @@ const worldStarsSpent=o=>(o.decor||[]).reduce((a,id)=>{ if((o.free||[]).includes
 const worldStars=o=>worldStarsEarned(o)-worldStarsSpent(o);
 const stageOf=(list,n)=>{ let k=0; list.forEach((st,i)=>{ if(n>=st.at) k=i; }); return k; };
 const pupStage=o=>stageOf(PUP_STAGES,worldCount(o)), islandStage=o=>stageOf(ISLAND_STAGES,worldCount(o));
-const pupName=o=>o.pupName>=0&&PUP_NAMES[o.pupName]||'';
+const pupName=o=>cleanPupText(o.pupText)||(o.pupName>=0&&PUP_NAMES[o.pupName])||'';
 function hash32(str){ let h=2166136261; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0).toString(36); }
 // A model's key: catalogue models by name, photo models by a hash (the file name never leaves the device)
 function modelKey(){ if(!model) return ''; const n=model.bricks.length;
@@ -5802,7 +5856,7 @@ function worldStripHTML(r){
   if(r.kind==='weekly'&&r.first) parts.push('<span>+1 Weekly star</span>');
   if(r.memory) parts.push('<span>🧠 From memory! +1 star</span>');
   if(r.decor) parts.push(`<span class="ws-up">🏝️ A ${r.decor.name.toLowerCase()} for your island</span>`);
-  if(r.pupUp) parts.push(`<span class="ws-up"><img src="/art/pup.png" alt="">${pupName(o)||'Your pup'} is a ${PUP_STAGES[r.after.pup].name}!</span>`);
+  if(r.pupUp) parts.push(`<span class="ws-up">${pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'})}${escapeHTML(pupName(o))||'Your pup'} is a ${PUP_STAGES[r.after.pup].name}!</span>`);
   else if(r.islandUp) parts.push(`<span class="ws-up">🏝️ ${ISLAND_STAGES[r.after.island].name} built!</span>`);
   return parts.join('');
 }
@@ -5817,28 +5871,72 @@ function worldToast(){
 }
 // After a Quick Build's reveal: the stars, and on the first ever finish the pup
 function worldAfterQuick(){ worldToast(); pupMaybe(); }
-function pupMaybe(then){ const o=worldStore(); if(o.pupName>=0||worldCount(o)!==1||o.pupAsked){ if(then) then(); return; } o.pupAsked=true; worldSet(o); pupOpen(then); }
+function pupMaybe(then){ const o=worldStore(); if(pupName(o)||worldCount(o)!==1||o.pupAsked){ if(then) then(); return; } o.pupAsked=true; worldSet(o); pupOpen(then); }
+// Meet your pup: its brick colour, then a name. Typing one is the main way; the list and "later" are there too.
+// After the first time, Otter Island is introduced (unless something else is already waiting: then()).
+var pupDraft={ci:0};
 function pupOpen(then){
-  const d=$('#pupDlg'); $('#pupNames').innerHTML=PUP_NAMES.map((n,i)=>`<button type="button" data-pup="${i}">${n}</button>`).join('');
-  d.onclose=()=>{ d.onclose=null; renderHome(); if(then) then(); };
-  if(!d.open){ d.showModal(); sfx.hatch(); }
+  const d=$('#pupDlg'), o=worldStore(), has=pupName(o), first=!o.isle;
+  pupDraft={ci:pupColorOf(o)};
+  $('#pupTitle').textContent=has?escapeHTML(has):'Meet your pup!';
+  $('#pupLead').textContent=has?'Change its brick colour or its name.':'Your own little otter, with its own brick. Pick its colour:';
+  $('#pupIn').value=cleanPupText(o.pupText); $('#pupErr').hidden=true;
+  $('#pupNames').hidden=true; $('#pupPickT').setAttribute('aria-expanded','false');
+  $('#pupNames').innerHTML=PUP_NAMES.map((n,i)=>`<button type="button" data-pup="${i}" aria-pressed="${o.pupName===i&&!o.pupText}">${n}</button>`).join('');
+  $('#pupLater').textContent=has?'Done':'Pick later';
+  pupColsRender();
+  d.onclose=()=>{ d.onclose=null; renderHome(); if(then) then(); else if(first&&worldCount(worldStore())) islandIntro(); };
+  if(!d.open){ d.showModal(); if(!has) sfx.hatch(); }
 }
-$('#pupNames').addEventListener('click',e=>{ const b=e.target.closest('[data-pup]'); if(!b) return; const o=worldStore(); o.pupName=+b.dataset.pup; worldSet(o); track('pup_named'); sfx.chime(); $('#pupDlg').close(); });
-$('#pupLater').onclick=()=>{ track('pup_name_later'); $('#pupDlg').close(); };
+function pupColsRender(){
+  $('#pupPic').innerHTML=pupFig(worldStore(),{ci:pupDraft.ci,vb:PUP_ROUND,par:'xMidYMid slice'});
+  $('#pupCols').innerHTML=PUP_COLORS.map((c,i)=>`<button type="button" role="radio" aria-checked="${i===pupDraft.ci}" aria-label="${c.n}" title="${c.n}" data-col="${i}" style="--c:${c.c}"></button>`).join('');
+}
+$('#pupCols').addEventListener('click',e=>{ const b=e.target.closest('[data-col]'); if(!b) return;
+  pupDraft.ci=+b.dataset.col; const o=worldStore(); o.pupColor=pupDraft.ci; o.pupAt=Date.now(); worldSet(o); track('pup_colour'); sfx.chirp(); pupColsRender();
+  const f=$(`#pupCols [data-col="${pupDraft.ci}"]`); if(f) f.focus(); });
+function pupSave(patch,how){ const o=worldStore(); Object.assign(o,patch,{pupAt:Date.now()}); worldSet(o); track(how); sfx.chime(); $('#pupDlg').close(); }
+$('#pupOwn').addEventListener('submit',e=>{ e.preventDefault(); const v=cleanPupText($('#pupIn').value);
+  if(!v){ $('#pupErr').hidden=false; $('#pupIn').focus(); return; } pupSave({pupText:v,pupName:-1},'pup_named_own'); });
+$('#pupIn').addEventListener('input',()=>{ $('#pupErr').hidden=true; });
+$('#pupPickT').onclick=()=>{ const open=$('#pupNames').hidden; $('#pupNames').hidden=!open; $('#pupPickT').setAttribute('aria-expanded',String(open)); };
+$('#pupNames').addEventListener('click',e=>{ const b=e.target.closest('[data-pup]'); if(!b) return; pupSave({pupName:+b.dataset.pup,pupText:''},'pup_named'); });
+$('#pupLater').onclick=()=>{ if(!pupName(worldStore())) track('pup_name_later'); $('#pupDlg').close(); };
 $('#pupDlg').addEventListener('cancel',e=>{ e.preventDefault(); $('#pupDlg').close(); });
+// Otter Island, introduced once after the pup: the island page with a card on top. The card's buttons are the
+// next steps (what the first-build screen used to offer).
+function islandIntro(){ setTab('island'); }
+function renderIslandIntro(o){
+  const el=$('#isIntro'), show=!o.isle&&worldCount(o)>0; el.hidden=!show; if(!show) return;
+  const nm=pupName(o);
+  $('#iiPup').innerHTML=pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'});
+  $('#iiTxt').textContent=nm?`${nm} lives here with Bloppit.`:'Your pup lives here with Bloppit.';
+  const n0=worldCount(o); $('#iiSteps').innerHTML=ISLAND_STAGES.slice(1).map(st=>`<li class="${n0>=st.at?'done':''}"><b>${n0>=st.at?'✓':st.at}</b>${n0>=st.at?st.at+' ':''}build${st.at===1?'':'s'}: ${st.name==='Hut'?'a hut':st.name==='Workshop'?'a workshop':'a village'}</li>`).join('');
+  const n=nextBuild(); $('#iiNext').innerHTML=n?`<img class="nb-pic" src="${n.thumb}" alt=""><span>Keep building<small>${escapeHTML(n.t)}</small></span>`:'Keep building';
+}
+function islandIntroDone(how){ const o=worldStore(); o.isle=1; worldSet(o); track('island_intro:'+how); $('#isIntro').hidden=true; }
+$('#iiNext').onclick=()=>{ islandIntroDone('next'); const n=nextBuild(); if(n) n.go(); else homeGo('otter'); };
+$('#iiWeekly').onclick=()=>{ islandIntroDone('weekly'); setTab('daily'); };
+$('#iiLook').onclick=()=>{ islandIntroDone('look'); try{ $('#island').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'}); }catch(e){} };
 function renderHomeWorld(){
   const el=$('#hmWorld'), o=worldStore(), n=worldCount(o);
   if(!n){ el.hidden=true; return; }
-  const ps=pupStage(o), is=islandStage(o), next=PUP_STAGES[ps+1], inext=ISLAND_STAGES[is+1];
+  const ps=pupStage(o), is=islandStage(o), next=PUP_STAGES[ps+1], inext=ISLAND_STAGES[is+1], nm=pupName(o);
   const pct=next?Math.round(100*(n-PUP_STAGES[ps].at)/(next.at-PUP_STAGES[ps].at)):100;
-  el.hidden=false;
-  el.innerHTML=`<img class="pup ${PUP_STAGES[ps].name.toLowerCase()}" src="/art/pup.png" alt="">
-    <div class="wt">${o.pupName>=0?`<b>${PUP_NAMES[o.pupName]} <span class="sub">· ${PUP_STAGES[ps].name}</span></b>`:`<span class="wname" id="wName" role="button" tabindex="0">Name your pup</span>`}
-      <span class="sub">${next?`${next.at-n} more build${next.at-n===1?'':'s'} to ${next.name}`:'Legend of Otter Island'}</span><span class="bar"><i style="width:${Math.max(4,pct)}%"></i></span></div>
+  const isle=islandSVG(o,{uid:'hm'});
+  el.hidden=false; el.classList.add('lead');
+  el.setAttribute('aria-label',`Otter Island, ${ISLAND_STAGES[is].name}. ${nm||'Your pup'}, ${n} build${n===1?'':'s'}.`);
+  el.innerHTML=`<span class="hw-isle">${isle}<span class="hw-tag">🏝️ Otter Island · ${ISLAND_STAGES[is].name}</span></span>
+    <span class="pup ps-${PUP_STAGES[ps].name.toLowerCase()}">${pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'})}</span>
+    <div class="wt">${nm?`<b>${escapeHTML(nm)} <span class="sub">· ${PUP_STAGES[ps].name}</span></b>`:`<span class="wname" id="wName" role="button" tabindex="0">Name your pup</span>`}
+      <span class="sub">${next?`${next.at-n} more build${next.at-n===1?'':'s'} to ${next.name} (another stud on its brick)`:'Legend of Otter Island'}</span><span class="bar"><i style="width:${Math.max(4,pct)}%"></i></span></div>
     <div class="wn"><div><b>${n}</b><span>build${n===1?'':'s'}</span></div><div><b class="st">${worldStars(o)}</b><span>Build Stars</span></div><div><b>${worldXP(o)}</b><span>XP</span></div></div>
-    <span class="sub" style="grid-column:1/-1;font-size:13px;font-weight:700;color:var(--muted)">🏝️ Otter Island: ${ISLAND_STAGES[is].name}${inext?` · ${inext.at-n} more to the ${inext.name}`:''}</span>`;
-  const w=$('#wName'); if(w) w.onclick=e=>{ e.stopPropagation(); pupOpen(); };
+    ${inext?`<span class="sub" style="grid-column:1/-1;font-size:13px;font-weight:700;color:var(--muted)">${inext.at-n} more build${inext.at-n===1?'':'s'} to the ${inext.name}</span>`:''}`;
+  const w=$('#wName'); if(w){ w.onclick=e=>{ e.stopPropagation(); pupOpen(); }; w.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); e.stopPropagation(); pupOpen(); } }; }
+  islandSnap(o,isle,nm,n,ISLAND_STAGES[is].name);
 }
+// bloppit.com's front page shows a returning player their island: the picture is kept on this device only.
+function islandSnap(o,svg,nm,n,stage){ try{ const v=JSON.stringify({svg:svg.replace(/(id="|url\(#|href="#)hm-/g,'$1lp-'),name:nm,n,stage,t:Date.now()}); if(v.length<900000) localStorage.setItem('bloppit-island-v1',v); }catch(e){} }
 
 /* ---------- Otter Island: the drawn island that grows with every finished build (Bloppitopia Lite) ----------
    Four stages by build count (Beach, Hut at 1, Workshop at 3, Village at 10), fixed model slots (1, 3, 6) that
@@ -5947,9 +6045,12 @@ function islandSVG(o,opts){
   // Bloppit waits on the beach, then keeps the workshop door; the pup stays at his side
   const [bx,by]=stage>=2?[392,312]:[130,446], ps=pupStage(o), ph=[54,64,74][ps];
   P.push(`<ellipse cx="${bx}" cy="${by+2}" rx="26" ry="6" fill="#000" opacity=".12"/><image href="/art/bud-3q.png" x="${bx-36}" y="${by-96}" width="72" height="96" preserveAspectRatio="xMidYMax meet"/>`);
-  if(n>0) P.push(`<ellipse cx="${bx+54}" cy="${by+2}" rx="${ph*.34}" ry="5" fill="#000" opacity=".12"/><image class="is-bob" href="/art/pup.png" x="${bx+54-ph*.4}" y="${by-ph}" width="${Math.round(ph*.8)}" height="${ph}" preserveAspectRatio="xMidYMax meet"/>`);
+  if(n>0) P.push(`<ellipse cx="${bx+54}" cy="${by+2}" rx="${ph*.34}" ry="5" fill="#000" opacity=".12"/><g class="is-bob"><g transform="translate(${(bx+54-ph*.4+(ph*.8-239*ph/300)/2).toFixed(1)} ${by-ph}) scale(${(ph/300).toFixed(4)})">${pupLayers(pupColorOf(o),ps+1)}</g></g>`);
   if(stage===0) P.push('<g transform="translate(250 372)"><rect x="-74" y="-30" width="148" height="40" rx="12" fill="#fff" stroke="#14202C" stroke-width="2"/><path d="M-30 10 l-12 14 l24 -14z" fill="#fff" stroke="#14202C" stroke-width="2"/><rect x="-29" y="8" width="22" height="4" fill="#fff"/><text x="0" y="-4" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="15" fill="#14202C">Finish a build!</text></g>');
-  return `<svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-label="Otter Island at the ${ISLAND_STAGES[stage].name} stage">${P.join('')}</svg>`;
+  let out=`<svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-label="Otter Island at the ${ISLAND_STAGES[stage].name} stage">${P.join('')}</svg>`;
+  // A second copy on the page (the menu's) gets its own ids, so its gradients never point into a hidden copy
+  if(opts.uid) out=out.replace(/(id="|url\(#|href="#)is-/g,`$1${opts.uid}-`);
+  return out;
 }
 // Which model sits on which stand: placed ones stay where they were dragged; the rest fill free stands newest first
 function islandSlots(o,keys,open){
@@ -6008,7 +6109,7 @@ let islandShown=-1;
 function renderIsland(){
   const o=worldStore(), stage=islandStage(o), n=worldCount(o), next=ISLAND_STAGES[stage+1];
   const pop=islandShown>=0&&islandShown<n; islandShown=n;
-  $('#island').innerHTML=islandSVG(o,{pop}); islandDrag();
+  $('#island').innerHTML=islandSVG(o,{pop}); islandDrag(); renderIslandIntro(o);
   $('#isStage').innerHTML=`${ISLAND_STAGES[stage].name}<small>${n} build${n===1?'':'s'} finished · ${worldStars(o)} Build Star${worldStars(o)===1?'':'s'} to spend</small>`;
   $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>The whole village is built. The jetty points at Friendship Harbour, coming next.</span>';
   $('#isNote').textContent=n?`${pupName(o)||'Your pup'} and Bloppit are home. ${next?'Every build you finish grows the island.':''}${n>1?' Drag a model to move it.':''}`:'Finish any build and the first hut rises from the sand.';
@@ -6038,7 +6139,9 @@ function renderBuilds(){
 $('#isCard').onclick=async()=>{
   const o=worldStore(); track('postcard');
   try{
-    const svg=islandSVG(o,{}).replace(/href="\/art\//g,`href="${location.origin}/art/`);
+    // An SVG drawn as a picture can't fetch files, so the art goes in as data first
+    let svg=islandSVG(o,{uid:'pc'}); const urls=[...new Set([...svg.matchAll(/href="(\/art\/[^"]+)"/g)].map(m=>m[1]))];
+    for(const u of urls){ const b=await (await fetch(u)).blob(); const d=await new Promise(r=>{ const f=new FileReader(); f.onload=()=>r(f.result); f.readAsDataURL(b); }); svg=svg.split(`href="${u}"`).join(`href="${d}"`); }
     const img=new Image(); img.crossOrigin='anonymous';
     await new Promise((res,rej)=>{ img.onload=res; img.onerror=rej; img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg); });
     const c=document.createElement('canvas'); c.width=1200; c.height=800; const x=c.getContext('2d');
@@ -6265,7 +6368,7 @@ async function famList(key){
   const el=$('#famList'); el.innerHTML='<p class="note">Loading…</p>';
   try{ const j=await pupApi('POST',{action:'family-list',key}); try{ localStorage.setItem(FAM_KEY,key); }catch(e){}
     const here=new Set(players.list.map(p=>p.pup).filter(Boolean));
-    el.innerHTML=j.pups.length?j.pups.map(p=>`<div><span>${p.pupName>=0?escapeHTML(PUP_NAMES[p.pupName]||'')+' · ':''}${escapeHTML(p.label)} · ${p.builds} build${p.builds===1?'':'s'}${here.has(p.pup)?' · on this device':''}</span><span>${here.has(p.pup)?'':`<button class="ghost" type="button" data-fam-bring="${p.pup}">Bring here</button>`}<button class="ghost danger" type="button" data-fam-del="${p.pup}">Delete</button></span></div>`).join(''):'<p class="note">No players attached to this key yet.</p>';
+    el.innerHTML=j.pups.length?j.pups.map(p=>`<div><span>${(p.pupText||p.pupName>=0)?escapeHTML(cleanPupText(p.pupText)||PUP_NAMES[p.pupName]||'')+' · ':''}${escapeHTML(p.label)} · ${p.builds} build${p.builds===1?'':'s'}${here.has(p.pup)?' · on this device':''}</span><span>${here.has(p.pup)?'':`<button class="ghost" type="button" data-fam-bring="${p.pup}">Bring here</button>`}<button class="ghost danger" type="button" data-fam-del="${p.pup}">Delete</button></span></div>`).join(''):'<p class="note">No players attached to this key yet.</p>';
     famNote(''); }catch(e){ el.innerHTML=''; famNote(e.message,'err'); }
 }
 $('#famList').addEventListener('click',async e=>{
@@ -6491,19 +6594,19 @@ function welcomeOffer(left){
 function welcomeDone(){
   welcomeVer=-1; track('welcome_build_completed'); if(welcomeBook){ welcomeBook=false; toggleBook(); }
   // One screen: the stars, the pup's name (if it has none yet), the fork
-  const o=worldStore(), askPup=o.pupName<0; if(askPup&&!o.pupAsked){ o.pupAsked=true; worldSet(o); }
-  $('#wcPup').hidden=!askPup; $('#wcNames').innerHTML=PUP_NAMES.map((n,i)=>`<button type="button" data-pup="${i}" aria-pressed="false">${n}</button>`).join('');
-  $('#wcPupSub').textContent='Pick a name, or name it later.';
+  // A first pup goes to "Meet your pup" (and from there to the island); otherwise the usual next steps.
+  const o=worldStore(), askPup=!pupName(o)&&!o.pupAsked; if(askPup){ o.pupAsked=true; worldSet(o); }
+  $('#wcPupGo').hidden=!askPup; ['#wcTrail','#wcWeekly','#wcLibrary'].forEach(q=>$(q).hidden=askPup);
+  $('#wcNote').textContent=askPup?'Something just hatched on your island…':'What next?';
   { const n=nextBuild(); $('#wcTrail').innerHTML=n?`<img class="nb-pic" src="${n.thumb}" alt=""><span>Keep building<small>${escapeHTML(n.t)}</small></span>`:'Keep building'; }
   const d=$('#welcomeDlg'); if(!d.open) d.showModal(); worldSound(); if(askPup) setTimeout(()=>sfx.hatch(),1600);
 }
-$('#wcNames').addEventListener('click',e=>{ const b=e.target.closest('[data-pup]'); if(!b) return; const o=worldStore(); o.pupName=+b.dataset.pup; worldSet(o); track('pup_named');
-  document.querySelectorAll('#wcNames [data-pup]').forEach(x=>x.setAttribute('aria-pressed',x===b)); $('#wcPupSub').textContent=`${PUP_NAMES[o.pupName]} it is! ${PUP_NAMES[o.pupName]} is waiting on your island.`; sfx.chirp(); renderHome(); });
+$('#wcPupGo').onclick=()=>{ const d=$('#welcomeDlg'); d.close(); endReveal(true); track('welcome_fork:pup'); pupOpen(); };
 { const d=$('#welcomeDlg'), go=f=>{ d.close(); endReveal(true); f(); };
   $('#wcTrail').onclick=()=>go(()=>{ track('welcome_fork:trail'); const n=nextBuild(); if(n) n.go(); else homeGo('otter'); });
   $('#wcWeekly').onclick=()=>go(()=>{ track('welcome_fork:weekly'); setTab('daily'); });
   $('#wcLibrary').onclick=()=>go(()=>{ track('welcome_fork:library'); homeGo('library'); });
-  d.addEventListener('cancel',e=>{ e.preventDefault(); go(()=>{ track('welcome_fork:stay'); setTab('home'); }); }); }
+  d.addEventListener('cancel',e=>{ e.preventDefault(); if(!$('#wcPupGo').hidden){ $('#wcPupGo').click(); return; } go(()=>{ track('welcome_fork:stay'); setTab('home'); }); }); }
 
 {
   // Share links: bloppit.com/join/CODE (netlify.toml sends it here as ?code=CODE; 5 characters is a room, 6 a challenge),
