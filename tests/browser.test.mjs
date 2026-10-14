@@ -164,3 +164,20 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   assert.doesNotMatch(await a.text('#crewFeed'), /Nice clean build!/);
   assert.deepEqual(a.errors, []); assert.deepEqual(b.errors, []); await a.ctx.close(); await b.ctx.close();
 });
+
+test('island: drag a model onto another stand swaps them; the weekly board shows when a grown-up switches it on', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1#island', { init: { fn: () => { const builds = {}, log = []; for (let i = 0; i < 3; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1 }; log.push(k); }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); localStorage.setItem('bloppit-board-v1', '1'); } } });
+  const before = await t.page.evaluate(() => [...document.querySelectorAll('#island g.is-model')].map((g) => g.dataset.slot + ':' + g.dataset.key));
+  assert.equal(before.length, 3);
+  const box = async (slot) => t.page.evaluate((s) => { const g = document.querySelector(`#island g.is-model[data-slot="${s}"]`); const r = g.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; }, slot);
+  const a = await box(0), b = await box(2);
+  await t.page.mouse.move(a.x, a.y); await t.page.mouse.down(); await t.page.mouse.move(a.x + 20, a.y + 10); await t.page.mouse.move(b.x, b.y, { steps: 8 }); await t.page.mouse.up(); await t.page.waitForTimeout(500);
+  const w = JSON.parse(await t.page.evaluate(() => localStorage.getItem('bloppit-world-v1')));
+  assert.equal(w.slot['m:Model2:12'], 2); assert.equal(w.slot['m:Model0:10'], 0);   // newest was on stand 0, oldest on stand 2; swapped
+  // the board on the Weekly page
+  await t.page.evaluate(() => document.getElementById('tab-daily').click()); await t.page.waitForTimeout(1200);
+  assert.equal(await t.page.evaluate(() => document.getElementById('dyBoard').hidden), false);
+  assert.match(await t.text('#dyBoardList'), /Nobody on the board yet/);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});

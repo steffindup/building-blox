@@ -26,7 +26,7 @@ function cors(req: Request): Record<string, string> {
   return {
     "access-control-allow-origin": o,
     "access-control-allow-methods": "GET, POST, OPTIONS",
-    "access-control-allow-headers": "content-type",
+    "access-control-allow-headers": "content-type, x-pup",
     "access-control-max-age": "86400",
     vary: "origin",
   };
@@ -37,6 +37,8 @@ export default async (req: Request) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: h });
   const url = new URL(req.url);
   const query: Record<string, string> = Object.fromEntries(url.searchParams);
+  // The pup id (for the weekly board) comes in a header, never a URL
+  const pid = req.headers.get("x-pup"); if (pid) query.pid = pid; else delete query.pid;
   let body: any = null;
   if (req.method === "POST") {
     try { body = await req.json(); } catch { return Response.json({ error: "Bad request" }, { status: 400, headers: h }); }

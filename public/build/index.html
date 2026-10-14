@@ -801,6 +801,8 @@ body.on-home .tabs{visibility:hidden}
 .island{position:relative;background:#CFE9F7}
 .island svg{display:block;width:100%;height:auto}
 .island .slot-empty{opacity:.35}
+.island g.is-model{cursor:grab}.island g.is-model.dragging{cursor:grabbing;opacity:.85}
+.island svg{touch-action:none}
 .island .ghost-build{opacity:.28}
 .island .is-pop{animation:is-pop .6s cubic-bezier(.3,1.6,.5,1) both;transform-box:fill-box;transform-origin:50% 100%}
 @keyframes is-pop{from{transform:scale(.2);opacity:0}to{transform:none;opacity:1}}
@@ -817,6 +819,10 @@ body.on-home .tabs{visibility:hidden}
 .is-stage{font-family:var(--f-display);font-size:22px}.is-stage small{display:block;font-family:var(--f-body);font-size:13px;font-weight:700;color:var(--muted)}
 .is-next{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--muted)}
 .is-next .bar{width:140px;height:8px;border-radius:4px;background:var(--bg);overflow:hidden}.is-next .bar i{display:block;height:100%;background:#008F9B}
+.board{display:grid;gap:4px;max-height:420px;overflow:auto}
+.board div{display:grid;grid-template-columns:40px 1fr auto auto;gap:10px;align-items:center;padding:6px 10px;border-radius:10px;background:var(--bg);font-weight:700;font-size:14px}
+.board div.me{background:#14202C;color:#fff}.board .rk{font-family:var(--f-display);font-size:18px}.board .ws-stars{font-size:16px;letter-spacing:2px;color:#E9A800}.board div.me .ws-stars i{color:rgba(255,255,255,.3)}
+.switch{display:flex;align-items:center;gap:10px;font-weight:700;cursor:pointer}.switch input{width:22px;height:22px}
 .crew-card{display:grid;gap:14px}
 .crew-list{display:grid;gap:10px}.crew-list:empty{display:none}
 .crew-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:var(--bg)}
@@ -1376,7 +1382,8 @@ body.on-home .tabs{visibility:hidden}
       <p class="msg" id="dyMsg" hidden></p>
     </div>
   </div>
-  <p class="note">Bloppit only counts how many people finished this week’s puzzle and how many finished it clean. No names, no times, no ranks. The counts are deleted after 8 weeks.</p>
+  <div class="card" id="dyBoard" hidden><div class="gm-head sub-head"><div><h2>🏆 This week’s top 100</h2><p class="note">Clean builds first, then stars. Generated names only; no times. A grown-up switched this on in the Grown-ups corner.</p></div></div><div class="board" id="dyBoardList"></div></div>
+  <p class="note">Bloppit only counts how many people finished this week’s puzzle and how many finished it clean. No names, no times, no ranks, unless a grown-up switches on the top-100 board, which shows generated names and stars. The counts are deleted after 8 weeks.</p>
 </section>
 
 
@@ -1441,6 +1448,11 @@ body.on-home .tabs{visibility:hidden}
       <button class="primary sm" type="submit" id="grownClaimGo">Bring here</button>
     </form>
     <p class="note" id="grownClaimNote" hidden></p>
+  </section>
+  <section class="grown-sec">
+    <h3>Weekly top-100 board</h3>
+    <p class="note">Off by default. When on, this player’s Weekly finishes are listed on a top-100 board with other players, under a generated name like “Brave Otter 214”: clean builds first, then stars. No real names and no times are ever shown.</p>
+    <label class="switch"><input type="checkbox" id="grownBoard"> Show the board and list this player on it</label>
   </section>
   <section class="grown-sec">
     <h3>Crews this player is in</h3>
@@ -4649,7 +4661,7 @@ async function openGrown(){
   if(!(await gate.ask('The Grown-ups corner is for parents.'))) return;
   $('#whoDlg').close(); renderGrown();
   $('#grownCode').hidden=true; $('#grownXferNote').hidden=true; $('#grownClaimNote').hidden=true; $('#grownClaimIn').value='';
-  familyCode=''; renderFamily(); renderGrownCrews();
+  familyCode=''; renderFamily(); renderGrownCrews(); $('#grownBoard').checked=boardOn();
   const b=$('#grownDel'); delete b.dataset.confirm; b.textContent='Delete from the server';
   $('#grownDlg').showModal();
 }
@@ -5304,7 +5316,8 @@ function trialResult(){ const p=mp.state.players[0]; return {ms:Math.round(p.ms|
 const totalMs=r=>r.ms+r.miss*MISS_MS+(r.hint||0)*HINT_MS;
 const ordinal=n=>n+(n%100>=11&&n%100<=13?'th':['th','st','nd','rd'][n%10]||'th');
 async function chApi(method,body,query=''){
-  let r; try{ r=await fetch(API_BASE+'/api/challenge'+query,{method,headers:body?{'content-type':'application/json'}:{},body:body?JSON.stringify(body):undefined,cache:'no-store'}); }
+  const pid=(body&&body.board&&curPlayer()&&curPlayer().pup)||'';
+  let r; try{ r=await fetch(API_BASE+'/api/challenge'+query,{method,headers:{...(body?{'content-type':'application/json'}:{}),...(pid?{'x-pup':pid}:{})},body:body?JSON.stringify(body):undefined,cache:'no-store'}); }
   catch(e){ throw new Error('Couldn’t reach Bloppit. Check your internet connection.'); }
   let j=null; try{ j=await r.json(); }catch(e){}
   if(!r.ok||!j) throw new Error((j&&j.error)||'Bloppit didn’t answer. Please try again.');
@@ -5365,7 +5378,8 @@ async function trialEnd(){
       if(!first){ trialDialog({icon:'📅',card:true,title:clean?'Clean build!':'Nice practice!',rows:cleanRow,note:(clean&&!prev.clean?'That one counts as clean now. ':'')+'Come back on Monday for a new puzzle!'+streakNote()}); return; }
       trialDialog({icon:'📅',title:'Weekly Bloppit done!',rows:cleanRow,note:'Checking how everyone else did…'});
       try{
-        const j=await chApi('POST',{action:'weekly',week:info.week,ms:r.ms,miss:r.miss,hint:r.hint,nBricks:model.bricks.length});
+        const j=await chApi('POST',{action:'weekly',week:info.week,ms:r.ms,miss:r.miss,hint:r.hint,nBricks:model.bricks.length,board:boardOn(),stars:worldLast?worldLast.stars:0});
+        if(j.board) $('#dyBoardList').innerHTML=boardRows(j.board);
         weeklyPeek={week:info.week,n:j.n,clean:j.clean,pct:j.pct};
         W.weeks[info.week].n=j.n; W.weeks[info.week].pct=j.pct; weeklyStoreSet(W);
         const beat=weeklyPuzzle(info.week).beat;
@@ -5500,6 +5514,7 @@ async function renderHomeWeekly(){
   try{ el.textContent=cleanLine(await weeklyFetch(),me); }catch(e){}
 }
 async function renderDaily(){
+  renderBoard();
   const week=weekOf(), o=weeklyPuzzle(week), me=weeklyStore().weeks[week], streak=weeklyStreak();
   $('#dyImg').src=o.thumb; $('#dyName').textContent=o.name;
   const mon=new Date(week+'T12:00:00Z');
@@ -5679,7 +5694,7 @@ function worldMerge(a,b){
   for(const k of Object.keys(b.builds||{})){ const x=builds[k], y=b.builds[k]; builds[k]=x?{...x,...y,s:Math.max(x.s||0,y.s||0),t:Math.min(x.t||Infinity,y.t||Infinity),c:Math.max(x.c||1,y.c||1),...((x.m||y.m)?{m:1}:{})}:y; }
   const log=[]; for(const k of [...(a.log||[]),...(b.log||[]),...Object.keys(builds)]) if(builds[k]&&!log.includes(k)) log.push(k);
   const pn=[a.pupName,b.pupName].find(v=>typeof v==='number'&&v>=0);
-  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],pupName:pn==null?-1:pn,pupAsked:!!(a.pupAsked||b.pupAsked)};
+  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},pupName:pn==null?-1:pn,pupAsked:!!(a.pupAsked||b.pupAsked)};
 }
 function worldSet(o){ try{ localStorage.setItem(pkey(WORLD_KEY),JSON.stringify(o)); }catch(e){} pupPush(); }
 const worldCount=o=>o.log.length;                                   // distinct models finished
@@ -5893,8 +5908,9 @@ function islandSVG(o,opts){
   if(stage>=3) P.push(village(n===10&&opts.pop?'is-pop':'')); else if(stage===2) P.push(village('ghost-build'));
   // decorations, then the models (drawn lower-first so nearer ones overlap), the Weekly by the water
   for(const id of decor) if(DECOR_AT[id]) P.push(decorSVG(id,DECOR_AT[id][0],DECOR_AT[id][1]));
+  const at=islandSlots(o,keys,slotsOpen);   // slot index → model key, honouring where the player put things
   const slots=SLOTS.map(([x,y],i)=>({x,y,i})).filter(s=>s.i<slotsOpen).sort((a,b)=>a.y-b.y);
-  for(const sl of slots){ const k=keys[sl.i]; if(k) P.push(pic(k,sl.x,sl.y,124,opts.pop&&sl.i===0)); else P.push(`<g class="slot-empty">${stand(sl.x,sl.y,110)}</g>`); }
+  for(const sl of slots){ const k=at[sl.i]; if(k) P.push(`<g class="is-model" data-key="${escapeHTML(k)}" data-slot="${sl.i}">${pic(k,sl.x,sl.y,124,opts.pop&&k===keys[0]&&!(o.slot||{})[k])}</g>`); else P.push(`<g class="slot-empty" data-slot="${sl.i}">${stand(sl.x,sl.y,110)}</g>`); }
   if(weekly){ const [x,y]=WEEKLY_SLOT; P.push(pic(weekly,x,y,112,opts.pop&&o.log[o.log.length-1]===weekly)+`<rect x="${x+50}" y="${y-92}" width="3" height="90" fill="#14202C"/><path d="M${x+53} ${y-92} l22 7 l-22 7z" fill="#008F9B"/>`); }
   // Bloppit waits on the beach, then keeps the workshop door; the pup stays at his side
   const [bx,by]=stage>=2?[392,312]:[130,446], ps=pupStage(o), ph=[54,64,74][ps];
@@ -5903,14 +5919,37 @@ function islandSVG(o,opts){
   if(stage===0) P.push('<g transform="translate(250 372)"><rect x="-74" y="-30" width="148" height="40" rx="12" fill="#fff" stroke="#14202C" stroke-width="2"/><path d="M-30 10 l-12 14 l24 -14z" fill="#fff" stroke="#14202C" stroke-width="2"/><rect x="-29" y="8" width="22" height="4" fill="#fff"/><text x="0" y="-4" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="15" fill="#14202C">Finish a build!</text></g>');
   return `<svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-label="Otter Island at the ${ISLAND_STAGES[stage].name} stage">${P.join('')}</svg>`;
 }
+// Which model sits on which stand: placed ones stay where they were dragged; the rest fill free stands newest first
+function islandSlots(o,keys,open){
+  const at={}, placed=o.slot||{}, used=new Set();
+  for(const k of keys){ const i=placed[k]; if(Number.isInteger(i)&&i>=0&&i<open&&!at[i]){ at[i]=k; used.add(k); } }
+  for(const k of keys){ if(used.has(k)) continue; for(let i=0;i<open;i++) if(!at[i]){ at[i]=k; used.add(k); break; } }
+  return at;
+}
+// Drag a model onto another stand (or swap two)
+function islandDrag(){
+  const svg=$('#island svg'); if(!svg) return;
+  let drag=null;
+  const pt=(e)=>{ const p=svg.createSVGPoint(); p.x=e.clientX; p.y=e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); };
+  svg.addEventListener('pointerdown',e=>{ const g=e.target.closest('g.is-model'); if(!g) return; e.preventDefault(); svg.setPointerCapture(e.pointerId);
+    const p=pt(e); drag={g,key:g.dataset.key,from:+g.dataset.slot,x0:p.x,y0:p.y,moved:false}; g.classList.add('dragging'); svg.appendChild(g); });
+  svg.addEventListener('pointermove',e=>{ if(!drag) return; const p=pt(e); const dx=p.x-drag.x0, dy=p.y-drag.y0; if(Math.hypot(dx,dy)>4) drag.moved=true; drag.g.setAttribute('transform',`translate(${dx} ${dy})`); });
+  const end=e=>{ if(!drag) return; const d=drag; drag=null; d.g.classList.remove('dragging'); d.g.removeAttribute('transform'); if(!d.moved) return;
+    const p=pt(e), o=worldStore(), open=ISLAND_STAGES[islandStage(o)].slots; let best=-1, bd=90;
+    SLOTS.forEach(([x,y],i)=>{ if(i>=open) return; const dist=Math.hypot(p.x-x,p.y-(y-40)); if(dist<bd){ bd=dist; best=i; } });
+    if(best<0||best===d.from) return;
+    const keys=o.log.filter(k=>!k.startsWith('w:')).slice(-open).reverse(), at=islandSlots(o,keys,open), other=at[best];
+    o.slot=o.slot||{}; o.slot[d.key]=best; if(other) o.slot[other]=d.from; worldSet(o); track('island_arranged'); sfx.snap(); islandShown=worldCount(o); renderIsland(); };
+  svg.addEventListener('pointerup',end); svg.addEventListener('pointercancel',end);
+}
 let islandShown=-1;
 function renderIsland(){
   const o=worldStore(), stage=islandStage(o), n=worldCount(o), next=ISLAND_STAGES[stage+1];
   const pop=islandShown>=0&&islandShown<n; islandShown=n;
-  $('#island').innerHTML=islandSVG(o,{pop});
+  $('#island').innerHTML=islandSVG(o,{pop}); islandDrag();
   $('#isStage').innerHTML=`${ISLAND_STAGES[stage].name}<small>${n} build${n===1?'':'s'} finished · ${worldStars(o)} Build Star${worldStars(o)===1?'':'s'} to spend</small>`;
   $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>The whole village is built. The jetty points at Friendship Harbour, coming next.</span>';
-  $('#isNote').textContent=n?`${pupName(o)||'Your pup'} and Bloppit are home. ${next?`Every build you finish grows the island.`:''}`:'Finish any build and the first hut rises from the sand.';
+  $('#isNote').textContent=n?`${pupName(o)||'Your pup'} and Bloppit are home. ${next?'Every build you finish grows the island.':''}${n>1?' Drag a model to move it.':''}`:'Finish any build and the first hut rises from the sand.';
   $('#isCard').hidden=stage<3; $('#isDecor').hidden=!n;
   renderDecorShop(); renderBuilds();
 }
@@ -6088,7 +6127,20 @@ $('#familyCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(fam
 $('#familyShare').onclick=async()=>{ if(APP&&!await gate.ask('Sharing sends a link to another app.')) return; track('family_link_shared');
   const url=familyUrl(), text='Bloppit, a calm brick puzzle game. Open this on the device they play on:'; try{ if(navigator.share) await navigator.share({title:'Bloppit',text,url}); else await navigator.clipboard.writeText(`${text} ${url}`); }catch(e){} };
 
-/* ---------- Crews: a shared lighthouse for an approved group (friends, a family, a class) ----------
+/* ---------- The Weekly top-100 board, behind a parent switch (per player, on this device) ---------- */
+const BOARD_KEY='bloppit-board-v1';
+function boardOn(){ try{ return localStorage.getItem(pkey(BOARD_KEY))==='1'; }catch(e){ return false; } }
+function boardSet(on){ try{ localStorage.setItem(pkey(BOARD_KEY),on?'1':'0'); }catch(e){} track(on?'board_on':'board_off'); renderBoard(); }
+$('#grownBoard').addEventListener('change',e=>boardSet(e.target.checked));
+function boardRows(b){ return b.length?b.map(e=>`<div class="${e.me?'me':''}"><span class="rk">${e.rank}</span><span>${escapeHTML(e.name)}${e.me?' (you)':''}</span><span>${e.clean?'✨ clean':''}</span>${wsStars(e.stars)}</div>`).join(''):'<p class="note">Nobody on the board yet this week. Finish the Weekly to be first.</p>'; }
+async function renderBoard(){
+  const card=$('#dyBoard'); if(!boardOn()){ card.hidden=true; return; }
+  card.hidden=false; const me=curPlayer(), pid=me&&me.pup;
+  try{ const r=await fetch(API_BASE+'/api/challenge?weekly='+weekOf()+'&board=1',{headers:pid?{'x-pup':pid}:{},cache:'no-store'}); const j=await r.json(); $('#dyBoardList').innerHTML=boardRows(j.board||[]); }
+  catch(e){ $('#dyBoardList').innerHTML='<p class="note">Couldn’t load the board just now.</p>'; }
+}
+
+/* ---------- Crews: a shared lighthouse for an approved group (friends, a family, a class) ----------/* ---------- Crews: a shared lighthouse for an approved group (friends, a family, a class) ----------
    Identity is the pup (x-pup). The maker approves every join; builds add bricks to the crew's lighthouse; only
    fixed phrases and stickers pass, under generated names; a report hides the post for you and three reports
    pause the sender; a parent sees every crew and can take a player out from the Grown-ups corner. */

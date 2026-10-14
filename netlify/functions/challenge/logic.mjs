@@ -73,6 +73,14 @@ function publicRelay(c, mine) {
     second: c.second ? { label: labelFor(c.second.id), moves: c.second.moves, miss: c.second.miss, hint: c.second.hint, at: c.second.at, me: me(c.second) } : null };
 }
 
+const BOARD_MAX = 100;
+const cleanPid = (s) => /^[a-z0-9]{24}$/.test(String(s || '')) ? String(s) : '';
+const sortBoard = (b) => [...b].sort((x, y) => (y.clean - x.clean) || (y.stars - x.stars) || (x.at - y.at));
+function publicBoard(d, pid) {
+  const b = sortBoard(d.board || []);
+  return b.map((e, i) => ({ rank: i + 1, name: labelFor(e.id), clean: !!e.clean, stars: e.stars, me: !!pid && e.id === pid }));
+}
+
 async function readChallenge(store, code) {
   const r = await store.get(chKey(code));
   if (!r) return null;
@@ -90,7 +98,9 @@ export async function handle(method, query, body, store) {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(week)) return { status: 400, body: { error: 'Bad week.' } };
       const r = await store.get(weekKey(week));
       const d = r ? r.data : { week, n: 0, clean: 0 };
-      return { status: 200, body: { week, n: d.n, clean: d.clean, pct: d.n ? Math.round(100 * d.clean / d.n) : 0 } };
+      const out = { week, n: d.n, clean: d.clean, pct: d.n ? Math.round(100 * d.clean / d.n) : 0 };
+      if (query.board) out.board = publicBoard(d, cleanPid(query.pid));   // the top-100, only asked for when a parent has switched it on
+      return { status: 200, body: out };
     }
     const code = cleanCode(query.code);
     if (code.length !== 6) return { status: 400, body: { error: 'Challenge codes have 6 letters and numbers.' } };
@@ -205,8 +215,11 @@ export async function handle(method, query, body, store) {
       const r = await store.get(weekKey(week));
       const d = r ? r.data : { week, n: 0, clean: 0 };
       d.n += 1; if (clean) d.clean += 1;
+      // The top-100 board (behind a parent switch on the device): generated names, clean first, ties by stars, then earliest.
+      const pid = cleanPid(query.pid), stars = Math.max(0, Math.min(3, Math.floor(Number(body.stars)) || 0));
+      if (body.board && pid) { d.board = (d.board || []).filter((e) => e.id !== pid); d.board.push({ id: pid, clean, stars, at: now }); d.board = sortBoard(d.board).slice(0, BOARD_MAX); }
       const { modified } = await store.set(weekKey(week), d, r ? { onlyIfMatch: r.etag } : { onlyIfNew: true });
-      if (modified) return { status: 200, body: { week, n: d.n, clean: d.clean, pct: Math.round(100 * d.clean / d.n), you: clean } };
+      if (modified) return { status: 200, body: { week, n: d.n, clean: d.clean, pct: Math.round(100 * d.clean / d.n), you: clean, ...(body.board && pid ? { board: publicBoard(d, pid) } : {}) } };
       await new Promise((res) => setTimeout(res, 40 + Math.random() * 120));
     }
     return { status: 409, body: { error: 'Lots of people are building right now. Please try again.' } };
