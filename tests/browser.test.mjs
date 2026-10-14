@@ -199,3 +199,25 @@ test('family key: make, attach a player, bring the player to another device', { 
   assert.equal(await b.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-players-v1')).list.filter((p) => p.pup).length), 1);
   assert.deepEqual(b.errors, []); await b.ctx.close();
 });
+
+test('draw your own: paint, build as a picture, save with the pup, send as a link', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0#photos');
+  const cv = await t.page.$('#drawCv'); await cv.scrollIntoViewIfNeeded(); await t.page.waitForTimeout(300); const r = await cv.boundingBox();
+  const cell = (cx, cy) => ({ x: r.x + (cx + .5) * r.width / 24, y: r.y + (cy + .5) * r.height / 24 });
+  // a red square outline with a yellow middle: paint strokes, then fill
+  await t.page.evaluate(() => document.querySelector('#drawPal [data-c="1"]').click());
+  for (const [x1, y1, x2, y2] of [[6, 6, 17, 6], [17, 6, 17, 17], [17, 17, 6, 17], [6, 17, 6, 6]]) { const a = cell(x1, y1), b = cell(x2, y2); await t.page.mouse.move(a.x, a.y); await t.page.mouse.down(); await t.page.mouse.move(b.x, b.y, { steps: 14 }); await t.page.mouse.up(); }
+  await t.page.evaluate(() => { document.querySelector('#drawPal [data-c="3"]').click(); document.getElementById('drawFill').click(); });
+  const m = cell(11, 11); await t.page.mouse.click(m.x, m.y);
+  const painted = await t.page.evaluate(() => window.bloppitDrawCode()); assert.match(painted, /^24x24-/);
+  await t.page.evaluate(() => document.getElementById('drawSave').click()); await t.page.waitForTimeout(300);
+  assert.equal(await t.page.evaluate(() => document.querySelectorAll('#drawSaved button').length), 1);
+  await t.page.evaluate(() => document.getElementById('drawBuild').click()); await t.page.waitForTimeout(1500);
+  assert.equal(await t.view(), 'view-build'); const prog = await t.text('#progress'); assert.match(prog, /0 of (\d+) placed/); assert.ok(+prog.match(/of (\d+)/)[1] >= 100);
+  await t.ctx.close();
+  const u = await open('?nosplash=1&welcome=0&p=d-' + painted);
+  assert.match(await u.text('#shTitle'), /A drawing for you/);
+  await u.page.evaluate(() => document.getElementById('shGo').click()); await u.page.waitForTimeout(1500);
+  assert.equal(await u.view(), 'view-build'); assert.match(await u.text('#progress'), /0 of \d+ placed/);
+  assert.deepEqual(u.errors, []); assert.deepEqual(t.errors, []); await u.ctx.close();
+});
