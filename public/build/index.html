@@ -627,6 +627,12 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 @media (max-width:640px){.who{padding-right:10px}.who-txt .tag{display:none}}
 .windlg::backdrop{background:rgba(10,16,24,.55)}
 .windlg .wc-pic{display:block;width:auto;height:140px;margin:-6px auto 2px}
+.windlg .share-pic{display:block;width:150px;height:112px;object-fit:contain;margin:-4px auto 6px}
+.family{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.family .qr{width:132px;height:132px;flex:none;background:#fff;border-radius:10px;padding:6px;border:1px solid var(--line)}
+.family .qr svg{display:block;width:100%;height:100%}
+.family-txt{display:grid;gap:8px;min-width:0}
+.family-txt code{font-size:14px;font-weight:700;word-break:break-all}
 .windlg .pup-pic{height:150px;border-radius:50%;width:150px;object-fit:cover;object-position:center 20%;background:#E8F1F8;border:4px solid #fff;box-shadow:0 4px 0 var(--shadow)}
 .pup-names{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 14px}
 .pup-names button{font:inherit;font-weight:800;font-size:15px;padding:10px 6px;border-radius:12px;border:2px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer}
@@ -1321,7 +1327,7 @@ body.on-home .tabs{visibility:hidden}
   <div class="win-rows" id="trRows"></div>
   <div class="world-strip" data-ws></div>
   <p class="win-best" id="trNote"></p>
-  <div class="win-btns"><button class="ghost" id="trBook" type="button">📖 Build it for real</button><button class="ghost" id="trShare" type="button" hidden>Share the code</button><button class="ghost" id="trRetry" type="button" hidden>Try sending again</button><button class="primary sm" id="trDone" type="button">Done</button></div>
+  <div class="win-btns"><button class="ghost" id="trBook" type="button">📖 Build it for real</button><button class="ghost" id="trShare" type="button" hidden>Share the code</button><button class="ghost" id="trCard" type="button" hidden>📮 Weekly card</button><button class="ghost" id="trRetry" type="button" hidden>Try sending again</button><button class="primary sm" id="trDone" type="button">Done</button></div>
 </dialog>
 <dialog class="windlg" id="mpEndDlg" aria-label="Game finished">
   <div class="win-stars">🏆</div>
@@ -1359,6 +1365,13 @@ body.on-home .tabs{visibility:hidden}
     <div class="win-btns" style="justify-content:flex-start"><button class="ghost" id="grownXfer" type="button">Make a transfer code</button></div>
     <p class="gate-num" id="grownCode" hidden></p>
     <p class="note" id="grownXferNote" hidden></p>
+  </section>
+  <section class="grown-sec">
+    <h3>Family Link: send Bloppit to another device</h3>
+    <p class="note">Scan this with the child’s iPad, phone or Chromebook, or send the link. It opens Bloppit’s first build. Nothing personal crosses. To bring this player’s progress along too, make a transfer code above first; it is added to the link while it lasts.</p>
+    <div class="family"><div class="qr" id="familyQr" aria-label="QR code for the Family Link"></div>
+      <div class="family-txt"><code id="familyUrl">bloppit.com/p/start</code>
+        <div class="win-btns" style="justify-content:flex-start"><button class="ghost" id="familyCopy" type="button">Copy link</button><button class="ghost" id="familyShare" type="button">Send link</button></div></div></div>
   </section>
   <section class="grown-sec">
     <h3>Bring a player here</h3>
@@ -1422,6 +1435,12 @@ body.on-home .tabs{visibility:hidden}
   <p class="win-best" style="margin-top:0">Your own little otter. Pick a name, or name it later.</p>
   <div class="pup-names" id="pupNames" role="group" aria-label="Pup names"></div>
   <div class="win-btns"><button class="ghost" id="pupLater" type="button">Name it later</button></div>
+</dialog>
+<dialog class="windlg" id="shareDlg" aria-labelledby="shTitle">
+  <img class="share-pic" id="shPic" alt="" hidden>
+  <h2 id="shTitle">Build this one</h2>
+  <p class="win-best" id="shNote" style="margin-top:0"></p>
+  <div class="win-btns wc-btns"><button class="primary sm" id="shGo" type="button">Build this one</button><button class="ghost" id="shLook" type="button">Look around first</button></div>
 </dialog>
 <dialog class="lightbox" id="bookDlg" aria-label="Booklet page">
   <div class="lb-top"><div class="pg-top"><div class="pg-step" id="lbStep"></div><div class="callout" id="lbCallout"></div></div>
@@ -4511,6 +4530,7 @@ async function openGrown(){
   if(!(await gate.ask('The Grown-ups corner is for parents.'))) return;
   $('#whoDlg').close(); renderGrown();
   $('#grownCode').hidden=true; $('#grownXferNote').hidden=true; $('#grownClaimNote').hidden=true; $('#grownClaimIn').value='';
+  familyCode=''; renderFamily();
   const b=$('#grownDel'); delete b.dataset.confirm; b.textContent='Delete from the server';
   $('#grownDlg').showModal();
 }
@@ -4522,8 +4542,8 @@ $('#grownXfer').onclick=async()=>{
     if(!me.pup){ await pupSync(); if(!me.pup){ note.textContent='Finish one build first, then make a code.'; return; } }
     note.textContent='Making a code…';
     const j=await pupApi('POST',{action:'transfer'},me.pup); track('transfer_made');
-    out.textContent=j.code; out.hidden=false;
-    note.textContent=`Type this on the other device within 72 hours. It works once.`;
+    out.textContent=j.code; out.hidden=false; familyCode=j.code; renderFamily();
+    note.textContent=`Type this on the other device within 72 hours. It works once. The Family Link below now carries it too.`;
   }catch(e){ note.textContent=e.message; }
 };
 $('#grownClaimForm').addEventListener('submit',async e=>{
@@ -5189,7 +5209,7 @@ let trialDone=null;
 function trialDialog(o){
   $('#trIcon').textContent=o.icon||'⚡'; $('#trTitle').textContent=o.title; $('#trRows').innerHTML=o.rows||''; $('#trRows').hidden=!o.rows;
   $('#trNote').textContent=o.note||''; $('#trCode').hidden=!o.code; $('#trCode').textContent=o.code||'';
-  $('#trShare').hidden=!o.code; $('#trRetry').hidden=!o.retry; trialDone=o;
+  $('#trShare').hidden=!o.code; $('#trCard').hidden=!o.card; $('#trRetry').hidden=!o.retry; trialDone=o;
   const d=$('#trialDlg'); if(!d.open) d.showModal();
 }
 async function trialEnd(){
@@ -5223,16 +5243,16 @@ async function trialEnd(){
       W.weeks[info.week]={...(prev||{}),best,first:prev?prev.first:t,at:Date.now(),clean:!!((prev&&prev.clean)||clean)}; if(first) W.total=weeklyTotal()+1; weeklyStoreSet(W);
       const cleanRow=clean?'<div class="tot"><span>Clean build</span><span>✓</span></div>':`<div><span>Not clean yet</span><span>${r.miss?`${r.miss} miss${r.miss===1?'':'es'}`:''}${r.miss&&r.hint?', ':''}${r.hint?`${r.hint} hint${r.hint===1?'':'s'}`:''}</span></div>`;
       const streakNote=()=>{ const k=weeklyStreak(); return k>1?` Streak: ${k} weeks 🔥.`:''; };
-      if(!first){ trialDialog({icon:'📅',title:clean?'Clean build!':'Nice practice!',rows:cleanRow,note:(clean&&!prev.clean?'That one counts as clean now. ':'')+'Come back on Monday for a new puzzle!'+streakNote()}); return; }
+      if(!first){ trialDialog({icon:'📅',card:true,title:clean?'Clean build!':'Nice practice!',rows:cleanRow,note:(clean&&!prev.clean?'That one counts as clean now. ':'')+'Come back on Monday for a new puzzle!'+streakNote()}); return; }
       trialDialog({icon:'📅',title:'Weekly Bloppit done!',rows:cleanRow,note:'Checking how everyone else did…'});
       try{
         const j=await chApi('POST',{action:'weekly',week:info.week,ms:r.ms,miss:r.miss,hint:r.hint,nBricks:model.bricks.length});
         weeklyPeek={week:info.week,n:j.n,clean:j.clean,pct:j.pct};
         W.weeks[info.week].n=j.n; W.weeks[info.week].pct=j.pct; weeklyStoreSet(W);
         const beat=weeklyPuzzle(info.week).beat;
-        trialDialog({icon:clean?'✨':'📅',title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,
+        trialDialog({icon:clean?'✨':'📅',card:true,title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,
           note:(beat?beat+' ':'')+(clean?`You and ${j.pct}% of this week’s builders finished clean.`:`${j.pct}% of this week’s builders finished clean. Build it again for a clean one!`)+streakNote()+' A new puzzle arrives on Monday.'});
-      }catch(e){ trialDialog({icon:'📅',title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,note:`Your build is saved on this device, but it couldn’t be counted with everyone else’s (${e.message}).`+streakNote()}); }
+      }catch(e){ trialDialog({icon:'📅',card:true,title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,note:`Your build is saved on this device, but it couldn’t be counted with everyone else’s (${e.message}).`+streakNote()}); }
     }
   };
   await send();
@@ -5751,6 +5771,143 @@ $('#isCard').onclick=async()=>{
   }catch(e){ setStatus('Couldn’t make the postcard just now.','err'); }
 };
 
+/* ---------- Share links, the Weekly card and Family Link ----------
+   bloppit.com/p/CODE opens one build with one button, "Build this one": w-2026-10-26 is that week's Weekly,
+   m-red-boat a library model, start the first build. A parent shares, never the child: the Weekly card is a
+   picture of this week's model with the shared-achievement line and the otter, and the link on it. Family Link
+   is /p/start as a QR code in the Grown-ups corner, with the transfer code added when one has just been made,
+   so a parent's phone can hand the game to the child's device with nothing personal crossing. */
+// Tiny QR encoder: byte mode, error correction M, versions 1-10, best mask by the standard penalty.
+// Returns a square array of booleans (true = dark). Enough for a short bloppit.com link.
+function qrMatrix(text, forceMask){
+  const EC_M=[[1,10],[1,16],[1,26],[2,18],[2,24],[4,16],[4,18],[4,22],[5,22],[5,26]];   // [blocks, EC codewords per block] per version
+  const CAP=[16,28,44,64,86,108,124,154,182,216];                                         // data codewords (M) per version
+  const bytes=new TextEncoder().encode(text);
+  let v=1; while(v<=10&&CAP[v-1]-2<bytes.length) v++; if(v>10) throw new Error('too long');
+  const n=17+4*v, cap=CAP[v-1];
+  // bit stream
+  const bits=[]; const put=(val,len)=>{ for(let i=len-1;i>=0;i--) bits.push((val>>i)&1); };
+  put(4,4); put(bytes.length,v<10?8:16); for(const b of bytes) put(b,8);
+  for(let i=0;i<4&&bits.length<cap*8;i++) bits.push(0); while(bits.length%8) bits.push(0);
+  const data=[]; for(let i=0;i<bits.length;i+=8){ let x=0; for(let j=0;j<8;j++) x=(x<<1)|bits[i+j]; data.push(x); }
+  for(let k=0;data.length<cap;k++) data.push(k%2?17:236);
+  // GF(256)
+  const EXP=new Array(512), LOG=new Array(256); let x=1; for(let i=0;i<255;i++){ EXP[i]=x; LOG[x]=i; x<<=1; if(x&256) x^=0x11d; } for(let i=255;i<512;i++) EXP[i]=EXP[i-255];
+  const mul=(a,b)=>a&&b?EXP[LOG[a]+LOG[b]]:0;
+  const [blocks,ecn]=EC_M[v-1];
+  let gen=[1]; for(let i=0;i<ecn;i++){ const ng=new Array(gen.length+1).fill(0); for(let j=0;j<gen.length;j++){ ng[j]^=gen[j]; ng[j+1]^=mul(gen[j],EXP[i]); } gen=ng; }
+  const short=Math.floor(cap/blocks), longer=cap%blocks, dblocks=[], eblocks=[]; let pos=0;
+  for(let b=0;b<blocks;b++){ const len=short+(b>=blocks-longer?1:0), d=data.slice(pos,pos+len); pos+=len; dblocks.push(d);
+    const r=new Array(ecn).fill(0); for(const c of d){ const f=c^r[0]; r.shift(); r.push(0); for(let j=0;j<ecn;j++) r[j]^=mul(gen[j+1],f); } eblocks.push(r); }
+  const out=[]; for(let i=0;i<short+1;i++) for(const d of dblocks) if(i<d.length) out.push(d[i]); for(let i=0;i<ecn;i++) for(const e of eblocks) out.push(e[i]);
+  // matrix
+  const m=Array.from({length:n},()=>new Array(n).fill(null));   // null = free
+  const set=(r,c,val)=>{ m[r][c]=val?1:0; };
+  const finder=(r,c)=>{ for(let i=-1;i<=7;i++) for(let j=-1;j<=7;j++){ const rr=r+i, cc=c+j; if(rr<0||cc<0||rr>=n||cc>=n) continue; const d=(i>=0&&i<=6&&(j===0||j===6))||(j>=0&&j<=6&&(i===0||i===6))||(i>=2&&i<=4&&j>=2&&j<=4); set(rr,cc,d); } };
+  finder(0,0); finder(0,n-7); finder(n-7,0);
+  const AP={2:[6,18],3:[6,22],4:[6,26],5:[6,30],6:[6,34],7:[6,22,38],8:[6,24,42],9:[6,26,46],10:[6,28,50]}[v]||[];
+  for(const r of AP) for(const c of AP){ if(m[r][c]!==null) continue; for(let i=-2;i<=2;i++) for(let j=-2;j<=2;j++) set(r+i,c+j,Math.max(Math.abs(i),Math.abs(j))!==1); }
+  for(let i=8;i<n-8;i++){ if(m[6][i]===null) set(6,i,i%2===0); if(m[i][6]===null) set(i,6,i%2===0); }
+  set(n-8,8,1);
+  const fmtCells=[]; for(let i=0;i<=8;i++){ if(i!==6){ fmtCells.push([8,i]); fmtCells.push([i,8]); } } for(let i=0;i<8;i++){ fmtCells.push([8,n-1-i]); fmtCells.push([n-1-i,8]); }
+  for(const [r,c] of fmtCells) if(m[r][c]===null) m[r][c]=0;
+  if(v>=7){ let bitsV=v<<12, g=0x1f25; for(let i=5;i>=0;i--) if(bitsV&(1<<(i+12))) bitsV^=g<<i; const vi=(v<<12)|bitsV;
+    for(let i=0;i<18;i++){ const b=(vi>>i)&1; set(Math.floor(i/3),n-11+i%3,b); set(n-11+i%3,Math.floor(i/3),b); } }
+  // place data
+  const free=[]; let up=true;
+  for(let c=n-1;c>0;c-=2){ if(c===6) c--; for(let k=0;k<n;k++){ const r=up?n-1-k:k; for(const cc of [c,c-1]) if(m[r][cc]===null) free.push([r,cc]); } up=!up; }
+  const dataBits=[]; for(const b of out) for(let i=7;i>=0;i--) dataBits.push((b>>i)&1);
+  const isData=new Set(free.map(([r,c])=>r*n+c));
+  const masks=[(r,c)=>(r+c)%2===0,(r,c)=>r%2===0,(r,c)=>c%3===0,(r,c)=>(r+c)%3===0,(r,c)=>(Math.floor(r/2)+Math.floor(c/3))%2===0,(r,c)=>(r*c)%2+(r*c)%3===0,(r,c)=>((r*c)%2+(r*c)%3)%2===0,(r,c)=>((r+c)%2+(r*c)%3)%2===0];
+  const build=(mk)=>{ const g=m.map(r=>r.slice()); free.forEach(([r,c],i)=>{ const b=i<dataBits.length?dataBits[i]:0; g[r][c]=masks[mk](r,c)?b^1:b; });
+    // format info: EC M = 00
+    let f=(0<<3)|mk, rem=f<<10; for(let i=4;i>=0;i--) if(rem&(1<<(i+10))) rem^=0x537<<i; const fi=((f<<10)|rem)^0x5412;
+    const fb=[]; for(let i=14;i>=0;i--) fb.push((fi>>i)&1);
+    const a=[[8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],[7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]];
+    const b2=[[n-1,8],[n-2,8],[n-3,8],[n-4,8],[n-5,8],[n-6,8],[n-7,8],[8,n-8],[8,n-7],[8,n-6],[8,n-5],[8,n-4],[8,n-3],[8,n-2],[8,n-1]];
+    fb.forEach((bit,i)=>{ g[a[i][0]][a[i][1]]=bit; g[b2[i][0]][b2[i][1]]=bit; });
+    return g; };
+  const penalty=(g)=>{ let p=0;
+    for(let r=0;r<n;r++){ let run=1; for(let c=1;c<n;c++){ if(g[r][c]===g[r][c-1]){ run++; if(run===5) p+=3; else if(run>5) p++; } else run=1; } }
+    for(let c=0;c<n;c++){ let run=1; for(let r=1;r<n;r++){ if(g[r][c]===g[r-1][c]){ run++; if(run===5) p+=3; else if(run>5) p++; } else run=1; } }
+    for(let r=0;r<n-1;r++) for(let c=0;c<n-1;c++){ const s=g[r][c]+g[r][c+1]+g[r+1][c]+g[r+1][c+1]; if(s===0||s===4) p+=3; }
+    const pat=[1,0,1,1,1,0,1,0,0,0,0],pat2=[0,0,0,0,1,0,1,1,1,0,1];
+    for(let r=0;r<n;r++) for(let c=0;c<=n-11;c++){ let ok=true,ok2=true; for(let k=0;k<11;k++){ if(g[r][c+k]!==pat[k]) ok=false; if(g[r][c+k]!==pat2[k]) ok2=false; } if(ok) p+=40; if(ok2) p+=40; }
+    for(let c=0;c<n;c++) for(let r=0;r<=n-11;r++){ let ok=true,ok2=true; for(let k=0;k<11;k++){ if(g[r+k][c]!==pat[k]) ok=false; if(g[r+k][c]!==pat2[k]) ok2=false; } if(ok) p+=40; if(ok2) p+=40; }
+    let dark=0; for(const row of g) for(const x of row) dark+=x; const k=Math.floor(Math.abs(dark*100/(n*n)-50)/5); p+=k*10; return p; };
+  if(forceMask!=null) return build(forceMask);
+  let best=null, bp=Infinity; for(let mk=0;mk<8;mk++){ const g=build(mk), pp=penalty(g); if(pp<bp){ bp=pp; best=g; } }
+  return best;
+}
+
+function qrSVG(text){ const m=qrMatrix(text), n=m.length; let d=''; for(let r=0;r<n;r++) for(let c=0;c<n;c++) if(m[r][c]) d+=`M${c} ${r}h1v1h-1z`;
+  return `<svg viewBox="-2 -2 ${n+4} ${n+4}" shape-rendering="crispEdges" role="img"><rect x="-2" y="-2" width="${n+4}" height="${n+4}" fill="#fff"/><path d="${d}" fill="#14202C"/></svg>`; }
+const slugOf=n=>String(n||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const SHARE_BASE='https://bloppit.com';
+function shareCodeFor(kind){ if(kind==='weekly'&&cpu&&cpu.trial&&cpu.trial.week) return 'w-'+cpu.trial.week; if(photos.length&&photos.every(p=>p.sample)&&photos[0].name) return 'm-'+slugOf(photos[0].name); return 'start'; }
+// A share link lands here: work out the build, show it with one button, then start it.
+function shareOpen(code,xfer){
+  code=String(code||'').toLowerCase().replace(/[^a-z0-9-]/g,'').slice(0,40);
+  { const o=evStore(); if(!o.channel){ o.channel='share'; evStoreSet(o); } track('visit:share'); }
+  if(xfer) shareClaim(xfer);
+  let week=null, smp=null, title='', note='';
+  if(/^w-\d{4}-\d{2}-\d{2}$/.test(code)){ week=code.slice(2); if(week>weekOf()) week=null; }
+  if(week){ const o=weeklyPuzzle(week); smp=SAMPLES[o.i]; title=week===weekOf()?'This week’s Bloppit':'A Weekly Bloppit'; note=week===weekOf()?`${o.name}, ${o.n} bricks. Build it clean and see how many others did too.`:`${o.name}, ${o.n} bricks, from the week of ${new Date(week+'T12:00:00Z').toLocaleDateString(undefined,{day:'numeric',month:'long'})}.`; }
+  else if(code.startsWith('m-')){ smp=SAMPLES.find(x=>released(x)&&slugOf(x.name)===code.slice(2)); if(smp){ title=smp.name; note='A Bloppit build, sent to you. No account, nothing to sign up for.'; } }
+  if(!smp){ if(welcomeDue()&&welcomeStart()) return; setTab('home'); return; }
+  if(!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png');
+  $('#shPic').src=smp.thumb; $('#shPic').hidden=false; $('#shTitle').textContent=title; $('#shNote').textContent=note;
+  setTab(week?'daily':'home');
+  const d=$('#shareDlg'), go=()=>{ d.close();
+    if(week===weekOf()){ $('#dyGo').click(); return; }
+    if(week){ const o=weeklyPuzzle(week); if(mp) mpLeave(); if(game) endGame(); weeklyLoad(o); setTab('build'); return; }
+    const i=SAMPLES.indexOf(smp); if(mp) mpLeave(); if(game) endGame(); loadSample(i); clearTimeout(timer); rebuild(); setTab('build'); };
+  $('#shGo').onclick=()=>{ track('share_build_started'); go(); };
+  $('#shLook').onclick=()=>{ d.close(); setTab('home'); };
+  d.onclose=null; if(!d.open) d.showModal();
+}
+// A Family Link with a transfer code brings the pup along, as a new player on this device
+async function shareClaim(code){
+  code=String(code||'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(code.length!==8) return;
+  try{ const j=await pupApi('POST',{action:'claim',code}); track('transfer_claimed:family');
+    if(players.list.some(p=>p.pup===j.pup)) return;
+    const id='p'+(++players.n+1), n=players.list.length+1;
+    players.list.push({id,name:'Player '+n,age:null,color:AV_COLORS[(n-1)%AV_COLORS.length],pup:j.pup}); pupApply(id,j.data); playersSave(); switchPlayer(id);
+  }catch(e){}
+}
+// The Weekly card: this week's model, the shared-achievement line, the otter, and the link
+async function weeklyCard(){
+  const info=cpu&&cpu.trial; if(!info||info.kind!=='weekly') return;
+  if(APP&&!await gate.ask('Sharing sends a picture to another app.')) return;
+  track('weekly_card');
+  try{
+    const o=weeklyPuzzle(info.week), me=weeklyStore().weeks[info.week], line=cleanLine(weeklyPeek&&weeklyPeek.week===info.week?weeklyPeek:null,me)||'Finished this week’s Bloppit.';
+    const c=document.createElement('canvas'); c.width=1200; c.height=630; const x=c.getContext('2d');
+    x.fillStyle='#008F9B'; x.fillRect(0,0,1200,630);
+    x.fillStyle='#fff'; x.beginPath(); x.roundRect(60,60,420,420,36); x.fill();
+    const load=src=>new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=src; });
+    const pic=await load(worldThumb(`w:${info.week}`)||o.thumb); const fit=Math.min(360/pic.width,360/pic.height); x.drawImage(pic,270-pic.width*fit/2,270-pic.height*fit/2,pic.width*fit,pic.height*fit);
+    x.fillStyle='#fff'; x.font='800 30px Nunito,sans-serif'; x.fillText('Finished this week’s Bloppit', 540, 150);
+    x.font='400 64px "Lilita One",Nunito,sans-serif'; x.fillText(o.name.slice(0,22), 540, 240);
+    x.font='700 28px Nunito,sans-serif'; const words=line.split(' '); let ln='', yy=320; for(const w of words){ const t=ln?ln+' '+w:w; if(x.measureText(t).width>580){ x.fillText(ln,540,yy); yy+=40; ln=w; } else ln=t; } if(ln) x.fillText(ln,540,yy);
+    try{ const otter=await load('/art/head-bloppit.png'); x.save(); x.beginPath(); x.arc(600,520,56,0,7); x.clip(); x.drawImage(otter,544,464,112,112); x.restore(); }catch(e){}
+    x.fillStyle='#F4BC22'; x.font='800 26px Nunito,sans-serif'; x.fillText('Build it: bloppit.com/p/w-'+info.week, 672, 530);
+    const blob=await new Promise(r=>c.toBlob(r,'image/png')), file=new File([blob],'weekly-bloppit.png',{type:'image/png'});
+    const url=`${SHARE_BASE}/p/w-${info.week}`, text=`Finished this week’s Bloppit: ${o.name}. ${line} Build it: ${url}`;
+    if(navigator.canShare&&navigator.canShare({files:[file]})) await navigator.share({files:[file],title:'Weekly Bloppit',text,url});
+    else if(navigator.share) await navigator.share({title:'Weekly Bloppit',text,url});
+    else { const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='weekly-bloppit.png'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),5000); try{ await navigator.clipboard.writeText(text); }catch(e){} }
+  }catch(e){ if(!/abort/i.test(String(e))) setStatus('Couldn’t make the card just now.','err'); }
+}
+$('#trCard').onclick=weeklyCard;
+// Family Link in the Grown-ups corner
+let familyCode='';
+function familyUrl(){ return `${SHARE_BASE}/p/start${familyCode?`?x=${familyCode}`:''}`; }
+function renderFamily(){ const u=familyUrl(); $('#familyUrl').textContent=u.replace(/^https:\/\//,''); try{ $('#familyQr').innerHTML=qrSVG(u); }catch(e){ $('#familyQr').textContent=''; } }
+$('#familyCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(familyUrl()); $('#familyCopy').textContent='Copied!'; setTimeout(()=>$('#familyCopy').textContent='Copy link',2000); track('family_link_copied'); }catch(e){} };
+$('#familyShare').onclick=async()=>{ if(APP&&!await gate.ask('Sharing sends a link to another app.')) return; track('family_link_shared');
+  const url=familyUrl(), text='Bloppit, a calm brick puzzle game. Open this on the device they play on:'; try{ if(navigator.share) await navigator.share({title:'Bloppit',text,url}); else await navigator.clipboard.writeText(`${text} ${url}`); }catch(e){} };
+
 /* ---------- First session: Bloppit hands over the bricks for one small build ----------
    A first visit (no build started or finished on this device, nothing to resume) skips the menu and opens an
    six-brick tree on the build stage. Bloppit puts each step's brick straight into the player's hand and the
@@ -5806,7 +5963,9 @@ function welcomeDone(){
   const q=(clean(usp.get('room'))||(code.length===5?code:'')).slice(0,5);
   const chq=(clean(usp.get('ch'))||(code.length===6?code:'')).slice(0,6);
   if(code&&!q&&!chq) try{ history.replaceState(null,'',location.pathname); }catch(e){}
-  if(chq.length===6&&!q){ setTab('blitz'); $('#bzCodeIn').value=chq; setTimeout(()=>chOpen(chq),0); try{ history.replaceState(null,'',location.pathname); }catch(e){} }
+  const pcode=usp.get('p'), xcode=usp.get('x');
+  if(pcode){ try{ history.replaceState(null,'',location.pathname); }catch(e){} shareOpen(pcode,xcode); }
+  else if(chq.length===6&&!q){ setTab('blitz'); $('#bzCodeIn').value=chq; setTimeout(()=>chOpen(chq),0); try{ history.replaceState(null,'',location.pathname); }catch(e){} }
   else if(q){
     $('#mpCodeIn').value=q; setTab('mp');
     const st=mpStored();

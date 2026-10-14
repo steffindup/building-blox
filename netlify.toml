@@ -48,3 +48,12 @@
   to = "/build/?go=:channel"
   status = 302
   force = true
+
+# Share links: bloppit.com/p/w-2026-10-26 (a Weekly), /p/m-red-boat (a library model), /p/start (the first build).
+# The app opens that build with one button, "Build this one". Family Link sends /p/start with an optional
+# transfer code (?x=CODE) so a parent's phone can hand the game to the child's device with nothing personal crossing.
+[[redirects]]
+  from = "/p/:code"
+  to = "/build/?p=:code"
+  status = 302
+  force = true
