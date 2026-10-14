@@ -80,12 +80,20 @@ export function merge(server, incoming) {
     for (const k of Object.keys(builds)) if (!seen.has(k)) { seen.add(k); log.push(k); }
     const keep = log.slice(-WORLD_BUILDS_MAX), kept = {};
     for (const k of keep) kept[k] = builds[k];
-    const pupName = [wb.pupName, wa.pupName].map(num).find((v) => v != null && v >= 0) ?? -1;
+    // The pup's name from the fixed list (a number) and its brick colour (a number), whichever was set last (pupAt).
+    // A name the child types for the pup stays on the device: it is never stored here (numbers and dates only).
+    const later = (num(wb.pupAt) ?? 0) >= (num(wa.pupAt) ?? 0) ? wb : wa, other = later === wb ? wa : wb;
+    const named = (w) => ((num(w.pupName) ?? -1) >= 0) ? w : null;
+    const nw = named(later) || named(other) || {};
+    const pupName = num(nw.pupName) != null && num(nw.pupName) >= 0 ? num(nw.pupName) : -1;
+    const pupAt = Math.max(num(wa.pupAt) ?? 0, num(wb.pupAt) ?? 0);
+    const pupColor = [later.pupColor, other.pupColor].map(num).find((v) => Number.isInteger(v) && v >= 0 && v < 16) ?? -1;
     out.world = { xp: Math.max(num(wa.xp) ?? 0, num(wb.xp) ?? 0), bonus: Math.max(num(wa.bonus) ?? 0, num(wb.bonus) ?? 0), builds: kept, log: keep,
       decor: [...new Set([...(wa.decor || []), ...(wb.decor || [])].filter((d) => typeof d === 'string' && d.length <= 20))],
       free: [...new Set([...(wa.free || []), ...(wb.free || [])].filter((d) => typeof d === 'string' && d.length <= 20))],
       draw: [...new Map([...(Array.isArray(wb.draw) ? wb.draw : []), ...(Array.isArray(wa.draw) ? wa.draw : [])].filter((d) => d && typeof d.id === 'string' && typeof d.c === 'string' && d.c.length <= 2600).map((d) => [d.id, { id: d.id, c: d.c, t: num(d.t) ?? 0 }])).values()].sort((x, y) => y.t - x.t).slice(0, 12),
-      slot: Object.fromEntries(Object.entries({ ...obj(wa.slot), ...obj(wb.slot) }).filter(([k, v]) => kept[k] && Number.isInteger(v) && v >= 0 && v < 12)), pupName: pupName >= 0 ? pupName : -1, pupAsked: !!(wa.pupAsked || wb.pupAsked) };
+      slot: Object.fromEntries(Object.entries({ ...obj(wa.slot), ...obj(wb.slot) }).filter(([k, v]) => kept[k] && Number.isInteger(v) && v >= 0 && v < 12)), pupName, pupAsked: !!(wa.pupAsked || wb.pupAsked),
+      ...(pupAt ? { pupAt } : {}), ...(pupColor >= 0 ? { pupColor } : {}), ...((wa.isle || wb.isle) ? { isle: 1 } : {}) };
   }
   for (const key of ['stars', 'xp']) out[key] = Math.max(num(a[key]) ?? 0, num(b[key]) ?? 0) || undefined;
   if (out.stars === undefined) delete out.stars;

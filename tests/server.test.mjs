@@ -21,6 +21,15 @@ test('pup: world merge keeps best stars, earliest time, union of log/decor, the 
 test('pup: a set name is never overwritten by an unset one', () => {
   assert.equal(merge({ world: { pupName: 2 } }, { world: { pupName: -1 } }).world.pupName, 2);
 });
+test('pup: a typed name never reaches the server; latest list name, colour and island flag kept', () => {
+  const w = (x) => ({ world: { builds: {}, log: [], ...x } });
+  let m = merge(w({ pupName: 2, pupAt: 100 }), w({ pupName: -1, pupText: 'Captain Fizz', pupAt: 200, pupColor: 3, isle: 1 })).world;
+  assert.equal(m.pupText, undefined); assert.equal(m.pupName, 2); assert.equal(m.pupColor, 3); assert.equal(m.isle, 1); assert.equal(m.pupAt, 200);
+  m = merge(w({ pupName: 2, pupAt: 100 }), w({ pupName: 4, pupAt: 200 })).world; assert.equal(m.pupName, 4);
+  m = merge(w({ pupName: 4, pupAt: 300 }), w({ pupName: -1, pupAt: 400 })).world; assert.equal(m.pupName, 4);   // a later 'no name' never wipes one
+  m = merge(w({ pupColor: 99 }), w({})).world; assert.equal(m.pupColor, undefined);
+  assert.equal(JSON.stringify(merge({}, w({ pupText: 'Zoë' }))).includes('Zo'), false);
+});
 test('pup: odd input does not throw', () => { assert.equal(merge({ world: 1 }, { world: [1] }).world.xp, 0); });
 test('pup: create → save (merge) → transfer → claim', async () => {
   mem.clear();

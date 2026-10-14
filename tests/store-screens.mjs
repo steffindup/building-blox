@@ -3,21 +3,31 @@ import { chromium } from 'playwright';
 import fs from 'node:fs';
 import path from 'node:path'; import { fileURLToPath } from 'node:url';
 const OUT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../mobile/store/screenshots/raw/')+'/'; fs.mkdirSync(OUT,{recursive:true});
+const FONTS=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../node_modules/@fontsource');
+const FONT_CSS=[['Lilita One','lilita-one/files/lilita-one-latin-400-normal.woff2',400],['Nunito','nunito/files/nunito-latin-400-normal.woff2',400],['Nunito','nunito/files/nunito-latin-700-normal.woff2',700],['Nunito','nunito/files/nunito-latin-800-normal.woff2',800]]
+  .map(([fam,file,w])=>`@font-face{font-family:'${fam}';font-weight:${w};font-display:block;src:url(http://fonts.local/${file}) format('woff2')}`).join('');
 const b = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM || undefined, args: ['--use-gl=swiftshader'] });
 const auto = async (p,n)=>{ for(let i=0;i<n;i++){ await p.evaluate(()=>document.getElementById('autoBtn')?.click()); await p.waitForTimeout(1100); } };
 for (const [tag, vp, dsf] of [['iphone',{width:440,height:956},3],['ipad',{width:1032,height:1376},2]]) {
   const ctx = await b.newContext({ viewport: vp, deviceScaleFactor: dsf, isMobile: true, hasTouch: true });
-  await ctx.route('**/*', r => { const u=r.request().url(); if (/three\.min|OrbitControls|BufferGeometryUtils/.test(u) && !u.includes('/vendor/')) return r.fulfill({status:302,headers:{location:'http://localhost:8788/vendor/'+u.split('/').pop()}}); r.continue(); });
+  await ctx.route('**/*', r => { const u=r.request().url(); if (/three\.min|OrbitControls|BufferGeometryUtils/.test(u) && !u.includes('/vendor/')) return r.fulfill({status:302,headers:{location:'http://localhost:8788/vendor/'+u.split('/').pop()}});
+    // The app's fonts (Lilita One, Nunito) from the @fontsource packages, so the screenshots match the real thing offline
+    if (/fonts\.googleapis\.com/.test(u)) return r.fulfill({status:200,contentType:'text/css',body:FONT_CSS});
+    const f=u.match(/^http:\/\/fonts\.local\/(.+)$/); if (f) return r.fulfill({status:200,contentType:'font/woff2',body:fs.readFileSync(path.join(FONTS,f[1]))});
+    r.continue(); });
   const page = await ctx.newPage(); page.on('pageerror', e => console.log('ERR', e.message));
   await page.goto('http://localhost:8788/build/?nosplash=1', { waitUntil: 'load' }); await page.waitForTimeout(3500);
   // first build → the finish card
   await page.evaluate(() => document.getElementById('hmCont').click()); await page.waitForTimeout(1500);
   await auto(page,3); await page.waitForTimeout(400); await page.screenshot({ path: `${OUT}${tag}-build.png` });
-  await auto(page,4); for(let i=0;i<20;i++){ if(await page.evaluate(()=>document.getElementById('welcomeDlg').open)) break; await page.waitForTimeout(500); } await page.waitForTimeout(600); await page.evaluate(() => document.querySelector('#wcNames [data-pup="0"]').click()); await page.waitForTimeout(600);
+  await auto(page,4); for(let i=0;i<20;i++){ if(await page.evaluate(()=>document.getElementById('welcomeDlg').open)) break; await page.waitForTimeout(500); } await page.waitForTimeout(600);
   await page.screenshot({ path: `${OUT}${tag}-finish.png` });
-  await page.evaluate(() => document.getElementById('welcomeDlg').close());
+  // meet the pup (blue brick, Pebble), then the island's first-time card sends us on to the Otter Trail
+  await page.evaluate(() => document.getElementById('wcPupGo').click()); await page.waitForTimeout(800);
+  await page.evaluate(() => { document.getElementById('pupPickT').click(); document.querySelector('#pupNames [data-pup="0"]').click(); }); await page.waitForTimeout(1500);
+  await page.evaluate(() => document.getElementById('iiNext').click()); await page.waitForTimeout(1500);
   // play next through a few Trail levels for real thumbnails
-  for (let k=0;k<3;k++){ await page.evaluate(() => document.getElementById('budNext')?.click()); await page.waitForTimeout(1500);
+  for (let k=0;k<3;k++){ if (k) { await page.evaluate(() => document.getElementById('budNext')?.click()); await page.waitForTimeout(1500); }
     for (let i=0;i<60;i++){ await auto(page,1); if (await page.evaluate(()=>/Every step complete/.test(document.getElementById('status').textContent))) break; }
     await page.waitForTimeout(3500); await page.evaluate(() => document.getElementById('winDlg').close()); await page.waitForTimeout(500); }
   // seed the island to the village with the real thumbs reused

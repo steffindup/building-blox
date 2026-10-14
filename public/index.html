@@ -116,6 +116,9 @@ nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;padding-block:12
 .pill{align-self:flex-start;background:var(--cream);border:2px solid var(--ink);border-radius:999px;padding:6px 16px;font-weight:800;font-size:14px}
 .hero h1{font-size:clamp(3.2rem,6vw,5.6rem);line-height:.98}
 .hero h1 .accent{color:var(--red)}
+.isle-hero{margin:0;flex:1 1 420px;min-width:0;border:2px solid var(--ink);border-radius:22px;overflow:hidden;box-shadow:0 8px 0 var(--ink);background:#A9D8F2;position:relative}
+.isle-hero svg{display:block;width:100%;height:auto}.isle-hero .ghost-build{opacity:.28}.isle-hero .slot-empty{opacity:.35}
+.isle-hero figcaption{position:absolute;left:12px;top:12px;padding:4px 14px;border-radius:999px;background:rgba(20,32,44,.85);color:#fff;font-family:var(--display);font-size:20px}
 .hero-text p{font-size:20px;max-width:520px}
 .tagline{display:flex;flex-wrap:wrap;gap:8px;font-family:var(--display);font-size:22px;line-height:1}
 .tagline span{padding:7px 13px 9px;border-radius:10px;border:2px solid var(--ink);box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
@@ -286,6 +289,25 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
     </div>
   </section>
 
+  <script>
+  /* A returning player (this device has played): the hero is their own Otter Island. The picture and name were
+     saved on this device by the game; nothing is fetched. */
+  (function(){ try{
+    var s=JSON.parse(localStorage.getItem('bloppit-island-v1')); if(!s||!s.svg||!(s.n>0)) return;
+    var hero=document.querySelector('.hero'), txt=hero.querySelector('.hero-text'), vis=hero.querySelector('.hero-visual');
+    txt.querySelector('.pill').textContent='Welcome back!';
+    var h=txt.querySelector('h1'); h.textContent=''; var a=document.createElement('span'); a.className='accent';
+    a.textContent=s.name?s.name+'’s':'Your'; h.appendChild(a); h.appendChild(document.createElement('br')); h.appendChild(document.createTextNode('island is waiting.'));
+    var tg=txt.querySelector('.tagline'); if(tg) tg.remove();
+    txt.querySelector('p').textContent=s.n+' build'+(s.n===1?'':'s')+' so far, and it’s a '+s.stage+'. Every build you finish grows it.';
+    var acts=txt.querySelector('.actions'); acts.firstElementChild.textContent='Back to your island'; acts.firstElementChild.href='/build/#island';
+    var f=document.createElement('figure'); f.className='isle-hero'; f.innerHTML=s.svg;
+    var c=document.createElement('figcaption'); c.textContent='🏝️ Otter Island · '+s.stage; f.appendChild(c);
+    var go=document.createElement('a'); go.href='/build/#island'; go.setAttribute('aria-label','Open your island'); go.style.cssText='position:absolute;inset:0'; f.appendChild(go);
+    vis.replaceWith(f);
+  }catch(e){} })();
+  </script>
+
   <div class="band cream" id="meet">
     <section class="wrap meet" aria-labelledby="meet-h">
       <div class="meet-art">
@@ -355,7 +377,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 (function(){
   var colors={s:'#9FC3E9',y:'#F2CD37',k:'#6C6E68',w:'#F4F4F4',r:'#C91A09',m:'#36AEBF',b:'#0055BF'};
   var rows=['ssssksssssyy','sssswkssssyy','ssswwkwsssss','sswwwkwwssss','swwwwkwwwsss','ssssskssssss','srrrrrrrrrss','mmrrrrrrrmmm','bbbbbbbbbbbb'];
-  var el=document.getElementById('mosaic'), html='';
+  var el=document.getElementById('mosaic'), html=''; if(!el) return;   // a returning player's hero is their island
   rows.forEach(function(row){ for(var i=0;i<row.length;i++) html+='<i style="background:'+colors[row[i]]+'"></i>'; });
   el.innerHTML=html;
 })();
