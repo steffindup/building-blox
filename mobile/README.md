@@ -32,8 +32,8 @@ the main script in `public/build/index.html` ("App Store app"):
 
 ## Icons and launch screen
 
-`assets/icon.svg` is the source for `assets/icon-only.png` (1024×1024, no transparency). `assets/splash.png` is
-the launch screen. After changing them: `npm run icons`.
+`assets/icon-only.png` (1024×1024, no transparency) is the locked Bloppit icon, the same image as `public/icon-1024.png`.
+`assets/splash.png` is the launch screen: the uncropped icon on the same blue. After changing them: `npm run icons`.
 
 ## Bundle ID and version
 
