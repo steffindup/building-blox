@@ -1,11 +1,14 @@
-// Deletes Play together and Blitz rooms (and their shared models and photos) 3 days after their last activity,
-// Blitz challenges 30 days after their last run, and Daily Bloppit times after a week.
+// Deletes Build together and Blitz rooms (and their shared models and photos) 3 days after their last activity,
+// Blitz challenges 30 days after their last run, Weekly Bloppit counts after 8 weeks, pups not played for a year,
+// and expired transfer codes.
 // Runs once a day as a Netlify scheduled function. The privacy policy (public/privacy/) promises this.
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 
 const ROOM_TTL_MS = 3 * 86400_000; // keep in step with ROOM_TTL_MS in ../room/logic.mjs
-import { CHALLENGE_TTL_MS, DAILY_KEEP_DAYS } from "../challenge/logic.mjs";
+import { CHALLENGE_TTL_MS, WEEKLY_KEEP_WEEKS, weekOf } from "../challenge/logic.mjs";
+import { PUP_TTL_MS } from "../pup/logic.mjs";
+import { EVENT_KEEP_DAYS } from "../event/logic.mjs";
 
 export default async () => {
   const store = getStore({ name: "building-blox-rooms", consistency: "strong" });
@@ -46,10 +49,31 @@ export default async () => {
     if (c && typeof c.updated === "number" && now - c.updated <= CHALLENGE_TTL_MS) continue;
     await store.delete(key); deleted++;
   }
-  // Daily Bloppit times older than a week
-  const oldest = new Date(now - DAILY_KEEP_DAYS * 86400_000).toISOString().slice(0, 10);
+  // Weekly Bloppit counts older than 8 weeks, and any leftover Daily Bloppit times (the Daily ended in October 2026)
+  const oldestWeek = weekOf(now - WEEKLY_KEEP_WEEKS * 7 * 86400_000);
+  const { blobs: weeks } = await store.list({ prefix: "weekly/" });
+  for (const { key } of weeks) if (key.slice("weekly/".length) < oldestWeek) { await store.delete(key); deleted++; }
   const { blobs: days } = await store.list({ prefix: "daily/" });
-  for (const { key } of days) if (key.slice("daily/".length) < oldest) { await store.delete(key); deleted++; }
+  for (const { key } of days) { await store.delete(key); deleted++; }
+  // Pups not played for a year, and transfer codes past their 72 hours
+  const { blobs: pups } = await store.list({ prefix: "pup/" });
+  let livePups = 0;
+  for (const { key } of pups) {
+    const p = (await store.get(key, { type: "json" })) as { updated?: number } | null;
+    if (p && typeof p.updated === "number" && now - p.updated <= PUP_TTL_MS) { livePups++; continue; }
+    await store.delete(key); deleted++;
+  }
+  const { blobs: xfers } = await store.list({ prefix: "xfer/" });
+  for (const { key } of xfers) {
+    const x = (await store.get(key, { type: "json" })) as { exp?: number } | null;
+    if (x && typeof x.exp === "number" && now <= x.exp) continue;
+    await store.delete(key); deleted++;
+  }
+  // Usage counts older than EVENT_KEEP_DAYS
+  const oldestEv = new Date(now - EVENT_KEEP_DAYS * 86400_000).toISOString().slice(0, 10);
+  const { blobs: evs } = await store.list({ prefix: "ev/" });
+  for (const { key } of evs) if (key.slice("ev/".length) < oldestEv) { await store.delete(key); deleted++; }
+  console.log(`room-cleanup: ${livePups} pups kept`);
   console.log(`room-cleanup: ${live.size} rooms and ${liveCh.size} challenges kept, ${deleted} blobs deleted`);
 };
 

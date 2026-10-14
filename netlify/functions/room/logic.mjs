@@ -9,34 +9,14 @@ const MAX_PLAYERS = 4;
 const STALE_MS = 45_000;          // a player not seen for this long can be skipped
 const ROOM_TTL_MS = 3 * 86400_000; // rooms are forgotten after 3 days without activity
 const MAX_MODEL_CHARS = 2_500_000;
-const MAX_CHAT = 60;              // messages kept per room
-const CHAT_LEN = 140;             // characters per message
-const CHAT_GAP_MS = 1000;         // at least this long between one player's messages
-const CHAT_BURST = 6;             // and no more than this many…
-const CHAT_BURST_MS = 20_000;     // …in this window
 const MAX_WAITING = 6;            // people waiting for the host to let them in
 const WAIT_STALE_MS = 60_000;     // a waiting person who stops checking in is dropped
-const SIG_KEEP_MS = 60_000;       // voice connection messages are dropped after this
-const SIG_MAX = 40;               // and at most this many are kept
-const SIG_LEN = 16_000;           // characters per voice connection message
 const BLITZ_PER_TURN = 3;         // Bloppit Blitz: each turn is 1, 2 or 3 bricks (the player taps Done)
 
-// Voice chat: the server only passes on the short connection messages ("offer"/"answer") that let two
-// devices find each other. The audio itself goes directly between the devices (encrypted by the browser)
-// and never reaches this server; nothing is ever recorded or stored.
+// No chat and no voice: rooms are for placing bricks together and nothing else passes between players.
+// Typed chat and voice were switched off in October 2026 (child-safety decision); the old actions return 410.
+// The word filter below only guards the player name shown in the room.
 
-// ---------- Chat guardrails ----------
-// Bloppit is for families, so chat is for this game only: no links, emails, phone numbers or
-// social accounts (which is how strangers try to move children somewhere else), and rude words
-// are blanked out. This is a basic filter, not full moderation.
-const BLOCK_RULES = [
-  /(https?:\/\/|www\.)/i,
-  /\b[a-z0-9-]+\s*(\.|\(dot\)|\[dot\])\s*(com|net|org|io|co|me|ly|gg|app|xyz|info|biz|uk|us|tv|link|site|online)\b/i,
-  /[^\s@]+\s*@\s*[^\s@]+\.[a-z]{2,}/i,              // emails
-  /(^|\s)@[a-z0-9_.]{2,}/i,                          // @handles
-  /(?:\d[\s\-().]*){7,}/,                            // phone numbers and other long numbers
-  /\b(snap ?chat|insta|instagram|whats ?app|discord|tik ?tok|telegram|kik|facebook|messenger|wechat)\b/i,
-];
 const BAD = new Set(('ass arse asshole arsehole asswipe bastard bitch bitches bollocks boobs bullshit cock cum cunt dick dickhead '
   + 'dildo fag faggot fck fk fuck fucked fucker fucking fuk motherfucker nigga nigger penis piss porn prick pussy rape '
   + 'retard retarded sex sexy shit shitty slut stfu tits twat vagina wank wanker whore wtf kys').split(' '));
@@ -50,19 +30,6 @@ export function isBad(token) {
   if (BAD.has(w) || BAD_PREFIX.some((p) => w.startsWith(p))) return true;
   const sq = squash(w);
   return sq.length >= 4 && BAD_SQUASHED.has(sq);
-}
-export function cleanChat(raw) {
-  let t = String(raw || '').normalize('NFKC')
-    .replace(/[\u0000-\u001F\u007F\u200B-\u200F\u2028-\u202E\u2060-\u206F\uFEFF]/g, '')
-    .replace(/\s+/g, ' ').trim();
-  if (!t) return { error: 'Type a message first.' };
-  if (t.length > CHAT_LEN) return { error: `Messages can be up to ${CHAT_LEN} characters.` };
-  const flat = t.toLowerCase().replace(/[^a-z0-9]/g, '');
-  if (BLOCK_RULES.some((re) => re.test(t)) || /killyourself/.test(flat)) {
-    return { error: 'Chat is just for this game, so links, emails, phone numbers and social accounts can’t be sent.' };
-  }
-  t = t.replace(/[^\s.,;:?"'()\-]+/g, (tok) => (isBad(tok) ? '•'.repeat([...tok].length) : tok));
-  return { text: t };
 }
 
 const rand = (n, chars) => { let s = ''; const a = new Uint32Array(n); crypto.getRandomValues(a); for (const v of a) s += chars[v % chars.length]; return s; };
@@ -79,29 +46,29 @@ const roomKey = (c) => `room/${c}`;
 const modelKey = (c) => `model/${c}`;
 
 // What everyone may see: never send player ids (they act as passwords).
-// Chat, who is waiting to join and voice messages are only sent to players in the room
+// Who is waiting to join is only sent to players in the room
 // (`viewer` is the asking player's index, or -1), not to anyone who just knows the code.
 function publicState(s, viewer = -1) {
   const now = Date.now();
   const out = {
     code: s.code, ver: s.ver, started: s.started, finished: s.finished, perTurn: s.perTurn, mode: s.mode || 'classic',
     nBricks: s.nBricks, title: s.title, level: s.level, host: s.host, turn: s.turn,
-    turnPlaced: s.turnPlaced, turnStart: s.turnStart, moves: s.moves, now, voice: !!s.voice, quota: s.quota || 0,
-    players: s.players.map((p) => ({ name: p.name, color: p.color, pen: p.pen, stale: now - p.seen > STALE_MS, vc: s.voice ? (p.vc || 0) : 0,
+    turnPlaced: s.turnPlaced, turnStart: s.turnStart, moves: s.moves, now, quota: s.quota || 0,
+    players: s.players.map((p) => ({ name: p.name, color: p.color, pen: p.pen, stale: now - p.seen > STALE_MS,
       ...(s.mode === 'blitz' ? { ms: p.ms || 0, miss: p.miss || 0, hint: p.hint || 0, n: p.n || 0 } : {}) })),
   };
   if (viewer >= 0) {
     out.me = viewer;
-    out.chat = (s.chat || []).map((m) => ({ n: m.n, p: m.p, t: m.t, at: m.at }));
     out.waiting = (s.waiting || []).filter((w) => now - w.seen <= WAIT_STALE_MS).map((w) => ({ k: w.k, name: w.name }));
-    out.sig = (s.sig || []).filter((m) => m.to === viewer).map((m) => ({ n: m.n, f: m.f, d: m.d }));
   }
   return out;
 }
 function prune(s) {
   const now = Date.now();
   if (s.waiting) s.waiting = s.waiting.filter((w) => now - w.seen <= WAIT_STALE_MS);
-  if (s.sig) s.sig = s.sig.filter((m) => now - m.at <= SIG_KEEP_MS).slice(-SIG_MAX);
+  // Rooms made before chat and voice were switched off may still carry them: drop them on sight.
+  delete s.chat; delete s.chatN; delete s.sig; delete s.sigN; delete s.voice;
+  s.players.forEach((p) => { delete p.vc; delete p.chatAt; });
 }
 
 // Bloppit Blitz: each player's clock only runs during their own turn. The server keeps the time,
@@ -280,40 +247,9 @@ export async function handle(method, query, body, store) {
     }, pid);
   }
 
-  // Voice chat. The host turns it on or off for the room; each player joins and mutes themselves.
-  if (a === 'voice') {
-    return update(store, code, (s) => {
-      const i = mine(s);
-      if (i < 0) return { error: 'You’re not in this room.', status: 403 };
-      if (i !== s.host) return { error: 'Only the player who made the room can turn voice chat on or off.', status: 403 };
-      s.voice = !!body.on;
-      if (!s.voice) { s.players.forEach((p) => { p.vc = 0; }); s.sig = []; }
-      return {};
-    }, pid);
-  }
-  if (a === 'vc') {
-    return update(store, code, (s) => {
-      const i = mine(s);
-      if (i < 0) return { error: 'You’re not in this room.', status: 403 };
-      const v = Math.max(0, Math.min(2, Math.floor(Number(body.state) || 0)));  // 0 out, 1 in but muted, 2 mic on
-      if (v && !s.voice) return { error: 'Voice chat is off for this room.', status: 409 };
-      s.players[i].vc = v;
-      if (!v) s.sig = (s.sig || []).filter((m) => m.f !== i && m.to !== i);
-      return {};
-    }, pid);
-  }
-  if (a === 'signal') {
-    const d = String(body.d || '');
-    if (!d || d.length > SIG_LEN) return { status: 400, body: { error: 'Bad voice message.' } };
-    return update(store, code, (s) => {
-      const i = mine(s);
-      if (i < 0) return { error: 'You’re not in this room.', status: 403 };
-      const to = Math.floor(Number(body.to));
-      if (!s.voice || !(to >= 0 && to < s.players.length) || to === i) return { error: 'Voice chat isn’t available.', status: 409 };
-      s.sigN = (s.sigN || 0) + 1;
-      s.sig = [...(s.sig || []), { n: s.sigN, f: i, to, d, at: Date.now() }];
-      return {};
-    }, pid);
+  // Chat and voice are no longer part of Bloppit (switched off October 2026). Old builds get a clear answer.
+  if (a === 'voice' || a === 'vc' || a === 'signal' || a === 'chat') {
+    return { status: 410, body: { error: 'Chat and voice are no longer part of Bloppit. Rooms are for building together.' } };
   }
 
   if (a === 'pen') {
@@ -343,24 +279,6 @@ export async function handle(method, query, body, store) {
       if (i < 0) return { error: 'You’re not in this room.', status: 403 };
       if (!blitz(s) || !s.started || s.finished || i !== s.turn) return {};
       s.players[i].miss = Math.min(9999, (s.players[i].miss || 0) + 1);
-      return {};
-    }, pid);
-  }
-
-  if (a === 'chat') {
-    const c = cleanChat(body.text);
-    if (c.error) return { status: 400, body: { error: c.error } };
-    return update(store, code, (s) => {
-      const i = mine(s);
-      if (i < 0) return { error: 'You’re not in this room.', status: 403 };
-      const p = s.players[i], now = Date.now();
-      const recent = (p.chatAt || []).filter((t) => now - t < CHAT_BURST_MS);
-      if ((recent.length && now - recent[recent.length - 1] < CHAT_GAP_MS) || recent.length >= CHAT_BURST) {
-        return { error: 'Slow down a little before sending another message.', status: 429 };
-      }
-      p.chatAt = [...recent, now];
-      s.chatN = (s.chatN || 0) + 1;
-      s.chat = [...(s.chat || []), { n: s.chatN, p: i, t: c.text, at: now }].slice(-MAX_CHAT);
       return {};
     }, pid);
   }

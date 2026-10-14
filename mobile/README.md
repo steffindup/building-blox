@@ -24,10 +24,10 @@ the main script in `public/build/index.html` ("App Store app"):
   the app's `capacitor://localhost` origin through CORS in `netlify/functions/room/room.mts`).
 - **Grown-ups gate.** Any link out of the app and sharing a room invite first ask for a number written in
   words to be typed in digits. Bloppit isn't in the Kids category, so this is our own safety choice, not an Apple rule.
-- **Chat and voice work as on the website.** Typed room chat goes through the same server filter (`cleanChat()`
-  in `logic.mjs`), and the host can turn on voice chat. The microphone permission text is in `Info.plist`.
+- **No chat and no voice** (switched off October 2026). Rooms are for placing bricks together; the old room
+  actions answer 410 and the microphone permission has been removed from `Info.plist`.
 - **Haptics** on brick snaps, wrong spots, finished steps and finished models (`@capacitor/haptics`).
-- **Camera, photos and microphone** use the standard iOS picker (Take Photo / Photo Library). The permission texts are in
+- **Camera and photos** use the standard iOS picker (Take Photo / Photo Library). The permission texts are in
   `ios/App/App/Info.plist`.
 
 ## Icons and launch screen

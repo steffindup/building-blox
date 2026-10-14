@@ -25,7 +25,7 @@ The home-screen name stays **Bloppit** (set by `CFBundleDisplayName` in the iOS 
 
 ## Promotional text (170)
 
-The brick-building puzzle game! Race Bloppit the otter, challenge a friend with a code, and play a new Daily Bloppit puzzle every day.
+The brick-building puzzle game! Race the Gulls, challenge a friend with a code, and build a new Weekly Bloppit puzzle every Monday.
 
 ## Description (4000)
 
@@ -34,7 +34,7 @@ Snap it. Bloppit. Build it.
 Bloppit is a brick-building puzzle game. Turn any photo into a puzzle (your cat, a toy, your own drawing) or pick one from the library, then build it brick by brick against the clock, up the levels, or with friends.
 
 BLOPPIT BLITZ
-• Race Bloppit the otter: Pup, Splash or Legend Bloppit, each one faster and sharper than the last
+• Race the Gulls: Scraps, Swoop or Squint, each one faster and sharper than the last
 • Challenge a friend: build a puzzle as fast as you can, get a 6-letter code, and see if they can beat your time whenever they like
 • Or race live, taking turns on your own devices
 • Need help? A hint adds 5 seconds, and every brick in the wrong spot adds 1 second
@@ -57,7 +57,7 @@ QUICK BUILD
 MADE FOR KIDS AND FAMILIES
 • No ads, no in-app purchases, no accounts
 • No tracking and no analytics
-• Friends join with a code, and the host lets each one in. Chat blocks links, contact details and rude words
+• Friends join with a code, and the host lets each one in. No chat and no voice anywhere in Bloppit
 • Photos stay on your device unless you share a challenge or room with friends
 • Racing Bloppit and the Trails work offline
 
@@ -71,7 +71,7 @@ bricks,build,puzzle,blocks,kids,race,daily,challenge,photo,3D,math,family,otter,
 
 Bloppit's first App Store release.
 
-(Next version:) Bloppit is now a game first! Race Pup, Splash or Legend Bloppit, send challenge codes to friends, play the new Daily Bloppit, and climb the Otter Trail or the Brain Trail.
+(Next version:) Bloppit is now a game first! Race the Gulls, send challenge codes to friends, build the new Weekly Bloppit, and climb the Otter Trail or the Brain Trail.
 
 ## App Review notes
 
@@ -79,31 +79,30 @@ Bloppit is a brick-building puzzle game for children. No account or login is nee
 To try it quickly: on the menu tap vs Bloppit, type a name and tap Start the race (works offline).
 Challenges: on the Blitz page tap Make a challenge, build the puzzle, and you get a 6-letter code; type that code
 into Got a code? on another device (the website bloppit.com/build works too) to race the same puzzle.
-Daily Bloppit: tap the Daily Bloppit banner on the menu. The finishing time and the player's nickname are sent for the day's scoreboard (top 50; letters only, rude words become "Player"; can be turned off so it shows "A player"). Deleted after a week.
+Weekly Bloppit: tap the Weekly Bloppit banner on the menu. Only a finish and whether it was clean are sent (two counts per week, no name, no time). Deleted after 8 weeks.
 Rooms (Build together, live Blitz): friends join with a 5-letter code and the host lets them in.
-Room chat is typed and filtered (no links, emails, phone numbers or social accounts; rude words hidden). The host can turn on voice chat; each player chooses whether to join it, and audio is never recorded.
+There is no chat and no voice: players in a room only place bricks.
 Links out of the app and sharing an invite are behind a parental gate (type a number written in words as digits).
 
 ## Age rating questionnaire
 
 Answer **None / No** to everything (violence, mature themes, gambling, horror, medical, alcohol, profanity, sexual content,
-contests, unrestricted web access). For "user-generated content / messaging and chat": **Yes**. Players can type
-filtered messages and voice chat with people in the same room. Rooms are invite-only (a code, and the host lets each
-player in), and there is no way to find or message strangers. Answer the questions that way and check the rating
-App Store Connect gives: with chat turned on it may come out higher than **4+**.
+contests, unrestricted web access). For "user-generated content / messaging and chat": **No** since October 2026. There is no
+typed chat and no voice anywhere in the app; players in a room only place bricks. Rooms are invite-only (a code, and
+the host lets each player in), and there is no way to find or message strangers. The rating should come out at **4+**.
 
 ## App Privacy ("privacy label")
 
 Data used to track you: **No**.
 
-Data collected (only through rooms, Blitz challenges and the Daily Bloppit; rooms are deleted 3 days after their last
+Data collected (only through rooms, Blitz challenges, the Weekly Bloppit and the pup save; rooms are deleted 3 days after their last
 activity, challenges 30 days after the last player, daily times after a week):
 
 | Data type | Collected | Linked to the user's identity | Used for tracking | Purpose |
 |---|---|---|---|---|
 | User Content › Photos or Videos (the photos a shared model is made from) | Yes | No | No | App Functionality |
-| User Content › Gameplay Content (bricks placed, scores, Blitz and Daily Bloppit times) | Yes | No | No | App Functionality |
-| User Content › Other User Content (player nickname, chat messages, Daily scoreboard name) | Yes | No | No | App Functionality |
+| User Content › Gameplay Content (bricks placed, scores, Blitz times, Weekly Bloppit finishes, pup save) | Yes | No | No | App Functionality |
+| User Content › Other User Content (player nickname) | Yes | No | No | App Functionality |
 
 Everything else (contact info, identifiers, location, usage data, diagnostics, etc.): **Not collected**.
 
