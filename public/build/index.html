@@ -160,6 +160,7 @@ main{max-width:1640px;margin:0 auto;padding-block:20px 0}
 input[type=range]{width:100%;accent-color:var(--accent)}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-flow:column;grid-auto-columns:1fr;border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .seg input{position:absolute;opacity:0}
+.seg input:disabled+label{opacity:.45;cursor:default}
 .seg.two{grid-template-columns:repeat(2,1fr)}
 .seg label{text-align:center;padding:7px 4px;cursor:pointer;font-weight:700;font-size:13px;justify-content:center}
 .seg label+input+label,.seg input+label~label{border-left:1px solid var(--line)}
@@ -223,15 +224,18 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .buddy .bud-art{position:relative;width:84px;aspect-ratio:300/398;display:block;transform-origin:50% 100%}
 .buddy .bud-art img{position:absolute;inset:0;width:100%;height:100%;display:none;object-fit:contain}
 .buddy .bud-art .st-rest{display:block}
-.buddy.cheer .bud-art .st-rest,.buddy.think .bud-art .st-rest,.buddy.oops .bud-art .st-rest{display:none}
-.buddy.cheer .bud-art .st-cheer,.buddy.think .bud-art .st-think,.buddy.oops .bud-art .st-oops{display:block}
+.buddy.cheer .bud-art .st-rest,.buddy.think .bud-art .st-rest,.buddy.oops .bud-art .st-rest,.buddy.offer .bud-art .st-rest,.buddy.hug .bud-art .st-rest,.buddy.reach .bud-art .st-rest{display:none}
+.buddy.cheer .bud-art .st-cheer,.buddy.think .bud-art .st-think,.buddy.oops .bud-art .st-oops,.buddy.offer .bud-art .st-offer,.buddy.hug .bud-art .st-hug,.buddy.reach .bud-art .st-reach{display:block}
+.buddy.offer .bud-art{animation:bud-nudge 1.6s ease-in-out infinite;transform-origin:50% 100%}
+.buddy.hug .bud-art{animation:bud-jump .55s ease-out 2}
+.buddy.reach .bud-art{animation:bud-shake .4s ease-in-out 2}
 .buddy.cheer .bud-art{animation:bud-jump .55s ease-out 2}
 .buddy.hop .bud-art{animation:bud-hop .32s ease-out}
 .buddy.point .bud-art{animation:bud-nudge 1.6s ease-in-out infinite;transform-origin:50% 100%}
 .bud-say{order:-1;position:relative;align-self:center;justify-self:end;background:var(--page);border:2px solid var(--ink);border-radius:14px;padding:7px 10px;margin-bottom:22px;font-weight:800;font-size:14px;line-height:1.25;box-shadow:0 3px 0 var(--shadow)}
 .bud-say::before{content:"";position:absolute;right:-9px;bottom:12px;width:12px;height:12px;background:var(--page);border-left:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:rotate(-135deg)}
-.buddy.cheer .bud-say{background:var(--hi);color:#14202C;border-color:#14202C;font-family:var(--f-display);font-weight:400;font-size:18px}
-.buddy.cheer .bud-say::before{background:var(--hi);border-color:#14202C}
+.buddy.cheer .bud-say,.buddy.hug .bud-say{background:var(--hi);color:#14202C;border-color:#14202C;font-family:var(--f-display);font-weight:400;font-size:18px}
+.buddy.cheer .bud-say::before,.buddy.hug .bud-say::before{background:var(--hi);border-color:#14202C}
 .bud-say .callout{margin-top:6px;padding:5px 8px;gap:4px 10px;box-shadow:none}
 .bud-say .callout img{height:26px}
 .bud-say .callout b{font-size:12px}
@@ -271,8 +275,8 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .buddy.think .bud-say,.buddy.big.hop .bud-say{background:#8A5A3B;color:#fff;border-color:#1B1410}
 .buddy.think .bud-say::before,.buddy.big.hop .bud-say::before{background:#8A5A3B;border-color:#1B1410}
 .buddy.think .bud-art{animation:bud-think 1.1s ease-in-out infinite}
-.buddy.oops .bud-say{background:var(--accent);color:var(--accent-ink);border-color:#1B1410}
-.buddy.oops .bud-say::before{background:var(--accent);border-color:#1B1410}
+.buddy.oops .bud-say,.buddy.reach .bud-say{background:var(--accent);color:var(--accent-ink);border-color:#1B1410}
+.buddy.oops .bud-say::before,.buddy.reach .bud-say::before{background:var(--accent);border-color:#1B1410}
 .buddy.oops .bud-art{animation:bud-shake .4s ease-in-out 2}
 .bud-dots::after{content:'';display:inline-block;width:1.2em;text-align:left;animation:bud-dots 1.2s steps(4) infinite}
 @keyframes bud-think{0%,100%{transform:rotate(0)}50%{transform:rotate(-4deg) translateY(-4px)}}
@@ -627,6 +631,12 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 @media (max-width:640px){.who{padding-right:10px}.who-txt .tag{display:none}}
 .windlg::backdrop{background:rgba(10,16,24,.55)}
 .windlg .wc-pic{display:block;width:auto;height:140px;margin:-6px auto 2px}
+.windlg .share-pic{display:block;width:150px;height:112px;object-fit:contain;margin:-4px auto 6px}
+.family{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.family .qr{width:132px;height:132px;flex:none;background:#fff;border-radius:10px;padding:6px;border:1px solid var(--line)}
+.family .qr svg{display:block;width:100%;height:100%}
+.family-txt{display:grid;gap:8px;min-width:0}
+.family-txt code{font-size:14px;font-weight:700;word-break:break-all}
 .windlg .pup-pic{height:150px;border-radius:50%;width:150px;object-fit:cover;object-position:center 20%;background:#E8F1F8;border:4px solid #fff;box-shadow:0 4px 0 var(--shadow)}
 .pup-names{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 14px}
 .pup-names button{font:inherit;font-weight:800;font-size:15px;padding:10px 6px;border-radius:12px;border:2px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer}
@@ -639,9 +649,11 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .world-strip .ws-up img{width:22px;height:22px;border-radius:50%;object-fit:cover;object-position:center 20%}
 .world-toast{position:absolute;left:50%;top:60px;transform:translateX(-50%);z-index:4;display:flex;align-items:center;gap:10px;padding:8px 16px;border-radius:999px;background:#14202C;color:#fff;font-weight:800;font-size:15px;box-shadow:0 8px 24px rgba(0,0,0,.25);animation:tb-pop .45s ease-out;white-space:nowrap;max-width:calc(100% - 24px)}
 .world-toast[hidden]{display:none}
+.world-toast{cursor:pointer}.world-toast .ws-go{color:#F4BC22;margin-left:4px}
 .world-toast .ws-stars{font-size:22px;letter-spacing:3px;color:#F4BC22;line-height:1}
 .world-toast .ws-stars i{font-style:normal;color:rgba(255,255,255,.3)}
-.hm-world{display:grid;grid-template-columns:auto 1fr;gap:12px 14px;align-items:center;padding:12px 14px;border-radius:16px;background:var(--page);border:1px solid var(--line);box-shadow:0 2px 0 var(--shadow)}
+.hm-world{display:grid;grid-template-columns:auto 1fr;gap:12px 14px;align-items:center;padding:12px 14px;border-radius:16px;background:var(--page);border:1px solid var(--line);box-shadow:0 2px 0 var(--shadow);width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.hm-world:hover{border-color:var(--ink)}
 .hm-world .pup{width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:center 20%;background:#E8F1F8;border:3px solid #fff;box-shadow:0 2px 0 var(--shadow)}
 .hm-world .pup.splash{width:76px;height:76px}.hm-world .pup.legend{width:88px;height:88px;border-color:#F4BC22}
 .hm-world .wt{display:grid;gap:3px;min-width:0}
@@ -652,7 +664,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .hm-world .wn div{display:grid;justify-items:center;padding:6px;border-radius:12px;background:var(--bg)}
 .hm-world .wn b{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.1;color:#14202C}.hm-world .wn b.st{color:#E9A800}
 .hm-world .wn span{font-size:11px;font-weight:700;color:var(--muted)}
-.hm-world .wname{background:none;border:0;padding:0;font:inherit;font-family:var(--f-display);font-size:22px;color:inherit;cursor:pointer;text-align:left;border-bottom:2px dashed var(--line)}
+.hm-world .wname{font-family:var(--f-display);font-size:22px;color:inherit;cursor:pointer;border-bottom:2px dashed var(--line);width:max-content}
 .wc-btns{flex-direction:column;align-items:stretch}.wc-btns button{width:100%}
 .win-stars{font-size:46px;letter-spacing:6px;color:var(--hi);line-height:1}
 .win-pic{display:block;margin:0 auto 6px;max-width:150px;max-height:110px;object-fit:contain;filter:drop-shadow(0 6px 10px rgba(0,0,0,.3));animation:rvBob 2.4s ease-in-out infinite}
@@ -766,6 +778,39 @@ body.on-home .tabs{visibility:hidden}
 .in-app .hm-foot{display:none}
 @media (max-width:420px){.hm-tile{min-height:120px;padding:14px}.hm-tile b{font-size:20px}.hm-bubble h2{font-size:22px}.hm-hello svg{width:58px;height:51px}}
 /* ---------- Game-first menu, Trails, Blitz challenges, Weekly Bloppit ---------- */
+.tab.play5{background:#F4BC22;color:#14202C;border-color:#F4BC22}
+.tab.play5 .n{background:#fff;overflow:hidden;padding:0}.tab.play5 .n img{width:100%;height:100%;object-fit:cover;display:block}
+.tab.play5[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
+.is-btns{display:flex;gap:8px;flex-wrap:wrap}
+.is-card{padding:0;overflow:hidden}
+.island{position:relative;background:#CFE9F7}
+.island svg{display:block;width:100%;height:auto}
+.island .slot-empty{opacity:.35}
+.island .ghost-build{opacity:.28}
+.island .is-pop{animation:is-pop .6s cubic-bezier(.3,1.6,.5,1) both;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes is-pop{from{transform:scale(.2);opacity:0}to{transform:none;opacity:1}}
+.island .is-bob{animation:is-bob 3s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes is-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.island .is-wave{animation:is-wave 6s ease-in-out infinite}
+@keyframes is-wave{0%,100%{transform:translateX(0)}50%{transform:translateX(-18px)}}
+.island .is-smoke{animation:is-smoke 4s ease-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes is-smoke{0%{transform:translateY(0) scale(.6);opacity:.7}100%{transform:translateY(-34px) scale(1.4);opacity:0}}
+@media (prefers-reduced-motion: reduce){.island *{animation:none!important}}
+.is-foot{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;justify-content:space-between;padding:12px 16px 14px;border-top:1px solid var(--line)}
+.is-stage{font-family:var(--f-display);font-size:22px}.is-stage small{display:block;font-family:var(--f-body);font-size:13px;font-weight:700;color:var(--muted)}
+.is-next{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--muted)}
+.is-next .bar{width:140px;height:8px;border-radius:4px;background:var(--bg);overflow:hidden}.is-next .bar i{display:block;height:100%;background:#008F9B}
+.decor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
+.decor-grid button{display:grid;justify-items:center;gap:6px;padding:12px 8px 10px;border-radius:14px;border:2px solid var(--line);background:var(--page);color:var(--ink);font:inherit;font-weight:800;font-size:14px;cursor:pointer}
+.decor-grid button svg{width:72px;height:72px}
+.decor-grid button .cost{font-size:13px;color:#B98200}.decor-grid button[data-owned] .cost{color:#008F9B}
+.decor-grid button:disabled{opacity:.5;cursor:default}
+.decor-grid button[data-confirm]{border-color:#F4BC22;background:#FFF6D6}
+.builds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.builds-grid div{display:grid;justify-items:center;gap:4px;padding:10px 6px 8px;border-radius:14px;background:var(--bg);font-size:13px;font-weight:800;text-align:center}
+.builds-grid img{width:96px;height:72px;object-fit:contain}
+.builds-grid .ws-stars{font-size:16px;letter-spacing:2px;color:#E9A800}.builds-grid .ws-stars i{font-style:normal;color:var(--line)}
+.builds-grid small{font-weight:700;color:var(--muted)}
 .tab.play4{background:#008F9B;color:#fff;border-color:#008F9B}
 .tab.play4 .n{background:rgba(255,255,255,.22);color:#fff}
 .tab.play4[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
@@ -870,6 +915,7 @@ body.on-home .tabs{visibility:hidden}
     </svg>
     <span>Bloppit</span></a></h1>
   <nav class="tabs" role="tablist" aria-label="Games">
+    <button class="tab play5" role="tab" id="tab-island" data-tab="island" aria-selected="false"><span class="n"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span>Island</button>
     <button class="tab play4" role="tab" id="tab-daily" data-tab="daily" aria-selected="false"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-cal"/></svg></span>Weekly</button>
     <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-brick"/></svg></span>Quick Build</button>
     <button class="tab play" role="tab" id="tab-game" data-tab="game" aria-selected="false"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-river"/></svg></span>Trails</button>
@@ -910,7 +956,7 @@ body.on-home .tabs{visibility:hidden}
     <div class="hd-nums"><div><b id="hdStreak">0</b><span>week streak 🔥</span></div><div><b id="hdTotal">0</b><span>Weeklies built</span></div></div>
     <p class="note" id="hdClean" style="margin:0"></p>
   </div>
-  <div class="hm-world" id="hmWorld" hidden></div>
+  <button class="hm-world" id="hmWorld" data-go="island" type="button" hidden></button>
 </div>
 <div class="hm-main">
   <h3 class="hm-sec">Solo</h3>
@@ -958,7 +1004,8 @@ body.on-home .tabs{visibility:hidden}
           <input type="radio" name="kind" id="kd-model" value="model" checked><label for="kd-model">3D model</label>
           <input type="radio" name="kind" id="kd-picture" value="picture"><label for="kd-picture">Picture</label>
         </div>
-        <p class="note pic-only" style="margin:6px 0 0">A flat mosaic of tiles that looks like your photo. The more tiles, the more lifelike.</p>
+        <p class="note pic-only" style="margin:6px 0 0">A flat mosaic of tiles that looks like your photo, made on this device. The more tiles, the more lifelike.</p>
+        <p class="note photo-only" id="photo3dNote" style="margin:6px 0 0" hidden>Photos become brick pictures for now. 3D photo models are coming to the Creator Workshop.</p>
       </div>
       <div class="field pic-only">
         <label for="pw">Detail <output id="pwOut"></output></label>
@@ -1041,7 +1088,7 @@ body.on-home .tabs{visibility:hidden}
         <div class="world-toast" id="worldToast" hidden></div>
         <div class="turn-banner" id="turnBanner" hidden aria-live="polite"></div>
           <div class="buddy" id="buddy" hidden>
-            <span class="bud-art" aria-hidden="true"><img class="st-rest" src="/art/bud-3q.png" alt="" width="300" height="398"><img class="st-cheer" src="/art/bud-happy.png" alt="" width="300" height="398"><img class="st-think" src="/art/bud-focused.png" alt="" width="300" height="398"><img class="st-oops" src="/art/bud-oops.png" alt="" width="300" height="398"></span>
+            <span class="bud-art" aria-hidden="true"><img class="st-rest" src="/art/bud-3q.png" alt="" width="300" height="398"><img class="st-cheer" src="/art/bud-happy.png" alt="" width="300" height="398"><img class="st-think" src="/art/bud-focused.png" alt="" width="300" height="398"><img class="st-oops" src="/art/bud-oops.png" alt="" width="300" height="398"><img class="st-offer" src="/art/bud-offer.png" alt="" width="300" height="398"><img class="st-hug" src="/art/bud-hug.png" alt="" width="300" height="398"><img class="st-reach" src="/art/bud-reach.png" alt="" width="300" height="398"></span>
             <div class="bud-say" id="budSay"></div>
           </div>
       </div>
@@ -1250,6 +1297,17 @@ body.on-home .tabs{visibility:hidden}
   </div>
 </section>
 
+<section class="view" id="view-island" hidden>
+  <div class="gm-head"><div><h2>🏝️ Otter Island</h2><p class="note" id="isNote">Every build you finish grows your island.</p></div>
+    <div class="is-btns"><button class="ghost" id="isDecor" type="button">✨ Decorate</button><button class="ghost" id="isCard" type="button" hidden>📮 Postcard</button></div></div>
+  <div class="card is-card"><div class="island" id="island"></div>
+    <div class="is-foot"><div class="is-stage" id="isStage"></div><div class="is-next" id="isNext"></div></div></div>
+  <div class="card is-shop" id="isShop" hidden>
+    <div class="gm-head sub-head"><div><h2>✨ Decorate your island</h2><p class="note">Build Stars buy decorations. Nothing here is ever sold for money. <b id="isStars"></b></p></div><button class="ghost" id="isShopClose" type="button">Done</button></div>
+    <div class="decor-grid" id="decorGrid"></div>
+  </div>
+  <div class="card is-builds"><div class="gm-head sub-head"><div><h2>📦 Your builds</h2><p class="note" id="isBuildsNote"></p></div></div><div class="builds-grid" id="buildsGrid"></div></div>
+</section>
 <section class="view" id="view-daily" hidden>
   <div class="gm-head"><div><h2>📅 Weekly Bloppit</h2><p class="note">One puzzle a week, the same for everybody. Build it clean: no misses, no hints. A new one arrives every Monday morning.</p></div></div>
   <div class="card daily-card">
@@ -1274,7 +1332,7 @@ body.on-home .tabs{visibility:hidden}
   <div class="win-rows" id="trRows"></div>
   <div class="world-strip" data-ws></div>
   <p class="win-best" id="trNote"></p>
-  <div class="win-btns"><button class="ghost" id="trBook" type="button">📖 Build it for real</button><button class="ghost" id="trShare" type="button" hidden>Share the code</button><button class="ghost" id="trRetry" type="button" hidden>Try sending again</button><button class="primary sm" id="trDone" type="button">Done</button></div>
+  <div class="win-btns"><button class="ghost" id="trBook" type="button">📖 Build it for real</button><button class="ghost" id="trShare" type="button" hidden>Share the code</button><button class="ghost" id="trCard" type="button" hidden>📮 Weekly card</button><button class="ghost" id="trRetry" type="button" hidden>Try sending again</button><button class="primary sm" id="trDone" type="button">Done</button></div>
 </dialog>
 <dialog class="windlg" id="mpEndDlg" aria-label="Game finished">
   <div class="win-stars">🏆</div>
@@ -1312,6 +1370,13 @@ body.on-home .tabs{visibility:hidden}
     <div class="win-btns" style="justify-content:flex-start"><button class="ghost" id="grownXfer" type="button">Make a transfer code</button></div>
     <p class="gate-num" id="grownCode" hidden></p>
     <p class="note" id="grownXferNote" hidden></p>
+  </section>
+  <section class="grown-sec">
+    <h3>Family Link: send Bloppit to another device</h3>
+    <p class="note">Scan this with the child’s iPad, phone or Chromebook, or send the link. It opens Bloppit’s first build. Nothing personal crosses. To bring this player’s progress along too, make a transfer code above first; it is added to the link while it lasts.</p>
+    <div class="family"><div class="qr" id="familyQr" aria-label="QR code for the Family Link"></div>
+      <div class="family-txt"><code id="familyUrl">bloppit.com/p/start</code>
+        <div class="win-btns" style="justify-content:flex-start"><button class="ghost" id="familyCopy" type="button">Copy link</button><button class="ghost" id="familyShare" type="button">Send link</button></div></div></div>
   </section>
   <section class="grown-sec">
     <h3>Bring a player here</h3>
@@ -1363,7 +1428,7 @@ body.on-home .tabs{visibility:hidden}
 </dialog>
 
 <dialog class="windlg" id="welcomeDlg" aria-labelledby="wcTitle">
-  <img class="wc-pic" src="/art/bud-happy.png" alt="" width="300" height="398">
+  <img class="wc-pic" src="/art/bud-hug.png" alt="" width="300" height="398">
   <h2 id="wcTitle">You built it!</h2>
   <div class="world-strip" data-ws></div>
   <p class="win-best" id="wcNote">Your first Bloppit. What next?</p>
@@ -1375,6 +1440,12 @@ body.on-home .tabs{visibility:hidden}
   <p class="win-best" style="margin-top:0">Your own little otter. Pick a name, or name it later.</p>
   <div class="pup-names" id="pupNames" role="group" aria-label="Pup names"></div>
   <div class="win-btns"><button class="ghost" id="pupLater" type="button">Name it later</button></div>
+</dialog>
+<dialog class="windlg" id="shareDlg" aria-labelledby="shTitle">
+  <img class="share-pic" id="shPic" alt="" hidden>
+  <h2 id="shTitle">Build this one</h2>
+  <p class="win-best" id="shNote" style="margin-top:0"></p>
+  <div class="win-btns wc-btns"><button class="primary sm" id="shGo" type="button">Build this one</button><button class="ghost" id="shLook" type="button">Look around first</button></div>
 </dialog>
 <dialog class="lightbox" id="bookDlg" aria-label="Booklet page">
   <div class="lb-top"><div class="pg-top"><div class="pg-step" id="lbStep"></div><div class="callout" id="lbCallout"></div></div>
@@ -2129,6 +2200,7 @@ function drawPreview(p){
 }
 const VIEW_LABEL={front:'Front',side:'Right side',back:'Back'};
 function renderPhotos(){
+  syncKind();
   const box=$('#photos'); box.innerHTML='';
   photos.forEach(p=>{
     const el=document.createElement('div'); el.className='photo';
@@ -2162,6 +2234,8 @@ function addFiles(files){
   const imgs=[...files].filter(f=>f.type.startsWith('image/')); if(!imgs.length) return;
   track('creator_started');
   photos=photos.filter(p=>!p.sample);
+  // Q4: a photo becomes a brick picture (a mosaic made on this device). 3D photo models are off until the Creator Workshop.
+  if(S.kind!=='picture'){ S.kind='picture'; syncKind(); refreshHint(); }
   let left=imgs.length;
   imgs.forEach(f=>{
     const url=URL.createObjectURL(f), img=new Image();
@@ -2189,7 +2263,8 @@ bindRange('tol','tol',v=>v?`${v}`:'off');
 bindRange('colors','maxColors',v=>`up to ${v}`);
 bindRange('pw','pw',v=>`${v} tiles wide · ${Math.round(v*.8)} cm`);
 bindRange('pcol','pcol',v=>`up to ${v}`);
-function syncKind(){ $('#settings').dataset.kind=S.kind; const r=document.querySelector(`input[name=kind][value="${S.kind}"]`); if(r) r.checked=true; }
+function syncKind(){ $('#settings').dataset.kind=S.kind; const r=document.querySelector(`input[name=kind][value="${S.kind}"]`); if(r) r.checked=true;
+  const photo=photos.some(p=>!p.sample); $('#kd-model').disabled=photo; const n=$('#photo3dNote'); if(n) n.hidden=!photo; }
 document.querySelectorAll('input[name=kind]').forEach(r=>r.addEventListener('change',()=>{S.kind=r.value; syncKind(); refreshHint(); schedule(60);}));
 syncKind();
 document.querySelectorAll('input[name=shape]').forEach(r=>r.addEventListener('change',()=>{S.shape=r.value;schedule();}));
@@ -2260,7 +2335,8 @@ function setTab(t,sub){
   { const sec=sectionOf(t); document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===sec)); }
   syncSub(t);
   { const sel=document.querySelector('.tab[aria-selected="true"]'), bar=$('.tabs'); if(sel&&bar.scrollWidth>bar.clientWidth) bar.scrollTo({left:sel.offsetLeft-bar.offsetLeft-24,behavior:'smooth'}); }
-  ['home','create','build','box','booklet','game','mp','blitz','daily'].forEach(v=>$('#view-'+v).hidden=v!==t);
+  ['home','create','build','box','booklet','game','mp','blitz','daily','island'].forEach(v=>$('#view-'+v).hidden=v!==t);
+  if(t==='island') renderIsland();
   if(t!=='create'&&pickFor) pickFor=null;
   syncPick();
   document.body.classList.toggle('on-home',t==='home');
@@ -2287,13 +2363,13 @@ function setTab(t,sub){
 }
 /* Browser Back and Forward on the website: each page gets its own address (/build/ is the menu, /build/#blitz, #daily, …),
    so Back goes to the page before instead of leaving Bloppit. The App Store app has no Back button, so it skips this. */
-const NAV_HASH={home:'',create:'photos',build:'build',box:'build',booklet:'booklet',game:'trails',mp:'together',blitz:'blitz',daily:'daily'};
+const NAV_HASH={home:'',create:'photos',build:'build',box:'build',booklet:'booklet',game:'trails',mp:'together',blitz:'blitz',daily:'daily',island:'island'};
 const SUB_HASH={game:{hub:'trails',otter:'otter',brain:'brain'},blitz:{hub:'blitz',cpu:'blitz-bloppit',friend:'blitz-friend'},mp:{hub:'together',start:'together-start',join:'together-join'}};
 const navHash=t=>SUB_HASH[t]?SUB_HASH[t][subOf[t]]:NAV_HASH[t];
 // Address → [page, part]
 function hashPage(h){
   for(const [t,m] of Object.entries(SUB_HASH)) for(const [s,hh] of Object.entries(m)) if(h===hh) return [t,s];
-  const t={photos:'create',create:'create',quick:'create',build:'build',booklet:'booklet',game:['game','hub'],'play-together':['mp','hub'],daily:'daily'}[h];
+  const t={photos:'create',create:'create',quick:'create',build:'build',booklet:'booklet',game:['game','hub'],'play-together':['mp','hub'],daily:'daily',island:'island'}[h];
   return Array.isArray(t)?t:[t||'home'];
 }
 var navReady=false, navFromBack=false;  // var: setTab runs during start-up, before this line
@@ -2403,7 +2479,7 @@ const playControls=new THREE.OrbitControls(playCam,renderer.domElement);
 playControls.enableDamping=true; playControls.dampingFactor=.1; playControls.enabled=false;
 const playGroup=new THREE.Group(), placedGroup=new THREE.Group(), ghostGroup=new THREE.Group(), hintGroup=new THREE.Group();
 playGroup.add(placedGroup,ghostGroup,hintGroup); playScene.add(playGroup);
-let floor=null, layerGrid=null, cur=0, viewPage=0, follow=true, placed=new Set(), sel=null, hintOn=false, drops=[], busy=false, lastAnchor=null, run={miss:0,hints:new Set(),auto:0};
+let floor=null, layerGrid=null, cur=0, viewPage=0, follow=true, placed=new Set(), sel=null, hintOn=false, drops=[], busy=false, lastAnchor=null, run={miss:0,hints:new Set(),auto:0,memory:null};
 // The model has no baseplate: the first brick goes anywhere and fixes where the model sits.
 // Until the first step is finished, `cands` holds every position the model could be in that fits what's been placed so far.
 let off=null, cands=[], placedN=0;
@@ -2487,7 +2563,7 @@ function resetBuild(){
   placedGroup.clear(); ghostGroup.clear(); hintGroup.clear();
   endReveal(true);
   placed=new Set(); off=null; cands=[]; placedN=0; placedBoxes=[]; cur=0; viewPage=0; follow=true; sel=null; drops=[]; busy=false; lastAnchor=null;
-  run={miss:0,hints:new Set(),auto:0};  // this attempt's misses, hinted steps and placed-for-me bricks (the clean score)
+  run={miss:0,hints:new Set(),auto:0,memory:null};  // this attempt's misses, hinted steps, placed-for-me bricks (the clean score) and whether it was built from memory
   // A picture goes on its baseplate, so where each tile goes is fixed from the start
   if(model&&model.kind==='picture') off={x:0,z:0};
   if(model) makePieces();
@@ -2642,7 +2718,7 @@ function budBurst(){
   }
 }
 function budPing(){ const e=$('#bpStep'); e.classList.remove('bud-ping'); void e.offsetWidth; if(!reduceMotion) e.classList.add('bud-ping'); }
-function budSay(cls,html){ const b=$('#buddy'); b.classList.remove('point','cheer','hop','think','oops'); if(cls) b.classList.add(cls); $('#budSay').innerHTML=html; }
+function budSay(cls,html){ const b=$('#buddy'); b.classList.remove('point','cheer','hop','think','oops','offer','hug','reach'); if(cls) b.classList.add(cls); $('#budSay').innerHTML=html; }
 function buddyUpdate(){
   const b=$('#buddy');
   if(!model){ b.hidden=true; return; }
@@ -2657,7 +2733,7 @@ function buddyUpdate(){
   const cpuT=cpuTurnNow(); b.classList.toggle('big',cpuT);
   if(fresh){
     const n=done, all=done>=N, mv=mp&&mp.cpu&&mp.state&&mp.state.moves, byCpu=!!(mv&&mv.length&&mv[mv.length-1].p===1);
-    budSay('cheer', all?`You built it! Every ${PIECE()} is in.`:byCpu?`My brick finished step ${n}!`:BUD_CHEERS[n%BUD_CHEERS.length].replace('{n}',n));
+    budSay(all&&!mp&&run.miss===0&&!run.hints.size&&!run.auto?'hug':'cheer', all?`You built it! Every ${PIECE()} is in.`:byCpu?`My brick finished step ${n}!`:BUD_CHEERS[n%BUD_CHEERS.length].replace('{n}',n));
     budBurst(); if(all) sfx.fanfare(); else sfx.chime(); sfx.chirp(); clearTimeout(budCheerT);
     budCheerT=setTimeout(()=>{ budCheerT=0; buddyUpdate(); }, all?3200:1700);
     return;
@@ -2673,7 +2749,7 @@ function buddyUpdate(){
   if(mpBlitz()){ budSay('point', mpMyTurn()?(mp.state.solo?`Step ${cur+1}! Go go go!`:mp.cpu?`Your turn! Step ${cur+1}. Beat my time!`:`Step ${cur+1}! Check the booklet. Quick!`):`Step ${cur+1}. Get ready for your turn!`); if(budStep!==cur){ budStep=cur; budPing(); } return; }
   const left=stepLeft(cur), total=model.steps[cur].bricks.length;
   if(welcomeOn()){ const lead=cur===0?'Hi! I’m Bloppit. Here’s your first brick. Tap the faded one!':left.length===total?['Here’s the next one!','Another one. Tap the faded brick!','Nice. Next brick!','Keep going!'][cur%4]:'One more for this step:';
-    budSay('point', `${lead}<div class="callout">${calloutHTML(left)}</div>`); if(budStep!==cur){ budStep=cur; budPing(); } return; }
+    budSay('offer', `${lead}<div class="callout">${calloutHTML(left)}</div>`); if(budStep!==cur){ budStep=cur; budPing(); } return; }
   const lead=left.length===total?`Step ${cur+1}! You need these:`:left.length===1?'Just one more for this step:':`${left.length} more for this step:`;
   budSay('point', `${lead}<div class="callout">${calloutHTML(left)}</div>`);
   if(hopped&&!reduceMotion){ const s=$('#buddy .bud-art'); b.classList.add('hop'); s.addEventListener('animationend',()=>b.classList.remove('hop'),{once:true}); }
@@ -2747,7 +2823,7 @@ function rotateSel(){ if(!sel||sel.sx===sel.sz) return; [sel.sx,sel.sz]=[sel.sz,
 function renderHints(){
   hintGroup.clear(); $('#hintBtn').setAttribute('aria-pressed',hintOn);
   if(!hintOn||!model||cur>=model.steps.length) return;
-  run.hints.add(cur);
+  run.hints.add(cur); run.memory=false;
   { const g=game||mp; if(g&&!g.hintSteps.includes(cur)){ g.hintSteps.push(cur);
       if(mpBlitz()){ mpPost({action:'hint'}).then(j=>mpApply(j.state)).catch(()=>{}); mpFlash('+5s'); }
       else charge('hint',5); } }
@@ -2829,7 +2905,7 @@ function placeBrick(t,ax,az){
   if(used){ pieces.splice(pieces.indexOf(used),1); if(hand.includes(used)) dropFromHand(used); }
   const s=model.steps[cur];
   const done=off?s.bricks.every(b=>placed.has(b)):cands[0].used.size>=s.bricks.length;
-  const first=placedN===1; if(first) buildStarted(game?'trail':mp?(mp.state&&mp.state.calm?'weekly':mp.cpu?'blitz':'room'):'quick');
+  const first=placedN===1; if(first){ buildStarted(game?'trail':mp?(mp.state&&mp.state.calm?'weekly':mp.cpu?'blitz':'room'):'quick'); if(run.memory===null) run.memory=$('.build-grid').classList.contains('no-book')&&!welcomeOn(); }
   if(!done){
     setStatus(first?'First brick down. The model builds out from here.':(['Nice!','Snapped in.','Perfect fit.','Got it.'][placedN%4])+(hand.length?'':' Your hand is empty.'),'ok');
     updateBuildUI(); if(first) frameBuild(true); return;
@@ -2854,7 +2930,7 @@ function autoPlace(){
   const prev=held, prevSel=sel?{...sel}:null, n0=placedN;
   sel={sx:t.sx,sz:t.sz,c:t.c}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2};
   autoBusy=true; tryPlace(); autoBusy=false;
-  if(placedN>n0) run.auto++;
+  if(placedN>n0){ run.auto++; run.memory=false; }
   if((game||mp)&&placedN>n0) charge('auto',10);
   lastAnchor=null; ghostGroup.visible=false;
   if(prev&&hand.includes(prev)){ held=prev; sel=prevSel; setGhost(); }
@@ -2908,8 +2984,8 @@ document.querySelectorAll('#placePad [data-mv]').forEach(b=>b.addEventListener('
 $('#ppTurn').onclick=rotateSel;
 $('#ppPlace').onclick=()=>tryPlace();
 $('#rotBtn').onclick=rotateSel;
-function toggleBook(){ const g=$('.build-grid'), off=!g.classList.toggle('no-book'); $('#bookBtn').setAttribute('aria-pressed',off); saveSoon(); requestAnimationFrame(()=>{resize(); bookResize(); frameBuild(true);}); }
-$('#bookBtn').onclick=toggleBook;
+function toggleBook(){ const g=$('.build-grid'), off=!g.classList.toggle('no-book'); if(off&&placedN>0) run.memory=false; $('#bookBtn').setAttribute('aria-pressed',off); saveSoon(); requestAnimationFrame(()=>{resize(); bookResize(); frameBuild(true);}); }
+$('#bookBtn').onclick=()=>{ toggleBook(); if($('.build-grid').classList.contains('no-book')&&placedN===0&&!mp&&!welcomeOn()) setStatus('Booklet hidden. Finish without it, no hints, for a From Memory star.'); };
 $('#hintBtn').onclick=()=>{
   if(mpBlitz()&&!hintOn&&!mpMyTurn()){ setStatus(mpTurnText(),'err'); return; }
   if(mpBlitz()&&!hintOn&&mp.cpu&&Date.now()<mp.state.turnStart){ setStatus('Wait for Go!','err'); return; }
@@ -3921,6 +3997,36 @@ const SAMPLES=[
    x.fillStyle='#1B2A34'; x.rr(64,90,18,4,2);
    x.fillStyle='#C91A09'; x.rr(96,92,10,40,4);
    return [['front',c]]; }},
+ {name:'Hot-air balloon',theme:'Vehicles',weekly:'2026-11-23',beat:'Pip’s new way to travel. Fill it before it floats off.',ws:{shape:'puffed',size:11},make(){ const [c,x]=sheet(200,260,'#BFE3F5');
+   x.dot(100,86,78,'#C91A09');
+   x.poly([[22,86],[178,86],[128,172],[72,172]],'#C91A09');
+   x.fillStyle='#F2CD37'; x.beginPath(); x.ellipse(100,86,30,78,0,0,7); x.fill(); x.poly([[70,86],[130,86],[114,172],[86,172]],'#F2CD37');
+   x.fillStyle='#F4F4F4'; x.rr(94,8,12,156,4);
+   x.fillStyle='#5E3A20'; x.fillRect(78,172,6,40); x.fillRect(116,172,6,40);
+   x.fillStyle='#8B5A2B'; x.rr(66,208,68,44,8); x.fillStyle='#5E3A20'; x.fillRect(66,224,68,6);
+   return [['front',c]]; }},
+ {name:'Snowman',theme:'Fantasy',weekly:'2026-11-30',beat:'First frost on Otter Island. Squint ran off with the carrot.',ws:{shape:'puffed',size:10},make(){ const [c,x]=sheet(200,260,'#BFE3F5');
+   x.dot(100,196,62,'#F4F4F4'); x.dot(100,118,46,'#F4F4F4'); x.dot(100,58,34,'#F4F4F4');
+   x.fillStyle='#1B2A34'; x.rr(72,24,56,10,3); x.rr(82,2,36,26,3);
+   x.dot(88,52,4,'#1B2A34'); x.dot(112,52,4,'#1B2A34'); x.poly([[104,60],[132,66],[104,70]],'#FE8A18');
+   x.dot(100,106,5,'#1B2A34'); x.dot(100,130,5,'#1B2A34'); x.dot(100,180,5,'#1B2A34');
+   x.fillStyle='#C91A09'; x.rr(66,78,68,14,6); x.rr(112,84,16,44,6);
+   x.fillStyle='#5E3A20'; x.rr(36,96,30,8,3); x.rr(134,96,30,8,3);
+   return [['front',c]]; }},
+ {name:'Christmas tree',theme:'Fantasy',weekly:'2026-12-07',beat:'The village needs a tree. Hang the star last.',ws:{shape:'puffed',size:11},make(){ const [c,x]=sheet(200,260,'#ffffff');
+   x.fillStyle='#5E3A20'; x.rr(84,216,32,40,4);
+   x.poly([[100,66],[170,150],[30,150]],'#2E8B3A'); x.poly([[100,110],[184,200],[16,200]],'#2E8B3A'); x.poly([[100,150],[196,236],[4,236]],'#2E8B3A');
+   x.poly([[100,22],[110,52],[140,56],[116,74],[122,106],[100,90],[78,106],[84,74],[60,56],[90,52]],'#F2CD37');
+   [[70,138,'#C91A09'],[128,140,'#0055BF'],[100,176,'#F2CD37'],[52,190,'#0055BF'],[150,192,'#C91A09'],[88,222,'#C91A09'],[120,226,'#0055BF']].forEach(([a,b,f])=>x.dot(a,b,11,f));
+   return [['front',c]]; }},
+ {name:'Gingerbread house',theme:'Food',weekly:'2026-12-14',beat:'Scraps ate the door. Bake it a new one.',ws:{shape:'flat',size:11},make(){ const [c,x]=sheet(240,220,'#ffffff');
+   x.poly([[120,18],[228,98],[12,98]],'#8B5A2B'); x.fillStyle='#8B5A2B'; x.fillRect(32,98,176,112);
+   x.fillStyle='#F4F4F4'; x.rr(20,90,200,14,7); x.poly([[120,18],[228,98],[220,104],[120,30],[20,104],[12,98]],'#F4F4F4');
+   [[44,118],[76,118],[108,118],[140,118],[172,118],[196,118]].forEach(([a,b])=>x.dot(a,b,8,'#F4F4F4'));
+   x.fillStyle='#F4F4F4'; x.rr(96,150,48,60,22); x.fillStyle='#C91A09'; x.rr(102,156,36,54,18);
+   x.fillStyle='#F2CD37'; x.rr(48,138,34,30,6); x.rr(158,138,34,30,6); x.fillStyle='#8B5A2B'; x.fillRect(63,138,4,30); x.fillRect(173,138,4,30); x.fillRect(48,151,34,4); x.fillRect(158,151,34,4);
+   [[36,190,'#2E8B3A'],[204,190,'#0055BF'],[60,60,'#C91A09'],[180,60,'#2E8B3A'],[120,50,'#0055BF']].forEach(([a,b,f])=>x.dot(a,b,9,f));
+   return [['front',c]]; }},
  // The first-session build (see "First session" below): six bricks, a brown trunk and a green top. Not in the library.
  {name:'Little tree',theme:'Fantasy',hidden:true,make(){ const [c,x]=sheet(160,220,'#ffffff');
    x.fillStyle='#6B4229'; x.rr(66,160,28,52,4);
@@ -4463,6 +4569,7 @@ async function openGrown(){
   if(!(await gate.ask('The Grown-ups corner is for parents.'))) return;
   $('#whoDlg').close(); renderGrown();
   $('#grownCode').hidden=true; $('#grownXferNote').hidden=true; $('#grownClaimNote').hidden=true; $('#grownClaimIn').value='';
+  familyCode=''; renderFamily();
   const b=$('#grownDel'); delete b.dataset.confirm; b.textContent='Delete from the server';
   $('#grownDlg').showModal();
 }
@@ -4474,8 +4581,8 @@ $('#grownXfer').onclick=async()=>{
     if(!me.pup){ await pupSync(); if(!me.pup){ note.textContent='Finish one build first, then make a code.'; return; } }
     note.textContent='Making a code…';
     const j=await pupApi('POST',{action:'transfer'},me.pup); track('transfer_made');
-    out.textContent=j.code; out.hidden=false;
-    note.textContent=`Type this on the other device within 72 hours. It works once.`;
+    out.textContent=j.code; out.hidden=false; familyCode=j.code; renderFamily();
+    note.textContent=`Type this on the other device within 72 hours. It works once. The Family Link below now carries it too.`;
   }catch(e){ note.textContent=e.message; }
 };
 $('#grownClaimForm').addEventListener('submit',async e=>{
@@ -5023,7 +5130,7 @@ function cpuKick(){
 function cpuStep(extra=0){
   const s=cpu.s, L=CPU_LEVELS[s.cpuLevel], wait=rndIn(L.ms[0],L.ms[1])+extra;
   const m=cpuPick(), miss=Math.random()<L.miss, wrong=miss?[{x:2,z:0},{x:-2,z:0},{x:0,z:2},{x:0,z:-2}][Math.floor(Math.random()*4)]:null;
-  if(m) cpuSay('think',`${s.turnPlaced?'Next one!':'My turn!'} I need this<span class="bud-dots"></span><div class="callout">${calloutHTML([model.bricks[m.b]])}</div>`);
+  if(m) cpuSay('think',`${s.turnPlaced?'Next one.':`${CPU_LEVELS[s.cpuLevel].name}’s turn.`} He wants this<span class="bud-dots"></span><div class="callout">${calloutHTML([model.bricks[m.b]])}</div>`);
   clearTimeout(cpu.aimT); cpu.aimT=setTimeout(()=>{ if(cpu&&cpu.s===s&&s.turn===1&&!s.finished) cpuAim(m,wrong); },Math.max(0,wait-1100));
   cpu.timer=setTimeout(()=>{
     if(!cpu||cpu.s!==s) return; cpu.timer=null;
@@ -5031,7 +5138,7 @@ function cpuStep(extra=0){
     if(miss){
       s.players[1].miss++; cpuSend(); mpFlash('+1s'); if(tab==='build') sfx.bonk();
       const g=cpuAimGroup.children[0]; if(g) g.material=errMat;
-      cpuSay('oops','Oops, wrong spot! +1 second for me.');
+      cpuSay('reach',`Ha! ${CPU_LEVELS[s.cpuLevel].name} dropped it. +1 second for him.`);
       cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; cpuAimGroup.clear(); if(!s.finished&&s.turn===1) cpuStep(); },1300);
       return;
     }
@@ -5042,7 +5149,7 @@ function cpuStep(extra=0){
     cpuSend();
     if(s.finished||s.turn!==1) return;     // the Gull placed 3, or his last one
     if(cpu.left>0){ cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(!s.finished&&s.turn===1) cpuStep(); },700); return; }
-    cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(s.finished||s.turn!==1) return; cpuSay('think','Done! Your turn. Go go go!'); cpuNextTurn(); cpuSend(); },rndIn(500,900));
+    cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(s.finished||s.turn!==1) return; cpuSay('point','Your turn. Go go go!'); cpuNextTurn(); cpuSend(); },rndIn(500,900));
   },wait);
 }
 function cpuCountdown(){
@@ -5141,7 +5248,7 @@ let trialDone=null;
 function trialDialog(o){
   $('#trIcon').textContent=o.icon||'⚡'; $('#trTitle').textContent=o.title; $('#trRows').innerHTML=o.rows||''; $('#trRows').hidden=!o.rows;
   $('#trNote').textContent=o.note||''; $('#trCode').hidden=!o.code; $('#trCode').textContent=o.code||'';
-  $('#trShare').hidden=!o.code; $('#trRetry').hidden=!o.retry; trialDone=o;
+  $('#trShare').hidden=!o.code; $('#trCard').hidden=!o.card; $('#trRetry').hidden=!o.retry; trialDone=o;
   const d=$('#trialDlg'); if(!d.open) d.showModal();
 }
 async function trialEnd(){
@@ -5175,16 +5282,16 @@ async function trialEnd(){
       W.weeks[info.week]={...(prev||{}),best,first:prev?prev.first:t,at:Date.now(),clean:!!((prev&&prev.clean)||clean)}; if(first) W.total=weeklyTotal()+1; weeklyStoreSet(W);
       const cleanRow=clean?'<div class="tot"><span>Clean build</span><span>✓</span></div>':`<div><span>Not clean yet</span><span>${r.miss?`${r.miss} miss${r.miss===1?'':'es'}`:''}${r.miss&&r.hint?', ':''}${r.hint?`${r.hint} hint${r.hint===1?'':'s'}`:''}</span></div>`;
       const streakNote=()=>{ const k=weeklyStreak(); return k>1?` Streak: ${k} weeks 🔥.`:''; };
-      if(!first){ trialDialog({icon:'📅',title:clean?'Clean build!':'Nice practice!',rows:cleanRow,note:(clean&&!prev.clean?'That one counts as clean now. ':'')+'Come back on Monday for a new puzzle!'+streakNote()}); return; }
+      if(!first){ trialDialog({icon:'📅',card:true,title:clean?'Clean build!':'Nice practice!',rows:cleanRow,note:(clean&&!prev.clean?'That one counts as clean now. ':'')+'Come back on Monday for a new puzzle!'+streakNote()}); return; }
       trialDialog({icon:'📅',title:'Weekly Bloppit done!',rows:cleanRow,note:'Checking how everyone else did…'});
       try{
         const j=await chApi('POST',{action:'weekly',week:info.week,ms:r.ms,miss:r.miss,hint:r.hint,nBricks:model.bricks.length});
         weeklyPeek={week:info.week,n:j.n,clean:j.clean,pct:j.pct};
         W.weeks[info.week].n=j.n; W.weeks[info.week].pct=j.pct; weeklyStoreSet(W);
         const beat=weeklyPuzzle(info.week).beat;
-        trialDialog({icon:clean?'✨':'📅',title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,
+        trialDialog({icon:clean?'✨':'📅',card:true,title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,
           note:(beat?beat+' ':'')+(clean?`You and ${j.pct}% of this week’s builders finished clean.`:`${j.pct}% of this week’s builders finished clean. Build it again for a clean one!`)+streakNote()+' A new puzzle arrives on Monday.'});
-      }catch(e){ trialDialog({icon:'📅',title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,note:`Your build is saved on this device, but it couldn’t be counted with everyone else’s (${e.message}).`+streakNote()}); }
+      }catch(e){ trialDialog({icon:'📅',card:true,title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,note:`Your build is saved on this device, but it couldn’t be counted with everyone else’s (${e.message}).`+streakNote()}); }
     }
   };
   await send();
@@ -5263,6 +5370,10 @@ const WEEKLY_PLAN={
   '2026-11-02':'Red boat',
   '2026-11-09':'Striped lighthouse',
   '2026-11-16':'Curled-up pup',
+  '2026-11-23':'Hot-air balloon',
+  '2026-11-30':'Snowman',
+  '2026-12-07':'Christmas tree',
+  '2026-12-14':'Gingerbread house',
 };
 // The hash pick only draws from models already in the library, so an unreleased Weekly is never spoiled early.
 const WEEKLY_POOL=()=>SAMPLES.map((s,i)=>i).filter(i=>!SAMPLES[i].weekly&&!SAMPLES[i].hidden);
@@ -5482,7 +5593,7 @@ function worldStore(){ try{ const o=JSON.parse(localStorage.getItem(pkey(WORLD_K
 // Join two world records (same rules as the server): best stars per model, higher XP, decorations and the name kept.
 function worldMerge(a,b){
   a=a||{}; b=b||{}; const builds={...(a.builds||{})};
-  for(const k of Object.keys(b.builds||{})){ const x=builds[k], y=b.builds[k]; builds[k]=x?{...x,...y,s:Math.max(x.s||0,y.s||0),t:Math.min(x.t||Infinity,y.t||Infinity),c:Math.max(x.c||1,y.c||1)}:y; }
+  for(const k of Object.keys(b.builds||{})){ const x=builds[k], y=b.builds[k]; builds[k]=x?{...x,...y,s:Math.max(x.s||0,y.s||0),t:Math.min(x.t||Infinity,y.t||Infinity),c:Math.max(x.c||1,y.c||1),...((x.m||y.m)?{m:1}:{})}:y; }
   const log=[]; for(const k of [...(a.log||[]),...(b.log||[]),...Object.keys(builds)]) if(builds[k]&&!log.includes(k)) log.push(k);
   const pn=[a.pupName,b.pupName].find(v=>typeof v==='number'&&v>=0);
   return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],pupName:pn==null?-1:pn,pupAsked:!!(a.pupAsked||b.pupAsked)};
@@ -5519,15 +5630,16 @@ function worldFinish(kind){
   const stars=blitz?1:1+(noHint?1:0)+(clean?1:0);
   let xp=first?(blitz?10:N<=20?10:N<=40?20:35):0, bonus=0;
   if(kind==='weekly'&&first){ xp+=10; bonus=1; }
+  const memory=!!run.memory&&!mp&&!blitz&&clean&&!(prev&&prev.m); if(memory){ xp+=5; bonus+=1; }
   const before={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
-  const rec=prev?{...prev,s:Math.max(prev.s||0,stars),c:(prev.c||1)+1}:{n:N,s:stars,k:kind,t:Date.now(),c:1};
+  const rec=prev?{...prev,s:Math.max(prev.s||0,stars),c:(prev.c||1)+1}:{n:N,s:stars,k:kind,t:Date.now(),c:1}; if(memory) rec.m=1;
   o.builds[key]=rec; if(first) o.log.push(key); o.xp=(o.xp||0)+xp; o.bonus=(o.bonus||0)+bonus;
   worldSet(o);
   worldThumbSave(key);
   const after={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
-  const r={key,kind,stars,best:rec.s,gained:first?stars+bonus:Math.max(0,stars-(prev.s||0)),xp,bonus,first,clean,noHint,miss,hint:hint+auto,before,after,
+  const r={key,kind,stars,best:rec.s,gained:first?stars+bonus:Math.max(0,stars-(prev.s||0))+(memory?1:0),xp,bonus,first,clean,noHint,memory,miss,hint:hint+auto,before,after,
     pupUp:after.pup>before.pup,islandUp:after.island>before.island,total:worldStars(o),count:after.n};
-  track('world_finish:'+stars+'star'+(first?'':'_again'), r.pupUp?'pup_stage:'+PUP_STAGES[after.pup].name.toLowerCase():'', r.islandUp?'island_stage:'+ISLAND_STAGES[after.island].name.toLowerCase():'');
+  track('world_finish:'+stars+'star'+(first?'':'_again'), memory?'from_memory':'', r.pupUp?'pup_stage:'+PUP_STAGES[after.pup].name.toLowerCase():'', r.islandUp?'island_stage:'+ISLAND_STAGES[after.island].name.toLowerCase():'');
   return r;
 }
 // A small transparent picture of the finished model, kept on this device for the island (never sent up)
@@ -5552,7 +5664,8 @@ function worldStripHTML(r){
   const o=worldStore(), what=r.kind==='blitz'?'Race won':r.clean?'Clean build!':r.noHint?'No hints!':'Finished!';
   const parts=[wsStars(r.stars),`<span>${what}</span>`];
   if(r.xp) parts.push(`<span>+${r.xp} XP</span>`); else if(!r.first) parts.push('<span>Built before · best kept</span>');
-  if(r.bonus) parts.push('<span>+1 Weekly star</span>');
+  if(r.kind==='weekly'&&r.first) parts.push('<span>+1 Weekly star</span>');
+  if(r.memory) parts.push('<span>🧠 From memory! +1 star</span>');
   if(r.pupUp) parts.push(`<span class="ws-up"><img src="/art/pup.png" alt="">${pupName(o)||'Your pup'} is a ${PUP_STAGES[r.after.pup].name}!</span>`);
   else if(r.islandUp) parts.push(`<span class="ws-up">🏝️ ${ISLAND_STAGES[r.after.island].name} built!</span>`);
   return parts.join('');
@@ -5560,7 +5673,7 @@ function worldStripHTML(r){
 function worldStrips(){ const h=worldStripHTML(worldLast); document.querySelectorAll('[data-ws]').forEach(el=>{ el.innerHTML=h; }); }
 function worldToast(){
   const r=worldLast, el=$('#worldToast'); if(!r){ el.hidden=true; return; }
-  el.innerHTML=worldStripHTML(r); el.hidden=false; clearTimeout(worldToast.t); worldToast.t=setTimeout(()=>{ el.hidden=true; },6000);
+  el.innerHTML=worldStripHTML(r)+'<span class="ws-go">Island ▸</span>'; el.hidden=false; el.onclick=()=>{ el.hidden=true; setTab('island'); }; clearTimeout(worldToast.t); worldToast.t=setTimeout(()=>{ el.hidden=true; },7000);
 }
 // After a Quick Build's reveal: the stars, and on the first ever finish the pup
 function worldAfterQuick(){ worldToast(); pupMaybe(); }
@@ -5580,12 +5693,265 @@ function renderHomeWorld(){
   const pct=next?Math.round(100*(n-PUP_STAGES[ps].at)/(next.at-PUP_STAGES[ps].at)):100;
   el.hidden=false;
   el.innerHTML=`<img class="pup ${PUP_STAGES[ps].name.toLowerCase()}" src="/art/pup.png" alt="">
-    <div class="wt">${o.pupName>=0?`<b>${PUP_NAMES[o.pupName]} <span class="sub">· ${PUP_STAGES[ps].name}</span></b>`:`<button class="wname" id="wName" type="button">Name your pup</button>`}
+    <div class="wt">${o.pupName>=0?`<b>${PUP_NAMES[o.pupName]} <span class="sub">· ${PUP_STAGES[ps].name}</span></b>`:`<span class="wname" id="wName" role="button" tabindex="0">Name your pup</span>`}
       <span class="sub">${next?`${next.at-n} more build${next.at-n===1?'':'s'} to ${next.name}`:'Legend of Otter Island'}</span><span class="bar"><i style="width:${Math.max(4,pct)}%"></i></span></div>
     <div class="wn"><div><b>${n}</b><span>build${n===1?'':'s'}</span></div><div><b class="st">${worldStars(o)}</b><span>Build Stars</span></div><div><b>${o.xp||0}</b><span>XP</span></div></div>
     <span class="sub" style="grid-column:1/-1;font-size:13px;font-weight:700;color:var(--muted)">🏝️ Otter Island: ${ISLAND_STAGES[is].name}${inext?` · ${inext.at-n} more to the ${inext.name}`:''}</span>`;
-  const w=$('#wName'); if(w) w.onclick=()=>pupOpen();
+  const w=$('#wName'); if(w) w.onclick=e=>{ e.stopPropagation(); pupOpen(); };
 }
+
+/* ---------- Otter Island: the drawn island that grows with every finished build (Bloppitopia Lite) ----------
+   Four stages by build count (Beach, Hut at 1, Workshop at 3, Village at 10), fixed model slots (1, 3, 6) that
+   the newest finished models drop into, Weeklies in a marked slot by the water, twelve decorations bought with
+   Build Stars in fixed spots, and a postcard from the Village on. The island reads from the world record; the
+   model pictures come from this device's thumbnail cache. */
+const SLOTS=[[280,338],[410,372],[320,428],[565,388],[665,428],[480,446]], WEEKLY_SLOT=[790,362];
+const DECOR_AT={flag:[66,300],campfire:[200,412],bench:[612,334],lantern:[522,338],signpost:[128,384],rockpool:[770,446],sandcastle:[168,456],hammock:[720,474],kite:[650,120],palm:[828,286],crab:[430,474],buoy:[868,492]};
+function decorSVG(id,x,y){
+  const g=(inner)=>`<g transform="translate(${x} ${y})">${inner}</g>`;
+  switch(id){
+    case 'flag': return g('<rect x="-2" y="-64" width="4" height="64" fill="#8A5A3B"/><path d="M2 -62 L34 -52 L2 -42 Z" fill="#F4BC22"/>');
+    case 'campfire': return g('<ellipse cx="0" cy="0" rx="20" ry="7" fill="#9AA3AD"/><path d="M-14 -2 L14 -8 M-13 -8 L13 -2" stroke="#8A5A3B" stroke-width="5" stroke-linecap="round"/><path d="M0 -36 C8 -26 12 -20 10 -12 C8 -6 -8 -6 -10 -12 C-12 -20 -8 -26 0 -36 Z" fill="#F4BC22"/><path d="M0 -26 C4 -20 6 -16 5 -12 C4 -8 -4 -8 -5 -12 C-6 -16 -4 -20 0 -26 Z" fill="#FE8A18"/>');
+    case 'bench': return g('<rect x="-26" y="-22" width="52" height="7" rx="2" fill="#8A5A3B"/><rect x="-26" y="-34" width="52" height="6" rx="2" fill="#A86E48"/><rect x="-22" y="-15" width="5" height="15" fill="#6B4229"/><rect x="17" y="-15" width="5" height="15" fill="#6B4229"/>');
+    case 'lantern': return g('<rect x="-2" y="-70" width="4" height="70" fill="#14202C"/><path d="M-2 -70 h16 v4 h-16z" fill="#14202C"/><rect x="6" y="-66" width="12" height="16" rx="3" fill="#FFF0B0" stroke="#14202C" stroke-width="2"/><circle cx="12" cy="-58" r="3" fill="#F4BC22"/>');
+    case 'signpost': return g('<rect x="-2" y="-62" width="4" height="62" fill="#8A5A3B"/><path d="M-20 -58 h36 l6 6 l-6 6 h-36 z" fill="#F4E1B5" stroke="#8A5A3B" stroke-width="2"/><path d="M22 -40 h-36 l-6 6 l6 6 h36 z" fill="#F4E1B5" stroke="#8A5A3B" stroke-width="2"/>');
+    case 'rockpool': return g('<ellipse cx="0" cy="0" rx="34" ry="13" fill="#9AA3AD"/><ellipse cx="0" cy="-1" rx="26" ry="9" fill="#6FB7E8"/><circle cx="-14" cy="-2" r="3" fill="#2E8B3A"/><circle cx="10" cy="1" r="2.5" fill="#F29A8A"/>');
+    case 'sandcastle': return g('<rect x="-22" y="-26" width="44" height="26" fill="#E3C99A"/><rect x="-26" y="-36" width="12" height="36" fill="#D9B98B"/><rect x="14" y="-36" width="12" height="36" fill="#D9B98B"/><rect x="-6" y="-44" width="12" height="44" fill="#E3C99A"/><path d="M0 -44 v-10 l10 4 l-10 4" fill="#0055BF"/><path d="M-26 -36 h4 v-4 h4 v4 h4 v-4 M14 -36 h4 v-4 h4 v4 h4 v-4" stroke="#D9B98B" stroke-width="2" fill="none"/>');
+    case 'hammock': return g('<rect x="-40" y="-52" width="4" height="52" fill="#8A5A3B"/><rect x="36" y="-52" width="4" height="52" fill="#8A5A3B"/><path d="M-38 -46 C-20 -14 20 -14 38 -46" stroke="#008F9B" stroke-width="9" stroke-linecap="round" fill="none"/><path d="M-38 -46 C-20 -20 20 -20 38 -46" stroke="#fff" stroke-width="2" stroke-dasharray="4 5" fill="none"/>');
+    case 'kite': return g('<path d="M0 60 C 10 90 -16 110 -2 150" stroke="#14202C" stroke-width="1.5" fill="none"/><path d="M0 -20 L20 0 L0 36 L-20 0 Z" fill="#0055BF"/><path d="M0 -20 L20 0 L0 0 Z" fill="#F4BC22"/><path d="M0 36 L-20 0 L0 0 Z" fill="#F4BC22"/><path d="M0 36 l6 12 l-8 6 l8 8 l-6 10" stroke="#F4BC22" stroke-width="2" fill="none"/>');
+    case 'palm': return g('<path d="M0 0 C-4 -30 2 -60 10 -86" stroke="#8A5A3B" stroke-width="8" stroke-linecap="round" fill="none"/><path d="M10 -86 C-20 -96 -40 -84 -46 -70 C-24 -78 -6 -74 10 -86 Z M10 -86 C40 -98 60 -84 66 -68 C44 -78 26 -74 10 -86 Z M10 -86 C-8 -112 10 -124 18 -122 C8 -110 10 -96 10 -86 Z M10 -86 C30 -112 50 -108 54 -100 C34 -100 20 -94 10 -86 Z" fill="#2E8B3A"/><circle cx="6" cy="-80" r="4" fill="#8A5A3B"/><circle cx="14" cy="-78" r="4" fill="#8A5A3B"/>');
+    case 'crab': return g('<ellipse cx="0" cy="0" rx="16" ry="10" fill="#FE8A18"/><circle cx="-6" cy="-9" r="3" fill="#14202C"/><circle cx="6" cy="-9" r="3" fill="#14202C"/><path d="M-16 -2 C-26 -8 -30 -14 -26 -18 M16 -2 C26 -8 30 -14 26 -18" stroke="#FE8A18" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M-12 8 l-6 6 M-4 10 l-2 7 M4 10 l2 7 M12 8 l6 6" stroke="#FE8A18" stroke-width="3" stroke-linecap="round"/>');
+    case 'buoy': return g('<g class="is-bob"><path d="M-12 0 C-12 -20 12 -20 12 0 Z" fill="#D2352B"/><rect x="-12" y="-8" width="24" height="5" fill="#fff"/><rect x="-2" y="-34" width="4" height="16" fill="#14202C"/><circle cx="0" cy="-36" r="4" fill="#F4BC22"/></g>');
+  }
+  return '';
+}
+function islandSVG(o,opts){
+  opts=opts||{}; const stage=islandStage(o), n=worldCount(o), decor=o.decor||[], thumbs=worldThumbs();
+  const slotsOpen=ISLAND_STAGES[stage].slots;
+  const keys=o.log.filter(k=>!k.startsWith('w:')).slice(-slotsOpen).reverse();          // newest first; newest takes slot 1
+  const weekly=o.log.filter(k=>k.startsWith('w:')).slice(-1)[0];
+  const pic=(key,x,y,w,cls,pop)=>{ const u=worldThumb(key); if(!u) return `<g class="${cls}" transform="translate(${x} ${y})"><rect x="-26" y="-30" width="52" height="30" rx="4" fill="#9AA3AD"/></g>`;
+    const h=w*.75; return `<image class="${cls}${pop?' is-pop':''}" href="${u}" x="${x-w/2}" y="${y-h}" width="${w}" height="${h}" preserveAspectRatio="xMidYMax meet"/>`; };
+  const parts=[];
+  parts.push(`<defs><linearGradient id="is-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BEE0F5"/><stop offset="1" stop-color="#EAF6FC"/></linearGradient><linearGradient id="is-sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5FAEE6"/><stop offset="1" stop-color="#2F8FD6"/></linearGradient></defs>`);
+  parts.push('<rect width="900" height="520" fill="url(#is-sky)"/>');
+  parts.push('<circle cx="800" cy="78" r="34" fill="#FFE27A"/><circle cx="800" cy="78" r="46" fill="#FFE27A" opacity=".25"/>');
+  parts.push('<g fill="#fff" opacity=".9"><ellipse cx="170" cy="90" rx="46" ry="16"/><ellipse cx="196" cy="80" rx="28" ry="18"/><ellipse cx="560" cy="60" rx="38" ry="13"/><ellipse cx="580" cy="52" rx="22" ry="14"/></g>');
+  parts.push('<rect y="292" width="900" height="228" fill="url(#is-sea)"/>');
+  parts.push('<g class="is-wave" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".55"><path d="M-20 318 q20 -8 40 0 t40 0 t40 0 t40 0"/><path d="M780 338 q20 -8 40 0 t40 0 t40 0 t40 0"/><path d="M40 496 q20 -8 40 0 t40 0 t40 0 t40 0 t40 0"/><path d="M600 500 q20 -8 40 0 t40 0 t40 0 t40 0 t40 0 t40 0"/></g>');
+  // the island
+  parts.push('<path d="M60 370 C120 290 260 270 400 280 C540 290 700 262 820 310 C880 340 880 420 800 450 C650 500 250 500 100 450 C40 430 30 400 60 370 Z" fill="#fff" opacity=".55" transform="translate(0 6) scale(1.02 1.05)" transform-origin="450 390"/>');
+  parts.push('<path d="M60 370 C120 290 260 270 400 280 C540 290 700 262 820 310 C880 340 880 420 800 450 C650 500 250 500 100 450 C40 430 30 400 60 370 Z" fill="#E3C99A"/>');
+  parts.push('<path d="M72 372 C130 300 262 282 400 292 C538 300 698 274 812 318 C864 344 862 414 792 440 C650 486 254 486 110 440 C54 422 44 398 72 372 Z" fill="#F1DFBC"/>');
+  parts.push('<path d="M520 300 C600 275 760 270 800 310 C820 330 760 360 660 355 C580 350 500 330 520 300 Z" fill="#9BD48C"/>');
+  parts.push('<ellipse cx="120" cy="446" rx="34" ry="14" fill="#9AA3AD"/><ellipse cx="112" cy="440" rx="22" ry="10" fill="#B9C2CF"/>');
+  parts.push('<g stroke="#7CC26C" stroke-width="3" stroke-linecap="round"><path d="M250 470 l-4 -10 M256 470 l2 -12 M262 470 l5 -8"/><path d="M700 466 l-4 -10 M706 466 l2 -12"/><path d="M400 300 l-4 -9 M406 300 l2 -11"/></g>');
+  // path from the hut once there is a workshop
+  if(stage>=2) parts.push('<path d="M222 312 C290 300 340 296 392 290" stroke="#D9B98B" stroke-width="10" stroke-linecap="round" stroke-dasharray="14 10" fill="none"/>');
+  // buildings, with the next one as a faint outline
+  const hut=(cls)=>`<g class="${cls}" transform="translate(190 306)"><rect x="-40" y="-56" width="80" height="56" rx="3" fill="#F4E1B5" stroke="#C9A96E" stroke-width="2"/><path d="M-52 -54 L0 -106 L52 -54 Z" fill="#E9B949" stroke="#C9A96E" stroke-width="2"/><path d="M-44 -66 h88 M-32 -80 h64 M-18 -94 h36" stroke="#C9A96E" stroke-width="2"/><rect x="-12" y="-34" width="24" height="34" rx="10" fill="#8A5A3B"/><rect x="18" y="-44" width="14" height="12" rx="2" fill="#6FB7E8"/></g>`;
+  const workshop=(cls)=>`<g class="${cls}" transform="translate(440 290)"><rect x="-62" y="-72" width="124" height="72" rx="3" fill="#C58B5A" stroke="#8A5A3B" stroke-width="2"/><path d="M-72 -70 L-50 -110 L50 -110 L72 -70 Z" fill="#5B6778" stroke="#3E5468" stroke-width="2"/><rect x="28" y="-128" width="16" height="40" fill="#8A5A3B"/><g class="is-smoke" fill="#fff" opacity=".7"><circle cx="36" cy="-134" r="8"/><circle cx="42" cy="-142" r="6"/></g><rect x="-18" y="-44" width="36" height="44" rx="4" fill="#5B6778"/><rect x="-18" y="-44" width="36" height="6" fill="#3E5468"/><rect x="-54" y="-58" width="22" height="18" rx="2" fill="#FFF0B0" stroke="#8A5A3B" stroke-width="2"/><rect x="32" y="-58" width="22" height="18" rx="2" fill="#FFF0B0" stroke="#8A5A3B" stroke-width="2"/><rect x="-62" y="-6" width="124" height="6" fill="#8A5A3B"/><path d="M-50 -82 h100" stroke="#F4BC22" stroke-width="4"/></g>`;
+  const cottage=(x,y,roof,cls)=>`<g class="${cls}" transform="translate(${x} ${y})"><rect x="-30" y="-44" width="60" height="44" rx="3" fill="#FFF8EA" stroke="#C9A96E" stroke-width="2"/><path d="M-38 -42 L0 -78 L38 -42 Z" fill="${roof}"/><rect x="-9" y="-26" width="18" height="26" rx="8" fill="#8A5A3B"/><rect x="12" y="-36" width="12" height="10" rx="2" fill="#6FB7E8"/><rect x="-24" y="-36" width="12" height="10" rx="2" fill="#6FB7E8"/></g>`;
+  const village=(cls)=>cottage(600,312,'#008F9B',cls)+cottage(690,330,'#F4BC22',cls)+cottage(760,300,'#0055BF',cls)
+    +`<g class="${cls}"><path d="M800 392 L870 428" stroke="#8A5A3B" stroke-width="14" stroke-linecap="round"/><path d="M800 392 L870 428" stroke="#A86E48" stroke-width="8" stroke-linecap="round" stroke-dasharray="6 5"/><rect x="806" y="372" width="5" height="26" fill="#6B4229"/><rect x="846" y="396" width="5" height="26" fill="#6B4229"/></g>`;
+  if(stage>=1) parts.push(hut(n===1&&opts.pop?'is-pop':'')); else parts.push(hut('ghost-build'));
+  if(stage>=2) parts.push(workshop(n===3&&opts.pop?'is-pop':'')); else if(stage===1) parts.push(workshop('ghost-build'));
+  if(stage>=3) parts.push(village(n===10&&opts.pop?'is-pop':'')); else if(stage===2) parts.push(village('ghost-build'));
+  // decorations
+  for(const id of decor) if(DECOR_AT[id]) parts.push(decorSVG(id,DECOR_AT[id][0],DECOR_AT[id][1]));
+  // finished models in their slots (the newest first), the Weekly by the water
+  SLOTS.forEach(([x,y],i)=>{ if(i>=slotsOpen) return; const k=keys[i]; if(k) parts.push(pic(k,x,y,118,'',opts.pop&&i===0)); else parts.push(`<ellipse class="slot-empty" cx="${x}" cy="${y-2}" rx="40" ry="10" fill="#D9B98B"/>`); });
+  if(weekly){ const [x,y]=WEEKLY_SLOT; parts.push(`<rect x="${x-50}" y="${y-2}" width="100" height="6" rx="3" fill="#D9B98B"/>`+pic(weekly,x,y,110,'',opts.pop&&o.log[o.log.length-1]===weekly)+`<rect x="${x+46}" y="${y-90}" width="3" height="88" fill="#14202C"/><path d="M${x+49} ${y-90} l20 7 l-20 7z" fill="#008F9B"/>`); }
+  // Bloppit waits on the beach, then keeps the workshop door; the pup stays at his side
+  const [bx,by]=stage>=2?[372,300]:[150,376], ps=pupStage(o), ph=[52,62,72][ps];
+  parts.push(`<image href="/art/bud-3q.png" x="${bx-34}" y="${by-92}" width="68" height="92" preserveAspectRatio="xMidYMax meet"/>`);
+  if(n>0) parts.push(`<image class="is-bob" href="/art/pup.png" x="${bx+30}" y="${by-ph}" width="${Math.round(ph*.8)}" height="${ph}" preserveAspectRatio="xMidYMax meet"/>`);
+  if(stage===0) parts.push('<g transform="translate(250 262)"><rect x="-70" y="-30" width="140" height="40" rx="12" fill="#fff" stroke="#14202C" stroke-width="2"/><path d="M-20 10 l-10 14 l22 -14z" fill="#fff" stroke="#14202C" stroke-width="2"/><rect x="-18" y="8" width="18" height="4" fill="#fff"/><text x="0" y="-4" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="15" fill="#14202C">Finish a build!</text></g>');
+  return `<svg viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-label="Otter Island at the ${ISLAND_STAGES[stage].name} stage">${parts.join('')}</svg>`;
+}
+let islandShown=-1;
+function renderIsland(){
+  const o=worldStore(), stage=islandStage(o), n=worldCount(o), next=ISLAND_STAGES[stage+1];
+  const pop=islandShown>=0&&islandShown<n; islandShown=n;
+  $('#island').innerHTML=islandSVG(o,{pop});
+  $('#isStage').innerHTML=`${ISLAND_STAGES[stage].name}<small>${n} build${n===1?'':'s'} finished · ${worldStars(o)} Build Star${worldStars(o)===1?'':'s'} to spend</small>`;
+  $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>The whole village is built. The jetty points at Friendship Harbour, coming next.</span>';
+  $('#isNote').textContent=n?`${pupName(o)||'Your pup'} and Bloppit are home. ${next?`Every build you finish grows the island.`:''}`:'Finish any build and the first hut rises from the sand.';
+  $('#isCard').hidden=stage<3; $('#isDecor').hidden=!n;
+  renderDecorShop(); renderBuilds();
+}
+function renderDecorShop(){
+  const o=worldStore(), left=worldStars(o);
+  $('#isStars').textContent=`You have ${left} Build Star${left===1?'':'s'}.`;
+  $('#decorGrid').innerHTML=DECOR.map(d=>{ const owned=o.decor.includes(d.id); return `<button type="button" data-decor="${d.id}"${owned?' data-owned="1" disabled':left<d.cost?' disabled':''}><svg viewBox="-64 -136 128 148">${decorSVG(d.id,0,d.id==='kite'?-110:6)}</svg>${d.name}<span class="cost">${owned?'On your island':`★ ${d.cost}`}</span></button>`; }).join('');
+}
+$('#decorGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-decor]'); if(!b||b.disabled) return;
+  const d=DECOR.find(x=>x.id===b.dataset.decor); if(!d) return;
+  if(!b.dataset.confirm){ b.dataset.confirm='1'; b.querySelector('.cost').textContent=`Tap again: ★ ${d.cost}`; setTimeout(()=>{ delete b.dataset.confirm; if(b.isConnected) b.querySelector('.cost').textContent=`★ ${d.cost}`; },3000); return; }
+  const o=worldStore(); if(o.decor.includes(d.id)||worldStars(o)<d.cost) return;
+  o.decor.push(d.id); worldSet(o); track('decor_bought:'+d.id); sfx.chime(); islandShown=-1; renderIsland(); });
+$('#isDecor').onclick=()=>{ const sh=$('#isShop'); sh.hidden=!sh.hidden; if(!sh.hidden) sh.scrollIntoView({behavior:'smooth',block:'start'}); };
+$('#isShopClose').onclick=()=>{ $('#isShop').hidden=true; scrollTo({top:0,behavior:'smooth'}); };
+function renderBuilds(){
+  const o=worldStore(), keys=[...o.log].reverse();
+  $('#isBuildsNote').textContent=keys.length?`${keys.length} model${keys.length===1?'':'s'} finished. Stars are the best of every try.`:'Nothing finished yet.';
+  $('#buildsGrid').innerHTML=keys.map(k=>{ const b=o.builds[k], u=worldThumb(k), nm=k.startsWith('w:')?'Weekly Bloppit':(/^m:(.+):\d+$/.exec(k)||/^t:[a-z]+:\d+:(.+)$/.exec(k)||[])[1]||'Your photo';
+    return `<div>${u?`<img src="${u}" alt="">`:'<span style="height:72px"></span>'}<span>${escapeHTML(nm)}</span>${wsStars(b.s||0)}<small>${b.n} bricks</small></div>`; }).join('');
+}
+// The postcard: the island as a picture, no name, no photo, no location
+$('#isCard').onclick=async()=>{
+  const o=worldStore(); track('postcard');
+  try{
+    const svg=islandSVG(o,{}).replace(/href="\/art\//g,`href="${location.origin}/art/`);
+    const img=new Image(); img.crossOrigin='anonymous';
+    await new Promise((res,rej)=>{ img.onload=res; img.onerror=rej; img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg); });
+    const c=document.createElement('canvas'); c.width=1200; c.height=800; const x=c.getContext('2d');
+    x.drawImage(img,0,0,1200,693); x.fillStyle='#14202C'; x.fillRect(0,693,1200,107);
+    x.fillStyle='#fff'; x.font='800 34px Nunito,sans-serif'; x.fillText('Every build you finish grows your island.',40,750);
+    x.font='700 22px Nunito,sans-serif'; x.fillStyle='#F4BC22'; x.fillText('bloppit.com',40,784);
+    const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+    const file=new File([blob],'otter-island.png',{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})) await navigator.share({files:[file],title:'Otter Island',text:'Every build you finish grows your island. bloppit.com'});
+    else { const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='otter-island.png'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),5000); }
+  }catch(e){ setStatus('Couldn’t make the postcard just now.','err'); }
+};
+
+/* ---------- Share links, the Weekly card and Family Link ----------
+   bloppit.com/p/CODE opens one build with one button, "Build this one": w-2026-10-26 is that week's Weekly,
+   m-red-boat a library model, start the first build. A parent shares, never the child: the Weekly card is a
+   picture of this week's model with the shared-achievement line and the otter, and the link on it. Family Link
+   is /p/start as a QR code in the Grown-ups corner, with the transfer code added when one has just been made,
+   so a parent's phone can hand the game to the child's device with nothing personal crossing. */
+// Tiny QR encoder: byte mode, error correction M, versions 1-10, best mask by the standard penalty.
+// Returns a square array of booleans (true = dark). Enough for a short bloppit.com link.
+function qrMatrix(text, forceMask){
+  const EC_M=[[1,10],[1,16],[1,26],[2,18],[2,24],[4,16],[4,18],[4,22],[5,22],[5,26]];   // [blocks, EC codewords per block] per version
+  const CAP=[16,28,44,64,86,108,124,154,182,216];                                         // data codewords (M) per version
+  const bytes=new TextEncoder().encode(text);
+  let v=1; while(v<=10&&CAP[v-1]-2<bytes.length) v++; if(v>10) throw new Error('too long');
+  const n=17+4*v, cap=CAP[v-1];
+  // bit stream
+  const bits=[]; const put=(val,len)=>{ for(let i=len-1;i>=0;i--) bits.push((val>>i)&1); };
+  put(4,4); put(bytes.length,v<10?8:16); for(const b of bytes) put(b,8);
+  for(let i=0;i<4&&bits.length<cap*8;i++) bits.push(0); while(bits.length%8) bits.push(0);
+  const data=[]; for(let i=0;i<bits.length;i+=8){ let x=0; for(let j=0;j<8;j++) x=(x<<1)|bits[i+j]; data.push(x); }
+  for(let k=0;data.length<cap;k++) data.push(k%2?17:236);
+  // GF(256)
+  const EXP=new Array(512), LOG=new Array(256); let x=1; for(let i=0;i<255;i++){ EXP[i]=x; LOG[x]=i; x<<=1; if(x&256) x^=0x11d; } for(let i=255;i<512;i++) EXP[i]=EXP[i-255];
+  const mul=(a,b)=>a&&b?EXP[LOG[a]+LOG[b]]:0;
+  const [blocks,ecn]=EC_M[v-1];
+  let gen=[1]; for(let i=0;i<ecn;i++){ const ng=new Array(gen.length+1).fill(0); for(let j=0;j<gen.length;j++){ ng[j]^=gen[j]; ng[j+1]^=mul(gen[j],EXP[i]); } gen=ng; }
+  const short=Math.floor(cap/blocks), longer=cap%blocks, dblocks=[], eblocks=[]; let pos=0;
+  for(let b=0;b<blocks;b++){ const len=short+(b>=blocks-longer?1:0), d=data.slice(pos,pos+len); pos+=len; dblocks.push(d);
+    const r=new Array(ecn).fill(0); for(const c of d){ const f=c^r[0]; r.shift(); r.push(0); for(let j=0;j<ecn;j++) r[j]^=mul(gen[j+1],f); } eblocks.push(r); }
+  const out=[]; for(let i=0;i<short+1;i++) for(const d of dblocks) if(i<d.length) out.push(d[i]); for(let i=0;i<ecn;i++) for(const e of eblocks) out.push(e[i]);
+  // matrix
+  const m=Array.from({length:n},()=>new Array(n).fill(null));   // null = free
+  const set=(r,c,val)=>{ m[r][c]=val?1:0; };
+  const finder=(r,c)=>{ for(let i=-1;i<=7;i++) for(let j=-1;j<=7;j++){ const rr=r+i, cc=c+j; if(rr<0||cc<0||rr>=n||cc>=n) continue; const d=(i>=0&&i<=6&&(j===0||j===6))||(j>=0&&j<=6&&(i===0||i===6))||(i>=2&&i<=4&&j>=2&&j<=4); set(rr,cc,d); } };
+  finder(0,0); finder(0,n-7); finder(n-7,0);
+  const AP={2:[6,18],3:[6,22],4:[6,26],5:[6,30],6:[6,34],7:[6,22,38],8:[6,24,42],9:[6,26,46],10:[6,28,50]}[v]||[];
+  for(const r of AP) for(const c of AP){ if(m[r][c]!==null) continue; for(let i=-2;i<=2;i++) for(let j=-2;j<=2;j++) set(r+i,c+j,Math.max(Math.abs(i),Math.abs(j))!==1); }
+  for(let i=8;i<n-8;i++){ if(m[6][i]===null) set(6,i,i%2===0); if(m[i][6]===null) set(i,6,i%2===0); }
+  set(n-8,8,1);
+  const fmtCells=[]; for(let i=0;i<=8;i++){ if(i!==6){ fmtCells.push([8,i]); fmtCells.push([i,8]); } } for(let i=0;i<8;i++){ fmtCells.push([8,n-1-i]); fmtCells.push([n-1-i,8]); }
+  for(const [r,c] of fmtCells) if(m[r][c]===null) m[r][c]=0;
+  if(v>=7){ let bitsV=v<<12, g=0x1f25; for(let i=5;i>=0;i--) if(bitsV&(1<<(i+12))) bitsV^=g<<i; const vi=(v<<12)|bitsV;
+    for(let i=0;i<18;i++){ const b=(vi>>i)&1; set(Math.floor(i/3),n-11+i%3,b); set(n-11+i%3,Math.floor(i/3),b); } }
+  // place data
+  const free=[]; let up=true;
+  for(let c=n-1;c>0;c-=2){ if(c===6) c--; for(let k=0;k<n;k++){ const r=up?n-1-k:k; for(const cc of [c,c-1]) if(m[r][cc]===null) free.push([r,cc]); } up=!up; }
+  const dataBits=[]; for(const b of out) for(let i=7;i>=0;i--) dataBits.push((b>>i)&1);
+  const isData=new Set(free.map(([r,c])=>r*n+c));
+  const masks=[(r,c)=>(r+c)%2===0,(r,c)=>r%2===0,(r,c)=>c%3===0,(r,c)=>(r+c)%3===0,(r,c)=>(Math.floor(r/2)+Math.floor(c/3))%2===0,(r,c)=>(r*c)%2+(r*c)%3===0,(r,c)=>((r*c)%2+(r*c)%3)%2===0,(r,c)=>((r+c)%2+(r*c)%3)%2===0];
+  const build=(mk)=>{ const g=m.map(r=>r.slice()); free.forEach(([r,c],i)=>{ const b=i<dataBits.length?dataBits[i]:0; g[r][c]=masks[mk](r,c)?b^1:b; });
+    // format info: EC M = 00
+    let f=(0<<3)|mk, rem=f<<10; for(let i=4;i>=0;i--) if(rem&(1<<(i+10))) rem^=0x537<<i; const fi=((f<<10)|rem)^0x5412;
+    const fb=[]; for(let i=14;i>=0;i--) fb.push((fi>>i)&1);
+    const a=[[8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],[7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]];
+    const b2=[[n-1,8],[n-2,8],[n-3,8],[n-4,8],[n-5,8],[n-6,8],[n-7,8],[8,n-8],[8,n-7],[8,n-6],[8,n-5],[8,n-4],[8,n-3],[8,n-2],[8,n-1]];
+    fb.forEach((bit,i)=>{ g[a[i][0]][a[i][1]]=bit; g[b2[i][0]][b2[i][1]]=bit; });
+    return g; };
+  const penalty=(g)=>{ let p=0;
+    for(let r=0;r<n;r++){ let run=1; for(let c=1;c<n;c++){ if(g[r][c]===g[r][c-1]){ run++; if(run===5) p+=3; else if(run>5) p++; } else run=1; } }
+    for(let c=0;c<n;c++){ let run=1; for(let r=1;r<n;r++){ if(g[r][c]===g[r-1][c]){ run++; if(run===5) p+=3; else if(run>5) p++; } else run=1; } }
+    for(let r=0;r<n-1;r++) for(let c=0;c<n-1;c++){ const s=g[r][c]+g[r][c+1]+g[r+1][c]+g[r+1][c+1]; if(s===0||s===4) p+=3; }
+    const pat=[1,0,1,1,1,0,1,0,0,0,0],pat2=[0,0,0,0,1,0,1,1,1,0,1];
+    for(let r=0;r<n;r++) for(let c=0;c<=n-11;c++){ let ok=true,ok2=true; for(let k=0;k<11;k++){ if(g[r][c+k]!==pat[k]) ok=false; if(g[r][c+k]!==pat2[k]) ok2=false; } if(ok) p+=40; if(ok2) p+=40; }
+    for(let c=0;c<n;c++) for(let r=0;r<=n-11;r++){ let ok=true,ok2=true; for(let k=0;k<11;k++){ if(g[r+k][c]!==pat[k]) ok=false; if(g[r+k][c]!==pat2[k]) ok2=false; } if(ok) p+=40; if(ok2) p+=40; }
+    let dark=0; for(const row of g) for(const x of row) dark+=x; const k=Math.floor(Math.abs(dark*100/(n*n)-50)/5); p+=k*10; return p; };
+  if(forceMask!=null) return build(forceMask);
+  let best=null, bp=Infinity; for(let mk=0;mk<8;mk++){ const g=build(mk), pp=penalty(g); if(pp<bp){ bp=pp; best=g; } }
+  return best;
+}
+
+function qrSVG(text){ const m=qrMatrix(text), n=m.length; let d=''; for(let r=0;r<n;r++) for(let c=0;c<n;c++) if(m[r][c]) d+=`M${c} ${r}h1v1h-1z`;
+  return `<svg viewBox="-2 -2 ${n+4} ${n+4}" shape-rendering="crispEdges" role="img"><rect x="-2" y="-2" width="${n+4}" height="${n+4}" fill="#fff"/><path d="${d}" fill="#14202C"/></svg>`; }
+const slugOf=n=>String(n||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const SHARE_BASE='https://bloppit.com';
+function shareCodeFor(kind){ if(kind==='weekly'&&cpu&&cpu.trial&&cpu.trial.week) return 'w-'+cpu.trial.week; if(photos.length&&photos.every(p=>p.sample)&&photos[0].name) return 'm-'+slugOf(photos[0].name); return 'start'; }
+// A share link lands here: work out the build, show it with one button, then start it.
+function shareOpen(code,xfer){
+  code=String(code||'').toLowerCase().replace(/[^a-z0-9-]/g,'').slice(0,40);
+  { const o=evStore(); if(!o.channel){ o.channel='share'; evStoreSet(o); } track('visit:share'); }
+  if(xfer) shareClaim(xfer);
+  let week=null, smp=null, title='', note='';
+  if(/^w-\d{4}-\d{2}-\d{2}$/.test(code)){ week=code.slice(2); if(week>weekOf()) week=null; }
+  if(week){ const o=weeklyPuzzle(week); smp=SAMPLES[o.i]; title=week===weekOf()?'This week’s Bloppit':'A Weekly Bloppit'; note=week===weekOf()?`${o.name}, ${o.n} bricks. Build it clean and see how many others did too.`:`${o.name}, ${o.n} bricks, from the week of ${new Date(week+'T12:00:00Z').toLocaleDateString(undefined,{day:'numeric',month:'long'})}.`; }
+  else if(code.startsWith('m-')){ smp=SAMPLES.find(x=>released(x)&&slugOf(x.name)===code.slice(2)); if(smp){ title=smp.name; note='A Bloppit build, sent to you. No account, nothing to sign up for.'; } }
+  if(!smp){ if(welcomeDue()&&welcomeStart()) return; setTab('home'); return; }
+  if(!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png');
+  $('#shPic').src=smp.thumb; $('#shPic').hidden=false; $('#shTitle').textContent=title; $('#shNote').textContent=note;
+  setTab(week?'daily':'home');
+  const d=$('#shareDlg'), go=()=>{ d.close();
+    if(week===weekOf()){ $('#dyGo').click(); return; }
+    if(week){ const o=weeklyPuzzle(week); if(mp) mpLeave(); if(game) endGame(); weeklyLoad(o); setTab('build'); return; }
+    const i=SAMPLES.indexOf(smp); if(mp) mpLeave(); if(game) endGame(); loadSample(i); clearTimeout(timer); rebuild(); setTab('build'); };
+  $('#shGo').onclick=()=>{ track('share_build_started'); go(); };
+  $('#shLook').onclick=()=>{ d.close(); setTab('home'); };
+  d.onclose=null; if(!d.open) d.showModal();
+}
+// A Family Link with a transfer code brings the pup along, as a new player on this device
+async function shareClaim(code){
+  code=String(code||'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(code.length!==8) return;
+  try{ const j=await pupApi('POST',{action:'claim',code}); track('transfer_claimed:family');
+    if(players.list.some(p=>p.pup===j.pup)) return;
+    const id='p'+(++players.n+1), n=players.list.length+1;
+    players.list.push({id,name:'Player '+n,age:null,color:AV_COLORS[(n-1)%AV_COLORS.length],pup:j.pup}); pupApply(id,j.data); playersSave(); switchPlayer(id);
+  }catch(e){}
+}
+// The Weekly card: this week's model, the shared-achievement line, the otter, and the link
+async function weeklyCard(){
+  const info=cpu&&cpu.trial; if(!info||info.kind!=='weekly') return;
+  if(APP&&!await gate.ask('Sharing sends a picture to another app.')) return;
+  track('weekly_card');
+  try{
+    const o=weeklyPuzzle(info.week), me=weeklyStore().weeks[info.week], line=cleanLine(weeklyPeek&&weeklyPeek.week===info.week?weeklyPeek:null,me)||'Finished this week’s Bloppit.';
+    const c=document.createElement('canvas'); c.width=1200; c.height=630; const x=c.getContext('2d');
+    x.fillStyle='#008F9B'; x.fillRect(0,0,1200,630);
+    x.fillStyle='#fff'; x.beginPath(); x.roundRect(60,60,420,420,36); x.fill();
+    const load=src=>new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=src; });
+    const pic=await load(worldThumb(`w:${info.week}`)||o.thumb); const fit=Math.min(360/pic.width,360/pic.height); x.drawImage(pic,270-pic.width*fit/2,270-pic.height*fit/2,pic.width*fit,pic.height*fit);
+    x.fillStyle='#fff'; x.font='800 30px Nunito,sans-serif'; x.fillText('Finished this week’s Bloppit', 540, 150);
+    x.font='400 64px "Lilita One",Nunito,sans-serif'; x.fillText(o.name.slice(0,22), 540, 240);
+    x.font='700 28px Nunito,sans-serif'; const words=line.split(' '); let ln='', yy=320; for(const w of words){ const t=ln?ln+' '+w:w; if(x.measureText(t).width>580){ x.fillText(ln,540,yy); yy+=40; ln=w; } else ln=t; } if(ln) x.fillText(ln,540,yy);
+    try{ const otter=await load('/art/head-bloppit.png'); x.save(); x.beginPath(); x.arc(600,520,56,0,7); x.clip(); x.drawImage(otter,544,464,112,112); x.restore(); }catch(e){}
+    x.fillStyle='#F4BC22'; x.font='800 26px Nunito,sans-serif'; x.fillText('Build it: bloppit.com/p/w-'+info.week, 672, 530);
+    const blob=await new Promise(r=>c.toBlob(r,'image/png')), file=new File([blob],'weekly-bloppit.png',{type:'image/png'});
+    const url=`${SHARE_BASE}/p/w-${info.week}`, text=`Finished this week’s Bloppit: ${o.name}. ${line} Build it: ${url}`;
+    if(navigator.canShare&&navigator.canShare({files:[file]})) await navigator.share({files:[file],title:'Weekly Bloppit',text,url});
+    else if(navigator.share) await navigator.share({title:'Weekly Bloppit',text,url});
+    else { const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='weekly-bloppit.png'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),5000); try{ await navigator.clipboard.writeText(text); }catch(e){} }
+  }catch(e){ if(!/abort/i.test(String(e))) setStatus('Couldn’t make the card just now.','err'); }
+}
+$('#trCard').onclick=weeklyCard;
+// Family Link in the Grown-ups corner
+let familyCode='';
+function familyUrl(){ return `${SHARE_BASE}/p/start${familyCode?`?x=${familyCode}`:''}`; }
+function renderFamily(){ const u=familyUrl(); $('#familyUrl').textContent=u.replace(/^https:\/\//,''); try{ $('#familyQr').innerHTML=qrSVG(u); }catch(e){ $('#familyQr').textContent=''; } }
+$('#familyCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(familyUrl()); $('#familyCopy').textContent='Copied!'; setTimeout(()=>$('#familyCopy').textContent='Copy link',2000); track('family_link_copied'); }catch(e){} };
+$('#familyShare').onclick=async()=>{ if(APP&&!await gate.ask('Sharing sends a link to another app.')) return; track('family_link_shared');
+  const url=familyUrl(), text='Bloppit, a calm brick puzzle game. Open this on the device they play on:'; try{ if(navigator.share) await navigator.share({title:'Bloppit',text,url}); else await navigator.clipboard.writeText(`${text} ${url}`); }catch(e){} };
 
 /* ---------- First session: Bloppit hands over the bricks for one small build ----------
    A first visit (no build started or finished on this device, nothing to resume) skips the menu and opens an
@@ -5642,7 +6008,9 @@ function welcomeDone(){
   const q=(clean(usp.get('room'))||(code.length===5?code:'')).slice(0,5);
   const chq=(clean(usp.get('ch'))||(code.length===6?code:'')).slice(0,6);
   if(code&&!q&&!chq) try{ history.replaceState(null,'',location.pathname); }catch(e){}
-  if(chq.length===6&&!q){ setTab('blitz'); $('#bzCodeIn').value=chq; setTimeout(()=>chOpen(chq),0); try{ history.replaceState(null,'',location.pathname); }catch(e){} }
+  const pcode=usp.get('p'), xcode=usp.get('x');
+  if(pcode){ try{ history.replaceState(null,'',location.pathname); }catch(e){} shareOpen(pcode,xcode); }
+  else if(chq.length===6&&!q){ setTab('blitz'); $('#bzCodeIn').value=chq; setTimeout(()=>chOpen(chq),0); try{ history.replaceState(null,'',location.pathname); }catch(e){} }
   else if(q){
     $('#mpCodeIn').value=q; setTab('mp');
     const st=mpStored();
@@ -5684,6 +6052,7 @@ function homeGo(where){
   if(where==='otter'||where==='brain'||where==='game'){ if(mp){ setTab(mpHomeTab()); mpMsg(`Leave ${mpWhat()} first to play the Trails on your own.`); return; } setTab('game',where==='game'?'hub':where); return; }
   if(where==='quick'){ pickPuzzle('quick','top'); return; }  // the puzzle page has both: add a photo at the top, the library below
   if(where==='daily'){ setTab('daily'); return; }
+  if(where==='island'){ setTab('island'); return; }
   if(where==='blitz'){ setTab('blitz',mp?undefined:'hub'); return; }
   if(where==='mp'){ setTab('mp',mp?undefined:'start'); return; }
   if(where==='code'){ setTab('mp',mp?undefined:'join'); if(!mp) requestAnimationFrame(()=>{ const i=$('#mpCodeIn'); if(i) i.focus(); }); return; }
