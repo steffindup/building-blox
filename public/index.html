@@ -290,7 +290,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
   </section>
 
   <script>
-  /* A returning player (this device has played): the hero is their own Otter Island. The picture and name were
+  /* A returning player (this device has played): the hero is their own Bloppitopia. The picture and name were
      saved on this device by the game; nothing is fetched. */
   (function(){ try{
     var s=JSON.parse(localStorage.getItem('bloppit-island-v1')); if(!s||!s.svg||!(s.n>0)) return;
@@ -302,7 +302,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
     txt.querySelector('p').textContent=s.n+' build'+(s.n===1?'':'s')+' so far, and it’s a '+s.stage+'. Every build you finish grows it.';
     var acts=txt.querySelector('.actions'); acts.firstElementChild.textContent='Back to your island'; acts.firstElementChild.href='/build/#island';
     var f=document.createElement('figure'); f.className='isle-hero'; f.innerHTML=s.svg;
-    var c=document.createElement('figcaption'); c.textContent='🏝️ Otter Island · '+s.stage; f.appendChild(c);
+    var c=document.createElement('figcaption'); c.textContent='🏝️ Bloppitopia · '+s.stage; f.appendChild(c);
     var go=document.createElement('a'); go.href='/build/#island'; go.setAttribute('aria-label','Open your island'); go.style.cssText='position:absolute;inset:0'; f.appendChild(go);
     vis.replaceWith(f);
   }catch(e){} })();
@@ -327,7 +327,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
     <div class="cards four">
       <article class="card lift">
         <span class="tag" style="background:#FFE7B8">Your island</span>
-        <h3>🏝️ Otter Island</h3>
+        <h3>🏝️ Bloppitopia</h3>
         <p>Every finished model lands on your own island. A hut rises after the first build, a workshop after three, a village after ten. Your pup grows with you, and Build Stars buy the decorations. Nothing is ever for sale.</p>
         <a class="card-link" href="/build/#island">Visit the island →</a>
       </article>

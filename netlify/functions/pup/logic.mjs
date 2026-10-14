@@ -73,7 +73,7 @@ export function merge(server, incoming) {
     for (const k of Object.keys(obj(wb.builds))) {
       const x = builds[k], y = wb.builds[k];
       if (!y || typeof y !== 'object') continue;
-      builds[k] = x ? { ...x, ...y, s: Math.max(num(x.s) ?? 0, num(y.s) ?? 0), t: Math.min(num(x.t) ?? Infinity, num(y.t) ?? Infinity), c: Math.max(num(x.c) ?? 1, num(y.c) ?? 1), ...((x.m || y.m) ? { m: 1 } : {}) } : y;
+      builds[k] = x ? { ...x, ...y, s: Math.max(num(x.s) ?? 0, num(y.s) ?? 0), t: Math.min(num(x.t) ?? Infinity, num(y.t) ?? Infinity), c: Math.max(num(x.c) ?? 1, num(y.c) ?? 1), ...((x.m || y.m) ? { m: 1 } : {}), ...((num(x.d) || num(y.d)) ? { d: Math.min(num(x.d) ?? Infinity, num(y.d) ?? Infinity) } : {}) } : y;
     }
     const seen = new Set(), log = [];
     for (const k of [...(wa.log || []), ...(wb.log || [])]) if (builds[k] && !seen.has(k)) { seen.add(k); log.push(k); }
@@ -92,6 +92,9 @@ export function merge(server, incoming) {
       decor: [...new Set([...(wa.decor || []), ...(wb.decor || [])].filter((d) => typeof d === 'string' && d.length <= 20))],
       free: [...new Set([...(wa.free || []), ...(wb.free || [])].filter((d) => typeof d === 'string' && d.length <= 20))],
       draw: [...new Map([...(Array.isArray(wb.draw) ? wb.draw : []), ...(Array.isArray(wa.draw) ? wa.draw : [])].filter((d) => d && typeof d.id === 'string' && typeof d.c === 'string' && d.c.length <= 2600).map((d) => [d.id, { id: d.id, c: d.c, t: num(d.t) ?? 0 }])).values()].sort((x, y) => y.t - x.t).slice(0, 12),
+      // Where the child put each model on the island (x, y in the drawing), and the ones put away
+      pos: Object.fromEntries(Object.entries({ ...obj(wa.pos), ...obj(wb.pos) }).filter(([k, v]) => kept[k] && Array.isArray(v) && v.length === 2 && v.every((n) => Number.isInteger(n) && n >= 0 && n <= 1000))),
+      away: Object.fromEntries(Object.entries({ ...obj(wa.away), ...obj(wb.away) }).filter(([k, v]) => kept[k] && v === 1)),
       slot: Object.fromEntries(Object.entries({ ...obj(wa.slot), ...obj(wb.slot) }).filter(([k, v]) => kept[k] && Number.isInteger(v) && v >= 0 && v < 12)), pupName, pupAsked: !!(wa.pupAsked || wb.pupAsked),
       ...(pupAt ? { pupAt } : {}), ...(pupColor >= 0 ? { pupColor } : {}), ...((wa.isle || wb.isle) ? { isle: 1 } : {}) };
   }
