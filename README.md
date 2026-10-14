@@ -81,3 +81,10 @@ Formerly called Building Blox; the browser save keys still use the old `building
 - `public/og-image.png` (1200×630) is the share preview image; `public/icon-*.png`,
   `apple-touch-icon.png` and `site.webmanifest` are the app icons.
 - Update `<lastmod>` in `sitemap.xml` when the page changes meaningfully, and add any new pages to it.
+
+## Tests
+
+`npm test` runs the server logic tests and, when the `playwright` dev dependency and a Chromium are available, the
+browser tests against a local stand-in for Netlify (`tests/devserver.mjs`, which serves `public/` and the four API
+functions over an in-memory store). `PLAYWRIGHT_CHROMIUM=/path/to/chrome` points at a Chromium if playwright's own
+isn't installed. `npm run dev` serves the site on http://localhost:8788 for hand testing.
