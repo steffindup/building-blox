@@ -1294,9 +1294,15 @@ body.on-home .tabs{visibility:hidden}
           <p class="note" id="bzLevelNote" style="margin:6px 0 0"></p></div>
         <button class="primary" id="bzCpuGo" type="button">Start the race</button>
       </div>
+      <div class="card bz-card" id="bzRelayCard">
+        <h2><span aria-hidden="true">🔁</span>Relay with a friend</h2>
+        <p class="note" style="margin:0">Build the first half of a model, send the code, and your friend builds the rest. The finished model lands on both your islands.</p>
+        <button class="primary" id="bzRelayGo" type="button">🔁 Start a relay</button>
+        <p class="note" style="margin:8px 0 0">Got a relay code? Type it under <b>vs Friend</b>; the same box opens relays and races.</p>
+      </div>
       <div class="card bz-card" id="bzFriendCard">
         <h2><span aria-hidden="true">🤝</span>vs Friend</h2>
-        <p class="note" style="margin:0">Build the whole puzzle as fast as you can, then send your code to a friend. They race your time whenever they like.</p>
+        <p class="note" style="margin:0">Build the whole puzzle as fast as you can, then send your code to a friend. They race your time whenever they like. Names never travel: on a friend’s screen you are a generated name like Brave Otter 214.</p>
         <p class="bz-off" id="bzOff" hidden></p>
         <button class="primary" id="bzChMake" type="button">📨 Make a challenge</button>
         <div class="bz-or">
@@ -2581,6 +2587,7 @@ function setupPlay(m){
   resetBuild();
 }
 function resetBuild(){
+  relay=null;
   $('#trayNote').textContent=TILES?'Tiles go on the dark baseplate. Row 1 is the top of the picture, at the far edge. Follow the yellow outline in the booklet.':'Your first brick can go anywhere on the table. The rest of the model builds out from it. Drag the see-through brick to move it; drag anywhere else to turn the view.';
   placedGroup.clear(); ghostGroup.clear(); hintGroup.clear();
   endReveal(true);
@@ -2908,6 +2915,7 @@ function tryPlace(){
   if(!sel||!lastAnchor||busy) return;
   if(isLocked(cur)){ setStatus('This page is locked. Solve Bloppit’s math puzzle to open it.','err'); openMath(cur); return; }
   if(mp&&!mpMyTurn()){ setStatus(mpTurnText(),'err'); return; }
+  if(relay&&relay.role==='first'&&cur>=relay.half){ setStatus('That page is your friend’s. Your half is done!','err'); relayHalfDone(); return; }
   if(mp&&mp.cpu&&Date.now()<mp.state.turnStart){ setStatus('Wait for Go!','err'); return; }
   if(mp&&mp.posting>=mpLeft(mp.state)){ setStatus(mpBlitz()&&(mp.state.players[mp.me].n||0)+mp.posting>=mp.state.quota?'That was your last brick. Wait for the others to finish.':'That was your last brick this turn.','ok'); return; }
   const s=model.steps[cur], {ax,az}=lastAnchor;
@@ -2928,6 +2936,7 @@ function tryPlace(){
 function placeBrick(t,ax,az){
   if(off) placed.add(t);
   if(mp) mpSendMove(t,ax,az,autoBusy);
+  if(relay) relay.moves.push({b:model.bricks.indexOf(t),x:ax,z:az});
   placedN++; placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz});
   const ms=new THREE.Mesh(brickGeo(t.sx,t.sz),mat(t.c)); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
   if(!reduceMotion){ const dir=model.steps[cur]&&model.steps[cur].hang?-1:1; ms.position.y+=2.2*dir; drops.push({m:ms,ty:t.y*1.2,t0:performance.now(),dir}); }
@@ -2949,7 +2958,8 @@ function placeBrick(t,ax,az){
   setTimeout(()=>{ busy=false; if(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))) cur++; follow=true; if(game||mp) hintOn=false;
     setStatus(cur>=model.steps.length?'Every step complete. Great build!':`On to step ${cur+1}.${model.steps[cur].hang?' These clip on underneath the bricks above.':''}${held?'':' Open the parts box for the next brick.'}`, cur>=model.steps.length?'ok':'');
     updateBuildUI(); frameBuild(true);
-    if(cur>=model.steps.length&&!mp){ buildFinished(game?'trail':'quick'); setTimeout(()=>playReveal(game?winLevel:welcomeOn()?welcomeDone:worldAfterQuick),350); } }, 700);
+    if(relay&&relay.role==='first'&&cur>=relay.half&&cur<model.steps.length){ relayHalfDone(); return; }
+    if(cur>=model.steps.length&&!mp){ buildFinished(game?'trail':relay&&relay.role==='second'?'relay':'quick'); setTimeout(()=>playReveal(game?winLevel:welcomeOn()?welcomeDone:relay&&relay.role==='second'?relayDone:worldAfterQuick),350); } }, 700);
 }
 function autoPlace(){
   if(busy||!model||cur>=model.steps.length||mpBlitz()) return;
@@ -4924,7 +4934,7 @@ async function renderMpView(){
     // Racing Bloppit works anywhere; racing friends needs the Bloppit website
     $('#mpOff').hidden=true; $('#bzOff').hidden=ok;
     if(!ok) $('#bzOff').textContent='Racing friends needs the internet. Check your connection and come back. You can still race the Gulls.';
-    ['#bzMake','#bzJoin','#bzCodeIn','#bzChMake'].forEach(id=>$(id).disabled=!ok);
+    ['#bzMake','#bzJoin','#bzCodeIn','#bzChMake','#bzRelayGo'].forEach(id=>$(id).disabled=!ok);
   } else {
     $('#mpOff').hidden=ok;
     if(!ok){ $('#mpOff').textContent='Building together needs the internet. Check your connection and come back.'; F.hidden=true; $('#mpRoom').hidden=true; $('#mpWaitBox').hidden=true; return; }
@@ -5266,15 +5276,15 @@ async function chApi(method,body,query=''){
 // The challenges this player made or played, so they can see who has raced them since
 const CH_KEY='bloppit-challenges-v1';
 function chMine(){ try{ return JSON.parse(localStorage.getItem(pkey(CH_KEY)))||[]; }catch(e){ return []; } }
-function chRemember(code,title,runId){ const l=chMine().filter(c=>c.code!==code), old=chMine().find(c=>c.code===code);
-  l.unshift({code,title,runs:[...new Set([runId,...(old?old.runs:[])])].slice(0,6),at:Date.now()});
+function chRemember(code,title,runId,kind){ const l=chMine().filter(c=>c.code!==code), old=chMine().find(c=>c.code===code);
+  l.unshift({code,title,kind:kind||(old&&old.kind)||'race',runs:[...new Set([runId,...(old?old.runs:[])])].slice(0,6),at:Date.now()});
   try{ localStorage.setItem(pkey(CH_KEY),JSON.stringify(l.slice(0,8))); }catch(e){} }
 function chRows(c){ const medals=['🥇','🥈','🥉'];
   return c.runs.map((r,k)=>`<div${r.me?' class="first"':''}><span>${medals[k]||`${k+1}.`} ${escapeHTML(r.name)}${r.me?' (you)':''}${r.maker?' · made it':''}</span><span><b>${fmtTime(totalMs(r))}</b>${r.miss?` · ${r.miss} miss${r.miss===1?'':'es'}`:''}${r.hint?` · ${r.hint} hint${r.hint===1?'':'s'}`:''}</span></div>`).join(''); }
 function chShareUrl(code){ return `https://bloppit.com/join/${code}`; }
-async function chShare(code){
+async function chShare(code,kind){
   if(APP&&!await gate.ask('Sharing sends your challenge code to another app.')) return;
-  const url=chShareUrl(code), text=`Can you beat my Bloppit time? Challenge code ${code}`;
+  const url=chShareUrl(code), text=kind==='relay'?`I built half. Can you finish it? Bloppit relay code ${code}`:`Can you beat my Bloppit time? Challenge code ${code}`;
   try{ if(navigator.share) await navigator.share({title:'Bloppit Blitz challenge',text,url}); else { await navigator.clipboard.writeText(`${text} ${url}`); $('#trShare').textContent='Copied!'; setTimeout(()=>$('#trShare').textContent='Share the code',2000); } }catch(e){}
 }
 let trialDone=null;
@@ -5294,7 +5304,7 @@ async function trialEnd(){
     if(info.kind==='make'){
       trialDialog({icon:'📨',title:'Making your challenge…',rows:missRow+timeRow,note:'Sending your time and puzzle to Bloppit.'});
       try{
-        const j=await chApi('POST',{action:'create',name,title:info.title,nBricks:model.bricks.length,ms:r.ms,miss:r.miss,hint:r.hint,
+        const j=await chApi('POST',{action:'create',title:info.title,nBricks:model.bricks.length,ms:r.ms,miss:r.miss,hint:r.hint,
           model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
         chRemember(j.code,info.title,j.runId);
         trialDialog({icon:'📨',title:'Your challenge is ready!',code:j.code,rows:missRow+timeRow,note:`Send this code to a friend. They type it into Got a code? on the Blitz page and race your ${fmtTime(t)}. Up to 12 people can play it, for 30 days.`});
@@ -5303,7 +5313,7 @@ async function trialEnd(){
       trialDialog({icon:'⏱',title:'Sending your time…',rows:missRow+timeRow});
       try{
         const mine=(chMine().find(c=>c.code===info.code)||{runs:[]}).runs;
-        const j=await chApi('POST',{action:'run',code:info.code,name,ms:r.ms,miss:r.miss,hint:r.hint,runs:mine.join(',')});
+        const j=await chApi('POST',{action:'run',code:info.code,ms:r.ms,miss:r.miss,hint:r.hint,runs:mine.join(',')});
         chRemember(info.code,info.title,j.runId);
         const c=j.challenge, k=c.runs.findIndex(x=>x.me&&x.ms===r.ms), place=k+1;
         trialDialog({icon:place===1?'🏆':'⚡',title:place===1?'You’re in the lead!':`You came ${ordinal(place)} of ${c.runs.length}`,rows:chRows(c),
@@ -5329,10 +5339,10 @@ async function trialEnd(){
   };
   await send();
 }
-$('#trRetry').onclick=()=>{ if(cpu&&cpu.trial) trialEnd(); };
-$('#trShare').onclick=()=>{ if(trialDone&&trialDone.code) chShare(trialDone.code); };
+$('#trRetry').onclick=()=>{ if(trialDone&&trialDone.relayRetry) relayHalfDone(); else if(cpu&&cpu.trial) trialEnd(); };
+$('#trShare').onclick=()=>{ if(trialDone&&trialDone.code) chShare(trialDone.code,trialDone.relay?'relay':''); };
 $('#trBook').onclick=()=>{ $('#trialDlg').close(); setTab('booklet'); };
-$('#trDone').onclick=()=>{ $('#trialDlg').close(); const weekly=cpu&&cpu.trial&&cpu.trial.kind==='weekly'; mpLeave(); setTab(weekly?'daily':'blitz'); };
+$('#trDone').onclick=()=>{ $('#trialDlg').close(); const weekly=cpu&&cpu.trial&&cpu.trial.kind==='weekly', rel=trialDone&&(trialDone.relay||trialDone.card===false); if(rel){ setTab('blitz'); renderChMine(true); return; } mpLeave(); setTab(weekly?'daily':'blitz'); };
 
 // Make a challenge: build the chosen puzzle against the clock, then get a code
 $('#bzChMake').onclick=async()=>{
@@ -5348,7 +5358,8 @@ async function chOpen(code){
   const box=$('#chPreview'); mpMsg('Opening the challenge…');
   try{
     const [j,m]=await Promise.all([chApi('GET',null,`?code=${code}&runs=${((chMine().find(c=>c.code===code)||{runs:[]}).runs).join(',')}`),chApi('GET',null,`?code=${code}&model=1`)]);
-    const c=j.challenge, ds=await Promise.all(m.model.photos.map(p=>loadPng(p.png)));
+    const c=j.challenge; if(c.kind==='relay') return relayOpen(c,m);
+    const ds=await Promise.all(m.model.photos.map(p=>loadPng(p.png)));
     if(game) endGame(); if(mp) mpLeave();
     photos=m.model.photos.map((p,i)=>({id:++pid,name:p.name,view:p.view,sample:true,d:ds[i],png:p.png,m:null}));
     setControls(m.model.S); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild();
@@ -5377,7 +5388,9 @@ async function renderChMine(force){
   const list=chMine().slice(0,5), card=$('#chMine'); if(!list.length){ card.hidden=true; return; }
   if(!force&&Date.now()-chMineAt<4000&&!card.hidden) return; chMineAt=Date.now();
   const res=await Promise.all(list.map(x=>chApi('GET',null,`?code=${x.code}&runs=${x.runs.join(',')}`).then(j=>j.challenge).catch(()=>null)));
+  res.forEach(c=>{ try{ relayCredit(c); }catch(e){} });
   const rows=res.map((c,k)=>{ if(!c) return '';
+    if(c.kind==='relay') return `<div class="ch-row"><b class="cc">${c.code}</b><div><b>🔁 ${escapeHTML(c.title)}</b><p class="note">${c.done?'Finished together! On your island.':c.first.me?'Waiting for your friend to finish':'Your friend is waiting for you'}</p></div><button class="ghost" type="button" data-ch="${c.code}">Open</button></div>`;
     const lead=c.runs[0], meIdx=c.runs.findIndex(r=>r.me);
     const what=c.runs.length<2?'Nobody has raced it yet':lead.me?'You’re in the lead! 🏆':`${escapeHTML(lead.name)} is in the lead${meIdx>=0?` · you’re ${ordinal(meIdx+1)}`:''}`;
     return `<div class="ch-row"><b class="cc">${c.code}</b><div><b>${escapeHTML(c.title)}</b><p class="note">${c.runs.length} player${c.runs.length===1?'':'s'} · ${what}</p></div><button class="ghost" type="button" data-ch="${c.code}">Open</button></div>`; }).join('');
@@ -5480,7 +5493,7 @@ function renderKnock(){
   const s=mp&&mp.state, list=(s&&s.waiting)||[], host=!!s&&mp.me===s.host;
   const html=list.map(w=>host
     ?`<div class="kn"><span>🚪 ${escapeHTML(w.name)} wants to join</span><button class="primary" type="button" data-admit="${escapeHTML(w.k)}">Let in</button><button class="ghost" type="button" data-deny="${escapeHTML(w.k)}">Not this time</button></div>`
-    :`<div class="kn other"><span>${escapeHTML(w.name)} is waiting for ${escapeHTML(s.players[s.host].name)} to let them in</span></div>`).join('');
+    :`<div class="kn other"><span>${escapeHTML(w.name)} is waiting for ${escapeHTML(s.players[s.host].name)} to let them in. On their screen you are <b>${escapeHTML(w.name)}</b>: tell them it’s you.</span></div>`).join('');
   for(const id of ['#mpKnock','#mpKnockRoom']){ const el=$(id); el.hidden=!list.length; el.innerHTML=html; }
   if(host){ const fresh=list.filter(w=>!knockSeen.has(w.k)); if(fresh.length){ sfx.chirp(); if(!['mp','blitz','build','box'].includes(tab)) setTab('build'); } }
   knockSeen=new Set(list.map(w=>w.k));
@@ -5648,6 +5661,7 @@ function hash32(str){ let h=2166136261; for(let i=0;i<str.length;i++){ h^=str.ch
 function modelKey(){ if(!model) return ''; const n=model.bricks.length;
   if(game){ const L=levelsOf(gameTrail())[game.lvl]; return `t:${gameTrail()}:${game.lvl}:${L?L.name:''}`; }
   if(mp&&mp.cpu&&mp.state&&mp.state.solo&&cpu&&cpu.trial&&cpu.trial.kind==='weekly') return `w:${cpu.trial.week}`;
+  if(relay&&relay.code) return `r:${relay.code}`;
   if(photos.length&&photos.every(p=>p.sample)) return `m:${photos[0].name}:${n}`;
   return `p:${hash32((photos[0]&&photos[0].name||'')+':'+n)}`;
 }
@@ -6036,6 +6050,73 @@ function renderFamily(){ const u=familyUrl(); $('#familyUrl').textContent=u.repl
 $('#familyCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(familyUrl()); $('#familyCopy').textContent='Copied!'; setTimeout(()=>$('#familyCopy').textContent='Copy link',2000); track('family_link_copied'); }catch(e){} };
 $('#familyShare').onclick=async()=>{ if(APP&&!await gate.ask('Sharing sends a link to another app.')) return; track('family_link_shared');
   const url=familyUrl(), text='Bloppit, a calm brick puzzle game. Open this on the device they play on:'; try{ if(navigator.share) await navigator.share({title:'Bloppit',text,url}); else await navigator.clipboard.writeText(`${text} ${url}`); }catch(e){} };
+
+/* ---------- Relay builds: a friend code where one builds the first pages and the other finishes ----------
+   The first player builds pages 1..half of a model, the record (model + their moves) goes up under a 6-character
+   code, the second player opens the code, sees those bricks in place and builds the rest. Both islands get the
+   model: the second on finishing, the first when they next look at "Your challenges". Nothing typed crosses. */
+var relay=null;   // {role:'first'|'second', half, code?, moves:[]}
+function relayStart(choice){
+  const title=mpUseModel(choice); if(game) endGame(); if(mp) mpLeave(); dismissResume();
+  const N=model.steps.length; if(N<4) throw new Error('Pick a bigger model for a relay (at least 4 pages).');
+  relay={role:'first',half:Math.ceil(N/2),moves:[],title:niceName(title)};
+  track('relay_started'); setTab('build'); setStatus(`A relay! You build pages 1 to ${relay.half}; your friend builds ${relay.half+1} to ${N}.`,'ok'); updateBuildUI();
+}
+async function relayHalfDone(){
+  if(!relay||relay.role!=='first'||relay.sent) return; relay.sent=true;
+  const half=relay.half, N=model.steps.length;
+  trialDialog({icon:'🔁',title:'Your half is done!',note:'Making a code for your friend…'});
+  try{
+    const j=await chApi('POST',{action:'relay',title:relay.title,nBricks:model.bricks.length,steps:N,half,moves:relay.moves,miss:run.miss,hint:run.hints.size+run.auto,
+      model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
+    chRemember(j.code,relay.title,j.runId,'relay'); worldThumbSave('r:'+j.code);
+    trialDialog({icon:'🔁',title:'Your half is done!',code:j.code,note:`Send this code to a friend. They type it into Got a code? on the Blitz page and build pages ${half+1} to ${N}. When they finish, the model lands on both your islands.`,relay:true});
+  }catch(e){ relay.sent=false; trialDialog({icon:'😕',title:'Couldn’t make the relay code',note:e.message,retry:true,relayRetry:true}); }
+}
+async function relayOpen(c,m){
+  const box=$('#chPreview'), ds=await Promise.all(m.model.photos.map(p=>loadPng(p.png)));
+  if(game) endGame(); if(mp) mpLeave();
+  photos=m.model.photos.map((p,i)=>({id:++pid,name:p.name,view:p.view,sample:true,d:ds[i],png:p.png,m:null}));
+  setControls(m.model.S); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild(); mpMsg('');
+  if(!model||model.bricks.length!==c.nBricks||model.steps.length!==c.steps) throw new Error('This relay was made with a different version of Bloppit. Ask your friend to make a new one.');
+  const who=c.first.me?'You':escapeHTML(c.first.label), left=c.steps-c.half;
+  box.hidden=false;
+  box.innerHTML=`<div class="ch-top"><img alt="" src="${photos[0].png}"><div><span class="tag">Relay ${c.code}</span><h2>${c.done?'Finished together!':c.first.me?'Waiting for your friend':`${who} started a relay`}</h2><p class="note" style="margin:0">${escapeHTML(c.title)} · ${c.nBricks} bricks · ${who} built pages 1 to ${c.half}${c.done?`, ${c.second.me?'you':escapeHTML(c.second.label)} built the rest`:`. ${left} page${left===1?'':'s'} to go.`}</p></div></div>
+    <div class="win-btns" style="justify-content:flex-start">${c.done||c.first.me?'':'<button class="primary" id="relGo" type="button">Finish it! 🔁</button>'}${c.first.me&&!c.done?'<button class="ghost" id="chShareBtn" type="button">Share the code</button>':''}<button class="ghost" id="chClose" type="button">Close</button></div>`;
+  box.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'});
+  $('#chClose').onclick=()=>{ box.hidden=true; };
+  const sh=$('#chShareBtn'); if(sh) sh.onclick=()=>chShare(c.code,'relay');
+  const go=$('#relGo'); if(go) go.onclick=()=>{
+    if(mp) mpLeave(); if(game) endGame(); dismissResume();
+    relay={role:'second',half:c.half,code:c.code,moves:[],title:c.title};
+    placedGroup.clear(); placedBoxes=[]; placed=new Set(); off=null; cands=[]; placedN=0; cur=0; drops=[]; busy=false;
+    for(const mv of c.first.moves) applyMoveCore(mv);
+    while(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))) cur++;
+    reconcilePieces(); run={miss:0,hints:new Set(),auto:0,memory:false};
+    track('relay_joined'); setTab('build'); updateBuildUI(); frameBuild(false);
+    setStatus(`${who} built pages 1 to ${c.half}. Your turn: pages ${c.half+1} to ${c.steps}.`,'ok');
+  };
+}
+async function relayDone(){
+  const r=relay; if(!r||r.role!=='second'||r.sent) return; r.sent=true;
+  trialDialog({icon:'🔁',title:'Finished together!',note:'Telling your friend…'});
+  try{ const j=await chApi('POST',{action:'relay-finish',code:r.code,moves:r.moves,miss:run.miss,hint:run.hints.size+run.auto}); chRemember(r.code,r.title,j.runId,'relay');
+    trialDialog({icon:'🔁',title:'Finished together!',note:`${escapeHTML(j.challenge.first.label)} built the first half, you built the rest. The ${escapeHTML(r.title)} is on both your islands now.`,card:false}); }
+  catch(e){ trialDialog({icon:'🔁',title:'Finished together!',note:`The model is on your island. Your friend couldn’t be told just now (${e.message}); open the code again later to try again.`}); }
+  relay=null;
+}
+// The first player's island gets the model once the friend has finished: checked whenever "Your challenges" refreshes
+function relayCredit(c){
+  if(!c||c.kind!=='relay'||!c.done||!c.first.me) return;
+  const o=worldStore(), key='r:'+c.code; if(o.builds[key]) return;
+  const clean=c.first.miss===0&&c.first.hint===0, stars=1+(c.first.hint===0?1:0)+(clean?1:0);
+  const before={pup:pupStage(o),island:islandStage(o)};
+  o.builds[key]={n:c.nBricks,s:stars,k:'relay',t:Date.now(),c:1}; o.log.push(key); worldSet(o);
+  const after={pup:pupStage(o),island:islandStage(o)};
+  worldLast={key,kind:'relay',stars,best:stars,gained:stars,xp:buildXP(key,o.builds[key]),bonus:0,first:true,clean,noHint:c.first.hint===0,before,after,pupUp:after.pup>before.pup,islandUp:after.island>before.island,total:worldStars(o),count:worldCount(o)};
+  track('relay_finished_first'); worldStrips(); trialDialog({icon:'🔁',title:'Your relay is finished!',note:`${escapeHTML(c.second.label)} built the rest of the ${escapeHTML(c.title)}. It’s on your island now.`,card:false}); worldSound(); renderHome();
+}
+$('#bzRelayGo').onclick=()=>{ try{ relayStart($('#bzModel').value); }catch(e){ mpMsg(e.message,'err'); } };
 
 /* ---------- Play Next: what to build next, with a picture ---------- */
 // The next unfinished Otter Trail level, then Brain Trail, then the first library model not yet built.

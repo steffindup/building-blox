@@ -9,7 +9,7 @@
 // The store adapter is the same as the room server's:
 //   get(key) -> { data, etag } | null
 //   set(key, data, { onlyIfMatch?, onlyIfNew? }) -> { modified }
-import { cleanName } from '../room/logic.mjs';
+import { cleanName, labelFor } from '../room/logic.mjs';
 
 const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 export const CHALLENGE_TTL_MS = 30 * 86400_000; // challenges are forgotten 30 days after the last run
@@ -52,11 +52,25 @@ function cleanRun(body, nBricks) {
   return { ms, miss, hint };
 }
 
+// Each run is shown under a generated label from its id ("Brave Otter 214"), never a typed name.
 // What anyone with the code may see. Run ids act as passwords, so only a flag says which run is yours.
 function publicChallenge(c, mine) {
+  if (c.kind === 'relay') return publicRelay(c, mine);
   const runs = [...c.runs].sort((a, b) => total(a) - total(b) || a.at - b.at)
-    .map((r) => ({ name: r.name, ms: r.ms, miss: r.miss, hint: r.hint || 0, at: r.at, ...(mine && mine.includes(r.id) ? { me: true } : {}), ...(r.id === c.runs[0].id ? { maker: true } : {}) }));
+    .map((r) => ({ name: labelFor(r.id), ms: r.ms, miss: r.miss, hint: r.hint || 0, at: r.at, ...(mine && mine.includes(r.id) ? { me: true } : {}), ...(r.id === c.runs[0].id ? { maker: true } : {}) }));
   return { code: c.code, title: c.title, nBricks: c.nBricks, created: c.created, runs, full: c.runs.length >= MAX_RUNS };
+}
+
+function cleanMoves(list, nBricks) {
+  if (!Array.isArray(list)) return [];
+  return list.slice(0, 5000).map((m) => ({ b: Math.floor(Number(m.b)), x: Math.round(Number(m.x)), z: Math.round(Number(m.z)) }))
+    .filter((m) => m.b >= 0 && m.b < nBricks && Number.isFinite(m.x) && Number.isFinite(m.z));
+}
+function publicRelay(c, mine) {
+  const me = (r) => !!(mine && r && mine.includes(r.id));
+  return { code: c.code, kind: 'relay', title: c.title, nBricks: c.nBricks, steps: c.steps, half: c.half, created: c.created, done: !!c.second,
+    first: { label: labelFor(c.first.id), moves: c.first.moves, miss: c.first.miss, hint: c.first.hint, at: c.first.at, me: me(c.first) },
+    second: c.second ? { label: labelFor(c.second.id), moves: c.second.moves, miss: c.second.miss, hint: c.second.hint, at: c.second.at, me: me(c.second) } : null };
 }
 
 async function readChallenge(store, code) {
@@ -106,7 +120,7 @@ export async function handle(method, query, body, store) {
     for (let i = 0; i < 10; i++) {
       const code = rand(6, ALPHABET);
       const c = { code, created: now, updated: now, title: cleanName(body.title).slice(0, 24), nBricks,
-        runs: [{ id, name: cleanName(body.name), ms: run.ms, miss: run.miss, hint: run.hint, at: now }] };
+        runs: [{ id, ms: run.ms, miss: run.miss, hint: run.hint, at: now }] };
       const { modified } = await store.set(chKey(code), c, { onlyIfNew: true });
       if (!modified) continue;
       await store.set(chModelKey(code), model, {});
@@ -127,7 +141,8 @@ export async function handle(method, query, body, store) {
       const run = cleanRun(body, c.nBricks);
       if (run.error) return { status: 400, body: { error: run.error } };
       if (c.runs.length >= MAX_RUNS) return { status: 409, body: { error: `This challenge is full (${MAX_RUNS} players).` } };
-      c.runs.push({ id, name: cleanName(body.name), ms: run.ms, miss: run.miss, hint: run.hint, at: now });
+      if (c.kind === 'relay') return { status: 400, body: { error: 'That code is a relay, not a race.' } };
+      c.runs.push({ id, ms: run.ms, miss: run.miss, hint: run.hint, at: now });
       c.updated = now;
       const { modified } = await store.set(chKey(code), c, { onlyIfMatch: r.etag });
       const mine = [id, ...String(body.runs || '').split(',').filter(Boolean)];
@@ -135,6 +150,45 @@ export async function handle(method, query, body, store) {
       await new Promise((res) => setTimeout(res, 40 + Math.random() * 120));
     }
     return { status: 409, body: { error: 'The challenge was busy. Please try again.' } };
+  }
+
+  // A relay: one friend builds the first pages of a model, gets a code, and the other finishes it. Nothing typed
+  // crosses; each side is "you" on its own device and a generated label on the other's.
+  if (a === 'relay') {
+    const model = body.model, nBricks = Math.floor(Number(body.nBricks)), half = Math.floor(Number(body.half)), steps = Math.floor(Number(body.steps));
+    if (!model || !Array.isArray(model.photos) || !model.photos.length) return { status: 400, body: { error: 'No puzzle to share.' } };
+    if (JSON.stringify(model).length > MAX_MODEL_CHARS) return { status: 413, body: { error: 'Those photos are too big to share. Try a smaller puzzle.' } };
+    if (!(nBricks > 1 && nBricks < 5000) || !(steps > 1 && steps < 5000) || !(half >= 1 && half < steps)) return { status: 400, body: { error: 'Bad puzzle size.' } };
+    const moves = cleanMoves(body.moves, nBricks); if (!moves.length) return { status: 400, body: { error: 'Build your half first.' } };
+    const miss = Math.floor(Number(body.miss) || 0), hint = Math.floor(Number(body.hint) || 0);
+    const id = rand(16, 'abcdefghijklmnopqrstuvwxyz0123456789');
+    for (let i = 0; i < 10; i++) {
+      const code = rand(6, ALPHABET);
+      const c = { code, kind: 'relay', created: now, updated: now, title: cleanName(body.title).slice(0, 24), nBricks, steps, half,
+        first: { id, moves, miss, hint, at: now }, second: null, runs: [{ id, at: now }] };
+      const { modified } = await store.set(chKey(code), c, { onlyIfNew: true });
+      if (!modified) continue;
+      await store.set(chModelKey(code), model, {});
+      return { status: 200, body: { code, runId: id, challenge: publicRelay(c, [id]) } };
+    }
+    return { status: 500, body: { error: 'Couldn’t make a relay code. Please try again.' } };
+  }
+  if (a === 'relay-finish') {
+    const code = cleanCode(body.code);
+    if (code.length !== 6) return { status: 400, body: { error: 'Relay codes have 6 letters and numbers.' } };
+    const id = rand(16, 'abcdefghijklmnopqrstuvwxyz0123456789');
+    for (let i = 0; i < 8; i++) {
+      const r = await readChallenge(store, code);
+      if (!r || r.data.kind !== 'relay') return { status: 404, body: { error: 'That relay wasn’t found.' } };
+      const c = r.data;
+      if (c.second) return { status: 409, body: { error: 'That relay has already been finished.' } };
+      const moves = cleanMoves(body.moves, c.nBricks); if (!moves.length) return { status: 400, body: { error: 'Nothing was built.' } };
+      c.second = { id, moves, miss: Math.floor(Number(body.miss) || 0), hint: Math.floor(Number(body.hint) || 0), at: now }; c.updated = now; c.runs.push({ id, at: now });
+      const { modified } = await store.set(chKey(code), c, { onlyIfMatch: r.etag });
+      if (modified) return { status: 200, body: { runId: id, challenge: publicRelay(c, [id]) } };
+      await new Promise((res) => setTimeout(res, 40 + Math.random() * 120));
+    }
+    return { status: 409, body: { error: 'The relay was busy. Please try again.' } };
   }
 
   if (a === 'daily') return { status: 410, body: { error: 'The Daily Bloppit is now the Weekly Bloppit. Please update the app.' } };
