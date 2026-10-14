@@ -38,7 +38,7 @@ const newId = () => rand(20, 'abcdefghijklmnopqrstuvwxyz0123456789');
 // Nothing a child typed is shown to another child: players and knockers get a generated label from their id
 // ("Brave Otter 214"); the typed name stays on its own device. Shared by the challenge server.
 const ADJ = ['Brave', 'Sunny', 'Quick', 'Clever', 'Happy', 'Mighty', 'Gentle', 'Speedy', 'Sandy', 'Salty', 'Jolly', 'Lucky', 'Curious', 'Bouncy', 'Shiny', 'Cosy'];
-const ANIMAL = ['Otter', 'Crab', 'Puffin', 'Turtle', 'Gull', 'Dolphin', 'Seal', 'Whale', 'Starfish', 'Parrotfish', 'Heron', 'Pelican'];
+const ANIMAL = ['Otter', 'Crab', 'Puffin', 'Turtle', 'Longtail', 'Dolphin', 'Seal', 'Whale', 'Starfish', 'Parrotfish', 'Heron', 'Pelican'];
 export function labelFor(id) { let h = 7; for (const ch of String(id)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return `${ADJ[h % ADJ.length]} ${ANIMAL[(h >>> 4) % ANIMAL.length]} ${100 + ((h >>> 8) % 900)}`; }
 export const cleanName = (s) => {
   const n = String(s || '').replace(/[<>&"]/g, '').trim().slice(0, 16);

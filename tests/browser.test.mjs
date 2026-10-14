@@ -62,7 +62,7 @@ test('a Trail level finish shows the stars strip and counts a build', { skip: sk
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('a Gull race starts and shows the Gull in the banner on his turn', { skip: skip() }, async () => {
+test('a Longtail race starts and shows the Longtail in the banner on his turn', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0');
   await t.page.evaluate(() => document.querySelector('[data-go="cpu"]').click()); await t.page.waitForTimeout(400);
   await t.page.evaluate(() => { document.getElementById('bzHard').click(); document.getElementById('bzName').value = 'Tester'; document.getElementById('bzCpuGo').click(); });

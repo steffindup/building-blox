@@ -6,10 +6,10 @@ The order of work, so nothing is discovered on the day. Each line is done when i
 
 - [ ] `main` is what ships: the Lite PRs (#3 world, #4 island, #5 share links, #6 Weeklies) merged and live on bloppit.com for a week.
 - [ ] Version: `MARKETING_VERSION = 1.0`, `CURRENT_PROJECT_VERSION` bumped to the TestFlight build being submitted (`mobile/ios/App/App.xcodeproj`).
-- [ ] Codemagic build from `main` is in TestFlight and has been played on an iPad and an iPhone: first session, a Weekly, a Gull race, the island, Grown-ups corner (gate, transfer code, Family Link QR).
-- [ ] Offline check on the iPad (aeroplane mode): the first session, a library build and a Gull race work; the Weekly says it can't be counted and still saves.
+- [ ] Codemagic build from `main` is in TestFlight and has been played on an iPad and an iPhone: first session, a Weekly, a Longtail race, the island, Grown-ups corner (gate, transfer code, Family Link QR).
+- [ ] Offline check on the iPad (aeroplane mode): the first session, a library build and a Longtail race work; the Weekly says it can't be counted and still saves.
 - [ ] Screenshots captured on the simulator at 1320 × 2868 (6.9" iPhone) and 2064 × 2752 (13" iPad), in the 1.0 order from `listing.md`, into `mobile/store/screenshots/`.
-- [ ] Preview video (optional for 1.0): 15–30 s of the snap, a finish and a Gull race, portrait, no sound required.
+- [ ] Preview video (optional for 1.0): 15–30 s of the snap, a finish and a Longtail race, portrait, no sound required.
 
 ## App Store Connect (Tue 10 – Thu 12 Nov)
 

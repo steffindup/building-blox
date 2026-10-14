@@ -14,7 +14,7 @@ instruction booklet, and you build it on screen. The menu is game-first:
   (`best` and `bbest` in the game save).
 - **Blitz** races are kept short: a puzzle picked for Blitz is shrunk to at most 30 bricks (`BLITZ_MAX`), opening Blitz
   without a small puzzle starts on the Toadstool Trail level, each wrong brick adds 1 second (`MISS_MS`) and each hint 5 seconds (`HINT_MS`, charged once per step).
-- **Blitz**: **vs the Gulls** (Scraps, Swoop or Squint, the comic brick thieves; take turns, 1 to 3 bricks a turn;
+- **Blitz**: **vs the Longtails** (Scraps, Swoop or Squint, the comic brick thieves; take turns, 1 to 3 bricks a turn;
   Bloppit himself is never the opponent) and **vs Friend**:
   *Make a challenge* builds the whole puzzle against the clock and gives a 6-character code; friends type it into
   *Got a code?* (or open the share link `bloppit.com/join/CODE`) and race the same puzzle later. Live Blitz rooms (5-character codes) are still there.
@@ -22,9 +22,9 @@ instruction booklet, and you build it on screen. The menu is game-first:
   (switched off October 2026; the server answers 410 to the old actions). Nothing typed or spoken passes between players.
 - Every finish screen offers **Build it for real**, which opens the printable booklet.
 
-- Racing the Gulls, challenges and the Weekly Bloppit all run on the device: `cpuApi()` in `public/build/index.html`
+- Racing the Longtails, challenges and the Weekly Bloppit all run on the device: `cpuApi()` in `public/build/index.html`
   stands in for the room server and follows the same Blitz rules as `logic.mjs`. A challenge or Weekly run is the same
-  engine with one player (`s.solo`); `trialEnd()` sends the result. Each Gull's speed and miss rate is in `CPU_LEVELS`.
+  engine with one player (`s.solo`); `trialEnd()` sends the result. Each Longtail's speed and miss rate is in `CPU_LEVELS`.
 - **The pup** (`netlify/functions/pup/`, `/api/pup`): each player profile gets an anonymous pup id, minted by the server
   at the first finish, and its progress (trail scores, Weekly record) is saved under it and merged on every finish
   (`pupPush()`), so an island survives a lost iPad or cleared site data. The id is the credential and travels in the
