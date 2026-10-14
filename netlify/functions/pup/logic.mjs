@@ -70,7 +70,7 @@ export function merge(server, incoming) {
     for (const k of Object.keys(obj(wb.builds))) {
       const x = builds[k], y = wb.builds[k];
       if (!y || typeof y !== 'object') continue;
-      builds[k] = x ? { ...x, ...y, s: Math.max(num(x.s) ?? 0, num(y.s) ?? 0), t: Math.min(num(x.t) ?? Infinity, num(y.t) ?? Infinity), c: Math.max(num(x.c) ?? 1, num(y.c) ?? 1) } : y;
+      builds[k] = x ? { ...x, ...y, s: Math.max(num(x.s) ?? 0, num(y.s) ?? 0), t: Math.min(num(x.t) ?? Infinity, num(y.t) ?? Infinity), c: Math.max(num(x.c) ?? 1, num(y.c) ?? 1), ...((x.m || y.m) ? { m: 1 } : {}) } : y;
     }
     const seen = new Set(), log = [];
     for (const k of [...(wa.log || []), ...(wb.log || [])]) if (builds[k] && !seen.has(k)) { seen.add(k); log.push(k); }

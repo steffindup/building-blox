@@ -160,6 +160,7 @@ main{max-width:1640px;margin:0 auto;padding-block:20px 0}
 input[type=range]{width:100%;accent-color:var(--accent)}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-flow:column;grid-auto-columns:1fr;border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .seg input{position:absolute;opacity:0}
+.seg input:disabled+label{opacity:.45;cursor:default}
 .seg.two{grid-template-columns:repeat(2,1fr)}
 .seg label{text-align:center;padding:7px 4px;cursor:pointer;font-weight:700;font-size:13px;justify-content:center}
 .seg label+input+label,.seg input+label~label{border-left:1px solid var(--line)}
@@ -1000,7 +1001,8 @@ body.on-home .tabs{visibility:hidden}
           <input type="radio" name="kind" id="kd-model" value="model" checked><label for="kd-model">3D model</label>
           <input type="radio" name="kind" id="kd-picture" value="picture"><label for="kd-picture">Picture</label>
         </div>
-        <p class="note pic-only" style="margin:6px 0 0">A flat mosaic of tiles that looks like your photo. The more tiles, the more lifelike.</p>
+        <p class="note pic-only" style="margin:6px 0 0">A flat mosaic of tiles that looks like your photo, made on this device. The more tiles, the more lifelike.</p>
+        <p class="note photo-only" id="photo3dNote" style="margin:6px 0 0" hidden>Photos become brick pictures for now. 3D photo models are coming to the Creator Workshop.</p>
       </div>
       <div class="field pic-only">
         <label for="pw">Detail <output id="pwOut"></output></label>
@@ -2195,6 +2197,7 @@ function drawPreview(p){
 }
 const VIEW_LABEL={front:'Front',side:'Right side',back:'Back'};
 function renderPhotos(){
+  syncKind();
   const box=$('#photos'); box.innerHTML='';
   photos.forEach(p=>{
     const el=document.createElement('div'); el.className='photo';
@@ -2228,6 +2231,8 @@ function addFiles(files){
   const imgs=[...files].filter(f=>f.type.startsWith('image/')); if(!imgs.length) return;
   track('creator_started');
   photos=photos.filter(p=>!p.sample);
+  // Q4: a photo becomes a brick picture (a mosaic made on this device). 3D photo models are off until the Creator Workshop.
+  if(S.kind!=='picture'){ S.kind='picture'; syncKind(); refreshHint(); }
   let left=imgs.length;
   imgs.forEach(f=>{
     const url=URL.createObjectURL(f), img=new Image();
@@ -2255,7 +2260,8 @@ bindRange('tol','tol',v=>v?`${v}`:'off');
 bindRange('colors','maxColors',v=>`up to ${v}`);
 bindRange('pw','pw',v=>`${v} tiles wide · ${Math.round(v*.8)} cm`);
 bindRange('pcol','pcol',v=>`up to ${v}`);
-function syncKind(){ $('#settings').dataset.kind=S.kind; const r=document.querySelector(`input[name=kind][value="${S.kind}"]`); if(r) r.checked=true; }
+function syncKind(){ $('#settings').dataset.kind=S.kind; const r=document.querySelector(`input[name=kind][value="${S.kind}"]`); if(r) r.checked=true;
+  const photo=photos.some(p=>!p.sample); $('#kd-model').disabled=photo; const n=$('#photo3dNote'); if(n) n.hidden=!photo; }
 document.querySelectorAll('input[name=kind]').forEach(r=>r.addEventListener('change',()=>{S.kind=r.value; syncKind(); refreshHint(); schedule(60);}));
 syncKind();
 document.querySelectorAll('input[name=shape]').forEach(r=>r.addEventListener('change',()=>{S.shape=r.value;schedule();}));
@@ -2470,7 +2476,7 @@ const playControls=new THREE.OrbitControls(playCam,renderer.domElement);
 playControls.enableDamping=true; playControls.dampingFactor=.1; playControls.enabled=false;
 const playGroup=new THREE.Group(), placedGroup=new THREE.Group(), ghostGroup=new THREE.Group(), hintGroup=new THREE.Group();
 playGroup.add(placedGroup,ghostGroup,hintGroup); playScene.add(playGroup);
-let floor=null, layerGrid=null, cur=0, viewPage=0, follow=true, placed=new Set(), sel=null, hintOn=false, drops=[], busy=false, lastAnchor=null, run={miss:0,hints:new Set(),auto:0};
+let floor=null, layerGrid=null, cur=0, viewPage=0, follow=true, placed=new Set(), sel=null, hintOn=false, drops=[], busy=false, lastAnchor=null, run={miss:0,hints:new Set(),auto:0,memory:null};
 // The model has no baseplate: the first brick goes anywhere and fixes where the model sits.
 // Until the first step is finished, `cands` holds every position the model could be in that fits what's been placed so far.
 let off=null, cands=[], placedN=0;
@@ -2554,7 +2560,7 @@ function resetBuild(){
   placedGroup.clear(); ghostGroup.clear(); hintGroup.clear();
   endReveal(true);
   placed=new Set(); off=null; cands=[]; placedN=0; placedBoxes=[]; cur=0; viewPage=0; follow=true; sel=null; drops=[]; busy=false; lastAnchor=null;
-  run={miss:0,hints:new Set(),auto:0};  // this attempt's misses, hinted steps and placed-for-me bricks (the clean score)
+  run={miss:0,hints:new Set(),auto:0,memory:null};  // this attempt's misses, hinted steps, placed-for-me bricks (the clean score) and whether it was built from memory
   // A picture goes on its baseplate, so where each tile goes is fixed from the start
   if(model&&model.kind==='picture') off={x:0,z:0};
   if(model) makePieces();
@@ -2814,7 +2820,7 @@ function rotateSel(){ if(!sel||sel.sx===sel.sz) return; [sel.sx,sel.sz]=[sel.sz,
 function renderHints(){
   hintGroup.clear(); $('#hintBtn').setAttribute('aria-pressed',hintOn);
   if(!hintOn||!model||cur>=model.steps.length) return;
-  run.hints.add(cur);
+  run.hints.add(cur); run.memory=false;
   { const g=game||mp; if(g&&!g.hintSteps.includes(cur)){ g.hintSteps.push(cur);
       if(mpBlitz()){ mpPost({action:'hint'}).then(j=>mpApply(j.state)).catch(()=>{}); mpFlash('+5s'); }
       else charge('hint',5); } }
@@ -2896,7 +2902,7 @@ function placeBrick(t,ax,az){
   if(used){ pieces.splice(pieces.indexOf(used),1); if(hand.includes(used)) dropFromHand(used); }
   const s=model.steps[cur];
   const done=off?s.bricks.every(b=>placed.has(b)):cands[0].used.size>=s.bricks.length;
-  const first=placedN===1; if(first) buildStarted(game?'trail':mp?(mp.state&&mp.state.calm?'weekly':mp.cpu?'blitz':'room'):'quick');
+  const first=placedN===1; if(first){ buildStarted(game?'trail':mp?(mp.state&&mp.state.calm?'weekly':mp.cpu?'blitz':'room'):'quick'); if(run.memory===null) run.memory=$('.build-grid').classList.contains('no-book')&&!welcomeOn(); }
   if(!done){
     setStatus(first?'First brick down. The model builds out from here.':(['Nice!','Snapped in.','Perfect fit.','Got it.'][placedN%4])+(hand.length?'':' Your hand is empty.'),'ok');
     updateBuildUI(); if(first) frameBuild(true); return;
@@ -2921,7 +2927,7 @@ function autoPlace(){
   const prev=held, prevSel=sel?{...sel}:null, n0=placedN;
   sel={sx:t.sx,sz:t.sz,c:t.c}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2};
   autoBusy=true; tryPlace(); autoBusy=false;
-  if(placedN>n0) run.auto++;
+  if(placedN>n0){ run.auto++; run.memory=false; }
   if((game||mp)&&placedN>n0) charge('auto',10);
   lastAnchor=null; ghostGroup.visible=false;
   if(prev&&hand.includes(prev)){ held=prev; sel=prevSel; setGhost(); }
@@ -2975,8 +2981,8 @@ document.querySelectorAll('#placePad [data-mv]').forEach(b=>b.addEventListener('
 $('#ppTurn').onclick=rotateSel;
 $('#ppPlace').onclick=()=>tryPlace();
 $('#rotBtn').onclick=rotateSel;
-function toggleBook(){ const g=$('.build-grid'), off=!g.classList.toggle('no-book'); $('#bookBtn').setAttribute('aria-pressed',off); saveSoon(); requestAnimationFrame(()=>{resize(); bookResize(); frameBuild(true);}); }
-$('#bookBtn').onclick=toggleBook;
+function toggleBook(){ const g=$('.build-grid'), off=!g.classList.toggle('no-book'); if(off&&placedN>0) run.memory=false; $('#bookBtn').setAttribute('aria-pressed',off); saveSoon(); requestAnimationFrame(()=>{resize(); bookResize(); frameBuild(true);}); }
+$('#bookBtn').onclick=()=>{ toggleBook(); if($('.build-grid').classList.contains('no-book')&&placedN===0&&!mp&&!welcomeOn()) setStatus('Booklet hidden. Finish without it, no hints, for a From Memory star.'); };
 $('#hintBtn').onclick=()=>{
   if(mpBlitz()&&!hintOn&&!mpMyTurn()){ setStatus(mpTurnText(),'err'); return; }
   if(mpBlitz()&&!hintOn&&mp.cpu&&Date.now()<mp.state.turnStart){ setStatus('Wait for Go!','err'); return; }
@@ -3987,6 +3993,36 @@ const SAMPLES=[
    x.oval(50,118,24,16,0,'#D9B98B'); x.oval(32,112,8,6,0,'#1B2A34');
    x.fillStyle='#1B2A34'; x.rr(64,90,18,4,2);
    x.fillStyle='#C91A09'; x.rr(96,92,10,40,4);
+   return [['front',c]]; }},
+ {name:'Hot-air balloon',theme:'Vehicles',weekly:'2026-11-23',beat:'Pip’s new way to travel. Fill it before it floats off.',ws:{shape:'puffed',size:11},make(){ const [c,x]=sheet(200,260,'#BFE3F5');
+   x.dot(100,86,78,'#C91A09');
+   x.poly([[22,86],[178,86],[128,172],[72,172]],'#C91A09');
+   x.fillStyle='#F2CD37'; x.beginPath(); x.ellipse(100,86,30,78,0,0,7); x.fill(); x.poly([[70,86],[130,86],[114,172],[86,172]],'#F2CD37');
+   x.fillStyle='#F4F4F4'; x.rr(94,8,12,156,4);
+   x.fillStyle='#5E3A20'; x.fillRect(78,172,6,40); x.fillRect(116,172,6,40);
+   x.fillStyle='#8B5A2B'; x.rr(66,208,68,44,8); x.fillStyle='#5E3A20'; x.fillRect(66,224,68,6);
+   return [['front',c]]; }},
+ {name:'Snowman',theme:'Fantasy',weekly:'2026-11-30',beat:'First frost on Otter Island. Squint ran off with the carrot.',ws:{shape:'puffed',size:10},make(){ const [c,x]=sheet(200,260,'#BFE3F5');
+   x.dot(100,196,62,'#F4F4F4'); x.dot(100,118,46,'#F4F4F4'); x.dot(100,58,34,'#F4F4F4');
+   x.fillStyle='#1B2A34'; x.rr(72,24,56,10,3); x.rr(82,2,36,26,3);
+   x.dot(88,52,4,'#1B2A34'); x.dot(112,52,4,'#1B2A34'); x.poly([[104,60],[132,66],[104,70]],'#FE8A18');
+   x.dot(100,106,5,'#1B2A34'); x.dot(100,130,5,'#1B2A34'); x.dot(100,180,5,'#1B2A34');
+   x.fillStyle='#C91A09'; x.rr(66,78,68,14,6); x.rr(112,84,16,44,6);
+   x.fillStyle='#5E3A20'; x.rr(36,96,30,8,3); x.rr(134,96,30,8,3);
+   return [['front',c]]; }},
+ {name:'Christmas tree',theme:'Fantasy',weekly:'2026-12-07',beat:'The village needs a tree. Hang the star last.',ws:{shape:'puffed',size:11},make(){ const [c,x]=sheet(200,260,'#ffffff');
+   x.fillStyle='#5E3A20'; x.rr(84,216,32,40,4);
+   x.poly([[100,66],[170,150],[30,150]],'#2E8B3A'); x.poly([[100,110],[184,200],[16,200]],'#2E8B3A'); x.poly([[100,150],[196,236],[4,236]],'#2E8B3A');
+   x.poly([[100,22],[110,52],[140,56],[116,74],[122,106],[100,90],[78,106],[84,74],[60,56],[90,52]],'#F2CD37');
+   [[70,138,'#C91A09'],[128,140,'#0055BF'],[100,176,'#F2CD37'],[52,190,'#0055BF'],[150,192,'#C91A09'],[88,222,'#C91A09'],[120,226,'#0055BF']].forEach(([a,b,f])=>x.dot(a,b,11,f));
+   return [['front',c]]; }},
+ {name:'Gingerbread house',theme:'Food',weekly:'2026-12-14',beat:'Scraps ate the door. Bake it a new one.',ws:{shape:'flat',size:11},make(){ const [c,x]=sheet(240,220,'#ffffff');
+   x.poly([[120,18],[228,98],[12,98]],'#8B5A2B'); x.fillStyle='#8B5A2B'; x.fillRect(32,98,176,112);
+   x.fillStyle='#F4F4F4'; x.rr(20,90,200,14,7); x.poly([[120,18],[228,98],[220,104],[120,30],[20,104],[12,98]],'#F4F4F4');
+   [[44,118],[76,118],[108,118],[140,118],[172,118],[196,118]].forEach(([a,b])=>x.dot(a,b,8,'#F4F4F4'));
+   x.fillStyle='#F4F4F4'; x.rr(96,150,48,60,22); x.fillStyle='#C91A09'; x.rr(102,156,36,54,18);
+   x.fillStyle='#F2CD37'; x.rr(48,138,34,30,6); x.rr(158,138,34,30,6); x.fillStyle='#8B5A2B'; x.fillRect(63,138,4,30); x.fillRect(173,138,4,30); x.fillRect(48,151,34,4); x.fillRect(158,151,34,4);
+   [[36,190,'#2E8B3A'],[204,190,'#0055BF'],[60,60,'#C91A09'],[180,60,'#2E8B3A'],[120,50,'#0055BF']].forEach(([a,b,f])=>x.dot(a,b,9,f));
    return [['front',c]]; }},
  // The first-session build (see "First session" below): six bricks, a brown trunk and a green top. Not in the library.
  {name:'Little tree',theme:'Fantasy',hidden:true,make(){ const [c,x]=sheet(160,220,'#ffffff');
@@ -5331,6 +5367,10 @@ const WEEKLY_PLAN={
   '2026-11-02':'Red boat',
   '2026-11-09':'Striped lighthouse',
   '2026-11-16':'Curled-up pup',
+  '2026-11-23':'Hot-air balloon',
+  '2026-11-30':'Snowman',
+  '2026-12-07':'Christmas tree',
+  '2026-12-14':'Gingerbread house',
 };
 // The hash pick only draws from models already in the library, so an unreleased Weekly is never spoiled early.
 const WEEKLY_POOL=()=>SAMPLES.map((s,i)=>i).filter(i=>!SAMPLES[i].weekly&&!SAMPLES[i].hidden);
@@ -5550,7 +5590,7 @@ function worldStore(){ try{ const o=JSON.parse(localStorage.getItem(pkey(WORLD_K
 // Join two world records (same rules as the server): best stars per model, higher XP, decorations and the name kept.
 function worldMerge(a,b){
   a=a||{}; b=b||{}; const builds={...(a.builds||{})};
-  for(const k of Object.keys(b.builds||{})){ const x=builds[k], y=b.builds[k]; builds[k]=x?{...x,...y,s:Math.max(x.s||0,y.s||0),t:Math.min(x.t||Infinity,y.t||Infinity),c:Math.max(x.c||1,y.c||1)}:y; }
+  for(const k of Object.keys(b.builds||{})){ const x=builds[k], y=b.builds[k]; builds[k]=x?{...x,...y,s:Math.max(x.s||0,y.s||0),t:Math.min(x.t||Infinity,y.t||Infinity),c:Math.max(x.c||1,y.c||1),...((x.m||y.m)?{m:1}:{})}:y; }
   const log=[]; for(const k of [...(a.log||[]),...(b.log||[]),...Object.keys(builds)]) if(builds[k]&&!log.includes(k)) log.push(k);
   const pn=[a.pupName,b.pupName].find(v=>typeof v==='number'&&v>=0);
   return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],pupName:pn==null?-1:pn,pupAsked:!!(a.pupAsked||b.pupAsked)};
@@ -5587,15 +5627,16 @@ function worldFinish(kind){
   const stars=blitz?1:1+(noHint?1:0)+(clean?1:0);
   let xp=first?(blitz?10:N<=20?10:N<=40?20:35):0, bonus=0;
   if(kind==='weekly'&&first){ xp+=10; bonus=1; }
+  const memory=!!run.memory&&!mp&&!blitz&&clean&&!(prev&&prev.m); if(memory){ xp+=5; bonus+=1; }
   const before={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
-  const rec=prev?{...prev,s:Math.max(prev.s||0,stars),c:(prev.c||1)+1}:{n:N,s:stars,k:kind,t:Date.now(),c:1};
+  const rec=prev?{...prev,s:Math.max(prev.s||0,stars),c:(prev.c||1)+1}:{n:N,s:stars,k:kind,t:Date.now(),c:1}; if(memory) rec.m=1;
   o.builds[key]=rec; if(first) o.log.push(key); o.xp=(o.xp||0)+xp; o.bonus=(o.bonus||0)+bonus;
   worldSet(o);
   worldThumbSave(key);
   const after={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
-  const r={key,kind,stars,best:rec.s,gained:first?stars+bonus:Math.max(0,stars-(prev.s||0)),xp,bonus,first,clean,noHint,miss,hint:hint+auto,before,after,
+  const r={key,kind,stars,best:rec.s,gained:first?stars+bonus:Math.max(0,stars-(prev.s||0))+(memory?1:0),xp,bonus,first,clean,noHint,memory,miss,hint:hint+auto,before,after,
     pupUp:after.pup>before.pup,islandUp:after.island>before.island,total:worldStars(o),count:after.n};
-  track('world_finish:'+stars+'star'+(first?'':'_again'), r.pupUp?'pup_stage:'+PUP_STAGES[after.pup].name.toLowerCase():'', r.islandUp?'island_stage:'+ISLAND_STAGES[after.island].name.toLowerCase():'');
+  track('world_finish:'+stars+'star'+(first?'':'_again'), memory?'from_memory':'', r.pupUp?'pup_stage:'+PUP_STAGES[after.pup].name.toLowerCase():'', r.islandUp?'island_stage:'+ISLAND_STAGES[after.island].name.toLowerCase():'');
   return r;
 }
 // A small transparent picture of the finished model, kept on this device for the island (never sent up)
@@ -5620,7 +5661,8 @@ function worldStripHTML(r){
   const o=worldStore(), what=r.kind==='blitz'?'Race won':r.clean?'Clean build!':r.noHint?'No hints!':'Finished!';
   const parts=[wsStars(r.stars),`<span>${what}</span>`];
   if(r.xp) parts.push(`<span>+${r.xp} XP</span>`); else if(!r.first) parts.push('<span>Built before · best kept</span>');
-  if(r.bonus) parts.push('<span>+1 Weekly star</span>');
+  if(r.kind==='weekly'&&r.first) parts.push('<span>+1 Weekly star</span>');
+  if(r.memory) parts.push('<span>🧠 From memory! +1 star</span>');
   if(r.pupUp) parts.push(`<span class="ws-up"><img src="/art/pup.png" alt="">${pupName(o)||'Your pup'} is a ${PUP_STAGES[r.after.pup].name}!</span>`);
   else if(r.islandUp) parts.push(`<span class="ws-up">🏝️ ${ISLAND_STAGES[r.after.island].name} built!</span>`);
   return parts.join('');
