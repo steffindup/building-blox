@@ -38,8 +38,9 @@ test('first visit: the menu shows Start here; one tap opens the six-brick build;
   assert.equal(await t.page.evaluate(() => document.getElementById('wcPup').hidden), false);
   await t.page.evaluate(() => document.querySelector('#wcNames [data-pup="0"]').click()); await t.page.waitForTimeout(300);
   assert.match(await t.text('#wcPupSub'), /Pebble it is/);
-  await t.page.evaluate(() => document.getElementById('wcTrail').click()); await t.page.waitForTimeout(500);
-  assert.equal(await t.view(), 'view-game');
+  assert.match(await t.text('#wcTrail'), /Keep building.*Heart/);   // Play Next: the first Otter Trail level, with a picture
+  await t.page.evaluate(() => document.getElementById('wcTrail').click()); await t.page.waitForTimeout(1500);
+  assert.equal(await t.view(), 'view-build'); assert.match(await t.text('#progress'), /0 of 10/);
   await t.page.evaluate(() => document.getElementById('tab-island').click()); await t.page.waitForTimeout(800);
   assert.match(await t.text('#isStage'), /^Hut/); assert.match(await t.text('#isNote'), /Pebble and Bloppit/);
   const w = JSON.parse(await t.page.evaluate(() => localStorage.getItem('bloppit-world-v1')));

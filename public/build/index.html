@@ -64,7 +64,7 @@
 </head>
 <body>
 <svg class="sr" width="0" height="0" aria-hidden="true" focusable="false"><defs>
-<symbol id="bh" viewBox="0 0 200 175"><circle cx="42" cy="38" r="16" fill="#8A5A3B"/><circle cx="42" cy="38" r="7" fill="#6B4229"/><circle cx="158" cy="38" r="16" fill="#8A5A3B"/><circle cx="158" cy="38" r="7" fill="#6B4229"/><ellipse cx="100" cy="94" rx="88" ry="74" fill="#8A5A3B"/><ellipse cx="100" cy="116" rx="56" ry="40" fill="#F3DEC0"/><ellipse cx="64" cy="88" rx="19" ry="22" fill="#1B1410"/><ellipse cx="136" cy="88" rx="19" ry="22" fill="#1B1410"/><circle cx="70" cy="79" r="7" fill="#fff"/><circle cx="142" cy="79" r="7" fill="#fff"/><path d="M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z" fill="#3A2418"/><path d="M100 120 q0 8 -9 10 M100 120 q0 8 9 10" stroke="#3A2418" stroke-width="4" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="bh" viewBox="0 0 200 175"><image href="/art/head-bloppit.png" x="0" y="-12" width="200" height="200" preserveAspectRatio="xMidYMid meet"/></symbol>
 <symbol id="bh2" viewBox="0 0 200 175"><circle cx="42" cy="38" r="16" fill="#C08A5E"/><circle cx="42" cy="38" r="7" fill="#9C6A42"/><circle cx="158" cy="38" r="16" fill="#C08A5E"/><circle cx="158" cy="38" r="7" fill="#9C6A42"/><ellipse cx="100" cy="94" rx="88" ry="74" fill="#C08A5E"/><ellipse cx="100" cy="116" rx="56" ry="40" fill="#FBEBD3"/><ellipse cx="64" cy="88" rx="17" ry="20" fill="#1B1410"/><ellipse cx="136" cy="88" rx="17" ry="20" fill="#1B1410"/><circle cx="70" cy="80" r="6" fill="#fff"/><circle cx="142" cy="80" r="6" fill="#fff"/><path d="M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z" fill="#3A2418"/><path d="M86 124 q14 12 28 0" stroke="#3A2418" stroke-width="4" stroke-linecap="round" fill="none"/></symbol>
 <symbol id="ic-cal" viewBox="0 0 120 120"><rect x="20" y="30" width="80" height="76" rx="11" fill="#fff"/><path d="M20 41 a11 11 0 0 1 11 -11 h58 a11 11 0 0 1 11 11 v13 h-80z" fill="#0B5E66"/><rect x="32" y="20" width="16" height="12" rx="4" fill="#fff"/><rect x="72" y="20" width="16" height="12" rx="4" fill="#fff"/><text x="60" y="96" text-anchor="middle" font-family="Lilita One, sans-serif" font-size="40" fill="#008F9B">1</text></symbol>
 <symbol id="ic-brick" viewBox="0 0 120 120"><path d="M60 28 L96 46 L60 64 L24 46z" fill="#F4BC22"/><path d="M24 46 L60 64 L60 98 L24 80z" fill="#D99A0F"/><path d="M60 64 L96 46 L96 80 L60 98z" fill="#B97F06"/><g fill="#F4BC22"><rect x="53" y="31" width="14" height="6"/><rect x="71" y="40" width="14" height="6"/><rect x="35" y="40" width="14" height="6"/><rect x="53" y="49" width="14" height="6"/></g><g fill="#D99A0F"><ellipse cx="60" cy="37" rx="7" ry="3.5"/><ellipse cx="78" cy="46" rx="7" ry="3.5"/><ellipse cx="42" cy="46" rx="7" ry="3.5"/><ellipse cx="60" cy="55" rx="7" ry="3.5"/></g><g fill="#FFD34D"><ellipse cx="60" cy="31" rx="7" ry="3.5"/><ellipse cx="78" cy="40" rx="7" ry="3.5"/><ellipse cx="42" cy="40" rx="7" ry="3.5"/><ellipse cx="60" cy="49" rx="7" ry="3.5"/></g></symbol>
@@ -239,6 +239,11 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .bud-say .callout{margin-top:6px;padding:5px 8px;gap:4px 10px;box-shadow:none}
 .bud-say .callout img{height:26px}
 .bud-say .callout b{font-size:12px}
+.bud-say .bud-next{pointer-events:auto;display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:5px 10px 5px 5px;border-radius:999px;border:2px solid #14202C;background:#F4BC22;color:#14202C;font:inherit;font-weight:800;font-size:13px;cursor:pointer}
+.bud-say .bud-next img{width:26px;height:26px;border-radius:6px;background:#fff;object-fit:contain}
+.nb-pic{width:34px;height:34px;border-radius:8px;background:#fff;object-fit:contain;margin:-4px 8px -4px -6px;vertical-align:middle}
+button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .nb-pic+span small{font-size:12px;font-weight:700;opacity:.85}
+#winNext,#wcTrail{display:inline-flex;align-items:center;justify-content:center}
 .pg-step.bud-ping{animation:bud-ping .9s ease-out}
 .bud-bit{position:absolute;right:38px;bottom:84px;width:10px;height:7px;border-radius:2px;pointer-events:none;animation:bud-burst .9s cubic-bezier(.2,.7,.4,1) forwards}
 @keyframes bud-jump{0%,100%{transform:translateY(0)}40%{transform:translateY(-16px) scale(1.04,.97)}70%{transform:translateY(0) scale(1.05,.94)}}
@@ -823,6 +828,7 @@ body.on-home .tabs{visibility:hidden}
 .builds-grid img{width:96px;height:72px;object-fit:contain}
 .builds-grid .ws-stars{font-size:16px;letter-spacing:2px;color:#E9A800}.builds-grid .ws-stars i{font-style:normal;color:var(--line)}
 .builds-grid small{font-weight:700;color:var(--muted)}
+.mastery{display:inline-flex;gap:10px;margin-left:8px;font-size:13px;font-weight:700;color:var(--muted)}.mastery b{color:#14202C}
 .tab.play4{background:#008F9B;color:#fff;border-color:#008F9B}
 .tab.play4 .n{background:rgba(255,255,255,.22);color:#fff}
 .tab.play4[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
@@ -2767,7 +2773,7 @@ function buddyUpdate(){
   }
   if(budCheerT) return;  // let the cheer finish
   if(cpuT&&cpu.say){ budSay(cpu.say.cls,cpu.say.html); return; }  // racing Bloppit: it's his turn
-  if(cur>=N){ budSay('', 'All done! Want to build it again, or try another model?'); return; }
+  if(cur>=N){ const n=!mp&&!game&&nextBuild(); budSay('', n?`All done! <button class="bud-next" type="button" id="budNext"><img src="${n.thumb}" alt="">Next: ${escapeHTML(n.t.replace(/^.*?: /,''))} ▸</button>`:'All done! Want to build it again, or try another model?'); const b=$('#budNext'); if(b) b.onclick=()=>{ track('play_next'); n.go(); }; return; }
   if(viewPage!==cur){
     budSay('point', viewPage<cur?`That’s a step you’ve done. You’re on step ${cur+1}.`:`That’s coming up later. You’re on step ${cur+1}.`);
     return;
@@ -4331,7 +4337,7 @@ function winLevel(){
   const total=Object.values(B).reduce((a,b)=>a+b,0);
   $('#winBest').textContent=(sc>prev&&prev?`New best! (was ${prev}) · `:'')+`${TRAILS[tr].name}: ${total.toLocaleString()} points`;
   const last=i>=LV.length-1;
-  $('#winNext').textContent=last?'All levels done!':`Level ${i+2}: ${LV[i+1].name}`; $('#winNext').disabled=last;
+  $('#winNext').innerHTML=last?'All levels done!':`<img class="nb-pic" src="${levelThumb(LV[i+1])}" alt=""><span>Next<small>Level ${i+2}: ${escapeHTML(LV[i+1].name)}</small></span>`; $('#winNext').disabled=last;
   game=null; updateGameBar(); storeClear();
   $('#winDlg').showModal();
 }
@@ -5616,14 +5622,14 @@ var PUP_STAGES=[{name:'Pup',at:0},{name:'Splash',at:10},{name:'Legend',at:40}];
 var ISLAND_STAGES=[{name:'Beach',at:0,slots:0},{name:'Hut',at:1,slots:1},{name:'Workshop',at:3,slots:3},{name:'Village',at:10,slots:6}];
 var DECOR=[{id:'flag',name:'Flag',cost:3},{id:'campfire',name:'Campfire',cost:3},{id:'bench',name:'Bench',cost:3},{id:'lantern',name:'Lantern',cost:5},{id:'signpost',name:'Signpost',cost:5},{id:'rockpool',name:'Rock pool',cost:5},
   {id:'sandcastle',name:'Sandcastle',cost:5},{id:'hammock',name:'Hammock',cost:8},{id:'kite',name:'Kite',cost:5},{id:'palm',name:'Palm',cost:8},{id:'crab',name:'Crab',cost:3},{id:'buoy',name:'Buoy',cost:8}];
-function worldStore(){ try{ const o=JSON.parse(localStorage.getItem(pkey(WORLD_KEY))); if(o&&o.builds) return o; }catch(e){} return {xp:0,bonus:0,builds:{},log:[],decor:[],pupName:-1}; }
+function worldStore(){ try{ const o=JSON.parse(localStorage.getItem(pkey(WORLD_KEY))); if(o&&o.builds) return o; }catch(e){} return {xp:0,bonus:0,builds:{},log:[],decor:[],free:[],pupName:-1}; }
 // Join two world records (same rules as the server): best stars per model, higher XP, decorations and the name kept.
 function worldMerge(a,b){
   a=a||{}; b=b||{}; const builds={...(a.builds||{})};
   for(const k of Object.keys(b.builds||{})){ const x=builds[k], y=b.builds[k]; builds[k]=x?{...x,...y,s:Math.max(x.s||0,y.s||0),t:Math.min(x.t||Infinity,y.t||Infinity),c:Math.max(x.c||1,y.c||1),...((x.m||y.m)?{m:1}:{})}:y; }
   const log=[]; for(const k of [...(a.log||[]),...(b.log||[]),...Object.keys(builds)]) if(builds[k]&&!log.includes(k)) log.push(k);
   const pn=[a.pupName,b.pupName].find(v=>typeof v==='number'&&v>=0);
-  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],pupName:pn==null?-1:pn,pupAsked:!!(a.pupAsked||b.pupAsked)};
+  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],pupName:pn==null?-1:pn,pupAsked:!!(a.pupAsked||b.pupAsked)};
 }
 function worldSet(o){ try{ localStorage.setItem(pkey(WORLD_KEY),JSON.stringify(o)); }catch(e){} pupPush(); }
 const worldCount=o=>o.log.length;                                   // distinct models finished
@@ -5632,7 +5638,7 @@ const worldCount=o=>o.log.length;                                   // distinct 
 const buildXP=(k,b)=>(b.k==='blitz'?10:b.n<=20?10:b.n<=40?20:35)+(k.startsWith('w:')?10:0)+(b.m?5:0);
 const worldXP=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+buildXP(k,b),0);
 const worldStarsEarned=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+(b.s||0)+(k.startsWith('w:')?1:0)+(b.m?1:0),0);
-const worldStarsSpent=o=>(o.decor||[]).reduce((a,id)=>{ const d=DECOR.find(x=>x.id===id); return a+(d?d.cost:0); },0);
+const worldStarsSpent=o=>(o.decor||[]).reduce((a,id)=>{ if((o.free||[]).includes(id)) return a; const d=DECOR.find(x=>x.id===id); return a+(d?d.cost:0); },0);
 const worldStars=o=>worldStarsEarned(o)-worldStarsSpent(o);
 const stageOf=(list,n)=>{ let k=0; list.forEach((st,i)=>{ if(n>=st.at) k=i; }); return k; };
 const pupStage=o=>stageOf(PUP_STAGES,worldCount(o)), islandStage=o=>stageOf(ISLAND_STAGES,worldCount(o));
@@ -5647,7 +5653,7 @@ function modelKey(){ if(!model) return ''; const n=model.bricks.length;
 }
 function worldFinish(kind){
   if(!model) return null;
-  const o=worldStore(), N=model.bricks.length;
+  const o=worldStore(), N=model.bricks.length; let r_decor=null;
   let miss=run.miss, hint=run.hints.size, auto=run.auto, won=true;
   if(mp&&mp.state){ const p=mp.state.players[mp.me]||{};
     if(mp.state.mode==='blitz'){ miss=p.miss||0; hint=p.hint||0; auto=0;
@@ -5660,7 +5666,7 @@ function worldFinish(kind){
   const noHint=hint+auto===0, clean=noHint&&miss===0;
   const stars=blitz?1:1+(noHint?1:0)+(clean?1:0);
   let xp=first?(blitz?10:N<=20?10:N<=40?20:35):0, bonus=0;
-  if(kind==='weekly'&&first){ xp+=10; bonus=1; }
+  if(kind==='weekly'&&first){ xp+=10; bonus=1; const d=DECOR.filter(x=>!o.decor.includes(x.id)).sort((a,b)=>a.cost-b.cost)[0]; if(d){ o.decor.push(d.id); o.free=[...(o.free||[]),d.id]; r_decor=d; } }
   const memory=!!run.memory&&!mp&&!blitz&&clean&&!(prev&&prev.m); if(memory){ xp+=5; bonus+=1; }
   const before={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
   const rec=prev?{...prev,s:Math.max(prev.s||0,stars),c:(prev.c||1)+1}:{n:N,s:stars,k:kind,t:Date.now(),c:1}; if(memory) rec.m=1;
@@ -5669,7 +5675,7 @@ function worldFinish(kind){
   worldThumbSave(key);
   const after={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
   const r={key,kind,stars,best:rec.s,gained:first?stars+bonus:Math.max(0,stars-(prev.s||0))+(memory?1:0),xp,bonus,first,clean,noHint,memory,miss,hint:hint+auto,before,after,
-    pupUp:after.pup>before.pup,islandUp:after.island>before.island,total:worldStars(o),count:after.n};
+    pupUp:after.pup>before.pup,islandUp:after.island>before.island,total:worldStars(o),count:after.n,decor:r_decor};
   track('world_finish:'+stars+'star'+(first?'':'_again'), memory?'from_memory':'', r.pupUp?'pup_stage:'+PUP_STAGES[after.pup].name.toLowerCase():'', r.islandUp?'island_stage:'+ISLAND_STAGES[after.island].name.toLowerCase():'');
   return r;
 }
@@ -5697,6 +5703,7 @@ function worldStripHTML(r){
   if(r.xp) parts.push(`<span>+${r.xp} XP</span>`); else if(!r.first) parts.push('<span>Built before · best kept</span>');
   if(r.kind==='weekly'&&r.first) parts.push('<span>+1 Weekly star</span>');
   if(r.memory) parts.push('<span>🧠 From memory! +1 star</span>');
+  if(r.decor) parts.push(`<span class="ws-up">🏝️ A ${r.decor.name.toLowerCase()} for your island</span>`);
   if(r.pupUp) parts.push(`<span class="ws-up"><img src="/art/pup.png" alt="">${pupName(o)||'Your pup'} is a ${PUP_STAGES[r.after.pup].name}!</span>`);
   else if(r.islandUp) parts.push(`<span class="ws-up">🏝️ ${ISLAND_STAGES[r.after.island].name} built!</span>`);
   return parts.join('');
@@ -5859,7 +5866,7 @@ function renderIsland(){
 function renderDecorShop(){
   const o=worldStore(), left=worldStars(o);
   $('#isStars').textContent=`You have ${left} Build Star${left===1?'':'s'}.`;
-  $('#decorGrid').innerHTML=DECOR.map(d=>{ const owned=o.decor.includes(d.id); return `<button type="button" data-decor="${d.id}"${owned?' data-owned="1" disabled':left<d.cost?' disabled':''}><svg viewBox="-64 -136 128 148">${decorSVG(d.id,0,d.id==='kite'?-110:6)}</svg>${d.name}<span class="cost">${owned?'On your island':`★ ${d.cost}`}</span></button>`; }).join('');
+  $('#decorGrid').innerHTML=DECOR.map(d=>{ const owned=o.decor.includes(d.id); return `<button type="button" data-decor="${d.id}"${owned?' data-owned="1" disabled':left<d.cost?' disabled':''}><svg viewBox="-64 -136 128 148">${decorSVG(d.id,0,d.id==='kite'?-110:6)}</svg>${d.name}<span class="cost">${owned?((o.free||[]).includes(d.id)?'From a Weekly':'On your island'):`★ ${d.cost}`}</span></button>`; }).join('');
 }
 $('#decorGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-decor]'); if(!b||b.disabled) return;
   const d=DECOR.find(x=>x.id===b.dataset.decor); if(!d) return;
@@ -5870,9 +5877,10 @@ $('#isDecor').onclick=()=>{ const sh=$('#isShop'); sh.hidden=!sh.hidden; if(!sh.
 $('#isShopClose').onclick=()=>{ $('#isShop').hidden=true; scrollTo({top:0,behavior:'smooth'}); };
 function renderBuilds(){
   const o=worldStore(), keys=[...o.log].reverse();
-  $('#isBuildsNote').textContent=keys.length?`${keys.length} model${keys.length===1?'':'s'} finished. Stars are the best of every try.`:'Nothing finished yet.';
+  const B=Object.values(o.builds), clean=B.filter(b=>(b.s||0)>=3).length, nohint=B.filter(b=>(b.s||0)>=2).length, mem=B.filter(b=>b.m).length;
+  $('#isBuildsNote').innerHTML=keys.length?`${keys.length} model${keys.length===1?'':'s'} finished. Stars are the best of every try. <span class="mastery"><b>${clean}</b> clean · <b>${nohint}</b> no hints · <b>${mem}</b> from memory</span>`:'Nothing finished yet.';
   $('#buildsGrid').innerHTML=keys.map(k=>{ const b=o.builds[k], u=worldThumb(k), nm=k.startsWith('w:')?'Weekly Bloppit':(/^m:(.+):\d+$/.exec(k)||/^t:[a-z]+:\d+:(.+)$/.exec(k)||[])[1]||'Your photo';
-    return `<div>${u?`<img src="${u}" alt="">`:'<span style="height:72px"></span>'}<span>${escapeHTML(nm)}</span>${wsStars(b.s||0)}<small>${b.n} bricks</small></div>`; }).join('');
+    return `<div>${u?`<img src="${u}" alt="">`:'<span style="height:72px"></span>'}<span>${escapeHTML(nm)}</span>${wsStars(b.s||0)}<small>${b.n} bricks${b.m?' · 🧠':''}${k.startsWith('w:')?' · 📅':''}</small></div>`; }).join('');
 }
 // The postcard: the island as a picture, no name, no photo, no location
 $('#isCard').onclick=async()=>{
@@ -6029,6 +6037,17 @@ $('#familyCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(fam
 $('#familyShare').onclick=async()=>{ if(APP&&!await gate.ask('Sharing sends a link to another app.')) return; track('family_link_shared');
   const url=familyUrl(), text='Bloppit, a calm brick puzzle game. Open this on the device they play on:'; try{ if(navigator.share) await navigator.share({title:'Bloppit',text,url}); else await navigator.clipboard.writeText(`${text} ${url}`); }catch(e){} };
 
+/* ---------- Play Next: what to build next, with a picture ---------- */
+// The next unfinished Otter Trail level, then Brain Trail, then the first library model not yet built.
+function nextBuild(){
+  const g=gameStore(), o=worldStore();
+  for(const tr of ['otter','brain']){ const LV=levelsOf(tr), B=bestOf(g,tr); for(let i=0;i<LV.length;i++) if(!B[i]) return {t:`${tr==='otter'?'Otter':'Brain'} Trail level ${i+1}: ${LV[i].name}`,s:'',thumb:levelThumb(LV[i]),go:()=>{ setTrail(tr); if(mp) mpLeave(); startLevel(i); }}; }
+  const smp=SAMPLES.find(x=>released(x)&&!o.builds[`m:${x.name}:`]&&!Object.keys(o.builds).some(k=>k.startsWith(`m:${x.name}:`)));
+  if(smp){ if(!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png'); const i=SAMPLES.indexOf(smp); return {t:`From the library: ${smp.name}`,s:'',thumb:smp.thumb,go:()=>{ if(mp) mpLeave(); if(game) endGame(); loadSample(i); clearTimeout(timer); rebuild(); setTab('build'); }}; }
+  return null;
+}
+function nextButtonHTML(n,cls){ return n?`<img src="${n.thumb}" alt="">${escapeHTML(n.t)}`:''; }
+
 /* ---------- First session: Bloppit hands over the bricks for one small build ----------
    On a first visit (no build started or finished on this device, nothing to resume) the menu's hero card is
    "Start here": one tap opens a six-brick tree on the build stage. Bloppit puts each step's brick straight into
@@ -6072,12 +6091,13 @@ function welcomeDone(){
   const o=worldStore(), askPup=o.pupName<0; if(askPup&&!o.pupAsked){ o.pupAsked=true; worldSet(o); }
   $('#wcPup').hidden=!askPup; $('#wcNames').innerHTML=PUP_NAMES.map((n,i)=>`<button type="button" data-pup="${i}" aria-pressed="false">${n}</button>`).join('');
   $('#wcPupSub').textContent='Pick a name, or name it later.';
+  { const n=nextBuild(); $('#wcTrail').innerHTML=n?`<img class="nb-pic" src="${n.thumb}" alt=""><span>Keep building<small>${escapeHTML(n.t)}</small></span>`:'Keep building'; }
   const d=$('#welcomeDlg'); if(!d.open) d.showModal(); worldSound(); if(askPup) setTimeout(()=>sfx.hatch(),1600);
 }
 $('#wcNames').addEventListener('click',e=>{ const b=e.target.closest('[data-pup]'); if(!b) return; const o=worldStore(); o.pupName=+b.dataset.pup; worldSet(o); track('pup_named');
   document.querySelectorAll('#wcNames [data-pup]').forEach(x=>x.setAttribute('aria-pressed',x===b)); $('#wcPupSub').textContent=`${PUP_NAMES[o.pupName]} it is! ${PUP_NAMES[o.pupName]} is waiting on your island.`; sfx.chirp(); renderHome(); });
 { const d=$('#welcomeDlg'), go=f=>{ d.close(); endReveal(true); f(); };
-  $('#wcTrail').onclick=()=>go(()=>{ track('welcome_fork:trail'); homeGo('otter'); });
+  $('#wcTrail').onclick=()=>go(()=>{ track('welcome_fork:trail'); const n=nextBuild(); if(n) n.go(); else homeGo('otter'); });
   $('#wcWeekly').onclick=()=>go(()=>{ track('welcome_fork:weekly'); setTab('daily'); });
   $('#wcLibrary').onclick=()=>go(()=>{ track('welcome_fork:library'); homeGo('library'); });
   d.addEventListener('cancel',e=>{ e.preventDefault(); go(()=>{ track('welcome_fork:stay'); setTab('home'); }); }); }
