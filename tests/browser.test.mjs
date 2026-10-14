@@ -100,3 +100,33 @@ test('the island renders every stage from a seeded world', { skip: skip() }, asy
     assert.deepEqual(t.errors, []); await t.ctx.close();
   }
 });
+
+test('a relay: one friend builds half, the other finishes, both islands get the model', { skip: skip() }, async () => {
+  const seeded = { fn: () => localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 })) };
+  const a = await open('?nosplash=1&welcome=0#blitz', { init: seeded });
+  await a.page.evaluate(() => { document.getElementById('bzName').value = 'A'; const sel = document.getElementById('bzModel'); sel.value = [...sel.options].find((o) => o.value !== 'cur').value; sel.dispatchEvent(new Event('change')); });
+  await a.page.waitForTimeout(600);
+  await a.page.evaluate(() => document.getElementById('bzRelayGo').click()); await a.page.waitForTimeout(1200);
+  assert.equal(await a.view(), 'view-build');
+  for (let i = 0; i < 60; i++) { await autoPlace(a.page, 1); if (await a.page.evaluate(() => document.getElementById('trialDlg').open)) break; }
+  await a.page.waitForTimeout(1500);
+  const code = await a.text('#trCode'); assert.match(code, /^[A-Z0-9]{6}$/); assert.match(await a.text('#trTitle'), /Your half is done/);
+  await a.page.evaluate(() => document.getElementById('trDone').click()); await a.page.waitForTimeout(800);
+  assert.match(await a.text('#chMineList'), /Waiting for your friend/);
+  const b = await open('?nosplash=1&welcome=0#blitz', { init: seeded });
+  await b.page.evaluate((c) => { document.getElementById('bzCodeIn').value = c; document.getElementById('bzJoin').click(); }, code); await b.page.waitForTimeout(2500);
+  assert.match(await b.text('#chPreview'), /started a relay/);
+  await b.page.evaluate(() => document.getElementById('relGo').click()); await b.page.waitForTimeout(1200);
+  assert.equal(await b.view(), 'view-build'); assert.doesNotMatch(await b.text('#progress'), /^0 of/);
+  for (let i = 0; i < 60; i++) { await autoPlace(b.page, 1); if (await b.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; }
+  await b.page.waitForTimeout(4500);
+  assert.match(await b.text('#trTitle'), /Finished together/);
+  const wb = JSON.parse(await b.page.evaluate(() => localStorage.getItem('bloppit-world-v1'))); assert.equal(wb.log.length, 1); assert.match(wb.log[0], /^r:/);
+  assert.deepEqual(b.errors, []); await b.ctx.close();
+  // the first player hears about it on the Blitz page
+  await a.page.evaluate(() => window.bloppitHome()); await a.page.waitForTimeout(300);
+  await a.page.evaluate(() => document.querySelector('[data-go="friend"]').click()); await a.page.waitForTimeout(2500);
+  assert.match(await a.text('#trTitle'), /Your relay is finished/);
+  const wa = JSON.parse(await a.page.evaluate(() => localStorage.getItem('bloppit-world-v1'))); assert.equal(wa.log.length, 1);
+  assert.deepEqual(a.errors, []); await a.ctx.close();
+});

@@ -68,14 +68,14 @@ footer{text-align:center;font-size:14px;color:var(--muted);padding:0 16px 32px}
   <p>Rooms let people on different devices build or race the same puzzle at the same time. To make that work, our server keeps a <b>room</b> with:</p>
   <ul>
     <li>the room code;</li>
-    <li>the name each player types (we ask for a first name or nickname, and rude words are turned into “Player”);</li>
+    <li>a generated label for each player, such as “Brave Otter 214”. The name typed on a device stays on that device and is never sent to the room;</li>
     <li>the puzzle being built, including the photos it was made from;</li>
     <li>the bricks each player places and their points or times.</li>
   </ul>
   <p>Only people who have the room code can ask to join, and the player who made the room decides who comes in. There is no chat and no voice in rooms: nothing a player types or says is sent to another player.</p>
   <p>A room is deleted automatically 3 days after its last activity. Our server does not use rooms for anything else.</p>
-  <h2>Blitz challenges</h2>
-  <p>A challenge lets a friend race your time later. When you make one, our server keeps the challenge code, the puzzle (including the photos it was made from), and the name and time of each player who races it (up to 12). Anyone with the code can see the names and times on that challenge. A challenge is deleted automatically 30 days after the last person played it.</p>
+  <h2>Blitz challenges and relays</h2>
+  <p>A challenge lets a friend race your time later; a relay lets a friend finish a model you started. When you make one, our server keeps the code, the puzzle (including the photos it was made from), and for each player a generated label such as “Brave Otter 214”, their time or the bricks they placed, and their misses and hints (up to 12 players on a challenge, two on a relay). Typed names are never sent. Anyone with the code can see the labels and times on that challenge. A challenge is deleted 30 days after the last player.</p>
   <h2>Weekly Bloppit</h2>
   <p>When you finish the Weekly Bloppit for the first time in a week, the app tells our server that one more person finished it, and whether the build was clean (no misses, no hints). That is all: no name, no time, no rank. The server keeps two counts per week so it can tell you how many builders finished clean, and deletes them after 8 weeks.</p>
   <h2>Your pup code (saved progress)</h2>

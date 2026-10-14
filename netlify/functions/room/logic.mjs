@@ -35,6 +35,11 @@ export function isBad(token) {
 const rand = (n, chars) => { let s = ''; const a = new Uint32Array(n); crypto.getRandomValues(a); for (const v of a) s += chars[v % chars.length]; return s; };
 const newCode = () => rand(5, ALPHABET);
 const newId = () => rand(20, 'abcdefghijklmnopqrstuvwxyz0123456789');
+// Nothing a child typed is shown to another child: players and knockers get a generated label from their id
+// ("Brave Otter 214"); the typed name stays on its own device. Shared by the challenge server.
+const ADJ = ['Brave', 'Sunny', 'Quick', 'Clever', 'Happy', 'Mighty', 'Gentle', 'Speedy', 'Sandy', 'Salty', 'Jolly', 'Lucky', 'Curious', 'Bouncy', 'Shiny', 'Cosy'];
+const ANIMAL = ['Otter', 'Crab', 'Puffin', 'Turtle', 'Gull', 'Dolphin', 'Seal', 'Whale', 'Starfish', 'Parrotfish', 'Heron', 'Pelican'];
+export function labelFor(id) { let h = 7; for (const ch of String(id)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return `${ADJ[h % ADJ.length]} ${ANIMAL[(h >>> 4) % ANIMAL.length]} ${100 + ((h >>> 8) % 900)}`; }
 export const cleanName = (s) => {
   const n = String(s || '').replace(/[<>&"]/g, '').trim().slice(0, 16);
   // Names are shown to everyone in the room, so a rude one becomes plain "Player".
@@ -156,7 +161,7 @@ export async function handle(method, query, body, store) {
     const mode = body.mode === 'blitz' ? 'blitz' : 'classic';
     const perTurn = mode === 'blitz' ? BLITZ_PER_TURN : Math.max(1, Math.min(20, Math.floor(Number(body.perTurn) || 5)));
     const now = Date.now();
-    const player = { id: newId(), name: cleanName(body.name), color: COLORS[0], pen: { hint: 0, auto: 0, miss: 0 }, seen: now, ms: 0, miss: 0 };
+    const pid = newId(), player = { id: pid, name: labelFor(pid), color: COLORS[0], pen: { hint: 0, auto: 0, miss: 0 }, seen: now, ms: 0, miss: 0 };
     for (let i = 0; i < 10; i++) {
       const code = newCode();
       const s = {
@@ -188,7 +193,7 @@ export async function handle(method, query, body, store) {
       const w0 = body.playerId ? s.waiting.find((w) => w.id === body.playerId) : null;
       if (w0) { w0.seen = now; pid = w0.id; waiting = true; return {}; }
       if (s.waiting.length >= MAX_WAITING) return { error: 'Lots of people are already waiting to join. Try again in a minute.' };
-      const w = { id: newId(), k: rand(8, ALPHABET), name: cleanName(body.name), seen: now };
+      const wid = newId(), w = { id: wid, k: rand(8, ALPHABET), name: labelFor(wid), seen: now };
       s.waiting.push(w); pid = w.id; waiting = true;
       return {};
     }, body.playerId);

@@ -125,7 +125,7 @@ Challenges: on the Blitz page tap Make a challenge, build the puzzle, and you ge
 into Got a code? on another device (the website bloppit.com/build works too) to race the same puzzle.
 Weekly Bloppit: tap the Weekly Bloppit banner on the menu. Only a finish and whether it was clean are sent (two counts per week, no name, no time). Deleted after 8 weeks.
 Progress (scores, finished models, stars, the pup's name as a number from a fixed list) is saved under an anonymous pup code minted by our server; nothing typed by a child is sent. Grown-ups corner (behind the parental gate) shows the transfer code and the Family Link QR, and can delete the record.
-Rooms (Build together, live Blitz): friends join with a 5-letter code and the host lets them in.
+Rooms (Build together, live Blitz): friends join with a 5-letter code and the host lets them in. Players appear under generated labels ("Brave Otter 214"); typed names never leave the device. Relays: one friend builds half a model, the other finishes it from a code.
 There is no chat and no voice: players in a room only place bricks.
 Links out of the app and sharing an invite are behind a parental gate (type a number written in words as digits).
 
@@ -147,7 +147,6 @@ activity, challenges 30 days after the last player, daily times after a week):
 |---|---|---|---|---|
 | User Content › Photos or Videos (the photos a shared model is made from) | Yes | No | No | App Functionality |
 | User Content › Gameplay Content (bricks placed, scores, Blitz times, Weekly Bloppit finishes, finished models, stars, XP, island decorations, pup save) | Yes | No | No | App Functionality |
-| User Content › Other User Content (player nickname) | Yes | No | No | App Functionality |
 
 Everything else (contact info, identifiers, location, usage data, diagnostics, etc.): **Not collected**.
 
