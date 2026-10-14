@@ -742,6 +742,10 @@ body.on-home .tabs{visibility:hidden}
 .hm-cont .go{grid-row:1 / span 3;grid-column:2;width:52px;height:52px;border-radius:50%;background:#D2352B;color:#fff;display:grid;place-items:center;font-size:24px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
 .hm-cont .bar{grid-column:1;height:10px;border-radius:99px;background:rgba(20,32,44,.18);overflow:hidden}
 .hm-cont .bar i{display:block;height:100%;background:#14202C;border-radius:99px}
+.hm-cont .hc-pic{display:none}
+.hm-cont.first{grid-template-columns:auto 1fr auto;background:#F4BC22}
+.hm-cont.first .hc-pic{display:block;grid-row:1 / span 3;grid-column:1;width:auto;height:84px;margin:-6px 0 -8px}
+.hm-cont.first b,.hm-cont.first .sub{grid-column:2}.hm-cont.first .go{grid-column:3}
 .hm-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px 14px;padding-top:8px}
 /* Trails, Blitz and Together: a hub page with the two games, then each game on a page of its own */
 .hub-grid{max-width:720px;margin-top:6px}
@@ -950,7 +954,7 @@ body.on-home .tabs{visibility:hidden}
     <img src="/art/head-bloppit.png" alt="" width="256" height="256">
     <div class="hm-bubble"><h2 id="hmHi">Hi there!</h2><p>What shall we build today?</p></div>
   </div>
-  <button class="hm-cont" id="hmCont" type="button" hidden><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span><span class="go" aria-hidden="true">▶</span></button>
+  <button class="hm-cont" id="hmCont" type="button" hidden><img class="hc-pic" src="/art/bud-offer.png" alt="" width="300" height="398"><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span><span class="go" aria-hidden="true">▶</span></button>
   <button class="hm-daily" data-go="daily" type="button"><img id="hmDailyImg" alt=""><span class="hd-txt"><span class="tag">📅 Weekly Bloppit</span><b id="hmDailyT">This week’s puzzle</b><span id="hmDailyS">One puzzle, the same for everyone</span></span><span class="go" aria-hidden="true">▶</span></button>
   <div class="hm-dstats" id="hmDstats">
     <div class="hd-nums"><div><b id="hdStreak">0</b><span>week streak 🔥</span></div><div><b id="hdTotal">0</b><span>Weeklies built</span></div></div>
@@ -5899,7 +5903,7 @@ function shareOpen(code,xfer){
   if(/^w-\d{4}-\d{2}-\d{2}$/.test(code)){ week=code.slice(2); if(week>weekOf()) week=null; }
   if(week){ const o=weeklyPuzzle(week); smp=SAMPLES[o.i]; title=week===weekOf()?'This week’s Bloppit':'A Weekly Bloppit'; note=week===weekOf()?`${o.name}, ${o.n} bricks. Build it clean and see how many others did too.`:`${o.name}, ${o.n} bricks, from the week of ${new Date(week+'T12:00:00Z').toLocaleDateString(undefined,{day:'numeric',month:'long'})}.`; }
   else if(code.startsWith('m-')){ smp=SAMPLES.find(x=>released(x)&&slugOf(x.name)===code.slice(2)); if(smp){ title=smp.name; note='A Bloppit build, sent to you. No account, nothing to sign up for.'; } }
-  if(!smp){ if(welcomeDue()&&welcomeStart()) return; setTab('home'); return; }
+  if(!smp){ setTab('home'); return; }
   if(!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png');
   $('#shPic').src=smp.thumb; $('#shPic').hidden=false; $('#shTitle').textContent=title; $('#shNote').textContent=note;
   setTab(week?'daily':'home');
@@ -5954,11 +5958,11 @@ $('#familyShare').onclick=async()=>{ if(APP&&!await gate.ask('Sharing sends a li
   const url=familyUrl(), text='Bloppit, a calm brick puzzle game. Open this on the device they play on:'; try{ if(navigator.share) await navigator.share({title:'Bloppit',text,url}); else await navigator.clipboard.writeText(`${text} ${url}`); }catch(e){} };
 
 /* ---------- First session: Bloppit hands over the bricks for one small build ----------
-   A first visit (no build started or finished on this device, nothing to resume) skips the menu and opens an
-   six-brick tree on the build stage. Bloppit puts each step's brick straight into the player's hand and the
-   hint shows where it goes, so the first snap happens in seconds. The reveal, then a fork: keep building
-   (Otter Trail), this week's Bloppit, or the library. ?welcome=1 opens it again (playtests). Naming a pup
-   comes later, in Bloppit Lite. */
+   On a first visit (no build started or finished on this device, nothing to resume) the menu's hero card is
+   "Start here": one tap opens a six-brick tree on the build stage. Bloppit puts each step's brick straight into
+   the player's hand and the hint shows where it goes, so the first snap happens in seconds. The reveal, the
+   pup, then a fork: keep building (Otter Trail), this week's Bloppit, or the library. ?welcome=1 opens the
+   build straight away (playtests); ?welcome=0 hides the card. */
 var WELCOME={sample:'Little tree',S:{kind:'model',shape:'flat',thick:1,tol:48,maxColors:6,gray:true,pw:48,pcol:24,size:6}};
 var welcomeVer=-1, welcomeBook=false;  // var: the buddy can update before this line runs
 function welcomeOn(){ return welcomeVer===modelVersion&&!mp&&!game; }
@@ -6028,9 +6032,10 @@ function homeContinue(){
       s:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`${levelsOf(o.game&&o.game.trail)[o.game.lvl].name}: ${o.placedN} of ${o.nBricks} bricks placed`:`Your ${niceName(o.name)}: ${o.placedN} of ${o.nBricks} bricks placed`,
       p:bar(o.placedN,o.nBricks),go:()=>$('#resumeGo').click()}; }
   if(model&&placedN>0&&placedN<model.bricks.length) return {t:'Continue building',s:`${placedN} of ${model.bricks.length} bricks placed`,p:bar(placedN,model.bricks.length),go:()=>setTab('build')};
+  if(welcomeDue()) return {t:'Start here: your first Bloppit',s:'Six bricks, one minute. Bloppit hands you each one.',p:-1,first:true,go:()=>{ track('welcome_from_menu'); if(!welcomeStart()) homeGo('library'); }};
   return null;
 }
-var homeCont=null;  // var: the menu can open (from the room check above) before this line runs
+var homeCont;  // var, no initializer: the menu can open (from the routing above) before this line runs, and must keep what it set
 function renderHome(){
   const p=curPlayer(), named=p.name&&!/^Player \d+$/.test(p.name.trim());
   $('#hmHi').innerHTML=named?`Hi <button class="hm-who" id="hmWho" type="button">${escapeHTML(p.name.trim())}</button>!`:'Hi there!';
@@ -6038,7 +6043,7 @@ function renderHome(){
   homeCont=homeContinue(); $('#hmCont').hidden=!homeCont; renderHomeWorld();
   if(tab==='home') pupMaybe();  // the first finish anywhere (a Trail level, a race) meets the pup on the way back to the menu
   if(homeCont){ $('#hmContT').textContent=homeCont.t; $('#hmContS').textContent=homeCont.s;
-    $('#hmContBar').hidden=homeCont.p<0; $('#hmContBar i').style.width=Math.max(4,homeCont.p)+'%'; }
+    $('#hmContBar').hidden=homeCont.p<0; $('#hmContBar i').style.width=Math.max(4,homeCont.p)+'%'; $('#hmCont').classList.toggle('first',!!homeCont.first); }
   const st=playerStats(players.cur);
   $('#hmOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
   $('#hmBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} new levels, with math puzzles`;
@@ -6071,7 +6076,7 @@ function homeRoute(){
   if(h==='photos'||h==='create') setTab('create');
   else if(h==='library') homeGo('library');
   else if(h==='otter'||h==='brain') homeGo(h);
-  else if(!h&&welcomeDue()&&welcomeStart()) {}
+  else if(!h&&new URLSearchParams(location.search).get('welcome')==='1'&&welcomeStart()) {}
   else { const [t,sub]=hashPage(h); if(t==='build'||t==='booklet'||t==='create') setTab('home'); else setTab(t,sub); }
 }
 { // Launch screen: show it for a moment, then fade to the menu (tap to skip)
