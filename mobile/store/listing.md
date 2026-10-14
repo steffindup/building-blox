@@ -120,7 +120,7 @@ Preview video: 1.0 is captured app footage of the snap, the finish and a Blitz r
 ## App Review notes
 
 Bloppit is a brick-building puzzle game for children. No account or login is needed.
-To try it quickly: the first visit opens a guided six-brick build; tap the faded brick to place each piece. Then on the menu tap Blitz → vs the Gulls, type a name and tap Start the race (works offline).
+To try it quickly: on the menu tap the yellow Start here card for a guided six-brick build; tap the faded brick to place each piece. Then on the menu tap Blitz → vs the Gulls, type a name and tap Start the race (works offline).
 Challenges: on the Blitz page tap Make a challenge, build the puzzle, and you get a 6-letter code; type that code
 into Got a code? on another device (the website bloppit.com/build works too) to race the same puzzle.
 Weekly Bloppit: tap the Weekly Bloppit banner on the menu. Only a finish and whether it was clean are sent (two counts per week, no name, no time). Deleted after 8 weeks.
