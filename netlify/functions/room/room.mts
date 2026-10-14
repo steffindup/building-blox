@@ -1,4 +1,4 @@
-// "Play together" room server for Building Blox.
+// "Build together" room server for Bloppit. Rooms are for placing bricks together: no chat, no voice.
 // Rooms live in Netlify Blobs; the game rules are in ./logic.mjs.
 import type { Config } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
@@ -41,15 +41,8 @@ export default async (req: Request) => {
   // The player id comes in a header (not the URL) so it never lands in logs or history.
   const pid = req.headers.get("x-player");
   if (pid) query.pid = pid; else delete query.pid;
-  // Voice chat: which servers help two devices find each other. STUN only tells a device its own public
-  // address. A TURN relay (optional: set TURN_URLS, TURN_USERNAME and TURN_CREDENTIAL in Netlify) passes
-  // encrypted audio along when a network blocks direct connections; it can't listen in or record.
-  if (req.method === "GET" && query.ice) {
-    const iceServers: any[] = [{ urls: ["stun:stun.l.google.com:19302", "stun:stun.cloudflare.com:3478"] }];
-    const turn = process.env.TURN_URLS;
-    if (turn) iceServers.push({ urls: turn.split(",").map((u) => u.trim()), username: process.env.TURN_USERNAME, credential: process.env.TURN_CREDENTIAL });
-    return Response.json({ iceServers }, { headers: { "cache-control": "no-store" } });
-  }
+  // Voice chat is gone (October 2026): the old ICE-server lookup answers 410 so stale builds stop asking.
+  if (req.method === "GET" && query.ice) return Response.json({ error: "Voice chat is no longer part of Bloppit." }, { status: 410, headers: h });
   let body: any = null;
   if (req.method === "POST") {
     try { body = await req.json(); } catch { return Response.json({ error: "Bad request" }, { status: 400, headers: h }); }

@@ -504,69 +504,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .mp-knock .kn .primary{padding:7px 14px;font-size:15px}
 .mp-knock .kn .ghost{background:#fff;color:#14202C}
 .mp-knock .kn.other{background:var(--callout);color:var(--ink);font-weight:700}
-.mp-voice{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.mp-voice:empty{display:none}
-.vc-btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:8px 16px 8px 12px;font-weight:800;font-size:15px;cursor:pointer;border:2px solid var(--line);background:var(--page);color:var(--ink)}
-.vc-btn:hover{border-color:var(--ink)}
-.vc-btn.join{background:#0055BF;border-color:#0055BF;color:#fff}
-.vc-btn.live{background:#237841;border-color:#237841;color:#fff}
-.vc-btn.live .dot{width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 0 0 0 rgba(255,255,255,.7)}
-.vc-btn.live.talk .dot{animation:vc-pulse 1s infinite}
-.vc-btn.off{background:var(--bg);color:var(--muted)}
-.vc-btn svg{width:18px;height:18px;flex:none}
-@keyframes vc-pulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.75)}100%{box-shadow:0 0 0 10px rgba(255,255,255,0)}}
-.vc-note{font-size:12px;font-weight:700;color:var(--muted)}
-.vc-ic{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:12px;line-height:1}
-.vc-ic.on{background:#237841;color:#fff}
-.vc-ic.off{background:var(--line);color:var(--muted)}
-.mp-pl.talk{box-shadow:0 0 0 3px #3FB45F}
-.vc-mute{border:0;background:var(--page);border-radius:999px;width:26px;height:26px;cursor:pointer;font-size:13px;line-height:1;box-shadow:inset 0 0 0 1px var(--line)}
-.vc-mute[aria-pressed="true"]{background:var(--accent);color:#fff;box-shadow:none}
-.mp-vc-card{display:grid;gap:8px;background:var(--bg);border-radius:12px;padding:12px 14px}
-.mp-vc-card h3{margin:0}
-.mp-vc-card p{margin:0;font-size:14px;color:var(--muted)}
-@media (prefers-reduced-motion: reduce){.vc-btn.live.talk .dot{animation:none;box-shadow:0 0 0 4px rgba(255,255,255,.5)}}
 .mp-off{background:var(--callout);border-radius:12px;padding:16px;font-size:15px}
-/* Room chat: a button bottom-right while you're in a Play together room, opening a small panel */
-.chat{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
-.chat-fab{display:flex;align-items:center;gap:8px;min-height:48px;padding:10px 18px 10px 14px;border:0;border-radius:999px;cursor:pointer;
-  background:#0055BF;color:#fff;font-family:var(--f-display);font-size:18px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.22),0 6px 18px var(--shadow)}
-.chat-fab:hover{filter:brightness(1.08)}
-.chat-fab svg{width:22px;height:22px}
-.chat-badge{min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--hi);color:#14202C;font-family:var(--f-body);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center}
-.chat-panel{width:min(360px,calc(100vw - 32px));height:min(460px,calc(100vh - 120px));background:var(--page);border:2px solid #0055BF;border-radius:16px;
-  box-shadow:0 12px 32px var(--shadow);display:flex;flex-direction:column;overflow:hidden}
-.chat-head{display:flex;align-items:center;gap:8px;padding:10px 10px 10px 14px;border-bottom:1px solid var(--line)}
-.chat-head strong{font-family:var(--f-display);font-weight:400;font-size:19px}
-.chat-head .ghost{margin-left:auto;min-width:44px;min-height:44px;font-size:20px;line-height:1}
-.chat-log{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px;overscroll-behavior:contain}
-.cm{display:flex;flex-direction:column;gap:2px;max-width:85%;align-self:flex-start}
-.cm.me{align-self:flex-end;align-items:flex-end}
-.cm-who{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:var(--muted)}
-.cm-who i{width:12px;height:12px;border-radius:50%;display:inline-block}
-.cm-t{background:var(--bg);border-radius:14px 14px 14px 4px;padding:8px 12px;font-size:15px;line-height:1.35;overflow-wrap:anywhere;white-space:pre-wrap}
-.cm.me .cm-t{background:var(--callout);border-radius:14px 14px 4px 14px}
-.chat-empty{margin:auto;text-align:center}
-.chat-form{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
-.chat-form .inp{flex:1;min-width:0}
-.chat-form .primary{padding:9px 16px;font-size:16px}
-.chat-foot{padding:0 12px 10px;font-size:12px}
-.chat-foot[data-kind="err"]{color:var(--accent);font-weight:700}
-.gate-num{font-family:var(--f-body);font-weight:800;font-size:22px;line-height:1.3;text-align:center;margin:12px 0}
-.appfoot{text-align:center;font-size:13px;margin:8px 0 24px}
-/* Puzzle page: once you've picked a puzzle, a ribbon pins under the top bar (or to the very top while the bar is tucked away) */
-.usebar{position:fixed;left:50%;transform:translateX(-50%);top:calc(var(--topH,64px) + 8px);z-index:19;width:min(640px,calc(100% - 24px));display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:8px 8px 8px 10px;border-radius:16px;background:var(--ink);color:var(--page);box-shadow:0 8px 24px rgba(0,0,0,.25);transition:top .22s ease,opacity .2s}
-.top.tucked ~ main .usebar{top:calc(env(safe-area-inset-top,0px) + 8px)}
-.usebar[hidden]{display:none}
-.usebar img{width:44px;height:44px;border-radius:10px;background:#fff;object-fit:contain;padding:2px}
-.ub-txt{display:grid;min-width:0;line-height:1.2}
-.ub-txt b{font-family:var(--f-display);font-weight:400;font-size:19px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ub-txt span{font-size:13px;font-weight:600;opacity:.75}
-.usebar .primary{white-space:nowrap}
-body.ub-on #view-create{padding-top:64px}
-body:not(.on-home) .appfoot{display:none}  /* the privacy policy link lives on the menu */
-.appfoot a{color:var(--muted)}
-body.chat-on{padding-bottom:96px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .gamebar{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;background:var(--page);border:2px solid var(--hi);border-radius:14px;padding:10px 14px;margin-bottom:14px}
 .gb-lvl{display:flex;gap:10px;align-items:center}
@@ -951,7 +889,6 @@ li.hd-empty::before{content:none!important}
   <div class="mp-turn" id="mpTurn"></div>
   <div class="mp-players" id="mpPlayers"></div>
   <span class="gb-flash" id="mpFlash"></span>
-  <div class="mp-voice" id="mpVoice"></div>
   <div class="mp-knock" id="mpKnock" hidden></div>
   <div class="gb-btns"><button class="ghost" id="mpEndTurn" type="button" hidden>End my turn</button><button class="ghost" id="mpSkip" type="button" hidden>Skip their turn</button><button class="ghost" id="mpRoomBtn" type="button">Room</button></div>
 </div>
@@ -1283,7 +1220,6 @@ li.hd-empty::before{content:none!important}
     <div class="mp-knock big" id="mpKnockRoom" hidden></div>
     <h3>Players</h3>
     <div class="mp-list" id="mpList"></div>
-    <div class="mp-vc-card" id="mpVcCard"></div>
     <div class="mp-room-btns">
       <button class="primary" id="mpStart" type="button" hidden>Start the game</button>
       <span class="note" id="mpWait"></span>
@@ -1369,23 +1305,7 @@ li.hd-empty::before{content:none!important}
   <p class="note">Your first try each day counts. Bloppit keeps your time and the name you play as (a first name or nickname; rude words, numbers and links become “Player”), or “A player” if you turn your name off. The scoreboard shows the fastest 50, and each day’s list is deleted after a week.</p>
 </section>
 
-<div class="chat" id="chat" hidden>
-  <section class="chat-panel" id="chatPanel" aria-labelledby="chatTitle" hidden>
-    <div class="chat-head"><strong id="chatTitle">Room chat</strong><span class="note" id="chatRoom"></span>
-      <button class="ghost" id="chatClose" type="button" aria-label="Close chat">×</button></div>
-    <div class="chat-log" id="chatLog" aria-live="polite"></div>
-    <form class="chat-form" id="chatForm" autocomplete="off">
-      <label class="sr" for="chatIn">Message</label>
-      <input class="inp" id="chatIn" maxlength="140" placeholder="Say something nice…" enterkeyhint="send">
-      <button class="primary" id="chatSend" type="submit">Send</button>
-    </form>
-    <p class="note chat-foot" id="chatFoot">Be kind. Only people in this room can see the chat.</p>
-  </section>
-  <button class="chat-fab" id="chatFab" type="button" aria-expanded="false" aria-controls="chatPanel">
-    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>
-    <span>Chat</span><b class="chat-badge" id="chatBadge" hidden></b>
-  </button>
-</div>
+
 <dialog class="windlg" id="trialDlg" aria-labelledby="trTitle">
   <div class="win-stars" id="trIcon">⚡</div>
   <h2 id="trTitle">Done!</h2>
@@ -1470,7 +1390,7 @@ li.hd-empty::before{content:none!important}
 /* ---------- App Store app (iPhone/iPad, built with Capacitor from mobile/) ---------- */
 // mobile/scripts/build-www.mjs sets window.BLOPPIT_APP when it packages this page for the app.
 // In the app: rooms, challenges and the Daily Bloppit talk to bloppit.com; links out of the app and sharing sit
-// behind a grown-ups gate. Room chat (typed, filtered on the server) and voice chat work the same as on the website.
+// behind a grown-ups gate. There is no chat and no voice in rooms: players only place bricks.
 const APP=!!window.BLOPPIT_APP, API_BASE=APP?'https://bloppit.com':'';
 function haptic(kind,delay=0){
   const H=APP&&window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.Haptics; if(!H) return;
@@ -4592,21 +4512,18 @@ async function mpLoadModel(code){
 }
 async function mpEnter(res,isHost,name){
   mpEndSolo(); dismissResume();
-  mp={cpu:!!res.cpu,code:res.code,playerId:res.playerId,me:res.me,state:null,ver:0,applied:0,pen:{hint:0,auto:0,miss:0},hintSteps:[],local:new Set(),posting:0,fails:0,lastTurn:-1,entered:false,ended:false,chatSeen:chatSeenGet(res.code),chatShown:-1};
+  mp={cpu:!!res.cpu,code:res.code,playerId:res.playerId,me:res.me,state:null,ver:0,applied:0,pen:{hint:0,auto:0,miss:0},hintSteps:[],local:new Set(),posting:0,fails:0,lastTurn:-1,entered:false,ended:false};
   if(!isHost){ try{ await mpLoadModel(res.code); }catch(e){ mp=null; throw e; } }
   if(!model||model.bricks.length!==res.state.nBricks){ mp=null; throw new Error('This room was made with a different version of Bloppit. Refresh the page on every device and try again.'); }
   if(!mp.cpu) mpStore({code:res.code,playerId:res.playerId,name});
   const meP=res.state.players[res.me]; if(meP&&meP.pen) mp.pen={...mp.pen,...meP.pen};
   hand=[]; held=null; sel=null; ghostGroup.clear(); pieces.forEach(p=>p.hand=false);
   if(res.state.moves.length){ mp.state=res.state; mpResync(); reconcilePieces(); mp.state=null; }
-  vo.sigSeen=-1; vo.mutedPeers=new Set();
   mpApply(res.state);
-  // Coming back after a reload: you're not in voice on this page yet, so tell the others
-  if(meP&&meP.vc) mpPost({action:'vc',state:0}).then(j=>mpApply(j.state)).catch(()=>{});
   updateBuildUI(); frameBuild(false);
   mp.tick=setInterval(mpTick,100);
   if(mp.cpu){ cpuKick(); return; }
-  let tick=0; mp.poll=setInterval(()=>{ tick++; if(tick%3===0||voBusy()) mpPoll(); },500);
+  let tick=0; mp.poll=setInterval(()=>{ tick++; if(tick%3===0) mpPoll(); },500);
   mp.ping=setInterval(()=>{ if(mp) mpPost({action:'ping'}).then(j=>mpApply(j.state)).catch(()=>{}); },15000);
   try{ history.replaceState(null,'','?room='+res.code); }catch(e){}
 }
@@ -4615,7 +4532,7 @@ function mpLeave(){
   voLeave(true);
   clearInterval(mp.poll); clearInterval(mp.ping); clearInterval(mp.tick);
   const wasCpu=mp.cpu; cpuEnd();
-  mp=null; if(!wasCpu) mpStore(null); document.title='Bloppit'; chatOpen=false; renderChat();
+  mp=null; if(!wasCpu) mpStore(null); document.title='Bloppit';
   try{ history.replaceState(null,'',location.pathname); }catch(e){}
   $('#mpBar').hidden=true; $('#restart').hidden=false;
   ['hintBtn','autoBtn'].forEach(id=>{ $('#'+id).disabled=false; $('#'+id).hidden=false; });
@@ -4699,7 +4616,7 @@ async function renderMpView(){
   }
   if(!s) return;
   const bz=s.mode==='blitz', cpuOn=!!mp.cpu;
-  $('.mp-room-top').hidden=cpuOn; $('#mpVcCard').hidden=cpuOn;
+  $('.mp-room-top').hidden=cpuOn;
   $('#mpBigCode').textContent=s.code; $('#mpSite').textContent=APP?'bloppit.com/build':location.host+location.pathname.replace(/\/$/,'');
   $('#mpWhere').textContent=bz?'⚡ Blitz':'🧩 Together';
   const p0=photos[0]; if(p0) $('#mpThumb').src=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png'));
@@ -4885,7 +4802,7 @@ async function cpuApi(method,body,query){
     if(s.finished||s.turn!==me) return {state:cpuPub()};
     if(s.turnPlaced<1) throw new Error('Place at least one brick before you tap Done.');
     cpuNextTurn();
-  } else return {state:cpuPub()};  // ping, chat, voice: nothing to do in a race against Bloppit
+  } else return {state:cpuPub()};  // ping: nothing to do in a race against Bloppit
   s.ver++; setTimeout(cpuKick,0);
   return {state:cpuPub()};
 }
@@ -4945,9 +4862,9 @@ $('#bzCpuGo').onclick=async()=>{
     if(mp) mpLeave();
     const title=mpUseModel($('#bzModel').value);
     if(model.bricks.length<2) throw new Error('This model is too small for a race. Pick a bigger one.');
-    const lvl=bzLevel(), me=curPlayer(), pl=(nm,color)=>({name:nm,color,pen:{},stale:false,vc:0,ms:0,miss:0,hint:0,n:0});
+    const lvl=bzLevel(), me=curPlayer(), pl=(nm,color)=>({name:nm,color,pen:{},stale:false,ms:0,miss:0,hint:0,n:0});
     cpu={timer:null,left:0,s:{code:'VS',ver:1,started:true,finished:false,perTurn:3,mode:'blitz',cpuLevel:lvl,nBricks:model.bricks.length,title,level:null,host:0,
-      turn:0,turnPlaced:0,turnStart:Date.now()+COUNTDOWN_MS,moves:[],voice:false,me:0,chat:[],waiting:[],sig:[],quota:Math.floor(model.bricks.length/2),
+      turn:0,turnPlaced:0,turnStart:Date.now()+COUNTDOWN_MS,moves:[],me:0,waiting:[],quota:Math.floor(model.bricks.length/2),
       players:[pl(name,(me&&me.color&&me.color!=='#8A5A3B')?me.color:'#D2352B'),pl(CPU_LEVELS[lvl].name,'#8A5A3B')]}};
     mpRememberName(name);
     await mpEnter({cpu:true,code:'VS',playerId:'me',me:0,state:cpuPub()},true,name);
@@ -4993,8 +4910,8 @@ async function trialStart(info,name){
   if(!model||model.bricks.length<2) throw new Error('This puzzle is too small for a race. Pick a bigger one.');
   const me=curPlayer(), N=model.bricks.length;
   cpu={timer:null,left:0,trial:info,s:{code:'⏱',ver:1,started:true,finished:false,perTurn:N,mode:'blitz',solo:true,label:info.label,cpuLevel:'medium',nBricks:N,title:info.title||niceName(model.name),level:null,host:0,
-    turn:0,turnPlaced:0,turnStart:Date.now()+COUNTDOWN_MS,moves:[],voice:false,me:0,chat:[],waiting:[],sig:[],quota:N,
-    players:[{name,color:(me&&me.color&&me.color!=='#8A5A3B')?me.color:'#D2352B',pen:{},stale:false,vc:0,ms:0,miss:0,hint:0,n:0}]}};
+    turn:0,turnPlaced:0,turnStart:Date.now()+COUNTDOWN_MS,moves:[],me:0,waiting:[],quota:N,
+    players:[{name,color:(me&&me.color&&me.color!=='#8A5A3B')?me.color:'#D2352B',pen:{},stale:false,ms:0,miss:0,hint:0,n:0}]}};
   await mpEnter({cpu:true,code:'⏱',playerId:'me',me:0,state:cpuPub()},true,name);
   setTab('build'); cpuCountdown();
 }
@@ -5228,204 +5145,13 @@ document.addEventListener('click',e=>{
   mpPost({action:admit?'admit':'deny',k:admit?a.dataset.admit:a.dataset.deny}).then(j=>mpApply(j.state)).catch(err=>setStatus(err.message,'err'));
 });
 
-/* ---------- Voice chat (Play together) ---------- */
-// Off until the room's host turns it on; each player then chooses to join and can mute themselves or anyone else.
-// Audio goes directly between the devices (WebRTC, encrypted by the browser). The room server only passes on the
-// two short messages each pair of devices needs to find each other. Nothing is ever recorded or stored.
-const MIC_SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="2" width="8" height="13" rx="4" fill="currentColor"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>';
-const MIC_OFF_SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="2" width="8" height="13" rx="4" fill="currentColor" opacity=".45"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" opacity=".45"/><path d="M3 3l18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
-const vo={on:false,mic:true,stream:null,pcs:new Map(),sigSeen:-1,ice:null,mutedPeers:new Set(),ac:null,meters:new Map(),level:{},fastUntil:0,joining:false};
-const voBusy=()=>Date.now()<vo.fastUntil||(vo.on&&[...vo.pcs.values()].some(e=>e.pc.connectionState!=='connected'));
-async function voIce(){ if(vo.ice) return vo.ice; try{ const j=await mpApi('GET',null,'?ice=1'); vo.ice=j.iceServers; }catch(e){ vo.ice=[{urls:'stun:stun.l.google.com:19302'}]; } return vo.ice; }
-async function voJoin(){
-  if(!mp||!mp.state||!mp.state.voice||vo.on||vo.joining) return;
-  if(!navigator.mediaDevices||!window.RTCPeerConnection){ setStatus('Voice chat doesn’t work in this browser. Try Safari or Chrome.','err'); return; }
-  vo.joining=true; updateVoiceUI();
-  try{
-    await voIce();
-    vo.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false});
-  }catch(e){
-    vo.joining=false; updateVoiceUI();
-    setStatus(e&&e.name==='NotAllowedError'?'Bloppit wasn’t allowed to use the microphone. Allow it in your browser settings, then tap Join voice again.':'No microphone was found on this device.','err'); return;
-  }
-  vo.joining=false; vo.on=true; vo.mic=true; voMeter('me',vo.stream); vo.fastUntil=Date.now()+10000;
-  setStatus('You’re in voice chat. Your mic is on. In the same room as other players? Use headphones to stop echo.','ok');
-  mpPost({action:'vc',state:2}).then(j=>mpApply(j.state)).catch(err=>{ setStatus(err.message,'err'); voLeave(false); });
-  updateVoiceUI();
-}
-function voSetMic(on){
-  vo.mic=on; if(vo.stream) vo.stream.getAudioTracks().forEach(t=>t.enabled=on);
-  mpPost({action:'vc',state:on?2:1}).then(j=>mpApply(j.state)).catch(()=>{});
-  updateVoiceUI();
-}
-function voLeave(send){
-  for(const j of [...vo.pcs.keys()]) voClose(j);
-  if(vo.stream) vo.stream.getTracks().forEach(t=>t.stop());
-  vo.stream=null; voMeterStop('me');
-  const was=vo.on; vo.on=false;
-  if(was&&send&&mp) mpPost({action:'vc',state:0}).then(j=>mpApply(j.state)).catch(()=>{});
-  updateVoiceUI();
-}
-function voSync(s){
-  if(!mp||mp.cpu) return;
-  const sig=s.sig||[];
-  if(vo.sigSeen<0) vo.sigSeen=sig.reduce((a,m)=>Math.max(a,m.n),0);  // ignore old messages from before this visit
-  if(vo.on&&!s.voice){ voLeave(false); setStatus('The host turned voice chat off.'); }
-  for(const m of sig){ if(m.n<=vo.sigSeen) continue; vo.sigSeen=m.n; if(vo.on) voOnSignal(m.f,m.d); }
-  if(vo.on){
-    s.players.forEach((p,j)=>{
-      if(j===mp.me) return;
-      const want=p.vc>0&&!p.stale, e=vo.pcs.get(j);
-      if(!want){ if(e) voClose(j); return; }
-      if(mp.me<j){  // the player listed first starts each connection
-        if(!e) voOffer(j);
-        else if(e.pc.connectionState==='failed'||(e.pc.connectionState!=='connected'&&Date.now()-e.t0>20000)){ voClose(j); voOffer(j); }
-      }
-    });
-  }
-  updateVoiceUI();
-}
-function voPeer(j,sid){
-  const pc=new RTCPeerConnection({iceServers:vo.ice||[]});
-  const e={pc,sid,t0:Date.now(),audio:null};
-  if(vo.stream) vo.stream.getTracks().forEach(t=>pc.addTrack(t,vo.stream));
-  pc.ontrack=ev=>{
-    if(!e.audio){ e.audio=document.createElement('audio'); e.audio.autoplay=true; e.audio.setAttribute('playsinline',''); e.audio.hidden=true; document.body.appendChild(e.audio); }
-    e.audio.srcObject=ev.streams[0]; e.audio.muted=vo.mutedPeers.has(j);
-    e.audio.play().catch(()=>{ vo.needTap=true; updateVoiceUI(); });
-    voMeter(j,ev.streams[0]);
-  };
-  pc.onconnectionstatechange=()=>{ if(pc.connectionState==='connected') vo.fastUntil=0; updateVoiceUI(); };
-  vo.pcs.set(j,e); return e;
-}
-function voGather(pc){ return new Promise(res=>{ if(pc.iceGatheringState==='complete') return res(); const t=setTimeout(res,2500);
-  pc.addEventListener('icegatheringstatechange',()=>{ if(pc.iceGatheringState==='complete'){ clearTimeout(t); res(); } }); }); }
-function voSend(j,o){ vo.fastUntil=Date.now()+10000; mpPost({action:'signal',to:j,d:JSON.stringify(o)}).then(r=>mpApply(r.state)).catch(()=>{}); }
-async function voOffer(j){
-  const sid=Math.random().toString(36).slice(2,10), e=voPeer(j,sid);
-  try{ await e.pc.setLocalDescription(await e.pc.createOffer()); await voGather(e.pc); if(vo.pcs.get(j)!==e) return; voSend(j,{t:'o',sid,sdp:e.pc.localDescription.sdp}); }
-  catch(err){ voClose(j); }
-}
-async function voOnSignal(f,d){
-  let m; try{ m=JSON.parse(d); }catch(err){ return; }
-  if(m.t==='o'){
-    voClose(f); const e=voPeer(f,m.sid);
-    try{ await e.pc.setRemoteDescription({type:'offer',sdp:m.sdp}); await e.pc.setLocalDescription(await e.pc.createAnswer()); await voGather(e.pc);
-      if(vo.pcs.get(f)!==e) return; voSend(f,{t:'a',sid:m.sid,sdp:e.pc.localDescription.sdp}); }
-    catch(err){ voClose(f); }
-  } else if(m.t==='a'){
-    const e=vo.pcs.get(f); if(e&&e.sid===m.sid&&e.pc.signalingState==='have-local-offer'){ try{ await e.pc.setRemoteDescription({type:'answer',sdp:m.sdp}); }catch(err){} }
-  }
-}
-function voClose(j){ const e=vo.pcs.get(j); if(!e) return; try{ e.pc.close(); }catch(x){} if(e.audio){ e.audio.srcObject=null; e.audio.remove(); } voMeterStop(j); vo.pcs.delete(j); }
-// Who is talking: a gentle glow on their name (and a pulse on your own Mic on button)
-function voMeter(key,stream){
-  try{
-    if(!vo.ac){ const C=window.AudioContext||window.webkitAudioContext; vo.ac=new C(); }
-    if(vo.ac.state==='suspended') vo.ac.resume();
-    voMeterStop(key);
-    const src=vo.ac.createMediaStreamSource(stream), an=vo.ac.createAnalyser(); an.fftSize=512; src.connect(an);
-    vo.meters.set(key,{src,an,buf:new Uint8Array(an.fftSize)});
-    if(!vo.meterT) vo.meterT=setInterval(voTick,150);
-  }catch(e){}
-}
-function voMeterStop(key){ const m=vo.meters.get(key); if(m){ try{ m.src.disconnect(); }catch(e){} vo.meters.delete(key); } delete vo.level[key]; if(!vo.meters.size&&vo.meterT){ clearInterval(vo.meterT); vo.meterT=0; } }
-function voTick(){
-  let changed=false;
-  for(const [k,m] of vo.meters){ m.an.getByteTimeDomainData(m.buf); let sum=0; for(const v of m.buf){ const x=(v-128)/128; sum+=x*x; }
-    const talk=Math.sqrt(sum/m.buf.length)>.04&&(k!=='me'||vo.mic); if(!!vo.level[k]!==talk){ vo.level[k]=talk; changed=true; } }
-  if(changed) voTalkUI();
-}
-function voTalkUI(){
-  document.querySelectorAll('[data-pl]').forEach(el=>{ const i=+el.dataset.pl; el.classList.toggle('talk',i===mp?.me?!!vo.level.me:!!vo.level[i]); });
-  const b=$('#vcMic'); if(b) b.classList.toggle('talk',!!vo.level.me);
-}
-function voChip(i){
-  const s=mp&&mp.state; if(!s||!s.voice) return '';
-  const p=s.players[i]; if(!p||!p.vc) return '';
-  const ic=p.vc===2?'<span class="vc-ic on" title="Mic on" aria-label="Mic on">🎙</span>':'<span class="vc-ic off" title="Mic off" aria-label="Mic off">🔇</span>';
-  const mute=vo.on&&i!==mp.me?`<button class="vc-mute" type="button" data-vmute="${i}" aria-pressed="${vo.mutedPeers.has(i)}" title="${vo.mutedPeers.has(i)?'Unmute':'Mute'} ${escapeHTML(p.name)} for me" aria-label="${vo.mutedPeers.has(i)?'Unmute':'Mute'} ${escapeHTML(p.name)}">${vo.mutedPeers.has(i)?'🔈':'🔊'}</button>`:'';
-  return ic+mute;
-}
-document.addEventListener('click',e=>{
-  const b=e.target.closest('[data-vmute]'); if(!b) return; const i=+b.dataset.vmute;
-  if(vo.mutedPeers.has(i)) vo.mutedPeers.delete(i); else vo.mutedPeers.add(i);
-  const pe=vo.pcs.get(i); if(pe&&pe.audio) pe.audio.muted=vo.mutedPeers.has(i);
-  updateMpBar(); if(tab==='mp'||tab==='blitz') renderMpView();
-});
-function updateVoiceUI(){
-  const s=mp&&mp.state, bar=$('#mpVoice'), card=$('#mpVcCard'); if(!bar||!card) return;
-  if(!s||mp.cpu){ bar.innerHTML=''; card.innerHTML=''; return; }
-  const host=mp.me===s.host, n=s.players.filter(p=>p.vc>0).length;
-  let h='';
-  if(!s.voice){ if(host) h=`<button class="vc-btn" type="button" data-vc="on">${MIC_SVG}Turn on voice chat</button>`; }
-  else if(vo.joining) h=`<button class="vc-btn join" type="button" disabled>${MIC_SVG}Starting your mic…</button>`;
-  else if(!vo.on) h=`<button class="vc-btn join" type="button" data-vc="join">${MIC_SVG}Join voice chat${n?` (${n} in)`:''}</button>`;
-  else {
-    const peers=[...vo.pcs.values()], wait=peers.filter(e=>e.pc.connectionState!=='connected').length;
-    h=`<button class="vc-btn ${vo.mic?'live':'off'}${vo.mic&&vo.level.me?' talk':''}" id="vcMic" type="button" data-vc="${vo.mic?'mute':'unmute'}" aria-pressed="${vo.mic}">${vo.mic?'<span class="dot" aria-hidden="true"></span>Mic on':MIC_OFF_SVG+'Mic off'}</button>`
-      +`<button class="ghost" type="button" data-vc="leave">Leave voice</button>`
-      +(vo.needTap?`<button class="ghost" type="button" data-vc="hear">Tap to hear others</button>`:'')
-      +`<span class="vc-note">${n<2?'Waiting for others to join voice':wait?'Connecting…':`Talking with ${n-1} other${n>2?'s':''}`}</span>`;
-  }
-  bar.innerHTML=h;
-  card.innerHTML=`<h3>Voice chat</h3>`+(s.voice
-    ?`<p>Voice chat is on. Players can join and talk while they build. Audio goes straight between your devices and is never recorded or stored.</p><div class="mp-voice">${h}${host?'<button class="ghost" type="button" data-vc="off">Turn voice chat off</button>':''}</div>`
-    :host?`<p>Off. Turn it on to let players talk while they build. Everyone still chooses whether to join, and can mute themselves or anyone else. Audio goes straight between your devices and is never recorded or stored.</p><div class="mp-voice"><button class="vc-btn" type="button" data-vc="on">${MIC_SVG}Turn on voice chat</button></div>`
-    :`<p>Off. ${escapeHTML(s.players[s.host].name)}, who made the room, can turn it on.</p>`);
-  voTalkUI();
-}
-document.addEventListener('click',e=>{
-  const b=e.target.closest('[data-vc]'); if(!b||!mp) return; const a=b.dataset.vc;
-  if(a==='on'||a==='off') mpPost({action:'voice',on:a==='on'}).then(j=>mpApply(j.state)).catch(err=>setStatus(err.message,'err'));
-  else if(a==='join') voJoin();
-  else if(a==='mute') voSetMic(false);
-  else if(a==='unmute') voSetMic(true);
-  else if(a==='leave') voLeave(true);
-  else if(a==='hear'){ vo.needTap=false; for(const e of vo.pcs.values()) if(e.audio) e.audio.play().catch(()=>{}); updateVoiceUI(); }
-});
-
-/* ---------- Room chat (Play together and Blitz rooms) ---------- */
-// Messages are checked on the server (no links, emails, phone numbers or social accounts; rude words blanked).
-let chatOpen=false;
-function chatSeenGet(code){ try{ return +localStorage.getItem('bloppit-chat-seen-'+code)||0; }catch(e){ return 0; } }
-function chatSeenSet(){ if(!mp) return; try{ localStorage.setItem('bloppit-chat-seen-'+mp.code,String(mp.chatSeen)); }catch(e){} }
-function chatFoot(t,kind){ const el=$('#chatFoot');
-  el.textContent=t||'Be kind. Only people in this room can see the chat.'; el.dataset.kind=kind||''; }
-function renderChat(){
-  const box=$('#chat'), s=mp&&!mp.cpu&&mp.state;
-  box.hidden=!s; document.body.classList.toggle('chat-on',!!s); if(!s){ $('#chatPanel').hidden=true; $('#chatFab').setAttribute('aria-expanded','false'); return; }
-  const list=s.chat||[], last=list.length?list[list.length-1].n:0;
-  if(chatOpen&&last>mp.chatSeen){ mp.chatSeen=last; chatSeenSet(); }
-  const unread=list.filter(m=>m.n>mp.chatSeen&&m.p!==mp.me).length;
-  $('#chatBadge').hidden=!unread; $('#chatBadge').textContent=unread>9?'9+':String(unread);
-  $('#chatFab').setAttribute('aria-label',unread?`Chat, ${unread} new message${unread>1?'s':''}`:'Chat');
-  $('#chatRoom').textContent='· '+s.code;
-  if(!$('#chatFoot').dataset.kind&&$('#chatFoot').textContent!=='Sending…') chatFoot('');
-  if(mp.chatShown===last) return;
-  mp.chatShown=last;
-  const log=$('#chatLog'), nearEnd=log.scrollHeight-log.scrollTop-log.clientHeight<60;
-  log.innerHTML=list.length?list.map(m=>{ const p=s.players[m.p]||{name:'Player',color:'#888'}, me=m.p===mp.me;
-    return `<div class="cm${me?' me':''}"><span class="cm-who"><i style="background:${escapeHTML(p.color)}"></i>${escapeHTML(p.name)}${me?' (you)':''}</span><span class="cm-t">${escapeHTML(m.t)}</span></div>`; }).join('')
-    :'<p class="note chat-empty">No messages yet. Say hi!</p>';
-  if(nearEnd||chatOpen) log.scrollTop=log.scrollHeight;
-}
-function setChatOpen(v){
-  chatOpen=v; $('#chatPanel').hidden=!v; $('#chatFab').setAttribute('aria-expanded',String(v));
-  if(v){ chatFoot(''); renderChat(); const log=$('#chatLog'); log.scrollTop=log.scrollHeight; $('#chatIn').focus(); }
-  else $('#chatFab').focus();
-}
-$('#chatFab').onclick=()=>setChatOpen(!chatOpen);
-$('#chatClose').onclick=()=>setChatOpen(false);
-$('#chatPanel').addEventListener('keydown',e=>{ if(e.key==='Escape'){ e.stopPropagation(); setChatOpen(false); } });
-$('#chatForm').addEventListener('submit',async e=>{
-  e.preventDefault(); if(!mp) return;
-  const inp=$('#chatIn'), text=inp.value.trim(); if(!text) return;
-  const btn=$('#chatSend'); btn.disabled=true; chatFoot('Sending…');
-  try{ const j=await mpPost({action:'chat',text}); inp.value=''; chatFoot(''); mpApply(j.state); }
-  catch(err){ chatFoot(err.message,'err'); }
-  finally{ btn.disabled=false; inp.focus(); }
-});
+/* ---------- No chat, no voice ----------
+   Typed chat and voice were switched off in October 2026 (child-safety decision in the Bloppit strategy).
+   Rooms are for placing bricks together and nothing else passes between players. */
+function renderChat(){}
+function voSync(){}
+function updateVoiceUI(){ const c=$('#mpVcCard'); if(c) c.hidden=true; }
+function voLeave(){}
 
 /* ---------- Save progress (in this browser, on this device) ---------- */
 const SAVE_KEY='building-blox-save-v1';

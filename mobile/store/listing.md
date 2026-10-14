@@ -57,7 +57,7 @@ QUICK BUILD
 MADE FOR KIDS AND FAMILIES
 • No ads, no in-app purchases, no accounts
 • No tracking and no analytics
-• Friends join with a code, and the host lets each one in. Chat blocks links, contact details and rude words
+• Friends join with a code, and the host lets each one in. No chat and no voice anywhere in Bloppit
 • Photos stay on your device unless you share a challenge or room with friends
 • Racing Bloppit and the Trails work offline
 
@@ -81,16 +81,15 @@ Challenges: on the Blitz page tap Make a challenge, build the puzzle, and you ge
 into Got a code? on another device (the website bloppit.com/build works too) to race the same puzzle.
 Daily Bloppit: tap the Daily Bloppit banner on the menu. The finishing time and the player's nickname are sent for the day's scoreboard (top 50; letters only, rude words become "Player"; can be turned off so it shows "A player"). Deleted after a week.
 Rooms (Build together, live Blitz): friends join with a 5-letter code and the host lets them in.
-Room chat is typed and filtered (no links, emails, phone numbers or social accounts; rude words hidden). The host can turn on voice chat; each player chooses whether to join it, and audio is never recorded.
+There is no chat and no voice: players in a room only place bricks.
 Links out of the app and sharing an invite are behind a parental gate (type a number written in words as digits).
 
 ## Age rating questionnaire
 
 Answer **None / No** to everything (violence, mature themes, gambling, horror, medical, alcohol, profanity, sexual content,
-contests, unrestricted web access). For "user-generated content / messaging and chat": **Yes**. Players can type
-filtered messages and voice chat with people in the same room. Rooms are invite-only (a code, and the host lets each
-player in), and there is no way to find or message strangers. Answer the questions that way and check the rating
-App Store Connect gives: with chat turned on it may come out higher than **4+**.
+contests, unrestricted web access). For "user-generated content / messaging and chat": **No** since October 2026. There is no
+typed chat and no voice anywhere in the app; players in a room only place bricks. Rooms are invite-only (a code, and
+the host lets each player in), and there is no way to find or message strangers. The rating should come out at **4+**.
 
 ## App Privacy ("privacy label")
 
@@ -103,7 +102,7 @@ activity, challenges 30 days after the last player, daily times after a week):
 |---|---|---|---|---|
 | User Content › Photos or Videos (the photos a shared model is made from) | Yes | No | No | App Functionality |
 | User Content › Gameplay Content (bricks placed, scores, Blitz and Daily Bloppit times) | Yes | No | No | App Functionality |
-| User Content › Other User Content (player nickname, chat messages, Daily scoreboard name) | Yes | No | No | App Functionality |
+| User Content › Other User Content (player nickname) | Yes | No | No | App Functionality |
 
 Everything else (contact info, identifiers, location, usage data, diagnostics, etc.): **Not collected**.
 
