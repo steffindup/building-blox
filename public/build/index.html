@@ -23,7 +23,7 @@
 <meta name="twitter:title" content="Bloppit: Brick Puzzle Game">
 <meta name="twitter:description" content="Add a photo, get a brick model and an instruction booklet, then build it step by step. Free to play.">
 <meta name="twitter:image" content="https://bloppit.com/og-image.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
 <link rel="manifest" href="/site.webmanifest">
 <script type="application/ld+json">
 {
@@ -39,8 +39,8 @@
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
 }
 </script>
-<link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
-<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" href="/favicon-96.png?v=3" type="image/png" sizes="96x96">
+<link rel="icon" href="/favicon.ico?v=3" sizes="16x16 32x32 48x48">
 <style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}
 /* Launch screen: same red as the app's native splash, so the two run together */
 .splash{position:fixed;inset:0;z-index:100;background:#0369BD;color:#fff;display:grid;place-content:center;justify-items:center;gap:6px;text-align:center;font-family:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;cursor:pointer;-webkit-user-select:none;user-select:none;animation:sp-fail .3s ease 5s forwards}
@@ -121,7 +121,7 @@ button,select,input{font:inherit;color:inherit}
 .brand a{display:flex;align-items:center;gap:8px;color:inherit;text-decoration:none;border-radius:10px}
 .brand a:hover span{color:var(--accent)}
 .brand a:focus-visible{outline:3px solid var(--hi);outline-offset:3px}
-.brand svg{display:block;flex:none}
+.brand svg,.brand .brand-otter{display:block;flex:none}.brand .brand-otter{width:40px;height:40px;object-fit:contain}
 .tabs{display:flex;gap:6px;flex-wrap:wrap}
 .tab{border:1px solid var(--line);background:var(--page);border-radius:999px;padding:7px 14px 7px 8px;cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:700}
 .tab .n{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--callout);font-family:var(--f-display);font-size:14px}
@@ -585,7 +585,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .pg-lock span{color:var(--muted);font-weight:700;font-size:14px;max-width:220px}
 .mathdlg{text-align:left;width:min(480px,calc(100vw - 24px))}
 .mq-head{display:flex;gap:12px;align-items:center}
-.mq-head svg{flex:none}
+.mq-head svg,.mq-head img{flex:none}
 .mq-head h2{font-size:24px;margin:2px 0 0}
 .mq-vis{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0 0}
 .mq-vis:empty{display:none}
@@ -727,7 +727,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
   .top::before{content:"";position:absolute;left:-16px;right:-16px;bottom:100%;height:env(safe-area-inset-top,0px);background:var(--bg)}
   .top.tucked{transform:translateY(calc(-100% - env(safe-area-inset-top,0px) - 2px))}
   .brand{font-size:19px;gap:6px;flex:none}
-  .brand svg{width:30px;height:26px}
+  .brand svg{width:30px;height:26px}.brand .brand-otter{width:32px;height:32px}
   .tabs{flex-wrap:nowrap;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-block:2px;mask-image:linear-gradient(90deg,#000 calc(100% - 18px),transparent)}
   .tabs::-webkit-scrollbar{display:none}
   .tab{flex:none;white-space:nowrap;padding:4px 10px 4px 5px;gap:6px;font-size:13px}
@@ -958,16 +958,7 @@ body.on-home .tabs{visibility:hidden}
 
 <header class="top">
   <h1 class="brand"><a href="/" id="brandLink" aria-label="Bloppit menu">
-    <svg viewBox="0 0 200 175" width="40" height="35" aria-hidden="true">
-      <circle cx="42" cy="38" r="16" fill="#8A5A3B"/><circle cx="42" cy="38" r="7" fill="#6B4229"/>
-      <circle cx="158" cy="38" r="16" fill="#8A5A3B"/><circle cx="158" cy="38" r="7" fill="#6B4229"/>
-      <ellipse cx="100" cy="94" rx="88" ry="74" fill="#8A5A3B"/>
-      <ellipse cx="100" cy="116" rx="56" ry="40" fill="#F3DEC0"/>
-      <ellipse cx="64" cy="88" rx="19" ry="22" fill="#1B1410"/><ellipse cx="136" cy="88" rx="19" ry="22" fill="#1B1410"/>
-      <circle cx="70" cy="79" r="7" fill="#FFFFFF"/><circle cx="142" cy="79" r="7" fill="#FFFFFF"/>
-      <path d="M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z" fill="#3A2418"/>
-      <path d="M100 120 q0 8 -9 10 M100 120 q0 8 9 10" stroke="#3A2418" stroke-width="4" stroke-linecap="round" fill="none"/>
-    </svg>
+    <img class="brand-otter" src="/art/head-bloppit.png" alt="" width="256" height="256">
     <span>Bloppit</span></a></h1>
   <nav class="tabs" role="tablist" aria-label="Games">
     <button class="tab play5" role="tab" id="tab-island" data-tab="island" aria-selected="false"><span class="n"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span>Island</button>
@@ -1018,11 +1009,11 @@ body.on-home .tabs{visibility:hidden}
   <div class="hm-grid three">
     <button class="hm-tile t-quick" data-go="quick" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="13" y="2" width="94" height="82"/><rect x="33" y="77" width="54" height="31" rx="5" fill="#D2352B"/><rect x="39" y="70" width="15" height="10" rx="3" fill="#E5463C"/><rect x="66" y="70" width="15" height="10" rx="3" fill="#E5463C"/><rect x="33" y="99" width="54" height="9" rx="4" fill="#B32A22"/><ellipse cx="33" cy="88" rx="9" ry="8" fill="#8A5A3B"/><ellipse cx="87" cy="88" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Quick Build</b><span>Any puzzle, at your own pace</span></button>
     <button class="hm-tile t-game" data-go="otter" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="18" y="8" width="84" height="73"/><path d="M4 82 q10 -8 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 V120 H4z" fill="#36AEBF"/><path d="M4 82 q10 -8 20 0 t20 0 t20 0 t20 0 t20 0 t20 0" stroke="#DFF6F8" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M14 100 q8 -5 16 0 M70 104 q8 -5 16 0" stroke="#9EE0E8" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M96 26 v-22" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M97 5 l15 6 -15 6z" fill="#F4BC22"/></svg></span><b>Otter Trail</b><span id="hmOtterSub">Levels from tiny to tricky</span></button>
-    <button class="hm-tile t-brain" data-go="brain" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="14" y="22" width="92" height="80"/><circle cx="43.5" cy="62.5" r="13" fill="rgba(255,255,255,.28)" stroke="#1B1410" stroke-width="4"/><circle cx="76.5" cy="62.5" r="13" fill="rgba(255,255,255,.28)" stroke="#1B1410" stroke-width="4"/><path d="M56.5 61 q4 -4 7 0" stroke="#1B1410" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M30 30 l30 -14 30 14 -30 14z" fill="#1B2A34"/><path d="M42 36 v10 q18 8 36 0 v-10" fill="#1B2A34"/><path d="M90 30 v16" stroke="#F4BC22" stroke-width="3" stroke-linecap="round"/><circle cx="90" cy="48" r="4" fill="#F4BC22"/><text x="8" y="22" font-family="Lilita One, sans-serif" font-size="20" fill="#fff">+</text><text x="100" y="24" font-family="Lilita One, sans-serif" font-size="20" fill="#fff">÷</text></svg></span><b>Brain Trail</b><span id="hmBrainSub">Levels with math puzzles</span></button>
+    <button class="hm-tile t-brain" data-go="brain" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="14" y="22" width="92" height="80"/><g transform="rotate(5.9 46.5 65.5)"><circle cx="27" cy="65.5" r="12" fill="rgba(255,255,255,.28)" stroke="#1B1410" stroke-width="3.5"/><circle cx="66" cy="65.5" r="13" fill="rgba(255,255,255,.28)" stroke="#1B1410" stroke-width="3.5"/><path d="M39 64 q7 -5 14 0" stroke="#1B1410" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M79 64 l10 -3" stroke="#1B1410" stroke-width="3.5" stroke-linecap="round"/></g><path d="M30 30 l30 -14 30 14 -30 14z" fill="#1B2A34"/><path d="M42 36 v10 q18 8 36 0 v-10" fill="#1B2A34"/><path d="M90 30 v16" stroke="#F4BC22" stroke-width="3" stroke-linecap="round"/><circle cx="90" cy="48" r="4" fill="#F4BC22"/><text x="8" y="22" font-family="Lilita One, sans-serif" font-size="20" fill="#fff">+</text><text x="100" y="24" font-family="Lilita One, sans-serif" font-size="20" fill="#fff">÷</text></svg></span><b>Brain Trail</b><span id="hmBrainSub">Levels with math puzzles</span></button>
   </div>
   <h3 class="hm-sec">Blitz</h3>
   <div class="hm-grid">
-    <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><path d="M6 52 h18 M2 66 h22 M8 80 h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/><use href="#bh" x="24" y="18" width="88" height="77"/><rect x="26" y="33" width="84" height="10" rx="5" fill="#D2352B"/><path d="M106 36 l12 -8 -2 12z M106 40 l13 6 -12 4z" fill="#D2352B"/><path d="M44 49 l14 5 M92 49 l-14 5" stroke="#1B1410" stroke-width="4" stroke-linecap="round"/></svg></span><b>vs the Gulls</b><span>Race Scraps, Swoop or Squint</span></button>
+    <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><path d="M6 52 h18 M2 66 h22 M8 80 h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/><use href="#bh" x="24" y="18" width="88" height="77"/><rect x="26" y="33" width="84" height="10" rx="5" fill="#D2352B"/><path d="M106 36 l12 -8 -2 12z M106 40 l13 6 -12 4z" fill="#D2352B"/><path d="M44 49 l14 5 M92 49 l-14 5" stroke="#1B1410" stroke-width="4" stroke-linecap="round"/></svg></span><b>vs the Longtails</b><span>Race Scraps, Swoop or Squint</span></button>
     <button class="hm-tile t-friend" data-go="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><ellipse cx="31.6" cy="65.2" rx="10" ry="11" fill="#8A5A3B"/><path d="M24 66 q7.5 6 15 0" stroke="#1B1410" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>vs Friend</b><span>Send a challenge code, or race live</span></button>
   </div>
   <h3 class="hm-sec">Together</h3>
@@ -1220,7 +1211,7 @@ body.on-home .tabs{visibility:hidden}
     <div class="gm-head"><div><h2>🦦 Trails</h2><p class="note">Climb 14 levels, from tiny to tricky. Each trail has its own puzzles and keeps its own points.</p></div></div>
     <div class="hm-grid hub-grid">
       <button class="hm-tile t-game" data-sub="otter" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="18" y="8" width="84" height="73"/><path d="M4 82 q10 -8 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 V120 H4z" fill="#36AEBF"/><path d="M4 82 q10 -8 20 0 t20 0 t20 0 t20 0 t20 0 t20 0" stroke="#DFF6F8" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M14 100 q8 -5 16 0 M70 104 q8 -5 16 0" stroke="#9EE0E8" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M96 26 v-22" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M97 5 l15 6 -15 6z" fill="#F4BC22"/></svg></span><b>Otter Trail</b><span id="hubOtterSub">Levels from tiny to tricky</span></button>
-      <button class="hm-tile t-brain" data-sub="brain" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="14" y="22" width="92" height="80"/><circle cx="43.5" cy="62.5" r="13" fill="rgba(255,255,255,.28)" stroke="#1B1410" stroke-width="4"/><circle cx="76.5" cy="62.5" r="13" fill="rgba(255,255,255,.28)" stroke="#1B1410" stroke-width="4"/><path d="M56.5 61 q4 -4 7 0" stroke="#1B1410" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M30 30 l30 -14 30 14 -30 14z" fill="#1B2A34"/><path d="M42 36 v10 q18 8 36 0 v-10" fill="#1B2A34"/><path d="M90 30 v16" stroke="#F4BC22" stroke-width="3" stroke-linecap="round"/><circle cx="90" cy="48" r="4" fill="#F4BC22"/><text x="8" y="22" font-family="Lilita One, sans-serif" font-size="20" fill="#fff">+</text><text x="100" y="24" font-family="Lilita One, sans-serif" font-size="20" fill="#fff">÷</text></svg></span><b>Brain Trail</b><span id="hubBrainSub">Levels with math puzzles</span></button>
+      <button class="hm-tile t-brain" data-sub="brain" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="14" y="22" width="92" height="80"/><g transform="rotate(5.9 46.5 65.5)"><circle cx="27" cy="65.5" r="12" fill="rgba(255,255,255,.28)" stroke="#1B1410" stroke-width="3.5"/><circle cx="66" cy="65.5" r="13" fill="rgba(255,255,255,.28)" stroke="#1B1410" stroke-width="3.5"/><path d="M39 64 q7 -5 14 0" stroke="#1B1410" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M79 64 l10 -3" stroke="#1B1410" stroke-width="3.5" stroke-linecap="round"/></g><path d="M30 30 l30 -14 30 14 -30 14z" fill="#1B2A34"/><path d="M42 36 v10 q18 8 36 0 v-10" fill="#1B2A34"/><path d="M90 30 v16" stroke="#F4BC22" stroke-width="3" stroke-linecap="round"/><circle cx="90" cy="48" r="4" fill="#F4BC22"/><text x="8" y="22" font-family="Lilita One, sans-serif" font-size="20" fill="#fff">+</text><text x="100" y="24" font-family="Lilita One, sans-serif" font-size="20" fill="#fff">÷</text></svg></span><b>Brain Trail</b><span id="hubBrainSub">Levels with math puzzles</span></button>
     </div>
   </div>
   <div class="trail-pick" role="tablist" aria-label="Which trail" hidden>
@@ -1301,7 +1292,7 @@ body.on-home .tabs{visibility:hidden}
   </div>
   <div id="mpShared">
   <div class="card mp-waitbox" id="mpWaitBox" hidden>
-    <div class="mq-head"><svg viewBox="0 0 200 175" width="56" height="49" aria-hidden="true"><circle cx="42" cy="38" r="16" fill="#8A5A3B"/><circle cx="158" cy="38" r="16" fill="#8A5A3B"/><ellipse cx="100" cy="94" rx="88" ry="74" fill="#8A5A3B"/><ellipse cx="100" cy="116" rx="56" ry="40" fill="#F3DEC0"/><ellipse cx="64" cy="88" rx="19" ry="22" fill="#1B1410"/><ellipse cx="136" cy="88" rx="19" ry="22" fill="#1B1410"/><circle cx="70" cy="79" r="7" fill="#FFFFFF"/><circle cx="142" cy="79" r="7" fill="#FFFFFF"/><path d="M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z" fill="#3A2418"/></svg><div><span class="tag" id="mpWaitCode"></span><h2>Knock knock!</h2></div></div>
+    <div class="mq-head"><img src="/art/head-bloppit.png" alt="" width="56" height="56"><div><span class="tag" id="mpWaitCode"></span><h2>Knock knock!</h2></div></div>
     <p id="mpWaitTxt">Waiting for the person who made the room to let you in…</p>
     <div class="mp-room-btns"><button class="ghost" id="mpWaitStop" type="button">Stop waiting</button></div>
   </div>
@@ -1329,7 +1320,7 @@ body.on-home .tabs{visibility:hidden}
   <div class="hub" data-hub>
     <div class="gm-head"><div><h2>⚡ Bloppit Blitz</h2><p class="note">A head-to-head brick race. Fastest clean build wins.</p></div></div>
     <div class="hm-grid hub-grid">
-      <button class="hm-tile t-blitz" data-sub="cpu" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><path d="M6 52 h18 M2 66 h22 M8 80 h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/><use href="#bh" x="24" y="18" width="88" height="77"/><rect x="26" y="33" width="84" height="10" rx="5" fill="#D2352B"/><path d="M106 36 l12 -8 -2 12z M106 40 l13 6 -12 4z" fill="#D2352B"/><path d="M44 49 l14 5 M92 49 l-14 5" stroke="#1B1410" stroke-width="4" stroke-linecap="round"/></svg></span><b>vs the Gulls</b><span>Race Scraps, Swoop or Squint</span></button>
+      <button class="hm-tile t-blitz" data-sub="cpu" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><path d="M6 52 h18 M2 66 h22 M8 80 h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/><use href="#bh" x="24" y="18" width="88" height="77"/><rect x="26" y="33" width="84" height="10" rx="5" fill="#D2352B"/><path d="M106 36 l12 -8 -2 12z M106 40 l13 6 -12 4z" fill="#D2352B"/><path d="M44 49 l14 5 M92 49 l-14 5" stroke="#1B1410" stroke-width="4" stroke-linecap="round"/></svg></span><b>vs the Longtails</b><span>Race Scraps, Swoop or Squint</span></button>
       <button class="hm-tile t-friend" data-sub="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><ellipse cx="31.6" cy="65.2" rx="10" ry="11" fill="#8A5A3B"/><path d="M24 66 q7.5 6 15 0" stroke="#1B1410" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>vs Friend</b><span>Send a challenge code, or race live</span></button>
     </div>
   </div>
@@ -1346,10 +1337,10 @@ body.on-home .tabs{visibility:hidden}
     </div>
     <div class="mp-forms">
       <div class="card bz-card" id="bzCpuCard">
-        <h2><span aria-hidden="true">🐦</span>vs the Gulls</h2>
+        <h2><span aria-hidden="true">🐦</span>vs the Longtails</h2>
         <p class="note" style="margin:0">Take turns placing 1, 2 or 3 bricks, then tap Done. Your clock only runs on your turn. Works without internet.</p>
-        <div class="field"><span class="lbl">Which Gull?</span>
-          <div class="seg" style="grid-template-columns:repeat(3,1fr)" role="radiogroup" aria-label="Which Gull?">
+        <div class="field"><span class="lbl">Which Longtail?</span>
+          <div class="seg" style="grid-template-columns:repeat(3,1fr)" role="radiogroup" aria-label="Which Longtail?">
             <input type="radio" name="bzLevel" id="bzEasy" value="easy"><label for="bzEasy"><img src="/art/head-scraps.png" alt="" width="256" height="256">Scraps</label>
             <input type="radio" name="bzLevel" id="bzMed" value="medium" checked><label for="bzMed"><img src="/art/head-swoop.png" alt="" width="256" height="256">Swoop</label>
             <input type="radio" name="bzLevel" id="bzHard" value="hard"><label for="bzHard"><img src="/art/head-squint.png" alt="" width="256" height="256">Squint</label>
@@ -1507,7 +1498,7 @@ body.on-home .tabs{visibility:hidden}
   <div class="win-btns"><button class="primary sm" id="grownDone" type="button">Done</button></div>
 </dialog>
 <dialog class="windlg mathdlg" id="mathDlg" aria-labelledby="mqTitle">
-  <div class="mq-head"><svg viewBox="0 0 200 175" width="64" height="56" aria-hidden="true"><circle cx="42" cy="38" r="16" fill="#8A5A3B"/><circle cx="42" cy="38" r="7" fill="#6B4229"/><circle cx="158" cy="38" r="16" fill="#8A5A3B"/><circle cx="158" cy="38" r="7" fill="#6B4229"/><ellipse cx="100" cy="94" rx="88" ry="74" fill="#8A5A3B"/><ellipse cx="100" cy="116" rx="56" ry="40" fill="#F3DEC0"/><ellipse cx="64" cy="88" rx="19" ry="22" fill="#1B1410"/><ellipse cx="136" cy="88" rx="19" ry="22" fill="#1B1410"/><circle cx="70" cy="79" r="7" fill="#FFFFFF"/><circle cx="142" cy="79" r="7" fill="#FFFFFF"/><path d="M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z" fill="#3A2418"/><path d="M100 120 q0 8 -9 10 M100 120 q0 8 9 10" stroke="#3A2418" stroke-width="4" stroke-linecap="round" fill="none"/></svg><div><div class="tag" id="mqTag">Math puzzle</div><h2 id="mqTitle">Page 1 is locked!</h2></div></div>
+  <div class="mq-head"><img src="/art/head-bloppit.png" alt="" width="64" height="64"><div><div class="tag" id="mqTag">Math puzzle</div><h2 id="mqTitle">Page 1 is locked!</h2></div></div>
   <div class="mq-vis" id="mqVis"></div>
   <p class="mq-q" id="mqQ"></p>
   <div class="mq-choices" id="mqChoices"></div>
@@ -2438,7 +2429,7 @@ function syncSub(t){
   if(mp||mpw){ if(t==='blitz') s=mp&&mp.cpu?'cpu':'friend'; if(t==='mp') s='start'; }
   if(t==='game'&&s!=='hub') setTrail(s);
   const v=$('#view-'+t); v.dataset.sub=s; v.classList.toggle('in-room',!!(mp||mpw));
-  if(t==='blitz') $('#bzHeadT').textContent=s==='cpu'?'⚡ Blitz vs the Gulls':s==='friend'?'⚡ Blitz vs Friend':'⚡ Bloppit Blitz';
+  if(t==='blitz') $('#bzHeadT').textContent=s==='cpu'?'⚡ Blitz vs the Longtails':s==='friend'?'⚡ Blitz vs Friend':'⚡ Bloppit Blitz';
   if(t==='mp') $('#mpHeadT').textContent=s==='join'?'🔑 Join a game':'🧩 Build together';
   if(t==='game'&&s==='hub'){ const st=playerStats(players.cur);
     $('#hubOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
@@ -5023,7 +5014,7 @@ async function renderMpView(){
   if(bzv){
     // Racing Bloppit works anywhere; racing friends needs the Bloppit website
     $('#mpOff').hidden=true; $('#bzOff').hidden=ok;
-    if(!ok) $('#bzOff').textContent='Racing friends needs the internet. Check your connection and come back. You can still race the Gulls.';
+    if(!ok) $('#bzOff').textContent='Racing friends needs the internet. Check your connection and come back. You can still race the Longtails.';
     ['#bzMake','#bzJoin','#bzCodeIn','#bzChMake','#bzRelayGo'].forEach(id=>$(id).disabled=!ok);
   } else {
     $('#mpOff').hidden=ok;
@@ -5084,7 +5075,7 @@ function mpShowBlitzEnd(){
   $('#mpEndNew').textContent=mp.cpu?'Race again':'New game';
   $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span><b>${fmtTime(p.ms)}</b> · ${p.own} brick${p.own===1?'':'s'} · ${p.miss} miss${p.miss===1?'':'es'}${p.hint?` · ${p.hint} hint${p.hint===1?'':'s'}`:''}</span></div>`).join('');
   const extra=s.moves.filter(m=>m.p<0).length;
-  $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and the Gull put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, every miss added 1 second and every hint 5 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Legend Bloppit. Amazing!':' Ready to race a faster Bloppit?'):' Practice makes perfect. Try again?'):''}`;
+  $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and the Longtail put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, every miss added 1 second and every hint 5 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Legend Bloppit. Amazing!':' Ready to race a faster Bloppit?'):' Practice makes perfect. Try again?'):''}`;
   $('#mpEndDlg').showModal();
 }
 $('#mpEndClose').onclick=()=>{ $('#mpEndDlg').close(); setTab('build'); };
@@ -5160,8 +5151,8 @@ $('#mpToBlitz').onclick=e=>{ e.preventDefault(); setTab('blitz'); };
 // Bloppit takes a few seconds to find and place each brick, and sometimes misses (+1 second, like everyone).
 // Three Bloppits to race: each one is quicker and makes fewer mistakes than the last.
 const CPU_LEVELS={
-  // The Gulls: comic brick thieves. Bloppit himself is the player's buddy and never the opponent.
-  easy:  {name:'Scraps',  ms:[7000,11000],miss:.25,turn:[1,2],note:'Scraps is the scruffiest Gull. He takes his time and drops plenty of bricks. Great for a first race.'},
+  // The Longtails: comic brick thieves. Bloppit himself is the player's buddy and never the opponent.
+  easy:  {name:'Scraps',  ms:[7000,11000],miss:.25,turn:[1,2],note:'Scraps is the scruffiest Longtail. He takes his time and drops plenty of bricks. Great for a first race.'},
   medium:{name:'Swoop',   ms:[4500,7500], miss:.12,turn:[1,3],note:'Swoop is quick, but careless. A fair race.'},
   hard:  {name:'Squint',  ms:[2500,4500], miss:.05,turn:[2,3],note:'Squint lines up every brick and hardly ever misses. Can you beat him?'}};
 const CPU_IDS={easy:'#bzEasy',medium:'#bzMed',hard:'#bzHard'}, COUNTDOWN_MS=3000;
@@ -5188,7 +5179,7 @@ function cpuAim(m,wrong){
   h.position.set(m.x+(wrong?wrong.x:0),t.y*1.2+.9,m.z+(wrong?wrong.z:0)); cpuAimGroup.add(h);
 }
 // The banner across the top of the build: whose turn it is, with their clock
-// The Gulls, from the character sheet (public/art): Scraps' stuck-up feather, Swoop's goggles, Squint's monocle.
+// The Longtails, from the character sheet (public/art): Scraps' stuck-up feather, Swoop's goggles, Squint's monocle.
 const GULL_ART={easy:'scraps',medium:'swoop',hard:'squint'};
 const GULL_HEAD=(lvl)=>`<img src="/art/head-${GULL_ART[lvl]||'swoop'}.png" alt="" width="256" height="256">`;
 let bannerKey='';
@@ -5280,7 +5271,7 @@ function cpuStep(extra=0){
     cpuPlace(1,pick.b,pick.x,pick.z); cpu.left--;
     cpu.say={cls:'hop',html:['Click! Got it.','Snap! In it goes.','Yes! That one fits.'][s.players[1].n%3]};
     cpuSend();
-    if(s.finished||s.turn!==1) return;     // the Gull placed 3, or his last one
+    if(s.finished||s.turn!==1) return;     // the Longtail placed 3, or his last one
     if(cpu.left>0){ cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(!s.finished&&s.turn===1) cpuStep(); },700); return; }
     cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(s.finished||s.turn!==1) return; cpuSay('point','Your turn. Go go go!'); cpuNextTurn(); cpuSend(); },rndIn(500,900));
   },wait);
@@ -5718,7 +5709,7 @@ loadSample(0); setTab('create'); clearTimeout(timer); rebuild(); requestAnimatio
    Two currencies and no more (Build Stars draft, Oct 2026). XP measures how much you have built; Build Stars how
    well. Every finished model earns XP once (10 short / 20 medium / 35 long) and up to three stars: one for
    finishing, one for no hints, one for clean (no wrong placements either). Stars on a model are the best of all
-   attempts. The Weekly's first finish adds +10 XP and a bonus star; a Blitz win against a Gull is 10 XP and one
+   attempts. The Weekly's first finish adds +10 XP and a bonus star; a Blitz win against a Longtail is 10 XP and one
    star, never clean stars. Nothing is bought, sold, traded or lost. The record lives per player on this device
    and under the pup on the server (the world field); nothing in it is typed by a child: the pup's name is an
    index into a fixed list, and a photo build is keyed by a hash of its file name. */
@@ -6006,7 +5997,7 @@ function destinations(){
     {id:'workshop',name:'Creator Workshop',n:creations,unit:'creation',st:stage(creations,1,5,15),nx:next(creations,1,5,15),names:['Empty lot','Shed','Studio','Invention lab'],go:()=>{ pickPuzzle('quick','top'); requestAnimationFrame(()=>$('#drawCard').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'})); }},
     {id:'brain',name:'Brain Island',n:brain,unit:'Brain Trail level',st:stage(brain,1,5,14),nx:next(brain,1,5,14),names:['Empty lot','Schoolhouse','Academy','Observatory'],go:()=>homeGo('brain')},
     {id:'harbour',name:'Friendship Harbour',n:friends,unit:'friend build',st:stage(friends,1,5,15),nx:next(friends,1,5,15),names:['Jetty','Jetty with a boat','Harbour','Marina'],go:()=>setTab('mp','hub')},
-    {id:'speedway',name:'Blitz Speedway',n:wins,unit:'Gull win',st:stage(wins,1,5,15),nx:next(wins,1,5,15),names:['Dirt track','Starting line','Circuit','Stadium'],go:()=>homeGo('cpu')},
+    {id:'speedway',name:'Blitz Speedway',n:wins,unit:'Longtail win',st:stage(wins,1,5,15),nx:next(wins,1,5,15),names:['Dirt track','Starting line','Circuit','Stadium'],go:()=>homeGo('cpu')},
   ];
 }
 function renderDestinations(){
@@ -6536,7 +6527,7 @@ $('#wcNames').addEventListener('click',e=>{ const b=e.target.closest('[data-pup]
 function homeContinue(){
   const bar=(a,b)=>b?Math.round(100*a/b):0;
   if(game&&model&&levelsOf(gameTrail())[game.lvl]) return {t:`Back to ${TRAILS[gameTrail()].name} level ${game.lvl+1}`,s:`${levelsOf(gameTrail())[game.lvl].name}: ${placedN} of ${model.bricks.length} bricks placed`,p:bar(placedN,model.bricks.length),go:()=>setTab('build')};
-  if(mp) return {t:mp.cpu?'Back to your race':'Back to your room',s:mp.state&&mp.state.solo?`Your ${mp.state.label} is still going`:mp.cpu?`Your Blitz race against ${mp.state&&mp.state.cpuLevel?CPU_LEVELS[mp.state.cpuLevel].name:'the Gull'} is still going`:mpBlitz()?'Your Bloppit Blitz game is still going':'Your Play together game is still going',p:-1,go:()=>setTab(mp.state&&mp.state.started?'build':mpHomeTab())};
+  if(mp) return {t:mp.cpu?'Back to your race':'Back to your room',s:mp.state&&mp.state.solo?`Your ${mp.state.label} is still going`:mp.cpu?`Your Blitz race against ${mp.state&&mp.state.cpuLevel?CPU_LEVELS[mp.state.cpuLevel].name:'the Longtail'} is still going`:mpBlitz()?'Your Bloppit Blitz game is still going':'Your Play together game is still going',p:-1,go:()=>setTab(mp.state&&mp.state.started?'build':mpHomeTab())};
   if(pendingSave){ const o=pendingSave;
     return {t:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`Continue ${TRAILS[o.game.trail==='brain'?'brain':'otter'].name} level ${o.game.lvl+1}`:'Continue building',
       s:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`${levelsOf(o.game&&o.game.trail)[o.game.lvl].name}: ${o.placedN} of ${o.nBricks} bricks placed`:`Your ${niceName(o.name)}: ${o.placedN} of ${o.nBricks} bricks placed`,
