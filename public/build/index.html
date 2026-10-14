@@ -6143,7 +6143,10 @@ function shareOpen(code,xfer){
   let week=null, smp=null, title='', note='';
   if(/^w-\d{4}-\d{2}-\d{2}$/.test(code)){ week=code.slice(2); if(week>weekOf()) week=null; }
   if(week){ const o=weeklyPuzzle(week); smp=SAMPLES[o.i]; title=week===weekOf()?'This week’s Bloppit':'A Weekly Bloppit'; note=week===weekOf()?`${o.name}, ${o.n} bricks. Build it clean and see how many others did too.`:`${o.name}, ${o.n} bricks, from the week of ${new Date(week+'T12:00:00Z').toLocaleDateString(undefined,{day:'numeric',month:'long'})}.`; }
-  else if(code.startsWith('m-')){ smp=SAMPLES.find(x=>released(x)&&slugOf(x.name)===code.slice(2)); if(smp){ title=smp.name; note='A Bloppit build, sent to you. No account, nothing to sign up for.'; } }
+  else if(code.startsWith('m-')){ const li=OTTER_LEVELS.findIndex(L=>slugOf(L.name)===code.slice(2));   // a Trail level of that name first (tuned sizes), then the library
+    if(li<0){ smp=SAMPLES.find(x=>released(x)&&slugOf(x.name)===code.slice(2)); if(smp){ title=smp.name; note='A Bloppit build, sent to you. No account, nothing to sign up for.'; } }
+    else { if(li>=0){ const L=OTTER_LEVELS[li]; $('#shPic').src=levelThumb(L); $('#shPic').hidden=false; $('#shTitle').textContent=L.name; $('#shNote').textContent=`Otter Trail level ${li+1}. A Bloppit build, sent to you. No account, nothing to sign up for.`; setTab('home');
+      const d=$('#shareDlg'); $('#shGo').onclick=()=>{ d.close(); track('share_build_started'); if(mp) mpLeave(); if(game) endGame(); setTrail('otter'); startLevel(li); }; $('#shLook').onclick=()=>{ d.close(); setTab('home'); }; d.onclose=null; if(!d.open) d.showModal(); return; } } }
   else if(code.startsWith('d-')){ const dd=drawDecode(code.slice(2)); if(dd){ $('#shPic').src=drawThumb(dd,120); $('#shPic').hidden=false; $('#shTitle').textContent='A drawing for you'; $('#shNote').textContent=`Someone drew this, stud by stud, ${dd.w} × ${dd.h}. Build it as a brick picture.`; setTab('home');
       const d=$('#shareDlg'); $('#shGo').onclick=()=>{ d.close(); track('share_build_started'); draw={...draw,w:dd.w,h:dd.h,cells:dd.cells,undo:[],id:null}; $('#drawSize').value=dd.w; drawRender(); drawBuild(draw); }; $('#shLook').onclick=()=>{ d.close(); setTab('home'); }; d.onclose=null; if(!d.open) d.showModal(); return; } }
   if(!smp){ setTab('home'); return; }
