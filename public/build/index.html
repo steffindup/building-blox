@@ -224,15 +224,18 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .buddy .bud-art{position:relative;width:84px;aspect-ratio:300/398;display:block;transform-origin:50% 100%}
 .buddy .bud-art img{position:absolute;inset:0;width:100%;height:100%;display:none;object-fit:contain}
 .buddy .bud-art .st-rest{display:block}
-.buddy.cheer .bud-art .st-rest,.buddy.think .bud-art .st-rest,.buddy.oops .bud-art .st-rest{display:none}
-.buddy.cheer .bud-art .st-cheer,.buddy.think .bud-art .st-think,.buddy.oops .bud-art .st-oops{display:block}
+.buddy.cheer .bud-art .st-rest,.buddy.think .bud-art .st-rest,.buddy.oops .bud-art .st-rest,.buddy.offer .bud-art .st-rest,.buddy.hug .bud-art .st-rest,.buddy.reach .bud-art .st-rest{display:none}
+.buddy.cheer .bud-art .st-cheer,.buddy.think .bud-art .st-think,.buddy.oops .bud-art .st-oops,.buddy.offer .bud-art .st-offer,.buddy.hug .bud-art .st-hug,.buddy.reach .bud-art .st-reach{display:block}
+.buddy.offer .bud-art{animation:bud-nudge 1.6s ease-in-out infinite;transform-origin:50% 100%}
+.buddy.hug .bud-art{animation:bud-jump .55s ease-out 2}
+.buddy.reach .bud-art{animation:bud-shake .4s ease-in-out 2}
 .buddy.cheer .bud-art{animation:bud-jump .55s ease-out 2}
 .buddy.hop .bud-art{animation:bud-hop .32s ease-out}
 .buddy.point .bud-art{animation:bud-nudge 1.6s ease-in-out infinite;transform-origin:50% 100%}
 .bud-say{order:-1;position:relative;align-self:center;justify-self:end;background:var(--page);border:2px solid var(--ink);border-radius:14px;padding:7px 10px;margin-bottom:22px;font-weight:800;font-size:14px;line-height:1.25;box-shadow:0 3px 0 var(--shadow)}
 .bud-say::before{content:"";position:absolute;right:-9px;bottom:12px;width:12px;height:12px;background:var(--page);border-left:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:rotate(-135deg)}
-.buddy.cheer .bud-say{background:var(--hi);color:#14202C;border-color:#14202C;font-family:var(--f-display);font-weight:400;font-size:18px}
-.buddy.cheer .bud-say::before{background:var(--hi);border-color:#14202C}
+.buddy.cheer .bud-say,.buddy.hug .bud-say{background:var(--hi);color:#14202C;border-color:#14202C;font-family:var(--f-display);font-weight:400;font-size:18px}
+.buddy.cheer .bud-say::before,.buddy.hug .bud-say::before{background:var(--hi);border-color:#14202C}
 .bud-say .callout{margin-top:6px;padding:5px 8px;gap:4px 10px;box-shadow:none}
 .bud-say .callout img{height:26px}
 .bud-say .callout b{font-size:12px}
@@ -272,8 +275,8 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .buddy.think .bud-say,.buddy.big.hop .bud-say{background:#8A5A3B;color:#fff;border-color:#1B1410}
 .buddy.think .bud-say::before,.buddy.big.hop .bud-say::before{background:#8A5A3B;border-color:#1B1410}
 .buddy.think .bud-art{animation:bud-think 1.1s ease-in-out infinite}
-.buddy.oops .bud-say{background:var(--accent);color:var(--accent-ink);border-color:#1B1410}
-.buddy.oops .bud-say::before{background:var(--accent);border-color:#1B1410}
+.buddy.oops .bud-say,.buddy.reach .bud-say{background:var(--accent);color:var(--accent-ink);border-color:#1B1410}
+.buddy.oops .bud-say::before,.buddy.reach .bud-say::before{background:var(--accent);border-color:#1B1410}
 .buddy.oops .bud-art{animation:bud-shake .4s ease-in-out 2}
 .bud-dots::after{content:'';display:inline-block;width:1.2em;text-align:left;animation:bud-dots 1.2s steps(4) infinite}
 @keyframes bud-think{0%,100%{transform:rotate(0)}50%{transform:rotate(-4deg) translateY(-4px)}}
@@ -1085,7 +1088,7 @@ body.on-home .tabs{visibility:hidden}
         <div class="world-toast" id="worldToast" hidden></div>
         <div class="turn-banner" id="turnBanner" hidden aria-live="polite"></div>
           <div class="buddy" id="buddy" hidden>
-            <span class="bud-art" aria-hidden="true"><img class="st-rest" src="/art/bud-3q.png" alt="" width="300" height="398"><img class="st-cheer" src="/art/bud-happy.png" alt="" width="300" height="398"><img class="st-think" src="/art/bud-focused.png" alt="" width="300" height="398"><img class="st-oops" src="/art/bud-oops.png" alt="" width="300" height="398"></span>
+            <span class="bud-art" aria-hidden="true"><img class="st-rest" src="/art/bud-3q.png" alt="" width="300" height="398"><img class="st-cheer" src="/art/bud-happy.png" alt="" width="300" height="398"><img class="st-think" src="/art/bud-focused.png" alt="" width="300" height="398"><img class="st-oops" src="/art/bud-oops.png" alt="" width="300" height="398"><img class="st-offer" src="/art/bud-offer.png" alt="" width="300" height="398"><img class="st-hug" src="/art/bud-hug.png" alt="" width="300" height="398"><img class="st-reach" src="/art/bud-reach.png" alt="" width="300" height="398"></span>
             <div class="bud-say" id="budSay"></div>
           </div>
       </div>
@@ -1425,7 +1428,7 @@ body.on-home .tabs{visibility:hidden}
 </dialog>
 
 <dialog class="windlg" id="welcomeDlg" aria-labelledby="wcTitle">
-  <img class="wc-pic" src="/art/bud-happy.png" alt="" width="300" height="398">
+  <img class="wc-pic" src="/art/bud-hug.png" alt="" width="300" height="398">
   <h2 id="wcTitle">You built it!</h2>
   <div class="world-strip" data-ws></div>
   <p class="win-best" id="wcNote">Your first Bloppit. What next?</p>
@@ -2715,7 +2718,7 @@ function budBurst(){
   }
 }
 function budPing(){ const e=$('#bpStep'); e.classList.remove('bud-ping'); void e.offsetWidth; if(!reduceMotion) e.classList.add('bud-ping'); }
-function budSay(cls,html){ const b=$('#buddy'); b.classList.remove('point','cheer','hop','think','oops'); if(cls) b.classList.add(cls); $('#budSay').innerHTML=html; }
+function budSay(cls,html){ const b=$('#buddy'); b.classList.remove('point','cheer','hop','think','oops','offer','hug','reach'); if(cls) b.classList.add(cls); $('#budSay').innerHTML=html; }
 function buddyUpdate(){
   const b=$('#buddy');
   if(!model){ b.hidden=true; return; }
@@ -2730,7 +2733,7 @@ function buddyUpdate(){
   const cpuT=cpuTurnNow(); b.classList.toggle('big',cpuT);
   if(fresh){
     const n=done, all=done>=N, mv=mp&&mp.cpu&&mp.state&&mp.state.moves, byCpu=!!(mv&&mv.length&&mv[mv.length-1].p===1);
-    budSay('cheer', all?`You built it! Every ${PIECE()} is in.`:byCpu?`My brick finished step ${n}!`:BUD_CHEERS[n%BUD_CHEERS.length].replace('{n}',n));
+    budSay(all&&!mp&&run.miss===0&&!run.hints.size&&!run.auto?'hug':'cheer', all?`You built it! Every ${PIECE()} is in.`:byCpu?`My brick finished step ${n}!`:BUD_CHEERS[n%BUD_CHEERS.length].replace('{n}',n));
     budBurst(); if(all) sfx.fanfare(); else sfx.chime(); sfx.chirp(); clearTimeout(budCheerT);
     budCheerT=setTimeout(()=>{ budCheerT=0; buddyUpdate(); }, all?3200:1700);
     return;
@@ -2746,7 +2749,7 @@ function buddyUpdate(){
   if(mpBlitz()){ budSay('point', mpMyTurn()?(mp.state.solo?`Step ${cur+1}! Go go go!`:mp.cpu?`Your turn! Step ${cur+1}. Beat my time!`:`Step ${cur+1}! Check the booklet. Quick!`):`Step ${cur+1}. Get ready for your turn!`); if(budStep!==cur){ budStep=cur; budPing(); } return; }
   const left=stepLeft(cur), total=model.steps[cur].bricks.length;
   if(welcomeOn()){ const lead=cur===0?'Hi! I’m Bloppit. Here’s your first brick. Tap the faded one!':left.length===total?['Here’s the next one!','Another one. Tap the faded brick!','Nice. Next brick!','Keep going!'][cur%4]:'One more for this step:';
-    budSay('point', `${lead}<div class="callout">${calloutHTML(left)}</div>`); if(budStep!==cur){ budStep=cur; budPing(); } return; }
+    budSay('offer', `${lead}<div class="callout">${calloutHTML(left)}</div>`); if(budStep!==cur){ budStep=cur; budPing(); } return; }
   const lead=left.length===total?`Step ${cur+1}! You need these:`:left.length===1?'Just one more for this step:':`${left.length} more for this step:`;
   budSay('point', `${lead}<div class="callout">${calloutHTML(left)}</div>`);
   if(hopped&&!reduceMotion){ const s=$('#buddy .bud-art'); b.classList.add('hop'); s.addEventListener('animationend',()=>b.classList.remove('hop'),{once:true}); }
@@ -5127,7 +5130,7 @@ function cpuKick(){
 function cpuStep(extra=0){
   const s=cpu.s, L=CPU_LEVELS[s.cpuLevel], wait=rndIn(L.ms[0],L.ms[1])+extra;
   const m=cpuPick(), miss=Math.random()<L.miss, wrong=miss?[{x:2,z:0},{x:-2,z:0},{x:0,z:2},{x:0,z:-2}][Math.floor(Math.random()*4)]:null;
-  if(m) cpuSay('think',`${s.turnPlaced?'Next one!':'My turn!'} I need this<span class="bud-dots"></span><div class="callout">${calloutHTML([model.bricks[m.b]])}</div>`);
+  if(m) cpuSay('think',`${s.turnPlaced?'Next one.':`${CPU_LEVELS[s.cpuLevel].name}’s turn.`} He wants this<span class="bud-dots"></span><div class="callout">${calloutHTML([model.bricks[m.b]])}</div>`);
   clearTimeout(cpu.aimT); cpu.aimT=setTimeout(()=>{ if(cpu&&cpu.s===s&&s.turn===1&&!s.finished) cpuAim(m,wrong); },Math.max(0,wait-1100));
   cpu.timer=setTimeout(()=>{
     if(!cpu||cpu.s!==s) return; cpu.timer=null;
@@ -5135,7 +5138,7 @@ function cpuStep(extra=0){
     if(miss){
       s.players[1].miss++; cpuSend(); mpFlash('+1s'); if(tab==='build') sfx.bonk();
       const g=cpuAimGroup.children[0]; if(g) g.material=errMat;
-      cpuSay('oops','Oops, wrong spot! +1 second for me.');
+      cpuSay('reach',`Ha! ${CPU_LEVELS[s.cpuLevel].name} dropped it. +1 second for him.`);
       cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; cpuAimGroup.clear(); if(!s.finished&&s.turn===1) cpuStep(); },1300);
       return;
     }
@@ -5146,7 +5149,7 @@ function cpuStep(extra=0){
     cpuSend();
     if(s.finished||s.turn!==1) return;     // the Gull placed 3, or his last one
     if(cpu.left>0){ cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(!s.finished&&s.turn===1) cpuStep(); },700); return; }
-    cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(s.finished||s.turn!==1) return; cpuSay('think','Done! Your turn. Go go go!'); cpuNextTurn(); cpuSend(); },rndIn(500,900));
+    cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(s.finished||s.turn!==1) return; cpuSay('point','Your turn. Go go go!'); cpuNextTurn(); cpuSend(); },rndIn(500,900));
   },wait);
 }
 function cpuCountdown(){
