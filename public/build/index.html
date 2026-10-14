@@ -3878,7 +3878,48 @@ const SAMPLES=[
    for(const a of [56,190]){ x.dot(a,146,26,'#1B2A34'); x.dot(a,146,11,'#A0A5A9'); }
    x.fillStyle='#F4F4F4'; x.fillRect(110,124,30,8);
    return [['front',c]]; }},
+ // ---- Authored Weeklies (Q4 2026 bank). `weekly` = the release week key: hidden from the library and from
+ // the hash pick until that Monday 8 am ET, then they join the library like any other model.
+ {name:'Jack-o’-lantern',theme:'Spooky',weekly:'2026-10-26',beat:'Scraps tried to steal the candle. Build it before he’s back.',ws:{shape:'flat',size:9},make(){ const [c,x]=sheet(220,200,'#ffffff');
+   x.fillStyle='#3E9A3A'; x.rr(100,14,20,34,6); x.oval(132,30,18,8,-.4,'#4B9F4A');
+   x.oval(110,118,92,72,0,'#FE8A18');
+   x.oval(64,118,34,66,0,'#E5700B'); x.oval(156,118,34,66,0,'#E5700B'); x.oval(110,118,26,70,0,'#FE8A18');
+   x.poly([[62,98],[94,98],[78,72]],'#1B2A34'); x.poly([[126,98],[158,98],[142,72]],'#1B2A34');
+   x.poly([[102,118],[118,118],[110,104]],'#1B2A34');
+   x.poly([[58,136],[162,136],[150,164],[70,164]],'#1B2A34');
+   x.fillStyle='#F2CD37'; x.rr(92,146,36,12,4);
+   x.fillStyle='#FE8A18'; x.fillRect(84,136,14,12); x.fillRect(122,136,14,12);
+   return [['front',c]]; }},
+ {name:'Red boat',theme:'Vehicles',weekly:'2026-11-02',beat:'Pip spotted it from the ferry.',ws:{shape:'flat',size:12},make(){ const [c,x]=sheet(220,220,'#BFE3F5');
+   x.fillStyle='#A0A5A9'; x.fillRect(104,18,8,144);
+   x.poly([[116,24],[116,150],[192,150]],'#F4F4F4'); x.poly([[100,40],[100,150],[42,150]],'#F4F4F4');
+   x.poly([[14,158],[206,158],[178,196],[44,196]],'#C91A09');
+   x.fillStyle='#F4F4F4'; x.fillRect(30,166,162,8);
+   x.fillStyle='#0055BF'; x.rr(4,196,212,20,8);
+   return [['front',c]]; }},
+ {name:'Striped lighthouse',theme:'Ocean',weekly:'2026-11-09',beat:'The light went out. Finish it before dark.',ws:{size:10},make(){ const [c,x]=sheet(200,240,'#BFE3F5');
+   x.poly([[100,8],[66,48],[134,48]],'#C91A09');
+   x.fillStyle='#1B2A34'; x.fillRect(70,48,60,8); x.fillRect(70,84,60,8); x.fillRect(72,56,6,28); x.fillRect(122,56,6,28);
+   x.fillStyle='#F2CD37'; x.fillRect(78,56,44,28);
+   x.fillStyle='#1B2A34'; x.fillRect(58,92,84,8);
+   x.poly([[72,100],[128,100],[148,224],[52,224]],'#F4F4F4');
+   x.poly([[76,124],[124,124],[128,148],[72,148]],'#C91A09');
+   x.poly([[68,172],[132,172],[136,196],[64,196]],'#C91A09');
+   x.fillStyle='#1B2A34'; x.rr(92,200,16,24,6);
+   x.fillStyle='#1B2A34'; x.fillRect(40,224,120,10);
+   return [['front',c]]; }},
+ {name:'Curled-up pup',theme:'Animals',weekly:'2026-11-16',beat:'Your pup fell asleep on the beach.',ws:{shape:'flat',size:8},make(){ const [c,x]=sheet(240,180,'#ffffff');
+   x.oval(120,112,98,58,0,'#8B5A2B');
+   x.oval(196,130,30,18,-.5,'#8B5A2B'); x.oval(206,140,16,10,-.5,'#D9B98B');
+   x.oval(126,120,62,34,0,'#D9B98B');
+   x.oval(70,96,44,40,0,'#8B5A2B'); x.oval(48,80,14,30,.5,'#5E3A20');
+   x.oval(50,118,24,16,0,'#D9B98B'); x.oval(32,112,8,6,0,'#1B2A34');
+   x.fillStyle='#1B2A34'; x.rr(64,90,18,4,2);
+   x.fillStyle='#C91A09'; x.rr(96,92,10,40,4);
+   return [['front',c]]; }},
 ];
+// A Weekly's model stays out of the library until its week has started.
+const released=s=>!s.weekly||s.weekly<=weekOf();
 let sampleIdx=0;
 function loadSample(i){
   sampleIdx=i; const s=SAMPLES[i];
@@ -3889,10 +3930,11 @@ const LIB_THEMES=['All','Animals','Ocean','Space','Vehicles','Fantasy','Dinosaur
 let libTheme='All';
 function renderSamples(){
   const on=photos.some(p=>p.sample);
-  $('#libCount').textContent=`${SAMPLES.length} models`;
-  $('#libThemes').innerHTML=LIB_THEMES.map(t=>{ const n=t==='All'?SAMPLES.length:SAMPLES.filter(s=>s.theme===t).length;
+  const lib=SAMPLES.filter(released);
+  $('#libCount').textContent=`${lib.length} models`;
+  $('#libThemes').innerHTML=LIB_THEMES.map(t=>{ const n=t==='All'?lib.length:lib.filter(s=>s.theme===t).length;
     return n?`<button type="button" role="tab" data-t="${t}" aria-selected="${t===libTheme}">${t}<b>${n}</b></button>`:''; }).join('');
-  $('#samples').innerHTML=SAMPLES.map((s,i)=>{ if(libTheme!=='All'&&s.theme!==libTheme) return '';
+  $('#samples').innerHTML=SAMPLES.map((s,i)=>{ if(!released(s)||(libTheme!=='All'&&s.theme!==libTheme)) return '';
     if(!s.thumb) s.thumb=s.make()[0][1].toDataURL('image/png');
     return `<button class="smp" type="button" data-i="${i}" aria-pressed="${on&&i===sampleIdx}"><img alt="" src="${s.thumb}" loading="lazy">${s.name}${s.two?'<small>2 photos</small>':''}</button>`; }).join('');
 }
@@ -5132,8 +5174,9 @@ async function trialEnd(){
         const j=await chApi('POST',{action:'weekly',week:info.week,ms:r.ms,miss:r.miss,hint:r.hint,nBricks:model.bricks.length});
         weeklyPeek={week:info.week,n:j.n,clean:j.clean,pct:j.pct};
         W.weeks[info.week].n=j.n; W.weeks[info.week].pct=j.pct; weeklyStoreSet(W);
+        const beat=weeklyPuzzle(info.week).beat;
         trialDialog({icon:clean?'✨':'📅',title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,
-          note:(clean?`You and ${j.pct}% of this week’s builders finished clean.`:`${j.pct}% of this week’s builders finished clean. Build it again for a clean one!`)+streakNote()+' A new puzzle arrives on Monday.'});
+          note:(beat?beat+' ':'')+(clean?`You and ${j.pct}% of this week’s builders finished clean.`:`${j.pct}% of this week’s builders finished clean. Build it again for a clean one!`)+streakNote()+' A new puzzle arrives on Monday.'});
       }catch(e){ trialDialog({icon:'📅',title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,note:`Your build is saved on this device, but it couldn’t be counted with everyone else’s (${e.message}).`+streakNote()}); }
     }
   };
@@ -5208,20 +5251,29 @@ function weekOf(t=Date.now()){
 const weekBefore=w=>{ const d=new Date(w+'T00:00:00Z'); d.setUTCDate(d.getUTCDate()-7); return d.toISOString().slice(0,10); };
 function dayHash(day){ let h=2166136261; for(const ch of 'bloppit-weekly:'+day){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619); } return h>>>0; }
 // Authored Weeklies go here by week key (the sample's name in SAMPLES); any week without one gets a library pick from the hash.
-const WEEKLY_PLAN={};
+const WEEKLY_PLAN={
+  '2026-10-26':'Jack-o’-lantern',
+  '2026-11-02':'Red boat',
+  '2026-11-09':'Striped lighthouse',
+  '2026-11-16':'Curled-up pup',
+};
+// The hash pick only draws from models already in the library, so an unreleased Weekly is never spoiled early.
+const WEEKLY_POOL=()=>SAMPLES.map((s,i)=>i).filter(i=>!SAMPLES[i].weekly);
 const WEEKLY_MAX=48;  // a Weekly is 24–48 bricks: finishable in under ten minutes
 const weeklyCache=new Map();
 function weeklyPuzzle(week){
   if(weeklyCache.has(week)) return weeklyCache.get(week);
   const planned=WEEKLY_PLAN[week]?SAMPLES.findIndex(x=>x.name===WEEKLY_PLAN[week]):-1;
-  const i=planned>=0?planned:dayHash(week)%SAMPLES.length, smp=SAMPLES[i];
+  const pool=WEEKLY_POOL(), i=planned>=0?planned:pool[dayHash(week)%pool.length], smp=SAMPLES[i];
   const keepP=photos, keepS={...S}; let size=12, n=0;
-  const base={kind:'model',shape:'puffed',thick:1,tol:48,maxColors:6,gray:true,pw:48,pcol:24};
+  // An authored Weekly carries its own tuned settings (ws), so its brick count is the one it was authored at.
+  const base={kind:'model',shape:'puffed',thick:1,tol:48,maxColors:6,gray:true,pw:48,pcol:24,...(planned>=0&&smp.ws||{})};
+  if(planned>=0&&smp.ws&&smp.ws.size) size=smp.ws.size;
   for(;size>=5;size--){ Object.assign(S,base,{size}); photos=smp.make().map(([view,c])=>{const d=canvasData(c); return {id:++pid,name:smp.name,d,m:null,view,sample:true};}); photos.forEach(p=>p.m=computeMask(p.d,S.tol));
     const m=buildModel(); n=m&&m.bricks?m.bricks.length:0; if(n&&n<=WEEKLY_MAX) break; }
   photos=keepP; Object.assign(S,keepS);
   if(!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png');
-  const o={week,i,name:smp.name,theme:smp.theme,thumb:smp.thumb,S:{...base,size},n}; weeklyCache.set(week,o); return o;
+  const o={week,i,name:smp.name,theme:smp.theme,beat:planned>=0?smp.beat||'':'',thumb:smp.thumb,S:{...base,size},n}; weeklyCache.set(week,o); return o;
 }
 function weeklyLoad(o){
   const smp=SAMPLES[o.i]; sampleIdx=o.i;
