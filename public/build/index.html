@@ -850,6 +850,10 @@ body.on-home .tabs{visibility:hidden}
 .crew-say{display:flex;flex-wrap:wrap;gap:6px}.crew-say button{font:inherit;font-weight:800;font-size:13px;padding:7px 11px;border-radius:999px;border:2px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer}.crew-say button.st{font-size:20px;padding:3px 9px}
 .crew-pending{display:grid;gap:6px}.crew-pending div{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;background:#FFF6D6}
 .crew-grown{display:grid;gap:6px}.crew-grown div{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px;border-radius:10px;background:var(--bg);font-size:14px;font-weight:700}
+.dest-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.dest{display:grid;grid-template-columns:72px 1fr;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;border:2px solid var(--line);background:var(--page);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.dest:hover{border-color:var(--ink)}.dest svg{width:72px;height:72px}.dest b{font-size:16px;display:block}.dest small{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-top:2px}
+.dest .bar{height:6px;border-radius:3px;background:var(--bg);overflow:hidden;margin-top:6px}.dest .bar i{display:block;height:100%;background:#008F9B}
 .decor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
 .decor-grid button{display:grid;justify-items:center;gap:6px;padding:12px 8px 10px;border-radius:14px;border:2px solid var(--line);background:var(--page);color:var(--ink);font:inherit;font-weight:800;font-size:14px;cursor:pointer}
 .decor-grid button svg{width:72px;height:72px}
@@ -1381,10 +1385,11 @@ body.on-home .tabs{visibility:hidden}
 </section>
 
 <section class="view" id="view-island" hidden>
-  <div class="gm-head"><div><h2>🏝️ Otter Island</h2><p class="note" id="isNote">Every build you finish grows your island.</p></div>
+  <div class="gm-head"><div><h2>🏝️ Bloppitopia · Otter Island</h2><p class="note" id="isNote">Every build you finish grows your island.</p></div>
     <div class="is-btns"><button class="ghost" id="isDecor" type="button">✨ Decorate</button><button class="ghost" id="isCard" type="button" hidden>📮 Postcard</button></div></div>
   <div class="card is-card"><div class="island" id="island"></div>
     <div class="is-foot"><div class="is-stage" id="isStage"></div><div class="is-next" id="isNext"></div></div></div>
+  <div class="card"><div class="gm-head sub-head"><div><h2>🗺️ Bloppitopia</h2><p class="note">The other islands grow with what you do there. Tap one to go.</p></div></div><div class="dest-grid" id="destGrid"></div></div>
   <div class="card is-shop" id="isShop" hidden>
     <div class="gm-head sub-head"><div><h2>✨ Decorate your island</h2><p class="note">Build Stars buy decorations. Nothing here is ever sold for money. <b id="isStars"></b></p></div><button class="ghost" id="isShopClose" type="button">Done</button></div>
     <div class="decor-grid" id="decorGrid"></div>
@@ -5978,6 +5983,36 @@ function islandDrag(){
     o.slot=o.slot||{}; o.slot[d.key]=best; if(other) o.slot[other]=d.from; worldSet(o); track('island_arranged'); sfx.snap(); islandShown=worldCount(o); renderIsland(); };
   svg.addEventListener('pointerup',end); svg.addEventListener('pointercancel',end);
 }
+// The other destinations of Bloppitopia: each grows with what the player does there (three drawn stages)
+function destSVG(id,st){
+  const base='<ellipse cx="36" cy="64" rx="30" ry="6" fill="#000" opacity=".1"/><ellipse cx="36" cy="60" rx="30" ry="9" fill="#F1DFBC"/>';
+  const sea='<rect y="56" width="72" height="16" fill="#5FAEE6" opacity=".6"/>';
+  switch(id){
+    case 'ferry': return `<svg viewBox="0 0 72 72">${sea}<g transform="translate(36 52)"><path d="M-26 0 L26 0 L20 10 L-20 10 Z" fill="#0055BF"/><rect x="-18" y="-12" width="36" height="12" rx="2" fill="#F4F4F4"/>${st>=1?'<rect x="-14" y="-9" width="6" height="5" fill="#6FB7E8"/><rect x="-4" y="-9" width="6" height="5" fill="#6FB7E8"/><rect x="6" y="-9" width="6" height="5" fill="#6FB7E8"/>':''}${st>=2?'<rect x="-6" y="-22" width="12" height="10" rx="2" fill="#008F9B"/><path d="M-30 -2 l-10 -6 M30 -2 l10 -6" stroke="#F4BC22" stroke-width="3"/>':''}${st>=3?'<rect x="2" y="-30" width="2" height="8" fill="#14202C"/><path d="M4 -30 l10 3 l-10 3z" fill="#D2352B"/><g class="is-smoke" fill="#fff" opacity=".7"><circle cx="0" cy="-28" r="4"/></g>':''}</g></svg>`;
+    case 'workshop': return `<svg viewBox="0 0 72 72">${base}<g transform="translate(36 58)">${st>=1?'<rect x="-22" y="-26" width="44" height="26" fill="#C58B5A" stroke="#8A5A3B" stroke-width="1.5"/><path d="M-26 -26 L0 -44 L26 -26 Z" fill="#5B6778"/><rect x="-5" y="-14" width="10" height="14" fill="#5B6778"/>':'<rect x="-16" y="-18" width="32" height="18" fill="none" stroke="#B9C2CF" stroke-width="1.5" stroke-dasharray="3 3"/>'}${st>=2?'<rect x="-20" y="-22" width="12" height="9" fill="#FFF0B0" stroke="#8A5A3B"/><rect x="8" y="-22" width="12" height="9" fill="#FFF0B0" stroke="#8A5A3B"/><rect x="12" y="-42" width="6" height="12" fill="#8A5A3B"/>':''}${st>=3?'<g transform="translate(0 -50)"><circle r="6" fill="#F4BC22"/><path d="M0 -9 v-4 M0 9 v4 M-9 0 h-4 M9 0 h4" stroke="#F4BC22" stroke-width="2"/></g><rect x="-30" y="-10" width="8" height="10" fill="#D2352B"/><rect x="22" y="-8" width="8" height="8" fill="#0055BF"/>':''}</g></svg>`;
+    case 'brain': return `<svg viewBox="0 0 72 72">${base}<g transform="translate(36 58)">${st>=1?'<rect x="-18" y="-22" width="36" height="22" fill="#FFF8EA" stroke="#C9A96E" stroke-width="1.5"/><path d="M-22 -22 L0 -38 L22 -22 Z" fill="#D2352B"/><rect x="-4" y="-12" width="8" height="12" fill="#8A5A3B"/>':'<rect x="-16" y="-18" width="32" height="18" fill="none" stroke="#B9C2CF" stroke-width="1.5" stroke-dasharray="3 3"/>'}${st>=2?'<rect x="-3" y="-50" width="6" height="12" fill="#5B6778"/><circle cx="0" cy="-52" r="4" fill="#F4BC22"/><rect x="-26" y="-14" width="8" height="14" fill="#FFF8EA" stroke="#C9A96E"/><rect x="18" y="-14" width="8" height="14" fill="#FFF8EA" stroke="#C9A96E"/>':''}${st>=3?'<g transform="translate(22 -40)"><circle r="9" fill="#5B6778"/><path d="M0 -9 A9 9 0 0 1 9 0 L0 0 Z" fill="#14202C"/><rect x="-1" y="-16" width="2" height="8" fill="#14202C" transform="rotate(35)"/></g><circle cx="-22" cy="-46" r="1.5" fill="#F4BC22"/><circle cx="-14" cy="-52" r="1.2" fill="#F4BC22"/>':''}</g></svg>`;
+    case 'harbour': return `<svg viewBox="0 0 72 72">${sea}<g transform="translate(36 52)"><rect x="-30" y="-4" width="40" height="6" fill="#8A5A3B"/><rect x="-26" y="2" width="3" height="10" fill="#6B4229"/><rect x="2" y="2" width="3" height="10" fill="#6B4229"/>${st>=1?'<path d="M14 2 L34 2 L30 10 L18 10 Z" fill="#D2352B"/><rect x="23" y="-14" width="2" height="16" fill="#6B4229"/><path d="M25 -13 L34 -2 L25 -2 Z" fill="#F4F4F4"/>':''}${st>=2?'<rect x="-34" y="-28" width="16" height="24" fill="#FFF8EA" stroke="#C9A96E"/><path d="M-36 -28 L-26 -36 L-16 -28 Z" fill="#008F9B"/><rect x="-6" y="-22" width="3" height="18" fill="#14202C"/><path d="M-3 -22 l8 3 l-8 3z" fill="#F4BC22"/>':''}${st>=3?'<path d="M-8 14 L10 14 L7 20 L-5 20 Z" fill="#0055BF"/><path d="M14 16 L30 16 L27 21 L17 21 Z" fill="#F4BC22"/><rect x="16" y="-40" width="3" height="26" fill="#F4F4F4"/><rect x="12" y="-46" width="11" height="8" fill="#D2352B"/>':''}</g></svg>`;
+    case 'speedway': return `<svg viewBox="0 0 72 72">${base}<g transform="translate(36 54)"><ellipse cx="0" cy="0" rx="28" ry="12" fill="none" stroke="${st>=2?'#5B6778':'#D9B98B'}" stroke-width="${st>=2?7:6}"/>${st>=2?'<ellipse cx="0" cy="0" rx="28" ry="12" fill="none" stroke="#fff" stroke-width="1.5" stroke-dasharray="4 4"/>':''}${st>=1?'<path d="M-6 -12 h12 l-2 4 h-8z" fill="#F4F4F4"/><path d="M-6 -12 h3 v4 h-3z M0 -12 h3 v4 h-3z" fill="#14202C"/>':''}${st>=3?'<path d="M-34 -26 L34 -26 L30 -14 L-30 -14 Z" fill="#5B6778"/><path d="M-30 -26 h60" stroke="#F4BC22" stroke-width="3"/><rect x="-34" y="-14" width="4" height="12" fill="#5B6778"/><rect x="30" y="-14" width="4" height="12" fill="#5B6778"/>':''}<image href="/art/head-swoop.png" x="12" y="-26" width="18" height="18"/></g></svg>`;
+  }
+  return '';
+}
+function destinations(){
+  const o=worldStore(), g=gameStore(), B=Object.entries(o.builds);
+  const weeklies=weeklyTotal(), creations=(o.draw||[]).length+B.filter(([k])=>k.startsWith('p:')).length, brain=Object.keys(bestOf(g,'brain')).length;
+  const friends=chMine().length+B.filter(([k])=>k.startsWith('r:')).length+(crewMine||[]).filter(x=>x.me).length, wins=B.filter(([,b])=>b.k==='blitz').length;
+  const stage=(n,a,b,c)=>n>=c?3:n>=b?2:n>=a?1:0, next=(n,a,b,c)=>n>=c?null:n>=b?c:n>=a?b:a;
+  return [
+    {id:'ferry',name:'Weekly Ferry',n:weeklies,unit:'Weekly stamp',st:stage(weeklies,1,4,12),nx:next(weeklies,1,4,12),names:['Ferry stop','Ferry','Ferry line','Grand terminal'],go:()=>setTab('daily')},
+    {id:'workshop',name:'Creator Workshop',n:creations,unit:'creation',st:stage(creations,1,5,15),nx:next(creations,1,5,15),names:['Empty lot','Shed','Studio','Invention lab'],go:()=>{ pickPuzzle('quick','top'); requestAnimationFrame(()=>$('#drawCard').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'})); }},
+    {id:'brain',name:'Brain Island',n:brain,unit:'Brain Trail level',st:stage(brain,1,5,14),nx:next(brain,1,5,14),names:['Empty lot','Schoolhouse','Academy','Observatory'],go:()=>homeGo('brain')},
+    {id:'harbour',name:'Friendship Harbour',n:friends,unit:'friend build',st:stage(friends,1,5,15),nx:next(friends,1,5,15),names:['Jetty','Jetty with a boat','Harbour','Marina'],go:()=>setTab('mp','hub')},
+    {id:'speedway',name:'Blitz Speedway',n:wins,unit:'Gull win',st:stage(wins,1,5,15),nx:next(wins,1,5,15),names:['Dirt track','Starting line','Circuit','Stadium'],go:()=>homeGo('cpu')},
+  ];
+}
+function renderDestinations(){
+  $('#destGrid').innerHTML=destinations().map(d=>`<button class="dest" type="button" data-dest="${d.id}">${destSVG(d.id,d.st)}<span><b>${d.name}</b><small>${d.names[d.st]} · ${d.n} ${d.unit}${d.n===1?'':'s'}${d.nx?` · ${d.nx-d.n} more to the ${d.names[d.st+1].toLowerCase()}`:''}</small><span class="bar"><i style="width:${d.nx?Math.max(4,Math.round(100*d.n/d.nx)):100}%"></i></span></span></button>`).join('');
+}
+$('#destGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-dest]'); if(!b) return; const d=destinations().find(x=>x.id===b.dataset.dest); if(d){ track('dest:'+d.id); d.go(); } });
 let islandShown=-1;
 function renderIsland(){
   const o=worldStore(), stage=islandStage(o), n=worldCount(o), next=ISLAND_STAGES[stage+1];
@@ -5987,7 +6022,7 @@ function renderIsland(){
   $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>The whole village is built. The jetty points at Friendship Harbour, coming next.</span>';
   $('#isNote').textContent=n?`${pupName(o)||'Your pup'} and Bloppit are home. ${next?'Every build you finish grows the island.':''}${n>1?' Drag a model to move it.':''}`:'Finish any build and the first hut rises from the sand.';
   $('#isCard').hidden=stage<3; $('#isDecor').hidden=!n;
-  renderDecorShop(); renderBuilds();
+  renderDecorShop(); renderBuilds(); renderDestinations();
 }
 function renderDecorShop(){
   const o=worldStore(), left=worldStars(o);
