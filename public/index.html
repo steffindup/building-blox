@@ -8,7 +8,7 @@
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="google-site-verification" content="3jgoAs4OQQYRCxP8exwGKqmz1Gw5foP76_TtomURmc8" />
 <link rel="canonical" href="https://bloppit.com/">
-<meta name="theme-color" content="#D2352B">
+<meta name="theme-color" content="#0369BD">
 <meta name="application-name" content="Bloppit">
 <meta name="apple-mobile-web-app-title" content="Bloppit">
 <meta property="og:type" content="website">
@@ -25,7 +25,6 @@
 <meta name="twitter:title" content="Bloppit: Brick Puzzle Game">
 <meta name="twitter:description" content="Turn any photo into a brick puzzle, then race the Gulls, challenge a friend or build the Weekly Bloppit.">
 <meta name="twitter:image" content="https://bloppit.com/og-image.png">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
 <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -176,7 +175,7 @@ nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;padding-block:12
 .meet{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:40px;padding-block:72px;max-width:1100px}
 .meet-art{flex:0 1 300px;display:flex;flex-direction:column;align-items:center;gap:8px}
 .bubble{background:var(--white);border:2px solid var(--ink);border-radius:22px;padding:10px 20px;font-family:var(--display);font-size:26px}
-.meet-art svg{width:260px;max-width:100%;height:auto}
+.meet-art img{width:260px;max-width:100%;height:auto}
 .meet-text{flex:1 1 380px;min-width:0;display:flex;flex-direction:column;gap:16px}
 .meet-text h2{text-align:left;font-size:clamp(2.2rem,4vw,3.2rem);line-height:1.05}
 .meet-text p{font-size:19px}
@@ -196,19 +195,18 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 .foot .social a{display:inline-block;padding:5px 12px;border-radius:999px;border:2px solid var(--line,#E2D9CC);color:var(--ink);font-weight:800;font-size:14px;text-decoration:none}
 .foot .social a:hover,.foot .social a:focus-visible{border-color:var(--red);color:var(--red)}
 /* Launch screen (same as the app's): quick and cute, then the front page */
-.splash{display:none;position:fixed;inset:0;z-index:100;background:var(--red);color:var(--white);display:grid;place-content:center;justify-items:center;gap:6px;
+.splash{display:none;position:fixed;inset:0;z-index:100;background:#0369BD;color:var(--white);display:grid;place-content:center;justify-items:center;gap:6px;
   text-align:center;font-family:var(--display);cursor:pointer;-webkit-user-select:none;user-select:none;animation:sp-fail .3s ease 4s forwards}
 .sp-on .splash{display:grid}
 .sp-on{overflow:hidden}
-.splash svg{width:132px;height:116px;overflow:visible;animation:sp-pop .5s cubic-bezier(.3,1.6,.5,1) both}
-.splash .sp-head{transform-origin:100px 150px;animation:sp-tilt .5s ease-in-out .55s both}
-.splash .sp-eye{transform-box:fill-box;transform-origin:center;animation:sp-blink .18s ease-in-out .75s both}
+.splash .sp-head{display:block;transform-origin:50% 100%;animation:sp-tilt .5s ease-in-out .55s both}
+.splash .sp-head img{display:block;width:150px;height:150px;border-radius:34px;object-fit:cover;object-position:center 46%;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:sp-pop .5s cubic-bezier(.3,1.6,.5,1) both}
 .splash .sp-word{font-size:52px;line-height:1;letter-spacing:.01em;text-shadow:0 4px 0 rgba(0,0,0,.18);animation:sp-up .35s ease .1s both}
 .splash .sp-tag{display:flex;gap:8px;margin-top:10px}
 .splash .sp-tag span{font-size:17px;padding:6px 11px 8px;border-radius:9px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18);animation:sp-pop .3s cubic-bezier(.3,1.6,.5,1) both}
 .splash .sp-tag span:nth-child(1){background:var(--yellow);color:var(--ink);animation-delay:.25s}
-.splash .sp-tag span:nth-child(2){background:var(--white);color:var(--red);animation-delay:.4s}
-.splash .sp-tag span:nth-child(3){background:#0055BF;animation-delay:.55s}
+.splash .sp-tag span:nth-child(2){background:var(--white);color:#0055BF;animation-delay:.4s}
+.splash .sp-tag span:nth-child(3){background:var(--red);animation-delay:.55s}
 .splash.out{opacity:0;transform:scale(1.04);transition:opacity .3s ease,transform .3s ease;pointer-events:none}
 @keyframes sp-pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
 @keyframes sp-up{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
@@ -220,17 +218,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 </head>
 <body>
 <div class="splash" id="splash" aria-hidden="true">
-  <svg viewBox="0 0 200 175" aria-hidden="true"><g class="sp-head">
-    <circle cx="42" cy="38" r="16" fill="#8A5A3B"/><circle cx="42" cy="38" r="7" fill="#6B4229"/>
-    <circle cx="158" cy="38" r="16" fill="#8A5A3B"/><circle cx="158" cy="38" r="7" fill="#6B4229"/>
-    <ellipse cx="100" cy="94" rx="88" ry="74" fill="#8A5A3B"/>
-    <ellipse cx="100" cy="116" rx="56" ry="40" fill="#F3DEC0"/>
-    <g class="sp-eye"><ellipse cx="64" cy="88" rx="19" ry="22" fill="#1B1410"/><circle cx="70" cy="79" r="7" fill="#FFFFFF"/></g>
-    <g class="sp-eye"><ellipse cx="136" cy="88" rx="19" ry="22" fill="#1B1410"/><circle cx="142" cy="79" r="7" fill="#FFFFFF"/></g>
-    <ellipse cx="44" cy="118" rx="12" ry="7" fill="#F29A8A" opacity=".7"/><ellipse cx="156" cy="118" rx="12" ry="7" fill="#F29A8A" opacity=".7"/>
-    <path d="M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z" fill="#3A2418"/>
-    <path d="M100 120 q0 8 -9 10 M100 120 q0 8 9 10" stroke="#3A2418" stroke-width="4" stroke-linecap="round" fill="none"/>
-  </g></svg>
+  <span class="sp-head"><img src="/art/bloppit-icon.jpg" alt="" width="392" height="584"></span>
   <div class="sp-word">Bloppit</div>
   <div class="sp-tag"><span>Snap it.</span><span>Bloppit.</span><span>Build it.</span></div>
 </div>
@@ -250,16 +238,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 <header>
   <nav class="wrap" aria-label="Main">
     <a class="logo" href="/" aria-label="Bloppit home">
-      <svg viewBox="0 0 200 175" width="46" height="40" aria-hidden="true">
-        <circle cx="42" cy="38" r="16" fill="#8A5A3B"/><circle cx="42" cy="38" r="7" fill="#6B4229"/>
-        <circle cx="158" cy="38" r="16" fill="#8A5A3B"/><circle cx="158" cy="38" r="7" fill="#6B4229"/>
-        <ellipse cx="100" cy="94" rx="88" ry="74" fill="#8A5A3B"/>
-        <ellipse cx="100" cy="116" rx="56" ry="40" fill="#F3DEC0"/>
-        <ellipse cx="64" cy="88" rx="19" ry="22" fill="#1B1410"/><ellipse cx="136" cy="88" rx="19" ry="22" fill="#1B1410"/>
-        <circle cx="70" cy="79" r="7" fill="#FFFFFF"/><circle cx="142" cy="79" r="7" fill="#FFFFFF"/>
-        <path d="M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z" fill="#3A2418"/>
-        <path d="M100 120 q0 8 -9 10 M100 120 q0 8 9 10" stroke="#3A2418" stroke-width="4" stroke-linecap="round" fill="none"/>
-      </svg>
+      <img src="/art/head-bloppit.png" width="46" height="46" alt="" style="border-radius:50%">
       <span>Bloppit</span>
     </a>
     <div class="nav-links">
@@ -302,26 +281,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
       <div class="model">
         <span class="race-chip">⭐ <b>Puzzle complete!</b></span>
         <div class="mosaic" id="mosaic" role="img" aria-label="The same boat as a brick model"></div>
-        <svg class="buddy" viewBox="0 0 300 360" aria-hidden="true">
-          <path d="M208 300 C 272 302 292 248 268 212 C 262 240 240 262 204 270 Z" fill="#6B4229"/>
-          <ellipse cx="150" cy="250" rx="90" ry="96" fill="#8A5A3B"/>
-          <ellipse cx="150" cy="262" rx="58" ry="72" fill="#F3DEC0"/>
-          <ellipse cx="112" cy="340" rx="28" ry="14" fill="#6B4229"/><ellipse cx="188" cy="340" rx="28" ry="14" fill="#6B4229"/>
-          <path d="M86 196 Q 90 236 120 240" stroke="#8A5A3B" stroke-width="28" stroke-linecap="round" fill="none"/>
-          <path d="M214 196 Q 210 236 180 240" stroke="#8A5A3B" stroke-width="28" stroke-linecap="round" fill="none"/>
-          <circle cx="80" cy="66" r="19" fill="#8A5A3B"/><circle cx="80" cy="66" r="9" fill="#6B4229"/>
-          <circle cx="220" cy="66" r="19" fill="#8A5A3B"/><circle cx="220" cy="66" r="9" fill="#6B4229"/>
-          <ellipse cx="150" cy="128" rx="96" ry="80" fill="#8A5A3B"/>
-          <ellipse cx="150" cy="152" rx="60" ry="42" fill="#F3DEC0"/>
-          <ellipse cx="110" cy="122" rx="21" ry="24" fill="#1B1410"/><ellipse cx="190" cy="122" rx="21" ry="24" fill="#1B1410"/>
-          <circle cx="117" cy="112" r="8" fill="#FFFFFF"/><circle cx="197" cy="112" r="8" fill="#FFFFFF"/>
-          <ellipse cx="92" cy="154" rx="13" ry="8" fill="#F29A8A" opacity=".75"/><ellipse cx="208" cy="154" rx="13" ry="8" fill="#F29A8A" opacity=".75"/>
-          <path d="M137 141 q13 -8 26 0 q-3 13 -13 15 q-10 -2 -13 -15z" fill="#3A2418"/>
-          <path d="M150 156 q0 9 -10 11 M150 156 q0 9 10 11" stroke="#3A2418" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-          <rect x="116" y="214" width="68" height="44" rx="7" fill="#D2352B"/>
-          <rect x="127" y="204" width="18" height="13" rx="4" fill="#E5463C"/><rect x="155" y="204" width="18" height="13" rx="4" fill="#E5463C"/>
-          <ellipse cx="118" cy="238" rx="15" ry="13" fill="#8A5A3B"/><ellipse cx="182" cy="238" rx="15" ry="13" fill="#8A5A3B"/>
-        </svg>
+        <img class="buddy" src="/art/bloppit-3q.svg" width="120" height="179" alt="">
       </div>
     </div>
   </section>
@@ -330,29 +290,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
     <section class="wrap meet" aria-labelledby="meet-h">
       <div class="meet-art">
         <span class="bubble">Let’s bloppit!</span>
-        <svg viewBox="0 0 300 360" width="260" height="312" role="img" aria-label="Bloppit the otter, hugging a red brick">
-          <path d="M208 300 C 272 302 292 248 268 212 C 262 240 240 262 204 270 Z" fill="#6B4229"/>
-          <ellipse cx="150" cy="250" rx="90" ry="96" fill="#8A5A3B"/>
-          <ellipse cx="150" cy="262" rx="58" ry="72" fill="#F3DEC0"/>
-          <ellipse cx="112" cy="340" rx="28" ry="14" fill="#6B4229"/><ellipse cx="188" cy="340" rx="28" ry="14" fill="#6B4229"/>
-          <path d="M86 196 Q 90 236 120 240" stroke="#8A5A3B" stroke-width="28" stroke-linecap="round" fill="none"/>
-          <path d="M214 196 Q 210 236 180 240" stroke="#8A5A3B" stroke-width="28" stroke-linecap="round" fill="none"/>
-          <circle cx="80" cy="66" r="19" fill="#8A5A3B"/><circle cx="80" cy="66" r="9" fill="#6B4229"/>
-          <circle cx="220" cy="66" r="19" fill="#8A5A3B"/><circle cx="220" cy="66" r="9" fill="#6B4229"/>
-          <ellipse cx="150" cy="128" rx="96" ry="80" fill="#8A5A3B"/>
-          <ellipse cx="150" cy="152" rx="60" ry="42" fill="#F3DEC0"/>
-          <ellipse cx="110" cy="122" rx="21" ry="24" fill="#1B1410"/><ellipse cx="190" cy="122" rx="21" ry="24" fill="#1B1410"/>
-          <circle cx="117" cy="112" r="8" fill="#FFFFFF"/><circle cx="104" cy="132" r="3.5" fill="#FFFFFF"/>
-          <circle cx="197" cy="112" r="8" fill="#FFFFFF"/><circle cx="184" cy="132" r="3.5" fill="#FFFFFF"/>
-          <ellipse cx="92" cy="154" rx="13" ry="8" fill="#F29A8A" opacity=".75"/><ellipse cx="208" cy="154" rx="13" ry="8" fill="#F29A8A" opacity=".75"/>
-          <path d="M137 141 q13 -8 26 0 q-3 13 -13 15 q-10 -2 -13 -15z" fill="#3A2418"/>
-          <path d="M150 156 q0 9 -10 11 M150 156 q0 9 10 11" stroke="#3A2418" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-          <path d="M104 160 L78 155 M104 167 L80 172 M196 160 L222 155 M196 167 L220 172" stroke="#6B4229" stroke-width="2.5" stroke-linecap="round"/>
-          <rect x="116" y="214" width="68" height="44" rx="7" fill="#D2352B"/>
-          <rect x="116" y="248" width="68" height="10" rx="5" fill="#B32A22"/>
-          <rect x="127" y="204" width="18" height="13" rx="4" fill="#E5463C"/><rect x="155" y="204" width="18" height="13" rx="4" fill="#E5463C"/>
-          <ellipse cx="118" cy="238" rx="15" ry="13" fill="#8A5A3B"/><ellipse cx="182" cy="238" rx="15" ry="13" fill="#8A5A3B"/>
-        </svg>
+        <img src="/art/bloppit-front.svg" width="260" height="387" alt="Bloppit the otter, holding a red brick">
       </div>
       <div class="meet-text">
         <h2 id="meet-h">Meet Bloppit, your building buddy</h2>

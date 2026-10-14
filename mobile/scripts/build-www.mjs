@@ -2,7 +2,7 @@
 // Everything the app needs is bundled so it works offline: three.js and the fonts come from
 // node_modules instead of a CDN or Google Fonts. Play together still needs the internet (bloppit.com/api/room).
 // Run: cd mobile && npm run build   (or `npm run sync` to also copy into the iOS project)
-import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync, cpSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -11,6 +11,8 @@ const mobile = join(here, '..'), root = join(mobile, '..'), www = join(mobile, '
 
 rmSync(www, { recursive: true, force: true });
 mkdirSync(join(www, 'vendor', 'fonts'), { recursive: true });
+// Character art (public/art): the build buddy, the Gulls and the launch screen load it by relative path.
+cpSync(join(root, 'public', 'art'), join(www, 'art'), { recursive: true });
 
 // three.js r128, the same version the website loads from the CDN.
 const three = { 'three.min.js': 'three/build/three.min.js',
@@ -46,6 +48,7 @@ html = html.replace(/<link rel="(canonical|manifest|apple-touch-icon|icon)"[^>]*
 // launch screen script, which runs before everything else and only shows in the app, can see it.
 swap('<body>\n', '<body>\n<script>window.BLOPPIT_APP=true;</script>\n');
 
+html = html.replace(/src="\/art\//g, 'src="art/');
 if (/https:\/\/(cdn|fonts)\./.test(html)) throw new Error('build-www: the app still loads something from a CDN');
 writeFileSync(join(www, 'index.html'), html);
 console.log(`build-www: wrote ${join('mobile', 'www')} (index.html ${(html.length / 1024).toFixed(0)} KB, three.js and ${fonts.length} fonts bundled)`);
