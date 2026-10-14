@@ -143,6 +143,14 @@ main{max-width:1640px;margin:0 auto;padding-block:20px 0}
 .drop strong{font-family:var(--f-display);font-weight:400;font-size:20px}
 .drop span{color:var(--muted);font-size:13px}
 .drop input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.draw-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:8px}
+.draw-pal{display:flex;flex-wrap:wrap;gap:5px}.draw-pal button{width:28px;height:28px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0}
+.draw-pal button[aria-checked="true"]{box-shadow:0 0 0 3px #14202C}.draw-pal button.erase{background:#fff;font-size:14px}
+.draw-btns{display:flex;gap:6px;flex-wrap:wrap}.draw-btns .inp{padding:6px 8px;font-size:13px}.draw-btns .ghost{font-size:13px;padding:7px 10px}.draw-btns .ghost[aria-pressed="true"]{background:#14202C;color:#fff;border-color:#14202C}
+.draw-cv{display:block;width:min(480px,100%);height:auto;aspect-ratio:1;border-radius:12px;border:1px solid var(--line);background:#fff;touch-action:none;cursor:crosshair}
+.draw-saved{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.draw-saved:empty{display:none}
+.draw-saved button{padding:0;border:2px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;overflow:hidden;width:64px;height:64px}.draw-saved button img{width:100%;height:100%;image-rendering:pixelated;display:block}
+.draw-saved button[aria-current="true"]{border-color:#14202C}
 .photos{display:grid;gap:10px}
 .photo{display:grid;grid-template-columns:84px minmax(0,1fr);gap:12px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
 .photo canvas{width:84px;height:84px;object-fit:contain;border-radius:6px;display:block;background:var(--page)}
@@ -1029,6 +1037,20 @@ body.on-home .tabs{visibility:hidden}
       <strong>Add photos</strong>
       <span>Drop, paste or tap to choose. A plain background works best.</span>
     </label>
+    <div class="card draw-card" id="drawCard">
+      <div class="lib-head"><h2>Or draw your own</h2><span class="tag">Stud by stud</span></div>
+      <p class="note" style="margin:0 0 8px">Paint a picture on the studs, then build it as a brick picture. Drawings are saved with your pup and can be sent as a link.</p>
+      <div class="draw-tools">
+        <div class="draw-pal" id="drawPal" role="radiogroup" aria-label="Colour"></div>
+        <div class="draw-btns">
+          <select class="inp" id="drawSize" aria-label="Size"><option value="16">16 × 16</option><option value="24" selected>24 × 24</option><option value="32">32 × 32</option></select>
+          <button class="ghost" id="drawFill" type="button" aria-pressed="false">🪣 Fill</button><button class="ghost" id="drawUndo" type="button">↶ Undo</button><button class="ghost" id="drawClear" type="button">Clear</button>
+        </div>
+      </div>
+      <canvas class="draw-cv" id="drawCv" width="480" height="480" aria-label="Drawing grid"></canvas>
+      <div class="win-btns" style="justify-content:flex-start;margin-top:10px"><button class="primary sm" id="drawBuild" type="button">Build it ▶</button><button class="ghost" id="drawSave" type="button">Save drawing</button><button class="ghost" id="drawShare" type="button">Send as a link</button></div>
+      <div class="draw-saved" id="drawSaved"></div>
+    </div>
     <div class="card" id="library">
       <div class="lib-head"><h2>Or pick from the library</h2><span class="tag" id="libCount"></span></div>
       <div class="lib-themes" id="libThemes" role="tablist" aria-label="Library themes"></div>
@@ -2426,6 +2448,7 @@ function setTab(t,sub){
   { const sel=document.querySelector('.tab[aria-selected="true"]'), bar=$('.tabs'); if(sel&&bar.scrollWidth>bar.clientWidth) bar.scrollTo({left:sel.offsetLeft-bar.offsetLeft-24,behavior:'smooth'}); }
   ['home','create','build','box','booklet','game','mp','blitz','daily','island'].forEach(v=>$('#view-'+v).hidden=v!==t);
   if(t==='island') renderIsland();
+  if(t==='create') renderDrawSaved();
   if(t==='mp'&&(sub==='hub'||subOf.mp==='hub')) renderCrews(true);
   if(t!=='create'&&pickFor) pickFor=null;
   syncPick();
@@ -5707,7 +5730,7 @@ function worldMerge(a,b){
   for(const k of Object.keys(b.builds||{})){ const x=builds[k], y=b.builds[k]; builds[k]=x?{...x,...y,s:Math.max(x.s||0,y.s||0),t:Math.min(x.t||Infinity,y.t||Infinity),c:Math.max(x.c||1,y.c||1),...((x.m||y.m)?{m:1}:{})}:y; }
   const log=[]; for(const k of [...(a.log||[]),...(b.log||[]),...Object.keys(builds)]) if(builds[k]&&!log.includes(k)) log.push(k);
   const pn=[a.pupName,b.pupName].find(v=>typeof v==='number'&&v>=0);
-  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},pupName:pn==null?-1:pn,pupAsked:!!(a.pupAsked||b.pupAsked)};
+  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},draw:[...new Map([...(b.draw||[]),...(a.draw||[])].map(d=>[d.id,d])).values()].sort((x,y)=>(y.t||0)-(x.t||0)).slice(0,12),pupName:pn==null?-1:pn,pupAsked:!!(a.pupAsked||b.pupAsked)};
 }
 function worldSet(o){ try{ localStorage.setItem(pkey(WORLD_KEY),JSON.stringify(o)); }catch(e){} pupPush(); }
 const worldCount=o=>o.log.length;                                   // distinct models finished
@@ -6079,13 +6102,15 @@ const SHARE_BASE='https://bloppit.com';
 function shareCodeFor(kind){ if(kind==='weekly'&&cpu&&cpu.trial&&cpu.trial.week) return 'w-'+cpu.trial.week; if(photos.length&&photos.every(p=>p.sample)&&photos[0].name) return 'm-'+slugOf(photos[0].name); return 'start'; }
 // A share link lands here: work out the build, show it with one button, then start it.
 function shareOpen(code,xfer){
-  code=String(code||'').toLowerCase().replace(/[^a-z0-9-]/g,'').slice(0,40);
+  code=String(code||'').replace(/[^a-zA-Z0-9-]/g,'').slice(0,2600); if(!code.startsWith('d-')) code=code.toLowerCase().slice(0,40);
   { const o=evStore(); if(!o.channel){ o.channel='share'; evStoreSet(o); } track('visit:share'); }
   if(xfer) shareClaim(xfer);
   let week=null, smp=null, title='', note='';
   if(/^w-\d{4}-\d{2}-\d{2}$/.test(code)){ week=code.slice(2); if(week>weekOf()) week=null; }
   if(week){ const o=weeklyPuzzle(week); smp=SAMPLES[o.i]; title=week===weekOf()?'This week’s Bloppit':'A Weekly Bloppit'; note=week===weekOf()?`${o.name}, ${o.n} bricks. Build it clean and see how many others did too.`:`${o.name}, ${o.n} bricks, from the week of ${new Date(week+'T12:00:00Z').toLocaleDateString(undefined,{day:'numeric',month:'long'})}.`; }
   else if(code.startsWith('m-')){ smp=SAMPLES.find(x=>released(x)&&slugOf(x.name)===code.slice(2)); if(smp){ title=smp.name; note='A Bloppit build, sent to you. No account, nothing to sign up for.'; } }
+  else if(code.startsWith('d-')){ const dd=drawDecode(code.slice(2)); if(dd){ $('#shPic').src=drawThumb(dd,120); $('#shPic').hidden=false; $('#shTitle').textContent='A drawing for you'; $('#shNote').textContent=`Someone drew this, stud by stud, ${dd.w} × ${dd.h}. Build it as a brick picture.`; setTab('home');
+      const d=$('#shareDlg'); $('#shGo').onclick=()=>{ d.close(); track('share_build_started'); draw={...draw,w:dd.w,h:dd.h,cells:dd.cells,undo:[],id:null}; $('#drawSize').value=dd.w; drawRender(); drawBuild(draw); }; $('#shLook').onclick=()=>{ d.close(); setTab('home'); }; d.onclose=null; if(!d.open) d.showModal(); return; } }
   if(!smp){ setTab('home'); return; }
   if(!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png');
   $('#shPic').src=smp.thumb; $('#shPic').hidden=false; $('#shTitle').textContent=title; $('#shNote').textContent=note;
@@ -6140,7 +6165,64 @@ $('#familyCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(fam
 $('#familyShare').onclick=async()=>{ if(APP&&!await gate.ask('Sharing sends a link to another app.')) return; track('family_link_shared');
   const url=familyUrl(), text='Bloppit, a calm brick puzzle game. Open this on the device they play on:'; try{ if(navigator.share) await navigator.share({title:'Bloppit',text,url}); else await navigator.clipboard.writeText(`${text} ${url}`); }catch(e){} };
 
-/* ---------- Family key: a parent's own key that players attach to (Grown-ups corner) ---------- */
+/* ---------- Draw your own: a stud-grid drawing that builds as a brick picture ----------
+   Cells hold a palette index (0 = empty/white). Saved drawings live in the world record under the pup (small
+   run-length strings), and a drawing can be sent as a link: /p/d-24x24-<cells>. Nothing typed is involved. */
+const DRAW_COLORS=[['Red','#C91A09'],['Orange','#FE8A18'],['Yellow','#F2CD37'],['Lime','#BBE90B'],['Green','#237841'],['Dark Turquoise','#008F9B'],['Medium Azure','#36AEBF'],['Blue','#0055BF'],['Dark Blue','#0A3463'],['Lavender','#AC78BA'],['Magenta','#923978'],['Light Pink','#E4ADC8'],['Tan','#E4CD9E'],['Nougat','#D09168'],['Reddish Brown','#582A12'],['Light Grey','#A0A5A9'],['Dark Grey','#6C6E68'],['Black','#1B2A34']];
+const DRAW_SYM='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP';   // one letter per palette index; digits are run lengths
+let draw={w:24,h:24,cells:new Uint8Array(576),color:1,fill:false,undo:[],id:null};
+const drawHex=i=>i?(PALETTE.find(p=>p[0]===DRAW_COLORS[i-1][0])||DRAW_COLORS[i-1])[1]:'#F4F4F4';
+function drawEncode(d){ let out='', run=0, last=-1; const flush=()=>{ if(last<0) return; out+=DRAW_SYM[last]+(run>1?run:''); }; for(const v of d.cells){ if(v===last) run++; else { flush(); last=v; run=1; } } flush(); return `${d.w}x${d.h}-${out}`; }
+function drawDecode(str){ const m=/^(\d{1,2})x(\d{1,2})-([a-zA-P0-9]*)$/.exec(str); if(!m) return null; const w=+m[1], h=+m[2]; if(![16,24,32].includes(w)||h!==w) return null;
+  const cells=new Uint8Array(w*h); let i=0; for(const mm of m[3].matchAll(/([a-zA-P])(\d*)/g)){ const v=DRAW_SYM.indexOf(mm[1]), n=+(mm[2]||1); if(v<0||v>DRAW_COLORS.length) return null; for(let k=0;k<n&&i<cells.length;k++) cells[i++]=v; } return {w,h,cells}; }
+function drawRender(){
+  const cv=$('#drawCv'), x=cv.getContext('2d'), n=draw.w, cs=cv.width/n; x.fillStyle='#F4F4F4'; x.fillRect(0,0,cv.width,cv.height);
+  for(let i=0;i<n*n;i++){ const v=draw.cells[i], px=(i%n)*cs, py=Math.floor(i/n)*cs; if(v){ x.fillStyle=drawHex(v); x.fillRect(px,py,cs,cs); }
+    x.fillStyle=v?'rgba(255,255,255,.22)':'rgba(0,0,0,.05)'; x.beginPath(); x.arc(px+cs/2,py+cs/2,cs*.26,0,7); x.fill(); }
+  x.strokeStyle='rgba(0,0,0,.06)'; x.lineWidth=1; for(let k=1;k<n;k++){ x.beginPath(); x.moveTo(k*cs,0); x.lineTo(k*cs,cv.height); x.moveTo(0,k*cs); x.lineTo(cv.width,k*cs); x.stroke(); }
+}
+function drawThumb(d,px=96){ const c=document.createElement('canvas'); c.width=d.w; c.height=d.h; const x=c.getContext('2d'); for(let i=0;i<d.w*d.h;i++){ x.fillStyle=drawHex(d.cells[i]); x.fillRect(i%d.w,Math.floor(i/d.w),1,1); } const o=document.createElement('canvas'); o.width=px; o.height=px; const ox=o.getContext('2d'); ox.imageSmoothingEnabled=false; ox.drawImage(c,0,0,px,px); return o.toDataURL('image/png'); }
+function drawPalette(){ $('#drawPal').innerHTML=`<button type="button" class="erase" data-c="0" role="radio" aria-checked="${draw.color===0}" title="Rubber" aria-label="Rubber">✕</button>`+DRAW_COLORS.map((c,i)=>`<button type="button" data-c="${i+1}" role="radio" aria-checked="${draw.color===i+1}" style="background:${drawHex(i+1)}" title="${c[0]}" aria-label="${c[0]}"></button>`).join(''); }
+$('#drawPal').addEventListener('click',e=>{ const b=e.target.closest('[data-c]'); if(!b) return; draw.color=+b.dataset.c; drawPalette(); });
+$('#drawSize').addEventListener('change',e=>{ const n=+e.target.value; if(draw.cells.some(v=>v)&&!confirm('Change the size? The drawing will be cleared.')){ e.target.value=draw.w; return; } draw.w=draw.h=n; draw.cells=new Uint8Array(n*n); draw.undo=[]; draw.id=null; drawRender(); });
+$('#drawFill').onclick=()=>{ draw.fill=!draw.fill; $('#drawFill').setAttribute('aria-pressed',draw.fill); };
+$('#drawUndo').onclick=()=>{ const u=draw.undo.pop(); if(u){ draw.cells=u; drawRender(); } };
+$('#drawClear').onclick=()=>{ if(!draw.cells.some(v=>v)) return; draw.undo.push(draw.cells.slice()); draw.cells=new Uint8Array(draw.w*draw.h); draw.id=null; drawRender(); };
+{ const cv=$('#drawCv'); let painting=false, stroke=null;
+  const cell=e=>{ const r=cv.getBoundingClientRect(), cx=Math.floor((e.clientX-r.left)/r.width*draw.w), cy=Math.floor((e.clientY-r.top)/r.height*draw.h); return cx>=0&&cy>=0&&cx<draw.w&&cy<draw.h?cy*draw.w+cx:-1; };
+  const paint=i=>{ if(i<0) return; if(draw.fill){ const from=draw.cells[i]; if(from===draw.color) return; const st=[i]; while(st.length){ const k=st.pop(); if(draw.cells[k]!==from) continue; draw.cells[k]=draw.color; const x=k%draw.w; if(x>0) st.push(k-1); if(x<draw.w-1) st.push(k+1); if(k>=draw.w) st.push(k-draw.w); if(k+draw.w<draw.cells.length) st.push(k+draw.w); } }
+    else draw.cells[i]=draw.color; };
+  cv.addEventListener('pointerdown',e=>{ e.preventDefault(); cv.setPointerCapture(e.pointerId); painting=true; stroke=draw.cells.slice(); paint(cell(e)); drawRender(); });
+  cv.addEventListener('pointermove',e=>{ if(!painting||draw.fill) return; paint(cell(e)); drawRender(); });
+  const up=()=>{ if(!painting) return; painting=false; if(stroke&&stroke.some((v,i)=>v!==draw.cells[i])){ draw.undo.push(stroke); if(draw.undo.length>40) draw.undo.shift(); draw.id=null; } stroke=null; };
+  cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up); }
+// Build the drawing as a brick picture
+function drawBuild(d){
+  if(!d.cells.some(v=>v)){ showMsg('Paint something first.','err'); return false; }
+  if(game) endGame(); if(mp) mpLeave(); dismissResume(); usePicked=true;
+  const c=document.createElement('canvas'); c.width=d.w*8; c.height=d.h*8; const x=c.getContext('2d');
+  for(let i=0;i<d.w*d.h;i++){ x.fillStyle=drawHex(d.cells[i]); x.fillRect((i%d.w)*8,Math.floor(i/d.w)*8,8,8); }
+  const used=new Set(d.cells).size;
+  photos=[{id:++pid,name:`Drawing ${hash32(drawEncode(d))}`,d:canvasData(c),m:null,view:'front',drawing:true}];
+  setControls({kind:'picture',pw:d.w,pcol:Math.max(2,Math.min(32,used+1)),shape:'flat',thick:1,tol:48,maxColors:6,gray:false,size:12}); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild();
+  if(!model){ showMsg('That drawing couldn’t be built. Try adding a little more to it.','err'); return false; }
+  track('drawing_built'); setTab('build'); return true;
+}
+$('#drawBuild').onclick=()=>drawBuild(draw);
+// Saved drawings, with the pup
+function drawList(){ const o=worldStore(); return Array.isArray(o.draw)?o.draw:[]; }
+function renderDrawSaved(){ const list=drawList(); $('#drawSaved').innerHTML=list.map(d=>{ const dd=drawDecode(d.c); return dd?`<button type="button" data-draw="${d.id}" aria-current="${d.id===draw.id}" title="Open this drawing"><img src="${drawThumb(dd,64)}" alt=""></button>`:''; }).join(''); }
+$('#drawSave').onclick=()=>{ if(!draw.cells.some(v=>v)){ showMsg('Paint something first.','err'); return; } const o=worldStore(), c=drawEncode(draw); o.draw=drawList().filter(d=>d.c!==c); const id=draw.id||hash32(c+Date.now()); o.draw.unshift({id,c,t:Date.now()}); o.draw=o.draw.slice(0,12); worldSet(o); draw.id=id; renderDrawSaved(); showMsg('Saved with your pup. Up to 12 drawings are kept.','ok'); track('drawing_saved'); };
+$('#drawSaved').addEventListener('click',e=>{ const b=e.target.closest('[data-draw]'); if(!b) return; const d=drawList().find(x=>x.id===b.dataset.draw); const dd=d&&drawDecode(d.c); if(!dd) return;
+  if(b.dataset.del){ return; }
+  draw={...draw,w:dd.w,h:dd.h,cells:dd.cells,undo:[],id:d.id}; $('#drawSize').value=dd.w; drawRender(); renderDrawSaved(); });
+$('#drawShare').onclick=async()=>{ if(!draw.cells.some(v=>v)){ showMsg('Paint something first.','err'); return; } if(APP&&!await gate.ask('Sharing sends your drawing to another app.')) return;
+  const url=`${SHARE_BASE}/p/d-${drawEncode(draw)}`, text='I drew this in Bloppit. Build it!'; track('drawing_shared');
+  try{ if(navigator.share) await navigator.share({title:'A Bloppit drawing',text,url}); else { await navigator.clipboard.writeText(url); $('#drawShare').textContent='Link copied!'; setTimeout(()=>$('#drawShare').textContent='Send as a link',2000); } }catch(e){} };
+drawPalette(); drawRender();
+window.bloppitDrawCode=()=>drawEncode(draw);   // the current drawing as a share code (tests, and handy in the console)
+
+/* ---------- Family key: a parent's own key that players attach to (Grown-ups corner) ---------- *//* ---------- Family key: a parent's own key that players attach to (Grown-ups corner) ---------- */
 const FAM_KEY='bloppit-family-v1';
 function famStored(){ try{ return localStorage.getItem(FAM_KEY)||''; }catch(e){ return ''; } }
 function famNote(t,kind){ const el=$('#famNote'); el.hidden=!t; el.textContent=t||''; el.dataset.kind=kind||''; }
