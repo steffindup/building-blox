@@ -1,9 +1,10 @@
-// Blitz challenges and the Daily Bloppit. Kept free of Netlify imports so it can be tested locally.
+// Blitz challenges and the Weekly Bloppit. Kept free of Netlify imports so it can be tested locally.
 //
 // A challenge is an async race: one player builds a puzzle against the clock, gets a 6-character code,
 // and sends it to a friend, who builds the same puzzle later. Everyone who plays it is listed by total time.
-// The Daily Bloppit is one library puzzle a day that everybody plays; the server only keeps a list of
-// times for each day (no names), so a player can see how they did compared with everyone else.
+// The Weekly Bloppit is one puzzle a week that everybody builds; the server only keeps two counts for each
+// week (how many finished, how many finished clean), so the finish screen can say "you and 68% of this week's
+// builders finished clean". No names, no times, no ranks.
 //
 // The store adapter is the same as the room server's:
 //   get(key) -> { data, etag } | null
@@ -12,11 +13,9 @@ import { cleanName } from '../room/logic.mjs';
 
 const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 export const CHALLENGE_TTL_MS = 30 * 86400_000; // challenges are forgotten 30 days after the last run
-export const DAILY_KEEP_DAYS = 7;               // daily times are kept for a week
+export const WEEKLY_KEEP_WEEKS = 8;             // weekly counts are kept for 8 weeks
 const MAX_RUNS = 12;                            // players per challenge
 const MAX_MODEL_CHARS = 2_500_000;
-const MAX_DAILY = 20_000;
-const DAILY_BOARD = 50;                          // names shown on each day's scoreboard                       // times kept per day
 const MISS_MS = 1000;                           // each miss adds 1 second (same as Blitz)
 const HINT_MS = 5000;                           // each hint adds 5 seconds (same as Blitz)
 const MIN_MS_PER_BRICK = 300;                   // faster than this per brick isn't a real build
@@ -26,13 +25,23 @@ const rand = (n, chars) => { let s = ''; const a = new Uint32Array(n); crypto.ge
 const cleanCode = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
 const chKey = (c) => `ch/${c}`;
 const chModelKey = (c) => `chmodel/${c}`;
-const dayKey = (d) => `daily/${d}`;
+const weekKey = (w) => `weekly/${w}`;
 export const total = (r) => r.ms + r.miss * MISS_MS + (r.hint || 0) * HINT_MS;
 
-// UTC calendar day, as YYYY-MM-DD
-export const dayOf = (t) => new Date(t).toISOString().slice(0, 10);
-// The daily puzzle is chosen by day, so a player a few hours either side of UTC can still send their time
-const dayOk = (d, now) => [-1, 0, 1].some((k) => dayOf(now + k * 86400_000) === d);
+// The Weekly Bloppit changes on Monday at 8 am US Eastern. A week is named by that Monday's date (YYYY-MM-DD).
+// The app computes the same key (weekOf in public/build/index.html); keep the two in step.
+const ET = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hourCycle: 'h23', weekday: 'short', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit' });
+export function weekOf(t = Date.now()) {
+  const p = Object.fromEntries(ET.formatToParts(t).map((x) => [x.type, x.value]));
+  const dow = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }[p.weekday];
+  let back = (dow + 6) % 7;
+  if (back === 0 && Number(p.hour) < 8) back = 7;   // Monday before 8 am ET still belongs to last week
+  const d = new Date(Date.UTC(Number(p.year), Number(p.month) - 1, Number(p.day)));
+  d.setUTCDate(d.getUTCDate() - back);
+  return d.toISOString().slice(0, 10);
+}
+// A finish is accepted for this week and, for a few hours either side of the change, last week
+const weekOk = (w, now) => w === weekOf(now) || w === weekOf(now - 7 * 86400_000);
 
 function cleanRun(body, nBricks) {
   const ms = Math.round(Number(body.ms)), miss = Math.floor(Number(body.miss) || 0), hint = Math.floor(Number(body.hint) || 0);
@@ -57,27 +66,17 @@ async function readChallenge(store, code) {
   return r;
 }
 
-// Daily scoreboard names are seen by every player, so they're stricter than room names: a first name or nickname
-// in plain letters (no numbers, @handles or web addresses), rude words become "Player", and anyone can play as
-// "A player" instead.
-export function boardName(s) {
-  const raw = String(s || '');
-  if (/@|www|https?:|\.(com|net|org|io|gg|tv|me)\b|\d{3,}/i.test(raw)) return 'Player';
-  const n = cleanName(raw.normalize('NFKC').replace(/[^\p{L}\p{M} '\-]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 12));
-  return n || 'Player';
-}
-const dailyTop = (d, k) => (d.board || []).slice(0, k).map((e) => ({ name: e.name, t: e.t }));
-
 export async function handle(method, query, body, store) {
   const now = Date.now();
   if (method === 'GET') {
     if (query.ping) return { status: 200, body: { ok: true } };
-    if (query.daily) {
-      const day = String(query.daily);
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return { status: 400, body: { error: 'Bad day.' } };
-      const r = await store.get(dayKey(day));
-      const d = r ? r.data : { times: [] };
-      return { status: 200, body: { day, n: d.times.length, best: d.times.length ? d.times[0] : null, top: dailyTop(d, query.board ? DAILY_BOARD : 3) } };
+    if (query.daily) return { status: 410, body: { error: 'The Daily Bloppit is now the Weekly Bloppit. Please update the app.' } };
+    if (query.weekly) {
+      const week = String(query.weekly);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(week)) return { status: 400, body: { error: 'Bad week.' } };
+      const r = await store.get(weekKey(week));
+      const d = r ? r.data : { week, n: 0, clean: 0 };
+      return { status: 200, body: { week, n: d.n, clean: d.clean, pct: d.n ? Math.round(100 * d.clean / d.n) : 0 } };
     }
     const code = cleanCode(query.code);
     if (code.length !== 6) return { status: 400, body: { error: 'Challenge codes have 6 letters and numbers.' } };
@@ -138,30 +137,25 @@ export async function handle(method, query, body, store) {
     return { status: 409, body: { error: 'The challenge was busy. Please try again.' } };
   }
 
-  // Daily Bloppit: add a time to today's list and say where it comes
-  if (a === 'daily') {
-    const day = String(body.day || '');
-    if (!dayOk(day, now)) return { status: 400, body: { error: 'That daily puzzle has finished.' } };
+  if (a === 'daily') return { status: 410, body: { error: 'The Daily Bloppit is now the Weekly Bloppit. Please update the app.' } };
+
+  // Weekly Bloppit: count a finish (and whether it was clean: no misses, no hints). A player's first finish of the week only.
+  if (a === 'weekly') {
+    const week = String(body.week || '');
+    if (!weekOk(week, now)) return { status: 400, body: { error: 'That week\'s Bloppit has finished.' } };
     const nBricks = Math.floor(Number(body.nBricks)) || 0;
     const run = cleanRun(body, nBricks);
     if (run.error) return { status: 400, body: { error: run.error } };
-    const t = total(run);
+    const clean = run.miss === 0 && run.hint === 0;
     for (let i = 0; i < 8; i++) {
-      const r = await store.get(dayKey(day));
-      const d = r ? r.data : { day, times: [] };
-      // Keep the list sorted; once it's very long, only the fastest times are kept
-      let k = 0, hi = d.times.length; while (k < hi) { const m = (k + hi) >> 1; if (d.times[m] < t) k = m + 1; else hi = m; }
-      d.times.splice(k, 0, t); if (d.times.length > MAX_DAILY) d.times.length = MAX_DAILY;
-      // The scoreboard: the fastest few, with the name each player chose (or "A player")
-      const name = body.anon ? 'A player' : boardName(body.name);
-      const b = d.board || (d.board = []);
-      let j = 0; while (j < b.length && b[j].t <= t) j++;
-      if (j < DAILY_BOARD) { b.splice(j, 0, { name, t }); if (b.length > DAILY_BOARD) b.length = DAILY_BOARD; }
-      const { modified } = await store.set(dayKey(day), d, r ? { onlyIfMatch: r.etag } : { onlyIfNew: true });
-      if (modified) return { status: 200, body: { day, rank: k + 1, n: d.times.length, best: d.times[0], top: dailyTop(d, 3), name } };
+      const r = await store.get(weekKey(week));
+      const d = r ? r.data : { week, n: 0, clean: 0 };
+      d.n += 1; if (clean) d.clean += 1;
+      const { modified } = await store.set(weekKey(week), d, r ? { onlyIfMatch: r.etag } : { onlyIfNew: true });
+      if (modified) return { status: 200, body: { week, n: d.n, clean: d.clean, pct: Math.round(100 * d.clean / d.n), you: clean } };
       await new Promise((res) => setTimeout(res, 40 + Math.random() * 120));
     }
-    return { status: 409, body: { error: 'Lots of people are playing right now. Please try again.' } };
+    return { status: 409, body: { error: 'Lots of people are building right now. Please try again.' } };
   }
 
   return { status: 400, body: { error: 'Unknown action.' } };

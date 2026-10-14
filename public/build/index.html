@@ -634,6 +634,9 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .who-colors button[aria-checked="true"]{border-color:var(--page);box-shadow:0 0 0 3px var(--ink)}
 .ghost.danger{color:var(--accent);margin-right:auto}
 .whodlg .win-btns{margin-top:14px}
+.grown-sec{border-top:1px solid var(--line);padding:12px 0 4px}
+.grown-sec h3{margin:0 0 6px;font-size:17px}
+.grown-sec .note{margin:0 0 8px}
 @media (max-width:640px){.who{padding-right:10px}.who-txt .tag{display:none}}
 .windlg::backdrop{background:rgba(10,16,24,.55)}
 .win-stars{font-size:46px;letter-spacing:6px;color:var(--hi);line-height:1}
@@ -747,7 +750,7 @@ body.on-home .tabs{visibility:hidden}
 .hm-foot a{color:inherit}
 .in-app .hm-foot{display:none}
 @media (max-width:420px){.hm-tile{min-height:120px;padding:14px}.hm-tile b{font-size:20px}.hm-bubble h2{font-size:22px}.hm-hello svg{width:58px;height:51px}}
-/* ---------- Game-first menu, Trails, Blitz challenges, Daily Bloppit ---------- */
+/* ---------- Game-first menu, Trails, Blitz challenges, Weekly Bloppit ---------- */
 .tab.play4{background:#008F9B;color:#fff;border-color:#008F9B}
 .tab.play4 .n{background:rgba(255,255,255,.22);color:#fff}
 .tab.play4[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
@@ -771,30 +774,14 @@ body.on-home .tabs{visibility:hidden}
 .hm-daily b{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.1}
 .hm-daily .hd-txt>span:last-child{font-size:14px;font-weight:600;opacity:.9}
 .hm-side,.hm-main{display:grid;gap:18px;align-content:start;min-width:0}
-/* Daily stats under the Daily card on the menu */
+/* Weekly stats under the Weekly card on the menu */
 .hm-dstats{display:grid;gap:12px;padding:14px 16px;border-radius:16px;background:var(--page);border:1px solid var(--line)}
+#mpBar.calm .clk{display:none}
 .hd-nums{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .hd-nums div{display:grid;justify-items:center;gap:0;padding:8px;border-radius:12px;background:var(--bg)}
 .hd-nums b{font-family:var(--f-display);font-weight:400;font-size:30px;line-height:1.1;color:#008F9B}
 .hd-nums span{font-size:12px;font-weight:700;color:var(--muted)}
-.hd-top ol,.dy-list{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px;counter-reset:r}
-.hd-top li,.dy-list li{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:8px;padding:6px 8px;border-radius:10px;background:var(--bg);font-weight:700;font-size:14px;counter-increment:r}
-.hd-top li::before,.dy-list li::before{content:counter(r);font-family:var(--f-display);font-size:16px;text-align:center;color:var(--muted)}
-.hd-top li:nth-child(1)::before,.dy-list li:nth-child(1)::before{content:"🥇"}
-.hd-top li:nth-child(2)::before,.dy-list li:nth-child(2)::before{content:"🥈"}
-.hd-top li:nth-child(3)::before,.dy-list li:nth-child(3)::before{content:"🥉"}
-.hd-top li span,.dy-list li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hd-top li b,.dy-list li b{font-variant-numeric:tabular-nums}
-li.hd-empty{display:block;color:var(--muted);font-weight:600;background:none;padding:2px 0}
-li.hd-empty::before{content:none!important}
-.dy-list li.me{background:color-mix(in srgb,#008F9B 22%,var(--bg));outline:2px solid #008F9B}
-.hd-link{justify-self:start;border:0;background:none;padding:0;font:inherit;font-weight:800;color:#008F9B;cursor:pointer}
-.hd-link:hover{text-decoration:underline}
-.dy-board{display:grid;gap:8px}
-.dy-board-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.dy-list{max-height:520px;overflow:auto}
-.dy-show{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;flex-wrap:wrap}
-/* Laptops and big tablets: the menu spreads out like a game launcher. Hello, Continue and today's Daily
+/* Laptops and big tablets: the menu spreads out like a game launcher. Hello, Continue and this week's Weekly
    on the left; the Solo, Blitz and Together tiles fill the rest of the screen. */
 @media (min-width:1000px){
   .home{max-width:1180px;grid-template-columns:minmax(300px,360px) minmax(0,1fr);column-gap:36px;align-items:start;padding-top:18px}
@@ -868,7 +855,7 @@ li.hd-empty::before{content:none!important}
     </svg>
     <span>Bloppit</span></a></h1>
   <nav class="tabs" role="tablist" aria-label="Games">
-    <button class="tab play4" role="tab" id="tab-daily" data-tab="daily" aria-selected="false"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-cal"/></svg></span>Daily</button>
+    <button class="tab play4" role="tab" id="tab-daily" data-tab="daily" aria-selected="false"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-cal"/></svg></span>Weekly</button>
     <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-brick"/></svg></span>Quick Build</button>
     <button class="tab play" role="tab" id="tab-game" data-tab="game" aria-selected="false"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-river"/></svg></span>Trails</button>
     <button class="tab play3" role="tab" id="tab-blitz" data-tab="blitz" aria-selected="false"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-watch"/></svg></span>Blitz</button>
@@ -912,11 +899,10 @@ li.hd-empty::before{content:none!important}
     <div class="hm-bubble"><h2 id="hmHi">Hi there!</h2><p>What shall we build today?</p></div>
   </div>
   <button class="hm-cont" id="hmCont" type="button" hidden><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span><span class="go" aria-hidden="true">▶</span></button>
-  <button class="hm-daily" data-go="daily" type="button"><img id="hmDailyImg" alt=""><span class="hd-txt"><span class="tag">📅 Daily Bloppit</span><b id="hmDailyT">Today’s puzzle</b><span id="hmDailyS">One puzzle, everyone races it</span></span><span class="go" aria-hidden="true">▶</span></button>
+  <button class="hm-daily" data-go="daily" type="button"><img id="hmDailyImg" alt=""><span class="hd-txt"><span class="tag">📅 Weekly Bloppit</span><b id="hmDailyT">This week’s puzzle</b><span id="hmDailyS">One puzzle, the same for everyone</span></span><span class="go" aria-hidden="true">▶</span></button>
   <div class="hm-dstats" id="hmDstats">
-    <div class="hd-nums"><div><b id="hdStreak">0</b><span>day streak 🔥</span></div><div><b id="hdTotal">0</b><span>Dailies played</span></div></div>
-    <div class="hd-top"><span class="tag">Today’s fastest</span><ol id="hdTop"><li class="hd-empty">Loading…</li></ol></div>
-    <button class="hd-link" id="hdBoard" type="button">See the scoreboard ›</button>
+    <div class="hd-nums"><div><b id="hdStreak">0</b><span>week streak 🔥</span></div><div><b id="hdTotal">0</b><span>Weeklies built</span></div></div>
+    <p class="note" id="hdClean" style="margin:0"></p>
   </div>
 </div>
 <div class="hm-main">
@@ -928,7 +914,7 @@ li.hd-empty::before{content:none!important}
   </div>
   <h3 class="hm-sec">Blitz</h3>
   <div class="hm-grid">
-    <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><path d="M6 52 h18 M2 66 h22 M8 80 h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/><use href="#bh" x="24" y="18" width="88" height="77"/><rect x="26" y="33" width="84" height="10" rx="5" fill="#D2352B"/><path d="M106 36 l12 -8 -2 12z M106 40 l13 6 -12 4z" fill="#D2352B"/><path d="M44 49 l14 5 M92 49 l-14 5" stroke="#1B1410" stroke-width="4" stroke-linecap="round"/></svg></span><b>vs Bloppit</b><span>Race Pup, Splash or Legend Bloppit</span></button>
+    <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><path d="M6 52 h18 M2 66 h22 M8 80 h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/><use href="#bh" x="24" y="18" width="88" height="77"/><rect x="26" y="33" width="84" height="10" rx="5" fill="#D2352B"/><path d="M106 36 l12 -8 -2 12z M106 40 l13 6 -12 4z" fill="#D2352B"/><path d="M44 49 l14 5 M92 49 l-14 5" stroke="#1B1410" stroke-width="4" stroke-linecap="round"/></svg></span><b>vs the Gulls</b><span>Race Scraps, Swoop or Squint</span></button>
     <button class="hm-tile t-friend" data-go="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><ellipse cx="31.6" cy="65.2" rx="10" ry="11" fill="#8A5A3B"/><path d="M24 66 q7.5 6 15 0" stroke="#1B1410" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>vs Friend</b><span>Send a challenge code, or race live</span></button>
   </div>
   <h3 class="hm-sec">Together</h3>
@@ -1235,7 +1221,7 @@ li.hd-empty::before{content:none!important}
   <div class="hub" data-hub>
     <div class="gm-head"><div><h2>⚡ Bloppit Blitz</h2><p class="note">A head-to-head brick race. Fastest clean build wins.</p></div></div>
     <div class="hm-grid hub-grid">
-      <button class="hm-tile t-blitz" data-sub="cpu" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><path d="M6 52 h18 M2 66 h22 M8 80 h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/><use href="#bh" x="24" y="18" width="88" height="77"/><rect x="26" y="33" width="84" height="10" rx="5" fill="#D2352B"/><path d="M106 36 l12 -8 -2 12z M106 40 l13 6 -12 4z" fill="#D2352B"/><path d="M44 49 l14 5 M92 49 l-14 5" stroke="#1B1410" stroke-width="4" stroke-linecap="round"/></svg></span><b>vs Bloppit</b><span>Race Pup, Splash or Legend Bloppit</span></button>
+      <button class="hm-tile t-blitz" data-sub="cpu" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><path d="M6 52 h18 M2 66 h22 M8 80 h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/><use href="#bh" x="24" y="18" width="88" height="77"/><rect x="26" y="33" width="84" height="10" rx="5" fill="#D2352B"/><path d="M106 36 l12 -8 -2 12z M106 40 l13 6 -12 4z" fill="#D2352B"/><path d="M44 49 l14 5 M92 49 l-14 5" stroke="#1B1410" stroke-width="4" stroke-linecap="round"/></svg></span><b>vs the Gulls</b><span>Race Scraps, Swoop or Squint</span></button>
       <button class="hm-tile t-friend" data-sub="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><ellipse cx="31.6" cy="65.2" rx="10" ry="11" fill="#8A5A3B"/><path d="M24 66 q7.5 6 15 0" stroke="#1B1410" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>vs Friend</b><span>Send a challenge code, or race live</span></button>
     </div>
   </div>
@@ -1252,13 +1238,13 @@ li.hd-empty::before{content:none!important}
     </div>
     <div class="mp-forms">
       <div class="card bz-card" id="bzCpuCard">
-        <h2><span aria-hidden="true">🦦</span>vs Bloppit</h2>
+        <h2><span aria-hidden="true">🐦</span>vs the Gulls</h2>
         <p class="note" style="margin:0">Take turns placing 1, 2 or 3 bricks, then tap Done. Your clock only runs on your turn. Works without internet.</p>
-        <div class="field"><span class="lbl">Which Bloppit?</span>
+        <div class="field"><span class="lbl">Which Gull?</span>
           <div class="seg" style="grid-template-columns:repeat(3,1fr)" role="radiogroup" aria-label="Which Bloppit?">
-            <input type="radio" name="bzLevel" id="bzEasy" value="easy"><label for="bzEasy">🦦 Pup</label>
-            <input type="radio" name="bzLevel" id="bzMed" value="medium" checked><label for="bzMed">💦 Splash</label>
-            <input type="radio" name="bzLevel" id="bzHard" value="hard"><label for="bzHard">🏆 Legend</label>
+            <input type="radio" name="bzLevel" id="bzEasy" value="easy"><label for="bzEasy">🪶 Scraps</label>
+            <input type="radio" name="bzLevel" id="bzMed" value="medium" checked><label for="bzMed">🕶️ Swoop</label>
+            <input type="radio" name="bzLevel" id="bzHard" value="hard"><label for="bzHard">🧐 Squint</label>
           </div>
           <p class="note" id="bzLevelNote" style="margin:6px 0 0"></p></div>
         <button class="primary" id="bzCpuGo" type="button">Start the race</button>
@@ -1285,7 +1271,7 @@ li.hd-empty::before{content:none!important}
 </section>
 
 <section class="view" id="view-daily" hidden>
-  <div class="gm-head"><div><h2>📅 Daily Bloppit</h2><p class="note">One puzzle a day, the same for everybody. Build it as fast as you can and see how you did compared with everyone else. A new puzzle comes every day.</p></div></div>
+  <div class="gm-head"><div><h2>📅 Weekly Bloppit</h2><p class="note">One puzzle a week, the same for everybody. Build it clean: no misses, no hints. A new one arrives every Monday morning.</p></div></div>
   <div class="card daily-card">
     <img class="daily-img" id="dyImg" alt="">
     <div class="daily-txt">
@@ -1293,16 +1279,11 @@ li.hd-empty::before{content:none!important}
       <h2 id="dyName"></h2>
       <p class="note" id="dyInfo"></p>
       <div class="daily-stats" id="dyStats"></div>
-      <div class="win-btns" style="justify-content:flex-start"><button class="primary" id="dyGo" type="button">Start today’s race</button><button class="ghost" id="dyBook" type="button" hidden>📖 Build it for real</button></div>
+      <div class="win-btns" style="justify-content:flex-start"><button class="primary" id="dyGo" type="button">Build this week’s Bloppit</button><button class="ghost" id="dyBook" type="button" hidden>📖 See the pages</button></div>
       <p class="msg" id="dyMsg" hidden></p>
     </div>
   </div>
-  <div class="card dy-board" id="dyBoardCard">
-    <div class="dy-board-head"><h2>🏆 Today’s scoreboard</h2><span class="note" id="dyBoardN"></span></div>
-    <ol class="dy-list" id="dyBoard"><li class="hd-empty">Loading…</li></ol>
-    <label class="dy-show"><input type="checkbox" id="dyShowName" checked> Show my name on the scoreboard <span class="note" id="dyShowAs"></span></label>
-  </div>
-  <p class="note">Your first try each day counts. Bloppit keeps your time and the name you play as (a first name or nickname; rude words, numbers and links become “Player”), or “A player” if you turn your name off. The scoreboard shows the fastest 50, and each day’s list is deleted after a week.</p>
+  <p class="note">Bloppit only counts how many people finished this week’s puzzle and how many finished it clean. No names, no times, no ranks. The counts are deleted after 8 weeks.</p>
 </section>
 
 
@@ -1333,7 +1314,38 @@ li.hd-empty::before{content:none!important}
     <div class="who-colors" id="whoColors" role="radiogroup" aria-label="Colour"></div>
     <div class="win-btns"><button class="ghost danger" id="whoDel" type="button" hidden>Remove player</button><button class="ghost" id="whoCancel" type="button">Cancel</button><button class="primary sm" type="submit" id="whoSave">Save</button></div>
   </form>
-  <div class="win-btns" id="whoBtns"><button class="ghost" id="whoAdd" type="button">+ Add a player</button><button class="primary sm" id="whoDone" type="button">Done</button></div>
+  <div class="win-btns" id="whoBtns"><button class="ghost" id="whoGrown" type="button">Grown-ups</button><button class="ghost" id="whoAdd" type="button">+ Add a player</button><button class="primary sm" id="whoDone" type="button">Done</button></div>
+</dialog>
+<dialog class="windlg whodlg" id="grownDlg" aria-labelledby="grownTitle">
+  <h2 id="grownTitle">Grown-ups corner</h2>
+  <p class="note" id="grownWho" style="margin:-6px 0 12px"></p>
+  <section class="grown-sec">
+    <h3>Saved progress</h3>
+    <p class="note" id="grownSaved"></p>
+    <p class="note">Bloppit saves scores and dates under an anonymous pup code. No name, age, photo or device details are ever stored. <a href="/privacy/" target="_blank" rel="noopener">Privacy policy</a></p>
+  </section>
+  <section class="grown-sec">
+    <h3>Move this player to another device</h3>
+    <p class="note">Make a transfer code here, then on the other device open <b>Who’s playing → Grown-ups → Bring a player here</b> and type it in. A code works once and lasts 72 hours.</p>
+    <div class="win-btns" style="justify-content:flex-start"><button class="ghost" id="grownXfer" type="button">Make a transfer code</button></div>
+    <p class="gate-num" id="grownCode" hidden></p>
+    <p class="note" id="grownXferNote" hidden></p>
+  </section>
+  <section class="grown-sec">
+    <h3>Bring a player here</h3>
+    <form class="mq-ans" id="grownClaimForm" autocomplete="off" style="display:flex;gap:8px;flex-wrap:wrap">
+      <label class="sr" for="grownClaimIn">Transfer code</label>
+      <input class="inp" id="grownClaimIn" maxlength="9" placeholder="8-character code" autocapitalize="characters" spellcheck="false" style="flex:1;min-width:160px;text-transform:uppercase">
+      <button class="primary sm" type="submit" id="grownClaimGo">Bring here</button>
+    </form>
+    <p class="note" id="grownClaimNote" hidden></p>
+  </section>
+  <section class="grown-sec">
+    <h3>Delete saved progress</h3>
+    <p class="note">Removes everything Bloppit’s server holds for this player. Scores on this device stay until you remove the player.</p>
+    <div class="win-btns" style="justify-content:flex-start"><button class="ghost danger" id="grownDel" type="button">Delete from the server</button></div>
+  </section>
+  <div class="win-btns"><button class="primary sm" id="grownDone" type="button">Done</button></div>
 </dialog>
 <dialog class="windlg mathdlg" id="mathDlg" aria-labelledby="mqTitle">
   <div class="mq-head"><svg viewBox="0 0 200 175" width="64" height="56" aria-hidden="true"><circle cx="42" cy="38" r="16" fill="#8A5A3B"/><circle cx="42" cy="38" r="7" fill="#6B4229"/><circle cx="158" cy="38" r="16" fill="#8A5A3B"/><circle cx="158" cy="38" r="7" fill="#6B4229"/><ellipse cx="100" cy="94" rx="88" ry="74" fill="#8A5A3B"/><ellipse cx="100" cy="116" rx="56" ry="40" fill="#F3DEC0"/><ellipse cx="64" cy="88" rx="19" ry="22" fill="#1B1410"/><ellipse cx="136" cy="88" rx="19" ry="22" fill="#1B1410"/><circle cx="70" cy="79" r="7" fill="#FFFFFF"/><circle cx="142" cy="79" r="7" fill="#FFFFFF"/><path d="M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z" fill="#3A2418"/><path d="M100 120 q0 8 -9 10 M100 120 q0 8 9 10" stroke="#3A2418" stroke-width="4" stroke-linecap="round" fill="none"/></svg><div><div class="tag" id="mqTag">Math puzzle</div><h2 id="mqTitle">Page 1 is locked!</h2></div></div>
@@ -1389,7 +1401,7 @@ li.hd-empty::before{content:none!important}
 <script>
 /* ---------- App Store app (iPhone/iPad, built with Capacitor from mobile/) ---------- */
 // mobile/scripts/build-www.mjs sets window.BLOPPIT_APP when it packages this page for the app.
-// In the app: rooms, challenges and the Daily Bloppit talk to bloppit.com; links out of the app and sharing sit
+// In the app: rooms, challenges, the Weekly Bloppit and the pup talk to bloppit.com; links out of the app and sharing sit
 // behind a grown-ups gate. There is no chat and no voice in rooms: players only place bricks.
 const APP=!!window.BLOPPIT_APP, API_BASE=APP?'https://bloppit.com':'';
 function haptic(kind,delay=0){
@@ -2237,7 +2249,7 @@ function syncSub(t){
   if(mp||mpw){ if(t==='blitz') s=mp&&mp.cpu?'cpu':'friend'; if(t==='mp') s='start'; }
   if(t==='game'&&s!=='hub') setTrail(s);
   const v=$('#view-'+t); v.dataset.sub=s; v.classList.toggle('in-room',!!(mp||mpw));
-  if(t==='blitz') $('#bzHeadT').textContent=s==='cpu'?'⚡ Blitz vs Bloppit':s==='friend'?'⚡ Blitz vs Friend':'⚡ Bloppit Blitz';
+  if(t==='blitz') $('#bzHeadT').textContent=s==='cpu'?'⚡ Blitz vs the Gulls':s==='friend'?'⚡ Blitz vs Friend':'⚡ Bloppit Blitz';
   if(t==='mp') $('#mpHeadT').textContent=s==='join'?'🔑 Join a game':'🧩 Build together';
   if(t==='game'&&s==='hub'){ const st=playerStats(players.cur);
     $('#hubOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
@@ -3980,7 +3992,7 @@ function setTrail(t){ trail=t==='brain'?'brain':'otter'; try{ localStorage.setIt
 const bestOf=(g,tr)=>tr==='brain'?(g.bbest||(g.bbest={})):(g.best||(g.best={}));
 const gameTrail=()=>game&&game.trail==='brain'?'brain':'otter';
 function gameStore(id){ try{ return JSON.parse(localStorage.getItem(keyFor(id||players.cur,GAME_KEY)))||{best:{}}; }catch(e){ return {best:{}}; } }
-function gameStoreSet(g){ if(leavingPlayer) return; try{ localStorage.setItem(pkey(GAME_KEY),JSON.stringify(g)); }catch(e){} }
+function gameStoreSet(g){ if(leavingPlayer) return; try{ localStorage.setItem(pkey(GAME_KEY),JSON.stringify(g)); }catch(e){} pupPush(); }
 function levelMake(L){ return L.art?levelArt(L.art):SAMPLES.find(s=>s.name===L.sample).make(); }
 function levelThumb(L){ if(!L.thumb) L.thumb=levelMake(L)[0][1].toDataURL('image/png'); return L.thumb; }
 function levelSettings(L){ return {size:L.size,shape:L.shape,thick:L.thick,tol:48,maxColors:L.colors,gray:true}; }
@@ -4344,11 +4356,100 @@ $('#whoForm').addEventListener('submit',e=>{ e.preventDefault();
 $('#whoDel').onclick=()=>{ const b=$('#whoDel'), p=players.list.find(q=>q.id===whoEditing); if(!p) return;
   if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent=`Tap again to remove ${p.name} and their scores`; setTimeout(()=>{delete b.dataset.confirm; b.textContent='Remove player';},3000); return; }
   delete b.dataset.confirm; b.textContent='Remove player';
-  try{ localStorage.removeItem(keyFor(p.id,GAME_KEY)); localStorage.removeItem(keyFor(p.id,SAVE_KEY)); }catch(e){}
+  try{ localStorage.removeItem(keyFor(p.id,GAME_KEY)); localStorage.removeItem(keyFor(p.id,SAVE_KEY)); localStorage.removeItem(keyFor(p.id,DAILY_KEY)); }catch(e){}
+  if(p.pup) pupApi('POST',{action:'delete'},p.pup).catch(()=>{});
   players.list=players.list.filter(q=>q!==p);
   if(players.cur===p.id){ leavingPlayer=true; players.cur=players.list[0].id; playersSave(); location.reload(); return; }
   playersSave(); whoFormClose(); };
 renderWho();
+
+/* ---------- The pup: progress saved on the server under an anonymous id ---------- */
+// Each player profile on this device gets a pup id, minted by the server at the first finish. Scores and dates
+// (trail levels, Weekly Bloppit record) are kept under it, so progress survives a lost iPad or cleared site data.
+// Nothing typed by a child goes up: the name and age stay on this device. The id travels in a header, never a URL.
+const PUP_FIELDS=['game','daily','weekly'];
+let pupTimer=null, pupBusy=false, pupAgain=false;
+async function pupApi(method,body,pid){
+  const headers=body?{'content-type':'application/json'}:{}; if(pid) headers['x-pup']=pid;
+  let r; try{ r=await fetch(API_BASE+'/api/pup',{method,headers,body:body?JSON.stringify(body):undefined,cache:'no-store'}); }
+  catch(e){ throw new Error('Couldn’t reach Bloppit. Check your internet connection.'); }
+  let j=null; try{ j=await r.json(); }catch(e){}
+  if(!r.ok||!j){ const err=new Error((j&&j.error)||'Bloppit didn’t answer. Please try again.'); err.status=r.status; throw err; }
+  return j;
+}
+function pupLocal(id){
+  const d={}; for(const k of PUP_FIELDS){ try{ const v=JSON.parse(localStorage.getItem(keyFor(id||players.cur,{game:GAME_KEY,daily:DAILY_KEY,weekly:WEEKLY_KEY}[k]))); if(v) d[k]=v; }catch(e){} }
+  return d;
+}
+function pupApply(id,d){
+  if(!d) return;
+  for(const k of PUP_FIELDS){ if(d[k]) try{ localStorage.setItem(keyFor(id||players.cur,{game:GAME_KEY,daily:DAILY_KEY,weekly:WEEKLY_KEY}[k]),JSON.stringify(d[k])); }catch(e){} }
+}
+function pupHasProgress(d){ return !!((d.game&&((d.game.best&&Object.keys(d.game.best).length)||(d.game.bbest&&Object.keys(d.game.bbest).length)))||(d.daily&&Object.keys(d.daily.days||{}).length)||(d.weekly&&Object.keys(d.weekly.days||{}).length)); }
+// Push this device's record; the server merges it with what it holds and sends the merged record back.
+function pupPush(){ if(leavingPlayer) return; clearTimeout(pupTimer); pupTimer=setTimeout(pupSync,1500); }
+async function pupSync(){
+  if(pupBusy){ pupAgain=true; return; } pupBusy=true;
+  const me=curPlayer(), id=players.cur, local=pupLocal(id);
+  try{
+    if(!me.pup){
+      if(!pupHasProgress(local)) return;             // the pup is minted at the first finish, not before
+      const j=await pupApi('POST',{action:'create',data:local});
+      me.pup=j.pup; playersSave();
+    } else {
+      let j; try{ j=await pupApi('POST',{action:'save',data:local},me.pup); }
+      catch(e){ if(e.status===404){ const c=await pupApi('POST',{action:'create',data:local}); me.pup=c.pup; playersSave(); return; } throw e; }
+      if(j.data&&players.cur===id){ pupApply(id,j.data); }
+    }
+  }catch(e){ /* offline or busy: the local copy stands and the next finish tries again */ }
+  finally{ pupBusy=false; if(pupAgain){ pupAgain=false; pupPush(); } renderGrown(); }
+}
+function pupStatus(){ const me=curPlayer(); return me&&me.pup?`Saved on Bloppit’s server as pup …${me.pup.slice(-4)}.`:'Saved on this device only. The server copy starts with the first finished build.'; }
+function renderGrown(){ const el=$('#grownSaved'); if(el) el.textContent=pupStatus(); const w=$('#grownWho'); if(w){ const me=curPlayer(); w.textContent=`Settings for ${me?me.name:'this player'}.`; } }
+async function openGrown(){
+  if(!(await gate.ask('The Grown-ups corner is for parents.'))) return;
+  $('#whoDlg').close(); renderGrown();
+  $('#grownCode').hidden=true; $('#grownXferNote').hidden=true; $('#grownClaimNote').hidden=true; $('#grownClaimIn').value='';
+  const b=$('#grownDel'); delete b.dataset.confirm; b.textContent='Delete from the server';
+  $('#grownDlg').showModal();
+}
+$('#whoGrown').onclick=openGrown;
+$('#grownDone').onclick=()=>$('#grownDlg').close();
+$('#grownXfer').onclick=async()=>{
+  const me=curPlayer(), note=$('#grownXferNote'), out=$('#grownCode'); note.hidden=false; out.hidden=true;
+  try{
+    if(!me.pup){ await pupSync(); if(!me.pup){ note.textContent='Finish one build first, then make a code.'; return; } }
+    note.textContent='Making a code…';
+    const j=await pupApi('POST',{action:'transfer'},me.pup);
+    out.textContent=j.code; out.hidden=false;
+    note.textContent=`Type this on the other device within 72 hours. It works once.`;
+  }catch(e){ note.textContent=e.message; }
+};
+$('#grownClaimForm').addEventListener('submit',async e=>{
+  e.preventDefault(); const code=$('#grownClaimIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''), note=$('#grownClaimNote'); note.hidden=false;
+  if(code.length!==8){ note.textContent='A transfer code has 8 letters and numbers.'; return; }
+  $('#grownClaimGo').disabled=true; note.textContent='Bringing the player here…';
+  try{
+    const j=await pupApi('POST',{action:'claim',code});
+    if(players.list.some(p=>p.pup===j.pup)){ note.textContent='That player is already on this device.'; return; }
+    const id='p'+(++players.n+1), n=players.list.length+1;
+    players.list.push({id,name:'Player '+n,age:null,color:AV_COLORS[(n-1)%AV_COLORS.length],pup:j.pup}); pupApply(id,j.data); playersSave();
+    note.textContent='Done. Give them their name under Edit, then tap their card to play.';
+    renderWhoList();
+  }catch(err){ note.textContent=err.message; }
+  finally{ $('#grownClaimGo').disabled=false; }
+});
+$('#grownDel').onclick=async()=>{
+  const b=$('#grownDel'), me=curPlayer();
+  if(!me.pup){ b.textContent='Nothing is saved on the server for this player.'; return; }
+  if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent='Tap again to delete it from the server'; setTimeout(()=>{ delete b.dataset.confirm; b.textContent='Delete from the server'; },4000); return; }
+  delete b.dataset.confirm; b.disabled=true;
+  try{ await pupApi('POST',{action:'delete'},me.pup); delete me.pup; playersSave(); b.textContent='Deleted'; renderGrown(); }
+  catch(e){ b.textContent=e.message; }
+  finally{ b.disabled=false; }
+};
+// On load: if this player already has a pup, send what this device holds and take back the merged record.
+if(curPlayer()&&curPlayer().pup) pupPush();
 
 /* ---------- Play together (rooms on the Bloppit website) ---------- */
 const MP_KEY='building-blox-mp-v1';
@@ -4474,12 +4575,14 @@ function updateMpBar(){
   const bz=s.mode==='blitz';
   ['hintBtn','autoBtn'].forEach(id=>{ $('#'+id).disabled=done||!mpMyTurn(); });
   $('#autoBtn').hidden=bz; $('#hintBtn').hidden=false;
-  if(bz){ $('#hintBtn').textContent=mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'; $('#hintBtn').disabled=done||(!mpMyTurn()&&!hintOn); }
+  if(bz){ $('#hintBtn').textContent=s.calm?'Hint':mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'; $('#hintBtn').disabled=done||(!mpMyTurn()&&!hintOn); }
+  $('#mpBar').classList.toggle('calm',!!s.calm);
   $('#mpBar').classList.toggle('blitz',bz);
   $('#mpCodeBadge').textContent=s.solo?'⏱':mp.cpu?'VS':s.code; $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?`vs ${CPU_LEVELS[s.cpuLevel].name}`:'Room'; $('#mpRoomBtn').textContent=mp.cpu?'Race':'Room'; $('#mpTitle').innerHTML=(bz?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
   const cp=s.players[s.turn], mine=s.turn===mp.me, left=mpLeft(s), el=$('#mpTurn');
   el.classList.toggle('mine',mine&&!s.finished&&s.started);
-  if(bz&&s.solo) el.innerHTML=s.finished?'Finished!<small>Let’s see your time</small>':`Go go go!<small>${(s.players[0].n||0)} of ${s.quota} placed</small>`;
+  if(bz&&s.solo&&s.calm) el.innerHTML=s.finished?'Finished!<small>Let’s see how clean it was</small>':`Build it clean<small>${(s.players[0].n||0)} of ${s.quota} placed</small>`;
+  else if(bz&&s.solo) el.innerHTML=s.finished?'Finished!<small>Let’s see your time</small>':`Go go go!<small>${(s.players[0].n||0)} of ${s.quota} placed</small>`;
   else if(bz) el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Quickest time wins</small>':mine?`Your turn! Go!<small>${s.turnPlaced?`${s.turnPlaced} placed · up to ${left} more, or tap Done`:left<3?`Place up to ${left} brick${left===1?'':'s'} (${left===1?'your last one':'your last ones'})`:'Place 1, 2 or 3 bricks, then tap Done'}</small>`:mp.cpu?`Bloppit’s turn<small>${s.turnPlaced?`${s.turnPlaced} placed · `:'Thinking… '}Bloppit’s clock is running</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} placed · their clock is running${cp.stale?' · hasn’t been seen for a while':''}</small>`;
   else el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Built together</small>':mine?`Your turn!<small>Place ${left} more brick${left===1?'':'s'}</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} of ${s.perTurn} placed${cp.stale?' · hasn’t been seen for a while':''}</small>`;
   $('#mpPlayers').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.i===s.turn&&s.started&&!s.finished?' now':''}${p.stale?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''} ${bz?`<b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${s.quota?`<span class="mi" style="color:var(--muted)" title="Bricks placed">${p.done?'✓':`${p.n}/${s.quota}`}</span>`:''}${p.miss?`<span class="mi" title="Misses">✕${p.miss}</span>`:''}${p.hint?`<span class="mi" title="Hints" style="color:var(--muted)">💡${p.hint}</span>`:''}`:`<b>${p.score}</b>`}${voChip(p.i)}</span>`).join('');
@@ -4589,7 +4692,7 @@ async function renderMpView(){
   if(bzv){
     // Racing Bloppit works anywhere; racing friends needs the Bloppit website
     $('#mpOff').hidden=true; $('#bzOff').hidden=ok;
-    if(!ok) $('#bzOff').textContent='Racing friends needs the internet. Check your connection and come back. You can still race Bloppit.';
+    if(!ok) $('#bzOff').textContent='Racing friends needs the internet. Check your connection and come back. You can still race the Gulls.';
     ['#bzMake','#bzJoin','#bzCodeIn','#bzChMake'].forEach(id=>$(id).disabled=!ok);
   } else {
     $('#mpOff').hidden=ok;
@@ -4650,7 +4753,7 @@ function mpShowBlitzEnd(){
   $('#mpEndNew').textContent=mp.cpu?'Race again':'New game';
   $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span><b>${fmtTime(p.ms)}</b> · ${p.own} brick${p.own===1?'':'s'} · ${p.miss} miss${p.miss===1?'':'es'}${p.hint?` · ${p.hint} hint${p.hint===1?'':'s'}`:''}</span></div>`).join('');
   const extra=s.moves.filter(m=>m.p<0).length;
-  $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and Bloppit put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, every miss added 1 second and every hint 5 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Legend Bloppit. Amazing!':' Ready to race a faster Bloppit?'):' Practice makes perfect. Try again?'):''}`;
+  $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and the Gull put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, every miss added 1 second and every hint 5 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Legend Bloppit. Amazing!':' Ready to race a faster Bloppit?'):' Practice makes perfect. Try again?'):''}`;
   $('#mpEndDlg').showModal();
 }
 $('#mpEndClose').onclick=()=>{ $('#mpEndDlg').close(); setTab('build'); };
@@ -4726,9 +4829,10 @@ $('#mpToBlitz').onclick=e=>{ e.preventDefault(); setTab('blitz'); };
 // Bloppit takes a few seconds to find and place each brick, and sometimes misses (+1 second, like everyone).
 // Three Bloppits to race: each one is quicker and makes fewer mistakes than the last.
 const CPU_LEVELS={
-  easy:  {name:'Pup Bloppit',     ms:[7000,11000],miss:.25,turn:[1,2],note:'Pup Bloppit is still learning. He takes his time and makes plenty of mistakes. Great for a first race.'},
-  medium:{name:'Splash Bloppit',   ms:[4500,7500], miss:.12,turn:[1,3],note:'Splash Bloppit is quick, but not perfect. A fair race.'},
-  hard:  {name:'Legend Bloppit',  ms:[2500,4500], miss:.05,turn:[2,3],note:'Legend Bloppit is fast and hardly ever misses. Can you beat him?'}};
+  // The Gulls: comic brick thieves. Bloppit himself is the player's buddy and never the opponent.
+  easy:  {name:'Scraps',  ms:[7000,11000],miss:.25,turn:[1,2],note:'Scraps is the scruffiest Gull. He takes his time and drops plenty of bricks. Great for a first race.'},
+  medium:{name:'Swoop',   ms:[4500,7500], miss:.12,turn:[1,3],note:'Swoop is quick, but careless. A fair race.'},
+  hard:  {name:'Squint',  ms:[2500,4500], miss:.05,turn:[2,3],note:'Squint lines up every brick and hardly ever misses. Can you beat him?'}};
 const CPU_IDS={easy:'#bzEasy',medium:'#bzMed',hard:'#bzHard'}, COUNTDOWN_MS=3000;
 let cpu=null;
 const rndIn=(a,b)=>a+Math.random()*(b-a);
@@ -4852,7 +4956,7 @@ function cpuCountdown(){
   const show=()=>{ if(!cpu||cpu.s!==s||!mp||!mp.cpu) return;
     const left=Math.ceil((t0-Date.now())/1000);
     if(left>0){ mpFlash(String(left)); setStatus(`Get ready… ${left}`); sfx.chirp(); setTimeout(show,Math.max(50,t0-Date.now()-(left-1)*1000)); }
-    else { mpFlash('Go!'); sfx.chime(); setStatus(s.solo?'Go! Your clock is running. Place every brick as fast as you can.':'Go! Your clock is running. Place 1, 2 or 3 bricks, then tap Done.','ok'); } };
+    else { mpFlash('Go!'); sfx.chime(); setStatus(s.calm?'Go! Take your time. Place every brick in the right spot.':s.solo?'Go! Your clock is running. Place every brick as fast as you can.':'Go! Your clock is running. Place 1, 2 or 3 bricks, then tap Done.','ok'); } };
   setTimeout(show,250);
 }
 $('#bzCpuGo').onclick=async()=>{
@@ -4899,7 +5003,7 @@ var mpKeepPick=false;
 $('#bzLib').onclick=()=>pickPuzzle('blitz','library');
 $('#bzPhoto').onclick=()=>pickPuzzle('blitz','photo');
 
-/* ---------- Timed builds: Blitz challenges and the Daily Bloppit ---------- */
+/* ---------- Timed builds: Blitz challenges and the Weekly Bloppit ---------- */
 // One player builds the whole puzzle against the clock. It reuses the race against Bloppit (everything
 // happens on this device, with the same build screen and clock), just with one player. When the last
 // brick is in, the time goes to the challenge server (/api/challenge) and the results are shown.
@@ -4909,7 +5013,7 @@ async function trialStart(info,name){
   if(game) endGame();
   if(!model||model.bricks.length<2) throw new Error('This puzzle is too small for a race. Pick a bigger one.');
   const me=curPlayer(), N=model.bricks.length;
-  cpu={timer:null,left:0,trial:info,s:{code:'⏱',ver:1,started:true,finished:false,perTurn:N,mode:'blitz',solo:true,label:info.label,cpuLevel:'medium',nBricks:N,title:info.title||niceName(model.name),level:null,host:0,
+  cpu={timer:null,left:0,trial:info,s:{code:'⏱',ver:1,started:true,finished:false,perTurn:N,mode:'blitz',solo:true,calm:!!info.calm,label:info.label,cpuLevel:'medium',nBricks:N,title:info.title||niceName(model.name),level:null,host:0,
     turn:0,turnPlaced:0,turnStart:Date.now()+COUNTDOWN_MS,moves:[],me:0,waiting:[],quota:N,
     players:[{name,color:(me&&me.color&&me.color!=='#8A5A3B')?me.color:'#D2352B',pen:{},stale:false,ms:0,miss:0,hint:0,n:0}]}};
   await mpEnter({cpu:true,code:'⏱',playerId:'me',me:0,state:cpuPub()},true,name);
@@ -4970,21 +5074,21 @@ async function trialEnd(){
         trialDialog({icon:place===1?'🏆':'⚡',title:place===1?'You’re in the lead!':`You came ${ordinal(place)} of ${c.runs.length}`,rows:chRows(c),
           note:`${c.title}: ${c.nBricks} bricks. Each miss added 1 second. Share the code ${c.code} with more friends, or try again to beat your time.`});
       }catch(e){ trialDialog({icon:'😕',title:'Couldn’t send your time',rows:missRow+timeRow,note:e.message,retry:true}); }
-    } else if(info.kind==='daily'){
-      const D=dailyStore(), first=!D.days[info.day];
-      const prev=D.days[info.day], best=prev?Math.min(prev.best,t):t;
-      D.days[info.day]={...(prev||{}),best,first:prev?prev.first:t,at:Date.now()}; if(first) D.total=dailyTotal()+1; dailyStoreSet(D);
-      if(!first){ trialDialog({icon:'📅',title:t<prev.best?'New personal best!':'Nice practice!',rows:missRow+timeRow+`<div><span>Your best today</span><span>${fmtTime(best)}</span></div>`,note:'Only your first try each day counts for the ranking. Come back tomorrow for a new puzzle!'}); return; }
-      trialDialog({icon:'📅',title:'Daily Bloppit done!',rows:missRow+timeRow,note:'Checking how everyone else did…'});
+    } else if(info.kind==='weekly'){
+      const W=weeklyStore(), first=!W.weeks[info.week], clean=r.miss===0&&r.hint===0;
+      const prev=W.weeks[info.week], best=prev?Math.min(prev.best,t):t;
+      W.weeks[info.week]={...(prev||{}),best,first:prev?prev.first:t,at:Date.now(),clean:!!((prev&&prev.clean)||clean)}; if(first) W.total=weeklyTotal()+1; weeklyStoreSet(W);
+      const cleanRow=clean?'<div class="tot"><span>Clean build</span><span>✓</span></div>':`<div><span>Not clean yet</span><span>${r.miss?`${r.miss} miss${r.miss===1?'':'es'}`:''}${r.miss&&r.hint?', ':''}${r.hint?`${r.hint} hint${r.hint===1?'':'s'}`:''}</span></div>`;
+      const streakNote=()=>{ const k=weeklyStreak(); return k>1?` Streak: ${k} weeks 🔥.`:''; };
+      if(!first){ trialDialog({icon:'📅',title:clean?'Clean build!':'Nice practice!',rows:cleanRow,note:(clean&&!prev.clean?'That one counts as clean now. ':'')+'Come back on Monday for a new puzzle!'+streakNote()}); return; }
+      trialDialog({icon:'📅',title:'Weekly Bloppit done!',rows:cleanRow,note:'Checking how everyone else did…'});
       try{
-        const j=await chApi('POST',{action:'daily',day:info.day,ms:r.ms,miss:r.miss,hint:r.hint,nBricks:model.bricks.length,name:curPlayer().name||'',anon:!!D.anon});
-        D.days[info.day].board={name:j.name||'Player',t}; dailyPeek={day:info.day,n:j.n,best:j.best,top:j.top||[]};
-        const pct=j.n>1?Math.round(100*(j.n-j.rank)/(j.n-1)):100;
-        D.days[info.day].rank=j.rank; D.days[info.day].n=j.n; dailyStoreSet(D);
-        trialDialog({icon:j.rank===1?'🏆':'📅',title:j.rank===1?'Fastest today so far!':`You came ${ordinal(j.rank)} of ${j.n}`,
-          rows:missRow+timeRow+`<div><span>Fastest today</span><span>${fmtTime(j.best)}</span></div>`,
-          note:`${j.n>1?`You were quicker than ${pct}% of players today. `:''}Streak: ${dailyStreak()} day${dailyStreak()===1?'':'s'} 🔥. Come back tomorrow for a new puzzle!`});
-      }catch(e){ trialDialog({icon:'📅',title:'Daily Bloppit done!',rows:missRow+timeRow,note:`Your time is saved on this device, but it couldn’t be compared with everyone else’s (${e.message}). Streak: ${dailyStreak()} 🔥`}); }
+        const j=await chApi('POST',{action:'weekly',week:info.week,ms:r.ms,miss:r.miss,hint:r.hint,nBricks:model.bricks.length});
+        weeklyPeek={week:info.week,n:j.n,clean:j.clean,pct:j.pct};
+        W.weeks[info.week].n=j.n; W.weeks[info.week].pct=j.pct; weeklyStoreSet(W);
+        trialDialog({icon:clean?'✨':'📅',title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,
+          note:(clean?`You and ${j.pct}% of this week’s builders finished clean.`:`${j.pct}% of this week’s builders finished clean. Build it again for a clean one!`)+streakNote()+' A new puzzle arrives on Monday.'});
+      }catch(e){ trialDialog({icon:'📅',title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,note:`Your build is saved on this device, but it couldn’t be counted with everyone else’s (${e.message}).`+streakNote()}); }
     }
   };
   await send();
@@ -4992,7 +5096,7 @@ async function trialEnd(){
 $('#trRetry').onclick=()=>{ if(cpu&&cpu.trial) trialEnd(); };
 $('#trShare').onclick=()=>{ if(trialDone&&trialDone.code) chShare(trialDone.code); };
 $('#trBook').onclick=()=>{ $('#trialDlg').close(); setTab('booklet'); };
-$('#trDone').onclick=()=>{ $('#trialDlg').close(); const daily=cpu&&cpu.trial&&cpu.trial.kind==='daily'; mpLeave(); setTab(daily?'daily':'blitz'); };
+$('#trDone').onclick=()=>{ $('#trialDlg').close(); const weekly=cpu&&cpu.trial&&cpu.trial.kind==='weekly'; mpLeave(); setTab(weekly?'daily':'blitz'); };
 
 // Make a challenge: build the chosen puzzle against the clock, then get a code
 $('#bzChMake').onclick=async()=>{
@@ -5045,86 +5149,79 @@ async function renderChMine(force){
 }
 $('#chMineList').addEventListener('click',e=>{ const b=e.target.closest('[data-ch]'); if(b) chOpen(b.dataset.ch); });
 
-/* ---------- Daily Bloppit ---------- */
-// One library puzzle a day, picked from the date, so everyone gets the same one on the same day.
-// The day is the player's own calendar day; the server accepts the days either side of its own.
-function dayStr(d=new Date()){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-function dayHash(day){ let h=2166136261; for(const ch of 'bloppit-daily:'+day){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619); } return h>>>0; }
-const DAILY_MAX=60;  // keep the race to a few minutes: shrink the model until it has at most this many bricks
-const dailyCache=new Map();
-function dailyPuzzle(day){
-  if(dailyCache.has(day)) return dailyCache.get(day);
-  const i=dayHash(day)%SAMPLES.length, smp=SAMPLES[i];
+/* ---------- Weekly Bloppit ---------- */
+// One puzzle a week, the same for everybody, changing on Monday at 8 am US Eastern. A week is named by that
+// Monday's date; the server (netlify/functions/challenge/logic.mjs weekOf) computes the same key.
+// Scored on cleanness (no misses, no hints), never on time: the clock stays hidden.
+const ET_FMT=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hourCycle:'h23',weekday:'short',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit'});
+function weekOf(t=Date.now()){
+  const p=Object.fromEntries(ET_FMT.formatToParts(t).map(x=>[x.type,x.value]));
+  const dow={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[p.weekday]; let back=(dow+6)%7; if(back===0&&+p.hour<8) back=7;
+  const d=new Date(Date.UTC(+p.year,+p.month-1,+p.day)); d.setUTCDate(d.getUTCDate()-back); return d.toISOString().slice(0,10);
+}
+const weekBefore=w=>{ const d=new Date(w+'T00:00:00Z'); d.setUTCDate(d.getUTCDate()-7); return d.toISOString().slice(0,10); };
+function dayHash(day){ let h=2166136261; for(const ch of 'bloppit-weekly:'+day){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619); } return h>>>0; }
+// Authored Weeklies go here by week key (the sample's name in SAMPLES); any week without one gets a library pick from the hash.
+const WEEKLY_PLAN={};
+const WEEKLY_MAX=48;  // a Weekly is 24–48 bricks: finishable in under ten minutes
+const weeklyCache=new Map();
+function weeklyPuzzle(week){
+  if(weeklyCache.has(week)) return weeklyCache.get(week);
+  const planned=WEEKLY_PLAN[week]?SAMPLES.findIndex(x=>x.name===WEEKLY_PLAN[week]):-1;
+  const i=planned>=0?planned:dayHash(week)%SAMPLES.length, smp=SAMPLES[i];
   const keepP=photos, keepS={...S}; let size=12, n=0;
   const base={kind:'model',shape:'puffed',thick:1,tol:48,maxColors:6,gray:true,pw:48,pcol:24};
   for(;size>=5;size--){ Object.assign(S,base,{size}); photos=smp.make().map(([view,c])=>{const d=canvasData(c); return {id:++pid,name:smp.name,d,m:null,view,sample:true};}); photos.forEach(p=>p.m=computeMask(p.d,S.tol));
-    const m=buildModel(); n=m&&m.bricks?m.bricks.length:0; if(n&&n<=DAILY_MAX) break; }
+    const m=buildModel(); n=m&&m.bricks?m.bricks.length:0; if(n&&n<=WEEKLY_MAX) break; }
   photos=keepP; Object.assign(S,keepS);
   if(!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png');
-  const o={day,i,name:smp.name,theme:smp.theme,thumb:smp.thumb,S:{...base,size},n}; dailyCache.set(day,o); return o;
+  const o={week,i,name:smp.name,theme:smp.theme,thumb:smp.thumb,S:{...base,size},n}; weeklyCache.set(week,o); return o;
 }
-function dailyLoad(o){
+function weeklyLoad(o){
   const smp=SAMPLES[o.i]; sampleIdx=o.i;
   photos=smp.make().map(([view,c])=>{const d=canvasData(c); return {id:++pid,name:smp.name,d,m:null,view,sample:true};});
   setControls(o.S); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild();
 }
-const DAILY_KEY='bloppit-daily-v1';
-function dailyStore(){ try{ const o=JSON.parse(localStorage.getItem(pkey(DAILY_KEY))); return o&&o.days?o:{days:{}}; }catch(e){ return {days:{}}; } }
-function dailyStoreSet(o){ const keys=Object.keys(o.days).sort().slice(-60); o.days=Object.fromEntries(keys.map(k=>[k,o.days[k]])); try{ localStorage.setItem(pkey(DAILY_KEY),JSON.stringify(o)); }catch(e){} }
-function dailyStreak(){ const D=dailyStore().days; let n=0; const d=new Date(); if(!D[dayStr(d)]) d.setDate(d.getDate()-1);
-  while(D[dayStr(d)]){ n++; d.setDate(d.getDate()-1); } return n; }
-let dailyPeek=null;
-// How many Dailies this player has done (the day list only keeps the last 60, so there's a running total too)
-function dailyTotal(){ const o=dailyStore(); return Math.max(o.total||0,Object.values(o.days).filter(d=>d.first!=null).length); }
-const dailyAnon=()=>!!dailyStore().anon;
-const topLi=(e,me)=>`<li${me?' class="me"':''}><span>${escapeHTML(e.name)}${me?' (you)':''}</span><b>${fmtTime(e.t)}</b></li>`;
-const isMine=(e,mine)=>!!mine&&e.t===mine.t&&e.name===mine.name;
-async function dailyFetch(board){
-  const day=dayStr(); const j=await chApi('GET',null,`?daily=${day}${board?'&board=1':''}`); dailyPeek=j; return j;
+const WEEKLY_KEY='bloppit-weekly-v1', DAILY_KEY='bloppit-daily-v1';  // DAILY_KEY: the old Daily record, kept so a pup's history isn't lost
+function weeklyStore(){ try{ const o=JSON.parse(localStorage.getItem(pkey(WEEKLY_KEY))); return o&&o.weeks?o:{weeks:{}}; }catch(e){ return {weeks:{}}; } }
+function weeklyStoreSet(o){ const keys=Object.keys(o.weeks).sort().slice(-60); o.weeks=Object.fromEntries(keys.map(k=>[k,o.weeks[k]])); try{ localStorage.setItem(pkey(WEEKLY_KEY),JSON.stringify(o)); }catch(e){} pupPush(); }
+// Weeks in a row, counting back from this week (or last week if this one isn't done yet).
+// One missed week in the last 13 is forgiven, so a holiday doesn't wipe a streak.
+function weeklyStreak(){ const W=weeklyStore().weeks; let n=0, w=weekOf(), gap=false; if(!W[w]) w=weekBefore(w);
+  for(let i=0;i<520;i++){ if(W[w]) n++; else if(!gap&&i<13&&n>0) gap=true; else break; w=weekBefore(w); } return n; }
+let weeklyPeek=null;
+// How many Weeklies this player has built (the list only keeps the last 60, so there's a running total too)
+function weeklyTotal(){ const o=weeklyStore(); return Math.max(o.total||0,Object.values(o.weeks).filter(d=>d.first!=null).length); }
+async function weeklyFetch(){ const week=weekOf(); const j=await chApi('GET',null,`?weekly=${week}`); weeklyPeek=j; return j; }
+const cleanLine=(j,me)=>!j||!j.n?'':me&&me.clean?`You and ${j.pct}% of this week’s builders finished clean.`:`${j.n} built it this week · ${j.pct}% clean`;
+async function renderHomeWeekly(){
+  $('#hdStreak').textContent=weeklyStreak(); $('#hdTotal').textContent=weeklyTotal();
+  const el=$('#hdClean'), week=weekOf(), me=weeklyStore().weeks[week];
+  if(weeklyPeek&&weeklyPeek.week===week) el.textContent=cleanLine(weeklyPeek,me);
+  try{ el.textContent=cleanLine(await weeklyFetch(),me); }catch(e){}
 }
-async function renderHomeDaily(){
-  $('#hdStreak').textContent=dailyStreak(); $('#hdTotal').textContent=dailyTotal();
-  const el=$('#hdTop'), day=dayStr(), mine=(dailyStore().days[day]||{}).board;
-  const show=j=>{ const top=(j.top||[]).slice(0,3);
-    el.innerHTML=top.length?top.map(e=>topLi(e,isMine(e,mine))).join(''):'<li class="hd-empty">No times yet today. Be the first!</li>'; };
-  if(dailyPeek&&dailyPeek.day===day&&dailyPeek.top) show(dailyPeek);
-  try{ show(await dailyFetch(false)); }catch(e){ if(!(dailyPeek&&dailyPeek.day===day)) el.innerHTML='<li class="hd-empty">Scores show up when you’re online.</li>'; }
-}
-async function renderDailyBoard(){
-  const el=$('#dyBoard'), day=dayStr(), mine=(dailyStore().days[day]||{}).board;
-  $('#dyShowName').checked=!dailyAnon();
-  // Same rule as the server (netlify/functions/challenge/logic.mjs boardName): plain letters only, up to 12
-  const raw=curPlayer().name||'', shown=/@|www|https?:|\.(com|net|org|io|gg|tv|me)\b|\d{3,}/i.test(raw)?'Player':(raw.replace(/[^\p{L}\p{M} '\-]/gu,'').replace(/\s+/g,' ').trim().slice(0,12)||'Player');
-  $('#dyShowAs').textContent=dailyAnon()?'(you’ll show as “A player”)':`(as “${shown}”)`;
-  try{ const j=await dailyFetch(true); if(tab!=='daily') return;
-    $('#dyBoardN').textContent=j.n?`${j.n} played today`:'';
-    el.innerHTML=(j.top||[]).length?j.top.map(e=>topLi(e,isMine(e,mine))).join(''):'<li class="hd-empty">No times yet today. Be the first!</li>';
-    if(mine&&!j.top.some(e=>isMine(e,mine))){ const r=dailyStore().days[day].rank; if(r) el.insertAdjacentHTML('beforeend',`<li class="me hd-you"><span>${escapeHTML(mine.name)} (you, ${ordinal(r)})</span><b>${fmtTime(mine.t)}</b></li>`); }
-  }catch(e){ el.innerHTML='<li class="hd-empty">The scoreboard shows up when you’re online.</li>'; }
-}
-$('#dyShowName').addEventListener('change',e=>{ const o=dailyStore(); o.anon=!e.target.checked; dailyStoreSet(o); renderDailyBoard(); });
-$('#hdBoard').onclick=()=>{ setTab('daily'); requestAnimationFrame(()=>$('#dyBoardCard').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'})); };
 async function renderDaily(){
-  const day=dayStr(), o=dailyPuzzle(day), me=dailyStore().days[day], streak=dailyStreak();
+  const week=weekOf(), o=weeklyPuzzle(week), me=weeklyStore().weeks[week], streak=weeklyStreak();
   $('#dyImg').src=o.thumb; $('#dyName').textContent=o.name;
-  $('#dyDate').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
-  $('#dyInfo').textContent=`${o.n} bricks · ${o.theme} · build the whole puzzle as fast as you can. A hint adds 5 seconds; each miss adds 1 second.`;
-  const st=[]; if(me) st.push(`<span>Your best today <b>${fmtTime(me.best)}</b></span>`); if(me&&me.rank) st.push(`<span>Ranked <b>${ordinal(me.rank)}</b> of ${me.n}</span>`);
-  st.push(`<span>Streak <b>${streak}</b> 🔥</span>`); st.push(`<span id="dyCount">${dailyPeek&&dailyPeek.day===day?`<b>${dailyPeek.n}</b> played today`:'&nbsp;'}</span>`);
+  const mon=new Date(week+'T12:00:00Z');
+  $('#dyDate').textContent=`Week of ${mon.toLocaleDateString(undefined,{day:'numeric',month:'long'})}`;
+  $('#dyInfo').textContent=`${o.n} bricks · ${o.theme} · place every brick in the right spot. A clean build has no misses and no hints.`;
+  const st=[]; if(me) st.push(`<span>${me.clean?'Clean build <b>✓</b>':'Done <b>✓</b> · not clean yet'}</span>`);
+  st.push(`<span>Streak <b>${streak}</b> 🔥</span>`); st.push(`<span id="dyCount">${weeklyPeek&&weeklyPeek.week===week?cleanLine(weeklyPeek,me):'&nbsp;'}</span>`);
   $('#dyStats').innerHTML=st.join('');
-  $('#dyGo').textContent=me?'Race it again (practice)':'Start today’s race'; $('#dyBook').hidden=!me;
+  $('#dyGo').textContent=me?(me.clean?'Build it again':'Build it again for a clean one'):'Build this week’s Bloppit'; $('#dyBook').hidden=!me;
   $('#dyMsg').hidden=true;
-  renderDailyBoard().then(()=>{ const el=$('#dyCount'); if(el&&tab==='daily'&&dailyPeek&&dailyPeek.day===day) el.innerHTML=`<b>${dailyPeek.n}</b> played today`; });
+  weeklyFetch().then(j=>{ const el=$('#dyCount'); if(el&&tab==='daily') el.textContent=cleanLine(j,me); }).catch(()=>{});
 }
 $('#dyGo').onclick=async()=>{
   const b=$('#dyGo'); b.disabled=true;
-  try{ const day=dayStr(), o=dailyPuzzle(day); if(game) endGame(); if(mp) mpLeave(); dailyLoad(o);
+  try{ const week=weekOf(), o=weeklyPuzzle(week); if(game) endGame(); if(mp) mpLeave(); weeklyLoad(o);
     const nm=mpName()||curPlayer().name||'You';
-    await trialStart({kind:'daily',day,label:'📅 Daily Bloppit',title:o.name},nm); }
+    await trialStart({kind:'weekly',week,label:'📅 Weekly Bloppit',title:o.name,calm:true},nm); }
   catch(e){ const m=$('#dyMsg'); m.hidden=false; m.textContent=e.message; m.dataset.kind='err'; if(trialOn()) mpLeave(); cpuEnd(); }
   finally{ b.disabled=false; }
 };
-$('#dyBook').onclick=()=>{ const o=dailyPuzzle(dayStr()); if(mp) mpLeave(); if(game) endGame(); dailyLoad(o); setTab('booklet'); };
+$('#dyBook').onclick=()=>{ const o=weeklyPuzzle(weekOf()); if(mp) mpLeave(); if(game) endGame(); weeklyLoad(o); setTab('booklet'); };
 
 /* ---------- Quick Build: pick a puzzle source ---------- */
 
@@ -5301,10 +5398,10 @@ function renderHome(){
   const st=playerStats(players.cur);
   $('#hmOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
   $('#hmBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} new levels, with math puzzles`;
-  try{ const day=dayStr(), o=dailyPuzzle(day), me=dailyStore().days[day], k=dailyStreak();
-    $('#hmDailyImg').src=o.thumb; $('#hmDailyT').textContent=me?`${o.name}: done ✓`:`Today: ${o.name}`;
-    renderHomeDaily();
-    $('#hmDailyS').textContent=me?`Your time ${fmtTime(me.best)}${me.rank?` · ${ordinal(me.rank)} of ${me.n}`:''}${k?` · ${k} day streak 🔥`:''}`:`${o.n} bricks · everyone races the same puzzle${k?` · ${k} day streak 🔥`:''}`; }catch(e){}
+  try{ const week=weekOf(), o=weeklyPuzzle(week), me=weeklyStore().weeks[week], k=weeklyStreak();
+    $('#hmDailyImg').src=o.thumb; $('#hmDailyT').textContent=me?`${o.name}: ${me.clean?'clean ✓':'done ✓'}`:`This week: ${o.name}`;
+    renderHomeWeekly();
+    $('#hmDailyS').textContent=me?`${me.clean?'Clean build':'Build it again for a clean one'}${k?` · ${k} week streak 🔥`:''}`:`${o.n} bricks · the same puzzle for everyone this week${k?` · ${k} week streak 🔥`:''}`; }catch(e){}
 }
 $('#hmCont').onclick=()=>{ if(homeCont) homeCont.go(); };
 function homeGo(where){
