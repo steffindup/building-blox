@@ -8,11 +8,11 @@ Never mention LEGO or other toy brands anywhere in the listing (Apple rejects ot
 | Field | Value |
 |---|---|
 | Name (30) | Bloppit: Brick Puzzle Game |
-| Subtitle (30) | Snap it. Bloppit. Build it. |
+| Subtitle (30) | Build it. Grow your world. |
 | Bundle ID | com.bloppit.app |
 | SKU | bloppit-ios-1 |
-| Primary category | Games (not in the Kids category, see below) |
-| Secondary category | Education |
+| Primary category | Games › Puzzle (not in the Kids category, see below) |
+| Secondary category | Games › Family |
 | Content rights | Does not contain, show or access third-party content |
 | Privacy policy URL | https://bloppit.com/privacy/ |
 | Support URL | https://bloppit.com/ |
@@ -21,65 +21,110 @@ Never mention LEGO or other toy brands anywhere in the listing (Apple rejects ot
 | Price | Free |
 
 **Kids category:** Bloppit is **not** in the Kids category. Leave "Made for Kids" off; the age rating comes from the questionnaire below.
+No child-audience words ("kids", "children") in the listing text itself: the landing page says 8–13, the listing says "for families".
 The home-screen name stays **Bloppit** (set by `CFBundleDisplayName` in the iOS project).
+
+Two listings, from the strategy (v5): **1.0** (submitted Fri 13 Nov) is a puzzle game and says so; the subtitle is the one forward
+promise it makes. **1.1** (by Mon 7 Dec) adds the island and the pup. Paste the column for the version being submitted.
 
 ## Promotional text (170)
 
-The brick-building puzzle game! Race the Gulls, challenge a friend with a code, and build a new Weekly Bloppit puzzle every Monday.
+**1.0:** A calm brick puzzle game for families. Finish a model in minutes, scored on how cleanly you build. A new puzzle every week. Free, no ads, no account.
+
+**1.1:** Every build you finish grows your own island. Adopt a pup and watch it grow with you. A new puzzle every week. Free, no ads, no account.
 
 ## Description (4000)
 
-Snap it. Bloppit. Build it.
+### 1.0
 
-Bloppit is a brick-building puzzle game. Turn any photo into a puzzle (your cat, a toy, your own drawing) or pick one from the library, then build it brick by brick against the clock, up the levels, or with friends.
+Bloppit is a calm brick puzzle game for families. Snap bricks together on screen, page by page, and finish a model in minutes, scored on how cleanly you build.
 
-BLOPPIT BLITZ
-• Race the Gulls: Scraps, Swoop or Squint, each one faster and sharper than the last
-• Challenge a friend: build a puzzle as fast as you can, get a 6-letter code, and see if they can beat your time whenever they like
-• Or race live, taking turns on your own devices
-• Need help? A hint adds 5 seconds, and every brick in the wrong spot adds 1 second
+A new puzzle every week, a library to explore, and Blitz races against the Gulls.
 
-DAILY BLOPPIT
-• One new puzzle every day, the same for everyone
-• See how your time compares and keep your streak going
+Free, no ads, no tracking, no account needed.
+
+WEEKLY BLOPPIT
+• One new puzzle every Monday, the same for everyone
+• Build it clean, with no misses and no hints, and see how many builders did too
+• Keep your streak going, one week at a time
+
+FINISH CLEAN, EARN STARS
+• Every build earns a star for finishing, one for no hints and one for a clean build
+• Your best stars on each model are kept, so you can always come back for the third
+• Build from memory, with the booklet hidden, for a bonus star
 
 TRAILS
 • Otter Trail: 14 levels, from a tiny heart to a 364-brick otter
-• Brain Trail: 14 different levels, with math puzzles that unlock booklet pages, matched to the player's age
-• Earn points and stars for building without help
-• Separate profiles, so brothers and sisters each keep their own scores
+• Brain Trail: 14 different levels with math puzzles matched to the player's age
+• Separate players on one device, each with their own progress
 
-QUICK BUILD
-• Turn your own photos into 3D brick models or flat tile mosaics
-• 64 ready-made puzzles in 11 themes
-• Every puzzle comes with a full instruction booklet, so you can build it for real too
+THE LIBRARY
+• More than 70 models in 11 themes, each with a full instruction booklet you can build from for real
+• Turn a photo on your device into a brick picture; it never leaves the device
 
-MADE FOR KIDS AND FAMILIES
-• No ads, no in-app purchases, no accounts
-• No tracking and no analytics
-• Friends join with a code, and the host lets each one in. No chat and no voice anywhere in Bloppit
-• Photos stay on your device unless you share a challenge or room with friends
-• Racing Bloppit and the Trails work offline
+BLOPPIT BLITZ
+• Race the Gulls: Scraps, Swoop or Squint, each sharper than the last
+• Race a friend live, or send a 6-letter challenge code so they can try to beat your time later
+• Build one model together in a room: friends join with a code and the host lets each one in
+
+MADE FOR FAMILIES
+• No ads, no in-app purchases, no accounts, no tracking
+• No chat and no voice anywhere in Bloppit; players in a room only place bricks
+• Progress is saved under an anonymous code, and a grown-up can move it to another device
+• Racing the Gulls, the Trails and the library work offline
 
 Bloppit is an independent project and is not affiliated with any toy brick brand.
 
+### 1.1 (adds the island)
+
+Bloppit is a calm brick puzzle game for families. Snap bricks together on screen, page by page, and finish a model in minutes, scored on how cleanly you build.
+
+Every build you finish grows your own island. Adopt a pup and watch it grow with you.
+
+A new puzzle every week, a library to explore, and Blitz races against the Gulls.
+
+Free, no ads, no tracking, no account needed.
+
+YOUR ISLAND
+• Every finished model lands on Otter Island: a hut after the first build, a workshop after three, a village after ten
+• Your pup grows with you: Pup, Splash, Legend
+• Build Stars buy the island's decorations. Nothing is ever for sale, and nothing is ever lost
+
+(then the 1.0 sections from WEEKLY BLOPPIT down, unchanged)
+
 ## Keywords (100)
 
-bricks,build,puzzle,blocks,kids,race,daily,challenge,photo,3D,math,family,otter,brain,game
+**1.0:** blocks,building,bricks,construction,puzzle,family,calm,race,weekly,otter,model,booklet
 
-## What's New (version 1.0)
+**1.1:** blocks,building,bricks,construction,puzzle,family,calm,race,island,world,adventure,otter
 
-Bloppit's first App Store release.
+## Screenshots (captions, in order)
 
-(Next version:) Bloppit is now a game first! Race the Gulls, send challenge codes to friends, build the new Weekly Bloppit, and climb the Otter Trail or the Brain Trail.
+| # | 1.0 (13 Nov) | 1.1 (by 7 Dec) |
+|---|---|---|
+| 1 | Snap bricks into place, page by page. | A half-grown island with six finished models, the pup in front, Bloppit holding the red brick: "Every build you finish grows your island." |
+| 2 | Finish clean. Earn three stars. | Snap bricks into place, page by page. |
+| 3 | A new puzzle every week. See how many built it clean. | Watch your island grow, build by build. |
+| 4 | Race the Gulls in Blitz. | A new puzzle every week. See how many built it clean. |
+| 5 | Pick from the library. Build anything you like. | Race a friend with a code. No strangers. |
+| 6 | The snap, the sound, the celebration. | Your pup grows with every build. |
+
+Preview video: 1.0 is captured app footage of the snap, the finish and a Blitz race; 1.1's ends on the island and the hero line.
+
+## What's New
+
+**1.0:** Bloppit's first App Store release.
+
+**1.1:** Your island! Every build you finish grows Otter Island, and your pup grows with you. Build Stars buy decorations. Plus the From Memory star and four new Weeklies.
 
 ## App Review notes
 
 Bloppit is a brick-building puzzle game for children. No account or login is needed.
-To try it quickly: on the menu tap vs Bloppit, type a name and tap Start the race (works offline).
+To try it quickly: the first visit opens a guided six-brick build; tap the faded brick to place each piece. Then on the menu tap Blitz → vs the Gulls, type a name and tap Start the race (works offline).
 Challenges: on the Blitz page tap Make a challenge, build the puzzle, and you get a 6-letter code; type that code
 into Got a code? on another device (the website bloppit.com/build works too) to race the same puzzle.
 Weekly Bloppit: tap the Weekly Bloppit banner on the menu. Only a finish and whether it was clean are sent (two counts per week, no name, no time). Deleted after 8 weeks.
+Progress (scores, finished models, stars, the pup's name as a number from a fixed list) is saved under an anonymous pup code minted by our server; nothing typed by a child is sent. Grown-ups corner (behind the parental gate) shows the transfer code and the Family Link QR, and can delete the record.
 Rooms (Build together, live Blitz): friends join with a 5-letter code and the host lets them in.
 There is no chat and no voice: players in a room only place bricks.
 Links out of the app and sharing an invite are behind a parental gate (type a number written in words as digits).
@@ -101,7 +146,7 @@ activity, challenges 30 days after the last player, daily times after a week):
 | Data type | Collected | Linked to the user's identity | Used for tracking | Purpose |
 |---|---|---|---|---|
 | User Content › Photos or Videos (the photos a shared model is made from) | Yes | No | No | App Functionality |
-| User Content › Gameplay Content (bricks placed, scores, Blitz times, Weekly Bloppit finishes, pup save) | Yes | No | No | App Functionality |
+| User Content › Gameplay Content (bricks placed, scores, Blitz times, Weekly Bloppit finishes, finished models, stars, XP, island decorations, pup save) | Yes | No | No | App Functionality |
 | User Content › Other User Content (player nickname) | Yes | No | No | App Functionality |
 
 Everything else (contact info, identifiers, location, usage data, diagnostics, etc.): **Not collected**.
