@@ -6536,7 +6536,7 @@ $('#wcNames').addEventListener('click',e=>{ const b=e.target.closest('[data-pup]
 function homeContinue(){
   const bar=(a,b)=>b?Math.round(100*a/b):0;
   if(game&&model&&levelsOf(gameTrail())[game.lvl]) return {t:`Back to ${TRAILS[gameTrail()].name} level ${game.lvl+1}`,s:`${levelsOf(gameTrail())[game.lvl].name}: ${placedN} of ${model.bricks.length} bricks placed`,p:bar(placedN,model.bricks.length),go:()=>setTab('build')};
-  if(mp) return {t:mp.cpu?'Back to your race':'Back to your room',s:mp.state&&mp.state.solo?`Your ${mp.state.label} is still going`:mp.cpu?'Your Blitz race against Bloppit is still going':mpBlitz()?'Your Bloppit Blitz game is still going':'Your Play together game is still going',p:-1,go:()=>setTab(mp.state&&mp.state.started?'build':mpHomeTab())};
+  if(mp) return {t:mp.cpu?'Back to your race':'Back to your room',s:mp.state&&mp.state.solo?`Your ${mp.state.label} is still going`:mp.cpu?`Your Blitz race against ${mp.state&&mp.state.cpuLevel?CPU_LEVELS[mp.state.cpuLevel].name:'the Gull'} is still going`:mpBlitz()?'Your Bloppit Blitz game is still going':'Your Play together game is still going',p:-1,go:()=>setTab(mp.state&&mp.state.started?'build':mpHomeTab())};
   if(pendingSave){ const o=pendingSave;
     return {t:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`Continue ${TRAILS[o.game.trail==='brain'?'brain':'otter'].name} level ${o.game.lvl+1}`:'Continue building',
       s:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`${levelsOf(o.game&&o.game.trail)[o.game.lvl].name}: ${o.placedN} of ${o.nBricks} bricks placed`:`Your ${niceName(o.name)}: ${o.placedN} of ${o.nBricks} bricks placed`,
