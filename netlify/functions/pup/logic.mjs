@@ -25,6 +25,9 @@ const cleanId = (s) => /^[a-z0-9]{24}$/.test(String(s || '')) ? String(s) : '';
 const cleanCode = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
 const pupKey = (id) => `pup/${id}`;
 const xferKey = (c) => `xfer/${c}`;
+const familyKey = (k) => `family/${k}`;
+const cleanFamily = (s) => { const k = String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); return k.length === 12 ? k : ''; };
+import { labelFor } from '../room/logic.mjs';
 
 // Only the fields the game writes, and nothing that could carry text typed by a child.
 export function cleanData(d) {
@@ -133,8 +136,44 @@ export async function handle(method, query, body, store) {
     return { status: 200, body: { pup: x.data.pup, data: r.data.data || {}, ver: r.data.ver || 0 } };
   }
 
+  // A family key: a parent's own credential (12 characters, shown once) that pups attach to, so a parent can
+  // see every pup in the family from any device, bring one to a device without a transfer code, or delete one.
+  // It is not a login: nothing about the parent is stored, only the list of pup ids.
+  if (a === 'family-create') {
+    for (let i = 0; i < 10; i++) {
+      const key = rand(12, CODE_CHARS);
+      const { modified } = await store.set(familyKey(key), { created: now, updated: now, pups: [] }, { onlyIfNew: true });
+      if (modified) return { status: 200, body: { key } };
+    }
+    return { status: 500, body: { error: 'Could not make a family key. Please try again.' } };
+  }
+  if (a === 'family-list' || a === 'family-restore' || a === 'family-delete') {
+    const key = cleanFamily(body.key), f = key && (await store.get(familyKey(key)));
+    if (!f || !f.data) return { status: 404, body: { error: 'That family key was not found.' } };
+    const want = cleanId(body.pup);
+    if (a !== 'family-list' && !f.data.pups.includes(want)) return { status: 404, body: { error: 'That pup is not in this family.' } };
+    if (a === 'family-delete') { await store.del(pupKey(want)); f.data.pups = f.data.pups.filter((p) => p !== want); f.data.updated = now; await store.set(familyKey(key), f.data, {}); return { status: 200, body: { ok: true } }; }
+    if (a === 'family-restore') { const r = await readPup(store, want); if (!r) return { status: 404, body: { error: 'That pup is no longer there.' } }; return { status: 200, body: { pup: want, data: r.data.data || {}, ver: r.data.ver || 0 } }; }
+    const pups = [];
+    for (const pid of f.data.pups) { const r = await readPup(store, pid); if (!r) continue; const w = (r.data.data || {}).world || {}; pups.push({ pup: pid, label: labelFor(pid), builds: (w.log || []).length, pupName: Number.isInteger(w.pupName) ? w.pupName : -1, updated: r.data.updated }); }
+    return { status: 200, body: { pups } };
+  }
+
   const id = cleanId(query.pid);
   if (!id) return { status: 401, body: { error: 'No pup.' } };
+
+  if (a === 'family-attach' || a === 'family-detach') {
+    const key = cleanFamily(body.key);
+    for (let i = 0; i < 6; i++) {
+      const f = key && (await store.get(familyKey(key)));
+      if (!f || !f.data) return { status: 404, body: { error: 'That family key was not found. Check it, or make a new one.' } };
+      const r = await readPup(store, id); if (!r) return { status: 404, body: { error: 'That pup was not found.' } };
+      const pups = a === 'family-attach' ? [...new Set([...f.data.pups, id])].slice(0, 12) : f.data.pups.filter((p) => p !== id);
+      const { modified } = await store.set(familyKey(key), { ...f.data, pups, updated: now }, { onlyIfMatch: f.etag });
+      if (modified) return { status: 200, body: { ok: true, n: pups.length } };
+    }
+    return { status: 409, body: { error: 'Busy. Please try again.' } };
+  }
 
   if (a === 'save') {
     const incoming = cleanData(body.data);

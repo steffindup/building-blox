@@ -77,3 +77,17 @@ test('weekly board: entries only with the switch, generated names, clean first t
   const g = await challenge('GET', { weekly: week, board: '1', pid: A }, null, store); assert.equal(g.body.board[1].me, true); assert.match(g.body.board[0].name, /^[A-Z][a-z]+ [A-Z][a-z]+ \d{3}$/);
   const plain = await challenge('GET', { weekly: week }, null, store); assert.equal(plain.body.board, undefined);
 });
+
+test('family key: create → attach two pups → list → restore → delete one', async () => {
+  mem.clear();
+  const p1 = (await pup('POST', {}, { action: 'create', data: { world: { xp: 10, builds: { 'm:A:6': { n: 6, s: 3, t: 1, c: 1 } }, log: ['m:A:6'], decor: [], pupName: 2 } } }, store)).body.pup;
+  const p2 = (await pup('POST', {}, { action: 'create', data: {} }, store)).body.pup;
+  const k = (await pup('POST', {}, { action: 'family-create' }, store)).body.key; assert.match(k, /^[A-Z0-9]{12}$/);
+  assert.equal((await pup('POST', { pid: p1 }, { action: 'family-attach', key: k }, store)).body.n, 1);
+  assert.equal((await pup('POST', { pid: p2 }, { action: 'family-attach', key: k }, store)).body.n, 2);
+  const l = await pup('POST', {}, { action: 'family-list', key: k }, store); assert.equal(l.body.pups.length, 2); assert.equal(l.body.pups[0].builds, 1); assert.equal(l.body.pups[0].pupName, 2);
+  const r = await pup('POST', {}, { action: 'family-restore', key: k, pup: p1 }, store); assert.equal(r.body.data.world.xp, 10);
+  assert.equal((await pup('POST', {}, { action: 'family-delete', key: k, pup: p2 }, store)).body.ok, true);
+  assert.equal((await pup('POST', {}, { action: 'family-list', key: k }, store)).body.pups.length, 1);
+  assert.equal((await pup('POST', {}, { action: 'family-list', key: 'NOPE' }, store)).status, 404);
+});
