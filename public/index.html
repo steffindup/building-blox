@@ -117,7 +117,7 @@ nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;padding-block:12
 .hero h1{font-size:clamp(3.2rem,6vw,5.6rem);line-height:.98}
 .hero h1 .accent{color:var(--red)}
 .isle-hero{margin:0;flex:1 1 420px;min-width:0;border:2px solid var(--ink);border-radius:22px;overflow:hidden;box-shadow:0 8px 0 var(--ink);background:#A9D8F2;position:relative}
-.isle-hero svg{display:block;width:100%;height:auto}.isle-hero .ghost-build{opacity:.28}.isle-hero .slot-empty{opacity:.35}
+.isle-hero svg,.isle-hero img{display:block;width:100%;height:auto}.isle-hero .ghost-build{opacity:.28}.isle-hero .slot-empty{opacity:.35}
 .isle-hero figcaption{position:absolute;left:12px;top:12px;padding:4px 14px;border-radius:999px;background:rgba(20,32,44,.85);color:#fff;font-family:var(--display);font-size:20px}
 .hero-text p{font-size:20px;max-width:520px}
 .tagline{display:flex;flex-wrap:wrap;gap:8px;font-family:var(--display);font-size:22px;line-height:1}
@@ -293,7 +293,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
   /* A returning player (this device has played): the hero is their own Bloppitopia. The picture and name were
      saved on this device by the game; nothing is fetched. */
   (function(){ try{
-    var s=JSON.parse(localStorage.getItem('bloppit-island-v1')); if(!s||!s.svg||!(s.n>0)) return;
+    var s=JSON.parse(localStorage.getItem('bloppit-island-v1')); if(!s||!(s.img||s.svg)||!(s.n>0)) return;
     var hero=document.querySelector('.hero'), txt=hero.querySelector('.hero-text'), vis=hero.querySelector('.hero-visual');
     txt.querySelector('.pill').textContent='Welcome back!';
     var h=txt.querySelector('h1'); h.textContent=''; var a=document.createElement('span'); a.className='accent';
@@ -301,7 +301,8 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
     var tg=txt.querySelector('.tagline'); if(tg) tg.remove();
     txt.querySelector('p').textContent=s.n+' build'+(s.n===1?'':'s')+' so far, and it’s a '+s.stage+'. Every build you finish grows it.';
     var acts=txt.querySelector('.actions'); acts.firstElementChild.textContent='Back to your island'; acts.firstElementChild.href='/build/#island';
-    var f=document.createElement('figure'); f.className='isle-hero'; f.innerHTML=s.svg;
+    var f=document.createElement('figure'); f.className='isle-hero';
+    if(s.img&&/^data:image\/jpeg;base64,/.test(s.img)){ var im=document.createElement('img'); im.src=s.img; im.alt=''; f.appendChild(im); } else f.innerHTML=s.svg;
     var c=document.createElement('figcaption'); c.textContent='🏝️ Bloppitopia · '+s.stage; f.appendChild(c);
     var go=document.createElement('a'); go.href='/build/#island'; go.setAttribute('aria-label','Open your island'); go.style.cssText='position:absolute;inset:0'; f.appendChild(go);
     vis.replaceWith(f);
