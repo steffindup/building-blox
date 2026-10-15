@@ -833,6 +833,8 @@ body.on-home .tabs{visibility:hidden}
 .is-btns{display:flex;gap:8px;flex-wrap:wrap}
 .is-card{padding:0;overflow:hidden}
 .island{position:relative;background:#CFE9F7}
+/* a long press on the world or the build must never start an iPhone text selection (it also makes the 3D crawl) */
+.island,.island *,.stage,.stage *,.is-foot,.is-btns,button{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 .island.is3{overflow:hidden;background:#BFE6F7}
 .island .is3-canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab;outline:none}
 .island .is3-canvas:focus-visible{outline:3px solid var(--hi);outline-offset:-3px}
@@ -6544,7 +6546,8 @@ function isl3Init(){
   try{
     const r=new THREE.WebGLRenderer({antialias:true,alpha:false,preserveDrawingBuffer:true});
     const lite=/[?&]lite3d=1/.test(location.search);   // tests on machines without a GPU: no shadows, half the pixels
-    r.setPixelRatio(lite?.5:Math.min(devicePixelRatio||1,2)); r.outputEncoding=THREE.sRGBEncoding; r.shadowMap.enabled=!lite; r.shadowMap.type=THREE.PCFSoftShadowMap;
+    const coarse=matchMedia('(pointer: coarse)').matches;   // phones and tablets: fewer pixels, simpler shadow edges
+    r.setPixelRatio(lite?.5:Math.min(devicePixelRatio||1,coarse?1.5:2)); r.outputEncoding=THREE.sRGBEncoding; r.shadowMap.enabled=!lite; r.shadowMap.type=coarse?THREE.PCFShadowMap:THREE.PCFSoftShadowMap;
     r.setClearColor(new THREE.Color('#BFE6F7'));
     const sc=new THREE.Scene(); sc.fog=new THREE.Fog(new THREE.Color('#BFE6F7').convertSRGBToLinear(),80,170);
     const camera=new THREE.PerspectiveCamera(34,1.4,.5,300);
@@ -6617,9 +6620,13 @@ function isl3Focus(info,h){ let x,z,d;
   else return false;
   const cur=ISL3.cam.position.distanceTo(ISL3.ctl.target); if(Math.hypot(ISL3.ctl.target.x-x,ISL3.ctl.target.z-z)<.8&&cur<=d+.5) return false;
   isl3FlyTo(x,0,z,Math.min(cur,d),900); ISL3.moved=true; isl3WholeBtn(); return true; }
-function isl3WholeBtn(){ const b=ISL3.box&&ISL3.box.querySelector('.is3-whole'); if(!b) return; const far=ISL3.ctl.target.distanceTo(CAM_T3)>1.5||ISL3.cam.position.distanceTo(ISL3.ctl.target)<ISL3.fitD*.8; b.hidden=!(far&&!ISL3.revealing&&!ISL3.arrive); }
+function isl3WholeBtn(){ const b=ISL3.box&&ISL3.box.querySelector('.is3-whole'); if(!b) return; const far=ISL3.ctl.target.distanceTo(CAM_T3)>1.5||ISL3.cam.position.distanceTo(ISL3.ctl.target)<ISL3.fitD*.8; const h=!(far&&!ISL3.revealing&&!ISL3.arrive); if(b.hidden!==h) b.hidden=h; }
 function isl3Events(cv){
-  cv.tabIndex=0; const pts=new Map();
+  cv.tabIndex=0; const pts=new Map(), touched=()=>{ ISL3.input=performance.now(); isl3Kick(); };
+  for(const ev of ['pointerdown','pointermove','wheel','touchstart']) cv.addEventListener(ev,touched,{passive:true});
+  cv.addEventListener('pointerdown',()=>{ try{ const sl=getSelection(); if(sl&&sl.rangeCount) sl.removeAllRanges(); }catch(e){} });
+  if('IntersectionObserver' in window){ new IntersectionObserver(es=>{ for(const e of es){ ISL3.hidden=!e.isIntersecting; if(!ISL3.hidden) isl3Kick(); } }).observe(cv); }
+  document.addEventListener('visibilitychange',()=>{ if(!document.hidden) isl3Kick(); });
   cv.addEventListener('wheel',e=>{ if(!ISL3.revealing&&!ISL3.arrive) isl3ZoomAt(e.clientX,e.clientY); ISL3.moved=true; },{capture:true,passive:true});
   cv.addEventListener('pointerdown',e=>{ pts.set(e.pointerId,[e.clientX,e.clientY]); if(pts.size===2){ const [a,b]=[...pts.values()]; isl3ZoomAt((a[0]+b[0])/2,(a[1]+b[1])/2); } },{capture:true});
   cv.addEventListener('pointermove',e=>{ if(!pts.has(e.pointerId)) return; pts.set(e.pointerId,[e.clientX,e.clientY]); if(pts.size===2&&ISL3.zoomAt){ const [a,b]=[...pts.values()], p=isl3Ground({clientX:(a[0]+b[0])/2,clientY:(a[1]+b[1])/2}); if(p){ ISL3.zoomAt.p=p; ISL3.zoomAt.t=performance.now(); } } },{capture:true});
@@ -6915,7 +6922,7 @@ function isleBase(id,g,n){
 function islePieces(id,n){ return PIECES[id].filter(p=>n>=p.at); }
 // The nearest next thing to grow anywhere in the world (for the line under the map)
 function worldNextGoal(o){ const n=worldCount(o), out=[];
-  const hp=HOME_PIECES.find(p=>!p.hide&&p.id!=='pick'&&p.at>n); if(hp){ const prev=Math.max(0,...HOME_PIECES.filter(p=>!p.hide&&p.at<=n).map(p=>p.at)); out.push({left:hp.at-n,text:`${hp.at-n} more build${hp.at-n===1?'':'s'} and Home Island gets its ${hp.name.toLowerCase()}`,frac:(n-prev)/Math.max(1,hp.at-prev)}); }
+  const hp=HOME_PIECES.find(p=>!p.hide&&p.id!=='pick'&&p.at>n); if(hp){ const prev=Math.max(0,...HOME_PIECES.filter(p=>!p.hide&&p.at<=n).map(p=>p.at)); out.push({left:hp.at-n,text:`${hp.at-n} more build${hp.at-n===1?'':'s'} and Home Island gets ${/^(the|your) /i.test(hp.name)?'its '+hp.name.replace(/^(the|your) /i,''):hp.name}`,frac:(n-prev)/Math.max(1,hp.at-prev)}); }
   for(const id of Object.keys(ISLES)){ const I=ISLES[id], c=isleCount(id,o), p=PIECES[id].find(q=>q.at>c); if(!p) continue; const prev=Math.max(0,...PIECES[id].filter(q=>q.at<=c).map(q=>q.at)), k=p.at-c;
     out.push({left:k+(c?0:.5),text:c?`${k} more ${I.unit}${k===1?'':'s'}: ${p.name} on ${I.name}`:`Your first ${I.unit} finds ${I.name} in the mist`,frac:(c-prev)/Math.max(1,p.at-prev)}); }
   out.sort((a,b)=>a.left-b.left); return out[0]||null; }
@@ -6969,6 +6976,8 @@ function isl3Build(o){
     g.setAttribute('position',new THREE.Float32BufferAttribute(p,3)); ISL3.stars=new THREE.Points(g,new THREE.PointsMaterial({color:0xffffff,size:.6,transparent:true,opacity:0,fog:false})); ISL3.sc.add(ISL3.stars); }
   ISL3.sc.add(W);
   W.traverse(x=>{ if(x.isMesh||x.isSprite||x.isInstancedMesh) ISL3.hits.push(x); });
+  const AK=['beam','belt','bloppit','bob','cheer','cloud','crane','flap','fly','fount','hand','kite','longtail','mist','race','smoke','spin','swing','twinkle','waddle','zzz'];
+  ISL3.anim=[]; ISL3.sc.traverse(x=>{ const u=x.userData; if(AK.some(k=>u[k]!=null&&u[k]!==false)) ISL3.anim.push(x); });
   isl3Labels(); isl3Tod(true); isl3Kick();
 }
 function mist3(r){ const g=new THREE.Group(); for(let i=0;i<9;i++){ const a=i*.7, c=mesh3(new THREE.IcosahedronGeometry(1.1+(i%3)*.4,1),new THREE.MeshStandardMaterial({color:0xF4F7FA,transparent:true,opacity:.82,roughness:1,flatShading:true}),Math.cos(a)*r*.6,.8+(i%4)*.5,Math.sin(a)*r*.6); c.castShadow=false; c.userData.mist=i; g.add(c); } return g; }
@@ -7014,13 +7023,14 @@ function isl3Tod(force){ const h=isl3Hour(); if(!force&&ISL3.todH!=null&&Math.ab
 function isl3Frame(now){
   ISL3.raf=0; if(!ISL3.on) return;
   const busy=ISL3.dragging||ISL3.fly||(ISL3.pops&&ISL3.pops.length)||(ISL3.parts&&ISL3.parts.length);
-  if(!ISL3.dirty&&!busy&&now-(ISL3.last||0)<31){ ISL3.raf=requestAnimationFrame(isl3Frame); return; } ISL3.last=now;
+  if(ISL3.hidden){ return; }   // scrolled off screen: the observer starts it again
+  const gap=busy||now-(ISL3.input||0)<2500?31:66;
+  if(!ISL3.dirty&&!busy&&now-(ISL3.last||0)<gap){ ISL3.raf=requestAnimationFrame(isl3Frame); return; } ISL3.last=now;
   const t=now/1000; isl3Tod(false);
   if(ISL3.fly) isl3FlyStep(now); else if(ISL3.ctl) ISL3.ctl.update();
-  if(ISL3.world&&!reduceMotion) ISL3.world.traverse(x=>isl3Animate(x,t));
-  if(ISL3.world&&reduceMotion) ISL3.world.traverse(x=>{ if(x.userData.hand) isl3Animate(x,t); });
+  const A=ISL3.anim||[]; if(!reduceMotion) for(const x of A) isl3Animate(x,t); else for(const x of A) if(x.userData.hand) isl3Animate(x,t);
   isl3Pops(now);
-  ISL3.r.render(ISL3.sc,ISL3.cam); isl3PlaceLabels(); ISL3.dirty=false;
+  ISL3.r.render(ISL3.sc,ISL3.cam); { const k=ISL3.cam.matrixWorld.elements.join()+'|'+ISL3.r.domElement.width; if(k!==ISL3.labK||ISL3.dirty){ ISL3.labK=k; isl3PlaceLabels(); } } ISL3.dirty=false;
   if(ISL3.on&&(!reduceMotion||busy||(ISL3.settle-->0))) ISL3.raf=requestAnimationFrame(isl3Frame);
 }
 function isl3Animate(x,t){ const u=x.userData;
