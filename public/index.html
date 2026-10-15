@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Bloppit: Build it. Grow your world.</title>
-<meta name="description" content="Bloppit is a calm brick puzzle game for kids 8–13. Finish a model in minutes, scored on how cleanly you build, and every build you finish grows your own island. Free, no ads, no account needed.">
+<meta name="description" content="Bloppit is a calm brick puzzle game for enthusiastic brick builders. Finish a model in minutes, scored on how cleanly you build, and every build you finish grows your own island. Free, no ads, no account needed.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="google-site-verification" content="3jgoAs4OQQYRCxP8exwGKqmz1Gw5foP76_TtomURmc8" />
 <link rel="canonical" href="https://bloppit.com/">
@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Bloppit">
 <meta property="og:url" content="https://bloppit.com/">
 <meta property="og:title" content="Bloppit: Build it. Grow your world.">
-<meta property="og:description" content="A calm brick puzzle game for kids 8–13. Finish a model in minutes, scored on how cleanly you build. Every build you finish grows your island. Free, no ads, no account needed.">
+<meta property="og:description" content="A calm brick puzzle game for enthusiastic brick builders. Finish a model in minutes, scored on how cleanly you build. Every build you finish grows your island. Free, no ads, no account needed.">
 <meta property="og:image" content="https://bloppit.com/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -23,7 +23,7 @@
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Bloppit: Brick Puzzle Game">
-<meta name="twitter:description" content="A calm brick puzzle game for kids 8–13. Every build you finish grows your island. Free, no ads, no account needed.">
+<meta name="twitter:description" content="A calm brick puzzle game for enthusiastic brick builders. Every build you finish grows your island. Free, no ads, no account needed.">
 <meta name="twitter:image" content="https://bloppit.com/og-image.png">
 <link rel="icon" href="/favicon-96.png?v=3" type="image/png" sizes="96x96">
 <link rel="icon" href="/favicon.ico?v=3" sizes="16x16 32x32 48x48">
@@ -44,7 +44,7 @@
       "name": "Bloppit: Brick Puzzle Game",
       "alternateName": "Bloppit",
       "url": "https://bloppit.com/build/",
-      "description": "A calm brick puzzle game for kids 8–13. Finish a model in minutes, scored on how cleanly you build. Every build you finish grows your island. Free, no ads, no account needed.",
+      "description": "A calm brick puzzle game for enthusiastic brick builders. Finish a model in minutes, scored on how cleanly you build. Every build you finish grows your island. Free, no ads, no account needed.",
       "applicationCategory": "GameApplication",
       "operatingSystem": "Any (runs in a web browser)",
       "image": "https://bloppit.com/og-image.png",
@@ -202,7 +202,10 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
   text-align:center;font-family:var(--display);cursor:pointer;-webkit-user-select:none;user-select:none;animation:sp-fail .3s ease 4s forwards}
 .sp-on .splash{display:grid}
 .sp-on{overflow:hidden}
-.splash .sp-head{display:block;transform-origin:50% 100%;animation:sp-tilt .5s ease-in-out .55s both}
+.splash .sp-head{display:block;position:relative}
+/* the wink: a furry lid over his right eye with a happy closed-eye curve, shut for a moment */
+.splash .sp-wink{position:absolute;left:45.5%;top:22.5%;width:14%;height:14.5%;border-radius:45%;background:radial-gradient(closest-side,#9A6740 62%,rgba(154,103,64,.8) 80%,rgba(154,103,64,0) 100%);transform-origin:50% 0;transform:scaleY(0);animation:sp-wink 1s ease .8s both}
+.splash .sp-wink svg{position:absolute;inset:18% 4% 6%;width:92%;height:76%}
 .splash .sp-head img{display:block;width:150px;height:150px;border-radius:34px;object-fit:cover;object-position:center 46%;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:sp-pop .5s cubic-bezier(.3,1.6,.5,1) both}
 .splash .sp-word{font-size:52px;line-height:1;letter-spacing:.01em;text-shadow:0 4px 0 rgba(0,0,0,.18);animation:sp-up .35s ease .1s both}
 .splash .sp-tag{display:flex;gap:8px;margin-top:10px}
@@ -213,7 +216,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 .splash.out{opacity:0;transform:scale(1.04);transition:opacity .3s ease,transform .3s ease;pointer-events:none}
 @keyframes sp-pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
 @keyframes sp-up{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
-@keyframes sp-tilt{0%,100%{transform:none}35%{transform:rotate(-8deg)}70%{transform:rotate(5deg)}}
+@keyframes sp-wink{0%,8%{transform:scaleY(0)}22%,62%{transform:scaleY(1)}78%,100%{transform:scaleY(0)}}
 @keyframes sp-blink{0%,100%{transform:none}50%{transform:scaleY(.1)}}
 @keyframes sp-fail{to{opacity:0;visibility:hidden}}
 @media (prefers-reduced-motion: reduce){.splash *,.splash{animation:none!important}}
@@ -221,7 +224,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 </head>
 <body>
 <div class="splash" id="splash" aria-hidden="true">
-  <span class="sp-head"><img src="/art/bloppit-icon.jpg" alt="" width="392" height="584"></span>
+  <span class="sp-head"><img src="/art/bloppit-icon.jpg" alt="" width="392" height="584"><i class="sp-wink" aria-hidden="true"><svg viewBox="0 0 40 30"><path d="M5 13 Q20 26 35 13" fill="none" stroke="#2A170C" stroke-width="3.4" stroke-linecap="round"/><path d="M7 14 L3 10 M33 14 L37 10" stroke="#2A170C" stroke-width="2.6" stroke-linecap="round"/></svg></i></span>
   <div class="sp-word">Bloppit</div>
   <div class="sp-tag"><span>Snap it.</span><span>Bloppit.</span><span>Build it.</span></div>
 </div>
@@ -259,7 +262,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
       <span class="pill">Free · No ads · No account needed</span>
       <h1>Build it.<br>Grow your <span class="accent">world.</span></h1>
       <div class="tagline" aria-label="Snap it. Bloppit. Build it."><span>Snap it.</span><span>Bloppit.</span><span>Build it.</span></div>
-      <p>A calm brick puzzle game for kids 8–13. Finish a model in minutes, scored on how cleanly you build. Every build you finish grows your own island.</p>
+      <p>A calm brick puzzle game for enthusiastic brick builders. Finish a model in minutes, scored on how cleanly you build. Every build you finish grows your own island.</p>
       <div class="actions">
         <a class="btn primary" href="/build/">Play now</a>
         <a class="btn" href="/build/#daily">This week’s Bloppit</a>
