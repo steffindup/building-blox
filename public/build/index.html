@@ -3179,14 +3179,24 @@ function onGhost(e){
   ray.setFromCamera(ndc,playCam);
   const p=pointToPlate(e), {ax,az}=lastAnchor, pad=e.pointerType==='mouse'?0:.9;  // fingers are bigger than mice
   const overFoot=p&&p.px>=ax-pad&&p.px<=ax+sel.sx+pad&&p.pz>=az-pad&&p.pz<=az+sel.sz+pad;
-  return (ray.intersectObject(ghostGroup,true).length||overFoot)?p:null;
+  if(ray.intersectObject(ghostGroup,true).length||overFoot) return p;
+  // or near it on screen: within a fingertip of the brick's middle (bricks up on the model are hard to hit exactly)
+  if(e.pointerType!=='mouse'&&p){ const b=new THREE.Box3().setFromObject(ghostGroup); if(!b.isEmpty()){ const c=b.getCenter(new THREE.Vector3()).project(playCam), sz=b.getSize(new THREE.Vector3());
+    const cx=r.left+(c.x+1)/2*r.width, cy=r.top+(1-c.y)/2*r.height, edge=new THREE.Vector3(b.max.x,c.y,b.max.z).project(playCam), rad=Math.hypot((edge.x-c.x)/2*r.width,(edge.y-c.y)/2*r.height);
+    if(Math.hypot(e.clientX-cx,e.clientY-cy)<Math.max(56,rad+28)) return p; } }
+  return null;
 }
+window.bloppitGhost=()=>{ if(!sel||!lastAnchor||!ghostGroup.visible) return null; const r=renderer.domElement.getBoundingClientRect(), b=new THREE.Box3().setFromObject(ghostGroup), c=b.getCenter(new THREE.Vector3()).project(playCam);   // for tests
+  return {x:r.left+(c.x+1)/2*r.width,y:r.top+(1-c.y)/2*r.height,ax:lastAnchor.ax,az:lastAnchor.az,cam:playCam.position.toArray().map(v=>+v.toFixed(3))}; };
+// While a finger drags the brick, the view must not turn: these controls listen to touch events, not just pointer ones
+function viewHold(on){ if(on){ viewHold.was=[controls.enabled,playControls.enabled]; controls.enabled=false; playControls.enabled=false; }
+  else if(viewHold.was){ [controls.enabled,playControls.enabled]=viewHold.was; viewHold.was=null; } }
 cvs.addEventListener('pointerdown',e=>{
   // With a mouse the brick already follows the pointer, so a mouse drag always turns the view.
   if(tab!=='build'||!model||cur>=model.steps.length||busy||e.button>0||e.pointerType==='mouse') return;
   const p=onGhost(e); if(!p) return;
   e.stopImmediatePropagation(); e.preventDefault();
-  ghostDrag={id:e.pointerId,x:e.clientX,y:e.clientY,moved:false,dx:p.px-(lastAnchor.ax+sel.sx/2),dz:p.pz-(lastAnchor.az+sel.sz/2)};
+  ghostDrag={id:e.pointerId,x:e.clientX,y:e.clientY,moved:false,dx:p.px-(lastAnchor.ax+sel.sx/2),dz:p.pz-(lastAnchor.az+sel.sz/2)}; viewHold(true);
   try{ cvs.setPointerCapture(e.pointerId); }catch(err){}
 },{capture:true});
 cvs.addEventListener('pointerdown',e=>{downXY=[e.clientX,e.clientY];});
@@ -3197,7 +3207,7 @@ cvs.addEventListener('pointermove',e=>{ if(tab!=='build'||!sel||!model||cur>=mod
     return; }
   if(e.pointerType==='mouse'&&!e.buttons){const p=pointToPlate(e); if(p) placeGhost(p.px,p.pz);} });
 cvs.addEventListener('pointerup',e=>{
-  if(ghostDrag&&e.pointerId===ghostDrag.id){ const g=ghostDrag; ghostDrag=null;
+  if(ghostDrag&&e.pointerId===ghostDrag.id){ const g=ghostDrag; ghostDrag=null; viewHold(false);
     if(!g.moved) tryPlace();  // a tap on the brick puts it down
     else setStatus(e.pointerType==='mouse'?'Happy with it? Click it or press ✓ Place.':'Happy with it? Tap it or press ✓ Place.');
     return; }
@@ -3211,7 +3221,7 @@ cvs.addEventListener('pointerup',e=>{
   if(e.pointerType==='mouse') tryPlace();
   else setStatus('Drag the brick or use the arrows to adjust it, then press ✓ Place.');
 });
-cvs.addEventListener('pointercancel',()=>{ ghostDrag=null; downXY=null; });
+cvs.addEventListener('pointercancel',()=>{ if(ghostDrag) viewHold(false); ghostDrag=null; downXY=null; });
 document.querySelectorAll('#placePad [data-mv]').forEach(b=>b.addEventListener('click',()=>nudgeGhost(b.dataset.mv)));
 $('#ppTurn').onclick=rotateSel;
 $('#ppPlace').onclick=()=>tryPlace();
