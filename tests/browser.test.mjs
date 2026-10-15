@@ -197,6 +197,10 @@ test('island: tap anything for its card; drag a model anywhere on the sand; put 
   assert.match(await tap('#island [data-info="bloppit"]'), /Bloppit.*build buddy/);
   assert.match(await tap('#island [data-info="pup"]'), /Bubbles.*Pup.*1 stud.*Change name or colour/);
   assert.match(await tap('#island [data-info="decor:flag"]'), /Flag/);
+  // the islands nearby are on the map too: what grows them, how far to the next stage, and a way there
+  assert.equal(await t.page.evaluate(() => document.querySelectorAll('#island [data-info^="dest:"]').length), 5);
+  assert.match(await tap('#island [data-info="dest:ferry"]'), /Weekly Ferry.*Grows withEvery Weekly Bloppit.*1 more to the ferry.*This week’s Bloppit/);
+  await t.page.evaluate(() => document.querySelector('#isTip .tt-x').click());
   // a model: where it came from, when, stars, best time; then put it away
   const key = (await models())[0];
   const card = await tap(`#island g.is-model[data-key="${key}"]`);

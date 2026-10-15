@@ -1435,7 +1435,6 @@ body.on-home .tabs{visibility:hidden}
   </div>
   <div class="card is-card"><div class="island" id="island"></div>
     <div class="is-foot"><div class="is-stage" id="isStage"></div><div class="is-next" id="isNext"></div></div></div>
-  <div class="card"><div class="gm-head sub-head"><div><h2>🗺️ The islands nearby</h2><p class="note">The other islands grow with what you do there. Tap one to go.</p></div></div><div class="dest-grid" id="destGrid"></div></div>
   <div class="card is-shop" id="isShop" hidden>
     <div class="gm-head sub-head"><div><h2>✨ Decorate your island</h2><p class="note">Build Stars buy decorations. Nothing here is ever sold for money. <b id="isStars"></b></p></div><button class="ghost" id="isShopClose" type="button">Done</button></div>
     <div class="decor-grid" id="decorGrid"></div>
@@ -5990,6 +5989,20 @@ function decorSVG(id,x,y){
   }
   return '';
 }
+// The islands nearby, in a row across the sea below Bloppitopia (x centres), Friendship Harbour by the jetty
+const NEARBY_AT={ferry:110,workshop:300,brain:500,speedway:694,harbour:893};
+function islandsNearby(){
+  const P=[];
+  P.push('<g fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round" opacity=".65" pointer-events="none">'
+    +Object.values(NEARBY_AT).map(x=>{ const [tx,ty]=x===890?[958,476]:[Math.max(200,Math.min(820,x)),552]; return `<path d="M${x} 610 Q ${(x+tx)/2} ${(610+ty)/2+6} ${tx} ${ty}"/>`; }).join('')+'</g>');
+  for(const d of destinations()){ const x=NEARBY_AT[d.id]; if(x==null) continue;
+    const art=destSVG(d.id,d.st).replace(/^<svg[^>]*>|<\/svg>$/g,'').replace('<rect y="56" width="72" height="16" fill="#5FAEE6" opacity=".6"/>','');
+    P.push(`<g class="is-near" data-info="dest:${d.id}">
+      <ellipse cx="${x}" cy="684" rx="86" ry="22" fill="#8FD0EC" opacity=".8"/><ellipse cx="${x}" cy="680" rx="74" ry="17" fill="#E3C99A"/><ellipse cx="${x}" cy="677" rx="70" ry="14" fill="#F1DFBC"/>
+      <g transform="translate(${x-79} 545) scale(2.2)">${art}</g>
+      <g transform="translate(${x} 702)"><rect x="${-(d.name.length*5.2+12)}" y="-16" width="${d.name.length*10.4+24}" height="30" rx="15" fill="#14202C" opacity=".85"/><text x="0" y="5" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="19" fill="#fff">${escapeHTML(d.name.replace("Friendship ","Friendship "))}</text></g></g>`); }
+  return P.join('');
+}
 // The scene: sky, sea and the island, then whatever the stage has built, the models, the decorations, the two otters.
 function islandSVG(o,opts){
   opts=opts||{}; const stage=islandStage(o), n=worldCount(o), decor=o.decor||[], thumbs=worldThumbs();
@@ -6008,12 +6021,12 @@ function islandSVG(o,opts){
     <pattern id="is-plank" width="40" height="9" patternUnits="userSpaceOnUse"><path d="M0 8.5 h40" stroke="#8A5A3B" stroke-width="1.2" opacity=".6"/><path d="M12 0 v8 M30 0 v8" stroke="#8A5A3B" stroke-width="1" opacity=".3"/></pattern>
     <pattern id="is-stone" width="30" height="22" patternUnits="userSpaceOnUse"><ellipse cx="8" cy="8" rx="7" ry="4" fill="#D9B98B"/><ellipse cx="23" cy="16" rx="6" ry="3.5" fill="#D9B98B"/></pattern></defs>`);
   // sky
-  P.push('<rect width="1000" height="600" fill="url(#is-sky)" data-info="land:sky"/>');
+  P.push('<rect width="1000" height="720" fill="url(#is-sky)" data-info="land:sky"/>');
   P.push('<circle cx="880" cy="90" r="120" fill="url(#is-sun)"/><circle cx="880" cy="90" r="38" fill="#FFE27A"/>');
   P.push('<g fill="#fff"><g opacity=".95"><ellipse cx="180" cy="100" rx="52" ry="17"/><ellipse cx="206" cy="88" rx="30" ry="20"/><ellipse cx="156" cy="92" rx="24" ry="15"/></g><g opacity=".9"><ellipse cx="560" cy="70" rx="42" ry="14"/><ellipse cx="582" cy="60" rx="24" ry="15"/></g><g opacity=".85"><ellipse cx="760" cy="150" rx="34" ry="11"/><ellipse cx="776" cy="142" rx="18" ry="12"/></g></g>');
   P.push('<g class="is-drift" fill="none" stroke="#5B6778" stroke-width="2.2" stroke-linecap="round"><path d="M380 120 q8 -9 16 0 q8 -9 16 0"/><path d="M420 142 q6 -7 12 0 q6 -7 12 0"/><path d="M640 190 q7 -8 14 0 q7 -8 14 0"/></g>');
   // sea
-  P.push('<rect y="236" width="1000" height="364" fill="url(#is-sea)" data-info="land:sea"/>');
+  P.push('<rect y="236" width="1000" height="484" fill="url(#is-sea)" data-info="land:sea"/>');
   P.push('<path d="M0 240 q25 -6 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0" fill="none" stroke="#fff" stroke-width="2" opacity=".55"/>');
   P.push('<g class="is-wave" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".5"><path d="M20 300 q20 -8 40 0 t40 0 t40 0"/><path d="M700 268 q20 -8 40 0 t40 0 t40 0"/><path d="M820 370 q20 -8 40 0 t40 0 t40 0 t40 0"/><path d="M40 566 q20 -8 40 0 t40 0 t40 0 t40 0 t40 0"/><path d="M620 580 q20 -8 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0"/><path d="M400 586 q20 -8 40 0 t40 0 t40 0"/></g>');
   // the island: shallows, foam, wet sand, dry sand, speckle, grass
@@ -6074,7 +6087,9 @@ function islandSVG(o,opts){
   P.push(`<g data-info="bloppit"><ellipse cx="${bx}" cy="${by+2}" rx="26" ry="6" fill="#000" opacity=".12"/><image href="/art/bud-3q.png" x="${bx-36}" y="${by-96}" width="72" height="96" preserveAspectRatio="xMidYMax meet"/></g>`);
   if(n>0) P.push(`<g data-info="pup"><ellipse cx="${bx+54}" cy="${by+2}" rx="${ph*.34}" ry="5" fill="#000" opacity=".12"/><g class="is-bob"><g transform="translate(${(bx+54-ph*.4+(ph*.8-239*ph/300)/2).toFixed(1)} ${by-ph}) scale(${(ph/300).toFixed(4)})">${pupLayers(pupColorOf(o),ps+1)}</g></g></g>`);
   if(stage===0) P.push('<g transform="translate(250 372)"><rect x="-74" y="-30" width="148" height="40" rx="12" fill="#fff" stroke="#14202C" stroke-width="2"/><path d="M-30 10 l-12 14 l24 -14z" fill="#fff" stroke="#14202C" stroke-width="2"/><rect x="-29" y="8" width="22" height="4" fill="#fff"/><text x="0" y="-4" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="15" fill="#14202C">Finish a build!</text></g>');
-  let out=`<svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-label="Bloppitopia at the ${ISLAND_STAGES[stage].name} stage">${P.join('')}</svg>`;
+  // The islands nearby, out in the sea: each drawn at its stage, with a dotted boat route home
+  P.push(islandsNearby());
+  let out=`<svg viewBox="0 0 1000 720" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-label="Bloppitopia at the ${ISLAND_STAGES[stage].name} stage">${P.join('')}</svg>`;
   // A second copy on the page (the menu's) gets its own ids, so its gradients never point into a hidden copy
   if(opts.uid) out=out.replace(/(id="|url\(#|href="#)is-/g,`$1${opts.uid}-`);
   return out;
@@ -6171,13 +6186,19 @@ function islandInfo(id,o){
         rows:[['Level',`${st} of 3: ${ISLAND_STAGES[st].name}`],['Builds finished',String(n)],['Models standing',`${shown.list.length} of ${shown.cap} stands`],['Decorations',`${(o.decor||[]).length} of ${DECOR.length}`],['Next',nx?`The ${nx.name.toLowerCase()} at ${nx.at} builds`:'Everything is built']],
         bar:nx?bar(ISLAND_STAGES[st].at,nx.at):null, actions:n?[{label:'✨ Decorate',fn:()=>$('#isDecor').click()}]:[]};
       if(arg==='meadow') return {...place(3,'The meadow','Where the village grows'),title:'The meadow',hint:n>=10?'The village stands here':'The village grows here at 10 builds'};
-      if(arg==='sea') return {title:'The sea',hint:'The islands nearby are out there',rows:destinations().map(d=>[d.name,`${d.names[d.st]}${d.nx?` · ${d.nx-d.n} to go`:' · complete'}`]),
-        actions:[{label:'See the islands nearby',fn:()=>$('#destGrid').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'})}]};
+      if(arg==='sea') return {title:'The sea',hint:'Five islands nearby: tap one',rows:destinations().map(d=>[d.name,`${d.names[d.st]}${d.nx?` · ${d.nx-d.n} to go`:' · fully grown'}`])};
       if(arg==='rocks') return {title:'The rocks',hint:'Crabs like it here',rows:[['Good for','Crabs and rock pools (in the decorations)']],actions:n?[{label:'✨ Decorate',fn:()=>$('#isDecor').click()}]:[]};
       if(arg==='sky') return {title:'The sky',hint:(o.decor||[]).includes('kite')?'Your kite is flying':'Kites fly here',rows:[['Up here',(o.decor||[]).includes('kite')?'Your kite':'A kite, one day (5 Build Stars)']]};
       break; }
     case 'decor': { const d=DECOR.find(x=>x.id===arg)||{name:arg,cost:0}, gift=(o.free||[]).includes(arg);
       return {title:d.name,hint:gift?'A gift for a Weekly Bloppit':`Bought for ★ ${d.cost}`,rows:[['How you got it',gift?'A gift for finishing a Weekly Bloppit':`Bought with ${d.cost} Build Stars`],['Decorations',`${(o.decor||[]).length} of ${DECOR.length} on Bloppitopia`]]}; }
+    case 'dest': { const d=destinations().find(x=>x.id===arg); if(!d) break;
+      const grows={ferry:'Every Weekly Bloppit you finish',workshop:'Builds from your own photos and drawings',brain:'Brain Trail levels you finish',harbour:'Builds with friends: challenges, relays and crews',speedway:'Blitz races you win against the Longtails'}[d.id];
+      const go={ferry:'This week’s Bloppit',workshop:'Make your own',brain:'Play the Brain Trail',harbour:'Build with a friend',speedway:'Race a Longtail'}[d.id];
+      return {title:d.name,hint:`${d.names[d.st]} · ${d.n} ${d.unit}${d.n===1?'':'s'}`,icon:destSVG(d.id,d.st),
+        rows:[['Level',`${d.st} of 3: ${d.names[d.st]}`],['Grows with',grows],['So far',`${d.n} ${d.unit}${d.n===1?'':'s'}`],['Next',d.nx?`${d.names[d.st+1]} at ${d.nx}`:'Fully grown']],
+        bar:d.nx?{pct:Math.max(4,Math.round(100*d.n/d.nx)),label:`${d.nx-d.n} more to the ${d.names[d.st+1].toLowerCase()}`}:null,
+        actions:[{label:go,fn:d.go,primary:true}]}; }
     case 'stand': return {title:'An empty stand',hint:'Your next build stands here',rows:[['Fills with','Your next finished build'],['Stands',`${shown.list.length} of ${shown.cap} in use`],['Tip','Drag any model here, or anywhere on the sand']]};
     case 'bloppit': return {title:'Bloppit',hint:'Your build buddy',rows:[['Who','Your build buddy. He always holds the red brick.'],['Lives',st>=2?'At the workshop door':'On the beach'],['Built together',`${n} build${n===1?'':'s'}`]],
       actions:[{label:'Build something',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
@@ -6250,20 +6271,16 @@ function destinations(){
     {id:'speedway',name:'Blitz Speedway',n:wins,unit:'Longtail win',st:stage(wins,1,5,15),nx:next(wins,1,5,15),names:['Dirt track','Starting line','Circuit','Stadium'],go:()=>homeGo('cpu')},
   ];
 }
-function renderDestinations(){
-  $('#destGrid').innerHTML=destinations().map(d=>`<button class="dest" type="button" data-dest="${d.id}">${destSVG(d.id,d.st)}<span><b>${d.name}</b><small>${d.names[d.st]} · ${d.n} ${d.unit}${d.n===1?'':'s'}${d.nx?` · ${d.nx-d.n} more to the ${d.names[d.st+1].toLowerCase()}`:''}</small><span class="bar"><i style="width:${d.nx?Math.max(4,Math.round(100*d.n/d.nx)):100}%"></i></span></span></button>`).join('');
-}
-$('#destGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-dest]'); if(!b) return; const d=destinations().find(x=>x.id===b.dataset.dest); if(d){ track('dest:'+d.id); d.go(); } });
 let islandShown=-1;
 function renderIsland(){
   const o=worldStore(), stage=islandStage(o), n=worldCount(o), next=ISLAND_STAGES[stage+1];
   const pop=islandShown>=0&&islandShown<n; islandShown=n;
   $('#island').innerHTML=islandSVG(o,{pop}); islandDrag(); renderIslandIntro(o);
   $('#isStage').innerHTML=`${ISLAND_STAGES[stage].name}<small>${n} build${n===1?'':'s'} finished · ${worldStars(o)} Build Star${worldStars(o)===1?'':'s'} to spend</small>`;
-  $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>The whole village is built. The jetty points at Friendship Harbour, coming next.</span>';
+  $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>The whole village is built. Boats from the jetty go to Friendship Harbour.</span>';
   $('#isNote').textContent=n?`${pupName(o)||'Your pup'} and Bloppit are home. Tap anything to see what it is${n>1?', and drag a model anywhere on the sand':''}.`:'Finish any build and the first hut rises from the sand. Tap anything to see what it is.';
   $('#isCard').hidden=stage<3; $('#isDecor').hidden=!n;
-  renderDecorShop(); renderBuilds(); renderDestinations();
+  renderDecorShop(); renderBuilds();
 }
 function renderDecorShop(){
   const o=worldStore(), left=worldStars(o);
@@ -6295,10 +6312,10 @@ $('#isCard').onclick=async()=>{
     for(const u of urls){ const b=await (await fetch(u)).blob(); const d=await new Promise(r=>{ const f=new FileReader(); f.onload=()=>r(f.result); f.readAsDataURL(b); }); svg=svg.split(`href="${u}"`).join(`href="${d}"`); }
     const img=new Image(); img.crossOrigin='anonymous';
     await new Promise((res,rej)=>{ img.onload=res; img.onerror=rej; img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg); });
-    const c=document.createElement('canvas'); c.width=1200; c.height=800; const x=c.getContext('2d');
-    x.drawImage(img,0,0,1200,720); x.fillStyle='#14202C'; x.fillRect(0,700,1200,100);
-    x.fillStyle='#fff'; x.font='800 34px Nunito,sans-serif'; x.fillText('Every build you finish grows your island.',40,750);
-    x.font='700 22px Nunito,sans-serif'; x.fillStyle='#F4BC22'; x.fillText('bloppit.com',40,784);
+    const c=document.createElement('canvas'); c.width=1200; c.height=964; const x=c.getContext('2d');
+    x.drawImage(img,0,0,1200,864); x.fillStyle='#14202C'; x.fillRect(0,864,1200,100);
+    x.fillStyle='#fff'; x.font='800 34px Nunito,sans-serif'; x.fillText('Every build you finish grows Bloppitopia.',40,914);
+    x.font='700 22px Nunito,sans-serif'; x.fillStyle='#F4BC22'; x.fillText('bloppit.com',40,948);
     const blob=await new Promise(r=>c.toBlob(r,'image/png'));
     const file=new File([blob],'otter-island.png',{type:'image/png'});
     if(navigator.canShare&&navigator.canShare({files:[file]})) await navigator.share({files:[file],title:'Bloppitopia',text:'Every build you finish grows your island. bloppit.com'});
