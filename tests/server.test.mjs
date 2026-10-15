@@ -120,3 +120,8 @@ test('pup: outfit (latest wins, only clean ids and colour numbers), the ten-buil
   assert.deepEqual(m.wear, { head: ['beanie', 5] }); assert.equal(m.pick, 'lighthouse'); assert.equal(m.arrived, 1);
   m = merge(w({ wear: { neck: ['scarf', 2] }, wearAt: 300 }), w({ wear: {}, wearAt: 200 })).world; assert.deepEqual(m.wear, { neck: ['scarf', 2] });
 });
+test('pup: a decoration keeps where it was dragged, only if the player owns it', () => {
+  const w = (x) => ({ world: { builds: {}, log: [], ...x } });
+  const m = merge(w({ decor: ['bench'], pos: { 'decor:bench': [400, 520], 'decor:kite': [10, 10], 'decor:<x>': [1, 1] } }), w({ decor: ['flag'], pos: { 'decor:flag': [600, 300], 'decor:bench': [2000, 1] } })).world;
+  assert.deepEqual(m.pos, { 'decor:bench': [400, 520], 'decor:flag': [600, 300] });
+});

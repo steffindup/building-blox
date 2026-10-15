@@ -26,7 +26,8 @@ async function open(url, { viewport = { width: 1000, height: 800 }, init, at } =
   const page = await ctx.newPage(); const errors = []; page.on('pageerror', (e) => errors.push(e.message));
   if (init) await page.addInitScript(init.fn, init.arg);
   if (at) await page.clock.setFixedTime(new Date(at));
-  await page.goto(BASE + url, { waitUntil: 'load' }); await page.waitForTimeout(2500);
+  const u = url.replace(/^([^#]*)/, (m) => m + (m.includes('?') ? '&' : '?') + 'lite3d=1');   // a light 3D world: the test machine has no GPU
+  await page.goto(BASE + u, { waitUntil: 'load' }); await page.waitForTimeout(2500);
   return { page, ctx, errors, view: () => page.evaluate(() => [...document.querySelectorAll('section.view')].find((v) => !v.hidden)?.id), text: (sel) => page.evaluate((s) => document.querySelector(s)?.textContent.replace(/\s+/g, ' ').trim(), sel) };
 }
 const autoPlace = async (page, n) => { for (let i = 0; i < n; i++) { await page.evaluate(() => document.getElementById('autoBtn')?.click()); await page.waitForTimeout(1100); } };
@@ -205,14 +206,15 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   assert.equal((await models()).length, 3);
   const pt = (id) => t.page.evaluate((i) => window.bloppitIslandPoint(i), id);
   const still = () => t.page.waitForFunction(() => !window.bloppitIsland3().fly, null, { timeout: 8000, polling: 100 }).then(() => t.page.waitForTimeout(300));
-  const tap = async (id) => { const T0 = Date.now(); await still(); if (process.env.DBG) console.log('T', id, 'still', Date.now() - T0); const c = await pt(id); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(1200);
+  const tap = async (id) => { await still(); const c = await pt(id); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(1200);
     await t.page.waitForFunction(() => !document.getElementById('isTip').hidden, null, { timeout: 4000, polling: 100 }).catch(() => {}); const txt = await t.text('#isTip');
     await t.page.evaluate(() => document.querySelector('#isTip .tt-x')?.click());
     if (await t.page.evaluate(() => { const b = document.querySelector('#isWorld .is3-whole'); if (b && !b.hidden) { b.click(); return true; } return false; })) await still();   // tapping flies there; back to the whole world
     return txt; };
   // places, Bloppit, the pup, a decoration, the islands nearby: each says what it is, its level and what's next
   assert.match(await tap('land:beach'), /Home Island.*Builds finished3.*Islands discovered/);
-  assert.match(await tap('bloppit'), /Bloppit.*build buddy/);
+  assert.match(await tap('bloppit'), /Bloppit.*storm.*build buddy.*Secret.*red brick/);
+  assert.match(await tap('longtail:medium'), /Swoop.*A Longtail.*goggles.*Secret.*Did you know\?.*tropicbirds.*Race Swoop/);
   assert.match(await tap('pup'), /Bubbles.*Level \d+ Pup.*1 stud.*Otter level.*Wardrobe.*Name or colour/);
   assert.match(await tap('decor:flag'), /Flag/);
   assert.match(await tap('isle:sunrise'), /A misty island.*Play Weekly Bloppit to discover it.*This week’s Bloppit/);
@@ -238,6 +240,16 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   const m = await t.page.evaluate((k) => window.bloppitIsland3().shown.list.find((x) => x.key === k), key);
   assert.ok(m && m.placed, JSON.stringify(m));
   assert.equal(await t.page.evaluate(() => document.getElementById('isTip').hidden), true);   // a drag is not a tap
+  // buy a bench: the island shows it and says how to move it; drag it and it stays there
+  await still(); await t.page.evaluate(() => document.getElementById('isDecor').click());
+  await t.page.evaluate(() => { const b = document.querySelector('#decorGrid [data-decor="bench"]'); b.click(); });
+  assert.match(await t.text('#decorGrid [data-decor="bench"]'), /Tap again to buy/);
+  await t.page.evaluate(() => document.querySelector('#decorGrid [data-decor="bench"]').click());
+  await t.page.waitForFunction(() => /bench is here.*drag it/i.test(document.querySelector('#isWorld .is3-banner')?.textContent || ''), null, { timeout: 30000, polling: 100 })
+    .catch(async (e) => { console.log('NOBANNER', await t.page.evaluate(() => JSON.stringify([document.querySelector('#isWorld .is3-banner')?.textContent, window.bloppitIsland3().on, JSON.parse(localStorage.getItem('bloppit-world-v1')).decor, document.getElementById('isShop').hidden]))); throw e; });
+  await still(); const bc = await pt('decor:bench');
+  await t.page.mouse.move(bc.x, bc.y); await t.page.mouse.down(); await t.page.mouse.move(bc.x + 20, bc.y + 10, { steps: 4 }); await t.page.mouse.move(bc.x + 70, bc.y + 30, { steps: 8 }); await t.page.mouse.up(); await t.page.waitForTimeout(800);
+  assert.ok(Array.isArray(JSON.parse(await t.page.evaluate(() => localStorage.getItem('bloppit-world-v1'))).pos['decor:bench']));
   // the keyboard list has everything too
   assert.ok(await t.page.evaluate(() => document.querySelectorAll('#isA11y [data-info]').length > 15));
   // the board on the Weekly page
