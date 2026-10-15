@@ -203,9 +203,6 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 .sp-on .splash{display:grid}
 .sp-on{overflow:hidden}
 .splash .sp-head{display:block;position:relative}
-/* the wink: a furry lid over his right eye with a happy closed-eye curve, shut for a moment */
-.splash .sp-wink{position:absolute;left:45.5%;top:22.5%;width:14%;height:14.5%;border-radius:45%;background:radial-gradient(closest-side,#9A6740 62%,rgba(154,103,64,.8) 80%,rgba(154,103,64,0) 100%);transform-origin:50% 0;transform:scaleY(0);animation:sp-wink 1s ease .8s both}
-.splash .sp-wink svg{position:absolute;inset:18% 4% 6%;width:92%;height:76%}
 .splash .sp-head img{display:block;width:150px;height:150px;border-radius:34px;object-fit:cover;object-position:center 46%;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:sp-pop .5s cubic-bezier(.3,1.6,.5,1) both}
 .splash .sp-word{font-size:52px;line-height:1;letter-spacing:.01em;text-shadow:0 4px 0 rgba(0,0,0,.18);animation:sp-up .35s ease .1s both}
 .splash .sp-tag{display:flex;gap:8px;margin-top:10px}
@@ -216,7 +213,6 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 .splash.out{opacity:0;transform:scale(1.04);transition:opacity .3s ease,transform .3s ease;pointer-events:none}
 @keyframes sp-pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
 @keyframes sp-up{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
-@keyframes sp-wink{0%,8%{transform:scaleY(0)}22%,62%{transform:scaleY(1)}78%,100%{transform:scaleY(0)}}
 @keyframes sp-blink{0%,100%{transform:none}50%{transform:scaleY(.1)}}
 @keyframes sp-fail{to{opacity:0;visibility:hidden}}
 @media (prefers-reduced-motion: reduce){.splash *,.splash{animation:none!important}}
@@ -224,7 +220,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 </head>
 <body>
 <div class="splash" id="splash" aria-hidden="true">
-  <span class="sp-head"><img src="/art/bloppit-icon.jpg" alt="" width="392" height="584"><i class="sp-wink" aria-hidden="true"><svg viewBox="0 0 40 30"><path d="M5 13 Q20 26 35 13" fill="none" stroke="#2A170C" stroke-width="3.4" stroke-linecap="round"/><path d="M7 14 L3 10 M33 14 L37 10" stroke="#2A170C" stroke-width="2.6" stroke-linecap="round"/></svg></i></span>
+  <span class="sp-head"><img src="/art/bloppit-icon.jpg" alt="" width="392" height="584"></span>
   <div class="sp-word">Bloppit</div>
   <div class="sp-tag"><span>Snap it.</span><span>Bloppit.</span><span>Build it.</span></div>
 </div>

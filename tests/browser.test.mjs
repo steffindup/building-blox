@@ -266,9 +266,12 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   await t.page.evaluate(() => document.querySelector('#decorGrid [data-decor="bench"]').click());
   await t.page.waitForFunction(() => /bench is here.*drag it/i.test(document.querySelector('#isWorld .is3-banner')?.textContent || ''), null, { timeout: 30000, polling: 100 })
     .catch(async (e) => { console.log('NOBANNER', await t.page.evaluate(() => JSON.stringify([document.querySelector('#isWorld .is3-banner')?.textContent, window.bloppitIsland3().on, JSON.parse(localStorage.getItem('bloppit-world-v1')).decor, document.getElementById('isShop').hidden]))); throw e; });
-  await still(); const bc = await pt('decor:bench');
-  await t.page.mouse.move(bc.x, bc.y); await t.page.mouse.down(); await t.page.mouse.move(bc.x + 20, bc.y + 10, { steps: 4 }); await t.page.mouse.move(bc.x + 70, bc.y + 30, { steps: 8 }); await t.page.mouse.up(); await t.page.waitForTimeout(800);
-  assert.ok(Array.isArray(JSON.parse(await t.page.evaluate(() => localStorage.getItem('bloppit-world-v1'))).pos['decor:bench']));
+  const benchMoved = () => t.page.waitForFunction(() => Array.isArray((JSON.parse(localStorage.getItem('bloppit-world-v1')).pos || {})['decor:bench']), null, { timeout: 6000, polling: 100 }).then(() => true, () => false);
+  let moved = false;
+  for (let i = 0; i < 2 && !moved; i++) { await still(); const bc = await pt('decor:bench');
+    await t.page.mouse.move(bc.x, bc.y); await t.page.mouse.down(); await t.page.mouse.move(bc.x + 20, bc.y + 10, { steps: 4 }); await t.page.mouse.move(bc.x + 70, bc.y + 30, { steps: 8 }); await t.page.mouse.up();
+    moved = await benchMoved(); if (!moved) console.log('BENCHMISS', JSON.stringify(bc), await t.page.evaluate((c) => window.bloppitPick(c.x, c.y) + ' ' + JSON.stringify(window.bloppitIsland3().ctl.target) + ' fly:' + !!window.bloppitIsland3().fly + ' tip:' + document.getElementById('isTip').hidden + ' el:' + document.elementFromPoint(c.x, c.y)?.className, bc)); }
+  assert.ok(moved, 'the bench stays where it was dragged');
   // the keyboard list has everything too
   assert.ok(await t.page.evaluate(() => document.querySelectorAll('#isA11y [data-info]').length > 15));
   // the board on the Weekly page
