@@ -45,9 +45,6 @@
 /* Launch screen: same red as the app's native splash, so the two run together */
 .splash{position:fixed;inset:0;z-index:100;background:#0369BD;color:#fff;display:grid;place-content:center;justify-items:center;gap:6px;text-align:center;font-family:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;cursor:pointer;-webkit-user-select:none;user-select:none;animation:sp-fail .3s ease 5s forwards}
 .splash .sp-head{display:block;position:relative}
-/* the wink: a furry lid over his right eye with a happy closed-eye curve, shut for a moment */
-.splash .sp-wink{position:absolute;left:45.5%;top:22.5%;width:14%;height:14.5%;border-radius:45%;background:radial-gradient(closest-side,#9A6740 62%,rgba(154,103,64,.8) 80%,rgba(154,103,64,0) 100%);transform-origin:50% 0;transform:scaleY(0);animation:sp-wink 1s ease .95s both}
-.splash .sp-wink svg{position:absolute;inset:18% 4% 6%;width:92%;height:76%}
 .splash .sp-head img{display:block;width:150px;height:150px;border-radius:34px;object-fit:cover;object-position:center 46%;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:sp-pop .5s cubic-bezier(.3,1.6,.5,1) both}
 .splash .sp-word{font-size:52px;line-height:1;letter-spacing:.01em;text-shadow:0 4px 0 rgba(0,0,0,.18);animation:sp-up .4s ease .15s both}
 .splash .sp-tag{display:flex;gap:8px;margin-top:10px}
@@ -59,7 +56,6 @@
 @keyframes sp-pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
 @keyframes sp-up{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
 @keyframes sp-fail{to{opacity:0;visibility:hidden}}
-@keyframes sp-wink{0%,8%{transform:scaleY(0)}22%,62%{transform:scaleY(1)}78%,100%{transform:scaleY(0)}}
 @keyframes sp-blink{0%,100%{transform:none}50%{transform:scaleY(.1)}}
 @media (prefers-reduced-motion: reduce){.splash *{animation:none!important}}
 </style>
@@ -76,7 +72,7 @@
 <symbol id="ic-stack" viewBox="0 0 120 120"><rect x="14" y="68" width="92" height="38" rx="7" fill="#fff"/><rect x="21" y="60" width="16" height="10" rx="3" fill="#fff"/><rect x="52" y="60" width="16" height="10" rx="3" fill="#fff"/><rect x="83" y="60" width="16" height="10" rx="3" fill="#fff"/><rect x="30" y="20" width="60" height="32" rx="7" fill="#F4BC22"/><rect x="37" y="12" width="16" height="10" rx="3" fill="#F4BC22"/><rect x="67" y="12" width="16" height="10" rx="3" fill="#F4BC22"/></symbol>
 </defs></svg>
 <div class="splash" id="splash" aria-hidden="true">
-  <span class="sp-head"><img src="/art/bloppit-icon.jpg" alt="" width="392" height="584"><i class="sp-wink" aria-hidden="true"><svg viewBox="0 0 40 30"><path d="M5 13 Q20 26 35 13" fill="none" stroke="#2A170C" stroke-width="3.4" stroke-linecap="round"/><path d="M7 14 L3 10 M33 14 L37 10" stroke="#2A170C" stroke-width="2.6" stroke-linecap="round"/></svg></i></span>
+  <span class="sp-head"><img src="/art/bloppit-icon.jpg" alt="" width="392" height="584"></span>
   <div class="sp-word">Bloppit</div>
   <div class="sp-tag"><span>Snap it.</span><span>Bloppit.</span><span>Build it.</span></div>
 </div>
@@ -223,6 +219,24 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 @media (max-width:900px){.build-grid{grid-template-columns:minmax(0,1fr)}}
 .bookpane{display:grid;gap:10px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 84px);min-width:0}
 @media (max-width:900px){.bookpane{position:static}}
+/* Phones: the booklet becomes one compact row (the step picture, its number and parts, the page buttons) so the
+   booklet and the build fit on the screen together, instead of scrolling between them for every brick */
+@media (max-width:700px){
+  .build-grid{gap:10px;scroll-margin-top:calc(env(safe-area-inset-top,0px) + 70px)}
+  .build-grid .bp-head{display:none}
+  .build-grid #bpCard{grid-template-columns:54% minmax(0,1fr);grid-template-rows:auto 1fr;padding:8px;gap:6px 10px}
+  .build-grid #bpCard .pg-view{grid-column:1;grid-row:1 / span 2;aspect-ratio:1}
+  .build-grid #bpCard .pg-top{grid-column:2;grid-row:1;gap:6px}
+  .build-grid #bpCard .pg-step{font-size:30px}
+  .build-grid #bpCard .callout{padding:5px 8px;gap:4px 10px}
+  .build-grid #bpCard .callout img{height:24px}
+  .build-grid #bpCard .pg-foot{grid-column:2;grid-row:2;align-self:end;text-align:left}
+  .build-grid .bp-nav{flex-wrap:nowrap;gap:6px}
+  .build-grid .bp-nav button{padding:6px 10px;font-size:13px;min-height:0}
+  .build-grid:not(.no-book) #buildStage{height:calc(100dvh - 350px);min-height:330px}
+  .build-grid #bpCard .pg-turn{display:none}
+  .stage-tools{gap:5px;right:8px;top:8px}.stage-tools .tool{padding:5px 9px;font-size:12px}.stage-tools .tool kbd{display:none}
+}
 .bp-head,.bp-nav{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .bp-nav .now{border-color:var(--accent);color:var(--accent);font-weight:700}
 .bp-nav .final{font-weight:700}
@@ -1504,7 +1518,7 @@ body.on-home .tabs{visibility:hidden}
   <div class="win-rows" id="trRows"></div>
   <div class="world-strip" data-ws></div>
   <p class="win-best" id="trNote"></p>
-  <div class="win-btns"><button class="ghost" id="trBook" type="button">📖 Build it for real</button><button class="ghost" id="trShare" type="button" hidden>Share the code</button><button class="ghost" id="trCard" type="button" hidden>📮 Weekly card</button><button class="ghost" id="trRetry" type="button" hidden>Try sending again</button><button class="primary sm" id="trDone" type="button">Done</button></div>
+  <div class="win-btns"><button class="primary sm" id="trIsland" type="button" hidden>🏝️ See Bloppitopia</button><button class="ghost" id="trNext" type="button" hidden>▶ Play next</button><button class="ghost" id="trBook" type="button">📖 Build it for real</button><button class="ghost" id="trShare" type="button" hidden>Share the code</button><button class="ghost" id="trCard" type="button" hidden>📮 Weekly card</button><button class="ghost" id="trRetry" type="button" hidden>Try sending again</button><button class="primary sm" id="trDone" type="button">Done</button></div>
 </dialog>
 <dialog class="windlg" id="mpEndDlg" aria-label="Game finished">
   <div class="win-stars">🏆</div>
@@ -2203,7 +2217,7 @@ const partsHTML=list=>partsOf(list).map(p=>`<div class="part-row"><img alt="" sr
 
 /* ---------- Three.js scene ---------- */
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,matchMedia('(pointer: coarse)').matches?1.5:2));
 renderer.outputEncoding=THREE.sRGBEncoding;
 renderer.setClearColor(0x000000,0);
 const scene=new THREE.Scene();
@@ -2305,6 +2319,10 @@ function stepAnim(now){
     ms.position.y=ms.userData.ty+(1-e)*5*(anim.dir||1); if(t<1) done=false;}
   if(done) anim=null;
 }
+// Draw only when needed: full speed while someone is touching or something is moving, 15 a second otherwise
+// (the brick in hand pulses), and the booklet only when it changes. Phones drew both views 60-120 times a second.
+let lastInput=0, buildDirty=true, bookDirty=true, lastBuildR=0, lastBookR=0;
+for(const ev of ['pointerdown','pointermove','touchstart','touchmove','wheel','keydown']) document.addEventListener(ev,()=>{ lastInput=performance.now(); buildDirty=true; },{passive:true,capture:true});
 function loop(now){
   requestAnimationFrame(loop);
   const onStage=!!renderer.domElement.parentElement;
@@ -2319,21 +2337,23 @@ function loop(now){
     if(camAnim){ const t=clamp((now-camAnim.t0)/650,0,1), e=1-Math.pow(1-t,3);
       playControls.target.lerpVectors(camAnim.t1,camAnim.t2,e); playCam.position.lerpVectors(camAnim.p1,camAnim.p2,e);
       if(t>=1) camAnim=null; }
-    playControls.update(); renderer.render(playScene,playCam);
+    const moved=playControls.update(), busy=moved||camAnim||drops.length||reveal||buildDirty||now-lastInput<1500;
+    if(busy||now-lastBuildR>=66){ renderer.render(playScene,playCam); lastBuildR=now; buildDirty=false; }
   }
   // The booklet page is a live 3D view of the reference model at that step, so it can be turned around.
   if(model&&bookK>=0&&bookR.domElement.parentElement&&(tab==='build'||tab==='box'||$('#bookDlg').open)){
-    if(sceneK!==bookK) showStep(bookK,false);
-    stepAnim(now); bookControls.update(); bookR.render(scene,bookCam);
+    if(sceneK!==bookK){ showStep(bookK,false); bookDirty=true; }
+    const wasAnim=!!anim; stepAnim(now); const moved=bookControls.update();
+    if(moved||wasAnim||bookDirty||now-lastBookR>500){ bookR.render(scene,bookCam); lastBookR=now; bookDirty=false; }
   }
 }
-function resize(){
+function resize(){ buildDirty=true;
   const el=renderer.domElement.parentElement; if(!el) return;
   const w=el.clientWidth,h=el.clientHeight; if(!w||!h) return;
   renderer.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix(); playCam.aspect=w/h; playCam.updateProjectionMatrix();
 }
 const bookR=new THREE.WebGLRenderer({antialias:true,alpha:true});
-bookR.setPixelRatio(Math.min(devicePixelRatio||1,2)); bookR.outputEncoding=THREE.sRGBEncoding; bookR.setClearColor(0x000000,0);
+bookR.setPixelRatio(Math.min(devicePixelRatio||1,matchMedia('(pointer: coarse)').matches?1.5:2)); bookR.outputEncoding=THREE.sRGBEncoding; bookR.setClearColor(0x000000,0);
 const bookCam=new THREE.PerspectiveCamera(32,4/3,.1,2000);
 const bookControls=new THREE.OrbitControls(bookCam,bookR.domElement);
 bookControls.enableDamping=true; bookControls.dampingFactor=.1; bookControls.enablePan=false; bookControls.enableZoom=true;
@@ -2399,7 +2419,7 @@ document.addEventListener('scroll',()=>{ brickTip.hidden=true; },{capture:true,p
 function bookResize(){
   const el=bookR.domElement.parentElement; if(!el) return;
   const w=el.clientWidth,h=el.clientHeight; if(!w||!h) return;
-  bookR.setSize(w,h,false); bookCam.aspect=w/h; bookCam.updateProjectionMatrix();
+  bookR.setSize(w,h,false); bookCam.aspect=w/h; bookCam.updateProjectionMatrix(); bookDirty=true;
 }
 {const bro=new ResizeObserver(()=>{ bookResize(); if(TILES&&model){ if(!$('#bpChart').hidden) drawChart($('#bpChart'),viewPage); if(!$('#lbChart').hidden) drawChart($('#lbChart'),lbK); } }); bro.observe($('#bpView')); bro.observe($('#lbView'));}
 const ro=new ResizeObserver(resize); ro.observe($('#createStage')); ro.observe($('#buildStage'));
@@ -2575,6 +2595,7 @@ function setTab(t,sub){
   if(t==='build'){ $('#buildStage').prepend(renderer.domElement); if(!placedN) requestAnimationFrame(()=>{resize(); frameBuild(false);}); }
   if(t==='box'){ renderer.domElement.remove(); $('#boxBook').append($('.bookpane')); }
   if(t==='build') $('.build-grid').prepend($('.bookpane'));
+  if(t==='build'&&innerWidth<=700) requestAnimationFrame(()=>{ try{ $('.build-grid').scrollIntoView({block:'start'}); }catch(e){} });   // phones: the booklet row and the build, together
   if(t==='booklet'){ renderer.domElement.remove(); makeBooklet(); }
   if(t==='build'||t==='box') updateBuildUI();
   requestAnimationFrame(()=>{resize(); bookResize();});
@@ -5509,6 +5530,10 @@ function trialDialog(o){
   $('#trIcon').textContent=o.icon||'⚡'; $('#trTitle').textContent=o.title; $('#trRows').innerHTML=o.rows||''; $('#trRows').hidden=!o.rows;
   $('#trNote').textContent=o.note||''; $('#trCode').hidden=!o.code; $('#trCode').textContent=o.code||'';
   $('#trShare').hidden=!o.code; $('#trCard').hidden=!o.card; $('#trRetry').hidden=!o.retry; trialDone=o;
+  // What next: see the island grow, or straight on to the next puzzle (Done stays, as the quiet choice)
+  const nx=o.next?nextBuild():null; $('#trIsland').hidden=!o.next; $('#trNext').hidden=!nx;
+  if(o.next) $('#trIsland').textContent=o.isle&&ISLES[o.isle]?`🏝️ See ${ISLES[o.isle].name} grow`:'🏝️ See Bloppitopia';
+  if(nx) $('#trNext').textContent='▶ '+nx.t; $('#trDone').className=o.next?'ghost':'primary sm';
   const d=$('#trialDlg'); if(!d.open) d.showModal(); if(o.card) worldSound();
 }
 async function trialEnd(){
@@ -5542,7 +5567,7 @@ async function trialEnd(){
       W.weeks[info.week]={...(prev||{}),best,first:prev?prev.first:t,at:Date.now(),clean:!!((prev&&prev.clean)||clean)}; if(first) W.total=weeklyTotal()+1; weeklyStoreSet(W);
       const cleanRow=clean?'<div class="tot"><span>Clean build</span><span>✓</span></div>':`<div><span>Not clean yet</span><span>${r.miss?`${r.miss} miss${r.miss===1?'':'es'}`:''}${r.miss&&r.hint?', ':''}${r.hint?`${r.hint} hint${r.hint===1?'':'s'}`:''}</span></div>`;
       const streakNote=()=>{ const k=weeklyStreak(); return k>1?` Streak: ${k} weeks 🔥.`:''; };
-      if(!first){ trialDialog({icon:'📅',card:true,title:clean?'Clean build!':'Nice practice!',rows:cleanRow,note:(clean&&!prev.clean?'That one counts as clean now. ':'')+'Come back on Monday for a new puzzle!'+streakNote()}); return; }
+      if(!first){ trialDialog({icon:'📅',card:true,next:true,isle:'sunrise',title:clean?'Clean build!':'Nice practice!',rows:cleanRow,note:(clean&&!prev.clean?'That one counts as clean now. ':'')+'Come back on Monday for a new puzzle!'+streakNote()}); return; }
       trialDialog({icon:'📅',title:'Weekly Bloppit done!',rows:cleanRow,note:'Checking how everyone else did…'});
       try{
         const j=await chApi('POST',{action:'weekly',week:info.week,ms:r.ms,miss:r.miss,hint:r.hint,nBricks:model.bricks.length,board:boardOn(),stars:worldLast?worldLast.stars:0});
@@ -5550,9 +5575,9 @@ async function trialEnd(){
         weeklyPeek={week:info.week,n:j.n,clean:j.clean,pct:j.pct};
         W.weeks[info.week].n=j.n; W.weeks[info.week].pct=j.pct; weeklyStoreSet(W);
         const beat=weeklyPuzzle(info.week).beat;
-        trialDialog({icon:clean?'✨':'📅',card:true,title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,
+        trialDialog({icon:clean?'✨':'📅',card:true,next:true,isle:'sunrise',title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,
           note:(beat?beat+' ':'')+(clean?`You and ${j.pct}% of this week’s builders finished clean.`:`${j.pct}% of this week’s builders finished clean. Build it again for a clean one!`)+streakNote()+' A new puzzle arrives on Monday.'});
-      }catch(e){ trialDialog({icon:'📅',card:true,title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,note:`Your build is saved on this device, but it couldn’t be counted with everyone else’s (${e.message}).`+streakNote()}); }
+      }catch(e){ trialDialog({icon:'📅',card:true,next:true,isle:'sunrise',title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,note:`Your build is saved on this device, but it couldn’t be counted with everyone else’s (${e.message}).`+streakNote()}); }
     }
   };
   await send();
@@ -5560,7 +5585,10 @@ async function trialEnd(){
 $('#trRetry').onclick=()=>{ if(trialDone&&trialDone.relayRetry) relayHalfDone(); else if(cpu&&cpu.trial) trialEnd(); };
 $('#trShare').onclick=()=>{ if(trialDone&&trialDone.code) chShare(trialDone.code,trialDone.relay?'relay':''); };
 $('#trBook').onclick=()=>{ $('#trialDlg').close(); setTab('booklet'); };
-$('#trDone').onclick=()=>{ $('#trialDlg').close(); const weekly=cpu&&cpu.trial&&cpu.trial.kind==='weekly', rel=trialDone&&(trialDone.relay||trialDone.card===false); if(rel){ setTab('blitz'); renderChMine(true); return; } mpLeave(); setTab(weekly?'daily':'blitz'); };
+const trLeave=()=>{ $('#trialDlg').close(); if(cpu&&cpu.trial) mpLeave(); };
+$('#trIsland').onclick=()=>{ track('finish_next:island'); trLeave(); setTab('island'); };
+$('#trNext').onclick=()=>{ const n=nextBuild(); track('finish_next:play'); trLeave(); if(n) n.go(); else homeGo('quick'); };
+$('#trDone').onclick=()=>{ if(trialDone&&trialDone.quick){ $('#trialDlg').close(); return; } $('#trialDlg').close(); const weekly=cpu&&cpu.trial&&cpu.trial.kind==='weekly', rel=trialDone&&(trialDone.relay||trialDone.card===false); if(rel){ setTab('blitz'); renderChMine(true); return; } mpLeave(); setTab(weekly?'daily':'blitz'); };
 
 // Make a challenge: build the chosen puzzle against the clock, then get a code
 $('#bzChMake').onclick=async()=>{
@@ -5971,7 +5999,8 @@ function worldToast(){
   el.innerHTML=worldStripHTML(r)+'<span class="ws-go">Island ▸</span>'; el.hidden=false; worldSound(); el.onclick=()=>{ el.hidden=true; setTab('island'); }; clearTimeout(worldToast.t); worldToast.t=setTimeout(()=>{ el.hidden=true; },7000);
 }
 // After a Quick Build's reveal: the stars, and on the first ever finish the pup
-function worldAfterQuick(){ worldToast(); pupMaybe(); }
+function worldAfterQuick(){ pupMaybe(()=>{ const o=worldStore(), g=ISL3.ok&&typeof worldNextGoal==='function'?worldNextGoal(o):null;
+  trialDialog({icon:'🧱',title:'You built it!',note:g?'Next on Bloppitopia: '+g.text+'.':'',next:true,quick:true}); }); }
 function pupMaybe(then){ const o=worldStore(); if(pupName(o)||worldCount(o)!==1||o.pupAsked){ if(then) then(); return; } o.pupAsked=true; worldSet(o); pupOpen(then); }
 // Meet your pup: its brick colour, then a name. Typing one is the main way; the list and "later" are there too.
 // After the first time, Bloppitopia is introduced (unless something else is already waiting: then()).
