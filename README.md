@@ -88,3 +88,7 @@ Formerly called Building Blox; the browser save keys still use the old `building
 browser tests against a local stand-in for Netlify (`tests/devserver.mjs`, which serves `public/` and the four API
 functions over an in-memory store). `PLAYWRIGHT_CHROMIUM=/path/to/chrome` points at a Chromium if playwright's own
 isn't installed. `npm run dev` serves the site on http://localhost:8788 for hand testing.
+
+## Stats
+
+`bloppit.com/stats/` shows the daily counts from `/api/event`: players a day (app and website), new devices, comebacks after 1/7/30 days, the first-build path, the most used features, website pages and countries. Paste the `EVENTS_KEY` (Netlify environment variable) once; it is kept only in that browser. Counts only, nothing about any one child or device.
