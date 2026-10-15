@@ -73,7 +73,7 @@ export function merge(server, incoming) {
     for (const k of Object.keys(obj(wb.builds))) {
       const x = builds[k], y = wb.builds[k];
       if (!y || typeof y !== 'object') continue;
-      builds[k] = x ? { ...x, ...y, s: Math.max(num(x.s) ?? 0, num(y.s) ?? 0), t: Math.min(num(x.t) ?? Infinity, num(y.t) ?? Infinity), c: Math.max(num(x.c) ?? 1, num(y.c) ?? 1), ...((x.m || y.m) ? { m: 1 } : {}), ...((num(x.d) || num(y.d)) ? { d: Math.min(num(x.d) ?? Infinity, num(y.d) ?? Infinity) } : {}) } : y;
+      builds[k] = x ? { ...x, ...y, s: Math.max(num(x.s) ?? 0, num(y.s) ?? 0), t: Math.min(num(x.t) ?? Infinity, num(y.t) ?? Infinity), c: Math.max(num(x.c) ?? 1, num(y.c) ?? 1), ...((x.m || y.m) ? { m: 1 } : {}), ...((num(x.d) || num(y.d)) ? { d: Math.min(num(x.d) ?? Infinity, num(y.d) ?? Infinity) } : {}), ...((Number.isInteger(x.lv) || Number.isInteger(y.lv)) ? { lv: Math.min(2, Math.max(Number.isInteger(x.lv) ? x.lv : -1, Number.isInteger(y.lv) ? y.lv : -1)) } : {}) } : y;
     }
     const seen = new Set(), log = [];
     for (const k of [...(wa.log || []), ...(wb.log || [])]) if (builds[k] && !seen.has(k)) { seen.add(k); log.push(k); }

@@ -2596,7 +2596,7 @@ function setTab(t,sub){
   // Once the menu has been shown it offers "Continue building", so the Welcome back banner isn't needed
   $('#resume').hidden=!pendingSave||homeSeen;
   $('#mpBar').hidden=!(mp&&mp.state&&mp.state.started&&(t==='build'||t==='box'));
-  if(t==='blitz') blitzDefault();
+  if(t==='blitz'){ try{ bzLevelSync(); }catch(e){} blitzDefault(); }
   if(t==='mp'||t==='blitz'){ renderer.domElement.remove(); renderMpView(); }
   $('#gameBar').hidden=!(game&&(t==='build'||t==='box'));
   if(t==='game'){ renderer.domElement.remove(); renderGameMap(); }
@@ -5327,8 +5327,13 @@ let cpu=null;
 const rndIn=(a,b)=>a+Math.random()*(b-a);
 function bzLevel(){ const r=document.querySelector('input[name=bzLevel]:checked'); return r&&CPU_LEVELS[r.value]?r.value:'medium'; }
 function bzLevelNote(){ $('#bzLevelNote').textContent=CPU_LEVELS[bzLevel()].note; }
-document.querySelectorAll('input[name=bzLevel]').forEach(r=>r.addEventListener('change',()=>{ bzLevelNote(); try{ localStorage.setItem('building-blox-bz-level',bzLevel()); }catch(e){} }));
-try{ const l=localStorage.getItem('building-blox-bz-level'); if(CPU_IDS[l]) $(CPU_IDS[l]).checked=true; }catch(e){}
+// Which Longtail each player races (and who visits their Bloppitopia): their own choice, Scraps until they pick
+const BZ_LEVEL_KEY='building-blox-bz-level';
+function bzLevelSaved(){ try{ const l=localStorage.getItem(pkey(BZ_LEVEL_KEY)); if(CPU_IDS[l]) return l; }catch(e){} try{ return longtailNow(); }catch(e){ return 'easy'; } }
+function bzLevelSet(l){ try{ localStorage.setItem(pkey(BZ_LEVEL_KEY),l); }catch(e){} }
+function bzLevelSync(){ const l=bzLevelSaved(); $(CPU_IDS[l]).checked=true; bzLevelNote(); }
+document.querySelectorAll('input[name=bzLevel]').forEach(r=>r.addEventListener('change',()=>{ bzLevelNote(); bzLevelSet(bzLevel()); }));
+try{ bzLevelSync(); }catch(e){}
 bzLevelNote();
 
 function cpuPub(){ const o=JSON.parse(JSON.stringify(cpu.s)); o.now=Date.now(); return o; }
@@ -5913,7 +5918,7 @@ function worldStore(){ try{ const o=JSON.parse(localStorage.getItem(pkey(WORLD_K
 // Join two world records (same rules as the server): best stars per model, higher XP, decorations and the name kept.
 function worldMerge(a,b){
   a=a||{}; b=b||{}; const builds={...(a.builds||{})};
-  for(const k of Object.keys(b.builds||{})){ const x=builds[k], y=b.builds[k]; builds[k]=x?{...x,...y,s:Math.max(x.s||0,y.s||0),t:Math.min(x.t||Infinity,y.t||Infinity),c:Math.max(x.c||1,y.c||1),...((x.m||y.m)?{m:1}:{}),...((x.d||y.d)?{d:Math.min(x.d||Infinity,y.d||Infinity)}:{})}:y; }
+  for(const k of Object.keys(b.builds||{})){ const x=builds[k], y=b.builds[k]; builds[k]=x?{...x,...y,...((Number.isInteger(x.lv)||Number.isInteger(y.lv))?{lv:Math.max(Number.isInteger(x.lv)?x.lv:-1,Number.isInteger(y.lv)?y.lv:-1)}:{}),s:Math.max(x.s||0,y.s||0),t:Math.min(x.t||Infinity,y.t||Infinity),c:Math.max(x.c||1,y.c||1),...((x.m||y.m)?{m:1}:{}),...((x.d||y.d)?{d:Math.min(x.d||Infinity,y.d||Infinity)}:{})}:y; }
   const log=[]; for(const k of [...(a.log||[]),...(b.log||[]),...Object.keys(builds)]) if(builds[k]&&!log.includes(k)) log.push(k);
   // The name (typed or picked) and brick colour: whichever was set last (pupAt); a later 'no name yet' never wipes one
   const later=(b.pupAt||0)>(a.pupAt||0)?b:a, other=later===b?a:b, named=w=>(cleanPupText(w.pupText)||w.pupName>=0)?w:null, nw=named(later)||named(other)||{};
@@ -5961,6 +5966,7 @@ function worldFinish(kind){
   const before={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
   let dur=0; try{ dur=(mp&&mp.state&&mp.state.mode==='blitz')?((mpScores(mp.state).find(x=>x.i===mp.me)||{}).ms||0):(run.t0?Date.now()-run.t0:0); }catch(e){}
   const rec=prev?{...prev,s:Math.max(prev.s||0,stars),c:(prev.c||1)+1}:{n:N,s:stars,k:kind,t:Date.now(),c:1}; if(memory) rec.m=1;
+  if(blitz){ const lv=['easy','medium','hard'].indexOf(mp.state.cpuLevel); if(lv>=0) rec.lv=Math.max(prev&&Number.isInteger(prev.lv)?prev.lv:-1,lv); }   // which Longtail was beaten
   if(dur>500&&dur<6*3600e3) rec.d=Math.round(prev&&prev.d?Math.min(prev.d,dur):dur);   // best time, in ms
   o.builds[key]=rec; if(first) o.log.push(key); o.xp=worldXP(o); o.bonus=worldStarsEarned(o)-Object.values(o.builds).reduce((a,b)=>a+(b.s||0),0);  // kept for older readers; derived
   worldSet(o);
@@ -6338,8 +6344,8 @@ function islandInfo(id,o){
       actions:[{label:'Build something',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
     case 'longtail': { const L=CPU_LEVELS[arg], S=STORIES[arg]; if(!L||!S) break; const wins=Object.values(o.builds).filter(b=>b.k==='blitz').length;
       return {title:L.name,hint:'A Longtail · your Blitz rival',icon:`<img src="/art/head-${LONGTAIL_ART[arg].id}.png" alt="" width="256" height="256">`,story:S.story,
-        rows:[['Who',S.who],['Loves',S.loves],['Secret',S.secret],['Your Blitz wins',String(wins)],['Did you know?',LONGTAIL_FACT]],
-        actions:[{label:`Race ${L.name}`,fn:()=>{ try{ $(CPU_IDS[arg]).checked=true; localStorage.setItem('building-blox-bz-level',arg); bzLevelNote(); }catch(e){} homeGo('cpu'); },primary:true}]}; }
+        rows:[['Who',S.who],['Loves',S.loves],['Secret',S.secret],['Your Blitz wins',String(wins)],['Longtails beaten',(()=>{ const m=longtailBeaten(o); return m<0?'None yet. Start with Scraps!':['Scraps','Scraps and Swoop','All three!'][m]; })()],['Did you know?',LONGTAIL_FACT]],
+        actions:[{label:`Race ${L.name}`,fn:()=>{ try{ bzLevelSet(arg); bzLevelSync(); }catch(e){} homeGo('cpu'); },primary:true}]}; }
     case 'pup': { const nm=pupName(o), ps=pupStage(o), nx=PUP_STAGES[ps+1], c=PUP_COLORS[pupColorOf(o)];
       const lv=otterLevel(o), nl=levelXP(lv+1), nAcc=ACC.find(a=>!a.legend&&a.lvl>lv);
       return {title:nm||'Your otter',hint:`Level ${lv} ${PUP_STAGES[ps].name} · ${ps+1} stud${ps?'s':''} on its brick`,icon:pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'}),
@@ -6467,7 +6473,7 @@ function tree3(x,z,s,seed){ s=s||1; const g=new THREE.Group(); g.add(cyl3(.1*s,.
   if(seed%2){ const c2=mesh3(new THREE.IcosahedronGeometry(.38*s,0),m3('#5CC046'),.32*s,.75*s,.15*s); g.add(c2); }
   g.position.set(x,TOP3,z); return g; }
 function lamp3(x,z){ const g=new THREE.Group(); g.add(cyl3(.05,.06,1.3,5,'#3B3F46',0,0,0)); g.add(box3(.22,.22,.22,'#3B3F46',0,1.3,0));
-  const l=mesh3(new THREE.BoxGeometry(.14,.14,.14),m3('#FFE27A',{emissive:new THREE.Color('#FFC83D'),emissiveIntensity:.8}),0,1.41,0); g.add(l); g.position.set(x,TOP3,z); return g; }
+  const l=mesh3(new THREE.BoxGeometry(.16,.16,.16),glow3('#FFE27A'),0,1.41,0); g.add(l); g.position.set(x,TOP3,z); return g; }
 function bench3(x,z,ry){ const g=new THREE.Group(); g.add(box3(.9,.08,.32,'#A86E48',0,.32,0)); g.add(box3(.9,.3,.06,'#A86E48',0,.42,-.15)); g.add(box3(.06,.32,.3,'#5B3B25',-.38,0,0)); g.add(box3(.06,.32,.3,'#5B3B25',.38,0,0)); g.position.set(x,TOP3,z); g.rotation.y=ry||0; return g; }
 function boat3(c,s){ s=s||1; const g=new THREE.Group(); const hull=new THREE.CylinderGeometry(.5*s,.36*s,.32*s,6,1); hull.scale(2,1,1); g.add(mesh3(hull,m3(c),0,.16*s,0));
   g.add(box3(.7*s,.3*s,.5*s,'#F4F4F4',-.1*s,.32*s,0)); g.add(cyl3(.03,.03,1.1*s,4,'#6B4229',.3*s,.32*s,0));
@@ -6661,7 +6667,7 @@ function isl3ZoomFollow(){ const Z=ISL3.zoomAt, ctl=ISL3.ctl, cam=ISL3.cam; if(!
 function isl3Focus(info,h){ let x,z,d;
   if(info.startsWith('isle:')){ const I=ISL3.isles[info.slice(5)]; if(!I) return false; x=I.x; z=I.z; d=I.r*3.4+4; }
   else if(info==='land:beach'||info.startsWith('home:')){ x=0; z=0; d=HOME_R*2.9; }
-  else if(info==='bloppit'||info==='pup'||info.startsWith('longtail:')){ const p=h&&h.obj?h.obj.getWorldPosition(new THREE.Vector3()):null; if(!p) return false; x=p.x; z=p.z; d=8.5; }
+  else if(info==='bloppit'||info==='pup'||info.startsWith('longtail:')){ const p=h&&h.obj?h.obj.getWorldPosition(new THREE.Vector3()):null; if(!p) return false; x=p.x; z=p.z; d=12; }
   else if(info.startsWith('piece:')){ const I=ISL3.isles[info.split(':')[1]]; if(!I) return false; x=I.x; z=I.z; d=I.r*3+3; }
   else return false;
   const cur=ISL3.cam.position.distanceTo(ISL3.ctl.target); if(Math.hypot(ISL3.ctl.target.x-x,ISL3.ctl.target.z-z)<.8&&cur<=d+.5) return false;
@@ -6731,7 +6737,9 @@ function isl3Snap(o){
 // Tap Bloppit: a jump and a grin
 // The Longtail on Bloppitopia is the one you race (the Blitz level picked)
 const LONGTAIL_ART={easy:{id:'scraps',aspect:238/300},medium:{id:'swoop',aspect:207/300},hard:{id:'squint',aspect:197/300}};
-function longtailNow(){ try{ const l=localStorage.getItem('building-blox-bz-level'); if(LONGTAIL_ART[l]) return l; }catch(e){} return 'medium'; }
+// The Longtail on Bloppitopia: the next one to beat (Scraps, then Swoop, then Squint)
+function longtailBeaten(o){ o=o||worldStore(); let m=-1; for(const b of Object.values(o.builds||{})) if(b&&b.k==='blitz') m=Math.max(m,Number.isInteger(b.lv)?b.lv:0); return m; }
+function longtailNow(){ return ['easy','medium','hard'][Math.min(2,longtailBeaten()+1)]; }
 function beachPoint(a){ const P=scalePoly(HOMEP,0,0,.93); let r=1; while(r<12&&inPoly(Math.cos(a)*(r+.2),Math.sin(a)*(r+.2),P)) r+=.2; return [Math.cos(a)*r,Math.sin(a)*r]; }
 function longtailSquawk(){ ISL3.ltJumpT=performance.now(); try{ sfx.chirp(); }catch(e){} isl3Kick(); }
 // Who they are (tap Bloppit or a Longtail). Gentle, and true to the character sheet: Bloppit's brick is red; Longtails never hold red.
@@ -7037,26 +7045,37 @@ function sparkTex3(){ const c=document.createElement('canvas'); c.width=c.height
 // Bloppit's day: gardening in the morning, fishing at midday, reading in the afternoon, asleep at night.
 function isl3Hour(){ const q=new URLSearchParams(location.search).get('hour'); if(q!=null&&q!==''&&!isNaN(+q)) return +q; const d=new Date(); return d.getHours()+d.getMinutes()/60; }
 function routine3(h){ return h>=6&&h<10?'garden':h>=10&&h<15?'fish':h>=15&&h<19.5?'read':'sleep'; }
+// Where a character can stand: the nearest patch of open grass to a spot, clear of houses, lamps, trees and models.
+// (They are pictures that always face the camera, so anything just behind them would cut through them.)
+function isl3Obstacles(W){ const out=[], b=new THREE.Box3(); W.updateMatrixWorld(true);
+  W.traverse(x=>{ if(!(x.isMesh||x.isInstancedMesh)||!x.visible||x.isSprite) return; let p=x, skip=false; while(p){ const i=p.userData.info; if(i&&/^(land:|isle:|piece:|longtail|bloppit|pup)/.test(i)){ skip=true; break; } p=p.parent; } if(skip) return;
+    b.setFromObject(x); if(b.isEmpty()||b.max.y<TOP3+.3||b.min.y>TOP3+4) return; const r=Math.hypot(b.max.x-b.min.x,b.max.z-b.min.z)/2; if(r>6) return;
+    out.push([(b.min.x+b.max.x)/2,(b.min.z+b.max.z)/2,(b.max.x-b.min.x)/2,(b.max.z-b.min.z)/2]); });
+  return out; }
+function clearSpot3(ax,az,gap,taken){ const O=ISL3.obst||[], P=scalePoly(HOMEP,0,0,.86), ok=(x,z)=>inPoly(x,z,P)&&O.every(([cx,cz,hx,hz])=>Math.abs(x-cx)>hx+gap||Math.abs(z-cz)>hz+gap)&&(taken||[]).every(([tx,tz])=>Math.hypot(x-tx,z-tz)>1.45);
+  if(ok(ax,az)) return [ax,az]; for(let r=.35;r<=4.2;r+=.35) for(let k=0;k<16;k++){ const a=k/16*Math.PI*2+(r*1.7), x=ax+Math.cos(a)*r, z=az+Math.sin(a)*r*1.0; if(ok(x,z)) return [x,z]; }
+  return [ax,az]; }
 function isl3Characters(o,W){
   const r=routine3(isl3Hour()), n=worldCount(o), at={garden:[HOME_AT.garden[0]-1.5,HOME_AT.garden[1]+.6],fish:[HOME_AT.jetty[0]+.2,HOME_AT.jetty[1]+2.6],read:[HOME_AT.home[0]+1.6,HOME_AT.home[1]+1.6],sleep:[HOME_AT.home[0]+.2,HOME_AT.home[1]+1.4]}[r];
   if(ISL3.arrival) { at[0]=HOME_AT.home[0]+1.8; at[1]=HOME_AT.home[1]+1.8; }
+  ISL3.obst=isl3Obstacles(W); const onJetty=r==='fish'&&!ISL3.arrival; if(!onJetty){ const c=clearSpot3(at[0],at[1],.55); at[0]=c[0]; at[1]=c[1]; }
   const pose=ISL3.arrival?'/art/bud-offer.png':{garden:'/art/bud-3q.png',fish:'/art/bud-focused.png',read:'/art/bud-focused.png',sleep:'/art/bud-hug.png'}[r];
   const g=new THREE.Group(), b=sprite3(pose,2.2,.75); b.position.y=r==='fish'&&!ISL3.arrival?TOP3-.05:TOP3; g.add(b); g.userData.bloppit=1; ISL3.bloppit=g; ISL3.bloppitSprite=b; ISL3.bloppitPose=pose;
   if(!ISL3.arrival){
     if(r==='garden'){ const c=new THREE.Group(); c.add(cyl3(.14,.16,.24,8,'#9ED3F2',0,0,0)); const s=cyl3(.03,.03,.3,4,'#9ED3F2',.18,.12,0); s.rotation.z=-1; c.add(s); c.position.set(.55,TOP3,.25); g.add(c); }
     if(r==='fish'){ const rod=cyl3(.02,.025,2.0,4,'#7A4E2E',.45,TOP3+.6,.2); rod.rotation.z=-.7; g.add(rod); const line=cyl3(.006,.006,1.6,3,'#FFFFFF',1.15,TOP3-.4,.2); g.add(line); const bob=mesh3(new THREE.SphereGeometry(.07,6,4),m3('#FE8A18'),1.15,-1.25,.2); bob.userData.bob=1; g.add(bob); }
-    if(r==='read'){ g.add(box3(.34,.06,.26,'#0055BF',.45,TOP3+.02,.3)); g.add(bench3(-.1,-.2,0)); }
+    if(r==='read'){ g.add(box3(.34,.06,.26,'#0055BF',.55,TOP3+.02,.35)); }
     if(r==='sleep'){ const z=new THREE.Sprite(new THREE.SpriteMaterial({map:zzzTex3(),transparent:true,depthWrite:false})); z.scale.set(.9,.6,1); z.position.set(.6,TOP3+2.3,0); z.userData.zzz=1; g.add(z); }
   }
   g.position.set(at[0],0,at[1]); tag3(g,'bloppit'); W.add(g);
   if(n>0||ISL3.arrival||pupName(o)){ const ps=pupStage(o), p=new THREE.Sprite(new THREE.SpriteMaterial({map:pupTex3(o),transparent:true,alphaTest:.15})); const h=[1.3,1.5,1.7][ps]*346/300; p.scale.set(h*239/346,h,1); p.center.set(.5,0); p.position.y=TOP3;
     const pg=new THREE.Group(); pg.add(p); pg.userData.bob=2; const onIsle=(x,z)=>inPoly(x,z,scalePoly(HOMEP,0,0,.92)), offs=r==='fish'&&!ISL3.arrival?[[-1.15,-1.7],[-1.25,-2.6],[-.6,-3.4],[.9,-3.2]]:[[1.25,.35],[-1.25,.35],[1.2,-.9],[-1.2,-.9],[0,-1.6]];
-    const [ox,oz]=offs.find(([dx,dz])=>onIsle(at[0]+dx,at[1]+dz))||[-(at[0])*.25,-(at[1])*.25]; pg.position.set(at[0]+ox,0,at[1]+oz); tag3(pg,'pup'); ISL3.pupG=pg; W.add(pg); }
+    const [ox,oz]=offs.find(([dx,dz])=>onIsle(at[0]+dx,at[1]+dz))||[-(at[0])*.25,-(at[1])*.25], spot=clearSpot3(at[0]+ox,at[1]+oz,.5,[at]); pg.position.set(spot[0],0,spot[1]); tag3(pg,'pup'); ISL3.pupG=pg; W.add(pg); }
 }
 function zzzTex3(){ const c=document.createElement('canvas'); c.width=96; c.height=64; const x=c.getContext('2d'); x.font='bold 30px system-ui,sans-serif'; x.fillStyle='#FFFFFF'; x.strokeStyle='#14202C'; x.lineWidth=4; for(const [t,a,b] of [['z',8,58],['z',34,40],['Z',58,26]]){ x.strokeText(t,a,b); x.fillText(t,a,b); } const t=new THREE.CanvasTexture(c); return t; }
 
 // Time of day: sunrise, day, sunset and night from the device's clock (?hour=21 to try)
-const TOD3=[[0,'#0B1D3A',.16,'#8FA8FF',.28,'#0E3F68',1],[5,'#0B1D3A',.16,'#8FA8FF',.28,'#0E3F68',1],[6.5,'#FFB98A',.6,'#FFC59A',.48,'#2A8FD0',.35],[8,'#BFE6F7',.95,'#FFFFFF',.62,'#22B4EE',0],[17,'#BFE6F7',.95,'#FFFFFF',.62,'#22B4EE',0],[18.7,'#FF9E6E',.6,'#FFB070',.45,'#2C86C4',.35],[20.2,'#0B1D3A',.16,'#8FA8FF',.28,'#0E3F68',1],[24,'#0B1D3A',.16,'#8FA8FF',.28,'#0E3F68',1]];
+const TOD3=[[0,'#0B1D3A',.08,'#7F96E6',.17,'#0E3F68',1],[5,'#0B1D3A',.08,'#7F96E6',.17,'#0E3F68',1],[6.5,'#FFB98A',.6,'#FFC59A',.48,'#2A8FD0',.35],[8,'#BFE6F7',.95,'#FFFFFF',.62,'#22B4EE',0],[17,'#BFE6F7',.95,'#FFFFFF',.62,'#22B4EE',0],[18.7,'#FF9E6E',.6,'#FFB070',.45,'#2C86C4',.35],[20.2,'#0B1D3A',.08,'#7F96E6',.17,'#0E3F68',1],[24,'#0B1D3A',.08,'#7F96E6',.17,'#0E3F68',1]];
 function isl3Tod(force){ const h=isl3Hour(); if(!force&&ISL3.todH!=null&&Math.abs(h-ISL3.todH)<.02) return; ISL3.todH=h;
   let i=0; while(i<TOD3.length-2&&TOD3[i+1][0]<=h) i++; const A=TOD3[i], B=TOD3[i+1], t=(h-A[0])/Math.max(.001,B[0]-A[0]);
   const col=(a,b)=>new THREE.Color(a).convertSRGBToLinear().lerp(new THREE.Color(b).convertSRGBToLinear(),t), num=(a,b)=>a+(b-a)*t;
@@ -7064,6 +7083,10 @@ function isl3Tod(force){ const h=isl3Hour(); if(!force&&ISL3.todH!=null&&Math.ab
   ISL3.sun.intensity=num(A[2],B[2]); ISL3.sun.color.copy(col(A[3],B[3])); ISL3.hemi.intensity=num(A[4],B[4]); ISL3.sea.material.color.copy(col(A[5],B[5]));
   const night=num(A[6],B[6]); ISL3.night=night; const a=(h-6)/12*Math.PI; ISL3.sun.position.set(-Math.cos(a)*26,Math.max(8,Math.sin(Math.max(.15,Math.min(Math.PI-.15,a)))*32),14);
   for(const m of Object.values(ISL3.glows||{})) m.emissiveIntensity=.35+night*1.6;
+  // windows light up after dark (they share materials, so this lights every window in the world)
+  for(const c of ['#6FB7E8','#FFF0B0','#FFE9A8']){ const m=m3(c); if(!m.userData.win){ m.userData.win=1; m.emissive=new THREE.Color('#FFC24A').convertSRGBToLinear(); } m.emissiveIntensity=night*1.25; }
+  // the characters are pictures, not lit by the sun: dim and cool them as it gets dark
+  if(ISL3.world){ const k=1-night*.45; ISL3.world.traverse(x=>{ if(x.isSprite&&!x.userData.zzz&&x.material&&x.material.color) x.material.color.setRGB(k,k,Math.min(1,k*1.12)); }); }
   if(ISL3.stars) ISL3.stars.material.opacity=Math.max(0,night-.3)*1.2; }
 
 // The loop: about 30 frames a second while Bloppitopia is on screen, nothing when it isn't
@@ -7277,7 +7300,7 @@ $('#decorGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-de
   const o=worldStore(); if(o.decor.includes(d.id)||worldStars(o)<d.cost) return;
   o.decor.push(d.id); worldSet(o); track('decor_bought:'+d.id); sfx.chime(); islandShown=-1; renderIsland(); decorPlaced(d); });
 // Just bought: close the shop, go to the island, fly to it and say how to move it
-function decorPlaced(d){ $('#isShop').hidden=true; try{ $('#isWorld').scrollIntoView({behavior:'auto',block:'center'}); }catch(e){}
+function decorPlaced(d){ $('#isShop').hidden=true; try{ if($('#view-island').classList.contains('immersive')){ const up=()=>scrollTo({top:0,behavior:'instant'}); up(); setTimeout(up,60); setTimeout(up,400); } else $('#isWorld').scrollIntoView({behavior:'auto',block:'center'}); }catch(e){}
   if(!ISL3.ok||!ISL3.on||!ISL3.world) return; let g=null; ISL3.world.traverse(x=>{ if(!g&&x.userData.info==='decor:'+d.id) g=x; }); if(!g) return; const p=g.position;
   isl3FlyTo(p.x,0,p.z,13,900); ISL3.moved=true; isl3Pop&&isl3Pop(g); isl3Confetti(p.x,TOP3+1,p.z,20);
   clearTimeout(ISL3.decorT); ISL3.decorT=setTimeout(()=>{ isl3Banner(d.id==='buoy'?`Your ${d.name.toLowerCase()} is bobbing by the jetty!`:`Your ${d.name.toLowerCase()} is here! Hold it and drag it anywhere on the island.`,true); ISL3.decorT=setTimeout(()=>isl3Banner(''),6500); },900); }

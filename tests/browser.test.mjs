@@ -233,7 +233,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   // places, Bloppit, the pup, a decoration, the islands nearby: each says what it is, its level and what's next
   assert.match(await tap('land:beach'), /Home Island.*Builds finished3.*Islands discovered/);
   assert.match(await tap('bloppit'), /Bloppit.*storm.*build buddy.*Secret.*red brick/);
-  assert.match(await tap('longtail:medium'), /Swoop.*A Longtail.*goggles.*Secret.*Did you know\?.*tropicbirds.*Race Swoop/);
+  assert.match(await tap('longtail:easy'), /Scraps.*A Longtail.*feather.*Secret.*Did you know\?.*tropicbirds.*Race Scraps/);
   assert.match(await tap('pup'), /Bubbles.*Level \d+ Pup.*1 stud.*Otter level.*Wardrobe.*Name or colour/);
   assert.match(await tap('decor:flag'), /Flag/);
   assert.match(await tap('isle:sunrise'), /A misty island.*Play Weekly Bloppit to discover it.*This week’s Bloppit/);
@@ -270,7 +270,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   let moved = false;
   for (let i = 0; i < 2 && !moved; i++) { await still(); const bc = await pt('decor:bench');
     await t.page.mouse.move(bc.x, bc.y); await t.page.mouse.down(); await t.page.mouse.move(bc.x + 20, bc.y + 10, { steps: 4 }); await t.page.mouse.move(bc.x + 70, bc.y + 30, { steps: 8 }); await t.page.mouse.up();
-    moved = await benchMoved(); if (!moved) console.log('BENCHMISS', JSON.stringify(bc), await t.page.evaluate((c) => window.bloppitPick(c.x, c.y) + ' ' + JSON.stringify(window.bloppitIsland3().ctl.target) + ' fly:' + !!window.bloppitIsland3().fly + ' tip:' + document.getElementById('isTip').hidden + ' el:' + document.elementFromPoint(c.x, c.y)?.className, bc)); }
+    moved = await benchMoved(); if (!moved) console.log('BENCHMISS', JSON.stringify(bc), await t.page.evaluate((c) => window.bloppitPick(c.x, c.y) + ' ' + JSON.stringify(window.bloppitIsland3().ctl.target) + ' fly:' + !!window.bloppitIsland3().fly + ' tip:' + document.getElementById('isTip').hidden + ' el:' + document.elementFromPoint(c.x, c.y)?.className + ' scrollY:' + scrollY + ' canvas:' + JSON.stringify(document.querySelector('#isWorld canvas').getBoundingClientRect()) + ' head:' + document.querySelector('header.top').getBoundingClientRect().bottom, bc)); }
   assert.ok(moved, 'the bench stays where it was dragged');
   // the keyboard list has everything too
   assert.ok(await t.page.evaluate(() => document.querySelectorAll('#isA11y [data-info]').length > 15));
