@@ -8,6 +8,7 @@
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="google-site-verification" content="3jgoAs4OQQYRCxP8exwGKqmz1Gw5foP76_TtomURmc8" />
 <link rel="canonical" href="https://bloppit.com/">
+<link rel="preload" href="/art/bloppit-wink.jpg" as="image">
 <meta name="theme-color" content="#0369BD">
 <meta name="application-name" content="Bloppit">
 <meta name="apple-mobile-web-app-title" content="Bloppit">
@@ -203,7 +204,8 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 .sp-on .splash{display:grid}
 .sp-on{overflow:hidden}
 .splash .sp-head{display:block;position:relative}
-.splash .sp-head img{display:block;width:150px;height:150px;border-radius:34px;object-fit:cover;object-position:center 46%;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:sp-pop .5s cubic-bezier(.3,1.6,.5,1) both}
+/* Bloppit winks once: 9 frames in one strip, stepped at the drawing's own timing */
+.splash .sp-face{display:block;width:150px;height:150px;border-radius:34px;background:#0369BD url(/art/bloppit-wink.jpg) 0 0/900% 100% no-repeat;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:sp-pop .5s cubic-bezier(.3,1.6,.5,1) both,sp-wink 1.04s step-end .5s both}
 .splash .sp-word{font-size:52px;line-height:1;letter-spacing:.01em;text-shadow:0 4px 0 rgba(0,0,0,.18);animation:sp-up .35s ease .1s both}
 .splash .sp-tag{display:flex;gap:8px;margin-top:10px}
 .splash .sp-tag span{font-size:17px;padding:6px 11px 8px;border-radius:9px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18);animation:sp-pop .3s cubic-bezier(.3,1.6,.5,1) both}
@@ -214,13 +216,14 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 @keyframes sp-pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
 @keyframes sp-up{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
 @keyframes sp-blink{0%,100%{transform:none}50%{transform:scaleY(.1)}}
+@keyframes sp-wink{0.00%{background-position:0.0% 0}17.31%{background-position:12.5% 0}24.04%{background-position:25.0% 0}31.73%{background-position:37.5% 0}41.35%{background-position:50.0% 0}52.88%{background-position:62.5% 0}62.50%{background-position:75.0% 0}70.19%{background-position:87.5% 0}78.85%{background-position:100.0% 0}100%{background-position:0 0}}
 @keyframes sp-fail{to{opacity:0;visibility:hidden}}
 @media (prefers-reduced-motion: reduce){.splash *,.splash{animation:none!important}}
 </style>
 </head>
 <body>
 <div class="splash" id="splash" aria-hidden="true">
-  <span class="sp-head"><img src="/art/bloppit-icon.jpg" alt="" width="392" height="584"></span>
+  <span class="sp-head"><i class="sp-face"></i></span>
   <div class="sp-word">Bloppit</div>
   <div class="sp-tag"><span>Snap it.</span><span>Bloppit.</span><span>Build it.</span></div>
 </div>
@@ -230,8 +233,8 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
   var t0=Date.now(), done=false, rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
   function go(){ if(done) return; done=true; s.classList.add('out'); setTimeout(function(){ s.remove(); h.classList.remove('sp-on'); },320); }
   s.onclick=go;
-  // Quick: about 1.2 seconds, counted from when the page started, so a slow connection doesn't add to it
-  function later(){ setTimeout(go,Math.max(150,(rm?400:1200)-(Date.now()-t0))); }
+  // Quick: about 1.9 seconds (Bloppit's wink), counted from when the page started, so a slow connection doesn't add to it
+  function later(){ setTimeout(go,Math.max(150,(rm?400:1900)-(Date.now()-t0))); }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',later); else later();
 })();
 </script>
