@@ -113,3 +113,10 @@ test('events: counts only, split by country and by app or website; reading needs
   assert.deepEqual(r.body.byPlatform.open_day, { app: 1, web: 2 });
   const today = r.body.days[r.body.days.length - 1]; assert.deepEqual(today.c.open_day, { BM: 2, US: 1 });
 });
+
+test('pup: outfit (latest wins, only clean ids and colour numbers), the ten-build choice and the arrival are kept', () => {
+  const w = (x) => ({ world: { builds: {}, log: [], ...x } });
+  let m = merge(w({ wear: { neck: ['scarf', 2] }, wearAt: 100, pick: 'lighthouse' }), w({ wear: { head: ['beanie', 5], neck: ['<b>', 1], face: ['glasses', 99] }, wearAt: 200, arrived: 1, pick: 'castle' })).world;
+  assert.deepEqual(m.wear, { head: ['beanie', 5] }); assert.equal(m.pick, 'lighthouse'); assert.equal(m.arrived, 1);
+  m = merge(w({ wear: { neck: ['scarf', 2] }, wearAt: 300 }), w({ wear: {}, wearAt: 200 })).world; assert.deepEqual(m.wear, { neck: ['scarf', 2] });
+});

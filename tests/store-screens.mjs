@@ -15,26 +15,30 @@ for (const [tag, vp, dsf] of [['iphone',{width:440,height:956},3],['ipad',{width
     if (/fonts\.googleapis\.com/.test(u)) return r.fulfill({status:200,contentType:'text/css',body:FONT_CSS});
     const f=u.match(/^http:\/\/fonts\.local\/(.+)$/); if (f) return r.fulfill({status:200,contentType:'font/woff2',body:fs.readFileSync(path.join(FONTS,f[1]))});
     r.continue(); });
-  const page = await ctx.newPage(); page.on('pageerror', e => console.log('ERR', e.message));
+  const page = await ctx.newPage(); page.setDefaultTimeout(180000); page.on('pageerror', e => console.log('ERR', e.message));
   await page.goto('http://localhost:8788/build/?nosplash=1', { waitUntil: 'load' }); await page.waitForTimeout(3500);
-  // first build → the finish card
-  await page.evaluate(() => document.getElementById('hmCont').click()); await page.waitForTimeout(1500);
-  await auto(page,3); await page.waitForTimeout(400); await page.screenshot({ path: `${OUT}${tag}-build.png` });
-  await auto(page,4); for(let i=0;i<20;i++){ if(await page.evaluate(()=>document.getElementById('welcomeDlg').open)) break; await page.waitForTimeout(500); } await page.waitForTimeout(600);
-  await page.screenshot({ path: `${OUT}${tag}-finish.png` });
-  // meet the pup (blue brick, Pebble), then the island's first-time card sends us on to the Otter Trail
-  await page.evaluate(() => document.getElementById('wcPupGo').click()); await page.waitForTimeout(800);
-  await page.evaluate(() => { document.getElementById('pupPickT').click(); document.querySelector('#pupNames [data-pup="0"]').click(); }); await page.waitForTimeout(1500);
-  await page.evaluate(() => document.getElementById('iiNext').click()); await page.waitForTimeout(1500);
+  // first visit: a little boat brings the otter to Home Island; pick a name (Pebble, blue brick)
+  await page.evaluate(() => document.getElementById('hmCont').click());
+  await page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 20000 }); await page.waitForTimeout(600);
+  await page.screenshot({ path: `${OUT}${tag}-meet.png` });
+  await page.evaluate(() => { document.getElementById('pupPickT').click(); document.querySelector('#pupNames [data-pup="0"]').click(); }); await page.waitForTimeout(2500);
+  // Build Our First Home → the build → back home, where the cottage appears
+  await page.evaluate(() => document.querySelector('#isWorld .is3-play').click()); await page.waitForTimeout(1500);
+  await auto(page,5); await page.waitForTimeout(400); await page.screenshot({ path: `${OUT}${tag}-build.png` });
+  for(let i=0;i<20;i++){ await auto(page,1); if(await page.evaluate(()=>/You built your home/.test(document.querySelector('#isWorld .is3-banner')?.textContent||''))) break; }
+  await page.waitForTimeout(1200); await page.screenshot({ path: `${OUT}${tag}-finish.png` });
+  await page.waitForTimeout(4000); await page.evaluate(() => document.querySelector('#isWorld .is3-play').click()); await page.waitForTimeout(1500);
   // play next through a few Trail levels for real thumbnails
   for (let k=0;k<3;k++){ if (k) { await page.evaluate(() => document.getElementById('budNext')?.click()); await page.waitForTimeout(1500); }
     for (let i=0;i<60;i++){ await auto(page,1); if (await page.evaluate(()=>/Every step complete/.test(document.getElementById('status').textContent))) break; }
     await page.waitForTimeout(3500); await page.evaluate(() => document.getElementById('winDlg').close()); await page.waitForTimeout(500); }
   // seed the island to the village with the real thumbs reused
   await page.evaluate(() => { const o=JSON.parse(localStorage.getItem('bloppit-world-v1')), t=JSON.parse(localStorage.getItem('bloppit-thumbs-v1')), keys=Object.keys(t);
-    for (let i=0;i<9;i++){ const src=keys[i%keys.length], k=`m:Extra${i}:${12+i}`; o.builds[k]={n:12+i,s:(i%3)+1,t:1e12+i,c:1}; o.log.push(k); t[k]=t[src]; }
+    for (let i=0;i<9;i++){ const src=keys[i%keys.length], k=`m:Extra${i}:${12+i}`; o.builds[k]={n:12+i,s:(i%3)+1,t:1e12+i,c:1,...(i<4?{k:'blitz'}:{})}; o.log.push(k); t[k]=t[src]; }
+    o.pick='lighthouse'; o.wear={neck:['scarf',4],head:['beanie',1]}; o.wearAt=Date.now();
+    for (const k of Object.keys(localStorage)) if (k.startsWith('bloppit-seen3')) localStorage.removeItem(k);   // no reveal parade for the still
     o.decor=['flag','campfire','bench','lantern','palm','kite']; o.free=['flag','campfire','bench','lantern','palm','kite']; localStorage.setItem('bloppit-world-v1',JSON.stringify(o)); localStorage.setItem('bloppit-thumbs-v1',JSON.stringify(t)); });
-  await page.evaluate(() => document.getElementById('tab-island').click()); await page.waitForTimeout(1500);
+  await page.evaluate(() => document.getElementById('tab-island').click()); await page.waitForTimeout(3500);
   await page.screenshot({ path: `${OUT}${tag}-island.png` });
   await page.evaluate(() => document.getElementById('tab-daily').click()); await page.waitForTimeout(1200); await page.screenshot({ path: `${OUT}${tag}-weekly.png` });
   await page.evaluate(() => { window.bloppitHome(); }); await page.waitForTimeout(400); await page.evaluate(() => document.querySelector('[data-go="cpu"]').click()); await page.waitForTimeout(600);
