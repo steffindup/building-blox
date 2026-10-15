@@ -31,7 +31,7 @@ promise it makes. **1.1** (by Mon 7 Dec) adds the island and the pup. Paste the 
 
 **1.0:** A calm brick puzzle game for families. Finish a model in minutes, scored on how cleanly you build. A new puzzle every week. Free, no ads, no account.
 
-**1.1:** Every build you finish grows your own island. Adopt a pup and watch it grow with you. A new puzzle every week. Free, no ads, no account.
+**1.1:** Every build you finish grows your own world of islands, and your otter grows with you. A new puzzle every week. Free, no ads, no account.
 
 ## Description (4000)
 
@@ -79,16 +79,17 @@ Bloppit is an independent project and is not affiliated with any toy brick brand
 
 Bloppit is a calm brick puzzle game for families. Snap bricks together on screen, page by page, and finish a model in minutes, scored on how cleanly you build.
 
-Every build you finish grows your own island. Adopt a pup and watch it grow with you.
+Every build you finish grows your own world. A little otter arrives by boat, your first build finishes its home, and five islands wait in the mist.
 
 A new puzzle every week, a library to explore, and Blitz races against the Longtails.
 
 Free, no ads, no tracking, no account needed.
 
-YOUR ISLAND
-• Every finished model lands on Bloppitopia: a hut after the first build, a workshop after three, a village after ten
-• Your pup grows with you: Pup, Splash, Legend
-• Build Stars buy the island's decorations. Nothing is ever for sale, and nothing is ever lost
+YOUR WORLD: BLOPPITOPIA
+• Home Island grows with every build: a cottage, a garden, a workshop, a museum of your best models, then a lively village
+• Five islands rise from the mist as you play: Otterwood (Otter Trail), Brainpeak (Brain Trail), Sunrise Shores (Weekly Bloppit), Blitz Bay (Blitz) and Brickworks Island (your own creations)
+• Your otter grows with you, Pup, Splash, Legend, and earns outfits; you pick the colours
+• Build Stars buy decorations. Nothing is ever for sale, and nothing is ever lost
 
 (then the 1.0 sections from WEEKLY BLOPPIT down, unchanged)
 
@@ -120,7 +121,7 @@ retake them after any visual change. Preview video: capture the snap, a finish a
 
 **1.0:** Bloppit's first App Store release.
 
-**1.1:** Your island! Every build you finish grows Bloppitopia, and your pup grows with you. Build Stars buy decorations. Plus the From Memory star and four new Weeklies.
+**1.1:** Bloppitopia! Every build you finish grows your world: Home Island and five islands to discover. Your otter grows with you and earns outfits. Build Stars buy decorations. Plus the From Memory star and four new Weeklies.
 
 ## App Review notes
 
