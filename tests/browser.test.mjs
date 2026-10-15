@@ -11,6 +11,11 @@ before(async () => { server = await start(PORT); if (chromium) browser = await c
 const skip = () => !chromium;  // decided when the file loads; the browser itself starts in before()
 after(async () => { if (browser) await browser.close(); server?.close(); });
 
+// Keep placing until the first build is really finished (slow machines), then let the home appear
+async function finishFirst(page) {
+  for (let i = 0; i < 30; i++) { if (await page.evaluate(() => (JSON.parse(localStorage.getItem('bloppit-world-v1') || '{}').log || []).length > 0)) break; await autoPlace(page, 1); }
+  await page.waitForTimeout(5000);
+}
 async function open(url, { viewport = { width: 1000, height: 800 }, init, at } = {}) {
   const ctx = await browser.newContext({ viewport, acceptDownloads: true });
   await ctx.route('**/*', (r) => { const u = r.request().url();
@@ -162,7 +167,7 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   // Each player needs a pup: a finished build mints one
   const mkPlayer = async () => { const t = await open('?nosplash=1#island', { init: { fn: () => { if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, builds: {}, log: [] })); } } });
     await t.page.evaluate(() => document.querySelector('#isWorld .is3-play').click()); await t.page.waitForTimeout(1500);
-    await autoPlace(t.page, +(await t.text('#progress')).match(/0 of (\d+)/)[1]); await t.page.waitForTimeout(6000); return t; };
+    await autoPlace(t.page, +(await t.text('#progress')).match(/0 of (\d+)/)[1]); await finishFirst(t.page); return t; };
   const a = await mkPlayer(), b = await mkPlayer();
   const hub = async (t) => { await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => { location.hash = '#together'; document.getElementById('tab-mp').click(); }); await t.page.waitForTimeout(1500); };
   await hub(a);
@@ -170,7 +175,7 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   const code = await a.page.evaluate(() => document.querySelector('#crewOpen .cc')?.textContent); assert.match(code || '', /^[A-Z0-9]{6}$/);
   assert.match(await a.text('#crewOpen h2'), /Lighthouse Builders/);
   await hub(b);
-  await b.page.evaluate((c) => { document.getElementById('crewCodeIn').value = c; document.getElementById('crewJoin').click(); }, code); await b.page.waitForTimeout(1200);
+  await b.page.evaluate((c) => { document.getElementById('crewCodeIn').value = c; document.getElementById('crewJoin').click(); }, code); await b.page.waitForSelector('[data-crew-join]', { timeout: 15000 });
   await b.page.evaluate(() => document.querySelector('[data-crew-join]').click()); await b.page.waitForTimeout(1200);
   assert.match(await b.text('#crewOpen'), /Waiting for the crew’s maker/);
   await hub(a); await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);
@@ -199,7 +204,12 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   const models = () => t.page.evaluate(() => window.bloppitIsland3().shown.list.map((m) => m.key));
   assert.equal((await models()).length, 3);
   const pt = (id) => t.page.evaluate((i) => window.bloppitIslandPoint(i), id);
-  const tap = async (id) => { const c = await pt(id); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(400); const txt = await t.text('#isTip'); await t.page.evaluate(() => document.querySelector('#isTip .tt-x')?.click()); return txt; };
+  const still = () => t.page.waitForFunction(() => !window.bloppitIsland3().fly, null, { timeout: 8000, polling: 100 }).then(() => t.page.waitForTimeout(300));
+  const tap = async (id) => { const T0 = Date.now(); await still(); if (process.env.DBG) console.log('T', id, 'still', Date.now() - T0); const c = await pt(id); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(1200);
+    await t.page.waitForFunction(() => !document.getElementById('isTip').hidden, null, { timeout: 4000, polling: 100 }).catch(() => {}); const txt = await t.text('#isTip');
+    await t.page.evaluate(() => document.querySelector('#isTip .tt-x')?.click());
+    if (await t.page.evaluate(() => { const b = document.querySelector('#isWorld .is3-whole'); if (b && !b.hidden) { b.click(); return true; } return false; })) await still();   // tapping flies there; back to the whole world
+    return txt; };
   // places, Bloppit, the pup, a decoration, the islands nearby: each says what it is, its level and what's next
   assert.match(await tap('land:beach'), /Home Island.*Builds finished3.*Islands discovered/);
   assert.match(await tap('bloppit'), /Bloppit.*build buddy/);
@@ -207,6 +217,10 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   assert.match(await tap('decor:flag'), /Flag/);
   assert.match(await tap('isle:sunrise'), /A misty island.*Play Weekly Bloppit to discover it.*This week’s Bloppit/);
   assert.match(await tap('isle:blitzbay'), /A misty island.*Race a Longtail/);
+  { await still(); const c = await pt('isle:sunrise'); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(600); await still();
+    assert.equal(await t.page.evaluate(() => { const I = window.bloppitIsland3(), s = I.isles.sunrise; return Math.hypot(I.ctl.target.x - s.x, I.ctl.target.z - s.z) < 1 && !document.querySelector('#isWorld .is3-whole').hidden; }), true);   // flew there
+    await t.page.evaluate(() => { document.querySelector('#isTip .tt-x')?.click(); document.querySelector('#isWorld .is3-whole').click(); }); await still();
+    assert.equal(await t.page.evaluate(() => document.querySelector('#isWorld .is3-whole').hidden), true); }
   // a model: where it came from, when, stars, best time; then put it away (the card's button)
   const key = (await models())[0];
   const c = await pt('model:' + key); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(400);
@@ -236,7 +250,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
 test('family key: make, attach a player, bring the player to another device', { skip: skip() }, async () => {
   const a = await open('?nosplash=1#island', { init: { fn: () => { if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 5, builds: {}, log: [] })); } } });
   await a.page.evaluate(() => document.querySelector('#isWorld .is3-play').click()); await a.page.waitForTimeout(1500);
-  await autoPlace(a.page, +(await a.text('#progress')).match(/0 of (\d+)/)[1]); await a.page.waitForTimeout(6000);
+  await autoPlace(a.page, +(await a.text('#progress')).match(/0 of (\d+)/)[1]); await finishFirst(a.page);
   await a.page.evaluate(() => window.bloppitHome()); await a.page.waitForTimeout(500);
   const grown = async (t) => { await t.page.evaluate(() => document.getElementById('whoBtn').click()); await t.page.waitForTimeout(300); await t.page.evaluate(() => document.getElementById('whoGrown').click()); await t.page.waitForTimeout(1200); };
   await grown(a);
