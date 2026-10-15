@@ -41,11 +41,13 @@
 </script>
 <link rel="icon" href="/favicon-96.png?v=3" type="image/png" sizes="96x96">
 <link rel="icon" href="/favicon.ico?v=3" sizes="16x16 32x32 48x48">
+<link rel="preload" href="/art/bloppit-wink.jpg" as="image">
 <style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}
 /* Launch screen: same red as the app's native splash, so the two run together */
 .splash{position:fixed;inset:0;z-index:100;background:#0369BD;color:#fff;display:grid;place-content:center;justify-items:center;gap:6px;text-align:center;font-family:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;cursor:pointer;-webkit-user-select:none;user-select:none;animation:sp-fail .3s ease 5s forwards}
 .splash .sp-head{display:block;position:relative}
-.splash .sp-head img{display:block;width:150px;height:150px;border-radius:34px;object-fit:cover;object-position:center 46%;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:sp-pop .5s cubic-bezier(.3,1.6,.5,1) both}
+/* Bloppit winks once: 9 frames in one strip, stepped at the drawing's own timing */
+.splash .sp-face{display:block;width:150px;height:150px;border-radius:34px;background:#0369BD url(/art/bloppit-wink.jpg) 0 0/900% 100% no-repeat;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:sp-pop .5s cubic-bezier(.3,1.6,.5,1) both,sp-wink 1.04s step-end .5s both}
 .splash .sp-word{font-size:52px;line-height:1;letter-spacing:.01em;text-shadow:0 4px 0 rgba(0,0,0,.18);animation:sp-up .4s ease .15s both}
 .splash .sp-tag{display:flex;gap:8px;margin-top:10px}
 .splash .sp-tag span{font-size:17px;padding:6px 11px 8px;border-radius:9px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18);animation:sp-pop .35s cubic-bezier(.3,1.6,.5,1) both}
@@ -55,6 +57,7 @@
 .splash.out{opacity:0;transition:opacity .3s ease;pointer-events:none}
 @keyframes sp-pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
 @keyframes sp-up{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+@keyframes sp-wink{0.00%{background-position:0.0% 0}17.31%{background-position:12.5% 0}24.04%{background-position:25.0% 0}31.73%{background-position:37.5% 0}41.35%{background-position:50.0% 0}52.88%{background-position:62.5% 0}62.50%{background-position:75.0% 0}70.19%{background-position:87.5% 0}78.85%{background-position:100.0% 0}100%{background-position:0 0}}
 @keyframes sp-fail{to{opacity:0;visibility:hidden}}
 @keyframes sp-blink{0%,100%{transform:none}50%{transform:scaleY(.1)}}
 @media (prefers-reduced-motion: reduce){.splash *{animation:none!important}}
@@ -72,7 +75,7 @@
 <symbol id="ic-stack" viewBox="0 0 120 120"><rect x="14" y="68" width="92" height="38" rx="7" fill="#fff"/><rect x="21" y="60" width="16" height="10" rx="3" fill="#fff"/><rect x="52" y="60" width="16" height="10" rx="3" fill="#fff"/><rect x="83" y="60" width="16" height="10" rx="3" fill="#fff"/><rect x="30" y="20" width="60" height="32" rx="7" fill="#F4BC22"/><rect x="37" y="12" width="16" height="10" rx="3" fill="#F4BC22"/><rect x="67" y="12" width="16" height="10" rx="3" fill="#F4BC22"/></symbol>
 </defs></svg>
 <div class="splash" id="splash" aria-hidden="true">
-  <span class="sp-head"><img src="/art/bloppit-icon.jpg" alt="" width="392" height="584"></span>
+  <span class="sp-head"><i class="sp-face"></i></span>
   <div class="sp-word">Bloppit</div>
   <div class="sp-tag"><span>Snap it.</span><span>Bloppit.</span><span>Build it.</span></div>
 </div>
@@ -7868,7 +7871,7 @@ function homeRoute(){
 }
 { // Launch screen: show it for a moment, then fade to the menu (tap to skip)
   const sp=document.getElementById('splash');
-  if(sp&&window.BLOPPIT_SPLASH) setTimeout(()=>{ sp.classList.add('out'); setTimeout(()=>sp.remove(),320); },Math.max(0,(reduceMotion?500:1500)-(Date.now()-window.BLOPPIT_SPLASH)));
+  if(sp&&window.BLOPPIT_SPLASH) setTimeout(()=>{ sp.classList.add('out'); setTimeout(()=>sp.remove(),320); },Math.max(0,(reduceMotion?500:1900)-(Date.now()-window.BLOPPIT_SPLASH)));
 }
 navStart();  // from here on, each page change on the website is a step for the browser's Back button
 })();
