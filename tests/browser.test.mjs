@@ -16,8 +16,8 @@ async function finishFirst(page) {
   for (let i = 0; i < 30; i++) { if (await page.evaluate(() => (JSON.parse(localStorage.getItem('bloppit-world-v1') || '{}').log || []).length > 0)) break; await autoPlace(page, 1); }
   await page.waitForTimeout(5000);
 }
-async function open(url, { viewport = { width: 1000, height: 800 }, init, at } = {}) {
-  const ctx = await browser.newContext({ viewport, acceptDownloads: true });
+async function open(url, { viewport = { width: 1000, height: 800 }, init, at, touch } = {}) {
+  const ctx = await browser.newContext({ viewport, acceptDownloads: true, ...(touch ? { isMobile: true, hasTouch: true } : {}) });
   await ctx.route('**/*', (r) => { const u = r.request().url();
     const f = ['three.min.js', 'OrbitControls.js', 'BufferGeometryUtils.js'].find((k) => u.endsWith(k));
     if (f && !u.includes('/vendor/')) return r.fulfill({ status: 302, headers: { location: `http://localhost:${PORT}/vendor/${f}` } });
@@ -72,6 +72,25 @@ test('first visit: Start here → a boat brings the otter → name it → Build 
   assert.match(await t.text('#hmWorld'), /Captain Fizz/);
   await t.page.goto(new URL('/', BASE).href); await t.page.waitForTimeout(1500);
   assert.match(await t.text('.hero h1'), /Captain Fizz’s.*island is waiting/s);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('a finger on the brick in hand slides the brick, and the view stays still', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1#island', { viewport: { width: 402, height: 874 }, touch: true, init: { fn: () => { if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); } } });
+  await t.page.evaluate(() => document.querySelector('#isWorld .is3-play').click()); await t.page.waitForTimeout(1500);
+  await autoPlace(t.page, 4);
+  const g = await t.page.evaluate(() => window.bloppitGhost()); assert.ok(g, 'a brick in hand');
+  const cdp = await t.ctx.newCDPSession(t.page);
+  const touch = (type, x, y) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y, radiusX: 12, radiusY: 12 }] });
+  const slide = async (x0, y0, dx, dy) => { await touch('touchStart', x0, y0); for (let i = 1; i <= 10; i++) { await touch('touchMove', x0 + dx * i, y0 + dy * i); await t.page.waitForTimeout(50); } await touch('touchEnd'); await t.page.waitForTimeout(700); };
+  // press a little off the brick's middle (a fingertip) and slide
+  await slide(g.x + 18, g.y + 12, 9, 4);
+  const g2 = await t.page.evaluate(() => window.bloppitGhost());
+  assert.ok(g2.ax !== g.ax || g2.az !== g.az, 'the brick moved'); assert.deepEqual(g2.cam, g.cam, 'the view did not turn');
+  // sliding away from the brick still turns the view
+  await slide(60, 200, 10, 0);
+  const g3 = await t.page.evaluate(() => window.bloppitGhost());
+  assert.notDeepEqual(g3.cam, g2.cam); assert.deepEqual([g3.ax, g3.az], [g2.ax, g2.az]);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
