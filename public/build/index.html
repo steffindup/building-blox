@@ -697,7 +697,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .hm-world{display:grid;grid-template-columns:auto 1fr;gap:12px 14px;align-items:center;padding:12px 14px;border-radius:16px;background:var(--page);border:1px solid var(--line);box-shadow:0 2px 0 var(--shadow);width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}
 .hm-world:hover{border-color:var(--ink)}
 .hm-world .pup{display:block;width:64px;height:64px;border-radius:50%;overflow:hidden;background:#E8F1F8;border:3px solid #fff;box-shadow:0 2px 0 var(--shadow)}.hm-world .pup svg{width:100%;height:100%;display:block}
-.hm-world .hw-isle{grid-column:1/-1;display:block;margin:-12px -14px 0;border-radius:16px 16px 0 0;overflow:hidden;background:#A9D8F2;position:relative}.hm-world .hw-isle svg{display:block;width:100%;height:auto}
+.hm-world .hw-isle{grid-column:1/-1;display:block;margin:-12px -14px 0;border-radius:16px 16px 0 0;overflow:hidden;background:#A9D8F2;position:relative}.hm-world .hw-isle svg,.hm-world .hw-isle img{display:block;width:100%;height:auto}
 .hm-world .hw-isle .hw-tag{position:absolute;left:10px;top:10px;padding:4px 12px;border-radius:999px;background:rgba(20,32,44,.82);color:#fff;font-family:var(--f-display);font-size:18px}
 .hm-world.lead{border:3px solid #008F9B}
 .hm-world .pup.ps-splash{width:76px;height:76px}.hm-world .pup.ps-legend{width:88px;height:88px;border-color:#F4BC22}
@@ -833,6 +833,18 @@ body.on-home .tabs{visibility:hidden}
 .is-btns{display:flex;gap:8px;flex-wrap:wrap}
 .is-card{padding:0;overflow:hidden}
 .island{position:relative;background:#CFE9F7}
+.island.is3{overflow:hidden;background:#BFE6F7}
+.island .is3-canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab;outline:none}
+.island .is3-canvas:focus-visible{outline:3px solid var(--hi);outline-offset:-3px}
+.is3-labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.is3-label{position:absolute;left:0;top:0;display:grid;justify-items:center;padding:2px 9px 3px;border-radius:12px;background:rgba(20,32,44,.82);color:#fff;white-space:nowrap;line-height:1.1;will-change:transform}
+.is3-label b{font-family:var(--f-display);font-weight:400;font-size:12px}.is3-label small{font-size:9.5px;font-weight:700;opacity:.85}
+@media (min-width:700px){.is3-label b{font-size:15px}.is3-label small{font-size:11px}}
+.is3-label.home{background:#008F9B}.is3-label.home b{font-size:18px}
+.is3-help{position:absolute;right:10px;bottom:10px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.85);font-size:12px;font-weight:800;color:#14202C;pointer-events:none}
+.is-a11y{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.is-a11y:focus-within{position:static;width:auto;height:auto;clip:auto;white-space:normal;display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px}
+.is-a11y b{width:100%}.is-a11y button{font:inherit;font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer}
 .island svg{display:block;width:100%;height:auto}
 .island .slot-empty,.hw-isle .slot-empty{opacity:.35}
 .island g.is-model{cursor:grab}.island g.is-model.dragging{cursor:grabbing;opacity:.85}
@@ -1433,7 +1445,7 @@ body.on-home .tabs{visibility:hidden}
     <ol class="ii-steps" id="iiSteps"></ol>
     <div class="ii-btns"><button class="primary sm" id="iiNext" type="button">Keep building</button><button class="ghost" id="iiWeekly" type="button">📅 This week’s Bloppit</button><button class="ghost" id="iiLook" type="button">Look around</button></div>
   </div>
-  <div class="card is-card"><div class="island" id="island"></div>
+  <div class="card is-card"><div class="island" id="isWorld"></div><div class="is-a11y" id="isA11y"></div>
     <div class="is-foot"><div class="is-stage" id="isStage"></div><div class="is-next" id="isNext"></div></div></div>
   <div class="card is-shop" id="isShop" hidden>
     <div class="gm-head sub-head"><div><h2>✨ Decorate your island</h2><p class="note">Build Stars buy decorations. Nothing here is ever sold for money. <b id="isStars"></b></p></div><button class="ghost" id="isShopClose" type="button">Done</button></div>
@@ -2493,6 +2505,7 @@ function syncSub(t){
     $('#hubBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} new levels, with math puzzles`; }
 }
 function setTab(t,sub){
+  if(t!=='island'&&ISL3&&ISL3.on) isl3Hide();
   if(typeof islandTipHide==='function'){ islandTipHide(); const h=document.getElementById('isHover'); if(h) h.hidden=true; }
   if(t!=='build'&&reveal) endReveal(true);
   if(sub&&SUB_OK[t]&&SUB_OK[t].includes(sub)) subOf[t]=sub;
@@ -5850,7 +5863,7 @@ function worldFinish(kind){
   if(dur>500&&dur<6*3600e3) rec.d=Math.round(prev&&prev.d?Math.min(prev.d,dur):dur);   // best time, in ms
   o.builds[key]=rec; if(first) o.log.push(key); o.xp=worldXP(o); o.bonus=worldStarsEarned(o)-Object.values(o.builds).reduce((a,b)=>a+(b.s||0),0);  // kept for older readers; derived
   worldSet(o);
-  worldThumbSave(key);
+  worldThumbSave(key); worldShapeSave(key);
   const after={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
   const r={key,kind,stars,best:rec.s,gained:first?stars+bonus:Math.max(0,stars-(prev.s||0))+(memory?1:0),xp,bonus,first,clean,noHint,memory,miss,hint:hint+auto,before,after,
     pupUp:after.pup>before.pup,islandUp:after.island>before.island,total:worldStars(o),count:after.n,decor:r_decor};
@@ -5943,13 +5956,13 @@ function renderIslandIntro(o){
 function islandIntroDone(how){ const o=worldStore(); o.isle=1; worldSet(o); track('island_intro:'+how); $('#isIntro').hidden=true; }
 $('#iiNext').onclick=()=>{ islandIntroDone('next'); const n=nextBuild(); if(n) n.go(); else homeGo('otter'); };
 $('#iiWeekly').onclick=()=>{ islandIntroDone('weekly'); setTab('daily'); };
-$('#iiLook').onclick=()=>{ islandIntroDone('look'); try{ $('#island').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'}); }catch(e){} };
+$('#iiLook').onclick=()=>{ islandIntroDone('look'); try{ $('#isWorld').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'}); }catch(e){} };
 function renderHomeWorld(){
   const el=$('#hmWorld'), o=worldStore(), n=worldCount(o);
   if(!n){ el.hidden=true; return; }
   const ps=pupStage(o), is=islandStage(o), next=PUP_STAGES[ps+1], inext=ISLAND_STAGES[is+1], nm=pupName(o);
   const pct=next?Math.round(100*(n-PUP_STAGES[ps].at)/(next.at-PUP_STAGES[ps].at)):100;
-  const isle=islandSVG(o,{uid:'hm'});
+  const pic=isl3Init()?isl3Still(o,900,620):'', isle=pic?`<img src="${pic}" alt="">`:islandSVG(o,{uid:'hm'});
   el.hidden=false; el.classList.add('lead');
   el.setAttribute('aria-label',`Bloppitopia, ${ISLAND_STAGES[is].name}. ${nm||'Your pup'}, ${n} build${n===1?'':'s'}.`);
   el.innerHTML=`<span class="hw-isle">${isle}<span class="hw-tag">🏝️ Bloppitopia · ${ISLAND_STAGES[is].name}</span></span>
@@ -5959,10 +5972,10 @@ function renderHomeWorld(){
     <div class="wn"><div><b>${n}</b><span>build${n===1?'':'s'}</span></div><div><b class="st">${worldStars(o)}</b><span>Build Stars</span></div><div><b>${worldXP(o)}</b><span>XP</span></div></div>
     ${inext?`<span class="sub" style="grid-column:1/-1;font-size:13px;font-weight:700;color:var(--muted)">${inext.at-n} more build${inext.at-n===1?'':'s'} to the ${inext.name}</span>`:''}`;
   const w=$('#wName'); if(w){ w.onclick=e=>{ e.stopPropagation(); pupOpen(); }; w.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); e.stopPropagation(); pupOpen(); } }; }
-  islandSnap(o,isle,nm,n,ISLAND_STAGES[is].name);
+  islandSnap(o,pic?'':isle,nm,n,ISLAND_STAGES[is].name,pic);
 }
 // bloppit.com's front page shows a returning player their island: the picture is kept on this device only.
-function islandSnap(o,svg,nm,n,stage){ try{ const v=JSON.stringify({svg:svg.replace(/(id="|url\(#|href="#)hm-/g,'$1lp-'),name:nm,n,stage,t:Date.now()}); if(v.length<900000) localStorage.setItem('bloppit-island-v1',v); }catch(e){} }
+function islandSnap(o,svg,nm,n,stage,img){ try{ const v=JSON.stringify({...(img?{img}:{svg:svg.replace(/(id="|url\(#|href="#)hm-/g,'$1lp-')}),name:nm,n,stage,t:Date.now()}); if(v.length<900000) localStorage.setItem('bloppit-island-v1',v); }catch(e){} }
 
 /* ---------- Bloppitopia: the drawn island that grows with every finished build (Bloppitopia Lite) ----------
    Four stages by build count (Beach, Hut at 1, Workshop at 3, Village at 10), fixed model slots (1, 3, 6) that
@@ -6096,6 +6109,7 @@ function islandSVG(o,opts){
 }
 // The models standing on the island: the ones the child placed stay where they put them; the newest others
 // fill the free stands. Up to the stage's number of stands; models put away stay in the list below the island.
+function islandModelsAny(o){ return ISL3.ok?islandModels3(o):islandModels(o); }
 function islandModels(o){
   const cap=ISLAND_STAGES[islandStage(o)].slots, pos=o.pos||{}, away=o.away||{}, legacy=o.slot||{};
   const all=o.log.filter(k=>!k.startsWith('w:')&&o.builds[k]&&away[k]!==1).reverse();   // newest first
@@ -6109,7 +6123,7 @@ function islandModels(o){
 }
 // Tap (or hover) anything on the island to see what it is; drag a model anywhere on the sand.
 function islandDrag(){
-  const box=$('#island'), svg=box.querySelector('svg'); if(!svg) return;
+  const box=$('#isWorld'), svg=box.querySelector('svg'); if(!svg) return;
   const land=svg.querySelector('.is-land');
   svg.querySelectorAll('[data-info]').forEach(el=>{ const id=el.dataset.info; if(/^land:(sky|sea|beach)$/.test(id)) return;
     el.setAttribute('tabindex','0'); el.setAttribute('role','button'); el.setAttribute('aria-label',islandInfo(id).title); });
@@ -6124,7 +6138,7 @@ function islandDrag(){
     if(drag&&drag.g){ const p=pt(e), dx=p.x-drag.x0, dy=p.y-drag.y0;
       if(!drag.moved&&Math.hypot(dx,dy)>6){ drag.moved=true; islandTipHide(); drag.g.classList.add('dragging'); svg.appendChild(drag.g); }
       if(drag.moved) drag.g.setAttribute('transform',`translate(${dx} ${dy})`); return; }
-    if(e.pointerType==='mouse'&&!drag){ const el=e.target.closest('[data-info]'); islandHover(el,e); } });
+    if(e.pointerType==='mouse'&&!drag){ const el=e.target.closest('[data-info]'); islandHover(el&&el.dataset.info,e); } });
   svg.addEventListener('pointerleave',()=>{ if(!drag) islandHover(null); });
   const end=e=>{ if(!drag) return; const d=drag; drag=null;
     if(!d.moved){ if(e.type==='pointerup'){ islandHover(null); islandTip(d.el.dataset.info,d.el); } return; }
@@ -6137,11 +6151,11 @@ function islandDrag(){
   svg.addEventListener('keydown',e=>{ if(e.key!=='Enter'&&e.key!==' ') return; const el=e.target.closest('[data-info]'); if(!el) return; e.preventDefault(); islandTip(el.dataset.info,el); });
 }
 // A small label that follows the mouse over the island (desktop); a tap opens the full card
-function islandHover(el,e){
-  const h=$('#isHover'); if(!el){ h.hidden=true; return; }
+function islandHover(id,e){
+  const h=$('#isHover'); if(!id){ h.hidden=true; return; }
   if(!$('#isTip').hidden){ h.hidden=true; return; }
-  const i=islandInfo(el.dataset.info);
-  if(h.dataset.id!==el.dataset.info){ h.innerHTML=`<b>${escapeHTML(i.title)}</b>${i.hint?`<span>${escapeHTML(i.hint)}</span>`:''}`; h.dataset.id=el.dataset.info; }
+  const i=islandInfo(id);
+  if(h.dataset.id!==id){ h.innerHTML=`<b>${escapeHTML(i.title)}</b>${i.hint?`<span>${escapeHTML(i.hint)}</span>`:''}`; h.dataset.id=id; }
   h.hidden=false;
   const x=Math.min(document.documentElement.clientWidth-h.offsetWidth-8,Math.max(8,e.clientX+14)), y=Math.max(8,e.clientY-h.offsetHeight-12);
   h.style.left=(x+scrollX)+'px'; h.style.top=(y+scrollY)+'px';
@@ -6165,7 +6179,7 @@ function islandInfo(id,o){
   o=o||worldStore(); const n=worldCount(o), st=islandStage(o), [kind,arg]=[id.split(':')[0],id.slice(id.indexOf(':')+1)];
   const stageAt=i=>ISLAND_STAGES[i].at, dateAt=c=>{ const k=o.log[c-1]; return k&&o.builds[k]?fmtDay(o.builds[k].t):''; };
   const bar=(from,to)=>({pct:Math.max(4,Math.min(100,Math.round(100*(n-from)/Math.max(1,to-from)))),label:`${Math.max(0,to-n)} more build${to-n===1?'':'s'}`});
-  const shown=islandModels(o);
+  const shown=islandModelsAny(o);
   const place=(i,title,what)=>{ const s0=ISLAND_STAGES[i], built=n>=s0.at, nx=ISLAND_STAGES[i+1];
     return {title:built?title:`${title} (not built yet)`, hint:built?`Level ${i} of 3 · built`:`Opens at ${s0.at} builds`,
       rows:[['Level',`${i} of 3: ${s0.name}`],['Status',built?`Built ${dateAt(s0.at)||''}`.trim():`${s0.at-n} more build${s0.at-n===1?'':'s'} to build it`],['What it does',what],
@@ -6188,6 +6202,8 @@ function islandInfo(id,o){
       if(arg==='meadow') return {...place(3,'The meadow','Where the village grows'),title:'The meadow',hint:n>=10?'The village stands here':'The village grows here at 10 builds'};
       if(arg==='sea') return {title:'The sea',hint:'Five islands nearby: tap one',rows:destinations().map(d=>[d.name,`${d.names[d.st]}${d.nx?` · ${d.nx-d.n} to go`:' · fully grown'}`])};
       if(arg==='rocks') return {title:'The rocks',hint:'Crabs like it here',rows:[['Good for','Crabs and rock pools (in the decorations)']],actions:n?[{label:'✨ Decorate',fn:()=>$('#isDecor').click()}]:[]};
+      if(arg==='lighthouse') return {title:'The lighthouse',hint:'It lights the way home',rows:[['Stands on','A rock off Bloppitopia'],['Job','Lighting the way home for every boat']]};
+      if(arg==='balloon') return {title:'The balloon',hint:'Floating over Bloppitopia',rows:[['Up here','A hot-air balloon, drifting round'],['Tip','Turn the world with one finger, pinch to zoom']]};
       if(arg==='sky') return {title:'The sky',hint:(o.decor||[]).includes('kite')?'Your kite is flying':'Kites fly here',rows:[['Up here',(o.decor||[]).includes('kite')?'Your kite':'A kite, one day (5 Build Stars)']]};
       break; }
     case 'decor': { const d=DECOR.find(x=>x.id===arg)||{name:arg,cost:0}, gift=(o.free||[]).includes(arg);
@@ -6236,13 +6252,14 @@ function islandTip(id,anchor){
   t.querySelector('.tt-x').focus({preventScroll:true});
 }
 function islandTipHide(back){ const t=$('#isTip'); if(t.hidden) return; t.hidden=true; const a=islandTip.anchor; islandTip.anchor=null; if(back&&a&&a.isConnected) try{ a.focus({preventScroll:true}); }catch(e){} }
-document.addEventListener('pointerdown',e=>{ const t=$('#isTip'); if(!t.hidden&&!t.contains(e.target)&&!e.target.closest('#island [data-info],#buildsGrid [data-mkey]')) islandTipHide(); });
+document.addEventListener('pointerdown',e=>{ const t=$('#isTip'); if(!t.hidden&&!t.contains(e.target)&&!e.target.closest('#isWorld [data-info],#buildsGrid [data-mkey]')) islandTipHide(); });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') islandTipHide(true); });
-document.body.append($('#isTip'),$('#isHover'));   // positioned against the page
+document.body.append($('#isTip'),$('#isHover'));
+$('#isA11y').addEventListener('click',e=>{ const b=e.target.closest('[data-info]'); if(!b) return; const p=ISL3.ok&&isl3Point(b.dataset.info); islandTip(b.dataset.info,p?anchorAt(p.x,p.y):b); });   // positioned against the page
 // Put a model on Bloppitopia (on a free stand) or away (it stays in the list)
 function islandPut(k,on){
   const o=worldStore(); o.away={...(o.away||{}),[k]:on?0:1};
-  if(on){ const sh=islandModels(o), spot=sh.empty[0]; if(spot) o.pos={...(o.pos||{}),[k]:[spot[0],spot[1]]}; }
+  if(on){ const sh=islandModelsAny(o), spot=sh.empty[0]; if(spot) o.pos={...(o.pos||{}),[k]:ISL3.ok?[W2P(spot[0]),W2P(spot[1])]:[spot[0],spot[1]]}; }
   worldSet(o); track(on?'island_put_on':'island_put_away'); sfx.snap(); islandShown=worldCount(o); renderIsland();
 }
 // The other destinations of Bloppitopia: each grows with what the player does there (three drawn stages)
@@ -6271,14 +6288,424 @@ function destinations(){
     {id:'speedway',name:'Blitz Speedway',n:wins,unit:'Longtail win',st:stage(wins,1,5,15),nx:next(wins,1,5,15),names:['Dirt track','Starting line','Circuit','Stadium'],go:()=>homeGo('cpu')},
   ];
 }
+/* ---------- Bloppitopia in 3D ----------
+   A low-poly archipelago: Bloppitopia in the middle (grass on white cliffs, a sand rim), the five islands
+   nearby joined to it by bridges, each built up to its stage, plus a lighthouse rock and a balloon. The
+   player's finished models stand on Bloppitopia as real brick models (their bricks are kept on this device
+   when a build is finished; older ones show their picture). One finger turns the world, two zoom, a tap
+   opens the same cards as the drawn island, and a model can be dragged anywhere on the grass.
+   The drawn island (islandSVG) stays for devices without WebGL. */
+var ISL3={ok:null};   // var: the page switcher can look at it before this line runs
+const SHAPE_KEY='bloppit-shapes-v1';
+function worldShapes(){ try{ return JSON.parse(localStorage.getItem(SHAPE_KEY))||{}; }catch(e){ return {}; } }
+// The bricks of the model just finished, kept small: x y z sx sz c for each brick (local only, newest 40)
+function worldShapeSave(key){
+  try{ if(!model||!model.bricks||!model.bricks.length) return;
+    const b=[]; for(const r of model.bricks) b.push(r.x,r.y,r.z,r.sx,r.sz,r.c);
+    const t=worldShapes(); t[key]={p:model.kind==='picture'?1:0,b,t:Date.now()};
+    const keys=Object.keys(t).sort((a,c)=>t[c].t-t[a].t).slice(0,40), keep={}; for(const k of keys) keep[k]=t[k];
+    localStorage.setItem(SHAPE_KEY,JSON.stringify(keep)); }catch(e){}
+}
+// Positions are kept as whole numbers 0..1000 (the record's format): world -20..20 → 0..1000
+const W2P=v=>Math.round((v+20)*25), P2W=v=>v/25-20;
+// The islands: soft blobs. Bloppitopia in the middle; the others around it.
+function blob3(cx,cz,r,seed,n){ n=n||30; const P=[]; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2, rr=r*(1+.11*Math.sin(3*a+seed)+.07*Math.cos(5*a+seed*2.1)+.03*Math.sin(9*a+seed*.7)); P.push([cx+rr*Math.cos(a),cz+rr*Math.sin(a)]); } return P; }
+const HOME3=blob3(0,0,8.4,1.3,40);
+const NEAR3={ferry:{x:-13.4,z:2.6,r:3.2,seed:2.2},workshop:{x:-9.6,z:-10.0,r:3.0,seed:3.7},brain:{x:1.6,z:-13.6,r:3.2,seed:4.1},speedway:{x:12.6,z:-7.6,r:3.8,seed:5.3},harbour:{x:12.8,z:6.4,r:3.2,seed:6.6}};
+const LIGHT3={x:-6.4,z:11.4,r:1.6,seed:7.7};
+const inPoly=(x,z,P)=>{ let c=false; for(let i=0,j=P.length-1;i<P.length;j=i++){ const [xi,zi]=P[i],[xj,zj]=P[j]; if(((zi>z)!==(zj>z))&&(x<(xj-xi)*(z-zi)/(zj-zi)+xi)) c=!c; } return c; };
+const scalePoly=(P,cx,cz,k)=>P.map(([x,z])=>[cx+(x-cx)*k,cz+(z-cz)*k]);
+const onGrass=(x,z)=>inPoly(x,z,scalePoly(HOME3,0,0,.86));
+// Default stands for models on Bloppitopia (the first ones open at the hut, three at the workshop, twelve in the village)
+const STAND_R3=.62;
+const STANDS3=[[-1.6,1.4],[1.2,2.6],[3.2,0.6],[-3.9,3.4],[-1.2,4.7],[2.0,5.1],[4.4,3.4],[-5.6,1.0],[-3.4,-0.9],[5.6,-0.6],[0.4,-0.6],[-5.0,5.4]];
+const HUT3=[-4.6,-3.4], SHOP3=[0.6,-4.6], COTTAGES3=[[4.4,-3.6,'#008F9B'],[6.3,-1.6,'#F4BC22'],[3.0,-5.8,'#0055BF']], WELL3=[5.5,1.8];
+const DECOR3={flag:[-6.6,-1.4],campfire:[-5.4,5.6],bench:[2.0,-2.2],lantern:[-1.6,-2.4],signpost:[-7.0,2.6],rockpool:[6.6,4.4],sandcastle:[-2.8,7.1],hammock:[3.8,6.6],kite:[2.0,-1.0],palm:[7.0,-4.2],crab:[0.6,7.5],buoy:[9.7,4.6]};
+
+// Materials, made once
+function m3(c,o){ const k=c+JSON.stringify(o||{}); ISL3.mats=ISL3.mats||new Map(); if(ISL3.mats.has(k)) return ISL3.mats.get(k);
+  const m=new THREE.MeshStandardMaterial(Object.assign({color:new THREE.Color(c).convertSRGBToLinear(),roughness:.85,metalness:0,flatShading:true},o||{})); ISL3.mats.set(k,m); return m; }
+const GHOST3=()=>ISL3.ghost||(ISL3.ghost=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.32,depthWrite:false}));
+function mesh3(geo,mat,x,y,z,o){ const m=new THREE.Mesh(geo,mat); m.position.set(x||0,y||0,z||0); m.castShadow=true; m.receiveShadow=true; if(o) Object.assign(m.rotation,o); return m; }
+const box3=(w,h,d,c,x,y,z,o)=>mesh3(new THREE.BoxGeometry(w,h,d),m3(c),x,y+h/2,z,o);
+const cyl3=(r1,r2,h,seg,c,x,y,z,o)=>mesh3(new THREE.CylinderGeometry(r1,r2,h,seg),m3(c),x,y+h/2,z,o);
+function ghostify(g){ g.traverse(o=>{ if(o.isMesh){ o.material=GHOST3(); o.castShadow=false; } }); return g; }
+function tag3(g,info){ g.userData.info=info; return g; }
+// a gable roof over a w×d box at height h
+function gable3(w,d,h,rise,c,over){ over=over||.18; const g=new THREE.Group(), L=Math.hypot(d/2+over,rise), a=Math.atan2(rise,d/2+over);
+  for(const s of [-1,1]){ const p=mesh3(new THREE.BoxGeometry(w+over*2,.12,L),m3(c),0,h+rise/2,s*(d/2+over)/2); p.rotation.x=s*a; g.add(p); }
+  const tri=new THREE.Shape([new THREE.Vector2(-d/2,0),new THREE.Vector2(d/2,0),new THREE.Vector2(0,rise)]), eg=new THREE.ExtrudeGeometry(tri,{depth:w,bevelEnabled:false});
+  eg.translate(0,0,-w/2); const e=mesh3(eg,m3('#E9D9B8'),0,h,0); e.rotation.y=Math.PI/2; g.add(e); return g; }
+
+// One island: rock cliff (tapering, a little rough), sand rim (Bloppitopia only), grass top. Returns the group.
+function islandBody3(P,cx,cz,seed,sand){
+  const g=new THREE.Group(), rnd=i=>{ const s=Math.sin(i*12.9898+seed*78.233)*43758.5453; return s-Math.floor(s); };
+  const shapeOf=Q=>new THREE.Shape(Q.map(([x,z])=>new THREE.Vector2(x-cx,-(z-cz))));
+  // cliff: extruded down 2.4, narrower at the bottom, jagged
+  const rock=new THREE.ExtrudeGeometry(shapeOf(scalePoly(P,cx,cz,1.02)),{depth:2.4,bevelEnabled:false,steps:2});
+  rock.rotateX(-Math.PI/2); rock.translate(0,-2.4,0);
+  const pos=rock.attributes.position;
+  for(let i=0;i<pos.count;i++){ const y=pos.getY(i), t=Math.max(0,Math.min(1,-y/2.4)), k=1-.34*t*t+(t>0&&t<1?(rnd(i)-.5)*.08:0); pos.setX(i,pos.getX(i)*k); pos.setZ(i,pos.getZ(i)*k); if(t>0&&t<1) pos.setY(i,y+(rnd(i+7)-.5)*.25); }
+  rock.computeVertexNormals();
+  const r=mesh3(rock,[m3('#EFE9DD'),m3('#D9D1C2')],0,0,0); g.add(r);
+  const top=sand?.9:1;
+  if(sand){ const sg=new THREE.ExtrudeGeometry(shapeOf(scalePoly(P,cx,cz,1.0)),{depth:.24,bevelEnabled:true,bevelThickness:.06,bevelSize:.12,bevelSegments:1}); sg.rotateX(-Math.PI/2); sg.translate(0,-.06,0); g.add(mesh3(sg,[m3('#F1DFBC'),m3('#E3C99A')])); }
+  const gg=new THREE.ExtrudeGeometry(shapeOf(scalePoly(P,cx,cz,top)),{depth:.32,bevelEnabled:true,bevelThickness:.05,bevelSize:.08,bevelSegments:1}); gg.rotateX(-Math.PI/2); gg.translate(0,sand?.0:-.05,0);
+  g.add(mesh3(gg,[m3('#6CC24A'),m3('#4E9E3A')]));
+  g.position.set(cx,0,cz); return g;
+}
+const TOP3=.36;   // height of the grass
+function tree3(x,z,s,seed){ s=s||1; const g=new THREE.Group(); g.add(cyl3(.1*s,.15*s,.7*s,5,'#7A4E2E',0,0,0));
+  const c=mesh3(new THREE.IcosahedronGeometry(.55*s,0),m3(seed%3?'#4FB33A':'#3E9E36'),0,1.05*s,0); c.scale.set(1,1.15,1); c.rotation.y=seed; g.add(c);
+  if(seed%2){ const c2=mesh3(new THREE.IcosahedronGeometry(.38*s,0),m3('#5CC046'),.32*s,.75*s,.15*s); g.add(c2); }
+  g.position.set(x,TOP3,z); return g; }
+function lamp3(x,z){ const g=new THREE.Group(); g.add(cyl3(.05,.06,1.3,5,'#3B3F46',0,0,0)); g.add(box3(.22,.22,.22,'#3B3F46',0,1.3,0));
+  const l=mesh3(new THREE.BoxGeometry(.14,.14,.14),m3('#FFE27A',{emissive:new THREE.Color('#FFC83D'),emissiveIntensity:.8}),0,1.41,0); g.add(l); g.position.set(x,TOP3,z); return g; }
+function bench3(x,z,ry){ const g=new THREE.Group(); g.add(box3(.9,.08,.32,'#A86E48',0,.32,0)); g.add(box3(.9,.3,.06,'#A86E48',0,.42,-.15)); g.add(box3(.06,.32,.3,'#5B3B25',-.38,0,0)); g.add(box3(.06,.32,.3,'#5B3B25',.38,0,0)); g.position.set(x,TOP3,z); g.rotation.y=ry||0; return g; }
+function boat3(c,s){ s=s||1; const g=new THREE.Group(); const hull=new THREE.CylinderGeometry(.5*s,.36*s,.32*s,6,1); hull.scale(2,1,1); g.add(mesh3(hull,m3(c),0,.16*s,0));
+  g.add(box3(.7*s,.3*s,.5*s,'#F4F4F4',-.1*s,.32*s,0)); g.add(cyl3(.03,.03,1.1*s,4,'#6B4229',.3*s,.32*s,0));
+  const sail=new THREE.Shape([new THREE.Vector2(0,0),new THREE.Vector2(.7*s,0),new THREE.Vector2(0,.95*s)]); const sm=mesh3(new THREE.ShapeGeometry(sail),m3('#FFFFFF',{side:THREE.DoubleSide}),.33*s,.45*s,0); g.add(sm); g.userData.bob=1; return g; }
+// A plank bridge between two points, gently arched, with rope rails
+function bridge3(a,b,stone){
+  const g=new THREE.Group(), dx=b[0]-a[0], dz=b[1]-a[1], L=Math.hypot(dx,dz), ang=Math.atan2(dx,dz), n=Math.max(4,Math.round(L/.34));
+  const planks=new THREE.InstancedMesh(new THREE.BoxGeometry(stone?1.3:1.1,stone?.22:.09,stone?.36:.26),m3(stone?'#ECE6DA':'#B07A4C'),n), M=new THREE.Matrix4(), Q=new THREE.Quaternion(), S=new THREE.Vector3(1,1,1);
+  const yAt=t=>TOP3-.04+Math.sin(Math.PI*t)*(stone?.7:.45);
+  for(let i=0;i<n;i++){ const t=(i+.5)/n, t2=Math.min(1,t+.02), tilt=Math.atan2(yAt(t2)-yAt(t),(t2-t)*L);
+    Q.setFromEuler(new THREE.Euler(-tilt,ang,0,'YXZ')); M.compose(new THREE.Vector3(a[0]+dx*t,yAt(t),a[1]+dz*t),Q,S); planks.setMatrixAt(i,M); }
+  planks.castShadow=true; planks.receiveShadow=true; g.add(planks);
+  const side=new THREE.Vector3(Math.cos(ang),0,-Math.sin(ang)).multiplyScalar(stone?.6:.52), posts=Math.max(2,Math.round(L/1.1));
+  for(const s of [-1,1]){ let prev=null;
+    for(let i=0;i<=posts;i++){ const t=i/posts, p=new THREE.Vector3(a[0]+dx*t,yAt(t),a[1]+dz*t).addScaledVector(side,s);
+      g.add(cyl3(stone?.07:.05,stone?.07:.05,.45,5,stone?'#ECE6DA':'#7A4E2E',p.x,p.y,p.z));
+      const top=p.clone(); top.y+=.42; if(prev){ const mid=prev.clone().add(top).multiplyScalar(.5), len=prev.distanceTo(top); const rail=mesh3(new THREE.CylinderGeometry(.025,.025,len,4),m3(stone?'#ECE6DA':'#C9A27A'),mid.x,mid.y,mid.z); rail.lookAt(top); rail.rotateX(Math.PI/2); g.add(rail); }
+      prev=top; } }
+  return g;
+}
+// Where the line from island A's centre to B's centre leaves A's outline
+function edge3(P,cx,cz,tx,tz){ const a=Math.atan2(tz-cz,tx-cx); let best=P[0], bd=1e9; for(const p of P){ const d=Math.abs(((Math.atan2(p[1]-cz,p[0]-cx)-a+Math.PI*3)%(Math.PI*2))-Math.PI); if(d<bd){ bd=d; best=p; } } return [cx+(best[0]-cx)*.93,cz+(best[1]-cz)*.93]; }
+
+// Buildings on Bloppitopia
+function hut3(){ const g=new THREE.Group(); g.add(box3(1.5,1.05,1.3,'#C58B5A',0,0,0)); const roof=mesh3(new THREE.ConeGeometry(1.3,1.0,4),m3('#E9B949'),0,1.55,0); roof.rotation.y=Math.PI/4; g.add(roof);
+  g.add(box3(.36,.62,.06,'#6B4229',0,0,.66)); g.add(box3(.3,.3,.06,'#6FB7E8',.45,.45,.66)); return g; }
+function shop3(){ const g=new THREE.Group(); g.add(box3(2.6,1.35,1.7,'#C58B5A',0,0,0)); g.add(gable3(2.6,1.7,1.35,.75,'#5B6778'));
+  g.add(box3(.3,.9,.3,'#8A5A3B',.8,1.6,-.3)); g.add(box3(.7,.8,.06,'#3E5468',0,0,.86)); g.add(box3(.4,.32,.06,'#FFF0B0',-.85,.55,.86)); g.add(box3(.4,.32,.06,'#FFF0B0',.85,.55,.86));
+  // the sign: a red two-stud brick over the door
+  g.add(box3(.56,.26,.1,'#D2352B',0,1.05,.9)); for(const sx of [-.13,.13]) g.add(cyl3(.08,.08,.06,10,'#E5463C',sx,1.31,.9));
+  // smoke
+  for(let i=0;i<3;i++){ const p=mesh3(new THREE.IcosahedronGeometry(.16+i*.05,0),new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.75,flatShading:true}),.8,2.6+i*.32,-.3); p.castShadow=false; p.userData.smoke=i; g.add(p); }
+  return g; }
+function cottage3(c){ const g=new THREE.Group(); g.add(box3(1.15,.95,1.0,'#FFF8EA',0,0,0)); g.add(gable3(1.15,1.0,.95,.62,c,.12)); g.add(box3(.3,.52,.06,'#8A5A3B',0,0,.51)); g.add(box3(.24,.2,.06,'#6FB7E8',.34,.5,.51)); g.add(box3(.24,.2,.06,'#6FB7E8',-.34,.5,.51)); return g; }
+function well3(){ const g=new THREE.Group(); g.add(cyl3(.42,.46,.45,8,'#B9C2CF',0,0,0)); g.add(cyl3(.34,.34,.05,8,'#4FA6E0',0,.42,0)); g.add(box3(.06,.8,.06,'#8A5A3B',-.38,.42,0)); g.add(box3(.06,.8,.06,'#8A5A3B',.38,.42,0));
+  const r=mesh3(new THREE.ConeGeometry(.62,.42,4),m3('#5B6778'),0,1.42,0); r.rotation.y=Math.PI/4; g.add(r); return g; }
+function lighthouse3(){ const g=new THREE.Group(); for(let i=0;i<5;i++) g.add(cyl3(.5-i*.05,.55-i*.05,.5,10,i%2?'#D2352B':'#FFFFFF',0,i*.5,0));
+  { const lamp=cyl3(.42,.42,.4,10,'#FFE27A',0,2.5,0); lamp.material=m3('#FFE27A',{emissive:new THREE.Color('#FFC83D'),emissiveIntensity:.9}); g.add(lamp); } g.add(mesh3(new THREE.ConeGeometry(.55,.55,10),m3('#D2352B'),0,3.18,0)); return g; }
+function balloon3(){ const g=new THREE.Group(), cv=document.createElement('canvas'); cv.width=256; cv.height=64; const x=cv.getContext('2d');
+  for(let i=0;i<8;i++){ x.fillStyle=i%2?'#F4BC22':'#D2352B'; x.fillRect(i*32,0,32,64); } x.fillStyle='#0055BF'; x.fillRect(0,46,256,8);
+  const tex=new THREE.CanvasTexture(cv); tex.encoding=THREE.sRGBEncoding;
+  const env=mesh3(new THREE.SphereGeometry(1.1,16,12),new THREE.MeshStandardMaterial({map:tex,roughness:.7}),0,2.2,0); env.scale.set(1,1.18,1); g.add(env);
+  g.add(cyl3(.45,.3,.35,8,'#8A5A3B',0,0,0)); for(const [a,b] of [[-.3,-.3],[.3,-.3],[-.3,.3],[.3,.3]]){ const r=cyl3(.012,.012,1.05,3,'#5B3B25',a,.35,b); g.add(r); }
+  return g; }
+
+// The five islands nearby, built up to their stage (0..3)
+function nearby3(id,st){
+  const g=new THREE.Group(), T=TOP3;
+  const lot=()=>{ for(const [a,b] of [[-.9,-.7],[.9,-.7],[.9,.7],[-.9,.7]]) g.add(cyl3(.05,.05,.45,4,'#C9A27A',a,T,b)); const rope=(x1,z1,x2,z2)=>{ const L=Math.hypot(x2-x1,z2-z1), r=mesh3(new THREE.BoxGeometry(.03,.03,L),m3('#E6D2A8'),(x1+x2)/2,T+.38,(z1+z2)/2); r.rotation.y=Math.atan2(x2-x1,z2-z1); g.add(r); };
+    rope(-.9,-.7,.9,-.7); rope(.9,-.7,.9,.7); rope(.9,.7,-.9,.7); rope(-.9,.7,-.9,-.7); g.add(box3(.5,.32,.06,'#F4E1B5',0,T+.3,.9)); g.add(box3(.05,.35,.05,'#8A5A3B',0,T,.9)); };
+  if(id==='ferry'){
+    const pier=new THREE.Group(); for(let i=0;i<7;i++) pier.add(box3(.95,.08,.3,'#B07A4C',0,T-.05,0+i*.34)); pier.position.set(-2.2,0,-1); pier.rotation.y=-Math.PI/2; g.add(pier);
+    g.add(box3(.06,.9,.06,'#8A5A3B',-.4,T,.9)); g.add(box3(.7,.4,.06,'#F4E1B5',-.4,T+.75,.9));
+    if(st>=1){ const b=boat3('#0055BF',1.1); b.position.set(-4.6,-1.25,-.2); g.add(b); }
+    if(st>=2){ g.add(box3(.8,.75,.7,'#FFF8EA',.6,T,-.4)); const r=mesh3(new THREE.ConeGeometry(.65,.45,4),m3('#008F9B'),.6,T+.97,-.4); r.rotation.y=Math.PI/4; g.add(r); const b2=boat3('#D2352B',.9); b2.position.set(-4.2,-1.25,1.6); g.add(b2); }
+    if(st>=3){ g.add(box3(2.0,1.1,1.2,'#FFFFFF',.6,T,1.0)); g.add(gable3(2.0,1.2,1.1,.5,'#0055BF')); }
+  } else if(id==='workshop'){
+    if(st===0) lot();
+    if(st===1){ g.add(box3(1.2,.85,1.0,'#C58B5A',0,T,0)); g.add(gable3(1.2,1.0,.85,.45,'#D2352B').translateY(T)); }
+    if(st>=2){ g.add(box3(1.8,1.1,1.3,'#FFF8EA',0,T,0)); g.add(gable3(1.8,1.3,1.1,.55,'#81007B').translateY(T)); g.add(box3(.9,.55,.06,'#9ED3F2',0,T+.3,.66));
+      g.add(box3(.06,.8,.06,'#8A5A3B',1.3,T,.6)); g.add(box3(.5,.4,.05,'#FFFFFF',1.3,T+.65,.62)); }
+    if(st>=3){ g.add(mesh3(new THREE.SphereGeometry(.7,10,6,0,Math.PI*2,0,Math.PI/2),m3('#E8F1F8'),-1.4,T,-.6)); g.add(cyl3(.03,.03,1.4,4,'#5B6778',-1.4,T+.6,-.6)); g.add(mesh3(new THREE.IcosahedronGeometry(.1,0),m3('#F4BC22',{emissive:new THREE.Color('#F4BC22'),emissiveIntensity:1}),-1.4,T+2.05,-.6)); }
+  } else if(id==='brain'){
+    if(st===0) lot();
+    if(st>=1){ g.add(box3(1.5,1.0,1.1,'#FFF8EA',0,T,0)); g.add(gable3(1.5,1.1,1.0,.55,'#D2352B').translateY(T)); g.add(box3(.3,.55,.3,'#FFF8EA',0,T+1.5,0)); const r=mesh3(new THREE.ConeGeometry(.3,.4,4),m3('#D2352B'),0,T+2.25,0); r.rotation.y=Math.PI/4; g.add(r); g.add(box3(.34,.55,.06,'#8A5A3B',0,T,.56)); }
+    if(st>=2){ g.add(box3(1.0,.8,.9,'#FFF8EA',-1.25,T,.2)); g.add(gable3(1.0,.9,.8,.42,'#D2352B').translateX(-1.25).translateY(T).translateZ(.2)); for(const x of [-.5,-.15,.15,.5]) g.add(cyl3(.06,.06,.95,6,'#FFFFFF',x,T,.68)); }
+    if(st>=3){ g.add(cyl3(.55,.6,.8,10,'#B9C2CF',1.35,T,-.3)); g.add(mesh3(new THREE.SphereGeometry(.6,12,8,0,Math.PI*2,0,Math.PI/2),m3('#E8F1F8'),1.35,T+.8,-.3)); const tel=cyl3(.1,.12,.9,6,'#3E5468',1.6,T+1.05,-.3); tel.rotation.z=-.7; g.add(tel); }
+  } else if(id==='speedway'){
+    const ring=(r1,r2,c,y)=>{ const s=new THREE.Shape(); s.absellipse(0,0,r2*1.25,r2,0,Math.PI*2); const h=new THREE.Path(); h.absellipse(0,0,r1*1.25,r1,0,Math.PI*2,true); s.holes.push(h);
+      const m=mesh3(new THREE.ShapeGeometry(s,32),m3(c),0,y,0); m.rotation.x=-Math.PI/2; return m; };
+    g.add(ring(1.5,2.3,st>=2?'#5B6778':'#C9A27A',T+.02));
+    if(st>=2){ const d=ring(1.88,1.92,'#FFFFFF',T+.03); g.add(d); }
+    if(st>=1){ const cv=document.createElement('canvas'); cv.width=64; cv.height=16; const x=cv.getContext('2d'); for(let i=0;i<16;i++) for(let j=0;j<4;j++){ x.fillStyle=(i+j)%2?'#14202C':'#FFFFFF'; x.fillRect(i*4,j*4,4,4); }
+      const tex=new THREE.CanvasTexture(cv); g.add(box3(.08,1.2,.08,'#3B3F46',1.9,T,-.95)); g.add(box3(.08,1.2,.08,'#3B3F46',1.9,T,.95));
+      g.add(mesh3(new THREE.BoxGeometry(.06,.3,1.9),new THREE.MeshStandardMaterial({map:tex}),1.9,T+1.1,0)); }
+    if(st>=2){ const car=new THREE.Group(); car.add(box3(.55,.18,.3,'#D2352B',0,0,0)); car.add(box3(.25,.14,.24,'#14202C',-.05,.18,0)); car.position.set(0,T+.04,2.1); car.userData.race=1; g.add(car); }
+    if(st>=3){ for(const s of [-1,1]){ const st3=new THREE.Group(); for(let i=0;i<3;i++) st3.add(box3(2.2,.22,.4,i%2?'#0055BF':'#F4F4F4',0,i*.22,-i*.4)); st3.position.set(0,T,s*3.0); st3.rotation.y=s>0?Math.PI:0; g.add(st3); } }
+    g.add(tree3(-2.9,1.2,.8,3));
+  } else if(id==='harbour'){
+    const jetty=new THREE.Group(); for(let i=0;i<8;i++) jetty.add(box3(1.0,.08,.3,'#B07A4C',0,T-.05,i*.34)); jetty.position.set(1.4,0,1.6); jetty.rotation.y=Math.PI/2.6; g.add(jetty);
+    if(st>=1){ const b=boat3('#D2352B',1.0); b.position.set(3.6,-1.25,3.4); g.add(b); }
+    if(st>=2){ const b=boat3('#0055BF',.9); b.position.set(4.4,-1.25,1.4); g.add(b); g.add(box3(1.2,.9,.9,'#C58B5A',-.6,T,-.4)); g.add(gable3(1.2,.9,.9,.42,'#5B6778').translateX(-.6).translateY(T).translateZ(-.4)); }
+    if(st>=3){ const b=boat3('#F4BC22',.8); b.position.set(2.0,-1.25,4.4); g.add(b); g.add(cyl3(.05,.05,1.6,4,'#5B6778',.9,T,-1.2)); g.add(box3(1.0,.06,.06,'#5B6778',.45,T+1.6,-1.2)); }
+  }
+  return g;
+}
+// The decorations, in 3D
+function decor3(id){
+  const g=new THREE.Group(), T=TOP3;
+  switch(id){
+    case 'flag': g.add(cyl3(.04,.04,1.8,5,'#5B6778',0,T,0)); { const s=new THREE.Shape([new THREE.Vector2(0,0),new THREE.Vector2(.8,-.22),new THREE.Vector2(0,-.44)]); g.add(mesh3(new THREE.ShapeGeometry(s),m3('#F4BC22',{side:THREE.DoubleSide}),0,T+1.78,0)); } break;
+    case 'campfire': for(let i=0;i<4;i++){ const l=cyl3(.06,.06,.6,5,'#6B4229',0,T+.05,0); l.rotation.z=Math.PI/2; l.rotation.y=i*Math.PI/4; g.add(l); }
+      g.add(mesh3(new THREE.ConeGeometry(.22,.55,6),m3('#FE8A18',{emissive:new THREE.Color('#FE8A18'),emissiveIntensity:.9}),0,T+.38,0)); for(let i=0;i<6;i++) g.add(mesh3(new THREE.DodecahedronGeometry(.1,0),m3('#9AA3AD'),Math.cos(i)*.45,T+.05,Math.sin(i)*.45)); break;
+    case 'bench': g.add(bench3(0,0,0.3)); break;
+    case 'lantern': g.add(lamp3(0,0)); break;
+    case 'signpost': g.add(box3(.08,1.3,.08,'#8A5A3B',0,T,0)); g.add(box3(.8,.24,.05,'#F4E1B5',.2,T+1.0,0)); g.add(box3(.7,.24,.05,'#F4E1B5',-.15,T+.65,0,{y:.6})); break;
+    case 'rockpool': g.add(cyl3(.75,.8,.12,9,'#9AA3AD',0,T-.05,0)); g.add(cyl3(.6,.6,.05,9,'#6FB7E8',0,T+.06,0)); break;
+    case 'sandcastle': g.add(box3(.8,.4,.6,'#E3C99A',0,T-.1,0)); for(const [a,b] of [[-.4,-.3],[.4,-.3],[-.4,.3],[.4,.3]]){ g.add(cyl3(.13,.13,.6,6,'#D9B98B',a,T-.1,b)); } g.add(cyl3(.02,.02,.4,4,'#5B6778',0,T+.3,0)); break;
+    case 'hammock': g.add(tree3(-.9,0,.7,2)); g.add(tree3(.9,0,.7,5)); { const h=mesh3(new THREE.TorusGeometry(.9,.07,4,12,Math.PI),m3('#008F9B'),0,T+.9,0); h.rotation.z=Math.PI; g.add(h); } break;
+    case 'kite': { const k=new THREE.Group(); const s=new THREE.Shape([new THREE.Vector2(0,.5),new THREE.Vector2(.35,0),new THREE.Vector2(0,-.6),new THREE.Vector2(-.35,0)]); k.add(mesh3(new THREE.ShapeGeometry(s),m3('#0055BF',{side:THREE.DoubleSide}),0,0,0));
+      const s2=new THREE.Shape([new THREE.Vector2(0,.5),new THREE.Vector2(.35,0),new THREE.Vector2(0,0)]); k.add(mesh3(new THREE.ShapeGeometry(s2),m3('#F4BC22',{side:THREE.DoubleSide}),0,0,.01)); k.position.set(0,5.2,0); k.userData.kite=1; g.add(k);
+      { const str=cyl3(.01,.01,4.6,3,'#14202C',0,T,0); str.rotation.z=.12; g.add(str); } } break;
+    case 'palm': { for(let i=0;i<5;i++){ const s=cyl3(.12-i*.012,.14-i*.012,.5,6,'#8A5A3B',i*.06,T+i*.48,0); g.add(s); }
+      for(let i=0;i<6;i++){ const l=mesh3(new THREE.BoxGeometry(1.2,.04,.32),m3('#3E9E36'),.3,T+2.45,0); l.geometry.translate(.6,0,0); l.rotation.y=i*Math.PI/3; l.rotation.z=-.35; g.add(l); } } break;
+    case 'crab': { const c=mesh3(new THREE.SphereGeometry(.25,8,6),m3('#FE8A18'),0,T-.05+.12,0); c.scale.set(1,.55,.8); g.add(c); for(const s of [-1,1]) g.add(mesh3(new THREE.SphereGeometry(.09,6,4),m3('#FE8A18'),s*.3,T+.12,.18)); } break;
+    case 'buoy': { const b=new THREE.Group(); b.add(cyl3(.28,.36,.4,8,'#D2352B',0,0,0)); b.add(cyl3(.29,.29,.1,8,'#FFFFFF',0,.18,0)); b.add(cyl3(.04,.04,.6,4,'#14202C',0,.4,0)); b.add(mesh3(new THREE.IcosahedronGeometry(.09,0),m3('#F4BC22',{emissive:new THREE.Color('#F4BC22'),emissiveIntensity:.8}),0,1.02,0)); b.position.y=-1.3; b.userData.bob=1; g.add(b); } break;
+  }
+  return g;
+}
+// A sprite for Bloppit, the pup or a model's picture
+function tex3(url){ ISL3.tex=ISL3.tex||{}; if(ISL3.tex[url]) return ISL3.tex[url]; ISL3.pending=(ISL3.pending||0)+1;
+  const t=new THREE.TextureLoader().load(url,()=>isl3Loaded(),undefined,()=>isl3Loaded()); t.encoding=THREE.sRGBEncoding; ISL3.tex[url]=t; return t; }
+function isl3Loaded(){ ISL3.pending=Math.max(0,(ISL3.pending||1)-1); if(ISL3.on) isl3Kick(); else if(!ISL3.pending){ ISL3.sig=''; clearTimeout(ISL3.reT); ISL3.reT=setTimeout(()=>{ try{ renderHomeWorld(); }catch(e){} },50); } }
+function sprite3(url,h,aspect){ const tex=tex3(url);
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,alphaTest:.15})); s.scale.set(h*aspect,h,1); s.center.set(.5,0); return s; }
+function pupTex3(o){
+  const key=pupColorOf(o)+':'+pupStage(o); ISL3.pupT=ISL3.pupT||{}; if(ISL3.pupT[key]) return ISL3.pupT[key];
+  const cv=document.createElement('canvas'); cv.width=239; cv.height=300; const x=cv.getContext('2d'), tex=new THREE.CanvasTexture(cv); tex.encoding=THREE.sRGBEncoding;
+  const body=new Image(), paws=new Image(); let left=2;
+  const draw=()=>{ if(--left) return; x.drawImage(body,0,0); const c=(PUP_COLORS[pupColorOf(o)]||PUP_COLORS[0]).c, B=PUP_BRICK, n=pupStage(o)+1;
+    const fill=(d,f)=>{ const p=new Path2D(d); x.fillStyle=f; x.fill(p); x.lineWidth=1.4; x.strokeStyle='#3B2314'; x.lineJoin='round'; x.stroke(p); };
+    fill(B.side,pupShade(c,-.35)); fill(B.front,pupShade(c,-.12)); fill(B.top,pupShade(c,.18));
+    for(const t of B.studs[n]){ fill(t.side,pupShade(c,-.2)); fill(t.cap,pupShade(c,.28)); x.fillStyle='rgba(255,255,255,.35)'; x.fill(new Path2D(t.hi)); }
+    x.drawImage(paws,0,0); tex.needsUpdate=true; isl3Loaded(); };
+  ISL3.pending=(ISL3.pending||0)+1; body.onload=draw; paws.onload=draw; body.src='/art/pup-body.png'; paws.src='/art/pup-paws.png'; ISL3.pupT[key]=tex; return tex;
+}
+// A finished model as bricks (or its picture when the bricks aren't on this device), sized to stand on a stand
+const geo3=new Map();
+function brick3(sx,sz,tile){ const k=(tile?'t':'b')+sx+'x'+sz; if(geo3.has(k)) return geo3.get(k);
+  let g; if(tile){ g=new THREE.BoxGeometry(sx-.06,.4,sz-.06); g.translate(sx/2,.2,sz/2); }
+  else { const parts=[]; const b=new THREE.BoxGeometry(sx-.04,1.18,sz-.04); b.translate(sx/2,.59,sz/2); parts.push(b);
+    for(let i=0;i<sx;i++) for(let j=0;j<sz;j++){ const s=new THREE.CylinderGeometry(.3,.3,.18,8); s.translate(i+.5,1.27,j+.5); parts.push(s); }
+    g=THREE.BufferGeometryUtils.mergeBufferGeometries(parts); }
+  geo3.set(k,g); return g; }
+function model3(key){
+  const sh=worldShapes()[key], g=new THREE.Group();
+  g.add(cyl3(.62,.68,.14,10,'#E8E2D6',0,TOP3,0));   // the stand
+  if(sh&&sh.b&&sh.b.length>=6){
+    const tile=!!sh.p, groups=new Map(); let minX=1e9,maxX=-1e9,minZ=1e9,maxZ=-1e9,maxY=0;
+    for(let i=0;i<sh.b.length;i+=6){ const [x,y,z,sx,sz,c]=sh.b.slice(i,i+6); const k=sx+'x'+sz+'|'+c; if(!groups.has(k)) groups.set(k,[]); groups.get(k).push([x,y,z]);
+      minX=Math.min(minX,x); maxX=Math.max(maxX,x+sx); minZ=Math.min(minZ,z); maxZ=Math.max(maxZ,z+sz); maxY=Math.max(maxY,(y+1)*(tile?.4:1.2)); }
+    const inner=new THREE.Group(), M=new THREE.Matrix4();
+    for(const [k,list] of groups){ const [s,c]=k.split('|'), [sx,sz]=s.split('x').map(Number);
+      const im=new THREE.InstancedMesh(brick3(sx,sz,tile),mat(+c),list.length); list.forEach(([x,y,z],i)=>{ M.makeTranslation(x,y*(tile?.4:1.2),z); im.setMatrixAt(i,M); }); im.castShadow=true; im.receiveShadow=true; inner.add(im); }
+    const W=maxX-minX, D=maxZ-minZ;
+    inner.position.set(-minX-W/2,0,-minZ-D/2);
+    const holder=new THREE.Group(); holder.add(inner);
+    if(tile){ holder.rotation.x=-Math.PI/2; holder.position.set(0,0,0); }   // a picture stands up like a framed photo
+    const sz=tile?Math.max(W,D):Math.max(W,D), hgt=tile?D:maxY, k=Math.min(1.45/sz,2.3/Math.max(1,hgt));
+    holder.scale.setScalar(k); holder.position.y=TOP3+.16+(tile?D*k/2:0); if(tile) holder.position.z=0;
+    g.add(holder);
+  } else { const u=worldThumb(key); if(u){ const sp=sprite3(u,1.5,4/3); sp.position.y=TOP3+.12; g.add(sp); } else g.add(box3(.8,.6,.8,'#9AA3AD',0,TOP3+.16,0)); }
+  return g;
+}
+
+// The renderer, camera, controls, sea and lights: made once, the first time Bloppitopia is shown
+function isl3Init(){
+  if(ISL3.ok!==null) return ISL3.ok;
+  if(new URLSearchParams(location.search).get('island3d')==='0'){ ISL3.ok=false; return false; }   // the drawn island, on request
+  try{
+    const r=new THREE.WebGLRenderer({antialias:true,alpha:false,preserveDrawingBuffer:true});
+    r.setPixelRatio(Math.min(devicePixelRatio||1,2)); r.outputEncoding=THREE.sRGBEncoding; r.shadowMap.enabled=true; r.shadowMap.type=THREE.PCFSoftShadowMap;
+    r.setClearColor(new THREE.Color('#BFE6F7'));
+    const sc=new THREE.Scene(); sc.fog=new THREE.Fog(new THREE.Color('#BFE6F7').convertSRGBToLinear(),70,140);
+    const camera=new THREE.PerspectiveCamera(34,1.4,.5,300);
+    sc.add(new THREE.HemisphereLight(0xffffff,0x6aa8c8,.62));
+    const sunL=new THREE.DirectionalLight(0xffffff,.95); sunL.position.set(-14,30,16); sunL.castShadow=true; sunL.shadow.mapSize.set(2048,2048);
+    Object.assign(sunL.shadow.camera,{left:-22,right:22,top:22,bottom:-22,near:1,far:80}); sunL.shadow.bias=-.0006; sunL.shadow.normalBias=.02; sc.add(sunL);
+    // the sea, with a lighter shallow ring around each island
+    const sea=new THREE.Mesh(new THREE.PlaneGeometry(400,400),new THREE.MeshStandardMaterial({color:new THREE.Color('#22B4EE').convertSRGBToLinear(),roughness:.5}));
+    sea.rotation.x=-Math.PI/2; sea.position.y=-1.3; sea.receiveShadow=true; sea.userData.info='land:sea'; sc.add(sea);
+    ISL3.r=r; ISL3.sc=sc; ISL3.cam=camera; ISL3.ok=true;
+    r.domElement.className='is3-canvas'; r.domElement.setAttribute('role','img'); r.domElement.setAttribute('aria-label','Bloppitopia and the islands nearby. Drag to turn, pinch to zoom, tap anything to see what it is.');
+    isl3Events(r.domElement);
+    const ctl=new THREE.OrbitControls(camera,r.domElement); ctl.enableDamping=true; ctl.dampingFactor=.09; ctl.enablePan=false;
+    ctl.minDistance=12; ctl.maxDistance=58; ctl.minPolarAngle=.35; ctl.maxPolarAngle=1.12; ctl.target.set(0,0,-1.5);
+    ctl.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN}; ctl.addEventListener('change',isl3Kick); ctl.addEventListener('start',()=>{ ISL3.moved=true; }); ISL3.ctl=ctl;
+    camera.position.set(0,26,33); ctl.update();
+  }catch(e){ ISL3.ok=false; }
+  return ISL3.ok;
+}
+// Build the world from the record (on every change)
+function isl3Build(o){
+  const sc=ISL3.sc; if(ISL3.world){ sc.remove(ISL3.world); ISL3.world.traverse(x=>{ if(x.geometry&&!geo3.has(x.geometry)) x.geometry.dispose(); }); }
+  const W=new THREE.Group(), st=islandStage(o), n=worldCount(o); ISL3.world=W; ISL3.hits=[]; ISL3.labels=[];
+  const add=(g,info,x,z,ry)=>{ if(x!=null) g.position.set(x,g.position.y,z); if(ry) g.rotation.y=ry; if(info) tag3(g,info); W.add(g); return g; };
+  // Bloppitopia
+  add(islandBody3(HOME3,0,0,1.3,true),'land:beach');
+  // pebbles
+  { const pm=new THREE.InstancedMesh(new THREE.CylinderGeometry(.13,.15,.04,6),m3('#F6F2EA'),110), M=new THREE.Matrix4(), path=[[-4.6,-2.4],[-2.6,-1.6],[-.4,-3.0],[.6,-3.6],[2.4,-2.6],[4.4,-2.4],[5.6,-.4]];
+    let k=0; for(let i=0;i<path.length-1;i++){ const [a,b]=path[i],[c,d]=path[i+1]; for(let t=0;t<1&&k<110;t+=.07){ const j1=Math.sin(k*7.1)*.35, j2=Math.cos(k*3.3)*.35; M.makeTranslation(a+(c-a)*t+j1,TOP3+.005,b+(d-b)*t+j2); pm.setMatrixAt(k++,M); } }
+    pm.count=k;
+    pm.receiveShadow=true; W.add(pm); }
+  // buildings by stage (the next one shows as a ghost)
+  { const h=hut3(); if(st<1) ghostify(h); add(h,'place:hut',HUT3[0],HUT3[1],.35); h.position.y=TOP3; }
+  if(st>=1){ const s=shop3(); if(st<2) ghostify(s); add(s,'place:workshop',SHOP3[0],SHOP3[1],-.1); s.position.y=TOP3; }
+  if(st>=2){ const v=new THREE.Group(); COTTAGES3.forEach(([x,z,c],i)=>{ const ct=cottage3(c); ct.position.set(x,TOP3,z); ct.rotation.y=-.5-i*.3; v.add(ct); }); const wl=well3(); wl.position.set(WELL3[0],TOP3,WELL3[1]); v.add(wl);
+    if(st<3) ghostify(v); add(v,'place:village'); }
+  // trees, lamps and benches around the edge
+  [[-6.8,-3.6,1.1],[-7.4,.0,.9],[-6.2,3.8,1],[-2.6,-6.4,1.1],[6.6,2.8,.9],[4.4,5.6,1],[-.2,6.8,.8],[7.2,-.4,.8],[-4.0,6.6,.9]].forEach(([x,z,s],i)=>W.add(tree3(x,z,s,i)));
+  [[-2.4,-1.4],[3.0,-1.6],[-1.0,3.2]].forEach(([x,z])=>W.add(lamp3(x,z)));
+  W.add(bench3(-.6,-1.6,.2));
+  // decorations
+  const tapBox=(w,h,y)=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,w),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); b.visible=false; b.position.y=y; return b; };   // invisible, but taps find it
+  for(const id of o.decor||[]){ const p=DECOR3[id]; if(!p) continue; const d=decor3(id); d.add(id==='kite'?tapBox(1.4,1.6,5.2):tapBox(1.3,1.7,TOP3+.8)); add(d,'decor:'+id,p[0],p[1]); }
+  // models on stands, where the child put them
+  const shown=islandModels3(o); ISL3.shown=shown;
+  for(const [x,z,i] of shown.empty){ const s=cyl3(.62,.68,.14,10,'#E8E2D6',0,TOP3,0); const g=new THREE.Group(); g.add(s); g.children[0].material=m3('#F2EDE3'); add(g,'stand:'+i,x,z); }
+  for(const m of shown.list){ const g=model3(m.key); g.userData.key=m.key; add(g,'model:'+m.key,m.x,m.z,m.ry||0); }
+  // the latest Weekly by the shore, with its flag
+  { const wk=o.log.filter(k=>k.startsWith('w:')).slice(-1)[0]; if(wk){ const g=model3(wk); g.add(box3(.05,1.6,.05,'#14202C',.7,TOP3,0)); g.add(box3(.04,.3,.5,'#008F9B',.7,TOP3+1.3,.25)); add(g,'model:'+wk,-6.0,-5.2+0); } }
+  // Bloppit and the pup
+  { const at=st>=1?[SHOP3[0]-1.7,SHOP3[1]+1.5]:[-4.2,1.6]; const b=sprite3('/art/bud-3q.png',2.2,.75); const g=new THREE.Group(); g.add(b); b.position.y=TOP3; add(g,'bloppit',at[0],at[1]);
+    if(n>0){ const ps=pupStage(o), p=new THREE.Sprite(new THREE.SpriteMaterial({map:pupTex3(o),transparent:true,alphaTest:.15})); const h=[1.3,1.5,1.7][ps]; p.scale.set(h*.8,h,1); p.center.set(.5,0); p.position.y=TOP3; const pg=new THREE.Group(); pg.add(p); pg.userData.bob=2; add(pg,'pup',at[0]+1.25,at[1]+.35); }
+    ISL3.home=at; }
+  if(st===0){ const s=new THREE.Group(); s.add(box3(.08,1.0,.08,'#8A5A3B',0,TOP3,0)); s.add(box3(1.4,.5,.06,'#F4E1B5',0,TOP3+.8,0)); add(s,'stand:0',-1.6,1.4); }
+  // the islands nearby, their bridges, labels
+  for(const d of destinations()){ const N=NEAR3[d.id]; if(!N) continue; const P=blob3(N.x,N.z,N.r,N.seed,24);
+    const g=new THREE.Group(); g.add(islandBody3(P,N.x,N.z,N.seed,false)); const art=nearby3(d.id,d.st); art.position.set(N.x,0,N.z); g.add(art);
+    for(let i=0;i<7;i++){ const a=N.seed*2+i*0.9, rr=N.r*(.72+(i%3)*.06), x=N.x+Math.cos(a)*rr, z=N.z+Math.sin(a)*rr*.95;
+      if(i%3===2){ const r=mesh3(new THREE.DodecahedronGeometry(.22+(i%2)*.1,0),m3('#B9C2CF'),x,TOP3+.08,z); g.add(r); }
+      else if(i%3===1){ const b=mesh3(new THREE.IcosahedronGeometry(.32,0),m3('#58B843'),x,TOP3+.2,z); b.scale.set(1,.7,1); g.add(b); }
+      else g.add(tree3(x,z,.75+(i%2)*.15,i+3)); }
+    add(g,'dest:'+d.id);
+    const a=edge3(HOME3,0,0,N.x,N.z), b=edge3(P,N.x,N.z,0,0); W.add(tag3(bridge3(a,b,d.id==='brain'),'dest:'+d.id));
+    { const L=Math.hypot(N.x,N.z), ux=N.x/L, uz=N.z/L; ISL3.labels.push({id:'dest:'+d.id,name:d.name,sub:d.names[d.st],x:N.x+ux*N.r*.9,z:N.z+uz*N.r*1.0,y:-1.2}); } }
+  // the lighthouse rock and the balloon
+  { const P=blob3(LIGHT3.x,LIGHT3.z,LIGHT3.r,LIGHT3.seed,16); const g=new THREE.Group(); g.add(islandBody3(P,LIGHT3.x,LIGHT3.z,LIGHT3.seed,false)); const l=lighthouse3(); l.position.set(LIGHT3.x,TOP3,LIGHT3.z); g.add(l); add(g,'land:lighthouse'); }
+  { const b=balloon3(); b.position.set(7,7.5,-3); b.userData.balloon=1; add(b,'land:balloon'); }
+  ISL3.sc.add(W);
+  W.traverse(x=>{ if(x.isMesh||x.isSprite||x.isInstancedMesh) ISL3.hits.push(x); });
+  isl3Labels(); isl3Kick();
+}
+// Which models stand where (3D positions; the record keeps them as 0..1000)
+function islandModels3(o){
+  const cap=ISLAND_STAGES[islandStage(o)].slots, pos=o.pos||{}, away=o.away||{};
+  const all=o.log.filter(k=>!k.startsWith('w:')&&o.builds[k]&&away[k]!==1).reverse();
+  const list=[]; for(const k of all){ if(list.length>=cap) break; const p=pos[k]; if(Array.isArray(p)){ const x=P2W(p[0]), z=P2W(p[1]); if(onGrass(x,z)) list.push({key:k,x,z,placed:true}); } }
+  const near=(x,z)=>list.some(m=>Math.hypot(m.x-x,m.z-z)<1.5);
+  const free=STANDS3.slice(0,cap).map(([x,z],i)=>[x,z,i]).filter(([x,z])=>!near(x,z));
+  for(const k of all){ if(list.length>=cap) break; if(list.some(m=>m.key===k)) continue; const f=free.shift(); if(!f) break; list.push({key:k,x:f[0],z:f[1],placed:false}); }
+  return {list,empty:free.slice(0,Math.max(0,cap-list.length)),cap};
+}
+// Labels over the islands (HTML, so they stay sharp), placed every frame
+function isl3Labels(){ const box=ISL3.box; if(!box) return; let L=box.querySelector('.is3-labels'); if(!L){ L=document.createElement('div'); L.className='is3-labels'; box.appendChild(L); }
+  L.innerHTML=ISL3.labels.map((l,i)=>`<span class="is3-label${l.home?' home':''}" data-i="${i}"><b>${escapeHTML(l.name)}</b><small>${escapeHTML(l.sub)}</small></span>`).join(''); }
+function isl3PlaceLabels(){ const box=ISL3.box; if(!box) return; const w=box.clientWidth, h=box.clientHeight, v=new THREE.Vector3();
+  box.querySelectorAll('.is3-label').forEach(el=>{ const l=ISL3.labels[+el.dataset.i]; v.set(l.x,l.y,l.z).project(ISL3.cam); const vis=v.z<1&&Math.abs(v.x)<1.1&&Math.abs(v.y)<1.1;
+    el.style.display=vis?'':'none'; if(!vis) return;
+    const half=el.offsetWidth/2+4, px=Math.max(half,Math.min(w-half,(v.x+1)/2*w)), py=Math.max(4,Math.min(h-el.offsetHeight-4,(1-v.y)/2*h-el.offsetHeight*.3));
+    el.style.transform=`translate(${px.toFixed(1)}px,${py.toFixed(1)}px) translate(-50%,0)`; }); }
+// Size, loop
+const CAM_DIR3=()=>new THREE.Vector3(0,26,33).normalize(), CAM_T3=new THREE.Vector3(0,0,-.6);
+function isl3Fit(cam,aspect){ const v=THREE.MathUtils.degToRad(cam.fov)/2, hf=Math.atan(Math.tan(v)*aspect), need=Math.max(22/Math.tan(hf),15.5/Math.tan(v)*.92);
+  const d=Math.max(22,Math.min(64,need)); cam.position.copy(CAM_T3).addScaledVector(CAM_DIR3(),d); cam.lookAt(CAM_T3); return d; }
+function isl3Size(){ const box=ISL3.box, r=ISL3.r; if(!box) return; const w=box.clientWidth||600, h=Math.round(Math.min(w*.78,innerHeight*.72,720)); box.style.height=h+'px';
+  if(r.domElement.width!==Math.round(w*r.getPixelRatio())||r.domElement.height!==Math.round(h*r.getPixelRatio())){ r.setSize(w,h); ISL3.cam.aspect=w/h; ISL3.cam.updateProjectionMatrix(); if(!ISL3.moved){ const d=isl3Fit(ISL3.cam,w/h); ISL3.ctl.maxDistance=Math.max(58,d+6); ISL3.ctl.target.copy(CAM_T3); ISL3.ctl.update(); } } }
+function isl3Kick(){ ISL3.dirty=true; if(!ISL3.raf&&ISL3.on) ISL3.raf=requestAnimationFrame(isl3Frame); }
+function isl3Frame(now){
+  ISL3.raf=0; if(!ISL3.on) return;
+  // about 30 frames a second is plenty for bobbing boats, and kinder to batteries
+  if(!ISL3.dirty&&!ISL3.dragging&&now-(ISL3.last||0)<31){ ISL3.raf=requestAnimationFrame(isl3Frame); return; } ISL3.last=now;
+  const moving=!reduceMotion; if(ISL3.ctl) ISL3.ctl.update();
+  if(moving&&ISL3.world){ const t=now/1000;
+    ISL3.world.traverse(x=>{ const u=x.userData;
+      if(u.bob===1) x.position.y=(x.userData.y0??(x.userData.y0=x.position.y))+Math.sin(t*1.6+x.position.x)*.06;
+      else if(u.bob===2) x.children[0].position.y=TOP3+Math.abs(Math.sin(t*2.2))*.08;
+      if(u.smoke!=null){ const k=((t*.5+u.smoke/3)%1); x.position.y=2.6+k*1.2; x.material.opacity=.75*(1-k); x.scale.setScalar(.7+k*.8); }
+      if(u.kite){ x.position.x=Math.sin(t*.7)*.5; x.position.y=5.2+Math.sin(t*1.3)*.2; x.rotation.z=Math.sin(t*.9)*.2; }
+      if(u.balloon){ x.position.y=7.5+Math.sin(t*.5)*.4; x.position.x=7+Math.sin(t*.12)*1.2; x.position.z=-3+Math.cos(t*.12)*1.2; }
+      if(u.race){ const a=t*1.1; x.position.x=Math.cos(a)*1.9*1.25; x.position.z=Math.sin(a)*1.9; x.rotation.y=-a-Math.PI/2; } }); }
+  ISL3.r.render(ISL3.sc,ISL3.cam); isl3PlaceLabels(); ISL3.dirty=false;
+  if(ISL3.on&&(moving||ISL3.dragging||(ISL3.ctl&&ISL3.ctl.enableDamping&&ISL3.settle-->0))) ISL3.raf=requestAnimationFrame(isl3Frame);
+}
+// Tap, hover and drag
+function isl3Pick(e){ const r=ISL3.r.domElement.getBoundingClientRect(), v=new THREE.Vector2(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
+  const rc=new THREE.Raycaster(); rc.setFromCamera(v,ISL3.cam); const hits=rc.intersectObjects([...ISL3.hits,ISL3.sc.children.find(x=>x.userData.info==='land:sea')],false);
+  for(const h of hits){ let o=h.object; while(o&&!o.userData.info) o=o.parent; if(o) return {obj:o,info:o.userData.info,point:h.point}; } return null; }
+function isl3Ground(e){ const r=ISL3.r.domElement.getBoundingClientRect(), v=new THREE.Vector2(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
+  const rc=new THREE.Raycaster(); rc.setFromCamera(v,ISL3.cam); const p=new THREE.Vector3(); return rc.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),-TOP3),p)?p:null; }
+const anchorAt=(x,y)=>({getBoundingClientRect:()=>({left:x-1,right:x+1,top:y-1,bottom:y+1,width:2,height:2}),isConnected:true,focus:()=>{ try{ ISL3.r.domElement.focus({preventScroll:true}); }catch(e){} }});
+function isl3Events(cv){
+  cv.tabIndex=0;
+  cv.addEventListener('pointerdown',e=>{ const h=isl3Pick(e); ISL3.down={x:e.clientX,y:e.clientY,t:performance.now(),h,id:e.pointerId,moved:false};
+    if(h&&h.info.startsWith('model:')&&h.obj.userData.key&&ISL3.ctl){ ISL3.ctl.enabled=false; ISL3.down.drag=h.obj; cv.setPointerCapture(e.pointerId); } });
+  cv.addEventListener('pointermove',e=>{ const d=ISL3.down;
+    if(d&&d.drag){ if(!d.moved&&Math.hypot(e.clientX-d.x,e.clientY-d.y)>6){ d.moved=true; ISL3.dragging=true; islandTipHide(); islandHover(null); }
+      if(d.moved){ const p=isl3Ground(e); if(p){ d.drag.position.x=p.x; d.drag.position.z=p.z; d.drag.position.y=.35; } isl3Kick(); } return; }
+    if(d&&Math.hypot(e.clientX-d.x,e.clientY-d.y)>6) d.moved=true;
+    if(e.pointerType==='mouse'&&!d){ const h=isl3Pick(e); cv.style.cursor=h&&!/^land:(sea|sky)$/.test(h.info)?'pointer':'grab'; islandHover(h&&h.info!=='land:sea'?h.info:null,e); } });
+  const up=e=>{ const d=ISL3.down; ISL3.down=null; if(ISL3.ctl) ISL3.ctl.enabled=true; if(!d) return;
+    if(d.drag&&d.moved){ ISL3.dragging=false; let x=d.drag.position.x, z=d.drag.position.z; for(let i=0;i<30&&!onGrass(x,z);i++){ x*=.92; z*=.92; }
+      const o=worldStore(); o.pos={...(o.pos||{}),[d.drag.userData.key]:[W2P(x),W2P(z)]}; worldSet(o); track('island_arranged'); sfx.snap(); islandShown=worldCount(o); renderIsland(); return; }
+    if(e.type==='pointerup'&&!d.moved&&performance.now()-d.t<600&&d.h){ islandHover(null); islandTip(d.h.info,anchorAt(e.clientX,e.clientY)); } };
+  cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up);
+  cv.addEventListener('pointerleave',()=>islandHover(null));
+}
+// Show Bloppitopia in its box (the Island page)
+function isl3Show(box,o){
+  ISL3.box=box; if(!box.contains(ISL3.r.domElement)){ box.innerHTML=''; box.appendChild(ISL3.r.domElement); box.classList.add('is3'); }
+  isl3Build(o); isl3Size(); ISL3.on=true; ISL3.settle=30; isl3Kick();
+  if(!ISL3.ro){ ISL3.ro=new ResizeObserver(()=>{ if(ISL3.on){ isl3Size(); isl3Kick(); } }); ISL3.ro.observe(box); }
+  isl3A11y(o);
+}
+function isl3Hide(){ ISL3.on=false; if(ISL3.raf){ cancelAnimationFrame(ISL3.raf); ISL3.raf=0; } }
+// A screen-point for any thing on the island (the keyboard list, the tests)
+function isl3Point(info){ if(!ISL3.world) return null; let found=null; ISL3.world.traverse(x=>{ if(!found&&x.userData.info===info) found=x; }); if(!found) return null;
+  const b=new THREE.Box3().setFromObject(found), c=b.getCenter(new THREE.Vector3());
+  if(/^(model:|place:|decor:|stand:)/.test(info)) c.y=Math.min(c.y,TOP3+(info.startsWith('place:')?.7:.5));   // aim at the body, not smoke or a kite string
+  if(info==='bloppit'||info==='pup'){ c.copy(found.getWorldPosition(new THREE.Vector3())); c.y=TOP3+(info==='pup'?.6:1.0); }   // sprites stand up from their feet
+  if(info==='decor:kite') c.x=found.getWorldPosition(new THREE.Vector3()).x;
+  if(info==='decor:kite') c.y=TOP3+5.2;
+  c.project(ISL3.cam);
+  const r=ISL3.r.domElement.getBoundingClientRect(); return {x:r.left+(c.x+1)/2*r.width,y:r.top+(1-c.y)/2*r.height}; }
+window.bloppitIslandPoint=isl3Point; window.bloppitIsland3=()=>ISL3;   // for tests
+// Everything on the island as a list of buttons, for keyboards and screen readers (shown when tabbed into)
+function isl3A11y(o){ let L=$('#isA11y'); if(!L) return; const ids=[]; ISL3.world.traverse(x=>{ const i=x.userData.info; if(i&&!ids.includes(i)&&i!=='land:sea') ids.push(i); });
+  L.innerHTML=`<b>On Bloppitopia</b>`+ids.map(i=>`<button type="button" data-info="${escapeHTML(i)}">${escapeHTML(islandInfo(i,o).title)}</button>`).join(''); }
+function isl3Sig(o){ return JSON.stringify([o.log,o.decor,o.pos,o.away,o.pupColor,pupStage(o),destinations().map(d=>d.st),Object.keys(worldShapes()).length]); }
+function isl3Still(o,w,h){
+  if(!isl3Init()) return '';
+  const sig=isl3Sig(o)+w; if(ISL3.on) return ISL3.still||''; if(ISL3.stillSig===sig&&ISL3.still) return ISL3.still;
+  isl3Build(o);
+  const r=ISL3.r, cam=ISL3.cam, pr=r.getPixelRatio(), sz=r.getSize(new THREE.Vector2()), p=cam.position.clone(), q=cam.quaternion.clone(), asp=cam.aspect;
+  r.setPixelRatio(1); r.setSize(w,h,false); cam.aspect=w/h; isl3Fit(cam,w/h); cam.updateProjectionMatrix();
+  r.render(ISL3.sc,cam); const url=r.domElement.toDataURL('image/jpeg',.85);
+  r.setPixelRatio(pr); r.setSize(sz.x,sz.y,false); cam.position.copy(p); cam.quaternion.copy(q); cam.aspect=asp; cam.updateProjectionMatrix();
+  if(ISL3.on) isl3Kick();
+  ISL3.still=url; ISL3.stillSig=ISL3.pending?'':sig; return url;
+}
+function isl3Snap(o){
+  try{ if(!ISL3.on) return; const cv=ISL3.r.domElement, c=document.createElement('canvas'); c.width=900; c.height=Math.round(900*cv.height/cv.width); c.getContext('2d').drawImage(cv,0,0,c.width,c.height);
+    const img=c.toDataURL('image/jpeg',.82); ISL3.still=img; const st=islandStage(o);
+    localStorage.setItem('bloppit-island-v1',JSON.stringify({img,name:pupName(o),n:worldCount(o),stage:ISLAND_STAGES[st].name,t:Date.now()})); renderHomeWorld(); }catch(e){}
+}
+
 let islandShown=-1;
 function renderIsland(){
   const o=worldStore(), stage=islandStage(o), n=worldCount(o), next=ISLAND_STAGES[stage+1];
   const pop=islandShown>=0&&islandShown<n; islandShown=n;
-  $('#island').innerHTML=islandSVG(o,{pop}); islandDrag(); renderIslandIntro(o);
+  if(isl3Init()) isl3Show($('#isWorld'),o); else { $('#isWorld').innerHTML=islandSVG(o,{pop}); islandDrag(); }
+  renderIslandIntro(o);
   $('#isStage').innerHTML=`${ISLAND_STAGES[stage].name}<small>${n} build${n===1?'':'s'} finished · ${worldStars(o)} Build Star${worldStars(o)===1?'':'s'} to spend</small>`;
   $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>The whole village is built. Boats from the jetty go to Friendship Harbour.</span>';
-  $('#isNote').textContent=n?`${pupName(o)||'Your pup'} and Bloppit are home. Tap anything to see what it is${n>1?', and drag a model anywhere on the sand':''}.`:'Finish any build and the first hut rises from the sand. Tap anything to see what it is.';
+  $('#isNote').textContent=n?`${pupName(o)||'Your pup'} and Bloppit are home. Tap anything to see what it is${n>1?`, and drag a model anywhere on the ${ISL3.ok?'grass':'sand'}`:''}${ISL3.ok?'. Turn the world with one finger, pinch to zoom':''}.`:'Finish any build and the first hut rises from the sand. Tap anything to see what it is.';
   $('#isCard').hidden=stage<3; $('#isDecor').hidden=!n;
   renderDecorShop(); renderBuilds();
 }
@@ -6295,7 +6722,7 @@ $('#decorGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-de
 $('#isDecor').onclick=()=>{ const sh=$('#isShop'); sh.hidden=!sh.hidden; if(!sh.hidden) sh.scrollIntoView({behavior:'smooth',block:'start'}); };
 $('#isShopClose').onclick=()=>{ $('#isShop').hidden=true; scrollTo({top:0,behavior:'smooth'}); };
 function renderBuilds(){
-  const o=worldStore(), keys=[...o.log].reverse(), shownKeys=new Set(islandModels(o).list.map(m=>m.key));
+  const o=worldStore(), keys=[...o.log].reverse(), shownKeys=new Set(islandModelsAny(o).list.map(m=>m.key));
   const B=Object.values(o.builds), clean=B.filter(b=>(b.s||0)>=3).length, nohint=B.filter(b=>(b.s||0)>=2).length, mem=B.filter(b=>b.m).length;
   $('#isBuildsNote').innerHTML=keys.length?`${keys.length} model${keys.length===1?'':'s'} finished. Stars are the best of every try. <span class="mastery"><b>${clean}</b> clean · <b>${nohint}</b> no hints · <b>${mem}</b> from memory</span>`:'Nothing finished yet.';
   $('#buildsGrid').innerHTML=keys.map(k=>{ const b=o.builds[k], u=worldThumb(k), nm=k.startsWith('w:')?'Weekly Bloppit':(/^m:(.+):\d+$/.exec(k)||/^t:[a-z]+:\d+:(.+)$/.exec(k)||[])[1]||'Your photo';
@@ -6307,11 +6734,12 @@ $('#buildsGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-m
 $('#isCard').onclick=async()=>{
   const o=worldStore(); track('postcard');
   try{
+    const pic=isl3Init()?isl3Still(o,1200,864):'';
     // An SVG drawn as a picture can't fetch files, so the art goes in as data first
-    let svg=islandSVG(o,{uid:'pc'}); const urls=[...new Set([...svg.matchAll(/href="(\/art\/[^"]+)"/g)].map(m=>m[1]))];
+    let svg=pic?'':islandSVG(o,{uid:'pc'}); const urls=[...new Set([...svg.matchAll(/href="(\/art\/[^"]+)"/g)].map(m=>m[1]))];
     for(const u of urls){ const b=await (await fetch(u)).blob(); const d=await new Promise(r=>{ const f=new FileReader(); f.onload=()=>r(f.result); f.readAsDataURL(b); }); svg=svg.split(`href="${u}"`).join(`href="${d}"`); }
     const img=new Image(); img.crossOrigin='anonymous';
-    await new Promise((res,rej)=>{ img.onload=res; img.onerror=rej; img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg); });
+    await new Promise((res,rej)=>{ img.onload=res; img.onerror=rej; img.src=pic||'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg); });
     const c=document.createElement('canvas'); c.width=1200; c.height=964; const x=c.getContext('2d');
     x.drawImage(img,0,0,1200,864); x.fillStyle='#14202C'; x.fillRect(0,864,1200,100);
     x.fillStyle='#fff'; x.font='800 34px Nunito,sans-serif'; x.fillText('Every build you finish grows Bloppitopia.',40,914);
