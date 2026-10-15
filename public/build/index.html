@@ -849,6 +849,16 @@ body.on-home .tabs{visibility:hidden}
 .tab.play5[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
 .is-btns{display:flex;gap:8px;flex-wrap:wrap}
 .is-card{padding:0;overflow:hidden}
+/* Immersive Bloppitopia (the 3D world): edge to edge under the top bar, everything else floats over it */
+body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
+#view-island.immersive>.gm-head{display:none}
+#view-island.immersive .is-card{position:relative;width:100vw;margin-left:calc(50% - 50vw);border:0;border-radius:0;box-shadow:none;background:transparent}
+#view-island.immersive .is-foot{position:absolute;top:10px;left:10px;max-width:calc(100% - 160px);padding:8px 12px;border:0;border-radius:16px;background:rgba(20,32,44,.78);color:#fff;pointer-events:none;display:grid;gap:2px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+#view-island.immersive .is-stage{font-size:17px;line-height:1.15}#view-island.immersive .is-stage small{display:none}
+#view-island.immersive .is-next{font-size:12px;color:rgba(255,255,255,.85);gap:8px}#view-island.immersive .is-next .bar{width:60px;height:6px;background:rgba(255,255,255,.25)}
+#view-island.immersive .is-btns{position:absolute;top:10px;right:10px;flex-direction:column;align-items:flex-end;gap:6px;z-index:2}
+#view-island.immersive .is-btns button{font-size:13px;font-weight:800;padding:7px 12px;border-radius:999px;border:0;background:rgba(255,255,255,.94);color:#14202C;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+@media (min-width:700px){#view-island.immersive .is-foot{top:14px;left:14px;padding:10px 16px}#view-island.immersive .is-stage{font-size:20px}#view-island.immersive .is-btns{top:14px;right:14px}}
 .island{position:relative;background:#CFE9F7}
 /* a long press on the world or the build must never start an iPhone text selection (it also makes the 3D crawl) */
 .island,.island *,.stage,.stage *,.is-foot,.is-btns,button{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
@@ -946,7 +956,8 @@ body.on-home .tabs{visibility:hidden}
 .is3-banner.big{font-size:22px;background:#008F9B}
 @media (max-width:559px){.is3-play{min-width:0;font-size:16px;padding:8px 18px}.is3-play small{font-size:11px}.is3-banner{font-size:15px}.is3-banner.big{font-size:18px}}
 @keyframes is3-in{from{transform:translateY(-10px)}to{transform:none}}
-.is3-whole{position:absolute;top:10px;right:10px;pointer-events:auto;font:inherit;font-weight:800;font-size:13px;padding:6px 12px;border-radius:999px;border:0;background:rgba(255,255,255,.92);color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.18);cursor:pointer}
+.is3-whole{position:absolute;bottom:18px;right:12px;pointer-events:auto;font:inherit;font-weight:800;font-size:13px;padding:8px 12px;border-radius:999px;border:0;background:rgba(255,255,255,.94);color:#14202C;box-shadow:0 2px 8px rgba(0,0,0,.18);cursor:pointer}
+.is3-whole .w-txt{display:none}@media (min-width:700px){.is3-whole .w-txt{display:inline}}
 .is3-play{pointer-events:auto;margin-top:auto;display:grid;justify-items:center;gap:0;min-width:220px;max-width:92%;font-size:18px;padding:10px 22px;border-radius:999px;box-shadow:0 5px 0 #8f1f18,0 8px 18px rgba(0,0,0,.25)}
 .is3-play small{font-family:var(--f-body,inherit);font-size:12px;font-weight:700;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .pup-suggest{width:100%;margin:0 0 8px}
@@ -1478,7 +1489,7 @@ body.on-home .tabs{visibility:hidden}
 <div class="is-tip" id="isTip" role="dialog" hidden></div><div class="is-hover" id="isHover" aria-hidden="true" hidden></div>
 <section class="view" id="view-island" hidden>
   <div class="gm-head"><div><h2>🏝️ Bloppitopia</h2><p class="note" id="isNote">Every build you finish grows your island.</p></div>
-    <div class="is-btns"><button class="ghost" id="isDecor" type="button">✨ Decorate</button><button class="ghost" id="isCard" type="button" hidden>📮 Postcard</button></div></div>
+    <div class="is-btns"><button class="ghost" id="isDecor" type="button">✨ Decorate</button><button class="ghost" id="isCard" type="button" hidden>📮 Postcard</button><button class="ghost" id="isBuildsGo" type="button" hidden>📦 Your builds</button></div></div>
   <div class="card is-intro" id="isIntro" hidden>
     <div class="ii-head"><span class="ii-pup" id="iiPup"></span><div><h2 id="iiTitle">Welcome to Bloppitopia</h2><p id="iiTxt">Your pup lives here with Bloppit.</p></div></div>
     <p style="margin:0">Every build you finish grows the island, and your models stand on it. Build Stars buy decorations.</p>
@@ -6618,11 +6629,14 @@ function isl3PlaceLabels(){ const box=ISL3.box; if(!box) return; const w=box.cli
     const half=el.offsetWidth/2+4, px=Math.max(half,Math.min(w-half,(v.x+1)/2*w)), py=Math.max(4,Math.min(h-el.offsetHeight-4,(1-v.y)/2*h-el.offsetHeight*.3));
     el.style.transform=`translate(${px.toFixed(1)}px,${py.toFixed(1)}px) translate(-50%,0)`; }); }
 // Size, loop
-const CAM_DIR3=()=>new THREE.Vector3(0,27,31).normalize(), CAM_T3=new THREE.Vector3(.4,0,-2.4);
-function isl3Fit(cam,aspect){ const v=THREE.MathUtils.degToRad(cam.fov)/2, hf=Math.atan(Math.tan(v)*aspect), need=Math.max((aspect<1?21:23.5)/Math.tan(hf),19/Math.tan(v)*.92);
-  const d=Math.max(24,Math.min(76,need)); cam.position.copy(CAM_T3).addScaledVector(CAM_DIR3(),d); cam.lookAt(CAM_T3); return d; }
-function isl3Size(){ const box=ISL3.box, r=ISL3.r; if(!box) return; const w=box.clientWidth||600, h=Math.round(w<560?Math.min(w*1.1,innerHeight*.64):Math.min(w*.78,innerHeight*.72,720)); box.style.height=h+'px';
-  if(r.domElement.width!==Math.round(w*r.getPixelRatio())||r.domElement.height!==Math.round(h*r.getPixelRatio())){ r.setSize(w,h); ISL3.cam.aspect=w/h; ISL3.cam.updateProjectionMatrix(); if(!ISL3.moved){ const d=isl3Fit(ISL3.cam,w/h); ISL3.fitD=d; ISL3.ctl.maxDistance=Math.max(70,d+6); ISL3.ctl.target.copy(CAM_T3); ISL3.ctl.update(); } } }
+// Tall screens (phones held upright) look at the world from the side, so its long east-west line runs top to bottom
+const CAM_TALL=a=>a<.8, CAM_DIR3=(a)=>{ if(a==null) a=ISL3&&ISL3.cam?ISL3.cam.aspect:1.5; return (CAM_TALL(a)?new THREE.Vector3(17,40,0):new THREE.Vector3(0,27,31)).normalize(); }, CAM_T3=new THREE.Vector3(.4,0,-2.4);
+function isl3Fit(cam,aspect){ const v=THREE.MathUtils.degToRad(cam.fov)/2, hf=Math.atan(Math.tan(v)*aspect), tall=CAM_TALL(aspect);
+  const need=tall?Math.max(18.5/Math.tan(hf),21.5/Math.tan(v)*.93):Math.max((aspect<1?21:23.5)/Math.tan(hf),19/Math.tan(v)*.92);
+  const d=Math.max(24,Math.min(tall?170:84,need)); cam.position.copy(CAM_T3).addScaledVector(CAM_DIR3(aspect),d); cam.lookAt(CAM_T3); return d; }
+function isl3Size(){ const box=ISL3.box, r=ISL3.r; if(!box) return; if(ISL3.world&&box.clientWidth&&box.clientHeight&&CAM_TALL(box.clientWidth/box.clientHeight)!==!!ISL3.tallBuild&&!ISL3.revealing){ ISL3.tallBuild=!ISL3.tallBuild; ISL3.moved=false; setTimeout(()=>{ try{ renderIsland(); }catch(e){} },0); } const w=box.clientWidth||600, im=box.closest('.immersive'), top=im?(()=>{ const hd=document.querySelector('header.top'); return hd?hd.offsetHeight+(parseFloat(getComputedStyle(hd).top)||0):0; })():0;
+  const h=Math.round(im?Math.max(360,innerHeight-top):w<560?Math.min(w*1.1,innerHeight*.64):Math.min(w*.78,innerHeight*.72,720)); box.style.height=h+'px';
+  if(r.domElement.width!==Math.round(w*r.getPixelRatio())||r.domElement.height!==Math.round(h*r.getPixelRatio())){ r.setSize(w,h); ISL3.cam.aspect=w/h; ISL3.cam.updateProjectionMatrix(); if(!ISL3.moved){ const d=isl3Fit(ISL3.cam,w/h); ISL3.fitD=d; ISL3.ctl.maxDistance=Math.max(70,d+6); ISL3.sc.fog&&(ISL3.sc.fog.far=Math.max(170,d*2.2)); ISL3.ctl.target.copy(CAM_T3); ISL3.ctl.update(); } } }
 function isl3Kick(){ ISL3.dirty=true; if(!ISL3.raf&&ISL3.on) ISL3.raf=requestAnimationFrame(isl3Frame); }
 // Tap, hover and drag
 function isl3Pick(e){ const r=ISL3.r.domElement.getBoundingClientRect(), v=new THREE.Vector2(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
@@ -7003,7 +7017,8 @@ function isl3Build(o){
   // the Longtail you race (the Blitz level picked), on the beach facing Blitz Bay, up to no good
   { const lv=longtailNow(), art=LONGTAIL_ART[lv], g=new THREE.Group(), sp=sprite3(`/art/longtail-${art.id}.png`,2.1,art.aspect); sp.position.y=TOP3; g.add(sp); { const tb=new THREE.Mesh(new THREE.BoxGeometry(1.1,1.9,1.1),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); tb.visible=false; tb.position.y=TOP3+.95; g.add(tb); }
     const [bx,bz]=beachPoint(Math.atan2(ISLES.blitzbay.z,ISLES.blitzbay.x)+.35); g.position.set(bx,0,bz); g.userData.longtail=1; ISL3.longtail=g; ISL3.longtailSprite=sp; add(g,'longtail:'+lv); }
-  for(let i=0;i<5;i++){ const c=cloud3(); c.position.set(-24+i*12,10+(i%2)*2,-18+((i*7)%11)); c.userData.cloud=i; W.add(c); }
+  const box=ISL3.box, tall=ISL3.tallBuild=!!(box&&box.clientWidth&&CAM_TALL(box.clientWidth/(box.clientHeight||box.clientWidth)));   // clouds sit behind the world, whichever way it's seen
+  for(let i=0;i<5;i++){ const c=cloud3(), a=-24+i*12, b=-18+((i*7)%11); if(tall) c.position.set(b-6,10+(i%2)*2,a); else c.position.set(a,10+(i%2)*2,b); c.userData.cloud=i; c.userData.ax=tall?'z':'x'; W.add(c); }
   if(!ISL3.stars){ const g=new THREE.BufferGeometry(), p=[]; for(let i=0;i<260;i++){ const a=Math.random()*Math.PI*2, e=.15+Math.random()*1.2; p.push(Math.cos(a)*90*Math.cos(e),40+Math.sin(e)*60,Math.sin(a)*90*Math.cos(e)-30); }
     g.setAttribute('position',new THREE.Float32BufferAttribute(p,3)); ISL3.stars=new THREE.Points(g,new THREE.PointsMaterial({color:0xffffff,size:.6,transparent:true,opacity:0,fog:false})); ISL3.sc.add(ISL3.stars); }
   ISL3.sc.add(W);
@@ -7086,7 +7101,7 @@ function isl3Animate(x,t){ const u=x.userData;
   if(u.beam){ x.material.opacity=.16+Math.sin(t*1.5)*.06; }
   if(u.twinkle!=null){ const k=(Math.sin(t*3+u.twinkle*1.7)+1)/2; x.scale.setScalar(.25+k*.55); x.material.opacity=.4+k*.6; }
   if(u.mist!=null) x.position.x+=Math.sin(t*.3+u.mist)*.002;
-  if(u.cloud!=null){ x.position.x+=.01; if(x.position.x>40) x.position.x=-40; }
+  if(u.cloud!=null){ const k=u.ax||'x'; x.position[k]+=.01; if(x.position[k]>40) x.position[k]=-40; }
   if(u.zzz){ const k=(t*.4)%1; x.position.y=TOP3+2.0+k*.8; x.material.opacity=1-k; }
   if(u.bloppit&&ISL3.jumpT){ const k=(performance.now()-ISL3.jumpT)/700; x.position.y=k<1?Math.sin(k*Math.PI)*.6:0; if(k>=1) ISL3.jumpT=0; }
 }
@@ -7132,7 +7147,7 @@ function revealText(id,o){ const [k,a,b]=id.split(':');
 function isl3Banner(t,big){ const b=ISL3.box&&ISL3.box.querySelector('.is3-banner'); if(!b) return; b.textContent=t; b.hidden=!t; b.classList.toggle('big',!!big); }
 // The buttons over the world: Play Next (one obvious next step), and the arrival's Build Our First Home
 function isl3Chrome(){ const box=ISL3.box; if(!box) return; let c=box.querySelector('.is3-chrome');
-  if(!c){ c=document.createElement('div'); c.className='is3-chrome'; c.innerHTML='<div class="is3-banner" hidden></div><button class="primary is3-play" type="button"></button><button class="is3-whole" type="button" hidden aria-label="See the whole world" title="See the whole world">⤢ Whole world</button>'; box.appendChild(c);
+  if(!c){ c=document.createElement('div'); c.className='is3-chrome'; c.innerHTML='<div class="is3-banner" hidden></div><button class="primary is3-play" type="button"></button><button class="is3-whole" type="button" hidden aria-label="See the whole world" title="See the whole world">🌍<span class="w-txt"> Whole world</span></button>'; box.appendChild(c);
     c.querySelector('.is3-whole').onclick=()=>{ islandTipHide(); ISL3.zoomAt=null; isl3FlyHome(800); ISL3.fly.done=()=>{ ISL3.moved=false; isl3WholeBtn(); }; };
     c.querySelector('.is3-play').onclick=()=>{ const a=c.querySelector('.is3-play').dataset.act; if(a==='home'){ track('first_home_start'); welcomeStart(); return; } const n=nextBuild(); track('play_next:island'); if(n) n.go(); else homeGo('quick'); }; }
   const b=c.querySelector('.is3-play'), o=worldStore();
@@ -7200,7 +7215,11 @@ function accSave(on){ const o=worldStore(), D=ISL3.accDraft, w=accWear(o); if(on
 function pickOpen(){ const d=$('#pickDlg'); if(!d.open){ d.showModal(); track('pick_offered'); } }
 
 // Show Bloppitopia (the Island page): build it, then reveal whatever is new since the last visit
-function isl3Show(box,o){
+function isl3Immersive(){ const v=$('#view-island'), card=v&&v.querySelector('.is-card'), btns=v&&v.querySelector('.is-btns'); if(!card||!btns) return;
+  v.classList.add('immersive'); v.setAttribute('aria-label','Bloppitopia'); if(btns.parentElement!==card) card.appendChild(btns);
+  const bg=$('#isBuildsGo'); bg.hidden=false; bg.onclick=()=>{ try{ v.querySelector('.is-builds').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}); }catch(e){} }; }
+addEventListener('resize',()=>{ if(ISL3&&ISL3.on){ isl3Size(); isl3Kick(); } });
+function isl3Show(box,o){ isl3Immersive();
   if(ISL3.revealing&&ISL3.on&&ISL3.box===box) return;   // a reveal is playing: don't pull the world out from under it
   ISL3.box=box; if(!box.contains(ISL3.r.domElement)){ box.innerHTML=''; box.appendChild(ISL3.r.domElement); box.classList.add('is3'); }
   const n=worldCount(o); ISL3.arrival=n===0?(!pupName(o)&&!o.pupAsked&&!o.arrived?(ISL3.arrival==='home'?'home':'boat'):'home'):null;
