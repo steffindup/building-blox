@@ -895,6 +895,7 @@ body.on-home .tabs{visibility:hidden}
 .decor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
 .decor-grid button{display:grid;justify-items:center;gap:6px;padding:12px 8px 10px;border-radius:14px;border:2px solid var(--line);background:var(--page);color:var(--ink);font:inherit;font-weight:800;font-size:14px;cursor:pointer}
 .decor-grid button svg{width:72px;height:72px}
+.decor-grid button.confirm{border-color:#F4BC22;background:#FFF6DA}.decor-grid button.confirm .cost{font-weight:800}
 .decor-grid button .cost{font-size:13px;color:#B98200}.decor-grid button[data-owned] .cost{color:#008F9B}
 .decor-grid button:disabled{opacity:.5;cursor:default}
 .decor-grid button[data-confirm]{border-color:#F4BC22;background:#FFF6D6}
@@ -919,12 +920,13 @@ body.on-home .tabs{visibility:hidden}
 .is-tip .tt-bar{display:grid;gap:4px}.is-tip .tt-bar .bar{height:8px;border-radius:4px;background:var(--bg);overflow:hidden;display:block}.is-tip .tt-bar .bar i{display:block;height:100%;background:#008F9B}
 .is-tip .tt-bar small{color:var(--muted);font-weight:700}
 .is-tip .tt-btns{display:flex;flex-wrap:wrap;gap:8px}
+.is-tip .tt-story{margin:0 0 8px;font-size:14px;line-height:1.45}
 .is-tip .tt-chips{display:flex;flex-wrap:wrap;gap:4px;max-height:132px;overflow:auto}.is-tip .tt-chips span{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--bg);color:var(--muted)}.is-tip .tt-chips span.ok{background:#D9F2EF;color:#00616A}
 .is3-chrome{position:absolute;inset:0;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:12px}
 .is3-banner{pointer-events:none;max-width:90%;text-align:center;padding:8px 16px;border-radius:999px;background:rgba(20,32,44,.86);color:#fff;font-family:var(--f-display);font-size:18px;box-shadow:0 4px 14px rgba(0,0,0,.2);animation:is3-in .4s ease both}
 .is3-banner.big{font-size:22px;background:#008F9B}
 @media (max-width:559px){.is3-play{min-width:0;font-size:16px;padding:8px 18px}.is3-play small{font-size:11px}.is3-banner{font-size:15px}.is3-banner.big{font-size:18px}}
-@keyframes is3-in{from{transform:translateY(-10px);opacity:0}to{transform:none;opacity:1}}
+@keyframes is3-in{from{transform:translateY(-10px)}to{transform:none}}
 .is3-whole{position:absolute;top:10px;right:10px;pointer-events:auto;font:inherit;font-weight:800;font-size:13px;padding:6px 12px;border-radius:999px;border:0;background:rgba(255,255,255,.92);color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.18);cursor:pointer}
 .is3-play{pointer-events:auto;margin-top:auto;display:grid;justify-items:center;gap:0;min-width:220px;max-width:92%;font-size:18px;padding:10px 22px;border-radius:999px;box-shadow:0 5px 0 #8f1f18,0 8px 18px rgba(0,0,0,.25)}
 .is3-play small{font-family:var(--f-body,inherit);font-size:12px;font-weight:700;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
@@ -6206,7 +6208,7 @@ function islandDrag(){
     let x=m.x+(p.x-d.x0), y=m.y+(p.y-d.y0);
     for(let i=0;i<24&&!onLand(x,y-6);i++){ x+=(500-x)*.12; y+=(410-y)*.12; }   // dropped in the sea: walk it back onto the sand
     const o=worldStore(); o.pos={...(o.pos||{}),[d.key]:[Math.round(Math.max(0,Math.min(1000,x))),Math.round(Math.max(0,Math.min(600,y)))]};
-    worldSet(o); track('island_arranged'); sfx.snap(); islandShown=worldCount(o); renderIsland(); };
+    worldSet(o); track(d.drag.userData.decor?'decor_moved':'island_arranged'); sfx.snap(); islandShown=worldCount(o); renderIsland(); };
   svg.addEventListener('pointerup',end); svg.addEventListener('pointercancel',end);
   svg.addEventListener('keydown',e=>{ if(e.key!=='Enter'&&e.key!==' ') return; const el=e.target.closest('[data-info]'); if(!el) return; e.preventDefault(); islandTip(el.dataset.info,el); });
 }
@@ -6262,11 +6264,10 @@ function islandInfo(id,o){
       if(arg==='sea') return {title:'The sea',hint:'Five islands around Home Island: tap one',rows:destinations().map(d=>[d.name,d.n?(d.st===3?`${d.milestone} ✓`:`${Math.min(d.n,d.total)} of ${d.total}${d.next?` · next: ${d.next}`:''}`):`In the mist · play ${ISLES[d.id].game} to find it`])};
       if(arg==='rocks') return {title:'The rocks',hint:'Crabs like it here',rows:[['Good for','Crabs and rock pools (in the decorations)']],actions:n?[{label:'✨ Decorate',fn:()=>$('#isDecor').click()}]:[]};
       if(arg==='lighthouse') return {title:'The lighthouse',hint:'It lights the way home',rows:[['Stands on','A rock off Bloppitopia'],['Job','Lighting the way home for every boat']]};
-      if(arg==='balloon') return {title:'The balloon',hint:'Floating over Bloppitopia',rows:[['Up here','A hot-air balloon, drifting round'],['Tip','Turn the world with one finger, pinch to zoom']]};
       if(arg==='sky') return {title:'The sky',hint:(o.decor||[]).includes('kite')?'Your kite is flying':'Kites fly here',rows:[['Up here',(o.decor||[]).includes('kite')?'Your kite':'A kite, one day (5 Build Stars)']]};
       break; }
     case 'decor': { const d=DECOR.find(x=>x.id===arg)||{name:arg,cost:0}, gift=(o.free||[]).includes(arg);
-      return {title:d.name,hint:gift?'A gift for a Weekly Bloppit':`Bought for ★ ${d.cost}`,rows:[['How you got it',gift?'A gift for finishing a Weekly Bloppit':`Bought with ${d.cost} Build Stars`],['Decorations',`${(o.decor||[]).length} of ${DECOR.length} on Bloppitopia`]]}; }
+      return {title:d.name,hint:gift?'A gift for a Weekly Bloppit':`Bought for ★ ${d.cost}`,rows:[...(arg!=='buoy'?[['Move it',ISL3.ok?'Hold it and drag it anywhere on the island':'Drag it anywhere on the sand']]:[]),['How you got it',gift?'A gift for finishing a Weekly Bloppit':`Bought with ${d.cost} Build Stars`],['Decorations',`${(o.decor||[]).length} of ${DECOR.length} on Bloppitopia`]]}; }
     case 'dest': { const m={ferry:'sunrise',workshop:'brickworks',brain:'brainpeak',speedway:'blitzbay',harbour:'otterwood'}[arg]; if(m) return islandInfo('isle:'+m,o); break; }
     case 'isle': { const I=ISLES[arg]; if(!I) break; const c=isleCount(arg,o), P=PIECES[arg], total=P[P.length-1].at, built=P.filter(x=>c>=x.at), next=P.find(x=>c<x.at);
       if(!c) return {title:'A misty island',hint:`Play ${I.game} to discover it`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Finish your first ${I.unit}`]],actions:[{label:I.play,fn:I.go,primary:true}]};
@@ -6278,8 +6279,12 @@ function islandInfo(id,o){
         garden:['The garden','More flowers bloom with every build'],shop:['Bloppit’s workshop','Opened at 5 builds'],museum:['The museum','Your three best builds are on show'],pick:[o.pick==='lighthouse'?'Your lighthouse':'Your treehouse','You chose it at 10 builds'],harbour:['The harbour',friendCount(o)?`${friendCount(o)} build${friendCount(o)===1?'':'s'} with friends: a boat for every few`:'Build with a friend and a boat ties up here']}[arg]||[arg,''];
       const nx=HOME_PIECES.find(x=>x.at>n&&!x.hide); return {title:H[0],hint:'Home Island',rows:[['Story',H[1]],...(nx?[['Next on Home Island',`${nx.name} at ${nx.at} builds (${nx.at-n} more)`]]:[])],actions:arg==='harbour'?[{label:'Build with a friend',fn:()=>setTab('mp','hub')}]:arg==='home0'?[{label:'🔨 Build our first home',fn:()=>welcomeStart(),primary:true}]:[]}; }
     case 'stand': return {title:'An empty stand',hint:'Your next build stands here',rows:[['Fills with','Your next finished build'],['Stands',`${shown.list.length} of ${shown.cap} in use`],['Tip','Drag any model here, or anywhere on the sand']]};
-    case 'bloppit': return {title:'Bloppit',hint:ISL3.ok?{garden:'Tending the garden',fish:'Fishing off the jetty',read:'Reading a good book',sleep:'Fast asleep. Shh!'}[routine3(isl3Hour())]:'Your build buddy',rows:[['Who','Your build buddy. He always holds the red brick.'],['Lives',ISL3.ok?'On Home Island, with your otter':st>=2?'At the workshop door':'On the beach'],['Built together',`${n} build${n===1?'':'s'}`]],
+    case 'bloppit': return {title:'Bloppit',hint:ISL3.ok?{garden:'Tending the garden',fish:'Fishing off the jetty',read:'Reading a good book',sleep:'Fast asleep. Shh!'}[routine3(isl3Hour())]:'Your build buddy',icon:'<img src="/art/head-bloppit.png" alt="" width="256" height="256">',story:STORIES.bloppit.story,rows:[['Who','Your build buddy. '+STORIES.bloppit.who+'.'],['Loves',STORIES.bloppit.loves],['Secret',STORIES.bloppit.secret],['Lives',ISL3.ok?'On Home Island, with your otter':st>=2?'At the workshop door':'On the beach'],['Built together',`${n} build${n===1?'':'s'}`]],
       actions:[{label:'Build something',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
+    case 'longtail': { const L=CPU_LEVELS[arg], S=STORIES[arg]; if(!L||!S) break; const wins=Object.values(o.builds).filter(b=>b.k==='blitz').length;
+      return {title:L.name,hint:'A Longtail · your Blitz rival',icon:`<img src="/art/head-${LONGTAIL_ART[arg].id}.png" alt="" width="256" height="256">`,story:S.story,
+        rows:[['Who',S.who],['Loves',S.loves],['Secret',S.secret],['Your Blitz wins',String(wins)],['Did you know?',LONGTAIL_FACT]],
+        actions:[{label:`Race ${L.name}`,fn:()=>{ try{ $(CPU_IDS[arg]).checked=true; localStorage.setItem('building-blox-bz-level',arg); bzLevelNote(); }catch(e){} homeGo('cpu'); },primary:true}]}; }
     case 'pup': { const nm=pupName(o), ps=pupStage(o), nx=PUP_STAGES[ps+1], c=PUP_COLORS[pupColorOf(o)];
       const lv=otterLevel(o), nl=levelXP(lv+1), nAcc=ACC.find(a=>!a.legend&&a.lvl>lv);
       return {title:nm||'Your otter',hint:`Level ${lv} ${PUP_STAGES[ps].name} · ${ps+1} stud${ps?'s':''} on its brick`,icon:pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'}),
@@ -6299,7 +6304,7 @@ function islandInfo(id,o){
 function islandTip(id,anchor){
   const t=$('#isTip'), i=islandInfo(id);
   t.innerHTML=`<button class="tt-x" type="button" aria-label="Close">×</button><div class="tt-head">${i.icon?`<span class="tt-ic">${i.icon}</span>`:''}<div><b>${escapeHTML(i.title)}</b>${i.hint?`<small>${escapeHTML(i.hint)}</small>`:''}</div></div>
-    ${(i.rows||[]).length?`<dl>${i.rows.map(([a,b])=>`<dt>${escapeHTML(a)}</dt><dd>${escapeHTML(b)}</dd>`).join('')}</dl>`:''}
+    ${i.story?`<p class="tt-story">${escapeHTML(i.story)}</p>`:''}${(i.rows||[]).length?`<dl>${i.rows.map(([a,b])=>`<dt>${escapeHTML(a)}</dt><dd>${escapeHTML(b)}</dd>`).join('')}</dl>`:''}
     ${(i.chips||[]).length?`<div class="tt-chips">${i.chips.map(([nm,ok])=>`<span class="${ok?'ok':''}">${ok?'✓ ':''}${escapeHTML(nm)}</span>`).join('')}</div>`:''}
     ${i.bar?`<div class="tt-bar"><span class="bar"><i style="width:${i.bar.pct}%"></i></span><small>${escapeHTML(i.bar.label)}</small></div>`:''}
     ${(i.actions||[]).length?`<div class="tt-btns">${i.actions.map((a,j)=>a.off?`<p class="tt-off">${escapeHTML(a.off)}</p>`:`<button type="button" class="${a.primary?'primary sm':'ghost'}" data-a="${j}">${escapeHTML(a.label)}</button>`).join('')}</div>`:''}`;
@@ -6528,7 +6533,8 @@ function isl3Init(){
   if(new URLSearchParams(location.search).get('island3d')==='0'){ ISL3.ok=false; return false; }   // the drawn island, on request
   try{
     const r=new THREE.WebGLRenderer({antialias:true,alpha:false,preserveDrawingBuffer:true});
-    r.setPixelRatio(Math.min(devicePixelRatio||1,2)); r.outputEncoding=THREE.sRGBEncoding; r.shadowMap.enabled=true; r.shadowMap.type=THREE.PCFSoftShadowMap;
+    const lite=/[?&]lite3d=1/.test(location.search);   // tests on machines without a GPU: no shadows, half the pixels
+    r.setPixelRatio(lite?.5:Math.min(devicePixelRatio||1,2)); r.outputEncoding=THREE.sRGBEncoding; r.shadowMap.enabled=!lite; r.shadowMap.type=THREE.PCFSoftShadowMap;
     r.setClearColor(new THREE.Color('#BFE6F7'));
     const sc=new THREE.Scene(); sc.fog=new THREE.Fog(new THREE.Color('#BFE6F7').convertSRGBToLinear(),80,170);
     const camera=new THREE.PerspectiveCamera(34,1.4,.5,300);
@@ -6596,7 +6602,7 @@ function isl3ZoomFollow(){ const Z=ISL3.zoomAt, ctl=ISL3.ctl, cam=ISL3.cam; if(!
 function isl3Focus(info,h){ let x,z,d;
   if(info.startsWith('isle:')){ const I=ISL3.isles[info.slice(5)]; if(!I) return false; x=I.x; z=I.z; d=I.r*3.4+4; }
   else if(info==='land:beach'||info.startsWith('home:')){ x=0; z=0; d=HOME_R*2.9; }
-  else if(info==='bloppit'||info==='pup'){ const p=h&&h.obj?h.obj.getWorldPosition(new THREE.Vector3()):null; if(!p) return false; x=p.x; z=p.z; d=8.5; }
+  else if(info==='bloppit'||info==='pup'||info.startsWith('longtail:')){ const p=h&&h.obj?h.obj.getWorldPosition(new THREE.Vector3()):null; if(!p) return false; x=p.x; z=p.z; d=8.5; }
   else if(info.startsWith('piece:')){ const I=ISL3.isles[info.split(':')[1]]; if(!I) return false; x=I.x; z=I.z; d=I.r*3+3; }
   else return false;
   const cur=ISL3.cam.position.distanceTo(ISL3.ctl.target); if(Math.hypot(ISL3.ctl.target.x-x,ISL3.ctl.target.z-z)<.8&&cur<=d+.5) return false;
@@ -6610,16 +6616,16 @@ function isl3Events(cv){
   const ptsUp=e=>pts.delete(e.pointerId); cv.addEventListener('pointerup',ptsUp,{capture:true}); cv.addEventListener('pointercancel',ptsUp,{capture:true});
   cv.addEventListener('dblclick',e=>{ if(ISL3.revealing||ISL3.arrive) return; const p=isl3Ground(e); if(!p) return; const d=ISL3.cam.position.distanceTo(ISL3.ctl.target); isl3FlyTo(p.x,0,p.z,Math.max(ISL3.ctl.minDistance,d*.55),600); ISL3.moved=true; });
   cv.addEventListener('pointerdown',e=>{ if(ISL3.revealing||ISL3.arrive) return; const h=isl3Pick(e); ISL3.down={x:e.clientX,y:e.clientY,t:performance.now(),h,id:e.pointerId,moved:false};
-    if(h&&h.info.startsWith('model:')&&h.obj.userData.key&&ISL3.ctl){ ISL3.ctl.enabled=false; ISL3.down.drag=h.obj; cv.setPointerCapture(e.pointerId); } });
+    if(h&&/^(model|decor):/.test(h.info)&&h.obj.userData.key&&ISL3.ctl){ ISL3.ctl.enabled=false; ISL3.down.drag=h.obj; cv.setPointerCapture(e.pointerId); } });
   cv.addEventListener('pointermove',e=>{ const d=ISL3.down;
     if(d&&d.drag){ if(!d.moved&&Math.hypot(e.clientX-d.x,e.clientY-d.y)>6){ d.moved=true; ISL3.dragging=true; islandTipHide(); islandHover(null); }
       if(d.moved){ const p=isl3Ground(e); if(p){ d.drag.position.x=p.x; d.drag.position.z=p.z; d.drag.position.y=.35; } isl3Kick(); } return; }
     if(d&&Math.hypot(e.clientX-d.x,e.clientY-d.y)>6) d.moved=true;
     if(e.pointerType==='mouse'&&!d){ const h=isl3Pick(e); cv.style.cursor=h&&!/^land:(sea|sky)$/.test(h.info)?'pointer':'grab'; islandHover(h&&h.info!=='land:sea'?h.info:null,e); } });
   const up=e=>{ const d=ISL3.down; ISL3.down=null; if(ISL3.ctl) ISL3.ctl.enabled=true; if(!d) return;
-    if(d.drag&&d.moved){ ISL3.dragging=false; let x=d.drag.position.x, z=d.drag.position.z; for(let i=0;i<30&&!onGrass(x,z);i++){ x*=.92; z*=.92; }
+    if(d.drag&&d.moved){ ISL3.dragging=false; let x=d.drag.position.x, z=d.drag.position.z; const fits=d.drag.userData.decor?((a,b)=>inPoly(a,b,scalePoly(HOMEP,0,0,.9))):onGrass; for(let i=0;i<30&&!fits(x,z);i++){ x*=.92; z*=.92; }
       const o=worldStore(); o.pos={...(o.pos||{}),[d.drag.userData.key]:[W2P(x),W2P(z)]}; worldSet(o); track('island_arranged'); sfx.snap(); islandShown=worldCount(o); renderIsland(); return; }
-    if(e.type==='pointerup'&&!d.moved&&performance.now()-d.t<600&&d.h){ islandHover(null); if(d.h.info==='bloppit') bloppitCheer(); const info=d.h.info; if(/^(piece|home):/.test(d.h.info)){ const c=d.h.point; isl3Confetti(c.x,c.y+.6,c.z,24); } if(isl3Focus(info,d.h)){ islandTipHide(); clearTimeout(ISL3.tipT); ISL3.tipT=setTimeout(()=>{ const v=ISL3.ctl.target.clone().setY(TOP3).project(ISL3.cam), r=ISL3.r.domElement.getBoundingClientRect(), sx=r.left+(v.x+1)/2*r.width, sy=r.top+(1-v.y)/2*r.height;
+    if(e.type==='pointerup'&&!d.moved&&performance.now()-d.t<600&&d.h){ islandHover(null); if(d.h.info==='bloppit') bloppitCheer(); if(d.h.info.startsWith('longtail:')) longtailSquawk(); const info=d.h.info; if(/^(piece|home):/.test(d.h.info)){ const c=d.h.point; isl3Confetti(c.x,c.y+.6,c.z,24); } if(isl3Focus(info,d.h)){ islandTipHide(); clearTimeout(ISL3.tipT); ISL3.tipT=setTimeout(()=>{ const v=ISL3.ctl.target.clone().setY(TOP3).project(ISL3.cam), r=ISL3.r.domElement.getBoundingClientRect(), sx=r.left+(v.x+1)/2*r.width, sy=r.top+(1-v.y)/2*r.height;
         if(r.width>=700){ const a=anchorAt(sx,sy), R=Math.min(r.width*.2,170); a.getBoundingClientRect=()=>({left:sx-R,right:sx+R,top:sy,bottom:sy,width:2*R,height:0}); a.side=true; islandTip(info,a); }
         else { const a=anchorAt(r.left+r.width/2,r.bottom-4); a.below=true; islandTip(info,a); } },950); }
       else islandTip(info,anchorAt(e.clientX,e.clientY)); } };
@@ -6632,7 +6638,7 @@ function isl3Point(info){ if(!ISL3.world) return null; let found=null;
   if(/^isle:/.test(info)){ const I=ISL3.isles&&ISL3.isles[info.slice(5)]; if(!I) return null; const v=new THREE.Vector3(I.x-I.r*.45,TOP3,I.z+I.r*.45).project(ISL3.cam), r=ISL3.r.domElement.getBoundingClientRect(); return {x:r.left+(v.x+1)/2*r.width,y:r.top+(1-v.y)/2*r.height}; } ISL3.world.traverse(x=>{ if(!found&&x.userData.info===info) found=x; }); if(!found) return null;
   const b=new THREE.Box3().setFromObject(found), c=b.getCenter(new THREE.Vector3());
   if(/^(model:|place:|decor:|stand:)/.test(info)) c.y=Math.min(c.y,TOP3+(info.startsWith('place:')?.7:.5));   // aim at the body, not smoke or a kite string
-  if(info==='bloppit'||info==='pup'){ c.copy(found.getWorldPosition(new THREE.Vector3())); c.y=TOP3+(info==='pup'?.6:1.0); }   // sprites stand up from their feet
+  if(info==='bloppit'||info==='pup'||info.startsWith('longtail:')){ c.copy(found.getWorldPosition(new THREE.Vector3())); c.y=TOP3+(info==='pup'?.6:1.0); }   // sprites stand up from their feet
   if(info==='decor:kite') c.x=found.getWorldPosition(new THREE.Vector3()).x;
   if(info==='decor:kite') c.y=TOP3+5.2;
   c.project(ISL3.cam);
@@ -6641,7 +6647,7 @@ window.bloppitIslandPoint=isl3Point; window.bloppitIsland3=()=>ISL3; window.blop
 // Everything on the island as a list of buttons, for keyboards and screen readers (shown when tabbed into)
 function isl3A11y(o){ let L=$('#isA11y'); if(!L) return; const ids=[]; ISL3.world.traverse(x=>{ const i=x.userData.info; if(i&&!ids.includes(i)&&i!=='land:sea') ids.push(i); });
   L.innerHTML=`<b>On Bloppitopia</b>`+ids.map(i=>`<button type="button" data-info="${escapeHTML(i)}">${escapeHTML(islandInfo(i,o).title)}</button>`).join(''); }
-function isl3Sig(o){ return JSON.stringify([o.log,o.decor,o.pos,o.away,o.pupColor,pupStage(o),Object.keys(ISLES).map(id=>isleCount(id,o)),Object.keys(worldShapes()).length,accWear(o),o.pick,friendCount(o),routine3(isl3Hour())]); }
+function isl3Sig(o){ return JSON.stringify([longtailNow(),o.log,o.decor,o.pos,o.away,o.pupColor,pupStage(o),Object.keys(ISLES).map(id=>isleCount(id,o)),Object.keys(worldShapes()).length,accWear(o),o.pick,friendCount(o),routine3(isl3Hour())]); }
 function isl3Still(o,w,h){
   if(!isl3Init()) return '';
   const sig=isl3Sig(o)+w; if(ISL3.on) return ISL3.still||''; if(ISL3.stillSig===sig&&ISL3.still) return ISL3.still;
@@ -6660,6 +6666,19 @@ function isl3Snap(o){
 }
 
 // Tap Bloppit: a jump and a grin
+// The Longtail on Bloppitopia is the one you race (the Blitz level picked)
+const LONGTAIL_ART={easy:{id:'scraps',aspect:238/300},medium:{id:'swoop',aspect:207/300},hard:{id:'squint',aspect:197/300}};
+function longtailNow(){ try{ const l=localStorage.getItem('building-blox-bz-level'); if(LONGTAIL_ART[l]) return l; }catch(e){} return 'medium'; }
+function beachPoint(a){ const P=scalePoly(HOMEP,0,0,.93); let r=1; while(r<12&&inPoly(Math.cos(a)*(r+.2),Math.sin(a)*(r+.2),P)) r+=.2; return [Math.cos(a)*r,Math.sin(a)*r]; }
+function longtailSquawk(){ ISL3.ltJumpT=performance.now(); try{ sfx.chirp(); }catch(e){} isl3Kick(); }
+// Who they are (tap Bloppit or a Longtail). Gentle, and true to the character sheet: Bloppit's brick is red; Longtails never hold red.
+const STORIES={
+  bloppit:{who:'An otter who loves building more than anything',story:'Long ago a storm washed Bloppit up on a bare little island with nothing but a red brick in his paws. He snapped it to a rock, then found another brick, and another. That island became Bloppitopia.',loves:'The click when two bricks fit, fishing (he always lets the fish go), and a good book in the hammock',secret:'That red brick is the very first brick of Bloppitopia. He has never once put it down.'},
+  easy:{who:'The youngest Longtail, and the scruffiest',story:'Scraps hatched in a cliff hole on the windy side of the island. One feather on his head has stood straight up since the day he was born, and no amount of smoothing will flatten it.',loves:'Shiny bricks. He grabs them, then drops half of them on the way home',secret:'He doesn’t really want to steal bricks. He just wants someone to ask him to build.'},
+  medium:{who:'The fastest Longtail in the sky',story:'Swoop found her goggles in a lost snorkel kit and has worn them ever since. She races everything: boats, clouds, and even her own shadow.',loves:'Going fast. Her nest is full of half-finished builds, because she always rushes off to the next one',secret:'She practises slow, careful building at night, when nobody is watching.'},
+  hard:{who:'The oldest and cleverest Longtail',story:'Squint found his monocle on the beach after a storm. Now he can spot a wonky brick from the top of the lighthouse, and he keeps a little notebook of every brick on Bloppitopia.',loves:'Neat rows, straight walls, and winning (fairly)',secret:'When nobody is looking, he quietly straightens other people’s crooked bricks.'},
+};
+const LONGTAIL_FACT='Real Longtails are white-tailed tropicbirds. They fly back to Bermuda every spring and nest in holes in the cliffs.';
 function bloppitCheer(){ ISL3.jumpT=performance.now(); sfx.chirp(); const s=ISL3.bloppitSprite; if(!s) return; const was=ISL3.bloppitPose; s.material.map=tex3('/art/bud-happy.png'); s.material.needsUpdate=true;
   clearTimeout(ISL3.cheerT); ISL3.cheerT=setTimeout(()=>{ if(ISL3.bloppitSprite===s){ s.material.map=tex3(was); s.material.needsUpdate=true; isl3Kick(); } },1600); isl3Kick(); }
 
@@ -6911,7 +6930,8 @@ function isl3Build(o){
   ISL3.isles.home={x:0,z:0,r:HOME_R};
   // decorations
   const tapBox=(w,h,y)=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,w),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); b.visible=false; b.position.y=y; return b; };
-  for(const id of o.decor||[]){ const p=DECOR3[id]; if(!p) continue; const d=decor3(id); d.add(id==='kite'?tapBox(1.4,1.6,5.2):tapBox(1.3,1.7,TOP3+.8)); add(d,'decor:'+id,p[0],p[1]); }
+  for(const id of o.decor||[]){ const p=DECOR3[id]; if(!p) continue; const d=decor3(id), q=(o.pos||{})['decor:'+id]; d.add(id==='kite'?tapBox(1.4,1.6,5.2):tapBox(1.3,1.7,TOP3+.8)); if(id!=='buoy'){ d.userData.key='decor:'+id; d.userData.decor=id; }
+    add(d,'decor:'+id,q?P2W(q[0]):p[0],q?P2W(q[1]):p[1]); ISL3.decorG=ISL3.decorG||{}; ISL3.decorG[id]=d; }
   // models, where the child put them
   const shown=islandModels3(o); ISL3.shown=shown;
   for(const [x,z,i] of shown.empty){ const g=new THREE.Group(); g.add(cyl3(.62,.68,.14,10,'#F2EDE3',0,TOP3,0)); add(g,'stand:'+i,x,z); }
@@ -6930,8 +6950,10 @@ function isl3Build(o){
     const L=Math.hypot(I.x,I.z), ux=I.x/L, uz=I.z/L, done=c>=PIECES[id][PIECES[id].length-1].at;
     ISL3.labels.push({id:'isle:'+id,name:c>0?I.name:'???',sub:c>0?(done?'Complete ★':`${Math.min(c,PIECES[id].length&&PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at}`):'In the mist',x:I.x+ux*I.r*.95,z:I.z+uz*I.r*1.05,y:-1.2}); }
   ISL3.labels.push({id:'land:beach',name:'Home Island',sub:pupName(o)?`${pupName(o)}’s home`:'Your home',x:0,z:HOME_R*.55,y:.9,home:1});
-  // sky things: the balloon, a few clouds, stars for the night
-  { const b=balloon3(); b.position.set(7,8,-3); b.userData.balloon=1; add(b,'land:balloon'); }
+  // sky things: a few clouds, stars for the night
+  // the Longtail you race (the Blitz level picked), on the beach facing Blitz Bay, up to no good
+  { const lv=longtailNow(), art=LONGTAIL_ART[lv], g=new THREE.Group(), sp=sprite3(`/art/longtail-${art.id}.png`,2.1,art.aspect); sp.position.y=TOP3; g.add(sp); { const tb=new THREE.Mesh(new THREE.BoxGeometry(1.1,1.9,1.1),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); tb.visible=false; tb.position.y=TOP3+.95; g.add(tb); }
+    const [bx,bz]=beachPoint(Math.atan2(ISLES.blitzbay.z,ISLES.blitzbay.x)+.35); g.position.set(bx,0,bz); g.userData.longtail=1; ISL3.longtail=g; ISL3.longtailSprite=sp; add(g,'longtail:'+lv); }
   for(let i=0;i<5;i++){ const c=cloud3(); c.position.set(-24+i*12,10+(i%2)*2,-18+((i*7)%11)); c.userData.cloud=i; W.add(c); }
   if(!ISL3.stars){ const g=new THREE.BufferGeometry(), p=[]; for(let i=0;i<260;i++){ const a=Math.random()*Math.PI*2, e=.15+Math.random()*1.2; p.push(Math.cos(a)*90*Math.cos(e),40+Math.sin(e)*60,Math.sin(a)*90*Math.cos(e)-30); }
     g.setAttribute('position',new THREE.Float32BufferAttribute(p,3)); ISL3.stars=new THREE.Points(g,new THREE.PointsMaterial({color:0xffffff,size:.6,transparent:true,opacity:0,fog:false})); ISL3.sc.add(ISL3.stars); }
@@ -6996,7 +7018,8 @@ function isl3Animate(x,t){ const u=x.userData;
   else if(u.bob===2&&x.children[0]) x.children[0].position.y=TOP3+Math.abs(Math.sin(t*2.2))*.08;
   if(u.smoke!=null){ const y0=u.y0??(u.y0=x.position.y), k=((t*.5+u.smoke/3)%1); x.position.y=y0+k*1.2; x.material.opacity=.75*(1-k); x.scale.setScalar(.7+k*.8); }
   if(u.kite){ x.position.x=Math.sin(t*.7)*.5; x.position.y=5.2+Math.sin(t*1.3)*.2; x.rotation.z=Math.sin(t*.9)*.2; }
-  if(u.balloon){ x.position.y=8+Math.sin(t*.5)*.4; x.position.x=7+Math.sin(t*.08)*4; x.position.z=-3+Math.cos(t*.08)*4; }
+  if(u.longtail){ const now=performance.now(), k=ISL3.ltJumpT?(now-ISL3.ltJumpT)/800:2, idle=(t%4.6)<.45?Math.sin((t%4.6)/.45*Math.PI)*.18:0;   // a little hop now and then, a big one when tapped
+    x.position.y=k<1?Math.sin(k*Math.PI)*.9:idle; if(k>=1) ISL3.ltJumpT=0; const sp=ISL3.longtailSprite; if(sp){ const face=Math.sin(t*.23)>0?1:-1; sp.scale.x=Math.abs(sp.scale.x)*face; sp.material.rotation=k<1?Math.sin(k*Math.PI*2)*.15:Math.sin(t*1.3)*.03; } }
   if(u.race!=null){ const a=t*1.1+u.race; x.position.set(Math.cos(a)*1.95*1.2,TOP3+.04,Math.sin(a)*1.95); x.rotation.y=-a-Math.PI/2; }
   if(u.swing) x.rotation.x=Math.sin(t*1.6)*.35;
   if(u.spin) x.rotation.z=t*.5;
@@ -7175,13 +7198,18 @@ function renderIsland(){
 function renderDecorShop(){
   const o=worldStore(), left=worldStars(o);
   $('#isStars').textContent=`You have ${left} Build Star${left===1?'':'s'}.`;
-  $('#decorGrid').innerHTML=DECOR.map(d=>{ const owned=o.decor.includes(d.id); return `<button type="button" data-decor="${d.id}"${owned?' data-owned="1" disabled':left<d.cost?' disabled':''}><svg viewBox="-64 -136 128 148">${decorSVG(d.id,0,d.id==='kite'?-110:6)}</svg>${d.name}<span class="cost">${owned?((o.free||[]).includes(d.id)?'From a Weekly':'On your island'):`★ ${d.cost}`}</span></button>`; }).join('');
+  $('#decorGrid').innerHTML=DECOR.map(d=>{ const owned=o.decor.includes(d.id); return `<button type="button" data-decor="${d.id}"${owned?' data-owned="1" disabled':left<d.cost?' disabled':''}><svg viewBox="-64 -136 128 148">${decorSVG(d.id,0,d.id==='kite'?-110:6)}</svg>${d.name}<span class="cost">${owned?((o.free||[]).includes(d.id)?'From a Weekly':'On your island'):`Buy · ★ ${d.cost}`}</span></button>`; }).join('');
 }
 $('#decorGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-decor]'); if(!b||b.disabled) return;
   const d=DECOR.find(x=>x.id===b.dataset.decor); if(!d) return;
-  if(!b.dataset.confirm){ b.dataset.confirm='1'; b.querySelector('.cost').textContent=`Tap again: ★ ${d.cost}`; setTimeout(()=>{ delete b.dataset.confirm; if(b.isConnected) b.querySelector('.cost').textContent=`★ ${d.cost}`; },3000); return; }
+  if(!b.dataset.confirm){ b.dataset.confirm='1'; b.classList.add('confirm'); b.querySelector('.cost').textContent=`Tap again to buy`; setTimeout(()=>{ delete b.dataset.confirm; if(b.isConnected){ b.classList.remove('confirm'); b.querySelector('.cost').textContent=`Buy · ★ ${d.cost}`; } },3000); return; }
   const o=worldStore(); if(o.decor.includes(d.id)||worldStars(o)<d.cost) return;
-  o.decor.push(d.id); worldSet(o); track('decor_bought:'+d.id); sfx.chime(); islandShown=-1; renderIsland(); });
+  o.decor.push(d.id); worldSet(o); track('decor_bought:'+d.id); sfx.chime(); islandShown=-1; renderIsland(); decorPlaced(d); });
+// Just bought: close the shop, go to the island, fly to it and say how to move it
+function decorPlaced(d){ $('#isShop').hidden=true; try{ $('#isWorld').scrollIntoView({behavior:'auto',block:'center'}); }catch(e){}
+  if(!ISL3.ok||!ISL3.on||!ISL3.world) return; let g=null; ISL3.world.traverse(x=>{ if(!g&&x.userData.info==='decor:'+d.id) g=x; }); if(!g) return; const p=g.position;
+  isl3FlyTo(p.x,0,p.z,13,900); ISL3.moved=true; isl3Pop&&isl3Pop(g); isl3Confetti(p.x,TOP3+1,p.z,20);
+  clearTimeout(ISL3.decorT); ISL3.decorT=setTimeout(()=>{ isl3Banner(d.id==='buoy'?`Your ${d.name.toLowerCase()} is bobbing by the jetty!`:`Your ${d.name.toLowerCase()} is here! Hold it and drag it anywhere on the island.`,true); ISL3.decorT=setTimeout(()=>isl3Banner(''),6500); },900); }
 $('#isDecor').onclick=()=>{ const sh=$('#isShop'); sh.hidden=!sh.hidden; if(!sh.hidden) sh.scrollIntoView({behavior:'smooth',block:'start'}); };
 $('#isShopClose').onclick=()=>{ $('#isShop').hidden=true; scrollTo({top:0,behavior:'smooth'}); };
 function renderBuilds(){
