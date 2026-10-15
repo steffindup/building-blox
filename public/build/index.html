@@ -840,7 +840,7 @@ body.on-home .tabs{visibility:hidden}
 .is3-label{position:absolute;left:0;top:0;display:grid;justify-items:center;padding:2px 9px 3px;border-radius:12px;background:rgba(20,32,44,.82);color:#fff;white-space:nowrap;line-height:1.1;will-change:transform}
 .is3-label b{font-family:var(--f-display);font-weight:400;font-size:12px}.is3-label small{font-size:9.5px;font-weight:700;opacity:.85}
 @media (min-width:700px){.is3-label b{font-size:15px}.is3-label small{font-size:11px}}
-.is3-label.home{background:#008F9B}.is3-label.home b{font-size:18px}
+.is3-label.is3-hl{background:#008F9B}.is3-label.is3-hl b{font-size:18px}
 .is3-help{position:absolute;right:10px;bottom:10px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.85);font-size:12px;font-weight:800;color:#14202C;pointer-events:none}
 .is-a11y{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .is-a11y:focus-within{position:static;width:auto;height:auto;clip:auto;white-space:normal;display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px}
@@ -918,7 +918,25 @@ body.on-home .tabs{visibility:hidden}
 .is-tip dt{color:var(--muted);font-weight:700}.is-tip dd{margin:0;font-weight:800}
 .is-tip .tt-bar{display:grid;gap:4px}.is-tip .tt-bar .bar{height:8px;border-radius:4px;background:var(--bg);overflow:hidden;display:block}.is-tip .tt-bar .bar i{display:block;height:100%;background:#008F9B}
 .is-tip .tt-bar small{color:var(--muted);font-weight:700}
-.is-tip .tt-btns{display:flex;flex-wrap:wrap;gap:8px}.is-tip .tt-off{margin:0;color:var(--muted);font-size:13px;font-weight:700}
+.is-tip .tt-btns{display:flex;flex-wrap:wrap;gap:8px}
+.is-tip .tt-chips{display:flex;flex-wrap:wrap;gap:4px;max-height:132px;overflow:auto}.is-tip .tt-chips span{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--bg);color:var(--muted)}.is-tip .tt-chips span.ok{background:#D9F2EF;color:#00616A}
+.is3-chrome{position:absolute;inset:0;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:12px}
+.is3-banner{pointer-events:none;max-width:90%;text-align:center;padding:8px 16px;border-radius:999px;background:rgba(20,32,44,.86);color:#fff;font-family:var(--f-display);font-size:18px;box-shadow:0 4px 14px rgba(0,0,0,.2);animation:is3-in .4s ease both}
+.is3-banner.big{font-size:22px;background:#008F9B}
+@media (max-width:559px){.is3-play{min-width:0;font-size:16px;padding:8px 18px}.is3-play small{font-size:11px}.is3-banner{font-size:15px}.is3-banner.big{font-size:18px}}
+@keyframes is3-in{from{transform:translateY(-10px);opacity:0}to{transform:none;opacity:1}}
+.is3-play{pointer-events:auto;margin-top:auto;display:grid;justify-items:center;gap:0;min-width:220px;max-width:92%;font-size:18px;padding:10px 22px;border-radius:999px;box-shadow:0 5px 0 #8f1f18,0 8px 18px rgba(0,0,0,.25)}
+.is3-play small{font-family:var(--f-body,inherit);font-size:12px;font-weight:700;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.pup-suggest{width:100%;margin:0 0 8px}
+.pup-outfit{display:grid;gap:6px;margin:0 0 10px;text-align:left}.pup-outfit span{font-weight:800;font-size:14px}.pup-outfit>div{display:flex;gap:6px;flex-wrap:wrap}
+.pup-outfit button{font:inherit;font-weight:800;font-size:14px;padding:8px 12px;border-radius:12px;border:2px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer}.pup-outfit button[aria-pressed="true"]{border-color:var(--ink);background:#E8F1F8}
+.acc-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;margin:6px 0 12px}
+.acc-list button{font:inherit;font-weight:800;font-size:14px;padding:8px 6px;border-radius:12px;border:2px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer;display:grid;gap:2px}
+.acc-list button small{font-size:11px;font-weight:700;color:var(--muted)}.acc-list button[aria-pressed="true"]{border-color:var(--ink);background:#E8F1F8}.acc-list button:disabled{opacity:.5;cursor:default}
+.pick-two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.pick-two button{font:inherit;display:grid;justify-items:center;gap:4px;padding:16px 10px;border-radius:16px;border:2px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer}
+.pick-two button span{font-size:42px}.pick-two button b{font-family:var(--f-display);font-weight:400;font-size:20px}.pick-two button small{font-size:12px;color:var(--muted);font-weight:700}
+.pick-two button:hover,.pick-two button:focus-visible{border-color:var(--ink)}.is-tip .tt-off{margin:0;color:var(--muted);font-size:13px;font-weight:700}
 .is-hover{position:absolute;z-index:59;pointer-events:none;background:#14202C;color:#fff;border-radius:10px;padding:6px 10px;font-size:13px;display:grid;max-width:240px;box-shadow:0 3px 10px rgba(0,0,0,.2)}
 .is-hover b{font-family:var(--f-display);font-weight:400;font-size:16px}.is-hover span{opacity:.85;font-weight:700}
 .builds-grid div,.builds-grid button{display:grid;justify-items:center;gap:4px;padding:10px 6px 8px;border-radius:14px;background:var(--bg);font-size:13px;font-weight:800;text-align:center}
@@ -1613,9 +1631,24 @@ body.on-home .tabs{visibility:hidden}
     <div><input id="pupIn" type="text" maxlength="14" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done" placeholder="Type a name"><button class="primary sm" type="submit">That’s it!</button></div>
     <p class="pup-err" id="pupErr" hidden>Use letters for its name.</p>
   </form>
+  <button class="ghost pup-suggest" id="pupSuggest" type="button" hidden></button>
+  <div class="pup-outfit" id="pupOutfit" hidden><span>Add a scarf or a hat?</span><div role="group" aria-label="Outfit"><button type="button" data-out="" aria-pressed="true">Not now</button><button type="button" data-out="scarf" aria-pressed="false">🧣 Scarf</button><button type="button" data-out="beanie" aria-pressed="false">🧢 Beanie</button></div></div>
   <button class="ghost pup-pick-t" id="pupPickT" type="button" aria-expanded="false" aria-controls="pupNames">Pick a name</button>
   <div class="pup-names" id="pupNames" role="group" aria-label="Pup names" hidden></div>
   <button class="pup-later" id="pupLater" type="button">Pick later</button>
+</dialog>
+<dialog class="windlg accdlg" id="accDlg" aria-labelledby="accTitle">
+  <div class="pup-pic" id="accPic"></div>
+  <h2 id="accTitle">Wardrobe</h2>
+  <p class="win-best" id="accSub" style="margin-top:0"></p>
+  <div class="acc-list" id="accList" role="group" aria-label="Outfit"></div>
+  <div class="pup-cols" id="accCols" role="radiogroup" aria-label="Colour"></div>
+  <div class="win-btns"><button class="ghost" id="accOff" type="button">Take it off</button><button class="primary sm" id="accOn" type="button">Wear it</button></div>
+</dialog>
+<dialog class="windlg pickdlg" id="pickDlg" aria-labelledby="pickTitle">
+  <h2 id="pickTitle">Ten builds! What shall we build on Home Island?</h2>
+  <p class="win-best" style="margin-top:0">Both are wonderful. Pick the one you like: it’s yours for good.</p>
+  <div class="pick-two"><button type="button" data-pick="treehouse"><span aria-hidden="true">🌳</span><b>A treehouse</b><small>High in a big tree, with a little window</small></button><button type="button" data-pick="lighthouse"><span aria-hidden="true">💡</span><b>A lighthouse</b><small>Red and white, lighting the way home</small></button></div>
 </dialog>
 <dialog class="windlg" id="shareDlg" aria-labelledby="shTitle">
   <img class="share-pic" id="shPic" alt="" hidden>
@@ -4224,6 +4257,9 @@ const SAMPLES=[
    [[36,190,'#2E8B3A'],[204,190,'#0055BF'],[60,60,'#C91A09'],[180,60,'#2E8B3A'],[120,50,'#0055BF']].forEach(([a,b,f])=>x.dot(a,b,9,f));
    return [['front',c]]; }},
  // The first-session build (see "First session" below): six bricks, a brown trunk and a green top. Not in the library.
+ {name:'Little house',theme:'Bermuda',hidden:true,make(){ const [c,x]=sheet(180,180,'#ffffff');
+   x.fillStyle='#F2CD37'; x.fillRect(30,80,120,90); x.poly([[90,8],[170,84],[10,84]],'#0055BF'); x.fillStyle='#6B4229'; x.rr(76,118,30,52,3);
+   return [['front',c]]; }},
  {name:'Little tree',theme:'Fantasy',hidden:true,make(){ const [c,x]=sheet(160,220,'#ffffff');
    x.fillStyle='#6B4229'; x.rr(66,160,28,52,4);
    x.poly([[80,10],[150,100],[10,100]],'#2E8B3A'); x.poly([[80,60],[158,160],[2,160]],'#2E8B3A');
@@ -5805,18 +5841,18 @@ function pupShade(hex,k){ const n=parseInt(hex.slice(1),16), f=c=>Math.round(k>0
 function pupBrick(n,ci){ const c=(PUP_COLORS[ci]||PUP_COLORS[0]).c, B=PUP_BRICK, ln='stroke="#3B2314" stroke-width="1.4" stroke-linejoin="round"';
   return `<path d="${B.side}" fill="${pupShade(c,-.35)}" ${ln}/><path d="${B.front}" fill="${pupShade(c,-.12)}" ${ln}/><path d="${B.top}" fill="${pupShade(c,.18)}" ${ln}/>`
     +B.studs[Math.min(3,Math.max(1,n))].map(t=>`<path d="${t.side}" fill="${pupShade(c,-.2)}" ${ln}/><path d="${t.cap}" fill="${pupShade(c,.28)}" ${ln}/><path d="${t.hi}" fill="#fff" opacity=".35"/>`).join(''); }
-var PUP_ROUND='-10 -5 260 260';  // a round badge: head and brick both inside the circle
+var PUP_ROUND='-16 -38 272 272';  // a round badge: head and brick both inside the circle
 function pupColorOf(o){ return o&&Number.isInteger(o.pupColor)&&o.pupColor>=0&&o.pupColor<PUP_COLORS.length?o.pupColor:0; }
 // The layers alone (for the island, which places them itself), and as a picture. opt: ci colour, n studs, vb crop.
-function pupLayers(ci,n){ return `<image href="/art/pup-body.png" width="239" height="300"/>${pupBrick(n,ci)}<image href="/art/pup-paws.png" width="239" height="300"/>`; }
+function pupLayers(ci,n,o){ const a=o?accSVG(o):{under:'',over:''}; return `<image href="/art/pup-body.png" width="239" height="300"/>${a.under}${pupBrick(n,ci)}<image href="/art/pup-paws.png" width="239" height="300"/>${a.over}`; }
 function pupFig(o,opt){ opt=opt||{}; const ci=opt.ci!=null?opt.ci:pupColorOf(o), n=opt.n||(o&&o.log?pupStage(o)+1:1);
-  return `<svg class="pupfig${opt.cls?' '+opt.cls:''}" viewBox="${opt.vb||'0 0 239 300'}" preserveAspectRatio="${opt.par||'xMidYMid meet'}" aria-hidden="true" focusable="false">${pupLayers(ci,n)}</svg>`; }
+  return `<svg class="pupfig${opt.cls?' '+opt.cls:''}" viewBox="${opt.vb||'0 -40 239 340'}" preserveAspectRatio="${opt.par||'xMidYMid meet'}" aria-hidden="true" focusable="false">${pupLayers(ci,n,o)}</svg>`; }
 // A name the child typed: letters in any language, spaces, ' and -, at most 14 characters (same rule as the server)
 function cleanPupText(v){ return typeof v!=='string'?'':v.normalize('NFC').replace(/[^\p{L}\p{M} '\-]/gu,'').replace(/\s+/g,' ').trim().slice(0,14).trim(); }
 var ISLAND_STAGES=[{name:'Beach',at:0,slots:0},{name:'Hut',at:1,slots:1},{name:'Workshop',at:3,slots:3},{name:'Village',at:10,slots:12}];
 var DECOR=[{id:'flag',name:'Flag',cost:3},{id:'campfire',name:'Campfire',cost:3},{id:'bench',name:'Bench',cost:3},{id:'lantern',name:'Lantern',cost:5},{id:'signpost',name:'Signpost',cost:5},{id:'rockpool',name:'Rock pool',cost:5},
   {id:'sandcastle',name:'Sandcastle',cost:5},{id:'hammock',name:'Hammock',cost:8},{id:'kite',name:'Kite',cost:5},{id:'palm',name:'Palm',cost:8},{id:'crab',name:'Crab',cost:3},{id:'buoy',name:'Buoy',cost:8}];
-function worldStore(){ try{ const o=JSON.parse(localStorage.getItem(pkey(WORLD_KEY))); if(o&&o.builds) return o; }catch(e){} return {xp:0,bonus:0,builds:{},log:[],decor:[],free:[],pupName:-1,pupColor:-1}; }
+function worldStore(){ try{ const o=JSON.parse(localStorage.getItem(pkey(WORLD_KEY))); if(o&&o.builds&&typeof o.builds==='object'){ for(const k of ['log','decor','free']) if(!Array.isArray(o[k])) o[k]=[]; if(typeof o.xp!=='number') o.xp=0; if(typeof o.bonus!=='number') o.bonus=0; return o; } }catch(e){} return {xp:0,bonus:0,builds:{},log:[],decor:[],free:[],pupName:-1,pupColor:-1}; }
 // Join two world records (same rules as the server): best stars per model, higher XP, decorations and the name kept.
 function worldMerge(a,b){
   a=a||{}; b=b||{}; const builds={...(a.builds||{})};
@@ -5825,7 +5861,7 @@ function worldMerge(a,b){
   // The name (typed or picked) and brick colour: whichever was set last (pupAt); a later 'no name yet' never wipes one
   const later=(b.pupAt||0)>(a.pupAt||0)?b:a, other=later===b?a:b, named=w=>(cleanPupText(w.pupText)||w.pupName>=0)?w:null, nw=named(later)||named(other)||{};
   const pn=typeof nw.pupName==='number'&&nw.pupName>=0?nw.pupName:null, pc=[later.pupColor,other.pupColor].find(v=>Number.isInteger(v)&&v>=0);
-  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},pos:{...(a.pos||{}),...(b.pos||{})},away:{...(a.away||{}),...(b.away||{})},draw:[...new Map([...(b.draw||[]),...(a.draw||[])].map(d=>[d.id,d])).values()].sort((x,y)=>(y.t||0)-(x.t||0)).slice(0,12),pupName:pn==null?-1:pn,pupText:cleanPupText(nw.pupText),pupAt:Math.max(a.pupAt||0,b.pupAt||0),pupColor:pc==null?-1:pc,isle:(a.isle||b.isle)?1:0,pupAsked:!!(a.pupAsked||b.pupAsked)};
+  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},pos:{...(a.pos||{}),...(b.pos||{})},away:{...(a.away||{}),...(b.away||{})},draw:[...new Map([...(b.draw||[]),...(a.draw||[])].map(d=>[d.id,d])).values()].sort((x,y)=>(y.t||0)-(x.t||0)).slice(0,12),pupName:pn==null?-1:pn,pupText:cleanPupText(nw.pupText),pupAt:Math.max(a.pupAt||0,b.pupAt||0),pupColor:pc==null?-1:pc,isle:(a.isle||b.isle)?1:0,arrived:(a.arrived||b.arrived)?1:0,pick:a.pick||b.pick||undefined,...(((b.wearAt||0)>(a.wearAt||0)?b:a).wear?{wear:((b.wearAt||0)>(a.wearAt||0)?b:a).wear,wearAt:Math.max(a.wearAt||0,b.wearAt||0)}:{}),pupAsked:!!(a.pupAsked||b.pupAsked)};
 }
 function worldSet(o){ try{ localStorage.setItem(pkey(WORLD_KEY),JSON.stringify(o)); }catch(e){} pupPush(); }
 const worldCount=o=>o.log.length;                                   // distinct models finished
@@ -5922,39 +5958,54 @@ function pupMaybe(then){ const o=worldStore(); if(pupName(o)||worldCount(o)!==1|
 // Meet your pup: its brick colour, then a name. Typing one is the main way; the list and "later" are there too.
 // After the first time, Bloppitopia is introduced (unless something else is already waiting: then()).
 var pupDraft={ci:0};
-function pupOpen(then){
-  const d=$('#pupDlg'), o=worldStore(), has=pupName(o), first=!o.isle;
-  pupDraft={ci:pupColorOf(o)};
-  $('#pupTitle').textContent=has?escapeHTML(has):'Meet your pup!';
+function pupOpen(then,opt){
+  const d=$('#pupDlg'), o=worldStore(), has=pupName(o), first=!o.isle, arr=!!(opt&&opt.arrival);
+  pupDraft={ci:pupColorOf(o),out:''}; ISL3.pupArrival=arr;
+  // On arrival: a suggested name in one tap, and an optional scarf or hat
+  const sug=PUP_NAMES[Math.floor(Math.random()*PUP_NAMES.length)]; $('#pupSuggest').hidden=!arr; $('#pupSuggest').textContent=`Call it ${sug}`; $('#pupSuggest').dataset.pup=PUP_NAMES.indexOf(sug);
+  $('#pupOutfit').hidden=!arr; document.querySelectorAll('#pupOutfit [data-out]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.out==='')));
+  $('#pupTitle').textContent=arr?'Meet your otter!':has?escapeHTML(has):'Meet your pup!';
   $('#pupLead').textContent=has?'Change its brick colour or its name.':'Your own little otter, with its own brick. Pick its colour:';
   $('#pupIn').value=cleanPupText(o.pupText); $('#pupErr').hidden=true;
   $('#pupNames').hidden=true; $('#pupPickT').setAttribute('aria-expanded','false');
   $('#pupNames').innerHTML=PUP_NAMES.map((n,i)=>`<button type="button" data-pup="${i}" aria-pressed="${o.pupName===i&&!o.pupText}">${n}</button>`).join('');
-  $('#pupLater').textContent=has?'Done':'Pick later';
+  $('#pupLater').textContent=has?'Done':'Pick later'; if(arr) $('#pupLead').textContent='Your very own little otter, with its own brick. Pick its colour:';
   pupColsRender();
   d.onclose=()=>{ d.onclose=null; renderHome(); if(then) then(); else if(first&&worldCount(worldStore())) islandIntro(); };
   if(!d.open){ d.showModal(); if(!has) sfx.hatch(); }
 }
 function pupColsRender(){
-  $('#pupPic').innerHTML=pupFig(worldStore(),{ci:pupDraft.ci,vb:PUP_ROUND,par:'xMidYMid slice'});
+  const o=worldStore(), prev=pupDraft.out?{...o,wear:{...accWear(o),[ACC.find(a=>a.id===pupDraft.out).slot]:[pupDraft.out,pupDraft.ci]}}:o;
+  $('#pupPic').innerHTML=pupFig(prev,{ci:pupDraft.ci,vb:PUP_ROUND,par:'xMidYMid slice'});
   $('#pupCols').innerHTML=PUP_COLORS.map((c,i)=>`<button type="button" role="radio" aria-checked="${i===pupDraft.ci}" aria-label="${c.n}" title="${c.n}" data-col="${i}" style="--c:${c.c}"></button>`).join('');
 }
 $('#pupCols').addEventListener('click',e=>{ const b=e.target.closest('[data-col]'); if(!b) return;
   pupDraft.ci=+b.dataset.col; const o=worldStore(); o.pupColor=pupDraft.ci; o.pupAt=Date.now(); worldSet(o); track('pup_colour'); sfx.chirp(); pupColsRender();
   const f=$(`#pupCols [data-col="${pupDraft.ci}"]`); if(f) f.focus(); });
-function pupSave(patch,how){ const o=worldStore(); Object.assign(o,patch,{pupAt:Date.now()}); worldSet(o); track(how); sfx.chime(); $('#pupDlg').close(); }
+function pupSave(patch,how){ const o=worldStore(); Object.assign(o,patch,{pupAt:Date.now()}); pupOutfitSave(o); worldSet(o); track(how); sfx.chime(); $('#pupDlg').close(); }
+function pupOutfitSave(o){ if(!ISL3.pupArrival||!pupDraft.out) return; const a=ACC.find(x=>x.id===pupDraft.out); if(a){ o.wear={...accWear(o),[a.slot]:[a.id,pupDraft.ci]}; o.wearAt=Date.now(); track('acc_wear:'+a.id); } }
+$('#pupSuggest').onclick=()=>pupSave({pupName:+$('#pupSuggest').dataset.pup,pupText:''},'pup_named_suggested');
+$('#pupOutfit').addEventListener('click',e=>{ const b=e.target.closest('[data-out]'); if(!b) return; pupDraft.out=b.dataset.out; document.querySelectorAll('#pupOutfit [data-out]').forEach(x=>x.setAttribute('aria-pressed',String(x===b))); sfx.chirp(); pupColsRender(); });
+// The wardrobe (and a newly earned piece): try one on, pick its colour, wear it or take it off
+$('#accList').addEventListener('click',e=>{ const b=e.target.closest('[data-acc]'); if(!b||b.disabled) return; const a=ACC.find(x=>x.id===b.dataset.acc), w=accWear(worldStore())[a.slot]; ISL3.accDraft={id:a.id,slot:a.slot,ci:w&&w[0]===a.id?w[1]:ISL3.accDraft.ci}; accRender(); });
+$('#accCols').addEventListener('click',e=>{ const b=e.target.closest('[data-col]'); if(!b) return; ISL3.accDraft.ci=+b.dataset.col; accRender(); const f=$(`#accCols [data-col="${b.dataset.col}"]`); if(f) f.focus(); });
+$('#accOn').onclick=()=>{ accSave(true); $('#accDlg').close(); };
+$('#accOff').onclick=()=>{ accSave(false); $('#accDlg').close(); };
+$('#accDlg').addEventListener('cancel',e=>{ e.preventDefault(); $('#accDlg').close(); });
+document.querySelectorAll('#pickDlg [data-pick]').forEach(b=>b.onclick=()=>{ const o=worldStore(); o.pick=b.dataset.pick; worldSet(o); track('pick:'+o.pick); sfx.chime(); $('#pickDlg').close(); renderIsland(); });
+$('#pickDlg').addEventListener('cancel',e=>{ e.preventDefault(); });
 $('#pupOwn').addEventListener('submit',e=>{ e.preventDefault(); const v=cleanPupText($('#pupIn').value);
   if(!v){ $('#pupErr').hidden=false; $('#pupIn').focus(); return; } pupSave({pupText:v,pupName:-1},'pup_named_own'); });
 $('#pupIn').addEventListener('input',()=>{ $('#pupErr').hidden=true; });
 $('#pupPickT').onclick=()=>{ const open=$('#pupNames').hidden; $('#pupNames').hidden=!open; $('#pupPickT').setAttribute('aria-expanded',String(open)); };
 $('#pupNames').addEventListener('click',e=>{ const b=e.target.closest('[data-pup]'); if(!b) return; pupSave({pupName:+b.dataset.pup,pupText:''},'pup_named'); });
-$('#pupLater').onclick=()=>{ if(!pupName(worldStore())) track('pup_name_later'); $('#pupDlg').close(); };
+$('#pupLater').onclick=()=>{ if(!pupName(worldStore())) track('pup_name_later'); const o=worldStore(); if(ISL3.pupArrival&&pupDraft.out){ pupOutfitSave(o); worldSet(o); } $('#pupDlg').close(); };
 $('#pupDlg').addEventListener('cancel',e=>{ e.preventDefault(); $('#pupDlg').close(); });
 // Bloppitopia, introduced once after the pup: the island page with a card on top. The card's buttons are the
 // next steps (what the first-build screen used to offer).
 function islandIntro(){ setTab('island'); }
 function renderIslandIntro(o){
-  const el=$('#isIntro'), show=!o.isle&&worldCount(o)>0; el.hidden=!show; if(!show) return;
+  const el=$('#isIntro'), show=!o.isle&&worldCount(o)>0&&!(ISL3.ok&&o.arrived); el.hidden=!show; if(!show) return;
   const nm=pupName(o);
   $('#iiPup').innerHTML=pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'});
   $('#iiTxt').textContent=nm?`${nm} lives here with Bloppit.`:'Your pup lives here with Bloppit.';
@@ -5973,9 +6024,9 @@ function renderHomeWorld(){
   const pic=isl3Init()?isl3Still(o,900,620):'', isle=pic?`<img src="${pic}" alt="">`:islandSVG(o,{uid:'hm'});
   el.hidden=false; el.classList.add('lead');
   el.setAttribute('aria-label',`Bloppitopia, ${ISLAND_STAGES[is].name}. ${nm||'Your pup'}, ${n} build${n===1?'':'s'}.`);
-  el.innerHTML=`<span class="hw-isle">${isle}<span class="hw-tag">🏝️ Bloppitopia · ${ISLAND_STAGES[is].name}</span></span>
+  el.innerHTML=`<span class="hw-isle">${isle}<span class="hw-tag">🏝️ Bloppitopia · ${ISL3.ok?islandsOpen(o).length+' of 5 islands':ISLAND_STAGES[is].name}</span></span>
     <span class="pup ps-${PUP_STAGES[ps].name.toLowerCase()}">${pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'})}</span>
-    <div class="wt">${nm?`<b>${escapeHTML(nm)} <span class="sub">· ${PUP_STAGES[ps].name}</span></b>`:`<span class="wname" id="wName" role="button" tabindex="0">Name your pup</span>`}
+    <div class="wt">${nm?`<b>${escapeHTML(nm)} <span class="sub">· Level ${otterLevel(o)} ${PUP_STAGES[ps].name}</span></b>`:`<span class="wname" id="wName" role="button" tabindex="0">Name your pup</span>`}
       <span class="sub">${next?`${next.at-n} more build${next.at-n===1?'':'s'} to ${next.name} (another stud on its brick)`:'Legend of Bloppitopia'}</span><span class="bar"><i style="width:${Math.max(4,pct)}%"></i></span></div>
     <div class="wn"><div><b>${n}</b><span>build${n===1?'':'s'}</span></div><div><b class="st">${worldStars(o)}</b><span>Build Stars</span></div><div><b>${worldXP(o)}</b><span>XP</span></div></div>
     ${inext?`<span class="sub" style="grid-column:1/-1;font-size:13px;font-weight:700;color:var(--muted)">${inext.at-n} more build${inext.at-n===1?'':'s'} to the ${inext.name}</span>`:''}`;
@@ -6106,7 +6157,7 @@ function islandSVG(o,opts){
   // Bloppit waits on the beach, then keeps the workshop door; the pup stays at his side
   const [bx,by]=stage>=2?[392,312]:[130,446], ps=pupStage(o), ph=[54,64,74][ps];
   P.push(`<g data-info="bloppit"><ellipse cx="${bx}" cy="${by+2}" rx="26" ry="6" fill="#000" opacity=".12"/><image href="/art/bud-3q.png" x="${bx-36}" y="${by-96}" width="72" height="96" preserveAspectRatio="xMidYMax meet"/></g>`);
-  if(n>0) P.push(`<g data-info="pup"><ellipse cx="${bx+54}" cy="${by+2}" rx="${ph*.34}" ry="5" fill="#000" opacity=".12"/><g class="is-bob"><g transform="translate(${(bx+54-ph*.4+(ph*.8-239*ph/300)/2).toFixed(1)} ${by-ph}) scale(${(ph/300).toFixed(4)})">${pupLayers(pupColorOf(o),ps+1)}</g></g></g>`);
+  if(n>0) P.push(`<g data-info="pup"><ellipse cx="${bx+54}" cy="${by+2}" rx="${ph*.34}" ry="5" fill="#000" opacity=".12"/><g class="is-bob"><g transform="translate(${(bx+54-ph*.4+(ph*.8-239*ph/300)/2).toFixed(1)} ${by-ph}) scale(${(ph/300).toFixed(4)})">${pupLayers(pupColorOf(o),ps+1,o)}</g></g></g>`);
   if(stage===0) P.push('<g transform="translate(250 372)"><rect x="-74" y="-30" width="148" height="40" rx="12" fill="#fff" stroke="#14202C" stroke-width="2"/><path d="M-30 10 l-12 14 l24 -14z" fill="#fff" stroke="#14202C" stroke-width="2"/><rect x="-29" y="8" width="22" height="4" fill="#fff"/><text x="0" y="-4" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="15" fill="#14202C">Finish a build!</text></g>');
   // The islands nearby, out in the sea: each drawn at its stage, with a dotted boat route home
   P.push(islandsNearby());
@@ -6204,6 +6255,7 @@ function islandInfo(id,o){
       break;
     case 'land': {
       const nx=ISLAND_STAGES[st+1];
+      if(arg==='beach'&&ISL3.ok){ const hp=HOME_PIECES.filter(x=>!x.hide&&x.id!=='pick'), nx=hp.find(x=>x.at>n); return {title:'Home Island',hint:pupName(o)?`${pupName(o)}’s home`:'Your home',rows:[['Builds finished',String(n)],['Models standing',`${shown.list.length} of ${shown.cap} stands`],['Islands discovered',`${islandsOpen(o).length} of 5`],['Next',nx?`${nx.name} at ${nx.at} builds`:'Everything on Home Island is built']],chips:hp.map(x=>[x.name,n>=x.at]),actions:n?[{label:'✨ Decorate',fn:()=>$('#isDecor').click()}]:[]}; }
       if(arg==='beach') return {title:'Bloppitopia',hint:`Level ${st} of 3: ${ISLAND_STAGES[st].name}`,
         rows:[['Level',`${st} of 3: ${ISLAND_STAGES[st].name}`],['Builds finished',String(n)],['Models standing',`${shown.list.length} of ${shown.cap} stands`],['Decorations',`${(o.decor||[]).length} of ${DECOR.length}`],['Next',nx?`The ${nx.name.toLowerCase()} at ${nx.at} builds`:'Everything is built']],
         bar:nx?bar(ISLAND_STAGES[st].at,nx.at):null, actions:n?[{label:'✨ Decorate',fn:()=>$('#isDecor').click()}]:[]};
@@ -6223,14 +6275,24 @@ function islandInfo(id,o){
         rows:[['Level',`${d.st} of 3: ${d.names[d.st]}`],['Grows with',grows],['So far',`${d.n} ${d.unit}${d.n===1?'':'s'}`],['Next',d.nx?`${d.names[d.st+1]} at ${d.nx}`:'Fully grown']],
         bar:d.nx?{pct:Math.max(4,Math.round(100*d.n/d.nx)),label:`${d.nx-d.n} more to the ${d.names[d.st+1].toLowerCase()}`}:null,
         actions:[{label:go,fn:d.go,primary:true}]}; }
+    case 'isle': { const I=ISLES[arg]; if(!I) break; const c=isleCount(arg,o), P=PIECES[arg], total=P[P.length-1].at, built=P.filter(x=>c>=x.at), next=P.find(x=>c<x.at);
+      if(!c) return {title:'A misty island',hint:`Play ${I.game} to discover it`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Finish your first ${I.unit}`]],actions:[{label:I.play,fn:I.go,primary:true}]};
+      return {title:I.name,hint:`${I.game} · ${Math.min(c,total)} of ${total}`,rows:[['Grows with',I.grows],['Built',`${built.length} of ${P.length} pieces`],...(next?[['Next piece',`${next.name}: ${next.at-c} more ${I.unit}${next.at-c===1?'':'s'}`]]:[]),['Milestone',c>=total?`${I.milestone} ✓`:`${I.milestone} at ${total}`]],
+        chips:P.map(x=>[x.name,c>=x.at]),bar:{pct:Math.max(4,Math.min(100,Math.round(100*c/total))),label:c>=total?'Complete!':`${total-c} more to ${I.milestone}`},actions:[{label:I.play,fn:I.go,primary:true}]}; }
+    case 'piece': { const [isle,i]=arg.split(':'), I=ISLES[isle], P=PIECES[isle]&&PIECES[isle][+i]; if(!P) break; const last=+i===PIECES[isle].length-1;
+      return {title:P.name,hint:`${I.name}${last?' · the milestone':''}`,rows:[['Built at',`${P.at} ${I.unit}${P.at===1?'':'s'}`],['Island',`${I.name}: ${Math.min(isleCount(isle,o),PIECES[isle][PIECES[isle].length-1].at)} of ${PIECES[isle][PIECES[isle].length-1].at}`]],actions:[{label:I.play,fn:I.go}]}; }
+    case 'home': { const H={home0:['Your unfinished home','Finish your first build and it becomes a cottage'],home1:['Your cottage','Built with your first build'],home3:['Your growing home','It grew at 3 builds'],home10:['The lively village','Your home became a village at 10 builds'],
+        garden:['The garden','More flowers bloom with every build'],shop:['Bloppit’s workshop','Opened at 5 builds'],museum:['The museum','Your three best builds are on show'],pick:[o.pick==='lighthouse'?'Your lighthouse':'Your treehouse','You chose it at 10 builds'],harbour:['The harbour',friendCount(o)?`${friendCount(o)} build${friendCount(o)===1?'':'s'} with friends: a boat for every few`:'Build with a friend and a boat ties up here']}[arg]||[arg,''];
+      const nx=HOME_PIECES.find(x=>x.at>n&&!x.hide); return {title:H[0],hint:'Home Island',rows:[['Story',H[1]],...(nx?[['Next on Home Island',`${nx.name} at ${nx.at} builds (${nx.at-n} more)`]]:[])],actions:arg==='harbour'?[{label:'Build with a friend',fn:()=>setTab('mp','hub')}]:arg==='home0'?[{label:'🔨 Build our first home',fn:()=>welcomeStart(),primary:true}]:[]}; }
     case 'stand': return {title:'An empty stand',hint:'Your next build stands here',rows:[['Fills with','Your next finished build'],['Stands',`${shown.list.length} of ${shown.cap} in use`],['Tip','Drag any model here, or anywhere on the sand']]};
-    case 'bloppit': return {title:'Bloppit',hint:'Your build buddy',rows:[['Who','Your build buddy. He always holds the red brick.'],['Lives',st>=2?'At the workshop door':'On the beach'],['Built together',`${n} build${n===1?'':'s'}`]],
+    case 'bloppit': return {title:'Bloppit',hint:ISL3.ok?{garden:'Tending the garden',fish:'Fishing off the jetty',read:'Reading a good book',sleep:'Fast asleep. Shh!'}[routine3(isl3Hour())]:'Your build buddy',rows:[['Who','Your build buddy. He always holds the red brick.'],['Lives',ISL3.ok?'On Home Island, with your otter':st>=2?'At the workshop door':'On the beach'],['Built together',`${n} build${n===1?'':'s'}`]],
       actions:[{label:'Build something',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
     case 'pup': { const nm=pupName(o), ps=pupStage(o), nx=PUP_STAGES[ps+1], c=PUP_COLORS[pupColorOf(o)];
-      return {title:nm||'Your pup',hint:`${PUP_STAGES[ps].name} · ${ps+1} stud${ps?'s':''} on its brick`,icon:pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'}),
-        rows:[['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at ${nx.at} builds: another stud`:'A Legend. That’s the top']],
+      const lv=otterLevel(o), nl=levelXP(lv+1), nAcc=ACC.find(a=>!a.legend&&a.lvl>lv);
+      return {title:nm||'Your otter',hint:`Level ${lv} ${PUP_STAGES[ps].name} · ${ps+1} stud${ps?'s':''} on its brick`,icon:pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'}),
+        rows:[['Otter level',`${lv} (${worldXP(o)} XP, next at ${nl})`],...(nAcc?[['Next outfit',`${nAcc.name} at level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at ${nx.at} builds: another stud`:'A Legend. That’s the top']],
         bar:nx?{pct:Math.max(4,Math.round(100*(n-PUP_STAGES[ps].at)/(nx.at-PUP_STAGES[ps].at))),label:`${nx.at-n} more build${nx.at-n===1?'':'s'} to ${nx.name}`}:null,
-        actions:[{label:nm?'Change name or colour':'Name your pup',fn:()=>pupOpen(),primary:true}]}; }
+        actions:[{label:'👕 Wardrobe',fn:()=>wardrobeOpen(),primary:true},{label:nm?'Name or colour':'Name your otter',fn:()=>pupOpen()}]}; }
     case 'model': { const f=modelFacts(arg,o), b=f.b, onIsle=shown.list.some(m=>m.key===arg)||arg.startsWith('w:');
       const acts=[]; if(f.again) acts.push({label:'Build it again',fn:f.again,primary:true});
       if(!arg.startsWith('w:')) acts.push(onIsle?{label:'Put away',fn:()=>islandPut(arg,false)}:{label:'Put on Bloppitopia',fn:()=>islandPut(arg,true),off:shown.list.length>=shown.cap?`Bloppitopia is full (${shown.cap} stands). Put one away first.`:''});
@@ -6245,6 +6307,7 @@ function islandTip(id,anchor){
   const t=$('#isTip'), i=islandInfo(id);
   t.innerHTML=`<button class="tt-x" type="button" aria-label="Close">×</button><div class="tt-head">${i.icon?`<span class="tt-ic">${i.icon}</span>`:''}<div><b>${escapeHTML(i.title)}</b>${i.hint?`<small>${escapeHTML(i.hint)}</small>`:''}</div></div>
     ${(i.rows||[]).length?`<dl>${i.rows.map(([a,b])=>`<dt>${escapeHTML(a)}</dt><dd>${escapeHTML(b)}</dd>`).join('')}</dl>`:''}
+    ${(i.chips||[]).length?`<div class="tt-chips">${i.chips.map(([nm,ok])=>`<span class="${ok?'ok':''}">${ok?'✓ ':''}${escapeHTML(nm)}</span>`).join('')}</div>`:''}
     ${i.bar?`<div class="tt-bar"><span class="bar"><i style="width:${i.bar.pct}%"></i></span><small>${escapeHTML(i.bar.label)}</small></div>`:''}
     ${(i.actions||[]).length?`<div class="tt-btns">${i.actions.map((a,j)=>a.off?`<p class="tt-off">${escapeHTML(a.off)}</p>`:`<button type="button" class="${a.primary?'primary sm':'ghost'}" data-a="${j}">${escapeHTML(a.label)}</button>`).join('')}</div>`:''}`;
   t.setAttribute('aria-label',i.title); t.hidden=false;
@@ -6296,13 +6359,7 @@ function destinations(){
     {id:'speedway',name:'Blitz Speedway',n:wins,unit:'Longtail win',st:stage(wins,1,5,15),nx:next(wins,1,5,15),names:['Dirt track','Starting line','Circuit','Stadium'],go:()=>homeGo('cpu')},
   ];
 }
-/* ---------- Bloppitopia in 3D ----------
-   A low-poly archipelago: Bloppitopia in the middle (grass on white cliffs, a sand rim), the five islands
-   nearby joined to it by bridges, each built up to its stage, plus a lighthouse rock and a balloon. The
-   player's finished models stand on Bloppitopia as real brick models (their bricks are kept on this device
-   when a build is finished; older ones show their picture). One finger turns the world, two zoom, a tap
-   opens the same cards as the drawn island, and a model can be dragged anywhere on the grass.
-   The drawn island (islandSVG) stays for devices without WebGL. */
+/* ---------- Bloppitopia in 3D (renderer, helpers, models, controls) ---------- */
 var ISL3={ok:null};   // var: the page switcher can look at it before this line runs
 const SHAPE_KEY='bloppit-shapes-v1';
 function worldShapes(){ try{ return JSON.parse(localStorage.getItem(SHAPE_KEY))||{}; }catch(e){ return {}; } }
@@ -6318,17 +6375,8 @@ function worldShapeSave(key){
 const W2P=v=>Math.round((v+20)*25), P2W=v=>v/25-20;
 // The islands: soft blobs. Bloppitopia in the middle; the others around it.
 function blob3(cx,cz,r,seed,n){ n=n||30; const P=[]; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2, rr=r*(1+.11*Math.sin(3*a+seed)+.07*Math.cos(5*a+seed*2.1)+.03*Math.sin(9*a+seed*.7)); P.push([cx+rr*Math.cos(a),cz+rr*Math.sin(a)]); } return P; }
-const HOME3=blob3(0,0,8.4,1.3,40);
-const NEAR3={ferry:{x:-13.4,z:2.6,r:3.2,seed:2.2},workshop:{x:-9.6,z:-10.0,r:3.0,seed:3.7},brain:{x:1.6,z:-13.6,r:3.2,seed:4.1},speedway:{x:12.6,z:-7.6,r:3.8,seed:5.3},harbour:{x:12.8,z:6.4,r:3.2,seed:6.6}};
-const LIGHT3={x:-6.4,z:11.4,r:1.6,seed:7.7};
 const inPoly=(x,z,P)=>{ let c=false; for(let i=0,j=P.length-1;i<P.length;j=i++){ const [xi,zi]=P[i],[xj,zj]=P[j]; if(((zi>z)!==(zj>z))&&(x<(xj-xi)*(z-zi)/(zj-zi)+xi)) c=!c; } return c; };
 const scalePoly=(P,cx,cz,k)=>P.map(([x,z])=>[cx+(x-cx)*k,cz+(z-cz)*k]);
-const onGrass=(x,z)=>inPoly(x,z,scalePoly(HOME3,0,0,.86));
-// Default stands for models on Bloppitopia (the first ones open at the hut, three at the workshop, twelve in the village)
-const STAND_R3=.62;
-const STANDS3=[[-1.6,1.4],[1.2,2.6],[3.2,0.6],[-3.9,3.4],[-1.2,4.7],[2.0,5.1],[4.4,3.4],[-5.6,1.0],[-3.4,-0.9],[5.6,-0.6],[0.4,-0.6],[-5.0,5.4]];
-const HUT3=[-4.6,-3.4], SHOP3=[0.6,-4.6], COTTAGES3=[[4.4,-3.6,'#008F9B'],[6.3,-1.6,'#F4BC22'],[3.0,-5.8,'#0055BF']], WELL3=[5.5,1.8];
-const DECOR3={flag:[-6.6,-1.4],campfire:[-5.4,5.6],bench:[2.0,-2.2],lantern:[-1.6,-2.4],signpost:[-7.0,2.6],rockpool:[6.6,4.4],sandcastle:[-2.8,7.1],hammock:[3.8,6.6],kite:[2.0,-1.0],palm:[7.0,-4.2],crab:[0.6,7.5],buoy:[9.7,4.6]};
 
 // Materials, made once
 function m3(c,o){ const k=c+JSON.stringify(o||{}); ISL3.mats=ISL3.mats||new Map(); if(ISL3.mats.has(k)) return ISL3.mats.get(k);
@@ -6414,47 +6462,6 @@ function balloon3(){ const g=new THREE.Group(), cv=document.createElement('canva
   g.add(cyl3(.45,.3,.35,8,'#8A5A3B',0,0,0)); for(const [a,b] of [[-.3,-.3],[.3,-.3],[-.3,.3],[.3,.3]]){ const r=cyl3(.012,.012,1.05,3,'#5B3B25',a,.35,b); g.add(r); }
   return g; }
 
-// The five islands nearby, built up to their stage (0..3)
-function nearby3(id,st){
-  const g=new THREE.Group(), T=TOP3;
-  const lot=()=>{ for(const [a,b] of [[-.9,-.7],[.9,-.7],[.9,.7],[-.9,.7]]) g.add(cyl3(.05,.05,.45,4,'#C9A27A',a,T,b)); const rope=(x1,z1,x2,z2)=>{ const L=Math.hypot(x2-x1,z2-z1), r=mesh3(new THREE.BoxGeometry(.03,.03,L),m3('#E6D2A8'),(x1+x2)/2,T+.38,(z1+z2)/2); r.rotation.y=Math.atan2(x2-x1,z2-z1); g.add(r); };
-    rope(-.9,-.7,.9,-.7); rope(.9,-.7,.9,.7); rope(.9,.7,-.9,.7); rope(-.9,.7,-.9,-.7); g.add(box3(.5,.32,.06,'#F4E1B5',0,T+.3,.9)); g.add(box3(.05,.35,.05,'#8A5A3B',0,T,.9)); };
-  if(id==='ferry'){
-    const pier=new THREE.Group(); for(let i=0;i<7;i++) pier.add(box3(.95,.08,.3,'#B07A4C',0,T-.05,0+i*.34)); pier.position.set(-2.2,0,-1); pier.rotation.y=-Math.PI/2; g.add(pier);
-    g.add(box3(.06,.9,.06,'#8A5A3B',-.4,T,.9)); g.add(box3(.7,.4,.06,'#F4E1B5',-.4,T+.75,.9));
-    if(st>=1){ const b=boat3('#0055BF',1.1); b.position.set(-4.6,-1.25,-.2); g.add(b); }
-    if(st>=2){ g.add(box3(.8,.75,.7,'#FFF8EA',.6,T,-.4)); const r=mesh3(new THREE.ConeGeometry(.65,.45,4),m3('#008F9B'),.6,T+.97,-.4); r.rotation.y=Math.PI/4; g.add(r); const b2=boat3('#D2352B',.9); b2.position.set(-4.2,-1.25,1.6); g.add(b2); }
-    if(st>=3){ g.add(box3(2.0,1.1,1.2,'#FFFFFF',.6,T,1.0)); g.add(gable3(2.0,1.2,1.1,.5,'#0055BF')); }
-  } else if(id==='workshop'){
-    if(st===0) lot();
-    if(st===1){ g.add(box3(1.2,.85,1.0,'#C58B5A',0,T,0)); g.add(gable3(1.2,1.0,.85,.45,'#D2352B').translateY(T)); }
-    if(st>=2){ g.add(box3(1.8,1.1,1.3,'#FFF8EA',0,T,0)); g.add(gable3(1.8,1.3,1.1,.55,'#81007B').translateY(T)); g.add(box3(.9,.55,.06,'#9ED3F2',0,T+.3,.66));
-      g.add(box3(.06,.8,.06,'#8A5A3B',1.3,T,.6)); g.add(box3(.5,.4,.05,'#FFFFFF',1.3,T+.65,.62)); }
-    if(st>=3){ g.add(mesh3(new THREE.SphereGeometry(.7,10,6,0,Math.PI*2,0,Math.PI/2),m3('#E8F1F8'),-1.4,T,-.6)); g.add(cyl3(.03,.03,1.4,4,'#5B6778',-1.4,T+.6,-.6)); g.add(mesh3(new THREE.IcosahedronGeometry(.1,0),m3('#F4BC22',{emissive:new THREE.Color('#F4BC22'),emissiveIntensity:1}),-1.4,T+2.05,-.6)); }
-  } else if(id==='brain'){
-    if(st===0) lot();
-    if(st>=1){ g.add(box3(1.5,1.0,1.1,'#FFF8EA',0,T,0)); g.add(gable3(1.5,1.1,1.0,.55,'#D2352B').translateY(T)); g.add(box3(.3,.55,.3,'#FFF8EA',0,T+1.5,0)); const r=mesh3(new THREE.ConeGeometry(.3,.4,4),m3('#D2352B'),0,T+2.25,0); r.rotation.y=Math.PI/4; g.add(r); g.add(box3(.34,.55,.06,'#8A5A3B',0,T,.56)); }
-    if(st>=2){ g.add(box3(1.0,.8,.9,'#FFF8EA',-1.25,T,.2)); g.add(gable3(1.0,.9,.8,.42,'#D2352B').translateX(-1.25).translateY(T).translateZ(.2)); for(const x of [-.5,-.15,.15,.5]) g.add(cyl3(.06,.06,.95,6,'#FFFFFF',x,T,.68)); }
-    if(st>=3){ g.add(cyl3(.55,.6,.8,10,'#B9C2CF',1.35,T,-.3)); g.add(mesh3(new THREE.SphereGeometry(.6,12,8,0,Math.PI*2,0,Math.PI/2),m3('#E8F1F8'),1.35,T+.8,-.3)); const tel=cyl3(.1,.12,.9,6,'#3E5468',1.6,T+1.05,-.3); tel.rotation.z=-.7; g.add(tel); }
-  } else if(id==='speedway'){
-    const ring=(r1,r2,c,y)=>{ const s=new THREE.Shape(); s.absellipse(0,0,r2*1.25,r2,0,Math.PI*2); const h=new THREE.Path(); h.absellipse(0,0,r1*1.25,r1,0,Math.PI*2,true); s.holes.push(h);
-      const m=mesh3(new THREE.ShapeGeometry(s,32),m3(c),0,y,0); m.rotation.x=-Math.PI/2; return m; };
-    g.add(ring(1.5,2.3,st>=2?'#5B6778':'#C9A27A',T+.02));
-    if(st>=2){ const d=ring(1.88,1.92,'#FFFFFF',T+.03); g.add(d); }
-    if(st>=1){ const cv=document.createElement('canvas'); cv.width=64; cv.height=16; const x=cv.getContext('2d'); for(let i=0;i<16;i++) for(let j=0;j<4;j++){ x.fillStyle=(i+j)%2?'#14202C':'#FFFFFF'; x.fillRect(i*4,j*4,4,4); }
-      const tex=new THREE.CanvasTexture(cv); g.add(box3(.08,1.2,.08,'#3B3F46',1.9,T,-.95)); g.add(box3(.08,1.2,.08,'#3B3F46',1.9,T,.95));
-      g.add(mesh3(new THREE.BoxGeometry(.06,.3,1.9),new THREE.MeshStandardMaterial({map:tex}),1.9,T+1.1,0)); }
-    if(st>=2){ const car=new THREE.Group(); car.add(box3(.55,.18,.3,'#D2352B',0,0,0)); car.add(box3(.25,.14,.24,'#14202C',-.05,.18,0)); car.position.set(0,T+.04,2.1); car.userData.race=1; g.add(car); }
-    if(st>=3){ for(const s of [-1,1]){ const st3=new THREE.Group(); for(let i=0;i<3;i++) st3.add(box3(2.2,.22,.4,i%2?'#0055BF':'#F4F4F4',0,i*.22,-i*.4)); st3.position.set(0,T,s*3.0); st3.rotation.y=s>0?Math.PI:0; g.add(st3); } }
-    g.add(tree3(-2.9,1.2,.8,3));
-  } else if(id==='harbour'){
-    const jetty=new THREE.Group(); for(let i=0;i<8;i++) jetty.add(box3(1.0,.08,.3,'#B07A4C',0,T-.05,i*.34)); jetty.position.set(1.4,0,1.6); jetty.rotation.y=Math.PI/2.6; g.add(jetty);
-    if(st>=1){ const b=boat3('#D2352B',1.0); b.position.set(3.6,-1.25,3.4); g.add(b); }
-    if(st>=2){ const b=boat3('#0055BF',.9); b.position.set(4.4,-1.25,1.4); g.add(b); g.add(box3(1.2,.9,.9,'#C58B5A',-.6,T,-.4)); g.add(gable3(1.2,.9,.9,.42,'#5B6778').translateX(-.6).translateY(T).translateZ(-.4)); }
-    if(st>=3){ const b=boat3('#F4BC22',.8); b.position.set(2.0,-1.25,4.4); g.add(b); g.add(cyl3(.05,.05,1.6,4,'#5B6778',.9,T,-1.2)); g.add(box3(1.0,.06,.06,'#5B6778',.45,T+1.6,-1.2)); }
-  }
-  return g;
-}
 // The decorations, in 3D
 function decor3(id){
   const g=new THREE.Group(), T=TOP3;
@@ -6485,14 +6492,14 @@ function isl3Loaded(){ ISL3.pending=Math.max(0,(ISL3.pending||1)-1); if(ISL3.on)
 function sprite3(url,h,aspect){ const tex=tex3(url);
   const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,alphaTest:.15})); s.scale.set(h*aspect,h,1); s.center.set(.5,0); return s; }
 function pupTex3(o){
-  const key=pupColorOf(o)+':'+pupStage(o); ISL3.pupT=ISL3.pupT||{}; if(ISL3.pupT[key]) return ISL3.pupT[key];
-  const cv=document.createElement('canvas'); cv.width=239; cv.height=300; const x=cv.getContext('2d'), tex=new THREE.CanvasTexture(cv); tex.encoding=THREE.sRGBEncoding;
+  const key=pupColorOf(o)+':'+pupStage(o)+':'+JSON.stringify(accWear(o)); ISL3.pupT=ISL3.pupT||{}; if(ISL3.pupT[key]) return ISL3.pupT[key];
+  const cv=document.createElement('canvas'); cv.width=239; cv.height=346; const x=cv.getContext('2d'), tex=new THREE.CanvasTexture(cv); tex.encoding=THREE.sRGBEncoding;
   const body=new Image(), paws=new Image(); let left=2;
-  const draw=()=>{ if(--left) return; x.drawImage(body,0,0); const c=(PUP_COLORS[pupColorOf(o)]||PUP_COLORS[0]).c, B=PUP_BRICK, n=pupStage(o)+1;
+  const draw=()=>{ if(--left) return; x.translate(0,46); x.drawImage(body,0,0); accCanvas(x,o,'under'); const c=(PUP_COLORS[pupColorOf(o)]||PUP_COLORS[0]).c, B=PUP_BRICK, n=pupStage(o)+1;
     const fill=(d,f)=>{ const p=new Path2D(d); x.fillStyle=f; x.fill(p); x.lineWidth=1.4; x.strokeStyle='#3B2314'; x.lineJoin='round'; x.stroke(p); };
     fill(B.side,pupShade(c,-.35)); fill(B.front,pupShade(c,-.12)); fill(B.top,pupShade(c,.18));
     for(const t of B.studs[n]){ fill(t.side,pupShade(c,-.2)); fill(t.cap,pupShade(c,.28)); x.fillStyle='rgba(255,255,255,.35)'; x.fill(new Path2D(t.hi)); }
-    x.drawImage(paws,0,0); tex.needsUpdate=true; isl3Loaded(); };
+    x.drawImage(paws,0,0); accCanvas(x,o,'over'); tex.needsUpdate=true; isl3Loaded(); };
   ISL3.pending=(ISL3.pending||0)+1; body.onload=draw; paws.onload=draw; body.src='/art/pup-body.png'; paws.src='/art/pup-paws.png'; ISL3.pupT[key]=tex; return tex;
 }
 // A finished model as bricks (or its picture when the bricks aren't on this device), sized to stand on a stand
@@ -6532,75 +6539,23 @@ function isl3Init(){
     const r=new THREE.WebGLRenderer({antialias:true,alpha:false,preserveDrawingBuffer:true});
     r.setPixelRatio(Math.min(devicePixelRatio||1,2)); r.outputEncoding=THREE.sRGBEncoding; r.shadowMap.enabled=true; r.shadowMap.type=THREE.PCFSoftShadowMap;
     r.setClearColor(new THREE.Color('#BFE6F7'));
-    const sc=new THREE.Scene(); sc.fog=new THREE.Fog(new THREE.Color('#BFE6F7').convertSRGBToLinear(),70,140);
+    const sc=new THREE.Scene(); sc.fog=new THREE.Fog(new THREE.Color('#BFE6F7').convertSRGBToLinear(),80,170);
     const camera=new THREE.PerspectiveCamera(34,1.4,.5,300);
-    sc.add(new THREE.HemisphereLight(0xffffff,0x6aa8c8,.62));
+    const hemi=new THREE.HemisphereLight(0xffffff,0x6aa8c8,.62); sc.add(hemi);
     const sunL=new THREE.DirectionalLight(0xffffff,.95); sunL.position.set(-14,30,16); sunL.castShadow=true; sunL.shadow.mapSize.set(2048,2048);
-    Object.assign(sunL.shadow.camera,{left:-22,right:22,top:22,bottom:-22,near:1,far:80}); sunL.shadow.bias=-.0006; sunL.shadow.normalBias=.02; sc.add(sunL);
+    Object.assign(sunL.shadow.camera,{left:-26,right:26,top:26,bottom:-26,near:1,far:90}); sunL.shadow.bias=-.0006; sunL.shadow.normalBias=.02; sc.add(sunL);
     // the sea, with a lighter shallow ring around each island
     const sea=new THREE.Mesh(new THREE.PlaneGeometry(400,400),new THREE.MeshStandardMaterial({color:new THREE.Color('#22B4EE').convertSRGBToLinear(),roughness:.5}));
     sea.rotation.x=-Math.PI/2; sea.position.y=-1.3; sea.receiveShadow=true; sea.userData.info='land:sea'; sc.add(sea);
-    ISL3.r=r; ISL3.sc=sc; ISL3.cam=camera; ISL3.ok=true;
+    ISL3.r=r; ISL3.sc=sc; ISL3.cam=camera; ISL3.ok=true; ISL3.sun=sunL; ISL3.hemi=hemi; ISL3.sea=sea;
     r.domElement.className='is3-canvas'; r.domElement.setAttribute('role','img'); r.domElement.setAttribute('aria-label','Bloppitopia and the islands nearby. Drag to turn, pinch to zoom, tap anything to see what it is.');
     isl3Events(r.domElement);
     const ctl=new THREE.OrbitControls(camera,r.domElement); ctl.enableDamping=true; ctl.dampingFactor=.09; ctl.enablePan=false;
-    ctl.minDistance=12; ctl.maxDistance=58; ctl.minPolarAngle=.35; ctl.maxPolarAngle=1.12; ctl.target.set(0,0,-1.5);
+    ctl.minDistance=9; ctl.maxDistance=70; ctl.minPolarAngle=.35; ctl.maxPolarAngle=1.12; ctl.target.set(0,0,-1.5);
     ctl.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN}; ctl.addEventListener('change',isl3Kick); ctl.addEventListener('start',()=>{ ISL3.moved=true; }); ISL3.ctl=ctl;
     camera.position.set(0,26,33); ctl.update();
   }catch(e){ ISL3.ok=false; }
   return ISL3.ok;
-}
-// Build the world from the record (on every change)
-function isl3Build(o){
-  const sc=ISL3.sc; if(ISL3.world){ sc.remove(ISL3.world); ISL3.world.traverse(x=>{ if(x.geometry&&!geo3.has(x.geometry)) x.geometry.dispose(); }); }
-  const W=new THREE.Group(), st=islandStage(o), n=worldCount(o); ISL3.world=W; ISL3.hits=[]; ISL3.labels=[];
-  const add=(g,info,x,z,ry)=>{ if(x!=null) g.position.set(x,g.position.y,z); if(ry) g.rotation.y=ry; if(info) tag3(g,info); W.add(g); return g; };
-  // Bloppitopia
-  add(islandBody3(HOME3,0,0,1.3,true),'land:beach');
-  // pebbles
-  { const pm=new THREE.InstancedMesh(new THREE.CylinderGeometry(.13,.15,.04,6),m3('#F6F2EA'),110), M=new THREE.Matrix4(), path=[[-4.6,-2.4],[-2.6,-1.6],[-.4,-3.0],[.6,-3.6],[2.4,-2.6],[4.4,-2.4],[5.6,-.4]];
-    let k=0; for(let i=0;i<path.length-1;i++){ const [a,b]=path[i],[c,d]=path[i+1]; for(let t=0;t<1&&k<110;t+=.07){ const j1=Math.sin(k*7.1)*.35, j2=Math.cos(k*3.3)*.35; M.makeTranslation(a+(c-a)*t+j1,TOP3+.005,b+(d-b)*t+j2); pm.setMatrixAt(k++,M); } }
-    pm.count=k;
-    pm.receiveShadow=true; W.add(pm); }
-  // buildings by stage (the next one shows as a ghost)
-  { const h=hut3(); if(st<1) ghostify(h); add(h,'place:hut',HUT3[0],HUT3[1],.35); h.position.y=TOP3; }
-  if(st>=1){ const s=shop3(); if(st<2) ghostify(s); add(s,'place:workshop',SHOP3[0],SHOP3[1],-.1); s.position.y=TOP3; }
-  if(st>=2){ const v=new THREE.Group(); COTTAGES3.forEach(([x,z,c],i)=>{ const ct=cottage3(c); ct.position.set(x,TOP3,z); ct.rotation.y=-.5-i*.3; v.add(ct); }); const wl=well3(); wl.position.set(WELL3[0],TOP3,WELL3[1]); v.add(wl);
-    if(st<3) ghostify(v); add(v,'place:village'); }
-  // trees, lamps and benches around the edge
-  [[-6.8,-3.6,1.1],[-7.4,.0,.9],[-6.2,3.8,1],[-2.6,-6.4,1.1],[6.6,2.8,.9],[4.4,5.6,1],[-.2,6.8,.8],[7.2,-.4,.8],[-4.0,6.6,.9]].forEach(([x,z,s],i)=>W.add(tree3(x,z,s,i)));
-  [[-2.4,-1.4],[3.0,-1.6],[-1.0,3.2]].forEach(([x,z])=>W.add(lamp3(x,z)));
-  W.add(bench3(-.6,-1.6,.2));
-  // decorations
-  const tapBox=(w,h,y)=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,w),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); b.visible=false; b.position.y=y; return b; };   // invisible, but taps find it
-  for(const id of o.decor||[]){ const p=DECOR3[id]; if(!p) continue; const d=decor3(id); d.add(id==='kite'?tapBox(1.4,1.6,5.2):tapBox(1.3,1.7,TOP3+.8)); add(d,'decor:'+id,p[0],p[1]); }
-  // models on stands, where the child put them
-  const shown=islandModels3(o); ISL3.shown=shown;
-  for(const [x,z,i] of shown.empty){ const s=cyl3(.62,.68,.14,10,'#E8E2D6',0,TOP3,0); const g=new THREE.Group(); g.add(s); g.children[0].material=m3('#F2EDE3'); add(g,'stand:'+i,x,z); }
-  for(const m of shown.list){ const g=model3(m.key); g.userData.key=m.key; add(g,'model:'+m.key,m.x,m.z,m.ry||0); }
-  // the latest Weekly by the shore, with its flag
-  { const wk=o.log.filter(k=>k.startsWith('w:')).slice(-1)[0]; if(wk){ const g=model3(wk); g.add(box3(.05,1.6,.05,'#14202C',.7,TOP3,0)); g.add(box3(.04,.3,.5,'#008F9B',.7,TOP3+1.3,.25)); add(g,'model:'+wk,-6.0,-5.2+0); } }
-  // Bloppit and the pup
-  { const at=st>=1?[SHOP3[0]-1.7,SHOP3[1]+1.5]:[-4.2,1.6]; const b=sprite3('/art/bud-3q.png',2.2,.75); const g=new THREE.Group(); g.add(b); b.position.y=TOP3; add(g,'bloppit',at[0],at[1]);
-    if(n>0){ const ps=pupStage(o), p=new THREE.Sprite(new THREE.SpriteMaterial({map:pupTex3(o),transparent:true,alphaTest:.15})); const h=[1.3,1.5,1.7][ps]; p.scale.set(h*.8,h,1); p.center.set(.5,0); p.position.y=TOP3; const pg=new THREE.Group(); pg.add(p); pg.userData.bob=2; add(pg,'pup',at[0]+1.25,at[1]+.35); }
-    ISL3.home=at; }
-  if(st===0){ const s=new THREE.Group(); s.add(box3(.08,1.0,.08,'#8A5A3B',0,TOP3,0)); s.add(box3(1.4,.5,.06,'#F4E1B5',0,TOP3+.8,0)); add(s,'stand:0',-1.6,1.4); }
-  // the islands nearby, their bridges, labels
-  for(const d of destinations()){ const N=NEAR3[d.id]; if(!N) continue; const P=blob3(N.x,N.z,N.r,N.seed,24);
-    const g=new THREE.Group(); g.add(islandBody3(P,N.x,N.z,N.seed,false)); const art=nearby3(d.id,d.st); art.position.set(N.x,0,N.z); g.add(art);
-    for(let i=0;i<7;i++){ const a=N.seed*2+i*0.9, rr=N.r*(.72+(i%3)*.06), x=N.x+Math.cos(a)*rr, z=N.z+Math.sin(a)*rr*.95;
-      if(i%3===2){ const r=mesh3(new THREE.DodecahedronGeometry(.22+(i%2)*.1,0),m3('#B9C2CF'),x,TOP3+.08,z); g.add(r); }
-      else if(i%3===1){ const b=mesh3(new THREE.IcosahedronGeometry(.32,0),m3('#58B843'),x,TOP3+.2,z); b.scale.set(1,.7,1); g.add(b); }
-      else g.add(tree3(x,z,.75+(i%2)*.15,i+3)); }
-    add(g,'dest:'+d.id);
-    const a=edge3(HOME3,0,0,N.x,N.z), b=edge3(P,N.x,N.z,0,0); W.add(tag3(bridge3(a,b,d.id==='brain'),'dest:'+d.id));
-    { const L=Math.hypot(N.x,N.z), ux=N.x/L, uz=N.z/L; ISL3.labels.push({id:'dest:'+d.id,name:d.name,sub:d.names[d.st],x:N.x+ux*N.r*.9,z:N.z+uz*N.r*1.0,y:-1.2}); } }
-  // the lighthouse rock and the balloon
-  { const P=blob3(LIGHT3.x,LIGHT3.z,LIGHT3.r,LIGHT3.seed,16); const g=new THREE.Group(); g.add(islandBody3(P,LIGHT3.x,LIGHT3.z,LIGHT3.seed,false)); const l=lighthouse3(); l.position.set(LIGHT3.x,TOP3,LIGHT3.z); g.add(l); add(g,'land:lighthouse'); }
-  { const b=balloon3(); b.position.set(7,7.5,-3); b.userData.balloon=1; add(b,'land:balloon'); }
-  ISL3.sc.add(W);
-  W.traverse(x=>{ if(x.isMesh||x.isSprite||x.isInstancedMesh) ISL3.hits.push(x); });
-  isl3Labels(); isl3Kick();
 }
 // Which models stand where (3D positions; the record keeps them as 0..1000)
 function islandModels3(o){
@@ -6614,35 +6569,19 @@ function islandModels3(o){
 }
 // Labels over the islands (HTML, so they stay sharp), placed every frame
 function isl3Labels(){ const box=ISL3.box; if(!box) return; let L=box.querySelector('.is3-labels'); if(!L){ L=document.createElement('div'); L.className='is3-labels'; box.appendChild(L); }
-  L.innerHTML=ISL3.labels.map((l,i)=>`<span class="is3-label${l.home?' home':''}" data-i="${i}"><b>${escapeHTML(l.name)}</b><small>${escapeHTML(l.sub)}</small></span>`).join(''); }
+  L.innerHTML=ISL3.labels.map((l,i)=>`<span class="is3-label${l.home?' is3-hl':''}" data-i="${i}"><b>${escapeHTML(l.name)}</b><small>${escapeHTML(l.sub)}</small></span>`).join(''); }
 function isl3PlaceLabels(){ const box=ISL3.box; if(!box) return; const w=box.clientWidth, h=box.clientHeight, v=new THREE.Vector3();
   box.querySelectorAll('.is3-label').forEach(el=>{ const l=ISL3.labels[+el.dataset.i]; v.set(l.x,l.y,l.z).project(ISL3.cam); const vis=v.z<1&&Math.abs(v.x)<1.1&&Math.abs(v.y)<1.1;
     el.style.display=vis?'':'none'; if(!vis) return;
     const half=el.offsetWidth/2+4, px=Math.max(half,Math.min(w-half,(v.x+1)/2*w)), py=Math.max(4,Math.min(h-el.offsetHeight-4,(1-v.y)/2*h-el.offsetHeight*.3));
     el.style.transform=`translate(${px.toFixed(1)}px,${py.toFixed(1)}px) translate(-50%,0)`; }); }
 // Size, loop
-const CAM_DIR3=()=>new THREE.Vector3(0,26,33).normalize(), CAM_T3=new THREE.Vector3(0,0,-.6);
-function isl3Fit(cam,aspect){ const v=THREE.MathUtils.degToRad(cam.fov)/2, hf=Math.atan(Math.tan(v)*aspect), need=Math.max(22/Math.tan(hf),15.5/Math.tan(v)*.92);
-  const d=Math.max(22,Math.min(64,need)); cam.position.copy(CAM_T3).addScaledVector(CAM_DIR3(),d); cam.lookAt(CAM_T3); return d; }
-function isl3Size(){ const box=ISL3.box, r=ISL3.r; if(!box) return; const w=box.clientWidth||600, h=Math.round(Math.min(w*.78,innerHeight*.72,720)); box.style.height=h+'px';
-  if(r.domElement.width!==Math.round(w*r.getPixelRatio())||r.domElement.height!==Math.round(h*r.getPixelRatio())){ r.setSize(w,h); ISL3.cam.aspect=w/h; ISL3.cam.updateProjectionMatrix(); if(!ISL3.moved){ const d=isl3Fit(ISL3.cam,w/h); ISL3.ctl.maxDistance=Math.max(58,d+6); ISL3.ctl.target.copy(CAM_T3); ISL3.ctl.update(); } } }
+const CAM_DIR3=()=>new THREE.Vector3(0,27,31).normalize(), CAM_T3=new THREE.Vector3(.4,0,-2.4);
+function isl3Fit(cam,aspect){ const v=THREE.MathUtils.degToRad(cam.fov)/2, hf=Math.atan(Math.tan(v)*aspect), need=Math.max((aspect<1?21:23.5)/Math.tan(hf),19/Math.tan(v)*.92);
+  const d=Math.max(24,Math.min(76,need)); cam.position.copy(CAM_T3).addScaledVector(CAM_DIR3(),d); cam.lookAt(CAM_T3); return d; }
+function isl3Size(){ const box=ISL3.box, r=ISL3.r; if(!box) return; const w=box.clientWidth||600, h=Math.round(w<560?Math.min(w*1.1,innerHeight*.64):Math.min(w*.78,innerHeight*.72,720)); box.style.height=h+'px';
+  if(r.domElement.width!==Math.round(w*r.getPixelRatio())||r.domElement.height!==Math.round(h*r.getPixelRatio())){ r.setSize(w,h); ISL3.cam.aspect=w/h; ISL3.cam.updateProjectionMatrix(); if(!ISL3.moved){ const d=isl3Fit(ISL3.cam,w/h); ISL3.ctl.maxDistance=Math.max(70,d+6); ISL3.ctl.target.copy(CAM_T3); ISL3.ctl.update(); } } }
 function isl3Kick(){ ISL3.dirty=true; if(!ISL3.raf&&ISL3.on) ISL3.raf=requestAnimationFrame(isl3Frame); }
-function isl3Frame(now){
-  ISL3.raf=0; if(!ISL3.on) return;
-  // about 30 frames a second is plenty for bobbing boats, and kinder to batteries
-  if(!ISL3.dirty&&!ISL3.dragging&&now-(ISL3.last||0)<31){ ISL3.raf=requestAnimationFrame(isl3Frame); return; } ISL3.last=now;
-  const moving=!reduceMotion; if(ISL3.ctl) ISL3.ctl.update();
-  if(moving&&ISL3.world){ const t=now/1000;
-    ISL3.world.traverse(x=>{ const u=x.userData;
-      if(u.bob===1) x.position.y=(x.userData.y0??(x.userData.y0=x.position.y))+Math.sin(t*1.6+x.position.x)*.06;
-      else if(u.bob===2) x.children[0].position.y=TOP3+Math.abs(Math.sin(t*2.2))*.08;
-      if(u.smoke!=null){ const k=((t*.5+u.smoke/3)%1); x.position.y=2.6+k*1.2; x.material.opacity=.75*(1-k); x.scale.setScalar(.7+k*.8); }
-      if(u.kite){ x.position.x=Math.sin(t*.7)*.5; x.position.y=5.2+Math.sin(t*1.3)*.2; x.rotation.z=Math.sin(t*.9)*.2; }
-      if(u.balloon){ x.position.y=7.5+Math.sin(t*.5)*.4; x.position.x=7+Math.sin(t*.12)*1.2; x.position.z=-3+Math.cos(t*.12)*1.2; }
-      if(u.race){ const a=t*1.1; x.position.x=Math.cos(a)*1.9*1.25; x.position.z=Math.sin(a)*1.9; x.rotation.y=-a-Math.PI/2; } }); }
-  ISL3.r.render(ISL3.sc,ISL3.cam); isl3PlaceLabels(); ISL3.dirty=false;
-  if(ISL3.on&&(moving||ISL3.dragging||(ISL3.ctl&&ISL3.ctl.enableDamping&&ISL3.settle-->0))) ISL3.raf=requestAnimationFrame(isl3Frame);
-}
 // Tap, hover and drag
 function isl3Pick(e){ const r=ISL3.r.domElement.getBoundingClientRect(), v=new THREE.Vector2(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
   const rc=new THREE.Raycaster(); rc.setFromCamera(v,ISL3.cam); const hits=rc.intersectObjects([...ISL3.hits,ISL3.sc.children.find(x=>x.userData.info==='land:sea')],false);
@@ -6652,7 +6591,7 @@ function isl3Ground(e){ const r=ISL3.r.domElement.getBoundingClientRect(), v=new
 const anchorAt=(x,y)=>({getBoundingClientRect:()=>({left:x-1,right:x+1,top:y-1,bottom:y+1,width:2,height:2}),isConnected:true,focus:()=>{ try{ ISL3.r.domElement.focus({preventScroll:true}); }catch(e){} }});
 function isl3Events(cv){
   cv.tabIndex=0;
-  cv.addEventListener('pointerdown',e=>{ const h=isl3Pick(e); ISL3.down={x:e.clientX,y:e.clientY,t:performance.now(),h,id:e.pointerId,moved:false};
+  cv.addEventListener('pointerdown',e=>{ if(ISL3.revealing||ISL3.arrive) return; const h=isl3Pick(e); ISL3.down={x:e.clientX,y:e.clientY,t:performance.now(),h,id:e.pointerId,moved:false};
     if(h&&h.info.startsWith('model:')&&h.obj.userData.key&&ISL3.ctl){ ISL3.ctl.enabled=false; ISL3.down.drag=h.obj; cv.setPointerCapture(e.pointerId); } });
   cv.addEventListener('pointermove',e=>{ const d=ISL3.down;
     if(d&&d.drag){ if(!d.moved&&Math.hypot(e.clientX-d.x,e.clientY-d.y)>6){ d.moved=true; ISL3.dragging=true; islandTipHide(); islandHover(null); }
@@ -6662,20 +6601,14 @@ function isl3Events(cv){
   const up=e=>{ const d=ISL3.down; ISL3.down=null; if(ISL3.ctl) ISL3.ctl.enabled=true; if(!d) return;
     if(d.drag&&d.moved){ ISL3.dragging=false; let x=d.drag.position.x, z=d.drag.position.z; for(let i=0;i<30&&!onGrass(x,z);i++){ x*=.92; z*=.92; }
       const o=worldStore(); o.pos={...(o.pos||{}),[d.drag.userData.key]:[W2P(x),W2P(z)]}; worldSet(o); track('island_arranged'); sfx.snap(); islandShown=worldCount(o); renderIsland(); return; }
-    if(e.type==='pointerup'&&!d.moved&&performance.now()-d.t<600&&d.h){ islandHover(null); islandTip(d.h.info,anchorAt(e.clientX,e.clientY)); } };
+    if(e.type==='pointerup'&&!d.moved&&performance.now()-d.t<600&&d.h){ islandHover(null); if(d.h.info==='bloppit') bloppitCheer(); if(/^(piece|home):/.test(d.h.info)){ const c=d.h.point; isl3Confetti(c.x,c.y+.6,c.z,24); } islandTip(d.h.info,anchorAt(e.clientX,e.clientY)); } };
   cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up);
   cv.addEventListener('pointerleave',()=>islandHover(null));
 }
-// Show Bloppitopia in its box (the Island page)
-function isl3Show(box,o){
-  ISL3.box=box; if(!box.contains(ISL3.r.domElement)){ box.innerHTML=''; box.appendChild(ISL3.r.domElement); box.classList.add('is3'); }
-  isl3Build(o); isl3Size(); ISL3.on=true; ISL3.settle=30; isl3Kick();
-  if(!ISL3.ro){ ISL3.ro=new ResizeObserver(()=>{ if(ISL3.on){ isl3Size(); isl3Kick(); } }); ISL3.ro.observe(box); }
-  isl3A11y(o);
-}
 function isl3Hide(){ ISL3.on=false; if(ISL3.raf){ cancelAnimationFrame(ISL3.raf); ISL3.raf=0; } }
 // A screen-point for any thing on the island (the keyboard list, the tests)
-function isl3Point(info){ if(!ISL3.world) return null; let found=null; ISL3.world.traverse(x=>{ if(!found&&x.userData.info===info) found=x; }); if(!found) return null;
+function isl3Point(info){ if(!ISL3.world) return null; let found=null;
+  if(/^isle:/.test(info)){ const I=ISL3.isles&&ISL3.isles[info.slice(5)]; if(!I) return null; const v=new THREE.Vector3(I.x-I.r*.45,TOP3,I.z+I.r*.45).project(ISL3.cam), r=ISL3.r.domElement.getBoundingClientRect(); return {x:r.left+(v.x+1)/2*r.width,y:r.top+(1-v.y)/2*r.height}; } ISL3.world.traverse(x=>{ if(!found&&x.userData.info===info) found=x; }); if(!found) return null;
   const b=new THREE.Box3().setFromObject(found), c=b.getCenter(new THREE.Vector3());
   if(/^(model:|place:|decor:|stand:)/.test(info)) c.y=Math.min(c.y,TOP3+(info.startsWith('place:')?.7:.5));   // aim at the body, not smoke or a kite string
   if(info==='bloppit'||info==='pup'){ c.copy(found.getWorldPosition(new THREE.Vector3())); c.y=TOP3+(info==='pup'?.6:1.0); }   // sprites stand up from their feet
@@ -6687,7 +6620,7 @@ window.bloppitIslandPoint=isl3Point; window.bloppitIsland3=()=>ISL3;   // for te
 // Everything on the island as a list of buttons, for keyboards and screen readers (shown when tabbed into)
 function isl3A11y(o){ let L=$('#isA11y'); if(!L) return; const ids=[]; ISL3.world.traverse(x=>{ const i=x.userData.info; if(i&&!ids.includes(i)&&i!=='land:sea') ids.push(i); });
   L.innerHTML=`<b>On Bloppitopia</b>`+ids.map(i=>`<button type="button" data-info="${escapeHTML(i)}">${escapeHTML(islandInfo(i,o).title)}</button>`).join(''); }
-function isl3Sig(o){ return JSON.stringify([o.log,o.decor,o.pos,o.away,o.pupColor,pupStage(o),destinations().map(d=>d.st),Object.keys(worldShapes()).length]); }
+function isl3Sig(o){ return JSON.stringify([o.log,o.decor,o.pos,o.away,o.pupColor,pupStage(o),Object.keys(ISLES).map(id=>isleCount(id,o)),Object.keys(worldShapes()).length,accWear(o),o.pick,friendCount(o),routine3(isl3Hour())]); }
 function isl3Still(o,w,h){
   if(!isl3Init()) return '';
   const sig=isl3Sig(o)+w; if(ISL3.on) return ISL3.still||''; if(ISL3.stillSig===sig&&ISL3.still) return ISL3.still;
@@ -6705,15 +6638,514 @@ function isl3Snap(o){
     localStorage.setItem('bloppit-island-v1',JSON.stringify({img,name:pupName(o),n:worldCount(o),stage:ISLAND_STAGES[st].name,t:Date.now()})); renderHomeWorld(); }catch(e){}
 }
 
+// Tap Bloppit: a jump and a grin
+function bloppitCheer(){ ISL3.jumpT=performance.now(); sfx.chirp(); const s=ISL3.bloppitSprite; if(!s) return; const was=ISL3.bloppitPose; s.material.map=tex3('/art/bud-happy.png'); s.material.needsUpdate=true;
+  clearTimeout(ISL3.cheerT); ISL3.cheerT=setTimeout(()=>{ if(ISL3.bloppitSprite===s){ s.material.map=tex3(was); s.material.needsUpdate=true; isl3Kick(); } },1600); isl3Kick(); }
+
+/* ---------- Bloppitopia: the world that grows with you ----------
+   Home Island (the child's own: their otter, their home, garden, workshop, museum, harbour, their models) in
+   the middle of five adventure islands, one per way to play. Each adventure island is a construction project
+   of 12–15 pieces; each piece unlocks at a count (levels done, races won, Weeklies built, creations made) and
+   the last one is the island's big milestone. Islands wait in the mist until the child first plays there.
+   Nothing here is stored beyond the world record: what's built is worked out from the counts. */
+const ISLES={
+  otterwood:{name:'Otterwood',game:'Otter Trail',unit:'Otter Trail level',x:-14.6,z:3.2,r:4.5,seed:2.2,ground:['#5DBB46','#3F8F33'],
+    milestone:'The Great Treehouse',grows:'Every Otter Trail level you finish',play:'Play Otter Trail',go:()=>homeGo('otter')},
+  brainpeak:{name:'Brainpeak',game:'Brain Trail',unit:'Brain Trail level',x:-8.4,z:-12.8,r:4.4,seed:4.1,ground:['#79C25A','#4E9E3A'],
+    milestone:'The Great Observatory',grows:'Every Brain Trail level you finish',play:'Play Brain Trail',go:()=>homeGo('brain')},
+  sunrise:{name:'Sunrise Shores',game:'Weekly Bloppit',unit:'Weekly Bloppit',x:5.6,z:-14.8,r:4.3,seed:5.9,ground:['#8AD06A','#5FA94A'],sand:true,
+    milestone:'The Festival Clock',grows:'Every Weekly Bloppit you build (no streak needed)',play:'This week’s Bloppit',go:()=>setTab('daily')},
+  blitzbay:{name:'Blitz Bay',game:'Blitz',unit:'Blitz win',x:15.2,z:-4.6,r:4.8,seed:5.3,ground:['#6CC24A','#4E9E3A'],sand:true,
+    milestone:'The Grand Bloppit Stadium',grows:'Every Blitz race you win against the Longtails',play:'Race a Longtail',go:()=>homeGo('cpu')},
+  brickworks:{name:'Brickworks Island',game:'Creative builds',unit:'creation',x:12.4,z:9.6,r:4.3,seed:6.6,ground:['#7CC45E','#4E9E3A'],
+    milestone:'The Grand Creation Gallery',grows:'Every build from your own photo or drawing, or from the library',play:'Make your own',
+    go:()=>{ pickPuzzle('quick','top'); requestAnimationFrame(()=>{ const c=$('#drawCard'); if(c) c.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}); }); }},
+};
+// How far each island has grown
+function isleCount(id,o){
+  o=o||worldStore(); const B=Object.entries(o.builds);
+  if(id==='otterwood') return Object.keys(bestOf(gameStore(),'otter')).length;
+  if(id==='brainpeak') return Object.keys(bestOf(gameStore(),'brain')).length;
+  if(id==='sunrise') return weeklyTotal();
+  if(id==='blitzbay') return B.filter(([,b])=>b.k==='blitz').length;
+  if(id==='brickworks') return (o.draw||[]).length+B.filter(([k,b])=>k.startsWith('p:')||(k.startsWith('m:')&&(b.k==='quick'||!b.k))).length;
+  return 0;
+}
+// Friend builds grow the harbour on Home Island
+const friendCount=o=>{ o=o||worldStore(); return chMine().length+Object.keys(o.builds).filter(k=>k.startsWith('r:')).length+Object.values(o.builds).filter(b=>b.k==='room'||b.k==='challenge').length+(crewMine||[]).filter(x=>x.me).length; };
+
+/* The pieces. Each: name, the count it unlocks at, and how it's built (local coordinates on its island, grass
+   top at y=TOP3). The last piece of each island is its milestone. */
+const PIECES={
+  otterwood:[
+    {at:1,name:'Forest path',make:g=>pebbles3(g,[[3.6,.6],[2.4,.4],[1.2,.2]],14)},
+    {at:2,name:'Treehouse platform',make:g=>{ const p=new THREE.Group(); p.add(cyl3(1.0,1.0,.12,10,'#A86E48',0,1.3,0)); for(let i=0;i<4;i++){ const a=i*Math.PI/2+.4; p.add(cyl3(.06,.06,.4,4,'#7A4E2E',Math.cos(a)*.9,1.42,Math.sin(a)*.9)); } g.add(p); }},
+    {at:3,name:'Rope bridge',make:g=>g.add(ropeBridge3([.9,1.4,.3],[-2.2,1.25,1.6]))},
+    {at:4,name:'Lanterns',make:g=>[[1.6,-1.6],[-1.4,-2.0],[2.4,1.8]].forEach(([x,z])=>g.add(lamp3(x,z)))},
+    {at:5,name:'Mushroom ring',make:g=>{ for(let i=0;i<6;i++){ const a=i*Math.PI/3; g.add(mushroom3(2.6+Math.cos(a)*.7,-.6+Math.sin(a)*.7,.8+(i%2)*.3)); } }},
+    {at:6,name:'Second treehouse',make:g=>{ g.add(tree3(-2.4,1.7,1.25,4)); const h=new THREE.Group(); h.add(box3(.9,.7,.8,'#C58B5A',0,0,0)); h.add(gable3(.9,.8,.7,.4,'#3E9E36')); h.add(winBox3(.2,.2,.2,.22,.41)); h.position.set(-2.4,1.25,1.7); g.add(h); }},
+    {at:7,name:'Swing',make:g=>{ g.add(tree3(1.8,-2.6,1.1,1)); const s=new THREE.Group(); s.add(box3(1.0,.06,.06,'#7A4E2E',0,1.3,0)); for(const x of [-.3,.3]) s.add(box3(.02,.9,.02,'#C9A27A',x,.42,0)); s.add(box3(.7,.06,.24,'#A86E48',0,.42,0)); s.position.set(2.5,TOP3,-2.2); s.userData.swing=1; g.add(s); }},
+    {at:8,name:'Waterfall pond',make:g=>{ g.add(cyl3(.9,.95,.06,10,'#4FA6E0',2.0,TOP3-.02,1.6)); for(let i=0;i<7;i++){ const a=i*.9; g.add(mesh3(new THREE.DodecahedronGeometry(.18,0),m3('#B9C2CF'),2.0+Math.cos(a)*.95,TOP3+.05,1.6+Math.sin(a)*.95)); } }},
+    {at:9,name:'Lantern network',make:g=>g.add(lightString3([[1.0,1.9,.2],[-2.2,1.9,1.7],[-1.4,1.7,-2.0],[1.8,1.8,-2.4],[1.0,1.9,.2]]))},
+    {at:10,name:'Bird boxes',make:g=>[[-.5,2.3,.5],[.5,2.1,-.5],[-2.6,2.1,1.4]].forEach(([x,y,z])=>{ const b=new THREE.Group(); b.add(box3(.26,.3,.24,'#F4BC22',0,0,0)); b.add(cyl3(.05,.05,.04,6,'#3B2314',0,.12,.12,{x:Math.PI/2})); b.position.set(x,y,z); g.add(b); })},
+    {at:11,name:'Lookout tower',make:g=>{ const t=new THREE.Group(); for(const [a,b] of [[-.3,-.3],[.3,-.3],[-.3,.3],[.3,.3]]) t.add(box3(.08,2.2,.08,'#7A4E2E',a,0,b)); t.add(box3(.9,.08,.9,'#A86E48',0,2.2,0)); t.add(box3(.05,.9,.05,'#5B6778',0,2.28,0)); t.add(flag3('#F4BC22',0,3.0,0)); t.position.set(-1.6,TOP3,-2.4); g.add(t); }},
+    {at:12,name:'Fireflies',make:g=>{ for(let i=0;i<14;i++){ const f=mesh3(new THREE.SphereGeometry(.05,5,4),glow3('#FFE27A'),Math.sin(i*2.1)*2.6,1.2+((i*7)%10)/8,Math.cos(i*1.7)*2.4); f.castShadow=false; f.userData.fly=i; g.add(f); } }},
+    {at:13,name:'Great Tree crown',make:g=>{ for(let i=0;i<5;i++){ const a=i*1.25; const c=mesh3(new THREE.IcosahedronGeometry(.6,0),m3('#F29A8A'),Math.cos(a)*1.1,3.3+(i%2)*.4,Math.sin(a)*1.1); c.scale.set(1,.7,1); g.add(c); } }},
+    {at:14,name:'The Great Treehouse',make:g=>{ const h=new THREE.Group(); h.add(cyl3(1.4,1.4,.14,12,'#A86E48',0,0,0)); h.add(box3(1.6,1.1,1.3,'#C58B5A',0,.14,0)); h.add(gable3(1.6,1.3,1.24,.7,'#008F9B'));
+      h.add(winBox3(.3,.3,-.45,.66,.66)); h.add(winBox3(.3,.3,.45,.66,.66)); h.add(box3(.34,.6,.06,'#6B4229',0,.14,.66)); h.add(flag3('#F4BC22',0,2.3,0)); h.position.set(0,3.35,0); g.add(h);
+      const st=new THREE.Group(); for(let i=0;i<14;i++){ const a=i*.5; st.add(box3(.5,.06,.22,'#A86E48',Math.cos(a)*.7,.3+i*.22,Math.sin(a)*.7,{y:-a})); } g.add(st); }},
+  ],
+  brainpeak:[
+    {at:1,name:'Stone stairs',make:g=>{ for(let i=0;i<7;i++) g.add(box3(.7,.14,.34,'#D9D1C2',1.6-i*.12,TOP3+i*.22,1.9-i*.34)); }},
+    {at:2,name:'Academy gate',make:g=>{ const a=new THREE.Group(); a.add(box3(.26,1.3,.26,'#ECE6DA',-.6,0,0)); a.add(box3(.26,1.3,.26,'#ECE6DA',.6,0,0)); a.add(box3(1.5,.26,.34,'#ECE6DA',0,1.3,0)); a.add(box3(.9,.2,.06,'#0055BF',0,1.36,.19)); a.position.set(2.2,TOP3,2.6); a.rotation.y=-.6; g.add(a); }},
+    {at:3,name:'Library',make:g=>{ const l=new THREE.Group(); l.add(box3(1.6,1.0,1.1,'#FFF8EA',0,0,0)); l.add(gable3(1.6,1.1,1.0,.45,'#0055BF')); for(const x of [-.55,-.2,.2,.55]) l.add(cyl3(.06,.06,.95,6,'#FFFFFF',x,0,.62)); l.add(winBox3(.5,.25,0,.5,.56)); l.position.set(2.6,TOP3,-.4); l.rotation.y=-1.1; g.add(l); }},
+    {at:4,name:'East tower',make:g=>g.add(tower3(-2.4,1.2,1.9,'#0055BF'))},
+    {at:5,name:'Cliff bridge',make:g=>g.add(ropeBridge3([-2.1,1.7,1.0],[-.8,1.9,.6],true))},
+    {at:6,name:'Giant puzzle gear',make:g=>{ const gr=gear3('#F4BC22',.7); gr.position.set(2.5,1.2,-2.0); gr.rotation.y=-.9; gr.userData.spin=1; g.add(gr); }},
+    {at:7,name:'West tower',make:g=>g.add(tower3(1.0,-2.8,2.2,'#008F9B'))},
+    {at:8,name:'Thinking stones',make:g=>[[-1.0,2.6],[-.2,3.0],[.6,3.1]].forEach(([x,z],i)=>{ g.add(cyl3(.18,.22,.5+i*.1,6,'#ECE6DA',x,TOP3,z)); g.add(mesh3(new THREE.IcosahedronGeometry(.18,0),m3(['#F29A8A','#9ED3F2','#F4BC22'][i]),x,TOP3+.72+i*.1,z)); })},
+    {at:9,name:'Bell tower',make:g=>{ const b=tower3(-.9,.9,1.4,'#81007B'); b.position.y+=1.1; g.add(b); }},
+    {at:10,name:'Banners',make:g=>[[-2.4,3.4,1.2],[1.0,3.7,-2.8],[2.2,1.6,2.6]].forEach(([x,y,z])=>g.add(flag3('#0055BF',x,y,z)))},
+    {at:11,name:'Crystal lamps',make:g=>{ for(let i=0;i<5;i++){ const a=i*1.3; const c=mesh3(new THREE.OctahedronGeometry(.2,0),glow3('#7FE3F2'),Math.cos(a)*3.1,TOP3+.3,Math.sin(a)*3.1); c.scale.set(1,1.8,1); g.add(c); } }},
+    {at:12,name:'Observatory base',make:g=>g.add(cyl3(.75,.85,.7,10,'#B9C2CF',0,3.3,-.4))},
+    {at:13,name:'The telescope',make:g=>{ const t=cyl3(.14,.18,1.5,8,'#3E5468',.3,3.9,-.4); t.rotation.z=-.8; g.add(t); }},
+    {at:14,name:'The Great Observatory',make:g=>{ g.add(mesh3(new THREE.SphereGeometry(.8,12,8,0,Math.PI*2,0,Math.PI/2),m3('#E8F1F8'),0,4.0,-.4)); const beam=new THREE.Mesh(new THREE.CylinderGeometry(.08,1.0,14,10,1,true),new THREE.MeshBasicMaterial({color:0xFFF3B0,transparent:true,opacity:.22,depthWrite:false,side:THREE.DoubleSide}));
+      beam.geometry.translate(0,7,0); beam.position.set(0,4.6,-.4); beam.userData.beam=1; g.add(beam); }},
+  ],
+  sunrise:[
+    {at:1,name:'Flower bed',make:g=>g.add(flowers3(1.9,1.6,1.0,18,0))},
+    {at:2,name:'Seaside bench',make:g=>g.add(bench3(-1.8,2.2,.3))},
+    {at:3,name:'Ice-cream stall',make:g=>g.add(stall3(2.4,-.8,'#F29A8A',-1.2))},
+    {at:4,name:'Second flower bed',make:g=>g.add(flowers3(-2.2,.2,.9,16,3))},
+    {at:5,name:'Visitors',make:g=>[[0,2.6],[.6,2.9],[-.6,2.7]].forEach(([x,z],i)=>{ const d=duck3(); d.position.set(x,TOP3,z); d.rotation.y=i; d.userData.waddle=i; g.add(d); })},
+    {at:6,name:'Fruit stall',make:g=>g.add(stall3(-2.4,-1.6,'#A5CA18',.9))},
+    {at:7,name:'Fountain',make:g=>{ g.add(cyl3(.8,.85,.3,12,'#ECE6DA',1.0,TOP3,2.0)); g.add(cyl3(.68,.68,.05,12,'#6FB7E8',1.0,TOP3+.27,2.0)); g.add(cyl3(.1,.12,.7,6,'#ECE6DA',1.0,TOP3+.3,2.0)); const w=mesh3(new THREE.ConeGeometry(.3,.4,8,1,true),new THREE.MeshBasicMaterial({color:0x9ED3F2,transparent:true,opacity:.6}),1.0,TOP3+1.2,2.0); w.rotation.x=Math.PI; w.userData.fount=1; g.add(w); }},
+    {at:8,name:'Street lamps',make:g=>[[-1.0,1.2],[1.4,-2.2],[-1.6,-2.6]].forEach(([x,z])=>g.add(lamp3(x,z)))},
+    {at:9,name:'The clock face',make:g=>{ const c=clockFace3(); c.position.set(0,3.05,.56); g.add(c); }},
+    {at:10,name:'Bunting',make:g=>g.add(bunting3([[-2.4,1.6,-1.6],[0,2.9,.4],[2.4,1.6,-.8]]))},
+    {at:11,name:'Bandstand',make:g=>{ const b=new THREE.Group(); b.add(cyl3(1.0,1.0,.16,8,'#ECE6DA',0,0,0)); for(let i=0;i<6;i++){ const a=i*Math.PI/3; b.add(cyl3(.05,.05,1.1,5,'#FFFFFF',Math.cos(a)*.85,.16,Math.sin(a)*.85)); } b.add(mesh3(new THREE.ConeGeometry(1.15,.6,8),m3('#008F9B'),0,1.55,0)); b.position.set(-1.4,TOP3,-.4); g.add(b); }},
+    {at:12,name:'The Festival Clock',make:g=>{ g.add(mesh3(new THREE.ConeGeometry(.75,.9,4),m3('#F4BC22'),0,4.1,0,{y:Math.PI/4})); const s=mesh3(new THREE.OctahedronGeometry(.22,0),glow3('#FFE27A'),0,4.75,0); s.userData.spin=1; g.add(s);
+      for(let i=0;i<4;i++){ const b=mesh3(new THREE.SphereGeometry(.22,10,8),m3(['#0055BF','#F4BC22','#008F9B','#FE8A18'][i]),Math.cos(i*1.6)*1.4,3.6+i*.25,Math.sin(i*1.6)*1.4); b.userData.bob=1; g.add(b); } }},
+  ],
+  blitzbay:[
+    {at:1,name:'Starting line',make:g=>g.add(startGate3(2.3,0,0))},
+    {at:2,name:'Track flags',make:g=>{ for(let i=0;i<6;i++){ const a=i*Math.PI/3+.3; g.add(flag3(['#0055BF','#F4BC22','#008F9B'][i%3],Math.cos(a)*3.0*1.2,TOP3,Math.sin(a)*3.0)); } }},
+    {at:3,name:'First grandstand',make:g=>g.add(stand3(0,-3.1,0,'#0055BF'))},
+    {at:4,name:'Smooth track',make:g=>{ g.add(ring3(1.55,2.35,'#5B6778',TOP3+.025)); g.add(ring3(1.93,1.97,'#FFFFFF',TOP3+.035)); }},
+    {at:5,name:'Cheering crabs',make:g=>[[-1.0,2.9],[0,3.2],[1.0,2.9]].forEach(([x,z],i)=>{ const c=crab3(); c.position.set(x,TOP3,z); c.userData.cheer=i; g.add(c); })},
+    {at:6,name:'Second grandstand',make:g=>g.add(stand3(-3.6,0,Math.PI/2,'#F4BC22'))},
+    {at:7,name:'Scoreboard',make:g=>{ const s=new THREE.Group(); s.add(box3(.1,1.6,.1,'#3B3F46',-.6,0,0)); s.add(box3(.1,1.6,.1,'#3B3F46',.6,0,0)); s.add(box3(1.5,.8,.12,'#14202C',0,1.4,0)); s.add(mesh3(new THREE.PlaneGeometry(1.3,.6),glow3('#7FE3F2'),0,1.8,.07)); s.position.set(-2.2,TOP3,-2.8); s.rotation.y=.6; g.add(s); }},
+    {at:8,name:'Floodlights',make:g=>[[3.6,-2.2],[-3.4,2.4],[3.4,2.6]].forEach(([x,z])=>{ g.add(box3(.1,2.6,.1,'#5B6778',x,TOP3,z)); g.add(mesh3(new THREE.BoxGeometry(.5,.3,.2),glow3('#FFFFFF'),x,TOP3+2.7,z)); })},
+    {at:9,name:'Pit garages',make:g=>{ for(let i=0;i<3;i++){ g.add(box3(.8,.7,.7,'#ECE6DA',2.6+i*.0,TOP3,-1.2+i*.9)); g.add(box3(.6,.5,.04,['#0055BF','#F4BC22','#008F9B'][i],2.25,TOP3,-1.2+i*.9,{y:Math.PI/2})); } }},
+    {at:10,name:'Trophy tower',make:(g,n)=>{ const t=new THREE.Group(); t.add(cyl3(.35,.45,1.6,8,'#ECE6DA',0,0,0)); t.add(mesh3(new THREE.CylinderGeometry(.35,.15,.4,10),m3('#F4BC22',{metalness:.4,roughness:.4}),0,1.85,0)); for(let i=0;i<Math.min(n,15);i++){ const m=cyl3(.1,.1,.03,10,'#F4BC22',Math.cos(i)*.38,.2+i*.09,Math.sin(i)*.38,{x:Math.PI/2}); t.add(m); } t.position.set(-.2,TOP3,0); g.add(t); }},
+    {at:11,name:'Third grandstand',make:g=>g.add(stand3(0,3.4,Math.PI,'#008F9B'))},
+    {at:12,name:'Balloon arch',make:g=>{ for(let i=0;i<11;i++){ const a=Math.PI*i/10; g.add(mesh3(new THREE.SphereGeometry(.2,8,6),m3(['#0055BF','#F4BC22','#FFFFFF'][i%3]),3.1,TOP3+Math.sin(a)*1.6,Math.cos(a)*1.3)); } }},
+    {at:13,name:'Race cars',make:g=>[0,Math.PI].forEach((p,i)=>{ const c=car3(['#0055BF','#F4BC22'][i]); c.userData.race=p; g.add(c); })},
+    {at:14,name:'Fireworks pads',make:g=>[[-3.2,-2.2],[3.4,-3.0],[-3.0,3.0]].forEach(([x,z])=>{ g.add(cyl3(.12,.12,.4,6,'#81007B',x,TOP3,z)); })},
+    {at:15,name:'The Grand Bloppit Stadium',make:g=>{ const r=new THREE.Mesh(new THREE.TorusGeometry(3.9,.18,6,36),m3('#FFFFFF')); r.rotation.x=Math.PI/2; r.scale.set(1.2,1,1); r.position.y=TOP3+2.2; r.castShadow=true; g.add(r);
+      for(let i=0;i<10;i++){ const a=i*Math.PI/5; g.add(box3(.1,2.2,.1,'#ECE6DA',Math.cos(a)*3.9*1.2,TOP3,Math.sin(a)*3.9)); } const sign=new THREE.Group(); sign.add(box3(2.4,.6,.1,'#0055BF',0,0,0)); sign.add(mesh3(new THREE.PlaneGeometry(2.2,.4),glow3('#FFE27A'),0,.3,.06)); sign.position.set(0,TOP3+2.4,-4.0); g.add(sign); }},
+  ],
+  brickworks:[
+    {at:1,name:'Brick piles',make:g=>{ const C=['#0055BF','#F4BC22','#237841','#FE8A18','#FFFFFF']; for(let i=0;i<9;i++) g.add(box3(.5,.22,.26,C[i%5],-2.2+(i%3)*.52,TOP3+Math.floor(i/3)*.22,2.2,{y:(i%2)*.1})); }},
+    {at:2,name:'Workbench',make:g=>{ g.add(box3(1.2,.08,.6,'#A86E48',1.6,TOP3+.62,1.9)); for(const [a,b] of [[-.5,-.25],[.5,-.25],[-.5,.25],[.5,.25]]) g.add(box3(.07,.62,.07,'#5B3B25',1.6+a,TOP3,1.9+b)); g.add(box3(.3,.12,.15,'#F4BC22',1.4,TOP3+.7,1.9)); }},
+    {at:3,name:'Workshop',make:g=>{ const w=new THREE.Group(); w.add(box3(1.6,1.1,1.2,'#C58B5A',0,0,0)); w.add(gable3(1.6,1.2,1.1,.5,'#5B6778')); w.add(box3(.6,.7,.06,'#3E5468',0,0,.61)); w.add(winBox3(.3,.25,.55,.6,.61)); w.position.set(-2.0,TOP3,-.4); w.rotation.y=.5; g.add(w); }},
+    {at:4,name:'Brick crane',make:g=>{ const c=new THREE.Group(); c.add(box3(.22,3.0,.22,'#F4BC22',0,0,0)); const arm=new THREE.Group(); arm.add(box3(2.6,.16,.16,'#F4BC22',.8,0,0)); arm.add(box3(.04,.9,.04,'#3B3F46',1.9,-.9,0)); arm.add(box3(.4,.25,.25,'#0055BF',1.9,-1.15,0)); arm.position.y=3.0; arm.userData.crane=1; c.add(arm); c.position.set(1.0,TOP3,-2.3); g.add(c); }},
+    {at:5,name:'Conveyor belt',make:g=>{ g.add(box3(2.2,.3,.4,'#3B3F46',.2,TOP3,.4)); for(let i=0;i<4;i++){ const b=box3(.3,.15,.2,['#0055BF','#F4BC22','#237841','#FE8A18'][i],-.7+i*.6,TOP3+.3,.4); b.userData.belt=i; g.add(b); } }},
+    {at:6,name:'Paint shop',make:g=>{ g.add(stall3(2.6,-.4,'#81007B',-1.4)); for(let i=0;i<3;i++) g.add(cyl3(.16,.16,.36,8,['#0055BF','#F4BC22','#237841'][i],2.0+i*.36,TOP3,-1.3)); }},
+    {at:7,name:'First gallery stand',make:(g,n,ctx)=>g.add(plinth3(-.6,2.6,ctx.creations[0]))},
+    {at:8,name:'Second gallery stand',make:(g,n,ctx)=>g.add(plinth3(.6,2.9,ctx.creations[1]))},
+    {at:9,name:'Giant brick sculpture',make:g=>{ const s=new THREE.Group(); s.add(box3(1.4,.7,.7,'#0055BF',0,0,0)); for(let i=0;i<4;i++) s.add(cyl3(.16,.16,.12,10,'#2A78D6',-.53+i*.35,.7,0)); s.position.set(-.4,TOP3+.1,-1.6); s.rotation.y=.4; g.add(cyl3(.9,.95,.12,8,'#ECE6DA',-.4,TOP3,-1.6)); g.add(s); }},
+    {at:10,name:'Second workshop',make:g=>{ const w=new THREE.Group(); w.add(box3(1.2,.9,1.0,'#FFF8EA',0,0,0)); w.add(gable3(1.2,1.0,.9,.45,'#008F9B')); w.position.set(-3.0,TOP3,1.0); w.rotation.y=1.2; g.add(w); }},
+    {at:11,name:'Third gallery stand',make:(g,n,ctx)=>g.add(plinth3(1.8,2.6,ctx.creations[2]))},
+    {at:12,name:'Banners',make:g=>[[-2.6,-1.6],[2.8,1.4],[0,-3.2]].forEach(([x,z],i)=>g.add(flag3(['#0055BF','#F4BC22','#237841'][i],x,TOP3,z)))},
+    {at:13,name:'Workshop lights',make:g=>g.add(lightString3([[-2.6,1.8,-1.6],[1.0,2.2,-2.3],[2.8,1.8,1.4],[0,1.6,3.0]]))},
+    {at:14,name:'Gallery frame',make:g=>{ for(const x of [-1.6,1.6]) g.add(box3(.16,1.8,.16,'#ECE6DA',x+.1,TOP3,3.4)); g.add(box3(3.5,.2,.4,'#ECE6DA',.1,TOP3+1.8,3.4)); }},
+    {at:15,name:'The Grand Creation Gallery',make:g=>{ const s=new THREE.Group(); s.add(box3(3.4,.5,.12,'#14202C',0,0,0)); s.add(mesh3(new THREE.PlaneGeometry(3.1,.32),glow3('#FFE27A'),0,.25,.07)); s.position.set(.1,TOP3+2.05,3.4); g.add(s); g.add(box3(3.5,.12,1.4,'#9ED3F2',.1,TOP3+2.0,2.8)); }},
+  ],
+};
+
+// Small builders used by the pieces
+function glow3(c){ ISL3.glows=ISL3.glows||{}; if(ISL3.glows[c]) return ISL3.glows[c]; const m=new THREE.MeshStandardMaterial({color:new THREE.Color(c).convertSRGBToLinear(),emissive:new THREE.Color(c).convertSRGBToLinear(),emissiveIntensity:.5,roughness:.6}); m.userData.glow=1; ISL3.glows[c]=m; return m; }
+function winBox3(w,h,x,y,z){ return mesh3(new THREE.BoxGeometry(w,h,.04),glow3('#FFE9A8'),x,y+h/2,z); }
+function pebbles3(g,path,n){ const pm=new THREE.InstancedMesh(new THREE.CylinderGeometry(.13,.15,.04,6),m3('#F6F2EA'),n), M=new THREE.Matrix4(); let k=0;
+  for(let i=0;i<path.length-1&&k<n;i++){ const [a,b]=path[i],[c,d]=path[i+1]; const m=Math.max(1,Math.round(n/(path.length-1))); for(let j=0;j<m&&k<n;j++){ const t=j/m; M.makeTranslation(a+(c-a)*t+Math.sin(k*7.1)*.18,TOP3+.005,b+(d-b)*t+Math.cos(k*3.3)*.18); pm.setMatrixAt(k++,M); } }
+  pm.count=k; pm.receiveShadow=true; g.add(pm); }
+function ropeBridge3(a,b,stone){ const g=new THREE.Group(), [x1,y1,z1]=a,[x2,y2,z2]=b, L=Math.hypot(x2-x1,z2-z1), n=Math.max(3,Math.round(L/.3)), ang=Math.atan2(x2-x1,z2-z1);
+  for(let i=0;i<n;i++){ const t=(i+.5)/n, y=y1+(y2-y1)*t-Math.sin(Math.PI*t)*(stone?-.15:.18); const p=box3(stone?.7:.6,.06,.22,stone?'#ECE6DA':'#B07A4C',x1+(x2-x1)*t,y,z1+(z2-z1)*t); p.rotation.y=ang; g.add(p); }
+  return g; }
+function mushroom3(x,z,s){ const g=new THREE.Group(); g.add(cyl3(.06*s,.08*s,.3*s,6,'#FFF8EA',0,0,0)); const c=mesh3(new THREE.SphereGeometry(.2*s,8,6,0,Math.PI*2,0,Math.PI/2),m3('#E5463C'),0,.28*s,0); g.add(c);
+  for(let i=0;i<3;i++) g.add(mesh3(new THREE.SphereGeometry(.035*s,5,4),m3('#FFFFFF'),Math.cos(i*2.1)*.12*s,.4*s,Math.sin(i*2.1)*.12*s)); g.position.set(x,TOP3,z); return g; }
+function lightString3(P){ const g=new THREE.Group();
+  for(let i=0;i<P.length-1;i++){ const [x1,y1,z1]=P[i],[x2,y2,z2]=P[i+1]; for(let j=0;j<6;j++){ const t=j/6, sag=Math.sin(Math.PI*t)*.25; g.add(mesh3(new THREE.SphereGeometry(.06,6,4),glow3(['#FFE27A','#7FE3F2','#F29A8A'][j%3]),x1+(x2-x1)*t,y1+(y2-y1)*t-sag,z1+(z2-z1)*t)); } }
+  g.traverse(o=>{ o.castShadow=false; }); return g; }
+function flag3(c,x,y,z){ const g=new THREE.Group(); g.add(cyl3(.03,.03,1.1,4,'#5B6778',0,0,0)); const s=new THREE.Shape([new THREE.Vector2(0,0),new THREE.Vector2(.5,-.14),new THREE.Vector2(0,-.28)]);
+  const f=mesh3(new THREE.ShapeGeometry(s),m3(c,{side:THREE.DoubleSide}),0,1.08,0); f.userData.flap=1; g.add(f); g.position.set(x,y,z); return g; }
+function tower3(x,z,h,roof){ const g=new THREE.Group(); g.add(cyl3(.45,.5,h,8,'#ECE6DA',0,0,0)); g.add(winBox3(.18,.28,0,h*.55,.47)); g.add(winBox3(.18,.28,0,h*.25,.48)); const r=mesh3(new THREE.ConeGeometry(.62,.8,8),m3(roof),0,h+.4,0); g.add(r); g.position.set(x,TOP3,z); return g; }
+function gear3(c,r){ const g=new THREE.Group(); g.add(cyl3(r,r,.18,12,c,0,0,0,{x:Math.PI/2})); for(let i=0;i<10;i++){ const a=i*Math.PI/5; const t=box3(.18,.18,.18,c,Math.cos(a)*(r+.08),Math.sin(a)*(r+.08)-.09,0); t.rotation.z=a; g.add(t); } g.add(cyl3(.12,.12,.24,8,'#5B6778',0,0,0,{x:Math.PI/2})); return g; }
+function flowers3(x,z,r,n,seed){ const g=new THREE.Group(); const season=[['#F29A8A','#F4BC22','#FFFFFF'],['#FF698F','#F4BC22','#81007B'],['#FE8A18','#F4BC22','#E5463C'],['#9ED3F2','#FFFFFF','#81007B']][Math.floor(((new Date().getMonth()+1)%12)/3)];
+  g.add(cyl3(r,r*1.05,.08,10,'#7A4E2E',0,TOP3-.02,0)); for(let i=0;i<n;i++){ const a=i*2.4+seed, rr=r*.85*Math.sqrt((i+.5)/n); g.add(cyl3(.02,.02,.22,3,'#3E9E36',Math.cos(a)*rr,TOP3,Math.sin(a)*rr)); g.add(mesh3(new THREE.IcosahedronGeometry(.08,0),m3(season[i%3]),Math.cos(a)*rr,TOP3+.26,Math.sin(a)*rr)); }
+  g.position.set(x,0,z); return g; }
+function stall3(x,z,c,ry){ const g=new THREE.Group(); g.add(box3(1.0,.55,.6,'#FFF8EA',0,0,0)); for(const [a,b] of [[-.45,.28],[.45,.28]]) g.add(box3(.05,1.1,.05,'#8A5A3B',a,0,b));
+  for(let i=0;i<5;i++) g.add(box3(.22,.06,.7,i%2?'#FFFFFF':c,-.44+i*.22,1.1,.05,{x:-.25})); g.position.set(x,TOP3,z); g.rotation.y=ry||0; return g; }
+function duck3(){ const g=new THREE.Group(); const b=mesh3(new THREE.SphereGeometry(.16,8,6),m3('#FFFFFF'),0,.14,0); b.scale.set(1.2,.9,1); g.add(b); g.add(mesh3(new THREE.SphereGeometry(.09,8,6),m3('#FFFFFF'),.13,.3,0)); g.add(mesh3(new THREE.ConeGeometry(.04,.1,5),m3('#F4BC22'),.23,.3,0,{z:-Math.PI/2})); return g; }
+function clockFace3(){ const cv=document.createElement('canvas'); cv.width=cv.height=128; const x=cv.getContext('2d'); x.fillStyle='#FFF8EA'; x.beginPath(); x.arc(64,64,60,0,7); x.fill(); x.strokeStyle='#14202C'; x.lineWidth=6; x.stroke();
+  for(let i=0;i<12;i++){ const a=i*Math.PI/6; x.fillStyle='#14202C'; x.fillRect(64+Math.cos(a)*48-3,64+Math.sin(a)*48-3,6,6); } const t=new THREE.CanvasTexture(cv); t.encoding=THREE.sRGBEncoding;
+  const g=new THREE.Group(); g.add(new THREE.Mesh(new THREE.CircleGeometry(.42,24),new THREE.MeshStandardMaterial({map:t}))); const h=new THREE.Mesh(new THREE.BoxGeometry(.04,.26,.02),m3('#14202C')); h.geometry.translate(0,.12,.01); h.userData.hand=1; g.add(h);
+  const mn=new THREE.Mesh(new THREE.BoxGeometry(.03,.36,.02),m3('#14202C')); mn.geometry.translate(0,.17,.02); mn.userData.hand=2; g.add(mn); return g; }
+function bunting3(P){ const g=new THREE.Group(); for(let i=0;i<P.length-1;i++){ const [x1,y1,z1]=P[i],[x2,y2,z2]=P[i+1]; for(let j=0;j<7;j++){ const t=j/7, s=Math.sin(Math.PI*t)*.3;
+    const f=mesh3(new THREE.ConeGeometry(.1,.2,3),m3(['#0055BF','#F4BC22','#008F9B','#FFFFFF'][j%4]),x1+(x2-x1)*t,y1+(y2-y1)*t-s-.1,z1+(z2-z1)*t,{x:Math.PI}); f.castShadow=false; g.add(f); } } return g; }
+function ring3(r1,r2,c,y){ const s=new THREE.Shape(); s.absellipse(0,0,r2*1.2,r2,0,Math.PI*2); const h=new THREE.Path(); h.absellipse(0,0,r1*1.2,r1,0,Math.PI*2,true); s.holes.push(h); const m=mesh3(new THREE.ShapeGeometry(s,40),m3(c),0,y,0); m.rotation.x=-Math.PI/2; return m; }
+function startGate3(x){ const g=new THREE.Group(), cv=document.createElement('canvas'); cv.width=64; cv.height=16; const c=cv.getContext('2d'); for(let i=0;i<16;i++) for(let j=0;j<4;j++){ c.fillStyle=(i+j)%2?'#14202C':'#FFFFFF'; c.fillRect(i*4,j*4,4,4); }
+  const t=new THREE.CanvasTexture(cv); g.add(box3(.08,1.3,.08,'#3B3F46',0,0,-1.0)); g.add(box3(.08,1.3,.08,'#3B3F46',0,0,1.0)); g.add(mesh3(new THREE.BoxGeometry(.06,.3,2.0),new THREE.MeshStandardMaterial({map:t}),0,1.2,0)); g.position.set(x,TOP3,0); return g; }
+function stand3(x,z,ry,c){ const g=new THREE.Group(); for(let i=0;i<3;i++) g.add(box3(2.4,.24,.42,i%2?c:'#F4F4F4',0,i*.24,-i*.42)); for(let i=0;i<8;i++) g.add(mesh3(new THREE.SphereGeometry(.09,6,4),m3(['#FE8A18','#9ED3F2','#F29A8A','#A5CA18'][i%4]),-1.0+i*.28,.62+(i%3)*.24,-(i%3)*.42));
+  g.position.set(x,TOP3,z); g.rotation.y=ry; return g; }
+function crab3(){ const g=new THREE.Group(); const c=mesh3(new THREE.SphereGeometry(.2,8,6),m3('#FE8A18'),0,.12,0); c.scale.set(1,.6,.8); g.add(c); for(const s of [-1,1]) g.add(mesh3(new THREE.SphereGeometry(.08,6,4),m3('#FE8A18'),s*.26,.24,.1)); return g; }
+function car3(c){ const g=new THREE.Group(); g.add(box3(.6,.18,.32,c,0,0,0)); g.add(box3(.26,.14,.26,'#14202C',-.05,.18,0)); for(const [a,b] of [[-.2,-.17],[.2,-.17],[-.2,.17],[.2,.17]]) g.add(cyl3(.07,.07,.05,8,'#14202C',a,.0,b,{x:Math.PI/2})); return g; }
+function plinth3(x,z,key){ const g=new THREE.Group(); g.add(box3(.7,.6,.7,'#ECE6DA',0,0,0)); if(key){ const u=worldThumb(key); if(u){ const sp=sprite3(u,.9,4/3); sp.position.y=.6; g.add(sp); } } g.position.set(x,TOP3,z); return g; }
+
+/* Home Island: the child's own. Its pieces grow with all their builds (and friend builds for the harbour) */
+const HOME_R=7.6, HOMEP=blob3(0,0,HOME_R,1.3,40);
+const HOME_AT={home:[-3.4,-2.4],garden:[3.9,-1.6],shop:[1.4,-4.6],museum:[4.6,2.6],wardrobe:[-5.4,1.4],tree10:[-5.2,-0.4],jetty:[1.2,6.6]};
+const HOME_PIECES=[
+  {id:'home0',at:0,name:'Your unfinished home',hide:1},
+  {id:'home1',at:1,name:'Your cottage'},
+  {id:'garden',at:2,name:'The garden'},
+  {id:'home3',at:3,name:'Your growing home'},
+  {id:'shop',at:5,name:'Bloppit’s workshop'},
+  {id:'museum',at:7,name:'The museum',},
+  {id:'home10',at:10,name:'The lively village'},
+  {id:'pick',at:10,name:'Your treehouse or lighthouse'},
+];
+const STANDS3=[[-.6,1.2],[1.4,1.6],[2.6,-.2],[-2.4,2.6],[-.4,3.6],[1.8,3.6],[3.4,1.4],[-4.2,3.4],[-1.6,.0],[.4,-1.6],[-2.8,4.8],[.8,5.0]];
+const onGrass=(x,z)=>inPoly(x,z,scalePoly(HOMEP,0,0,.86));
+const DECOR3={flag:[-6.4,-1.8],campfire:[-4.4,4.6],bench:[1.8,-2.4],lantern:[-1.4,-1.0],signpost:[-6.2,3.0],rockpool:[5.8,4.4],sandcastle:[-2.2,6.6],hammock:[3.4,5.6],kite:[2.0,-1.0],palm:[6.4,-3.6],crab:[3.8,6.6],buoy:[8.8,5.2]};
+function homeStage(o){ const n=worldCount(o); return n>=10?3:n>=3?2:n>=1?1:0; }
+function homeBuild(o,W){
+  const n=worldCount(o), st=homeStage(o), g=new THREE.Group(), add=(m,info)=>{ if(info) tag3(m,info); g.add(m); return m; };
+  // the home itself
+  { const [x,z]=HOME_AT.home, h=new THREE.Group();
+    if(st===0){ h.add(box3(1.8,.12,1.5,'#D9D1C2',0,0,0)); for(const [a,b] of [[-.8,-.65],[.8,-.65],[-.8,.65],[.8,.65]]) h.add(box3(.07,1.6,.07,'#C9A27A',a,.12,b)); h.add(box3(1.8,.06,.06,'#C9A27A',0,1.0,.65)); h.add(box3(1.8,.06,.06,'#C9A27A',0,1.6,-.65));
+      for(let i=0;i<5;i++) h.add(box3(.4,.2,.2,['#0055BF','#F4BC22','#237841'][i%3],-.6+i*.3,.12+(i%2)*.2,.9)); h.add(box3(.06,.8,.06,'#8A5A3B',1.2,0,1.0)); h.add(box3(.9,.4,.05,'#F4E1B5',1.2,.6,1.03)); }
+    else { h.add(box3(1.7,1.1,1.4,'#FFF8EA',0,0,0)); h.add(gable3(1.7,1.4,1.1,.75,'#0055BF')); h.add(box3(.42,.7,.06,'#8A5A3B',0,0,.71)); h.add(winBox3(.34,.3,-.55,.5,.71)); h.add(winBox3(.34,.3,.55,.5,.71));
+      if(st>=2){ h.add(box3(1.1,.9,1.1,'#F4E1B5',1.35,0,-.1)); h.add(gable3(1.1,1.1,.9,.5,'#008F9B').translateX(1.35).translateZ(-.1)); h.add(winBox3(.3,.28,1.35,.4,.46)); h.add(box3(.26,.8,.26,'#8A5A3B',-.5,1.4,-.3));
+        for(let i=0;i<3;i++){ const p=mesh3(new THREE.IcosahedronGeometry(.13+i*.04,0),new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.75,flatShading:true}),-.5,2.4+i*.3,-.3); p.castShadow=false; p.userData.smoke=i; h.add(p); } }
+      if(st>=3){ COTTAGE_V.forEach(([a,b,c,r])=>{ const ct=cottage3(c); ct.position.set(a,0,b); ct.rotation.y=r; h.add(ct); }); h.add(bunting3([[-1.6,1.6,1.2],[1.5,2.0,2.6],[3.4,1.6,3.6]])); } }
+    h.position.set(x,TOP3,z); h.rotation.y=.25; add(h,st===0?'home:home0':'home:home'+[0,1,3,10][st]); h.userData.piece=st===0?'home0':'home'+[0,1,3,10][st]; }
+  if(n>=2){ const gd=new THREE.Group(); gd.add(flowers3(0,0,1.0,10+Math.min(30,n),1)); for(let i=0;i<10;i++){ const a=i*Math.PI/5; gd.add(box3(.05,.35,.05,'#FFFFFF',Math.cos(a)*1.25,TOP3,Math.sin(a)*1.25)); } gd.position.set(HOME_AT.garden[0],0,HOME_AT.garden[1]); add(gd,'home:garden').userData.piece='garden'; }
+  if(n>=5){ const s=shop3(); s.position.set(HOME_AT.shop[0],TOP3,HOME_AT.shop[1]); s.rotation.y=-.15; add(s,'home:shop').userData.piece='shop'; }
+  if(n>=7){ const m=new THREE.Group(); m.add(box3(2.0,1.2,1.3,'#ECE6DA',0,0,0)); m.add(gable3(2.0,1.3,1.2,.5,'#81007B')); for(const x of [-.7,-.25,.25,.7]) m.add(cyl3(.07,.07,1.15,6,'#FFFFFF',x,0,.72)); m.add(box3(1.2,.22,.05,'#14202C',0,1.0,.76));
+    const fav=Object.entries(o.builds).filter(([k])=>!k.startsWith('w:')).sort((a,b)=>(b[1].s||0)-(a[1].s||0)||(b[1].c||1)-(a[1].c||1)).slice(0,3).map(([k])=>k);
+    fav.forEach((k,i)=>{ const p=plinth3(-.8+i*.8,1.2,k); p.position.y=0; p.scale.setScalar(.8); m.add(p); });
+    m.position.set(HOME_AT.museum[0],TOP3,HOME_AT.museum[1]); m.rotation.y=-1.0; add(m,'home:museum').userData.piece='museum'; }
+  if(n>=10&&o.pick){ if(o.pick==='lighthouse'){ const l=lighthouse3(); l.position.set(-6.0,TOP3,-.6); add(l,'home:pick').userData.piece='pick'; }
+    else { const t=new THREE.Group(); t.add(tree3(0,0,1.7,2)); const h=new THREE.Group(); h.add(cyl3(.9,.9,.1,10,'#A86E48',0,0,0)); h.add(box3(.9,.7,.8,'#C58B5A',0,.1,0)); h.add(gable3(.9,.8,.8,.4,'#237841')); h.add(winBox3(.24,.22,0,.3,.41)); h.position.set(0,TOP3+1.6,0); t.add(h); t.position.set(-5.2,0,-.4); add(t,'home:pick').userData.piece='pick'; } }
+  // the harbour: the jetty, and a boat for every few friend builds
+  { const j=new THREE.Group(); for(let i=0;i<9;i++) j.add(box3(.9,.08,.3,'#B07A4C',0,TOP3-.06,i*.34)); for(const x of [-.45,.45]) for(let i=0;i<3;i++) j.add(cyl3(.05,.05,1.4,5,'#7A4E2E',x,-1.2,.3+i*1.2));
+    const f=friendCount(o); for(let i=0;i<Math.min(4,f>0?1+Math.floor(f/3):0);i++){ const b=boat3(['#0055BF','#F4BC22','#008F9B','#FFFFFF'][i],.9); b.position.set((i%2?1:-1)*1.3,-1.25,1.2+i*.8); j.add(b); }
+    j.position.set(HOME_AT.jetty[0],0,HOME_AT.jetty[1]); j.rotation.y=.1; add(j,'home:harbour'); }
+  // trees, lamps, a bench around the edge
+  [[-6.2,-3.4,1.1],[-6.8,.6,.9],[-5.4,4.4,1],[-2.0,-6.2,1.1],[6.0,1.0,.9],[3.6,-5.6,1],[5.8,-2.6,.8],[-3.6,6.0,.9],[6.2,4.0,.8]].forEach(([x,z,s],i)=>g.add(tree3(x,z,s,i)));
+  [[-1.8,-.6],[2.4,-.8],[-.4,2.4]].forEach(([x,z])=>g.add(lamp3(x,z)));
+  pebbles3(g,[[-3.0,-1.2],[-1.4,-.4],[.2,.4],[1.0,2.6],[1.2,5.8]],60); pebbles3(g,[[.2,.4],[1.4,-3.4]],18);
+  W.add(g); return g;
+}
+const COTTAGE_V=[[-2.2,1.8,'#F4BC22',-.6],[2.6,2.4,'#008F9B',-1.0]];
+
+// Adventure islands: the always-there base, then each unlocked piece
+function isleBase(id,g,n){
+  if(id==='otterwood'){ const h=1.7+Math.min(14,n)*.12; g.add(cyl3(.42,.62,h,7,'#7A4E2E',0,TOP3,0)); for(let i=0;i<3;i++){ const c=mesh3(new THREE.IcosahedronGeometry(1.2-i*.25,0),m3(['#3E9E36','#4FB33A','#5CC046'][i]),Math.sin(i*2)*.3,TOP3+h+i*.55-.1,Math.cos(i*2)*.3); c.scale.set(1,.8,1); g.add(c); }
+    [[2.8,-2.0],[-3.0,-1.0],[-1.0,-3.2],[3.2,1.0],[-3.2,2.6],[1.4,3.0],[2.4,-3.0]].forEach(([x,z],i)=>g.add(tree3(x,z,.9+(i%3)*.15,i))); }
+  if(id==='brainpeak'){ const m=mesh3(new THREE.ConeGeometry(2.4,3.3,7),[m3('#B9C2CF'),m3('#9AA3AD')],0,TOP3+1.65,-.4); g.add(m); const s=mesh3(new THREE.ConeGeometry(.9,1.1,7),m3('#FFFFFF'),0,TOP3+2.85,-.4); g.add(s);
+    [[3.0,1.6],[-3.0,-1.2],[-.4,3.4]].forEach(([x,z],i)=>g.add(tree3(x,z,.85,i+2))); }
+  if(id==='sunrise'){ const t=new THREE.Group(); t.add(box3(1.0,2.6,1.0,'#FFF8EA',0,0,0)); t.add(box3(1.15,.18,1.15,'#E3C99A',0,2.6,0)); t.add(box3(.4,.7,.05,'#8A5A3B',0,0,.51)); g.add(t); t.position.y=TOP3;
+    [[-3.0,1.4],[3.0,1.2],[-2.6,-2.6]].forEach(([x,z],i)=>g.add(tree3(x,z,.85,i+5))); }
+  if(id==='blitzbay'){ g.add(ring3(1.5,2.4,'#C9A27A',TOP3+.02)); }
+  if(id==='brickworks'){ g.add(cyl3(2.4,2.5,.06,12,'#D9D1C2',0,TOP3-.02,0)); [[-3.2,-1.8],[3.0,-2.2]].forEach(([x,z],i)=>g.add(tree3(x,z,.85,i+1))); }
+}
+function islePieces(id,n){ return PIECES[id].filter(p=>n>=p.at); }
+// The nearest next thing to grow anywhere in the world (for the line under the map)
+function worldNextGoal(o){ const n=worldCount(o), out=[];
+  const hp=HOME_PIECES.find(p=>!p.hide&&p.id!=='pick'&&p.at>n); if(hp){ const prev=Math.max(0,...HOME_PIECES.filter(p=>!p.hide&&p.at<=n).map(p=>p.at)); out.push({left:hp.at-n,text:`${hp.at-n} more build${hp.at-n===1?'':'s'} and Home Island gets its ${hp.name.toLowerCase()}`,frac:(n-prev)/Math.max(1,hp.at-prev)}); }
+  for(const id of Object.keys(ISLES)){ const I=ISLES[id], c=isleCount(id,o), p=PIECES[id].find(q=>q.at>c); if(!p) continue; const prev=Math.max(0,...PIECES[id].filter(q=>q.at<=c).map(q=>q.at)), k=p.at-c;
+    out.push({left:k+(c?0:.5),text:c?`${k} more ${I.unit}${k===1?'':'s'}: ${p.name} on ${I.name}`:`Your first ${I.unit} finds ${I.name} in the mist`,frac:(c-prev)/Math.max(1,p.at-prev)}); }
+  out.sort((a,b)=>a.left-b.left); return out[0]||null; }
+const islandsOpen=o=>Object.keys(ISLES).filter(id=>isleCount(id,o)>0);
+
+// What's built, as ids: home pieces, discovered islands, each island's pieces. New ones get revealed.
+function worldUnlocked(o){ const n=worldCount(o), ids=[];
+  for(const p of HOME_PIECES){ if(p.id==='pick'){ if(n>=10&&o.pick) ids.push('home:pick'); continue; } if(n>=p.at&&!p.hide) ids.push('home:'+p.id); }
+  for(const id of Object.keys(ISLES)){ const c=isleCount(id,o); if(c>0) ids.push('isle:'+id); PIECES[id].forEach((p,i)=>{ if(c>=p.at) ids.push(id+':'+i); }); }
+  return ids; }
+const SEEN_KEY='bloppit-seen3-v1';
+function seenGet(){ try{ const v=JSON.parse(localStorage.getItem(pkey(SEEN_KEY))); return Array.isArray(v)?v:null; }catch(e){ return null; } }
+function seenSet(a){ try{ localStorage.setItem(pkey(SEEN_KEY),JSON.stringify(a.slice(-400))); }catch(e){} }
+
+function isl3Build(o){
+  const sc=ISL3.sc; if(ISL3.world){ sc.remove(ISL3.world); ISL3.world.traverse(x=>{ if(x.geometry&&!geo3.has(x.geometry)) x.geometry.dispose(); }); }
+  const W=new THREE.Group(), n=worldCount(o); ISL3.world=W; ISL3.hits=[]; ISL3.labels=[]; ISL3.pieces={}; ISL3.isles={};
+  const add=(g,info,x,z,ry)=>{ if(x!=null) g.position.set(x,g.position.y,z); if(ry) g.rotation.y=ry; if(info) tag3(g,info); W.add(g); return g; };
+  // Home Island
+  add(islandBody3(HOMEP,0,0,1.3,true),'land:beach');
+  const home=homeBuild(o,W); home.traverse(x=>{ if(x.userData.piece) ISL3.pieces['home:'+x.userData.piece.replace(/^home(1|3|10)$/,'home$1')]=x; });
+  ISL3.isles.home={x:0,z:0,r:HOME_R};
+  // decorations
+  const tapBox=(w,h,y)=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,w),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); b.visible=false; b.position.y=y; return b; };
+  for(const id of o.decor||[]){ const p=DECOR3[id]; if(!p) continue; const d=decor3(id); d.add(id==='kite'?tapBox(1.4,1.6,5.2):tapBox(1.3,1.7,TOP3+.8)); add(d,'decor:'+id,p[0],p[1]); }
+  // models, where the child put them
+  const shown=islandModels3(o); ISL3.shown=shown;
+  for(const [x,z,i] of shown.empty){ const g=new THREE.Group(); g.add(cyl3(.62,.68,.14,10,'#F2EDE3',0,TOP3,0)); add(g,'stand:'+i,x,z); }
+  for(const m of shown.list){ const g=model3(m.key); g.userData.key=m.key; add(g,'model:'+m.key,m.x,m.z,m.ry||0); }
+  // Bloppit and your otter, where the time of day puts them
+  isl3Characters(o,W);
+  // the five islands: built up to their count, or waiting in the mist
+  for(const id of Object.keys(ISLES)){ const I=ISLES[id], c=isleCount(id,o), P=blob3(0,0,I.r,I.seed,26), g=new THREE.Group();
+    g.add(islandBody3(P,0,0,I.seed,!!I.sand)); g.position.set(I.x,0,I.z); tag3(g,'isle:'+id); ISL3.isles[id]={x:I.x,z:I.z,r:I.r,g};
+    if(c>0){ isleBase(id,g,c); const ctx={creations:Object.entries(o.builds).filter(([k])=>k.startsWith('p:')).sort((a,b)=>(b[1].t||0)-(a[1].t||0)).map(([k])=>k)};
+      PIECES[id].forEach((p,i)=>{ if(c<p.at) return; const pg=new THREE.Group(); p.make(pg,c,ctx); tag3(pg,'piece:'+id+':'+i); pg.userData.piece=id+':'+i; g.add(pg); ISL3.pieces[id+':'+i]=pg; });
+      const a=edge3(HOMEP,0,0,I.x,I.z), b=edge3(blob3(I.x,I.z,I.r,I.seed,26),I.x,I.z,0,0); W.add(tag3(bridge3(a,b,id==='brainpeak'),'isle:'+id));
+      const next=PIECES[id].find(p=>c<p.at); if(next&&next.at-c<=1) g.add(sparkle3(0,2.6,0));
+    } else { g.traverse(x=>{ if(x.isMesh) x.material=m3('#C9D3DC'); }); g.add(mist3(I.r)); g.userData.misty=1; }
+    W.add(g);
+    const L=Math.hypot(I.x,I.z), ux=I.x/L, uz=I.z/L, done=c>=PIECES[id][PIECES[id].length-1].at;
+    ISL3.labels.push({id:'isle:'+id,name:c>0?I.name:'???',sub:c>0?(done?'Complete ★':`${Math.min(c,PIECES[id].length&&PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at}`):'In the mist',x:I.x+ux*I.r*.95,z:I.z+uz*I.r*1.05,y:-1.2}); }
+  ISL3.labels.push({id:'land:beach',name:'Home Island',sub:pupName(o)?`${pupName(o)}’s home`:'Your home',x:0,z:HOME_R*.55,y:.9,home:1});
+  // sky things: the balloon, a few clouds, stars for the night
+  { const b=balloon3(); b.position.set(7,8,-3); b.userData.balloon=1; add(b,'land:balloon'); }
+  for(let i=0;i<5;i++){ const c=cloud3(); c.position.set(-24+i*12,10+(i%2)*2,-18+((i*7)%11)); c.userData.cloud=i; W.add(c); }
+  if(!ISL3.stars){ const g=new THREE.BufferGeometry(), p=[]; for(let i=0;i<260;i++){ const a=Math.random()*Math.PI*2, e=.15+Math.random()*1.2; p.push(Math.cos(a)*90*Math.cos(e),40+Math.sin(e)*60,Math.sin(a)*90*Math.cos(e)-30); }
+    g.setAttribute('position',new THREE.Float32BufferAttribute(p,3)); ISL3.stars=new THREE.Points(g,new THREE.PointsMaterial({color:0xffffff,size:.6,transparent:true,opacity:0,fog:false})); ISL3.sc.add(ISL3.stars); }
+  ISL3.sc.add(W);
+  W.traverse(x=>{ if(x.isMesh||x.isSprite||x.isInstancedMesh) ISL3.hits.push(x); });
+  isl3Labels(); isl3Tod(true); isl3Kick();
+}
+function mist3(r){ const g=new THREE.Group(); for(let i=0;i<9;i++){ const a=i*.7, c=mesh3(new THREE.IcosahedronGeometry(1.1+(i%3)*.4,1),new THREE.MeshStandardMaterial({color:0xF4F7FA,transparent:true,opacity:.82,roughness:1,flatShading:true}),Math.cos(a)*r*.6,.8+(i%4)*.5,Math.sin(a)*r*.6); c.castShadow=false; c.userData.mist=i; g.add(c); } return g; }
+function cloud3(){ const g=new THREE.Group(); for(let i=0;i<4;i++){ const c=new THREE.Mesh(new THREE.IcosahedronGeometry(1.2+(i%2)*.5,1),new THREE.MeshStandardMaterial({color:0xffffff,flatShading:true,roughness:1,transparent:true,opacity:.95})); c.position.set(i*1.4-2,(i%2)*.4,(i%3)*.5); c.scale.set(1,.7,1); g.add(c); } return g; }
+function sparkle3(x,y,z){ const g=new THREE.Group(); for(let i=0;i<6;i++){ const s=new THREE.Sprite(ISL3.sparkMat||(ISL3.sparkMat=new THREE.SpriteMaterial({map:sparkTex3(),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending})));
+  s.scale.setScalar(.6); s.position.set(Math.cos(i)*1.2,y+(i%3)*.5,Math.sin(i)*1.2); s.userData.twinkle=i; g.add(s); } g.position.set(x,0,z); return g; }
+function sparkTex3(){ const c=document.createElement('canvas'); c.width=c.height=64; const x=c.getContext('2d'), gr=x.createRadialGradient(32,32,0,32,32,30); gr.addColorStop(0,'rgba(255,250,210,1)'); gr.addColorStop(.25,'rgba(255,226,122,.9)'); gr.addColorStop(1,'rgba(255,226,122,0)'); x.fillStyle=gr; x.fillRect(0,0,64,64);
+  x.fillStyle='rgba(255,255,255,.95)'; x.fillRect(30,4,4,56); x.fillRect(4,30,56,4); return new THREE.CanvasTexture(c); }
+
+// Bloppit's day: gardening in the morning, fishing at midday, reading in the afternoon, asleep at night.
+function isl3Hour(){ const q=new URLSearchParams(location.search).get('hour'); if(q!=null&&q!==''&&!isNaN(+q)) return +q; const d=new Date(); return d.getHours()+d.getMinutes()/60; }
+function routine3(h){ return h>=6&&h<10?'garden':h>=10&&h<15?'fish':h>=15&&h<19.5?'read':'sleep'; }
+function isl3Characters(o,W){
+  const r=routine3(isl3Hour()), n=worldCount(o), at={garden:[HOME_AT.garden[0]-1.5,HOME_AT.garden[1]+.6],fish:[HOME_AT.jetty[0]+.2,HOME_AT.jetty[1]+2.6],read:[HOME_AT.home[0]+1.6,HOME_AT.home[1]+1.6],sleep:[HOME_AT.home[0]+.2,HOME_AT.home[1]+1.4]}[r];
+  if(ISL3.arrival) { at[0]=HOME_AT.home[0]+1.8; at[1]=HOME_AT.home[1]+1.8; }
+  const pose=ISL3.arrival?'/art/bud-offer.png':{garden:'/art/bud-3q.png',fish:'/art/bud-focused.png',read:'/art/bud-focused.png',sleep:'/art/bud-hug.png'}[r];
+  const g=new THREE.Group(), b=sprite3(pose,2.2,.75); b.position.y=r==='fish'&&!ISL3.arrival?TOP3-.05:TOP3; g.add(b); g.userData.bloppit=1; ISL3.bloppit=g; ISL3.bloppitSprite=b; ISL3.bloppitPose=pose;
+  if(!ISL3.arrival){
+    if(r==='garden'){ const c=new THREE.Group(); c.add(cyl3(.14,.16,.24,8,'#9ED3F2',0,0,0)); const s=cyl3(.03,.03,.3,4,'#9ED3F2',.18,.12,0); s.rotation.z=-1; c.add(s); c.position.set(.55,TOP3,.25); g.add(c); }
+    if(r==='fish'){ const rod=cyl3(.02,.025,2.0,4,'#7A4E2E',.45,TOP3+.6,.2); rod.rotation.z=-.7; g.add(rod); const line=cyl3(.006,.006,1.6,3,'#FFFFFF',1.15,TOP3-.4,.2); g.add(line); const bob=mesh3(new THREE.SphereGeometry(.07,6,4),m3('#FE8A18'),1.15,-1.25,.2); bob.userData.bob=1; g.add(bob); }
+    if(r==='read'){ g.add(box3(.34,.06,.26,'#0055BF',.45,TOP3+.02,.3)); g.add(bench3(-.1,-.2,0)); }
+    if(r==='sleep'){ const z=new THREE.Sprite(new THREE.SpriteMaterial({map:zzzTex3(),transparent:true,depthWrite:false})); z.scale.set(.9,.6,1); z.position.set(.6,TOP3+2.3,0); z.userData.zzz=1; g.add(z); }
+  }
+  g.position.set(at[0],0,at[1]); tag3(g,'bloppit'); W.add(g);
+  if(n>0||ISL3.arrival||pupName(o)){ const ps=pupStage(o), p=new THREE.Sprite(new THREE.SpriteMaterial({map:pupTex3(o),transparent:true,alphaTest:.15})); const h=[1.3,1.5,1.7][ps]*346/300; p.scale.set(h*239/346,h,1); p.center.set(.5,0); p.position.y=TOP3;
+    const pg=new THREE.Group(); pg.add(p); pg.userData.bob=2; pg.position.set(at[0]+1.25,0,at[1]+.35); tag3(pg,'pup'); ISL3.pupG=pg; W.add(pg); }
+}
+function zzzTex3(){ const c=document.createElement('canvas'); c.width=96; c.height=64; const x=c.getContext('2d'); x.font='bold 30px system-ui,sans-serif'; x.fillStyle='#FFFFFF'; x.strokeStyle='#14202C'; x.lineWidth=4; for(const [t,a,b] of [['z',8,58],['z',34,40],['Z',58,26]]){ x.strokeText(t,a,b); x.fillText(t,a,b); } const t=new THREE.CanvasTexture(c); return t; }
+
+// Time of day: sunrise, day, sunset and night from the device's clock (?hour=21 to try)
+const TOD3=[[0,'#0B1D3A',.16,'#8FA8FF',.28,'#0E3F68',1],[5,'#0B1D3A',.16,'#8FA8FF',.28,'#0E3F68',1],[6.5,'#FFB98A',.6,'#FFC59A',.48,'#2A8FD0',.35],[8,'#BFE6F7',.95,'#FFFFFF',.62,'#22B4EE',0],[17,'#BFE6F7',.95,'#FFFFFF',.62,'#22B4EE',0],[18.7,'#FF9E6E',.6,'#FFB070',.45,'#2C86C4',.35],[20.2,'#0B1D3A',.16,'#8FA8FF',.28,'#0E3F68',1],[24,'#0B1D3A',.16,'#8FA8FF',.28,'#0E3F68',1]];
+function isl3Tod(force){ const h=isl3Hour(); if(!force&&ISL3.todH!=null&&Math.abs(h-ISL3.todH)<.02) return; ISL3.todH=h;
+  let i=0; while(i<TOD3.length-2&&TOD3[i+1][0]<=h) i++; const A=TOD3[i], B=TOD3[i+1], t=(h-A[0])/Math.max(.001,B[0]-A[0]);
+  const col=(a,b)=>new THREE.Color(a).convertSRGBToLinear().lerp(new THREE.Color(b).convertSRGBToLinear(),t), num=(a,b)=>a+(b-a)*t;
+  const sky=col(A[1],B[1]); ISL3.r.setClearColor(sky); ISL3.sc.fog.color.copy(sky);
+  ISL3.sun.intensity=num(A[2],B[2]); ISL3.sun.color.copy(col(A[3],B[3])); ISL3.hemi.intensity=num(A[4],B[4]); ISL3.sea.material.color.copy(col(A[5],B[5]));
+  const night=num(A[6],B[6]); ISL3.night=night; const a=(h-6)/12*Math.PI; ISL3.sun.position.set(-Math.cos(a)*26,Math.max(8,Math.sin(Math.max(.15,Math.min(Math.PI-.15,a)))*32),14);
+  for(const m of Object.values(ISL3.glows||{})) m.emissiveIntensity=.35+night*1.6;
+  if(ISL3.stars) ISL3.stars.material.opacity=Math.max(0,night-.3)*1.2; }
+
+// The loop: about 30 frames a second while Bloppitopia is on screen, nothing when it isn't
+function isl3Frame(now){
+  ISL3.raf=0; if(!ISL3.on) return;
+  const busy=ISL3.dragging||ISL3.fly||(ISL3.pops&&ISL3.pops.length)||(ISL3.parts&&ISL3.parts.length);
+  if(!ISL3.dirty&&!busy&&now-(ISL3.last||0)<31){ ISL3.raf=requestAnimationFrame(isl3Frame); return; } ISL3.last=now;
+  const t=now/1000; isl3Tod(false);
+  if(ISL3.fly) isl3FlyStep(now); else if(ISL3.ctl) ISL3.ctl.update();
+  if(ISL3.world&&!reduceMotion) ISL3.world.traverse(x=>isl3Animate(x,t));
+  if(ISL3.world&&reduceMotion) ISL3.world.traverse(x=>{ if(x.userData.hand) isl3Animate(x,t); });
+  isl3Pops(now);
+  ISL3.r.render(ISL3.sc,ISL3.cam); isl3PlaceLabels(); ISL3.dirty=false;
+  if(ISL3.on&&(!reduceMotion||busy||(ISL3.settle-->0))) ISL3.raf=requestAnimationFrame(isl3Frame);
+}
+function isl3Animate(x,t){ const u=x.userData;
+  if(u.bob===1) x.position.y=(u.y0??(u.y0=x.position.y))+Math.sin(t*1.6+x.position.x)*.06;
+  else if(u.bob===2&&x.children[0]) x.children[0].position.y=TOP3+Math.abs(Math.sin(t*2.2))*.08;
+  if(u.smoke!=null){ const y0=u.y0??(u.y0=x.position.y), k=((t*.5+u.smoke/3)%1); x.position.y=y0+k*1.2; x.material.opacity=.75*(1-k); x.scale.setScalar(.7+k*.8); }
+  if(u.kite){ x.position.x=Math.sin(t*.7)*.5; x.position.y=5.2+Math.sin(t*1.3)*.2; x.rotation.z=Math.sin(t*.9)*.2; }
+  if(u.balloon){ x.position.y=8+Math.sin(t*.5)*.4; x.position.x=7+Math.sin(t*.08)*4; x.position.z=-3+Math.cos(t*.08)*4; }
+  if(u.race!=null){ const a=t*1.1+u.race; x.position.set(Math.cos(a)*1.95*1.2,TOP3+.04,Math.sin(a)*1.95); x.rotation.y=-a-Math.PI/2; }
+  if(u.swing) x.rotation.x=Math.sin(t*1.6)*.35;
+  if(u.spin) x.rotation.z=t*.5;
+  if(u.fly!=null){ const k=u.fly; x.position.set(Math.sin(t*.6+k)*2.6,1.4+Math.sin(t*1.1+k*2)*.6+((k*7)%10)/10,Math.cos(t*.5+k*1.3)*2.4); }
+  if(u.flap) x.rotation.y=Math.sin(t*3+x.id)*.3;
+  if(u.waddle!=null) x.position.x+=Math.sin(t*2+u.waddle)*.003;
+  if(u.cheer!=null) x.position.y=TOP3+Math.abs(Math.sin(t*4+u.cheer))*.18;
+  if(u.crane) x.rotation.y=Math.sin(t*.35)*1.2;
+  if(u.belt!=null) x.position.x=-.8+((t*.35+u.belt*.25)%1)*2.0;
+  if(u.fount) x.scale.setScalar(.9+Math.sin(t*5)*.1);
+  if(u.hand){ const d=new Date(), h=(d.getHours()%12)+d.getMinutes()/60, m=d.getMinutes()+d.getSeconds()/60; x.rotation.z=-(u.hand===1?h/12:m/60)*Math.PI*2; }
+  if(u.beam){ x.material.opacity=.16+Math.sin(t*1.5)*.06; }
+  if(u.twinkle!=null){ const k=(Math.sin(t*3+u.twinkle*1.7)+1)/2; x.scale.setScalar(.25+k*.55); x.material.opacity=.4+k*.6; }
+  if(u.mist!=null) x.position.x+=Math.sin(t*.3+u.mist)*.002;
+  if(u.cloud!=null){ x.position.x+=.01; if(x.position.x>40) x.position.x=-40; }
+  if(u.zzz){ const k=(t*.4)%1; x.position.y=TOP3+2.0+k*.8; x.material.opacity=1-k; }
+  if(u.bloppit&&ISL3.jumpT){ const k=(performance.now()-ISL3.jumpT)/700; x.position.y=k<1?Math.sin(k*Math.PI)*.6:0; if(k>=1) ISL3.jumpT=0; }
+}
+// Camera flights (to a new piece and back)
+const ease3=k=>k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+function isl3FlyTo(x,y,z,dist,dur){ const cam=ISL3.cam, ctl=ISL3.ctl, dir=cam.position.clone().sub(ctl.target).normalize();
+  ISL3.fly={t0:performance.now(),dur:dur||1100,p0:cam.position.clone(),q0:ctl.target.clone(),q1:new THREE.Vector3(x,y,z),p1:new THREE.Vector3(x,y,z).addScaledVector(dir,dist)}; isl3Kick(); }
+function isl3FlyHome(dur){ const cam=ISL3.cam, box=ISL3.box, w=box.clientWidth, h=box.clientHeight, c=cam.clone(); isl3Fit(c,w/h); const d=c.position.distanceTo(CAM_T3);
+  ISL3.fly={t0:performance.now(),dur:dur||1000,p0:cam.position.clone(),q0:ISL3.ctl.target.clone(),q1:CAM_T3.clone(),p1:c.position.clone()}; isl3Kick(); }
+function isl3FlyStep(now){ const F=ISL3.fly, k=Math.min(1,(now-F.t0)/F.dur), e=ease3(k); ISL3.cam.position.lerpVectors(F.p0,F.p1,e); ISL3.ctl.target.lerpVectors(F.q0,F.q1,e); ISL3.cam.lookAt(ISL3.ctl.target); if(k>=1){ ISL3.fly=null; ISL3.ctl.update(); if(F.done) F.done(); } }
+// Pops (a new piece springs up), islands rising from the mist, confetti
+function isl3Pop(obj,kind){ if(!obj) return; ISL3.pops=ISL3.pops||[]; obj.userData.s0=obj.scale.x||1; ISL3.pops.push({obj,kind:kind||'pop',t0:performance.now()}); if(kind!=='rise') obj.scale.setScalar(.01); isl3Kick(); }
+function isl3Confetti(x,y,z,n,big){ ISL3.parts=ISL3.parts||[]; const C=['#0055BF','#F4BC22','#008F9B','#FE8A18','#FFFFFF','#A5CA18','#FF698F'];
+  for(let i=0;i<(n||40);i++){ const p=new THREE.Mesh(ISL3.cGeo||(ISL3.cGeo=new THREE.BoxGeometry(.12,.04,.08)),m3(C[i%C.length])); p.position.set(x,y,z); const a=Math.random()*Math.PI*2, s=(big?3.4:2.2)*(.5+Math.random());
+    p.userData.v=new THREE.Vector3(Math.cos(a)*s*.5,(big?5:3.6)*(.6+Math.random()*.6),Math.sin(a)*s*.5); p.userData.life=0; ISL3.sc.add(p); ISL3.parts.push(p); } isl3Kick(); }
+function isl3Pops(now){
+  if(ISL3.pops&&ISL3.pops.length) ISL3.pops=ISL3.pops.filter(p=>{ const k=Math.min(1,(now-p.t0)/(p.kind==='rise'?1600:900));
+    if(p.kind==='rise'){ p.obj.position.y=-3.2*(1-ease3(k)); p.obj.traverse(m=>{ if(m.userData.mist!=null&&m.material){ m.material.opacity=.82*(1-k); } }); }
+    else { const s=k<1?1+Math.sin(k*Math.PI*1.6)*(1-k)*.5:1; p.obj.scale.setScalar((p.obj.userData.s0||1)*Math.max(.01,k<.6?ease3(k/.6)*s:s)); }
+    return k<1; });
+  if(ISL3.parts&&ISL3.parts.length){ const dt=.033; ISL3.parts=ISL3.parts.filter(p=>{ p.userData.life+=dt; p.userData.v.y-=9*dt; p.position.addScaledVector(p.userData.v,dt); p.rotation.x+=.2; p.rotation.y+=.15;
+    if(p.userData.life>2.2||p.position.y<-1.4){ ISL3.sc.remove(p); return false; } return true; }); }
+}
+// After a build: fly to each new thing, pop it in, say what it is; milestones get fireworks
+function isl3Reveal(ids,o){
+  const items=ids.slice(0,6); if(!items.length) return isl3AfterReveal(o);
+  ISL3.revealing=true; isl3Chrome(); if(ISL3.ctl) ISL3.ctl.enabled=false;
+  const step=(i)=>{ if(i>=items.length||!ISL3.on){ ISL3.revealing=false; if(ISL3.ctl) ISL3.ctl.enabled=true; isl3Banner(''); isl3FlyHome(); isl3Chrome(); setTimeout(()=>isl3AfterReveal(o),900); return; }
+    const id=items[i], [kind,isle]=id.split(':'), I=(kind==='isle'?ISL3.isles[isle]:kind==='home'?ISL3.isles.home:ISL3.isles[kind])||ISL3.isles.home;
+    const obj=kind==='isle'?I.g:ISL3.pieces[id]; const where=obj?new THREE.Box3().setFromObject(obj).getCenter(new THREE.Vector3()):new THREE.Vector3(I.x,1,I.z);
+    const text=revealText(id,o), big=/milestone|complete|home:home1/.test(text.kind);
+    isl3FlyTo(where.x,Math.max(.8,where.y*.6),where.z,kind==='isle'?18:13,1100);
+    ISL3.fly.done=()=>{ if(kind==='isle') isl3Pop(obj,'rise'); else isl3Pop(obj); sfx.chime(); setTimeout(()=>isl3Confetti(where.x,where.y+1,where.z,big?90:40,big),kind==='isle'?1300:350);
+      ISL3.jumpT=performance.now(); isl3Banner(text.t,big); track('world_reveal:'+(kind==='isle'?'island':kind==='home'?'home':'piece'));
+      ISL3.revealT=setTimeout(()=>step(i+1),big?2800:2100); };
+  };
+  step(0);
+}
+function revealText(id,o){ const [k,a,b]=id.split(':');
+  if(k==='isle') return {t:`🏝️ ${ISLES[a].name} rose from the mist!`,kind:'isle'};
+  if(k==='home'){ const p=HOME_PIECES.find(x=>x.id===a); return {t:a==='home1'?'🏠 You built your home!':a==='pick'?(o.pick==='lighthouse'?'💡 Your lighthouse is lit!':'🌳 Your treehouse is ready!'):`✨ New on Home Island: ${p?p.name:a}`,kind:a==='home1'?'home:home1':a==='home10'?'milestone':'home'}; }
+  const P=PIECES[k][+a], last=+a===PIECES[k].length-1; return last?{t:`🎉 ${ISLES[k].name} is complete: ${P.name}!`,kind:'milestone'}:{t:`✨ New in ${ISLES[k].name}: ${P.name}`,kind:'piece'}; }
+function isl3Banner(t,big){ const b=ISL3.box&&ISL3.box.querySelector('.is3-banner'); if(!b) return; b.textContent=t; b.hidden=!t; b.classList.toggle('big',!!big); }
+// The buttons over the world: Play Next (one obvious next step), and the arrival's Build Our First Home
+function isl3Chrome(){ const box=ISL3.box; if(!box) return; let c=box.querySelector('.is3-chrome');
+  if(!c){ c=document.createElement('div'); c.className='is3-chrome'; c.innerHTML='<div class="is3-banner" hidden></div><button class="primary is3-play" type="button"></button>'; box.appendChild(c);
+    c.querySelector('.is3-play').onclick=()=>{ const a=c.querySelector('.is3-play').dataset.act; if(a==='home'){ track('first_home_start'); welcomeStart(); return; } const n=nextBuild(); track('play_next:island'); if(n) n.go(); else homeGo('quick'); }; }
+  const b=c.querySelector('.is3-play'), o=worldStore();
+  if(ISL3.arrival==='home'){ b.dataset.act='home'; b.innerHTML='🔨 Build Our First Home'; b.hidden=false; }
+  else if(ISL3.arrival||ISL3.revealing){ b.hidden=true; }
+  else { const n=nextBuild(); b.dataset.act='next'; b.innerHTML=n?`<span>▶ Play next</span><small>${escapeHTML(n.t)}</small>`:'<span>▶ Build something</span>'; b.hidden=false; } }
+function isl3AfterReveal(o){ o=worldStore();
+  if(ISL3.pending_acc&&ISL3.pending_acc.length){ const a=ISL3.pending_acc.shift(); accOffer(a); return; }
+  if(worldCount(o)>=10&&!o.pick&&!ISL3.askedPick){ ISL3.askedPick=true; pickOpen(); } }
+
+/* ---------- My Bloppit: your otter's level and outfit ----------
+   Otter Level comes from XP (every finished build). Outfits never change how puzzles play: a scarf and a beanie
+   from the start, then one more every few levels, and a crown for a Legend. The child picks the colour. What's
+   worn is kept in the world record as small ids and colour numbers (wear: { neck:['scarf',2], head:[...] }). */
+const otterLevel=o=>{ const xp=worldXP(o); let n=1; while(25*(n+1)*n<=xp) n++; return n; };          // L2 at 50 XP, L3 at 150, L5 at 500, L10 at 2,250
+const levelXP=n=>25*n*(n-1);
+const ACC=[
+  {id:'scarf',name:'Scarf',slot:'neck',lvl:1},
+  {id:'beanie',name:'Beanie',slot:'head',lvl:1},
+  {id:'bowtie',name:'Bow tie',slot:'neck',lvl:3},
+  {id:'straw',name:'Straw hat',slot:'head',lvl:5},
+  {id:'glasses',name:'Sunglasses',slot:'face',lvl:8},
+  {id:'sailor',name:'Sailor cap',slot:'head',lvl:11},
+  {id:'crown',name:'Legend crown',slot:'head',legend:1},
+];
+const accOwned=(a,o)=>a.legend?pupStage(o)>=2:otterLevel(o)>=a.lvl;
+function accWear(o){ const w=o&&o.wear&&typeof o.wear==='object'?o.wear:{}, out={}; for(const s of ['neck','head','face']){ const v=w[s]; if(Array.isArray(v)&&ACC.some(a=>a.id===v[0]&&a.slot===s)) out[s]=[v[0],Number.isInteger(v[1])?v[1]:0]; } return out; }
+// The shapes, in the pup drawing's own coordinates (239×300, the head's top at y≈0, the chin at y≈140)
+function accShapes(id,c){ const d=pupShade(c,-.3), l=pupShade(c,.35);
+  switch(id){
+    case 'scarf': return [{d:'M78 150 L64 206 L88 210 L98 158 Z',f:d},{d:'M56 136 C90 160 160 164 198 138 L200 156 C160 182 90 178 54 154 Z',f:c},{d:'M60 147 C92 168 158 171 199 147',s:l,w:4}];
+    case 'bowtie': return [{d:'M126 156 L100 142 L102 170 Z',f:c},{d:'M126 156 L152 142 L150 170 Z',f:c},{d:'M120 150 h12 v12 h-12 Z',f:d}];
+    case 'beanie': return [{d:'M50 30 C48 -22 206 -26 204 22 Z',f:c,r:[-11,128,20]},{d:'M46 18 L206 10 L208 32 L48 40 Z',f:d,r:[-11,128,20]},{c:[126,-24,15],f:l,r:[-11,128,20]}];
+    case 'straw': return [{e:[128,22,104,20],f:'#E9C46A',r:[-10,128,22]},{d:'M74 22 C72 -26 184 -30 182 18 Z',f:'#F2D58A',r:[-10,128,22]},{d:'M74 10 L182 6 L183 18 L74 22 Z',f:c,r:[-10,128,22]}];
+    case 'sailor': return [{d:'M64 28 C60 -14 194 -18 192 22 Z',f:'#FFFFFF',r:[-11,128,22]},{d:'M60 18 L196 10 L198 30 L62 38 Z',f:c,r:[-11,128,22]},{e:[126,34,72,9],f:'#14202C',r:[-11,128,22]}];
+    case 'crown': return [{d:'M78 24 L80 -22 L102 2 L126 -30 L150 -2 L172 -26 L176 20 Z',f:'#F4BC22',r:[-11,128,10]},{c:[126,-6,7],f:c,r:[-11,128,10]},{c:[100,4,5],f:c,r:[-11,128,10]},{c:[152,0,5],f:c,r:[-11,128,10]}];
+    case 'glasses': return [{e:[113,78,22,18],f:'rgba(20,32,44,.82)',s:c,w:5},{e:[181,63,19,16],f:'rgba(20,32,44,.82)',s:c,w:5},{d:'M134 72 Q148 62 162 66',s:c,w:5}];
+  } return []; }
+function accSVG(o){ const w=accWear(o), out={under:'',over:''}; for(const [s,[id,ci]] of Object.entries(w)){ const c=(PUP_COLORS[ci]||PUP_COLORS[0]).c;
+  const svg=accShapes(id,c).map(p=>{ const t=p.r?` transform="rotate(${p.r.join(' ')})"`:'', st=p.s?` stroke="${p.s}" stroke-width="${p.w||3}" stroke-linecap="round"`:' stroke="#3B2314" stroke-width="1.6" stroke-linejoin="round"', f=` fill="${p.f||'none'}"`;
+    if(p.d) return `<path d="${p.d}"${f}${st}${t}/>`; if(p.c) return `<circle cx="${p.c[0]}" cy="${p.c[1]}" r="${p.c[2]}"${f}${st}${t}/>`; return `<ellipse cx="${p.e[0]}" cy="${p.e[1]}" rx="${p.e[2]}" ry="${p.e[3]}"${f}${st}${t}/>`; }).join('');
+  if(s==='neck') out.under+=svg; else out.over+=svg; } return out; }
+function accCanvas(x,o,where){ const w=accWear(o); for(const [s,[id,ci]] of Object.entries(w)){ if((s==='neck')!==(where==='under')) continue; const c=(PUP_COLORS[ci]||PUP_COLORS[0]).c;
+  for(const p of accShapes(id,c)){ x.save(); if(p.r){ x.translate(p.r[1],p.r[2]); x.rotate(p.r[0]*Math.PI/180); x.translate(-p.r[1],-p.r[2]); }
+    const path=p.d?new Path2D(p.d):new Path2D(); if(p.c) path.arc(p.c[0],p.c[1],p.c[2],0,Math.PI*2); if(p.e) path.ellipse(p.e[0],p.e[1],p.e[2],p.e[3],0,0,Math.PI*2);
+    if(p.f){ x.fillStyle=p.f; x.fill(path); } if(p.s){ x.strokeStyle=p.s; x.lineWidth=p.w||3; x.lineCap='round'; x.stroke(path); } else if(p.f){ x.strokeStyle='#3B2314'; x.lineWidth=1.6; x.lineJoin='round'; x.stroke(path); } x.restore(); } } }
+
+// A new outfit piece: offer it with its colour choice (once)
+function accNew(o){ const seen=new Set(seenGet()||[]); return ACC.filter(a=>!(a.lvl===1)&&accOwned(a,o)&&!seen.has('acc:'+a.id)); }
+function accOffer(a){ const d=$('#accDlg'), o=worldStore(); ISL3.accDraft={id:a.id,slot:a.slot,ci:pupColorOf(o)};
+  $('#accTitle').textContent=`${pupName(o)||'Your otter'} earned a ${a.name.toLowerCase()}!`; $('#accSub').textContent='Pick its colour.';
+  accRender(); const s=seenGet()||[]; s.push('acc:'+a.id); seenSet(s); track('acc_earned:'+a.id);
+  d.onclose=()=>{ d.onclose=null; renderIsland(); }; if(!d.open){ d.showModal(); sfx.hatch(); } }
+function wardrobeOpen(){ const d=$('#accDlg'), o=worldStore(), w=accWear(o), first=ACC.find(a=>accOwned(a,o));
+  const cur=Object.values(w)[0]; ISL3.accDraft={id:cur?cur[0]:first.id,slot:(ACC.find(a=>a.id===(cur?cur[0]:first.id))||first).slot,ci:cur?cur[1]:pupColorOf(o)};
+  $('#accTitle').textContent=`${pupName(o)||'Your otter'}’s wardrobe`; $('#accSub').textContent=`Level ${otterLevel(o)} ${PUP_STAGES[pupStage(o)].name}. Tap one to try it on.`;
+  accRender(true); d.onclose=()=>{ d.onclose=null; renderIsland(); renderHome(); }; if(!d.open) d.showModal(); }
+function accRender(all){ const o=worldStore(), D=ISL3.accDraft, prev={...o,wear:{...accWear(o),[D.slot]:[D.id,D.ci]}};
+  $('#accPic').innerHTML=pupFig(prev,{vb:PUP_ROUND,par:'xMidYMid slice'});
+  $('#accList').innerHTML=ACC.map(a=>{ const own=accOwned(a,o), on=(accWear(o)[a.slot]||[])[0]===a.id; return `<button type="button" data-acc="${a.id}" aria-pressed="${a.id===D.id}" ${own?'':'disabled'}>${escapeHTML(a.name)}<small>${own?(on?'Wearing':'Yours'):a.legend?'At Legend':'Level '+a.lvl}</small></button>`; }).join('');
+  $('#accCols').innerHTML=PUP_COLORS.map((c,i)=>`<button type="button" role="radio" aria-checked="${i===D.ci}" aria-label="${c.n}" title="${c.n}" data-col="${i}" style="--c:${c.c}"></button>`).join('');
+  $('#accOff').hidden=!(accWear(o)[D.slot]); }
+function accSave(on){ const o=worldStore(), D=ISL3.accDraft, w=accWear(o); if(on) w[D.slot]=[D.id,D.ci]; else delete w[D.slot]; o.wear=w; o.wearAt=Date.now(); worldSet(o); track(on?'acc_wear:'+D.id:'acc_off'); sfx.chirp(); }
+// Ten builds: a choice that makes two children's worlds a little different
+function pickOpen(){ const d=$('#pickDlg'); if(!d.open){ d.showModal(); track('pick_offered'); } }
+
+// Show Bloppitopia (the Island page): build it, then reveal whatever is new since the last visit
+function isl3Show(box,o){
+  if(ISL3.revealing&&ISL3.on&&ISL3.box===box) return;   // a reveal is playing: don't pull the world out from under it
+  ISL3.box=box; if(!box.contains(ISL3.r.domElement)){ box.innerHTML=''; box.appendChild(ISL3.r.domElement); box.classList.add('is3'); }
+  const n=worldCount(o); ISL3.arrival=n===0?(!pupName(o)&&!o.pupAsked&&!o.arrived?(ISL3.arrival==='home'?'home':'boat'):'home'):null;
+  isl3Build(o); isl3Size(); ISL3.on=true; ISL3.settle=30; isl3Chrome(); isl3Kick();
+  if(!ISL3.ro){ ISL3.ro=new ResizeObserver(()=>{ if(ISL3.on){ isl3Size(); isl3Kick(); } }); ISL3.ro.observe(box); }
+  isl3A11y(o);
+  ISL3.pending_acc=accNew(o);
+  const un=worldUnlocked(o), seen=seenGet();
+  if(seen===null){ seenSet([...un,...ACC.filter(a=>accOwned(a,o)).map(a=>'acc:'+a.id)]); ISL3.pending_acc=[]; }
+  else { const nw=un.filter(i=>!seen.includes(i));
+    if(nw.length){ seenSet([...seen,...nw]); const rank=i=>i.startsWith('home:')?0:i.startsWith('isle:')?1:2; nw.sort((a,b)=>rank(a)-rank(b));
+      clearTimeout(ISL3.revealT); ISL3.revealT=setTimeout(()=>isl3Reveal(nw,o),600); return; } }
+  if(ISL3.arrival==='boat') isl3Arrive(o);
+  else if(ISL3.arrival==='home') isl3ShowHome();
+  else { clearTimeout(ISL3.afterT); ISL3.afterT=setTimeout(()=>isl3AfterReveal(o),500); }
+}
+// The first visit: a little boat brings the young otter to the jetty, Bloppit waves, and we meet it
+function isl3Arrive(o){
+  const [jx,jz]=HOME_AT.jetty, boat=boat3('#FFFFFF',1.3), pup=new THREE.Sprite(new THREE.SpriteMaterial({map:pupTex3(o),transparent:true,alphaTest:.15}));
+  pup.scale.set(.75,1.08,1); pup.center.set(.5,0); pup.position.set(-.1,.35,0); boat.add(pup); boat.position.set(jx+.6,-1.25,jz+13); boat.rotation.y=Math.PI/2; ISL3.world.add(boat);
+  ISL3.cam.position.set(jx+2,9,jz+20); ISL3.ctl.target.set(jx,0,jz+5); ISL3.ctl.update(); ISL3.moved=true;
+  ISL3.arrive={boat,t0:performance.now()+400}; isl3Kick(); track('arrival_started');
+  const tick=()=>{ if(!ISL3.on||!ISL3.arrive) return; const k=Math.min(1,(performance.now()-ISL3.arrive.t0)/3200); if(k>0) boat.position.z=jz+13-ease3(k)*9.2; isl3Kick();
+    if(k<1){ requestAnimationFrame(tick); return; }
+    ISL3.arrive=null; ISL3.jumpT=performance.now(); sfx.hatch(); isl3Banner('A little otter has arrived!'); isl3FlyTo(HOME_AT.home[0]+1,1,HOME_AT.home[1]+2,14,1400);
+    setTimeout(()=>{ isl3Banner(''); pupOpen(()=>{ const w=worldStore(); w.arrived=1; worldSet(w); ISL3.arrival='home'; renderIsland(); },{arrival:true}); },1700); };
+  requestAnimationFrame(tick);
+}
+// Bloppit shows the unfinished home; one button: Build Our First Home
+function isl3ShowHome(){ const [x,z]=HOME_AT.home; isl3FlyTo(x,.8,z,12,1200); isl3Banner('This is your home. Let’s finish it together!'); isl3Chrome(); ISL3.jumpT=performance.now(); }
+
 let islandShown=-1;
 function renderIsland(){
   const o=worldStore(), stage=islandStage(o), n=worldCount(o), next=ISLAND_STAGES[stage+1];
   const pop=islandShown>=0&&islandShown<n; islandShown=n;
   if(isl3Init()) isl3Show($('#isWorld'),o); else { $('#isWorld').innerHTML=islandSVG(o,{pop}); islandDrag(); }
   renderIslandIntro(o);
-  $('#isStage').innerHTML=`${ISLAND_STAGES[stage].name}<small>${n} build${n===1?'':'s'} finished · ${worldStars(o)} Build Star${worldStars(o)===1?'':'s'} to spend</small>`;
-  $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>The whole village is built. Boats from the jetty go to Friendship Harbour.</span>';
-  $('#isNote').textContent=n?`${pupName(o)||'Your pup'} and Bloppit are home. Tap anything to see what it is${n>1?`, and drag a model anywhere on the ${ISL3.ok?'grass':'sand'}`:''}${ISL3.ok?'. Turn the world with one finger, pinch to zoom':''}.`:'Finish any build and the first hut rises from the sand. Tap anything to see what it is.';
+  if(ISL3.ok){ const g=worldNextGoal(o), lv=otterLevel(o);
+    $('#isStage').innerHTML=`${escapeHTML(pupName(o)||'Your otter')} · Level ${lv} ${PUP_STAGES[pupStage(o)].name}<small>${n} build${n===1?'':'s'} finished · ${islandsOpen(o).length} of 5 islands · ${worldStars(o)} Build Star${worldStars(o)===1?'':'s'} to spend</small>`;
+    $('#isNext').innerHTML=g?`<span>${escapeHTML(g.text)}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*g.frac))}%"></i></span>`:'<span>Every island is complete. What a world!</span>'; }
+  else $('#isStage').innerHTML=`${ISLAND_STAGES[stage].name}<small>${n} build${n===1?'':'s'} finished · ${worldStars(o)} Build Star${worldStars(o)===1?'':'s'} to spend</small>`;
+  if(!ISL3.ok) $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>The whole village is built. Boats from the jetty go to Friendship Harbour.</span>';
+  $('#isNote').textContent=n?`${pupName(o)||'Your pup'} and Bloppit are home. Tap anything to see what it is${n>1?`, and drag a model anywhere on the ${ISL3.ok?'grass':'sand'}`:''}${ISL3.ok?'. Turn the world with one finger, pinch to zoom':''}.`:ISL3.ok?`${pupName(o)?pupName(o)+'’s':'Your'} home is waiting to be built. Tap anything to see what it is.`:'Finish any build and the first hut rises from the sand. Tap anything to see what it is.';
   $('#isCard').hidden=stage<3; $('#isDecor').hidden=!n;
   renderDecorShop(); renderBuilds();
 }
@@ -7164,7 +7596,7 @@ function nextButtonHTML(n,cls){ return n?`<img src="${n.thumb}" alt="">${escapeH
    the player's hand and the hint shows where it goes, so the first snap happens in seconds. The reveal, the
    pup, then a fork: keep building (Otter Trail), this week's Bloppit, or the library. ?welcome=1 opens the
    build straight away (playtests); ?welcome=0 hides the card. */
-var WELCOME={sample:'Little tree',S:{kind:'model',shape:'flat',thick:1,tol:48,maxColors:6,gray:true,pw:48,pcol:24,size:6}};
+var WELCOME={sample:'Little house',S:{kind:'model',shape:'flat',thick:1,tol:48,maxColors:6,gray:true,pw:48,pcol:24,size:6}};
 var welcomeVer=-1, welcomeBook=false;  // var: the buddy can update before this line runs
 function welcomeOn(){ return welcomeVer===modelVersion&&!mp&&!game; }
 function welcomeDue(){ const usp=new URLSearchParams(location.search); if(usp.get('welcome')==='1') return true; if(usp.get('welcome')==='0') return false;
@@ -7176,7 +7608,7 @@ function welcomeStart(){
     const smp=SAMPLES[i]; sampleIdx=i;
     photos=smp.make().map(([view,c])=>{const d=canvasData(c); return {id:++pid,name:smp.name,d,m:null,view,sample:true};});
     setControls(WELCOME.S); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild();
-    if(!model||model.bricks.length<4||model.bricks.length>10) return false;
+    if(!model||model.bricks.length<4||model.bricks.length>14) return false;
   }catch(e){ return false; }
   welcomeVer=modelVersion; hintOn=true;
   const o=evStore(); o.welcome=1; evStoreSet(o); track('welcome_build_started');
@@ -7197,6 +7629,8 @@ function welcomeOffer(left){
 }
 function welcomeDone(){
   welcomeVer=-1; track('welcome_build_completed'); if(welcomeBook){ welcomeBook=false; toggleBook(); }
+  // Came through Home Island's arrival: go back there and watch the home appear (the reveal does the celebrating)
+  if(worldStore().arrived&&ISL3.ok){ endReveal(true); worldSound(); ISL3.arrival=null; setTab('island'); return; }
   // One screen: the stars, the pup's name (if it has none yet), the fork
   // A first pup goes to "Meet your pup" (and from there to the island); otherwise the usual next steps.
   const o=worldStore(), askPup=!pupName(o)&&!o.pupAsked; if(askPup){ o.pupAsked=true; worldSet(o); }
@@ -7240,7 +7674,7 @@ function homeContinue(){
       s:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`${levelsOf(o.game&&o.game.trail)[o.game.lvl].name}: ${o.placedN} of ${o.nBricks} bricks placed`:`Your ${niceName(o.name)}: ${o.placedN} of ${o.nBricks} bricks placed`,
       p:bar(o.placedN,o.nBricks),go:()=>$('#resumeGo').click()}; }
   if(model&&placedN>0&&placedN<model.bricks.length) return {t:'Continue building',s:`${placedN} of ${model.bricks.length} bricks placed`,p:bar(placedN,model.bricks.length),go:()=>setTab('build')};
-  if(welcomeDue()) return {t:'Start here: your first Bloppit',s:'Six bricks, one minute. Bloppit hands you each one.',p:-1,first:true,go:()=>{ track('welcome_from_menu'); if(!welcomeStart()) homeGo('library'); }};
+  if(welcomeDue()) return {t:'Start here: meet your otter',s:'A little boat is on its way to Home Island.',p:-1,first:true,go:()=>{ track('welcome_from_menu'); if(isl3Init()){ setTab('island'); return; } if(!welcomeStart()) homeGo('library'); }};
   return null;
 }
 var homeCont;  // var, no initializer: the menu can open (from the routing above) before this line runs, and must keep what it set
