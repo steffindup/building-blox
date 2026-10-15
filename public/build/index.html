@@ -1144,7 +1144,7 @@ body.on-home .tabs{visibility:hidden}
           <input type="radio" name="kind" id="kd-picture" value="picture"><label for="kd-picture">Picture</label>
         </div>
         <p class="note pic-only" style="margin:6px 0 0">A flat mosaic of tiles that looks like your photo, made on this device. The more tiles, the more lifelike.</p>
-        <p class="note photo-only" id="photo3dNote" style="margin:6px 0 0" hidden>Photos become brick pictures for now. 3D photo models are coming to the Creator Workshop.</p>
+        <p class="note photo-only" id="photo3dNote" style="margin:6px 0 0" hidden>Photos become brick pictures for now. 3D photo models are coming to Brickworks Island.</p>
       </div>
       <div class="field pic-only">
         <label for="pw">Detail <output id="pwOut"></output></label>
@@ -2444,7 +2444,7 @@ function addFiles(files){
   const imgs=[...files].filter(f=>f.type.startsWith('image/')); if(!imgs.length) return;
   track('creator_started');
   photos=photos.filter(p=>!p.sample);
-  // Q4: a photo becomes a brick picture (a mosaic made on this device). 3D photo models are off until the Creator Workshop.
+  // Q4: a photo becomes a brick picture (a mosaic made on this device). 3D photo models are off for now.
   if(S.kind!=='picture'){ S.kind='picture'; syncKind(); refreshHint(); }
   let left=imgs.length;
   imgs.forEach(f=>{
@@ -5845,7 +5845,7 @@ function pupBrick(n,ci){ const c=(PUP_COLORS[ci]||PUP_COLORS[0]).c, B=PUP_BRICK,
 var PUP_ROUND='-16 -38 272 272';  // a round badge: head and brick both inside the circle
 function pupColorOf(o){ return o&&Number.isInteger(o.pupColor)&&o.pupColor>=0&&o.pupColor<PUP_COLORS.length?o.pupColor:0; }
 // The layers alone (for the island, which places them itself), and as a picture. opt: ci colour, n studs, vb crop.
-function pupLayers(ci,n,o){ const a=o?accSVG(o):{under:'',over:''}; return `<image href="/art/pup-body.png" width="239" height="300"/>${a.under}${pupBrick(n,ci)}<image href="/art/pup-paws.png" width="239" height="300"/>${a.over}`; }
+function pupLayers(ci,n,o){ const a=o?accSVG(o):{under:'',over:''}; return `<image href="/art/pup-body.png?v=2" width="239" height="300"/>${a.under}${pupBrick(n,ci)}<image href="/art/pup-paws.png" width="239" height="300"/>${a.over}`; }
 function pupFig(o,opt){ opt=opt||{}; const ci=opt.ci!=null?opt.ci:pupColorOf(o), n=opt.n||(o&&o.log?pupStage(o)+1:1);
   return `<svg class="pupfig${opt.cls?' '+opt.cls:''}" viewBox="${opt.vb||'0 -40 239 340'}" preserveAspectRatio="${opt.par||'xMidYMid meet'}" aria-hidden="true" focusable="false">${pupLayers(ci,n,o)}</svg>`; }
 // A name the child typed: letters in any language, spaces, ' and -, at most 14 characters (same rule as the server)
@@ -6062,15 +6062,15 @@ function decorSVG(id,x,y){
   }
   return '';
 }
-// The islands nearby, in a row across the sea below Bloppitopia (x centres), Friendship Harbour by the jetty
-const NEARBY_AT={ferry:110,workshop:300,brain:500,speedway:694,harbour:893};
+// The five islands, in a row across the sea below Bloppitopia (x centres), Otterwood by the jetty
+const NEARBY_AT={sunrise:110,brickworks:300,brainpeak:500,blitzbay:694,otterwood:893};
 function islandsNearby(){
   const P=[];
   P.push('<g fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round" opacity=".65" pointer-events="none">'
     +Object.values(NEARBY_AT).map(x=>{ const [tx,ty]=x===890?[958,476]:[Math.max(200,Math.min(820,x)),552]; return `<path d="M${x} 610 Q ${(x+tx)/2} ${(610+ty)/2+6} ${tx} ${ty}"/>`; }).join('')+'</g>');
   for(const d of destinations()){ const x=NEARBY_AT[d.id]; if(x==null) continue;
-    const art=destSVG(d.id,d.st).replace(/^<svg[^>]*>|<\/svg>$/g,'').replace('<rect y="56" width="72" height="16" fill="#5FAEE6" opacity=".6"/>','');
-    P.push(`<g class="is-near" data-info="dest:${d.id}">
+    const art=destSVG(d.art,d.st).replace(/^<svg[^>]*>|<\/svg>$/g,'').replace('<rect y="56" width="72" height="16" fill="#5FAEE6" opacity=".6"/>','');
+    P.push(`<g class="is-near" data-info="isle:${d.id}">
       <ellipse cx="${x}" cy="684" rx="86" ry="22" fill="#8FD0EC" opacity=".8"/><ellipse cx="${x}" cy="680" rx="74" ry="17" fill="#E3C99A"/><ellipse cx="${x}" cy="677" rx="70" ry="14" fill="#F1DFBC"/>
       <g transform="translate(${x-79} 545) scale(2.2)">${art}</g>
       <g transform="translate(${x} 702)"><rect x="${-(d.name.length*5.2+12)}" y="-16" width="${d.name.length*10.4+24}" height="30" rx="15" fill="#14202C" opacity=".85"/><text x="0" y="5" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="19" fill="#fff">${escapeHTML(d.name.replace("Friendship ","Friendship "))}</text></g></g>`); }
@@ -6160,7 +6160,7 @@ function islandSVG(o,opts){
   P.push(`<g data-info="bloppit"><ellipse cx="${bx}" cy="${by+2}" rx="26" ry="6" fill="#000" opacity=".12"/><image href="/art/bud-3q.png" x="${bx-36}" y="${by-96}" width="72" height="96" preserveAspectRatio="xMidYMax meet"/></g>`);
   if(n>0) P.push(`<g data-info="pup"><ellipse cx="${bx+54}" cy="${by+2}" rx="${ph*.34}" ry="5" fill="#000" opacity=".12"/><g class="is-bob"><g transform="translate(${(bx+54-ph*.4+(ph*.8-239*ph/300)/2).toFixed(1)} ${by-ph}) scale(${(ph/300).toFixed(4)})">${pupLayers(pupColorOf(o),ps+1,o)}</g></g></g>`);
   if(stage===0) P.push('<g transform="translate(250 372)"><rect x="-74" y="-30" width="148" height="40" rx="12" fill="#fff" stroke="#14202C" stroke-width="2"/><path d="M-30 10 l-12 14 l24 -14z" fill="#fff" stroke="#14202C" stroke-width="2"/><rect x="-29" y="8" width="22" height="4" fill="#fff"/><text x="0" y="-4" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="800" font-size="15" fill="#14202C">Finish a build!</text></g>');
-  // The islands nearby, out in the sea: each drawn at its stage, with a dotted boat route home
+  // The five islands, out in the sea: each drawn at its stage, with a dotted boat route home
   P.push(islandsNearby());
   let out=`<svg viewBox="0 0 1000 720" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-label="Bloppitopia at the ${ISLAND_STAGES[stage].name} stage">${P.join('')}</svg>`;
   // A second copy on the page (the menu's) gets its own ids, so its gradients never point into a hidden copy
@@ -6250,9 +6250,7 @@ function islandInfo(id,o){
       if(arg==='hut') return place(1,'The hut','Your first model stand');
       if(arg==='workshop') return place(2,'Bloppit’s workshop','Three model stands, and paths across the island');
       if(arg==='village') return place(3,'The village','Twelve model stands, the well, the bunting and the jetty');
-      if(arg==='jetty'){ const d=destinations().find(x=>x.id==='harbour'); return {title:'The jetty',hint:`Boats to Friendship Harbour · ${d.names[d.st]}`,
-        rows:[['Goes to','Friendship Harbour, one of the islands nearby'],['Harbour level',`${d.st} of 3: ${d.names[d.st]}`],['Friend builds',String(d.n)],...(d.nx?[['Next',`${d.names[d.st+1]} at ${d.nx}`]]:[])],
-        bar:d.nx?{pct:Math.max(4,Math.round(100*d.n/d.nx)),label:`${d.nx-d.n} more friend build${d.nx-d.n===1?'':'s'}`}:null, actions:[{label:'Go to Friendship Harbour',fn:d.go,primary:true}]}; }
+      if(arg==='jetty'){ const f=friendCount(o); return {title:'The jetty',hint:'Home Island’s harbour',rows:[['Boats','One for every build with a friend'],['Friend builds',String(f)]],actions:[{label:'Build with a friend',fn:()=>setTab('mp','hub'),primary:true}]}; }
       break;
     case 'land': {
       const nx=ISLAND_STAGES[st+1];
@@ -6261,7 +6259,7 @@ function islandInfo(id,o){
         rows:[['Level',`${st} of 3: ${ISLAND_STAGES[st].name}`],['Builds finished',String(n)],['Models standing',`${shown.list.length} of ${shown.cap} stands`],['Decorations',`${(o.decor||[]).length} of ${DECOR.length}`],['Next',nx?`The ${nx.name.toLowerCase()} at ${nx.at} builds`:'Everything is built']],
         bar:nx?bar(ISLAND_STAGES[st].at,nx.at):null, actions:n?[{label:'✨ Decorate',fn:()=>$('#isDecor').click()}]:[]};
       if(arg==='meadow') return {...place(3,'The meadow','Where the village grows'),title:'The meadow',hint:n>=10?'The village stands here':'The village grows here at 10 builds'};
-      if(arg==='sea') return {title:'The sea',hint:'Five islands nearby: tap one',rows:destinations().map(d=>[d.name,`${d.names[d.st]}${d.nx?` · ${d.nx-d.n} to go`:' · fully grown'}`])};
+      if(arg==='sea') return {title:'The sea',hint:'Five islands around Home Island: tap one',rows:destinations().map(d=>[d.name,d.n?(d.st===3?`${d.milestone} ✓`:`${Math.min(d.n,d.total)} of ${d.total}${d.next?` · next: ${d.next}`:''}`):`In the mist · play ${ISLES[d.id].game} to find it`])};
       if(arg==='rocks') return {title:'The rocks',hint:'Crabs like it here',rows:[['Good for','Crabs and rock pools (in the decorations)']],actions:n?[{label:'✨ Decorate',fn:()=>$('#isDecor').click()}]:[]};
       if(arg==='lighthouse') return {title:'The lighthouse',hint:'It lights the way home',rows:[['Stands on','A rock off Bloppitopia'],['Job','Lighting the way home for every boat']]};
       if(arg==='balloon') return {title:'The balloon',hint:'Floating over Bloppitopia',rows:[['Up here','A hot-air balloon, drifting round'],['Tip','Turn the world with one finger, pinch to zoom']]};
@@ -6269,13 +6267,7 @@ function islandInfo(id,o){
       break; }
     case 'decor': { const d=DECOR.find(x=>x.id===arg)||{name:arg,cost:0}, gift=(o.free||[]).includes(arg);
       return {title:d.name,hint:gift?'A gift for a Weekly Bloppit':`Bought for ★ ${d.cost}`,rows:[['How you got it',gift?'A gift for finishing a Weekly Bloppit':`Bought with ${d.cost} Build Stars`],['Decorations',`${(o.decor||[]).length} of ${DECOR.length} on Bloppitopia`]]}; }
-    case 'dest': { const d=destinations().find(x=>x.id===arg); if(!d) break;
-      const grows={ferry:'Every Weekly Bloppit you finish',workshop:'Builds from your own photos and drawings',brain:'Brain Trail levels you finish',harbour:'Builds with friends: challenges, relays and crews',speedway:'Blitz races you win against the Longtails'}[d.id];
-      const go={ferry:'This week’s Bloppit',workshop:'Make your own',brain:'Play the Brain Trail',harbour:'Build with a friend',speedway:'Race a Longtail'}[d.id];
-      return {title:d.name,hint:`${d.names[d.st]} · ${d.n} ${d.unit}${d.n===1?'':'s'}`,icon:destSVG(d.id,d.st),
-        rows:[['Level',`${d.st} of 3: ${d.names[d.st]}`],['Grows with',grows],['So far',`${d.n} ${d.unit}${d.n===1?'':'s'}`],['Next',d.nx?`${d.names[d.st+1]} at ${d.nx}`:'Fully grown']],
-        bar:d.nx?{pct:Math.max(4,Math.round(100*d.n/d.nx)),label:`${d.nx-d.n} more to the ${d.names[d.st+1].toLowerCase()}`}:null,
-        actions:[{label:go,fn:d.go,primary:true}]}; }
+    case 'dest': { const m={ferry:'sunrise',workshop:'brickworks',brain:'brainpeak',speedway:'blitzbay',harbour:'otterwood'}[arg]; if(m) return islandInfo('isle:'+m,o); break; }
     case 'isle': { const I=ISLES[arg]; if(!I) break; const c=isleCount(arg,o), P=PIECES[arg], total=P[P.length-1].at, built=P.filter(x=>c>=x.at), next=P.find(x=>c<x.at);
       if(!c) return {title:'A misty island',hint:`Play ${I.game} to discover it`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Finish your first ${I.unit}`]],actions:[{label:I.play,fn:I.go,primary:true}]};
       return {title:I.name,hint:`${I.game} · ${Math.min(c,total)} of ${total}`,rows:[['Grows with',I.grows],['Built',`${built.length} of ${P.length} pieces`],...(next?[['Next piece',`${next.name}: ${next.at-c} more ${I.unit}${next.at-c===1?'':'s'}`]]:[]),['Milestone',c>=total?`${I.milestone} ✓`:`${I.milestone} at ${total}`]],
@@ -6341,6 +6333,8 @@ function destSVG(id,st){
   const base='<ellipse cx="36" cy="64" rx="30" ry="6" fill="#000" opacity=".1"/><ellipse cx="36" cy="60" rx="30" ry="9" fill="#F1DFBC"/>';
   const sea='<rect y="56" width="72" height="16" fill="#5FAEE6" opacity=".6"/>';
   switch(id){
+    case 'otterwood': { const tree=(x,s2)=>`<g transform="translate(${x} 58) scale(${s2})"><rect x="-2" y="-10" width="4" height="10" fill="#7A4E2E"/><path d="M0 -34 L12 -10 L-12 -10 Z" fill="#3F8F33"/><path d="M0 -42 L9 -22 L-9 -22 Z" fill="#5DBB46"/></g>`;
+      return `<svg viewBox="0 0 72 72">${sea}${base}${tree(18,.8)}${st>=1?tree(54,.8):''}${st>=2?tree(28,1)+tree(46,.9):''}${st>=3?'<g transform="translate(36 40)"><rect x="-9" y="-8" width="18" height="10" fill="#A0663A" stroke="#5A3A20" stroke-width="1"/><path d="M-11 -8 L0 -16 L11 -8 Z" fill="#D2352B"/><rect x="-2" y="-5" width="4" height="7" fill="#5A3A20"/></g>':''}</svg>`; }
     case 'ferry': return `<svg viewBox="0 0 72 72">${sea}<g transform="translate(36 52)"><path d="M-26 0 L26 0 L20 10 L-20 10 Z" fill="#0055BF"/><rect x="-18" y="-12" width="36" height="12" rx="2" fill="#F4F4F4"/>${st>=1?'<rect x="-14" y="-9" width="6" height="5" fill="#6FB7E8"/><rect x="-4" y="-9" width="6" height="5" fill="#6FB7E8"/><rect x="6" y="-9" width="6" height="5" fill="#6FB7E8"/>':''}${st>=2?'<rect x="-6" y="-22" width="12" height="10" rx="2" fill="#008F9B"/><path d="M-30 -2 l-10 -6 M30 -2 l10 -6" stroke="#F4BC22" stroke-width="3"/>':''}${st>=3?'<rect x="2" y="-30" width="2" height="8" fill="#14202C"/><path d="M4 -30 l10 3 l-10 3z" fill="#D2352B"/><g class="is-smoke" fill="#fff" opacity=".7"><circle cx="0" cy="-28" r="4"/></g>':''}</g></svg>`;
     case 'workshop': return `<svg viewBox="0 0 72 72">${base}<g transform="translate(36 58)">${st>=1?'<rect x="-22" y="-26" width="44" height="26" fill="#C58B5A" stroke="#8A5A3B" stroke-width="1.5"/><path d="M-26 -26 L0 -44 L26 -26 Z" fill="#5B6778"/><rect x="-5" y="-14" width="10" height="14" fill="#5B6778"/>':'<rect x="-16" y="-18" width="32" height="18" fill="none" stroke="#B9C2CF" stroke-width="1.5" stroke-dasharray="3 3"/>'}${st>=2?'<rect x="-20" y="-22" width="12" height="9" fill="#FFF0B0" stroke="#8A5A3B"/><rect x="8" y="-22" width="12" height="9" fill="#FFF0B0" stroke="#8A5A3B"/><rect x="12" y="-42" width="6" height="12" fill="#8A5A3B"/>':''}${st>=3?'<g transform="translate(0 -50)"><circle r="6" fill="#F4BC22"/><path d="M0 -9 v-4 M0 9 v4 M-9 0 h-4 M9 0 h4" stroke="#F4BC22" stroke-width="2"/></g><rect x="-30" y="-10" width="8" height="10" fill="#D2352B"/><rect x="22" y="-8" width="8" height="8" fill="#0055BF"/>':''}</g></svg>`;
     case 'brain': return `<svg viewBox="0 0 72 72">${base}<g transform="translate(36 58)">${st>=1?'<rect x="-18" y="-22" width="36" height="22" fill="#FFF8EA" stroke="#C9A96E" stroke-width="1.5"/><path d="M-22 -22 L0 -38 L22 -22 Z" fill="#D2352B"/><rect x="-4" y="-12" width="8" height="12" fill="#8A5A3B"/>':'<rect x="-16" y="-18" width="32" height="18" fill="none" stroke="#B9C2CF" stroke-width="1.5" stroke-dasharray="3 3"/>'}${st>=2?'<rect x="-3" y="-50" width="6" height="12" fill="#5B6778"/><circle cx="0" cy="-52" r="4" fill="#F4BC22"/><rect x="-26" y="-14" width="8" height="14" fill="#FFF8EA" stroke="#C9A96E"/><rect x="18" y="-14" width="8" height="14" fill="#FFF8EA" stroke="#C9A96E"/>':''}${st>=3?'<g transform="translate(22 -40)"><circle r="9" fill="#5B6778"/><path d="M0 -9 A9 9 0 0 1 9 0 L0 0 Z" fill="#14202C"/><rect x="-1" y="-16" width="2" height="8" fill="#14202C" transform="rotate(35)"/></g><circle cx="-22" cy="-46" r="1.5" fill="#F4BC22"/><circle cx="-14" cy="-52" r="1.2" fill="#F4BC22"/>':''}</g></svg>`;
@@ -6349,18 +6343,12 @@ function destSVG(id,st){
   }
   return '';
 }
+// The five adventure islands, as a short list (the drawn island without WebGL, the sea's card). Same counts as 3D.
+const ISLE_ART={otterwood:'otterwood',brainpeak:'brain',sunrise:'ferry',blitzbay:'speedway',brickworks:'workshop'};
 function destinations(){
-  const o=worldStore(), g=gameStore(), B=Object.entries(o.builds);
-  const weeklies=weeklyTotal(), creations=(o.draw||[]).length+B.filter(([k])=>k.startsWith('p:')).length, brain=Object.keys(bestOf(g,'brain')).length;
-  const friends=chMine().length+B.filter(([k])=>k.startsWith('r:')).length+(crewMine||[]).filter(x=>x.me).length, wins=B.filter(([,b])=>b.k==='blitz').length;
-  const stage=(n,a,b,c)=>n>=c?3:n>=b?2:n>=a?1:0, next=(n,a,b,c)=>n>=c?null:n>=b?c:n>=a?b:a;
-  return [
-    {id:'ferry',name:'Weekly Ferry',n:weeklies,unit:'Weekly stamp',st:stage(weeklies,1,4,12),nx:next(weeklies,1,4,12),names:['Ferry stop','Ferry','Ferry line','Grand terminal'],go:()=>setTab('daily')},
-    {id:'workshop',name:'Creator Workshop',n:creations,unit:'creation',st:stage(creations,1,5,15),nx:next(creations,1,5,15),names:['Empty lot','Shed','Studio','Invention lab'],go:()=>{ pickPuzzle('quick','top'); requestAnimationFrame(()=>$('#drawCard').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'})); }},
-    {id:'brain',name:'Brain Island',n:brain,unit:'Brain Trail level',st:stage(brain,1,5,14),nx:next(brain,1,5,14),names:['Empty lot','Schoolhouse','Academy','Observatory'],go:()=>homeGo('brain')},
-    {id:'harbour',name:'Friendship Harbour',n:friends,unit:'friend build',st:stage(friends,1,5,15),nx:next(friends,1,5,15),names:['Jetty','Jetty with a boat','Harbour','Marina'],go:()=>setTab('mp','hub')},
-    {id:'speedway',name:'Blitz Speedway',n:wins,unit:'Longtail win',st:stage(wins,1,5,15),nx:next(wins,1,5,15),names:['Dirt track','Starting line','Circuit','Stadium'],go:()=>homeGo('cpu')},
-  ];
+  const o=worldStore();
+  return Object.keys(ISLES).map(id=>{ const I=ISLES[id], P=PIECES[id], total=P[P.length-1].at, c=isleCount(id,o), nxP=P.find(x=>x.at>c);
+    return {id,art:ISLE_ART[id],name:I.name,n:c,total,unit:I.unit,st:!c?0:c<total/2?1:c<total?2:3,nx:nxP?nxP.at:null,next:nxP?nxP.name:null,milestone:I.milestone,go:I.go}; });
 }
 /* ---------- Bloppitopia in 3D (renderer, helpers, models, controls) ---------- */
 var ISL3={ok:null};   // var: the page switcher can look at it before this line runs
@@ -6503,7 +6491,7 @@ function pupTex3(o){
     fill(B.side,pupShade(c,-.35)); fill(B.front,pupShade(c,-.12)); fill(B.top,pupShade(c,.18));
     for(const t of B.studs[n]){ fill(t.side,pupShade(c,-.2)); fill(t.cap,pupShade(c,.28)); x.fillStyle='rgba(255,255,255,.35)'; x.fill(new Path2D(t.hi)); }
     x.drawImage(paws,0,0); accCanvas(x,o,'over'); tex.needsUpdate=true; isl3Loaded(); };
-  ISL3.pending=(ISL3.pending||0)+1; body.onload=draw; paws.onload=draw; body.src='/art/pup-body.png'; paws.src='/art/pup-paws.png'; ISL3.pupT[key]=tex; return tex;
+  ISL3.pending=(ISL3.pending||0)+1; body.onload=draw; paws.onload=draw; body.src='/art/pup-body.png?v=2'; paws.src='/art/pup-paws.png'; ISL3.pupT[key]=tex; return tex;
 }
 // A finished model as bricks (or its picture when the bricks aren't on this device), sized to stand on a stand
 const geo3=new Map();
@@ -6551,7 +6539,7 @@ function isl3Init(){
     const sea=new THREE.Mesh(new THREE.PlaneGeometry(400,400),new THREE.MeshStandardMaterial({color:new THREE.Color('#22B4EE').convertSRGBToLinear(),roughness:.5}));
     sea.rotation.x=-Math.PI/2; sea.position.y=-1.3; sea.receiveShadow=true; sea.userData.info='land:sea'; sc.add(sea);
     ISL3.r=r; ISL3.sc=sc; ISL3.cam=camera; ISL3.ok=true; ISL3.sun=sunL; ISL3.hemi=hemi; ISL3.sea=sea;
-    r.domElement.className='is3-canvas'; r.domElement.setAttribute('role','img'); r.domElement.setAttribute('aria-label','Bloppitopia and the islands nearby. Drag to turn, pinch to zoom, tap anything to see what it is.');
+    r.domElement.className='is3-canvas'; r.domElement.setAttribute('role','img'); r.domElement.setAttribute('aria-label','Bloppitopia: Home Island and the five islands around it. Drag to turn, pinch to zoom, tap anything to see what it is.');
     isl3Events(r.domElement);
     const ctl=new THREE.OrbitControls(camera,r.domElement); ctl.enableDamping=true; ctl.dampingFactor=.09; ctl.enablePan=true; ctl.screenSpacePanning=false; ctl.panSpeed=.8;
     ctl.minDistance=9; ctl.maxDistance=70; ctl.minPolarAngle=.35; ctl.maxPolarAngle=1.12; ctl.target.set(0,0,-1.5);
@@ -6974,7 +6962,8 @@ function isl3Characters(o,W){
   }
   g.position.set(at[0],0,at[1]); tag3(g,'bloppit'); W.add(g);
   if(n>0||ISL3.arrival||pupName(o)){ const ps=pupStage(o), p=new THREE.Sprite(new THREE.SpriteMaterial({map:pupTex3(o),transparent:true,alphaTest:.15})); const h=[1.3,1.5,1.7][ps]*346/300; p.scale.set(h*239/346,h,1); p.center.set(.5,0); p.position.y=TOP3;
-    const pg=new THREE.Group(); pg.add(p); pg.userData.bob=2; pg.position.set(at[0]+1.25,0,at[1]+.35); tag3(pg,'pup'); ISL3.pupG=pg; W.add(pg); }
+    const pg=new THREE.Group(); pg.add(p); pg.userData.bob=2; const onIsle=(x,z)=>inPoly(x,z,scalePoly(HOMEP,0,0,.92)), offs=r==='fish'&&!ISL3.arrival?[[-1.15,-1.7],[-1.25,-2.6],[-.6,-3.4],[.9,-3.2]]:[[1.25,.35],[-1.25,.35],[1.2,-.9],[-1.2,-.9],[0,-1.6]];
+    const [ox,oz]=offs.find(([dx,dz])=>onIsle(at[0]+dx,at[1]+dz))||[-(at[0])*.25,-(at[1])*.25]; pg.position.set(at[0]+ox,0,at[1]+oz); tag3(pg,'pup'); ISL3.pupG=pg; W.add(pg); }
 }
 function zzzTex3(){ const c=document.createElement('canvas'); c.width=96; c.height=64; const x=c.getContext('2d'); x.font='bold 30px system-ui,sans-serif'; x.fillStyle='#FFFFFF'; x.strokeStyle='#14202C'; x.lineWidth=4; for(const [t,a,b] of [['z',8,58],['z',34,40],['Z',58,26]]){ x.strokeText(t,a,b); x.fillText(t,a,b); } const t=new THREE.CanvasTexture(c); return t; }
 
@@ -7178,7 +7167,7 @@ function renderIsland(){
     $('#isStage').innerHTML=`${escapeHTML(pupName(o)||'Your otter')} · Level ${lv} ${PUP_STAGES[pupStage(o)].name}<small>${n} build${n===1?'':'s'} finished · ${islandsOpen(o).length} of 5 islands · ${worldStars(o)} Build Star${worldStars(o)===1?'':'s'} to spend</small>`;
     $('#isNext').innerHTML=g?`<span>${escapeHTML(g.text)}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*g.frac))}%"></i></span>`:'<span>Every island is complete. What a world!</span>'; }
   else $('#isStage').innerHTML=`${ISLAND_STAGES[stage].name}<small>${n} build${n===1?'':'s'} finished · ${worldStars(o)} Build Star${worldStars(o)===1?'':'s'} to spend</small>`;
-  if(!ISL3.ok) $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>The whole village is built. Boats from the jetty go to Friendship Harbour.</span>';
+  if(!ISL3.ok) $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>Your village is built. Now grow the five islands around it.</span>';
   $('#isNote').textContent=n?`${pupName(o)||'Your pup'} and Bloppit are home. Tap anything to see what it is${n>1?`, and drag a model anywhere on the ${ISL3.ok?'grass':'sand'}`:''}${ISL3.ok?'. Tap an island to fly there; turn with one finger, pinch to zoom in where you like, slide two fingers to move':''}.`:ISL3.ok?`${pupName(o)?pupName(o)+'’s':'Your'} home is waiting to be built. Tap anything to see what it is.`:'Finish any build and the first hut rises from the sand. Tap anything to see what it is.';
   $('#isCard').hidden=stage<3; $('#isDecor').hidden=!n;
   renderDecorShop(); renderBuilds();
