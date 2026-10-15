@@ -125,3 +125,8 @@ test('pup: a decoration keeps where it was dragged, only if the player owns it',
   const m = merge(w({ decor: ['bench'], pos: { 'decor:bench': [400, 520], 'decor:kite': [10, 10], 'decor:<x>': [1, 1] } }), w({ decor: ['flag'], pos: { 'decor:flag': [600, 300], 'decor:bench': [2000, 1] } })).world;
   assert.deepEqual(m.pos, { 'decor:bench': [400, 520], 'decor:flag': [600, 300] });
 });
+test('pup: the hardest Longtail beaten on a Blitz build is kept', () => {
+  const w = (lv) => ({ world: { builds: { 'm:Car:20': { n: 20, s: 1, k: 'blitz', t: 5, c: 1, lv } }, log: ['m:Car:20'] } });
+  assert.equal(merge(w(2), w(0)).world.builds['m:Car:20'].lv, 2);
+  assert.equal(merge(w(0), w(1)).world.builds['m:Car:20'].lv, 1);
+});
