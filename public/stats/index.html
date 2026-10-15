@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Bloppit stats</title>
+<link rel="icon" href="/favicon-96.png?v=3" type="image/png" sizes="96x96">
+<style>
+/* Private engagement page for Bloppit's own counts (/api/event). Needs the EVENTS_KEY, which is kept only in this
+   browser. Counts only: nothing here is about any one child or device. */
+.viz-root{color-scheme:light;
+  --page:#f9f9f7;--surface-1:#fcfcfb;--text-primary:#0b0b0b;--text-secondary:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;
+  --border:rgba(11,11,11,.10);--series-1:#2a78d6;--series-2:#eb6834;--seq:#2a78d6;--good:#006300;--crit:#d03b3b}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])) .viz-root{color-scheme:dark;
+  --page:#0d0d0d;--surface-1:#1a1a19;--text-primary:#f0efec;--text-secondary:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--axis:#383835;
+  --border:rgba(255,255,255,.10);--series-1:#3987e5;--series-2:#d95926;--seq:#3987e5;--good:#0ca30c;--crit:#e66767}}
+:root[data-theme="dark"] .viz-root{color-scheme:dark;
+  --page:#0d0d0d;--surface-1:#1a1a19;--text-primary:#f0efec;--text-secondary:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--axis:#383835;
+  --border:rgba(255,255,255,.10);--series-1:#3987e5;--series-2:#d95926;--seq:#3987e5;--good:#0ca30c;--crit:#e66767}
+html,body{margin:0}
+body{background:#f9f9f7}
+@media (prefers-color-scheme:dark){body{background:#0d0d0d}}
+.viz-root{min-height:100vh;background:var(--page);color:var(--text-primary);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;padding:20px 16px 48px;box-sizing:border-box}
+.wrap{max-width:1080px;margin:0 auto;display:grid;gap:16px}
+h1{font-size:22px;margin:0;font-weight:700}
+h2{font-size:15px;margin:0 0 2px;font-weight:650}
+.sub{color:var(--text-secondary);font-size:13px;margin:0}
+.card{background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:16px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--surface-1)}
+.seg button{font:inherit;font-size:13px;border:0;background:none;color:var(--text-secondary);padding:7px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--text-primary);color:var(--surface-1);font-weight:650}
+.seg button:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid var(--series-1);outline-offset:2px}
+.btn{font:inherit;font-size:13px;border:1px solid var(--border);border-radius:10px;background:var(--surface-1);color:var(--text-primary);padding:7px 12px;cursor:pointer}
+input[type=password]{font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--axis);background:var(--surface-1);color:var(--text-primary);min-width:0;flex:1 1 220px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile .label{color:var(--text-secondary);font-size:13px}
+.tile .value{font-size:26px;font-weight:650;line-height:1.2;margin-top:2px}
+.tile .note{color:var(--muted);font-size:12px}
+.hero{display:grid;gap:2px}
+.hero .value{font-size:52px;font-weight:650;line-height:1}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--text-secondary);margin:6px 0 4px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:14px;height:2px;border-radius:1px}
+.tip{position:absolute;pointer-events:none;background:var(--surface-1);border:1px solid var(--border);border-radius:10px;padding:8px 10px;font-size:12px;box-shadow:0 4px 14px rgba(0,0,0,.12);display:none;min-width:120px;z-index:2}
+.tip .d{color:var(--muted);margin-bottom:4px}
+.tip .r{display:flex;align-items:center;gap:8px;justify-content:space-between}
+.tip .r b{font-size:13px}
+.tip .k{display:inline-flex;align-items:center;gap:6px;color:var(--text-secondary)}
+.tip .k i{width:12px;height:2px;display:inline-block;border-radius:1px}
+.bars{display:grid;gap:6px}
+.bar{display:grid;grid-template-columns:minmax(120px,38%) 1fr auto;gap:10px;align-items:center;font-size:13px}
+.bar .n{color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .t{height:14px;position:relative}
+.bar .t i{position:absolute;left:0;top:0;bottom:0;background:var(--seq);border-radius:0 4px 4px 0;max-width:100%}
+.bar .v{font-variant-numeric:tabular-nums;color:var(--text-primary);min-width:3ch;text-align:right}
+.bar:hover .t i,.bar:focus-within .t i{filter:brightness(1.12)}
+@media (max-width:560px){.bar{grid-template-columns:1fr auto;row-gap:2px}.bar .n{grid-column:1/-1;white-space:normal}.grid2{grid-template-columns:1fr}}
+table{border-collapse:collapse;width:100%;font-size:12px}
+th,td{text-align:right;padding:4px 8px;border-bottom:1px solid var(--grid);font-variant-numeric:tabular-nums;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--text-secondary);font-weight:600}
+.scroll{overflow-x:auto}
+details summary{cursor:pointer;color:var(--text-secondary);font-size:13px}
+.err{color:var(--crit);font-size:13px}
+.loading{opacity:.55;transition:opacity .2s}
+.empty{color:var(--muted);font-size:13px;padding:8px 0}
+</style>
+</head>
+<body>
+<div class="viz-root">
+<main class="wrap">
+  <header class="row" style="justify-content:space-between">
+    <div><h1>Bloppit stats</h1><p class="sub">Daily counts from the game and the website. Nothing here is about any one child or device.</p></div>
+    <button class="btn" id="forget" type="button" hidden>Forget key on this browser</button>
+  </header>
+
+  <section class="card" id="keyCard">
+    <h2>Your stats key</h2>
+    <p class="sub">The <code>EVENTS_KEY</code> from Netlify. It stays in this browser only.</p>
+    <form class="row" id="keyForm" style="margin-top:10px"><input type="password" id="keyIn" autocomplete="off" placeholder="Paste the key" aria-label="Stats key"><button class="btn" type="submit">Show stats</button></form>
+    <p class="err" id="keyErr" hidden></p>
+  </section>
+
+  <div id="dash" hidden>
+    <div class="row" role="group" aria-label="Filters" style="margin-bottom:16px">
+      <div class="seg" id="range" role="group" aria-label="Date range"><button type="button" data-d="7" aria-pressed="false">Last 7 days</button><button type="button" data-d="30" aria-pressed="true">Last 30 days</button><button type="button" data-d="90" aria-pressed="false">Last 90 days</button></div>
+      <div class="seg" id="plat" role="group" aria-label="App or website"><button type="button" data-p="all" aria-pressed="true">All</button><button type="button" data-p="app" aria-pressed="false">App</button><button type="button" data-p="web" aria-pressed="false">Website</button></div>
+      <span class="sub" id="asOf"></span>
+    </div>
+
+    <div class="wrap" id="body">
+      <section class="card grid2" style="align-items:center">
+        <div class="hero"><span class="sub">Players a day, on average</span><span class="value" id="hero">–</span><span class="sub" id="heroNote"></span></div>
+        <div class="tiles" id="tiles"></div>
+      </section>
+
+      <section class="card">
+        <h2>Players each day</h2>
+        <p class="sub">Devices that opened Bloppit that day (counted once a day each)</p>
+        <div class="legend" id="lineLegend"></div>
+        <div class="chart" id="line"></div>
+      </section>
+
+      <div class="grid2">
+        <section class="card"><h2>From first open to coming back</h2><p class="sub">New devices in this period, and how many took each next step</p><div class="bars" id="funnel" style="margin-top:12px"></div><p class="sub" style="margin-top:10px">Comebacks are counted the first time a device returns after 1, 7 or 30 days, so the last days of a period haven't had time to come back yet.</p></section>
+        <section class="card"><h2>What players do most</h2><p class="sub">Times each thing happened in the game</p><div class="bars" id="features" style="margin-top:12px"></div></section>
+      </div>
+
+      <div class="grid2">
+        <section class="card"><h2>Website pages</h2><p class="sub">Page views on bloppit.com (the game itself counts as players above)</p><div class="bars" id="pages" style="margin-top:12px"></div></section>
+        <section class="card"><h2>Where players are</h2><p class="sub">Player-days in this period, by country</p><div class="bars" id="countries" style="margin-top:12px"></div></section>
+      </div>
+
+      <section class="card"><details><summary>Every count, by day (table)</summary><div class="scroll" style="margin-top:10px"><table id="table"></table></div></details></section>
+    </div>
+  </div>
+</main>
+</div>
+<script>
+(function(){
+  'use strict';
+  var KEY='bloppit-stats-key', state={days:30,plat:'all',data:null};
+  var $=function(s){ return document.querySelector(s); };
+  function getKey(){ try{ return localStorage.getItem(KEY)||''; }catch(e){ return ''; } }
+  function setKey(v){ try{ if(v) localStorage.setItem(KEY,v); else localStorage.removeItem(KEY); }catch(e){} }
+  var fmt=function(n){ n=Math.round(n||0); return n>=10000?(n/1000).toFixed(n>=100000?0:1).replace(/\.0$/,'')+'K':n.toLocaleString(); };
+  var pct=function(a,b){ return b?Math.round(100*a/b)+'%':'–'; };
+  var dayStr=function(d){ return new Date(d+'T12:00:00Z').toLocaleDateString(undefined,{day:'numeric',month:'short'}); };
+  // A day's count of one event, for the chosen app/website filter
+  function count(day,ev){ if(state.plat==='all') return (day.n&&day.n[ev])||0; var p=day.p&&day.p[ev]; return (p&&p[state.plat])||0; }
+  function total(ev){ return state.data.days.reduce(function(a,d){ return a+count(d,ev); },0); }
+  function el(tag,cls,text){ var e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
+
+  async function load(){
+    var key=getKey(); if(!key){ show(false); return; }
+    var to=new Date(), from=new Date(Date.now()-(state.days-1)*864e5), iso=function(d){ return d.toISOString().slice(0,10); };
+    $('#body').classList.add('loading');
+    try{
+      var r=await fetch('/api/event?from='+iso(from)+'&to='+iso(to),{headers:{'x-admin':key},cache:'no-store'});
+      if(r.status===403){ setKey(''); show(false,'That key didn’t work. Check it in Netlify (Site configuration → Environment variables → EVENTS_KEY).'); return; }
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      state.data=await r.json(); show(true); render();
+    }catch(e){ show(true); $('#asOf').textContent='Couldn’t load the counts just now.'; }
+    finally{ $('#body').classList.remove('loading'); }
+  }
+  function show(on,err){ $('#keyCard').hidden=on; $('#dash').hidden=!on; $('#forget').hidden=!on; var k=$('#keyErr'); k.hidden=!err; if(err) k.textContent=err; }
+
+  function render(){
+    var D=state.data.days, n=D.length;
+    $('#asOf').textContent=dayStr(state.data.from)+' – '+dayStr(state.data.to)+' (UTC days)';
+    // headline: average players a day (open_day), with the platform split in the note
+    var opens=total('open_day'); $('#hero').textContent=fmt(opens/Math.max(1,n));
+    var app=D.reduce(function(a,d){ return a+((d.p&&d.p.open_day&&d.p.open_day.app)||0); },0), web=D.reduce(function(a,d){ return a+((d.p&&d.p.open_day&&d.p.open_day.web)||0); },0);
+    $('#heroNote').textContent=state.plat==='all'?(fmt(app)+' app · '+fmt(web)+' website player-days in '+n+' days'):(fmt(opens)+' player-days in '+n+' days');
+    // tiles
+    var T=$('#tiles'); T.textContent='';
+    var first=total('first_open');
+    [['New devices',fmt(first),'opened Bloppit for the first time'],
+     ['Builds finished',fmt(total('build_completed')),'every finish, any mode'],
+     ['Weeklies finished',fmt(total('weekly_completed')),fmt(total('weekly_completed_clean'))+' of them clean'],
+     ['Came back next day',pct(total('return_d1'),first),'of new devices (approx.)'],
+     ['Came back after a week',pct(total('return_d7'),first),'of new devices (approx.)']].forEach(function(t){
+      var c=el('div','tile'); c.appendChild(el('div','label',t[0])); c.appendChild(el('div','value',t[1])); c.appendChild(el('div','note',t[2])); T.appendChild(c); });
+    line(); funnel(); bars('#features',featureRows()); bars('#pages',pageRows()); bars('#countries',countryRows()); table();
+  }
+
+  // Players each day: one line per platform (or one line when filtered), crosshair + tooltip
+  function line(){
+    var box=$('#line'); box.textContent=''; var D=state.data.days;
+    var series=state.plat==='all'?[{k:'app',name:'App',c:'var(--series-1)'},{k:'web',name:'Website',c:'var(--series-2)'}]:[{k:state.plat,name:state.plat==='app'?'App':'Website',c:'var(--series-1)'}];
+    var val=function(d,k){ var p=d.p&&d.p.open_day; return (p&&p[k])||0; };
+    var leg=$('#lineLegend'); leg.textContent=''; if(series.length>1) series.forEach(function(s){ var sp=el('span'); var i=el('i'); i.style.background=s.c; sp.appendChild(i); sp.appendChild(document.createTextNode(s.name)); leg.appendChild(sp); });
+    var W=Math.max(320,box.clientWidth||1000),H=W<560?220:260,L=40,R=W<560?78:84,Tp=10,B=26, max=1;
+    D.forEach(function(d){ series.forEach(function(s){ max=Math.max(max,val(d,s.k)); }); });
+    var step=Math.pow(10,Math.floor(Math.log10(max))), nice=Math.ceil(max/step)*step; if(nice/step>5&&step>=1){} max=Math.max(1,nice);
+    var x=function(i){ return L+(D.length<2?0:(i*(W-L-R)/(D.length-1))); }, y=function(v){ return Tp+(H-Tp-B)*(1-v/max); };
+    var ns='http://www.w3.org/2000/svg', svg=document.createElementNS(ns,'svg'); svg.setAttribute('viewBox','0 0 '+W+' '+H); svg.setAttribute('role','img'); svg.setAttribute('aria-label','Players each day');
+    var mk=function(t,a){ var e=document.createElementNS(ns,t); for(var k in a) e.setAttribute(k,a[k]); return e; };
+    for(var g=0;g<=4;g++){ var v=max*g/4; svg.appendChild(mk('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:g?'var(--grid)':'var(--axis)','stroke-width':1}));
+      var t=mk('text',{x:L-8,y:y(v)+4,'text-anchor':'end','font-size':11,fill:'var(--muted)'}); t.textContent=fmt(v); svg.appendChild(t); }
+    var every=Math.ceil(D.length/(W<560?4:7)); D.forEach(function(d,i){ var last=D.length-1; if(i%every&&i!==last) return; if(i!==last&&x(last)-x(i)<58) return; var t=mk('text',{x:x(i),y:H-6,'text-anchor':'middle','font-size':11,fill:'var(--muted)'}); t.textContent=dayStr(d.day); svg.appendChild(t); });
+    series.forEach(function(s){ var dpath=D.map(function(d,i){ return (i?'L':'M')+x(i).toFixed(1)+' '+y(val(d,s.k)).toFixed(1); }).join(' ');
+      svg.appendChild(mk('path',{d:dpath,fill:'none',stroke:s.c,'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'}));
+      var li=D.length-1, lv=val(D[li],s.k); svg.appendChild(mk('circle',{cx:x(li),cy:y(lv),r:4,fill:s.c,stroke:'var(--surface-1)','stroke-width':2}));
+      var lt=mk('text',{x:x(li)+8,y:y(lv)+4,'font-size':11,fill:'var(--text-secondary)'}); lt.textContent=s.name+' '+fmt(lv); svg.appendChild(lt); });
+    var hair=mk('line',{y1:Tp,y2:H-B,stroke:'var(--axis)','stroke-width':1,visibility:'hidden'}); svg.appendChild(hair);
+    var dots=series.map(function(s){ var c=mk('circle',{r:4,fill:s.c,stroke:'var(--surface-1)','stroke-width':2,visibility:'hidden'}); svg.appendChild(c); return c; });
+    var hit=mk('rect',{x:L,y:Tp,width:W-L-R,height:H-Tp-B,fill:'transparent',tabindex:0}); svg.appendChild(hit);
+    box.appendChild(svg); var tip=el('div','tip'); box.appendChild(tip);
+    var at=function(i){ var d=D[i]; hair.setAttribute('x1',x(i)); hair.setAttribute('x2',x(i)); hair.setAttribute('visibility','visible');
+      series.forEach(function(s,j){ dots[j].setAttribute('cx',x(i)); dots[j].setAttribute('cy',y(val(d,s.k))); dots[j].setAttribute('visibility','visible'); });
+      tip.textContent=''; tip.appendChild(el('div','d',dayStr(d.day)));
+      series.forEach(function(s){ var r=el('div','r'), k=el('span','k'), i2=el('i'); i2.style.background=s.c; k.appendChild(i2); k.appendChild(document.createTextNode(s.name)); r.appendChild(el('b',null,fmt(val(d,s.k)))); r.appendChild(k); tip.appendChild(r); });
+      tip.style.display='block'; var bw=box.clientWidth, px=x(i)/W*bw; tip.style.left=Math.min(bw-tip.offsetWidth,Math.max(0,px+12))+'px'; tip.style.top='8px'; };
+    var hide=function(){ hair.setAttribute('visibility','hidden'); dots.forEach(function(c){ c.setAttribute('visibility','hidden'); }); tip.style.display='none'; };
+    var idx=function(e){ var r=svg.getBoundingClientRect(), vx=(e.clientX-r.left)/r.width*W; return Math.max(0,Math.min(D.length-1,Math.round((vx-L)/((W-L-R)/Math.max(1,D.length-1))))); };
+    var cur=D.length-1;
+    hit.addEventListener('pointermove',function(e){ cur=idx(e); at(cur); }); hit.addEventListener('pointerleave',hide);
+    hit.addEventListener('focus',function(){ at(cur); }); hit.addEventListener('blur',hide);
+    hit.addEventListener('keydown',function(e){ if(e.key==='ArrowLeft'){ cur=Math.max(0,cur-1); at(cur); e.preventDefault(); } if(e.key==='ArrowRight'){ cur=Math.min(D.length-1,cur+1); at(cur); e.preventDefault(); } });
+  }
+
+  // horizontal bars, one hue, value at the tip; the row is the hover target (title gives the exact number)
+  function bars(sel,rows){ var b=$(sel); b.textContent=''; if(!rows.length){ b.appendChild(el('div','empty','Nothing counted yet in this period.')); return; }
+    var max=Math.max.apply(null,rows.map(function(r){ return r[1]; }))||1;
+    rows.forEach(function(r){ var row=el('div','bar'); row.tabIndex=0; row.title=r[0]+': '+r[1].toLocaleString()+(r[2]?' ('+r[2]+')':'');
+      row.appendChild(el('span','n',r[0])); var t=el('span','t'), i=el('i'); i.style.width=Math.max(1,100*r[1]/max)+'%'; t.appendChild(i); row.appendChild(t);
+      row.appendChild(el('span','v',fmt(r[1])+(r[2]?' · '+r[2]:''))); b.appendChild(row); }); }
+  function funnel(){ var first=total('first_open');
+    var steps=[['Opened for the first time','first_open'],['Started a first build','first_build_started'],['Finished a first build','first_build_completed'],['Chose a second build','second_build_started_by_choice'],['Came back next day','return_d1'],['Came back after a week','return_d7'],['Came back after a month','return_d30']];
+    bars('#funnel',steps.map(function(s){ var v=total(s[1]); return [s[0],v,s[1]==='first_open'?'':pct(v,first)]; })); }
+  var NAMES={build_completed:'Builds finished',weekly_completed:'Weekly Bloppit finished',world_finish:'Finishes on the island',island_tip:'Island cards opened',island_arranged:'Models moved on the island',decor_bought:'Decorations bought',pup_named:'Pup named from the list',pup_named_own:'Pup named by the child',pup_colour:'Pup brick colour picked',relay_started:'Relays started',relay_joined:'Relays joined',crew_made:'Crews made',crew_post:'Crew messages',drawing_built:'Drawings built',drawing_saved:'Drawings saved',drawing_shared:'Drawings shared',postcard:'Postcards made',weekly_card:'Weekly cards shared',family_key_made:'Family keys made',family_link_shared:'Family links shared',play_next:'Play Next used',share_build_started:'Shared builds opened',build_started:'Builds started'};
+  function featureRows(){ var t={}; state.data.days.forEach(function(d){ for(var k in d.n||{}){ var base=k.split(':')[0]; if(!NAMES[base]||base==='build_started') continue; t[base]=(t[base]||0)+count(d,k); } });
+    return Object.keys(t).map(function(k){ return [NAMES[k],t[k]]; }).filter(function(r){ return r[1]>0; }).sort(function(a,b){ return b[1]-a[1]; }).slice(0,12); }
+  function pageRows(){ var t={}; state.data.days.forEach(function(d){ for(var k in d.n||{}) if(k.indexOf('page:')===0) t[k.slice(5)]=(t[k.slice(5)]||0)+count(d,k); });
+    var label={landing:'Front page','how-it-works':'How it works',faq:'FAQ',about:'About us',privacy:'Privacy',activity:'Activity page'};
+    return Object.keys(t).map(function(k){ return [label[k]||k,t[k]]; }).sort(function(a,b){ return b[1]-a[1]; }); }
+  function countryRows(){ var t={}; state.data.days.forEach(function(d){ var c=d.c&&d.c.open_day; for(var k in c||{}) t[k]=(t[k]||0)+c[k]; });
+    var dn=null; try{ dn=new Intl.DisplayNames(undefined,{type:'region'}); }catch(e){}
+    return Object.keys(t).map(function(k){ return [k==='ZZ'?'Unknown':(dn?dn.of(k):k),t[k]]; }).sort(function(a,b){ return b[1]-a[1]; }).slice(0,10); }
+  function table(){ var tb=$('#table'); tb.textContent=''; var D=state.data.days, evs={};
+    D.forEach(function(d){ for(var k in d.n||{}) evs[k]=1; }); var keys=Object.keys(evs).sort();
+    var hr=el('tr'); hr.appendChild(el('th',null,'Count')); D.forEach(function(d){ hr.appendChild(el('th',null,d.day.slice(5))); }); hr.appendChild(el('th',null,'Total')); tb.appendChild(hr);
+    if(!keys.length){ var r=el('tr'); r.appendChild(el('td',null,'Nothing counted yet.')); tb.appendChild(r); return; }
+    keys.forEach(function(k){ var r=el('tr'); r.appendChild(el('td',null,k)); var s=0; D.forEach(function(d){ var v=count(d,k); s+=v; r.appendChild(el('td',null,v?String(v):'')); }); r.appendChild(el('td',null,String(s))); tb.appendChild(r); }); }
+
+  $('#keyForm').addEventListener('submit',function(e){ e.preventDefault(); var v=$('#keyIn').value.trim(); if(!v) return; setKey(v); $('#keyIn').value=''; load(); });
+  $('#forget').addEventListener('click',function(){ setKey(''); state.data=null; show(false); });
+  function seg(sel,attr,fn){ $(sel).addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b) return; [].forEach.call($(sel).querySelectorAll('button'),function(x){ x.setAttribute('aria-pressed',String(x===b)); }); fn(b.getAttribute(attr)); }); }
+  seg('#range','data-d',function(v){ state.days=+v; load(); });
+  seg('#plat','data-p',function(v){ state.plat=v; if(state.data) render(); });
+  var rt; addEventListener('resize',function(){ clearTimeout(rt); rt=setTimeout(function(){ if(state.data) line(); },150); });
+  load();
+})();
+</script>
+</body>
+</html>

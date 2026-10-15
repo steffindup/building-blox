@@ -2,7 +2,8 @@
 // and the server adds one to that day's count, split by country. Nothing else: no identifier for the player or the
 // device, no pup code, no user agent, no timestamps finer than the day. That is what lets the privacy policy say
 // "simple counts with nothing in them about any one child" and keeps the counts inside COPPA's internal-operations
-// exception. One blob per UTC day: ev/YYYY-MM-DD -> { day, n: { event: count }, c: { event: { CC: count } } }.
+// exception. One blob per UTC day: ev/YYYY-MM-DD -> { day, n: { event: count }, c: { event: { CC: count } },
+// p: { event: { web: count, app: count } } } (which one sent it: the website or the iPhone/iPad app).
 //
 // Store adapter: get(key) -> { data, etag } | null; set(key, data, { onlyIfMatch?, onlyIfNew? }) -> { modified }.
 
@@ -36,16 +37,18 @@ export async function handle(method, query, body, store, opts = {}) {
     for (let d = new Date(from + 'T00:00:00Z'); d.toISOString().slice(0, 10) <= to && days.length < 120; d.setUTCDate(d.getUTCDate() + 1)) {
       const day = d.toISOString().slice(0, 10);
       const r = await store.get(evKey(day));
-      days.push(r ? r.data : { day, n: {}, c: {} });
+      days.push(r ? r.data : { day, n: {}, c: {}, p: {} });
     }
     const totals = {};
     for (const d of days) for (const [k, v] of Object.entries(d.n || {})) totals[k] = (totals[k] || 0) + v;
-    return { status: 200, body: { from, to, totals, days } };
+    const byPlatform = {};
+    for (const d of days) for (const [k, v] of Object.entries(d.p || {})) { const t = byPlatform[k] || (byPlatform[k] = {}); for (const [pl, n] of Object.entries(v)) t[pl] = (t[pl] || 0) + n; }
+    return { status: 200, body: { from, to, totals, byPlatform, days } };
   }
   if (method !== 'POST') return { status: 405, body: { error: 'Method not allowed' } };
   const events = cleanEvents(body && (body.events || [body.e]));
   if (!events.length) return { status: 400, body: { error: 'No events.' } };
-  const country = cleanCountry(opts.country);
+  const country = cleanCountry(opts.country), plat = body && body.p === 'app' ? 'app' : 'web';
   const day = dayOf(now);
   for (let i = 0; i < 8; i++) {
     const r = await store.get(evKey(day));
@@ -55,6 +58,7 @@ export async function handle(method, query, body, store, opts = {}) {
       d.n[e] = (d.n[e] || 0) + 1;
       const byC = d.c[e] || (d.c[e] = {});
       byC[country] = (byC[country] || 0) + 1;
+      const P = d.p || (d.p = {}), byP = P[e] || (P[e] = {}); byP[plat] = (byP[plat] || 0) + 1;
     }
     const { modified } = await store.set(evKey(day), d, r ? { onlyIfMatch: r.etag } : { onlyIfNew: true });
     if (modified) return { status: 200, body: { ok: true } };

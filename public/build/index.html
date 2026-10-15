@@ -4823,7 +4823,7 @@ function track(...names){
 }
 function evFlush(){
   const events=evQueue.splice(0,5); if(!events.length) return;
-  const body=JSON.stringify({events});
+  const body=JSON.stringify({events,p:APP?'app':'web'});   // which one: the app or the website (nothing else about the device)
   try{ if(!APP&&navigator.sendBeacon&&navigator.sendBeacon(API_BASE+'/api/event',new Blob([body],{type:'application/json'}))) return; }catch(e){}
   fetch(API_BASE+'/api/event',{method:'POST',headers:{'content-type':'application/json'},body,keepalive:true}).catch(()=>{});
   if(evQueue.length) evTimer=setTimeout(evFlush,800);
@@ -4844,6 +4844,14 @@ function buildFinished(kind){
   if(o.finished===1) track('first_build_completed','activation'+evChannel());
 }
 // A short link (bloppit.com/go/CHANNEL) brings a visit count and is remembered for the activation, first touch only
+// Opens and comebacks, still only as counts: the first open on this device, one open a day and one a week,
+// and the first time back after 1, 7 and 30 days. Nothing identifies the device; the dates stay on it.
+try{ const o=evStore(), today=new Date().toISOString().slice(0,10), ev=[], dayN=d=>Math.floor(Date.parse(d+'T00:00:00Z')/864e5), week=Math.floor((dayN(today)+3)/7);
+  if(!o.first){ o.first=today; ev.push('first_open'); }
+  if(o.lastDay!==today){ o.lastDay=today; ev.push('open_day'); }
+  if(o.lastWeek!==week){ o.lastWeek=week; ev.push('open_week'); }
+  o.back=o.back||{}; const gap=dayN(today)-dayN(o.first); for(const n of [1,7,30]) if(gap>=n&&!o.back[n]){ o.back[n]=1; ev.push('return_d'+n); }
+  evStoreSet(o); if(ev.length) track(...ev); }catch(e){}
 try{ const go=new URLSearchParams(location.search).get('go'); if(go&&/^[a-z0-9_-]{1,20}$/i.test(go)){ const o=evStore(); if(!o.channel){ o.channel=go.toLowerCase(); evStoreSet(o); } track('visit:'+go.toLowerCase()); history.replaceState(null,'',location.pathname+location.hash); } }catch(e){}
 
 /* ---------- Play together (rooms on the Bloppit website) ---------- */
