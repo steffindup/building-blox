@@ -6246,10 +6246,10 @@ function islandModels(o){
   const cap=ISLAND_STAGES[islandStage(o)].slots, pos=o.pos||{}, away=o.away||{}, legacy=o.slot||{};
   const all=o.log.filter(k=>!k.startsWith('w:')&&o.builds[k]&&away[k]!==1).reverse();   // newest first
   const at=k=>Array.isArray(pos[k])?pos[k]:(Number.isInteger(legacy[k])&&SLOTS[legacy[k]]?SLOTS[legacy[k]]:null);
-  const list=[]; for(const k of all){ if(list.length>=cap) break; const p=at(k); if(p) list.push({key:k,x:p[0],y:p[1],placed:true}); }
-  const near=(x,y)=>list.some(m=>Math.hypot(m.x-x,m.y-y)<70);
-  const free=SLOTS.slice(0,cap).map(([x,y],i)=>[x,y,i]).filter(([x,y])=>!near(x,y));
-  for(const k of all){ if(list.length>=cap) break; if(list.some(m=>m.key===k)) continue; const f=free.shift(); if(!f) break; list.push({key:k,x:f[0],y:f[1],placed:false}); }
+  const show=all.slice(0,cap), list=[]; for(const k of show){ const p=at(k); if(p) list.push({key:k,x:p[0],y:p[1],placed:true}); }   // the newest builds always get the spaces
+  const near=(x,y)=>list.some(m=>Math.hypot(m.x-x,m.y-y)<70), stands=SLOTS.slice(0,cap).map(([x,y],i)=>[x,y,i]);
+  const free=stands.filter(([x,y])=>!near(x,y)), spare=stands.filter(f=>!free.includes(f));
+  for(const k of show){ if(list.some(m=>m.key===k)) continue; const f=free.shift()||spare.shift(); if(!f) break; list.push({key:k,x:f[0],y:f[1],placed:false}); }
   list.sort((p,q)=>p.y-q.y);
   return {list,empty:free.slice(0,Math.max(0,cap-list.length)),cap};
 }
@@ -6629,10 +6629,11 @@ function isl3Init(){
 function islandModels3(o){
   const cap=ISLAND_STAGES[islandStage(o)].slots, pos=o.pos||{}, away=o.away||{};
   const all=o.log.filter(k=>!k.startsWith('w:')&&o.builds[k]&&away[k]!==1).reverse();
-  const list=[]; for(const k of all){ if(list.length>=cap) break; const p=pos[k]; if(Array.isArray(p)){ const x=P2W(p[0]), z=P2W(p[1]); if(onGrass(x,z)) list.push({key:k,x,z,placed:true}); } }
-  const near=(x,z)=>list.some(m=>Math.hypot(m.x-x,m.z-z)<1.5);
-  const free=STANDS3.slice(0,cap).map(([x,z],i)=>[x,z,i]).filter(([x,z])=>!near(x,z));
-  for(const k of all){ if(list.length>=cap) break; if(list.some(m=>m.key===k)) continue; const f=free.shift(); if(!f) break; list.push({key:k,x:f[0],z:f[1],placed:false}); }
+  // The newest builds always get the spaces: a model you dragged somewhere keeps its spot, but never pushes a newer build off the island
+  const show=all.slice(0,cap), list=[]; for(const k of show){ const p=pos[k]; if(Array.isArray(p)){ const x=P2W(p[0]), z=P2W(p[1]); if(onGrass(x,z)) list.push({key:k,x,z,placed:true}); } }
+  const near=(x,z)=>list.some(m=>Math.hypot(m.x-x,m.z-z)<1.5), stands=STANDS3.slice(0,cap).map(([x,z],i)=>[x,z,i]);
+  const free=stands.filter(([x,z])=>!near(x,z)), spare=stands.filter(f=>!free.includes(f));
+  for(const k of show){ if(list.some(m=>m.key===k)) continue; const f=free.shift()||spare.shift(); if(!f) break; list.push({key:k,x:f[0],z:f[1],placed:false}); }
   return {list,empty:free.slice(0,Math.max(0,cap-list.length)),cap};
 }
 // Labels over the islands (HTML, so they stay sharp), placed every frame
