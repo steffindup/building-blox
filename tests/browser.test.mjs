@@ -236,6 +236,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
     const sel = '#isWorld .is3-say, #isWorld .is3-banner';
     await t.page.waitForFunction((sel) => [...document.querySelectorAll(sel)].some((b) => !b.hidden && b.textContent), sel, { timeout: 4000, polling: 100 }).catch(() => {});
     const said = await t.page.evaluate((sel) => [...document.querySelectorAll(sel)].filter((b) => !b.hidden).map((b) => b.textContent).join(' '), sel);
+    if (!said) console.log('TAPDBG', id, JSON.stringify(c), await t.page.evaluate((c) => { const I = window.bloppitIsland3(); return [window.bloppitPick(c.x, c.y), document.elementFromPoint(c.x, c.y)?.className, 'tip:' + document.getElementById('isTip').hidden, 'view:' + I.viewI, 'arr:' + I.arrival, 'p3:' + !!I.p3, 'pupG:' + !!I.pupG, 'poke:' + JSON.stringify(I.lastPoke), 'down:' + JSON.stringify(I.down)].join(' | '); }, c));
     assert.ok(said, 'a reaction for ' + id); assert.equal(await t.page.evaluate(() => document.getElementById('isTip').hidden), true);
     await still(); c = await pt(id);
     await t.page.evaluate(() => { const I = window.bloppitIsland3(); if (I.lastPoke) I.lastPoke.t = performance.now(); });   // 'soon after': the camera's flight takes seconds on a test machine with no GPU
