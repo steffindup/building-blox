@@ -339,3 +339,13 @@ test('draw your own: paint, build as a picture, save with the pup, send as a lin
   assert.equal(await u.view(), 'view-build'); assert.match(await u.text('#progress'), /0 of \d+ placed/);
   assert.deepEqual(u.errors, []); assert.deepEqual(t.errors, []); await u.ctx.close();
 });
+
+test('island: a new build always shows, even when older models were dragged into every space', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1#island', { init: { fn: () => { const builds = {}, log = [], pos = {}; const spots = [[485, 530], [535, 540], [565, 495]];
+    for (let i = 0; i < 4; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1 }; log.push(k); if (i < 3) pos[k] = spots[i]; }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 40, bonus: 0, builds, log, pos, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 4, finished: 4, welcome: 1 })); } } });
+  const keys = await t.page.evaluate(() => window.bloppitIsland3().shown.list.map((m) => m.key));
+  assert.equal(keys.length, 3); assert.ok(keys.includes('m:Model3:13'), keys.join());   // the newest build is on the island
+  assert.ok(!keys.includes('m:Model0:10'));                                           // the oldest steps aside
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
