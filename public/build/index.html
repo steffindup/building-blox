@@ -118,7 +118,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:400;letter-spacing:.01em;text-
 button,select,input{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--hi);outline-offset:2px}
 
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px;padding-block:14px;max-width:1640px;margin:0 auto;border-bottom:1px solid var(--line)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px;padding-block:14px;margin:0 -16px;padding-inline:max(16px,calc((100% - 1608px)/2));border-bottom:1px solid var(--line)}   /* the bar runs edge to edge; what's in it lines up with the page */
 .brand{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-size:24px}
 .brand a{display:flex;align-items:center;gap:8px;color:inherit;text-decoration:none;border-radius:10px}
 .brand a:hover span{color:var(--accent)}
@@ -5941,6 +5941,7 @@ const worldCount=o=>o.log.length;                                   // distinct 
 const buildXP=(k,b)=>(b.k==='blitz'?10:b.n<=20?10:b.n<=40?20:35)+(k.startsWith('w:')?10:0)+(b.m?5:0);
 const worldXP=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+buildXP(k,b),0);
 const worldStarsEarned=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+(b.s||0)+(k.startsWith('w:')?1:0)+(b.m?1:0),0);
+const decorOut=o=>(o.decor||[]).filter(id=>(o.away||{})['decor:'+id]!==1);   // decorations on the island (not put away)
 const worldStarsSpent=o=>(o.decor||[]).reduce((a,id)=>{ if((o.free||[]).includes(id)) return a; const d=DECOR.find(x=>x.id===id); return a+(d?d.cost:0); },0);
 const worldStars=o=>worldStarsEarned(o)-worldStarsSpent(o);
 const stageOf=(list,n)=>{ let k=0; list.forEach((st,i)=>{ if(n>=st.at) k=i; }); return k; };
@@ -6150,7 +6151,7 @@ function islandsNearby(){
 }
 // The scene: sky, sea and the island, then whatever the stage has built, the models, the decorations, the two otters.
 function islandSVG(o,opts){
-  opts=opts||{}; const stage=islandStage(o), n=worldCount(o), decor=o.decor||[], thumbs=worldThumbs();
+  opts=opts||{}; const stage=islandStage(o), n=worldCount(o), decor=decorOut(o), thumbs=worldThumbs();
   const shown=islandModels(o);   // the models standing on the island, where the child put them
   const weekly=o.log.filter(k=>k.startsWith('w:')).slice(-1)[0];
   const stand=(x,y,w)=>`<ellipse cx="${x}" cy="${y+2}" rx="${w*.42}" ry="${w*.1}" fill="#000" opacity=".1"/><ellipse cx="${x}" cy="${y}" rx="${w*.4}" ry="${w*.09}" fill="#E3C99A"/>`;
@@ -6328,7 +6329,7 @@ function islandInfo(id,o){
       const nx=ISLAND_STAGES[st+1];
       if(arg==='beach'&&ISL3.ok){ const hp=HOME_PIECES.filter(x=>!x.hide&&x.id!=='pick'), nx=hp.find(x=>x.at>n); return {title:'Home Island',hint:pupName(o)?`${pupName(o)}’s home`:'Your home',rows:[['Builds finished',String(n)],['Models standing',`${shown.list.length} of ${shown.cap} stands`],['Islands discovered',`${islandsOpen(o).length} of 5`],['Next',nx?`${nx.name} at ${nx.at} builds`:'Everything on Home Island is built']],chips:hp.map(x=>[x.name,n>=x.at]),actions:n?[{label:'✨ Decorate',fn:()=>$('#isDecor').click()}]:[]}; }
       if(arg==='beach') return {title:'Bloppitopia',hint:`Level ${st} of 3: ${ISLAND_STAGES[st].name}`,
-        rows:[['Level',`${st} of 3: ${ISLAND_STAGES[st].name}`],['Builds finished',String(n)],['Models standing',`${shown.list.length} of ${shown.cap} stands`],['Decorations',`${(o.decor||[]).length} of ${DECOR.length}`],['Next',nx?`The ${nx.name.toLowerCase()} at ${nx.at} builds`:'Everything is built']],
+        rows:[['Level',`${st} of 3: ${ISLAND_STAGES[st].name}`],['Builds finished',String(n)],['Models standing',`${shown.list.length} of ${shown.cap} stands`],['Decorations',`${decorOut(o).length} of ${DECOR.length}`],['Next',nx?`The ${nx.name.toLowerCase()} at ${nx.at} builds`:'Everything is built']],
         bar:nx?bar(ISLAND_STAGES[st].at,nx.at):null, actions:n?[{label:'✨ Decorate',fn:()=>$('#isDecor').click()}]:[]};
       if(arg==='meadow') return {...place(3,'The meadow','Where the village grows'),title:'The meadow',hint:n>=10?'The village stands here':'The village grows here at 10 builds'};
       if(arg==='sea') return {title:'The sea',hint:'Five islands around Home Island: tap one',rows:destinations().map(d=>[d.name,d.n?(d.st===3?`${d.milestone} ✓`:`${Math.min(d.n,d.total)} of ${d.total}${d.next?` · next: ${d.next}`:''}`):`In the mist · play ${ISLES[d.id].game} to find it`])};
@@ -6337,7 +6338,7 @@ function islandInfo(id,o){
       if(arg==='sky') return {title:'The sky',hint:(o.decor||[]).includes('kite')?'Your kite is flying':'Kites fly here',rows:[['Up here',(o.decor||[]).includes('kite')?'Your kite':'A kite, one day (5 Build Stars)']]};
       break; }
     case 'decor': { const d=DECOR.find(x=>x.id===arg)||{name:arg,cost:0}, gift=(o.free||[]).includes(arg);
-      return {title:d.name,hint:gift?'A gift for a Weekly Bloppit':`Bought for ★ ${d.cost}`,rows:[...(arg!=='buoy'?[['Move it',ISL3.ok?'Hold it and drag it anywhere on the island':'Drag it anywhere on the sand']]:[]),['How you got it',gift?'A gift for finishing a Weekly Bloppit':`Bought with ${d.cost} Build Stars`],['Decorations',`${(o.decor||[]).length} of ${DECOR.length} on Bloppitopia`]]}; }
+      return {title:d.name,hint:gift?'A gift for a Weekly Bloppit':`Bought for ★ ${d.cost}`,rows:[...(arg!=='buoy'?[['Move it',ISL3.ok?'Hold it and drag it anywhere on the island':'Drag it anywhere on the sand']]:[]),['How you got it',gift?'A gift for finishing a Weekly Bloppit':`Bought with ${d.cost} Build Stars`],['Decorations',`${decorOut(o).length} of ${DECOR.length} on Bloppitopia`]],actions:[{label:'Put it away',fn:()=>decorPut(arg,false)}]}; }
     case 'dest': { const m={ferry:'sunrise',workshop:'brickworks',brain:'brainpeak',speedway:'blitzbay',harbour:'otterwood'}[arg]; if(m) return islandInfo('isle:'+m,o); break; }
     case 'isle': { const I=ISLES[arg]; if(!I) break; const c=isleCount(arg,o), P=PIECES[arg], total=P[P.length-1].at, built=P.filter(x=>c>=x.at), next=P.find(x=>c<x.at);
       if(!c) return {title:'A misty island',hint:`Play ${I.game} to discover it`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Finish your first ${I.unit}`]],actions:[{label:I.play,fn:I.go,primary:true}]};
@@ -7124,7 +7125,7 @@ function isl3Build(o){
   ISL3.isles.home={x:0,z:0,r:HOME_R};
   // decorations
   const tapBox=(w,h,y)=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,w),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); b.visible=false; b.position.y=y; return b; };
-  for(const id of o.decor||[]){ const p=DECOR3[id]; if(!p) continue; const d=decor3(id), q=(o.pos||{})['decor:'+id]; d.add(id==='kite'?tapBox(1.4,1.6,5.2):tapBox(1.3,1.7,TOP3+.8)); if(id!=='buoy'){ d.userData.key='decor:'+id; d.userData.decor=id; }
+  for(const id of decorOut(o)){ const p=DECOR3[id]; if(!p) continue; const d=decor3(id), q=(o.pos||{})['decor:'+id]; d.add(id==='kite'?tapBox(1.4,1.6,5.2):tapBox(1.3,1.7,TOP3+.8)); if(id!=='buoy'){ d.userData.key='decor:'+id; d.userData.decor=id; }
     add(d,'decor:'+id,q?P2W(q[0]):p[0],q?P2W(q[1]):p[1]); ISL3.decorG=ISL3.decorG||{}; ISL3.decorG[id]=d; }
   // models, where the child put them
   const shown=islandModels3(o); ISL3.shown=shown;
@@ -7453,18 +7454,22 @@ function renderIsland(){
 function renderDecorShop(){
   const o=worldStore(), left=worldStars(o);
   $('#isStars').textContent=`You have ${left} Build Star${left===1?'':'s'}.`;
-  $('#decorGrid').innerHTML=DECOR.map(d=>{ const owned=o.decor.includes(d.id); return `<button type="button" data-decor="${d.id}"${owned?' data-owned="1" disabled':left<d.cost?' disabled':''}><svg viewBox="-64 -136 128 148">${decorSVG(d.id,0,d.id==='kite'?-110:6)}</svg>${d.name}<span class="cost">${owned?((o.free||[]).includes(d.id)?'From a Weekly':'On your island'):`Buy · ★ ${d.cost}`}</span></button>`; }).join('');
+  $('#decorGrid').innerHTML=DECOR.map(d=>{ const owned=o.decor.includes(d.id), away=owned&&(o.away||{})['decor:'+d.id]===1; return `<button type="button" data-decor="${d.id}"${away?' data-owned="1" data-back="1"':owned?' data-owned="1" disabled':left<d.cost?' disabled':''}><svg viewBox="-64 -136 128 148">${decorSVG(d.id,0,d.id==='kite'?-110:6)}</svg>${d.name}<span class="cost">${away?'Put away · tap to put it back':owned?((o.free||[]).includes(d.id)?'From a Weekly':'On your island'):`Buy · ★ ${d.cost}`}</span></button>`; }).join('');
 }
 $('#decorGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-decor]'); if(!b||b.disabled) return;
   const d=DECOR.find(x=>x.id===b.dataset.decor); if(!d) return;
+  if(b.dataset.back){ decorPut(d.id,true); return; }
   if(!b.dataset.confirm){ b.dataset.confirm='1'; b.classList.add('confirm'); b.querySelector('.cost').textContent=`Tap again to buy`; setTimeout(()=>{ delete b.dataset.confirm; if(b.isConnected){ b.classList.remove('confirm'); b.querySelector('.cost').textContent=`Buy · ★ ${d.cost}`; } },3000); return; }
   const o=worldStore(); if(o.decor.includes(d.id)||worldStars(o)<d.cost) return;
   o.decor.push(d.id); worldSet(o); track('decor_bought:'+d.id); sfx.chime(); islandShown=-1; renderIsland(); decorPlaced(d); });
+// Put a decoration away (it stays yours, in the Decorate list) or back out where it was
+function decorPut(id,on){ const o=worldStore(), d=DECOR.find(x=>x.id===id); if(!d||!o.decor.includes(id)) return; o.away={...(o.away||{}),['decor:'+id]:on?0:1};
+  worldSet(o); track(on?'decor_put_back:'+id:'decor_put_away:'+id); sfx.snap(); islandTipHide(); islandShown=-1; renderIsland(); renderDecorShop(); if(on) decorPlaced(d,true); }
 // Just bought: close the shop, go to the island, fly to it and say how to move it
-function decorPlaced(d){ $('#isShop').hidden=true; try{ if($('#view-island').classList.contains('immersive')){ const up=()=>scrollTo({top:0,behavior:'instant'}); up(); setTimeout(up,60); setTimeout(up,400); } else $('#isWorld').scrollIntoView({behavior:'auto',block:'center'}); }catch(e){}
+function decorPlaced(d,back){ $('#isShop').hidden=true; try{ if($('#view-island').classList.contains('immersive')){ const up=()=>scrollTo({top:0,behavior:'instant'}); up(); setTimeout(up,60); setTimeout(up,400); } else $('#isWorld').scrollIntoView({behavior:'auto',block:'center'}); }catch(e){}
   if(!ISL3.ok||!ISL3.on||!ISL3.world) return; let g=null; ISL3.world.traverse(x=>{ if(!g&&x.userData.info==='decor:'+d.id) g=x; }); if(!g) return; const p=g.position;
   isl3FlyTo(p.x,0,p.z,13,900); ISL3.moved=true; isl3Pop&&isl3Pop(g); isl3Confetti(p.x,TOP3+1,p.z,20);
-  clearTimeout(ISL3.decorT); ISL3.decorT=setTimeout(()=>{ isl3Banner(d.id==='buoy'?`Your ${d.name.toLowerCase()} is bobbing by the jetty!`:`Your ${d.name.toLowerCase()} is here! Hold it and drag it anywhere on the island.`,true); ISL3.decorT=setTimeout(()=>isl3Banner(''),6500); },900); }
+  clearTimeout(ISL3.decorT); ISL3.decorT=setTimeout(()=>{ isl3Banner(d.id==='buoy'?`Your ${d.name.toLowerCase()} is bobbing by the jetty!`:`Your ${d.name.toLowerCase()} is ${back?'back':'here'}! Hold it and drag it anywhere on the island.`,true); ISL3.decorT=setTimeout(()=>isl3Banner(''),6500); },900); }
 $('#isDecor').onclick=()=>{ const sh=$('#isShop'); sh.hidden=!sh.hidden; if(!sh.hidden) sh.scrollIntoView({behavior:'smooth',block:'start'}); };
 $('#isShopClose').onclick=()=>{ $('#isShop').hidden=true; scrollTo({top:0,behavior:'smooth'}); };
 function renderBuilds(){
