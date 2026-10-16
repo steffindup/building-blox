@@ -233,7 +233,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   // places, Bloppit, the pup, a decoration, the islands nearby: each says what it is, its level and what's next
   assert.match(await tap('land:beach'), /Home Island.*Builds finished3.*Islands discovered/);
   assert.match(await tap('bloppit'), /Bloppit.*storm.*build buddy.*Secret.*red brick/);
-  assert.match(await tap('longtail:easy'), /Scraps.*A Longtail.*feather.*Secret.*Did you know\?.*tropicbirds.*Race Scraps/);
+  assert.match(await tap('longtail:easy'), /Scraps.*(A Longtail|Roosting in a cliff nest).*feather.*Secret.*Did you know\?.*tropicbirds.*Race Scraps/);
   assert.match(await tap('pup'), /Bubbles.*Level \d+ Pup.*1 stud.*Otter level.*Wardrobe.*Name or colour/);
   assert.match(await tap('decor:flag'), /Flag/);
   assert.match(await tap('isle:sunrise'), /A misty island.*Play Weekly Bloppit to discover it.*This week’s Bloppit/);
