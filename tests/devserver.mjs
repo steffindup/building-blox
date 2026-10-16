@@ -18,7 +18,7 @@ export const store = {
   async set(k, d, o = {}) { if (o.onlyIfNew && mem.has(k)) return { modified: false }; if (o.onlyIfMatch && mem.get(k)?.e !== o.onlyIfMatch) return { modified: false }; mem.set(k, { d: JSON.stringify(d), e: String(Math.random()) }); return { modified: true }; },
   async del(k) { mem.delete(k); },
 };
-const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.webmanifest': 'application/manifest+json', '.xml': 'application/xml', '.txt': 'text/plain' };
+const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.webmanifest': 'application/manifest+json', '.xml': 'application/xml', '.txt': 'text/plain', '.glb': 'model/gltf-binary', '.wasm': 'application/wasm' };
 // The website loads three.js from a CDN; here it comes from node_modules so the tests run offline.
 const vendor = { '/vendor/three.min.js': 'three/build/three.min.js', '/vendor/OrbitControls.js': 'three/examples/js/controls/OrbitControls.js', '/vendor/BufferGeometryUtils.js': 'three/examples/js/utils/BufferGeometryUtils.js' };
 export function start(port = +(process.env.PORT || 8788)) {

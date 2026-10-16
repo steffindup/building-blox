@@ -13,6 +13,8 @@ rmSync(www, { recursive: true, force: true });
 mkdirSync(join(www, 'vendor', 'fonts'), { recursive: true });
 // Character art (public/art): the build buddy, the Gulls and the launch screen load it by relative path.
 cpSync(join(root, 'public', 'art'), join(www, 'art'), { recursive: true });
+// The 3D characters (public/3d): models, the glTF/Draco loaders and the decoder, loaded on first need.
+cpSync(join(root, 'public', '3d'), join(www, '3d'), { recursive: true });
 
 // three.js r128, the same version the website loads from the CDN.
 const three = { 'three.min.js': 'three/build/three.min.js',

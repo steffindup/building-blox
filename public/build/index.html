@@ -252,6 +252,10 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .buddy .bud-art{position:relative;width:84px;aspect-ratio:300/398;display:block;transform-origin:50% 100%}
 .buddy .bud-art img{position:absolute;inset:0;width:100%;height:100%;display:none;object-fit:contain}
 .buddy .bud-art .st-rest{display:block}
+.c3-host{position:relative}.c3-host>.c3-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;pointer-events:none;transition:opacity .3s}.c3-host.c3on>.c3-canvas{opacity:1}
+.c3-host.c3on>img,.c3-host.c3on>svg{visibility:hidden}.buddy .bud-art.c3on{animation:none!important}.c3-wrap{display:block}.c3-wrap>img{display:block;width:100%;height:100%;object-fit:contain}
+.hm-cont.first .hc-pic.c3-wrap{width:64px}.windlg .wc-pic.c3-wrap{width:106px}.pupfig3d{width:100%;height:100%;object-fit:cover;display:block}
+.win-chars{display:block;width:210px;height:150px;margin:-4px auto 0}.win-chars[hidden]{display:none}
 .buddy.cheer .bud-art .st-rest,.buddy.think .bud-art .st-rest,.buddy.oops .bud-art .st-rest,.buddy.offer .bud-art .st-rest,.buddy.hug .bud-art .st-rest,.buddy.reach .bud-art .st-rest{display:none}
 .buddy.cheer .bud-art .st-cheer,.buddy.think .bud-art .st-think,.buddy.oops .bud-art .st-oops,.buddy.offer .bud-art .st-offer,.buddy.hug .bud-art .st-hug,.buddy.reach .bud-art .st-reach{display:block}
 .buddy.offer .bud-art{animation:bud-nudge 1.6s ease-in-out infinite;transform-origin:50% 100%}
@@ -1542,6 +1546,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 </dialog>
 <dialog class="windlg" id="mpEndDlg" aria-label="Game finished">
   <div class="win-stars">🏆</div>
+  <span class="win-chars" id="mpEndChars" hidden></span>
   <h2 id="mpEndTitle">Built together!</h2>
   <div class="win-rows" id="mpEndRows"></div>
   <div class="world-strip" data-ws></div>
@@ -1648,6 +1653,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 </dialog>
 <dialog class="windlg" id="winDlg" aria-label="Level complete">
   <img class="win-pic" id="winPic" alt="" hidden>
+  <span class="win-chars" id="winChars" hidden></span>
   <div class="win-stars" id="winStars"></div>
   <h2 id="winTitle">Level complete!</h2>
   <div class="win-rows" id="winRows"></div>
@@ -4584,6 +4590,7 @@ function winLevel(){
   setTrail(tr); winLvl=i;
   $('#winStars').innerHTML=starHTML(st); worldSound();
   { const pic=reveal&&reveal.url; $('#winPic').hidden=!pic; if(pic){ $('#winPic').src=pic; $('#winPic').alt=`The real ${L.name}`; } }
+  { const o=worldStore(); if(reveal&&reveal.url) $('#winChars').hidden=true; else if(hasPup(o)) cheer3($('#winChars'),['bloppit','pup'],['cheer','happy_hop']); else cheer3($('#winChars'),'bloppit','cheer'); }
   $('#winTitle').textContent=`${TRAILS[tr].icon} Level ${i+1} complete!`;
   const rows=[[`Built the ${L.name}`,L.pts,'']];
   if(p.hint) rows.push([`Hints (${p.hint})`,-p.hint*5,'neg']);
@@ -5242,6 +5249,7 @@ function mpShowEnd(){
   $('#mpEndTitle').textContent=`${s.title}: built together!`; $('#mpEndNew').textContent='New game';
   $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span>${p.own} brick${p.own===1?'':'s'} · ${p.score} pts</span></div>`).join('');
   $('#mpEndNote').textContent=`${s.nBricks} bricks placed by ${s.players.length} player${s.players.length>1?'s':''}. Each brick you place is worth 10 points; hints and “place one for me” cost points. Wrong spots are free: just try again.`;
+  { const o=worldStore(); cheer3($('#mpEndChars'),hasPup(o)?['bloppit','pup']:'bloppit',['cheer','happy_hop']); }
   $('#mpEndDlg').showModal(); worldSound();
 }
 function mpShowBlitzEnd(){
@@ -5251,7 +5259,9 @@ function mpShowBlitzEnd(){
   $('#mpEndNew').textContent=mp.cpu?'Race again':'New game';
   $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span><b>${fmtTime(p.ms)}</b> · ${p.own} brick${p.own===1?'':'s'} · ${p.miss} miss${p.miss===1?'':'es'}${p.hint?` · ${p.hint} hint${p.hint===1?'':'s'}`:''}</span></div>`).join('');
   const extra=s.moves.filter(m=>m.p<0).length;
-  $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and the Longtail put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, every miss added 1 second and every hint 5 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Legend Bloppit. Amazing!':' Ready to race a faster Bloppit?'):' Practice makes perfect. Try again?'):''}`;
+  $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and the Longtail put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, every miss added 1 second and every hint 5 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Squint, the cleverest Longtail. Amazing!':' Ready to race a faster Bloppit?'):' Practice makes perfect. Try again?'):''}`;
+  { const o=worldStore(), won=w.i===mp.me; if(mp.cpu) cheer3($('#mpEndChars'),hasPup(o)?['pup',LT3[s.cpuLevel]||'swoop']:['bloppit',LT3[s.cpuLevel]||'swoop'],won?['cheer','surprised_jump']:['look_at_you','cheer']);
+    else cheer3($('#mpEndChars'),'bloppit','cheer'); }
   $('#mpEndDlg').showModal();
 }
 $('#mpEndClose').onclick=()=>{ $('#mpEndDlg').close(); setTab('build'); };
@@ -5362,7 +5372,7 @@ function cpuAim(m,wrong){
 // The banner across the top of the build: whose turn it is, with their clock
 // The Longtails, from the character sheet (public/art): Scraps' stuck-up feather, Swoop's goggles, Squint's monocle.
 const GULL_ART={easy:'scraps',medium:'swoop',hard:'squint'};
-function GULL_HEAD(lvl){ return `<img src="/art/head-${({easy:'scraps',medium:'swoop',hard:'squint'})[lvl]||'swoop'}.png" alt="" width="256" height="256">`; }
+function GULL_HEAD(lvl){ const id=LT3[lvl]||'swoop', u=cv3Snap(id,null,'bust',160); if(!u&&ch3On()) ch3Get(id).catch(()=>{}); return `<img src="${u||`/art/head-${id}.png`}" alt="" width="256" height="256">`; }
 let bannerKey='';
 $('#turnBanner').addEventListener('click',e=>{ if(e.target.closest('#tbDone')&&!$('#mpEndTurn').hidden) $('#mpEndTurn').click(); });
 function turnBanner(s){
@@ -5916,7 +5926,8 @@ var PUP_ROUND='-16 -38 272 272';  // a round badge: head and brick both inside t
 function pupColorOf(o){ return o&&Number.isInteger(o.pupColor)&&o.pupColor>=0&&o.pupColor<PUP_COLORS.length?o.pupColor:0; }
 // The layers alone (for the island, which places them itself), and as a picture. opt: ci colour, n studs, vb crop.
 function pupLayers(ci,n,o){ const a=o?accSVG(o):{under:'',over:''}; return `<image href="/art/pup-body.png?v=2" width="239" height="300"/>${a.under}${pupBrick(n,ci)}<image href="/art/pup-paws.png" width="239" height="300"/>${a.over}`; }
-function pupFig(o,opt){ opt=opt||{}; const ci=opt.ci!=null?opt.ci:pupColorOf(o), n=opt.n||(o&&o.log?pupStage(o)+1:1);
+function pupFig(o,opt){ opt=opt||{};
+  if(!opt.svg){ const r=opt.vb===PUP_ROUND, u=cv3Snap(ch3PupId(o),o,r?'bust':'full',r?192:256,{ci:opt.ci}); if(u) return `<img class="pupfig pupfig3d${opt.cls?' '+opt.cls:''}" src="${u}" alt="" aria-hidden="true">`; } const ci=opt.ci!=null?opt.ci:pupColorOf(o), n=opt.n||(o&&o.log?pupStage(o)+1:1);
   return `<svg class="pupfig${opt.cls?' '+opt.cls:''}" viewBox="${opt.vb||'0 -40 239 340'}" preserveAspectRatio="${opt.par||'xMidYMid meet'}" aria-hidden="true" focusable="false">${pupLayers(ci,n,o)}</svg>`; }
 // A name the child typed: letters in any language, spaces, ' and -, at most 14 characters (same rule as the server)
 function cleanPupText(v){ return typeof v!=='string'?'':v.normalize('NFC').replace(/[^\p{L}\p{M} '\-]/gu,'').replace(/\s+/g,' ').trim().slice(0,14).trim(); }
@@ -6050,7 +6061,8 @@ function pupOpen(then,opt){
 }
 function pupColsRender(){
   const o=worldStore(), prev=pupDraft.out?{...o,wear:{...accWear(o),[ACC.find(a=>a.id===pupDraft.out).slot]:[pupDraft.out,pupDraft.ci]}}:o;
-  $('#pupPic').innerHTML=pupFig(prev,{ci:pupDraft.ci,vb:PUP_ROUND,par:'xMidYMid slice'});
+  $('#pupPic').innerHTML=pupFig(prev,{ci:pupDraft.ci,vb:PUP_ROUND,par:'xMidYMid slice',svg:1});
+  { const h=$('#pupPic'); cv3(h,{who:'pup',frame:'bust',o:prev,ci:pupDraft.ci,wear:prev.wear}); if(h.__ci!==pupDraft.ci){ const first=h.__ci==null; h.__ci=pupDraft.ci; if(!first) setTimeout(()=>cv3Play(h,'happy_hop'),30); } }
   $('#pupCols').innerHTML=PUP_COLORS.map((c,i)=>`<button type="button" role="radio" aria-checked="${i===pupDraft.ci}" aria-label="${c.n}" title="${c.n}" data-col="${i}" style="--c:${c.c}"></button>`).join('');
 }
 $('#pupCols').addEventListener('click',e=>{ const b=e.target.closest('[data-col]'); if(!b) return;
@@ -6081,7 +6093,7 @@ function islandIntro(){ setTab('island'); }
 function renderIslandIntro(o){
   const el=$('#isIntro'), show=!o.isle&&worldCount(o)>0&&!(ISL3.ok&&o.arrived); el.hidden=!show; if(!show) return;
   const nm=pupName(o);
-  $('#iiPup').innerHTML=pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'});
+  $('#iiPup').innerHTML=pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice',svg:1}); cv3($('#iiPup'),{who:'pup',frame:'bust',o});
   $('#iiTxt').textContent=nm?`${nm} lives here with Bloppit.`:'Your otter lives here with Bloppit.';
   const n0=worldCount(o); $('#iiSteps').innerHTML=ISLAND_STAGES.slice(1).map(st=>`<li class="${n0>=st.at?'done':''}"><b>${n0>=st.at?'✓':st.at}</b>${n0>=st.at?st.at+' ':''}build${st.at===1?'':'s'}: ${st.name==='Hut'?'a hut':st.name==='Workshop'?'a workshop':'a village'}</li>`).join('');
   const n=nextBuild(); $('#iiNext').innerHTML=n?`<img class="nb-pic" src="${n.thumb}" alt=""><span>Keep building<small>${escapeHTML(n.t)}</small></span>`:'Keep building';
@@ -6353,7 +6365,7 @@ function islandInfo(id,o){
     case 'bloppit': return {title:'Bloppit',hint:ISL3.ok?(ISL3.dozing?'Having a little nap':{garden:'Tending the garden',fish:'Fishing off the jetty',read:'Reading a good book',fire:'Warm by the campfire, looking at the stars'}[routine3(isl3Hour())]):'Your build buddy',icon:'<img src="/art/head-bloppit.png" alt="" width="256" height="256">',story:STORIES.bloppit.story,rows:[['Who','Your build buddy. '+STORIES.bloppit.who+'.'],['Loves',STORIES.bloppit.loves],['Secret',STORIES.bloppit.secret],['Lives',ISL3.ok?'On Home Island, with your otter':st>=2?'At the workshop door':'On the beach'],['Built together',`${n} build${n===1?'':'s'}`]],
       actions:[{label:'Build something',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
     case 'longtail': { const L=CPU_LEVELS[arg], S=STORIES[arg]; if(!L||!S) break; const wins=Object.values(o.builds).filter(b=>b.k==='blitz').length;
-      return {title:L.name,hint:ISL3.ltNight?'Roosting in a cliff nest for the night':'A Longtail · your Blitz rival',icon:`<img src="/art/head-${LONGTAIL_ART[arg].id}.png" alt="" width="256" height="256">`,story:S.story,
+      return {title:L.name,hint:ISL3.ltNight?'Roosting in a cliff nest for the night':'A Longtail · your Blitz rival',icon:`<img src="${cv3Snap(LT3[arg],null,'bust',192)||`/art/head-${LONGTAIL_ART[arg].id}.png`}" alt="" width="256" height="256">`,story:S.story,
         rows:[['Who',S.who],['Loves',S.loves],['Secret',S.secret],['Your Blitz wins',String(wins)],['Longtails beaten',(()=>{ const m=longtailBeaten(o); return m<0?'None yet. Start with Scraps!':['Scraps','Scraps and Swoop','All three!'][m]; })()],['Did you know?',LONGTAIL_FACT]],
         actions:[{label:`Race ${L.name}`,fn:()=>{ try{ bzLevelSet(arg); bzLevelSync(); }catch(e){} homeGo('cpu'); },primary:true}]}; }
     case 'pup': { const nm=pupName(o), ps=pupStage(o), nx=PUP_STAGES[ps+1], c=PUP_COLORS[pupColorOf(o)];
@@ -6604,7 +6616,7 @@ function isl3Init(){
   if(new URLSearchParams(location.search).get('island3d')==='0'){ ISL3.ok=false; return false; }   // the drawn island, on request
   try{
     const r=new THREE.WebGLRenderer({antialias:true,alpha:false,preserveDrawingBuffer:true});
-    const lite=/[?&]lite3d=1/.test(location.search);   // tests on machines without a GPU: no shadows, half the pixels
+    const lite=/[?&]lite3d=1/.test(location.search); ISL3.lite=lite;   // tests on machines without a GPU: no shadows, half the pixels
     const coarse=matchMedia('(pointer: coarse)').matches;   // phones and tablets: fewer pixels, simpler shadow edges
     r.setPixelRatio(lite?.5:Math.min(devicePixelRatio||1,coarse?1.5:2)); r.outputEncoding=THREE.sRGBEncoding; r.shadowMap.enabled=!lite; r.shadowMap.type=coarse?THREE.PCFShadowMap:THREE.PCFSoftShadowMap;
     r.setClearColor(new THREE.Color('#BFE6F7'));
@@ -6723,7 +6735,7 @@ function isl3Events(cv){
     if(e.type==='pointerup'&&d.moved&&!d.drag&&!d.multi){ const dx=e.clientX-d.x, dy=e.clientY-d.y; if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3){ isl3GoView((ISL3.viewI||0)+(dx<0?1:-1)); sfx.tick&&sfx.tick(); } return; }
     if(e.type==='pointerup'&&!d.moved&&performance.now()-d.t<600&&d.h){ islandHover(null); const info0=d.h.info;
       // characters: a reaction first; a second tap soon after shows who they are
-      if(info0==='bloppit'||info0==='pup'||info0.startsWith('longtail:')){ const again=ISL3.lastPoke&&ISL3.lastPoke.info===info0&&performance.now()-ISL3.lastPoke.t<4000;
+      if(info0==='bloppit'||info0==='pup'||info0.startsWith('longtail:')){ const again=ISL3.lastPoke&&ISL3.lastPoke.info===info0&&performance.now()-ISL3.lastPoke.t<8000;
         if(!again){ ISL3.lastPoke={info:info0,t:performance.now()}; if(info0==='bloppit'&&ISL3.dozing) isl3Wake(); else charReact(info0); const vi=isl3ViewOf(info0); if(vi>=0&&ISL3.viewI!==vi) isl3GoView(vi); return; }
         ISL3.lastPoke=null; islandTip(info0,anchorAt(e.clientX,e.clientY)); return; }
       const info=d.h.info; if(/^(piece|home):/.test(d.h.info)){ const c=d.h.point; isl3Confetti(c.x,c.y+.6,c.z,24); } if(isl3Focus(info,d.h)){ islandTipHide(); clearTimeout(ISL3.tipT); ISL3.tipT=setTimeout(()=>{ const v=ISL3.ctl.target.clone().setY(TOP3).project(ISL3.cam), r=ISL3.r.domElement.getBoundingClientRect(), sx=r.left+(v.x+1)/2*r.width, sy=r.top+(1-v.y)/2*r.height;
@@ -6783,12 +6795,174 @@ const STORIES={
 };
 const LONGTAIL_FACT='Real Longtails are white-tailed tropicbirds. They fly back to Bermuda every spring and nest in holes in the cliffs.';
 // Tap a character: something funny happens straight away (a hop, a wiggle, a spin, a squash), with a word and a sound
+/* ---------- The characters in 3D ----------
+   Bloppit, your otter at its three ages (Pup, Splash, Legend) and the three Longtails as rigged, animated models: the
+   approved character playground of 16 Oct 2026 (public/3d: Draco-compressed GLBs, 16 clips for Bloppit, 11 for the pup,
+   12 for each Longtail). They load on first need and the drawn art stays until they arrive, and for good without WebGL.
+   ?chars3d=0 keeps the drawings. The controllers below are the playground's, on the game's three.js. */
+const CH3={V:'1',files:{bloppit:'bloppit',pup0:'pup',pup1:'pup-growing',pup2:'pup-older',scraps:'scraps',swoop:'swoop',squint:'squint'},gltf:{},wait:{},size:{},failed:false};
+const LT3={easy:'scraps',medium:'swoop',hard:'squint'};
+function ch3GL(){ if(CH3.gl!=null) return CH3.gl; try{ const c=document.createElement('canvas'); CH3.gl=!!(window.WebGLRenderingContext&&(c.getContext('webgl')||c.getContext('experimental-webgl'))); }catch(e){ CH3.gl=false; } return CH3.gl; }
+function ch3On(){ return !CH3.failed&&typeof THREE!=='undefined'&&!!THREE.WebGLRenderer&&!/[?&]chars3d=0/.test(location.search)&&ch3GL(); }
+function ch3Script(src){ return new Promise((ok,no)=>{ const s=document.createElement('script'); s.src=src; s.async=true; s.onload=ok; s.onerror=()=>no(new Error('could not load '+src)); document.head.appendChild(s); }); }
+function ch3Loader(){ return CH3.loaderP||(CH3.loaderP=(async()=>{
+  for(const k of ['GLTFLoader','DRACOLoader','SkeletonUtils']) if(!THREE[k]) await ch3Script(`/3d/${k}.js?v=${CH3.V}`);
+  const d=new THREE.DRACOLoader(); d.setDecoderPath('/3d/draco/'); if(typeof WebAssembly!=='object') d.setDecoderConfig({type:'js'});
+  const L=new THREE.GLTFLoader(); L.setDRACOLoader(d); return L; })().catch(e=>{ CH3.failed=true; console.warn('3D characters off:',e); throw e; })); }
+// One character's model, parsed once and shared by every copy of it
+function ch3Get(id){ if(CH3.gltf[id]) return Promise.resolve(CH3.gltf[id]); if(!ch3On()||!CH3.files[id]) return Promise.reject(new Error('no 3D characters'));
+  return CH3.wait[id]||(CH3.wait[id]=ch3Loader().then(L=>L.loadAsync(`/3d/${CH3.files[id]}.glb?v=${CH3.V}`)).then(g=>{
+    const m=new THREE.AnimationMixer(g.scene), a=g.animations.find(c=>c.name==='idle'); if(a){ m.clipAction(a).play(); m.update(.01); }
+    g.scene.updateMatrixWorld(true); const b=new THREE.Box3().setFromObject(g.scene); m.stopAllAction(); m.uncacheRoot(g.scene);
+    CH3.size[id]={h:b.max.y-b.min.y,w:b.max.x-b.min.x}; CH3.gltf[id]=g; return g; }).catch(e=>{ delete CH3.wait[id]; console.warn('3D character',id,e); throw e; })); }
+const ch3Ready=(...ids)=>ids.every(id=>!!CH3.gltf[id]);
+const ch3PupId=o=>'pup'+(o&&o.log?pupStage(o):0);
+// A copy you can pose on its own: its own skeleton, its own animation player
+function ch3Make(id){ const g=CH3.gltf[id]; if(!g) return null; const root=THREE.SkeletonUtils.clone(g.scene);
+  root.traverse(m=>{ if(m.isMesh){ m.castShadow=true; m.receiveShadow=true; m.frustumCulled=false; } });
+  const C=id==='bloppit'?Ch3Ctl:id.startsWith('pup')?Ch3PupCtl:Ch3BirdCtl; return {id,root,ctl:new C(root,g.animations)}; }
+
+// The playground's state machine: a resting loop (mode), one-off reactions that return to it, a blink every few seconds
+class Ch3Ctl{
+  constructor(root,clips){ this.root=root; this.mixer=new THREE.AnimationMixer(root); this.actions={}; for(const c of clips) this.actions[c.name]=this.mixer.clipAction(c);
+    this.loops=[this.actions.logo_idle?'logo_idle':'idle','garden','fish','read','campfire','doze']; this.reactions=['happy_hop','giggle_wiggle','surprised_jump','show_brick','look_at_you'];
+    this.mode=0; this.react=Math.floor(Math.random()*5); this.current=null; this.queued=null; this.blend=null; this.activeBase=null; this.nextBlink=2+Math.random()*3;
+    this.finished=({action})=>{ if(action!==this.current) return; if(this.queued){ const n=this.queued; this.queued=null; this.play(n); } else this.base(); };
+    this.mixer.addEventListener('finished',this.finished); this.base(); }
+  has(n){ return !!this.actions[n]; }
+  base(){ this.play(this.loops[this.mode]||this.loops[0]); }
+  play(name){ const action=this.actions[name]; if(!action) return false;
+    if(name==='blink'){ if(this.mode===5||this.current===this.actions.wake) return false; action.reset().setLoop(THREE.LoopOnce,1); action.clampWhenFinished=false; action.play(); return true; }
+    this.queued=null; if(name==='wake') this.mode=0;
+    const prev=this.current||this.activeBase, bl=this.actions.blink;
+    const out=Object.values(this.actions).filter(a=>a!==bl&&(a.isRunning()||(a.enabled&&a.getEffectiveWeight()>0&&(a===prev||(this.blend&&this.blend.weights.has(a))))));
+    const w=new Map(out.map(a=>[a,a.getEffectiveWeight()])); for(const a of out) a.stopFading();
+    const loop=this.loops.includes(name);
+    if(loop){ this.mode=this.loops.indexOf(name); this.current=null; this.activeBase=action; } else { this.current=action; this.activeBase=null; }
+    action.reset().setEffectiveWeight(1).setEffectiveTimeScale(1).setLoop(loop?THREE.LoopRepeat:THREE.LoopOnce,loop?Infinity:1); action.clampWhenFinished=!loop; action.play();
+    if(prev&&prev!==action){ action.setEffectiveWeight(w.get(action)||0); if(!w.has(action)) w.set(action,0); this.blend={weights:w,target:action,time:0,duration:loop?.24:.16}; } else this.blend=null;
+    this.mixer.update(1/240); return true; }
+  setMode(m){ if(this.loops[m]&&this.has(this.loops[m])){ this.mode=m; if(!this.current) this.base(); } }
+  poke(){ this.queued=null; if(this.mode===5) return this.wake(); this.react=(this.react+1)%this.reactions.length; this.play(this.reactions[this.react]); }
+  wake(){ this.queued=null; this.mode=0; this.play('wake'); }
+  then(name,next){ if(this.play(name)) this.queued=next; }
+  update(dt){ if(this.blend){ const b=this.blend; b.time+=dt; const u=Math.min(1,b.time/b.duration), t=u*u*(3-2*u);
+      for(const [a,s] of b.weights) a.setEffectiveWeight(s*(1-t)+(a===b.target?t:0)); if(u===1){ for(const a of b.weights.keys()) if(a!==b.target) a.stop(); this.blend=null; } }
+    this.mixer.update(dt); this.nextBlink-=dt; if(this.nextBlink<=0){ this.play('blink'); this.nextBlink=3+Math.random()*3; } }
+  dispose(){ this.mixer.removeEventListener('finished',this.finished); this.mixer.stopAllAction(); this.mixer.uncacheRoot(this.root); }
+}
+class Ch3PupCtl extends Ch3Ctl{ constructor(root,clips){ super(root,clips); this.reactions=['happy_hop','giggle_wiggle','surprised_jump','spin','show_brick']; } wake(){ this.mode=0; this.base(); } }
+class Ch3BirdCtl extends Ch3Ctl{
+  constructor(root,clips){ super(root,clips); this.loops=['idle',null,null,null,null,'sleep']; this.reactions=['happy_hop','giggle_wiggle','surprised_jump','cheeky_taunt','look_at_you']; this.base(); }
+  play(name){ if(name==='blink'&&this.current===this.actions.grumpy_wake) return false; return super.play(name==='wake'?'grumpy_wake':name==='show_brick'?'cheeky_taunt':name); }
+  poke(){ if(this.mode===5){ this.queued=null; this.play('grumpy_wake'); return; } super.poke(); }   // grumbles, then back to sleep
+  wake(){ this.queued=null; this.mode=0; this.play('grumpy_wake'); }
+}
+
+// Dressing your otter: its age's brick (1, 2 or 3 studs) in the colour the child picked, and what it's wearing.
+// Each outfit changes design with age (a spinner cap, a backward cap, a sun hat); the main fabric takes its colour.
+const PUP3_OUTFIT={scarf:'scarf',beanie:'beanie',bowtie:'bow_tie',straw:'hat',glasses:'sunglasses',sailor:'sailor_cap',crown:'crown'};
+const PUP3_TINT=new Set(['Pup_Cloth','Wardrobe teal','Wardrobe navy']);
+const PUP3_NAMES={scarf:['Scarf','Long scarf','Neat scarf'],beanie:['Pom-pom hat','Slouch beanie','Fisherman beanie'],bowtie:['Big bow','Bow tie','Smart bow tie'],straw:['Spinner cap','Baseball cap','Sun hat'],
+  glasses:['Round glasses','Cool shades','Aviators'],sailor:['Sailor hat','Bucket hat','Captain’s cap'],crown:['Play crown','Silver crest','Gold crest'],shoes:['Soft shoes','Sneakers','Deck shoes'],prop:['Toy boat','Skateboard','Laptop bag']};
+const ch3Col=i=>new THREE.Color((PUP_COLORS[i]||PUP_COLORS[0]).c).convertSRGBToLinear();
+function ch3Own(n){ n.traverse(m=>{ if(m.isMesh&&!m.userData.ownMat){ m.material=Array.isArray(m.material)?m.material.map(x=>x.clone()):m.material.clone(); m.userData.ownMat=1; } }); }
+function ch3Tint(n,col,all){ ch3Own(n); n.traverse(m=>{ if(m.isMesh) for(const mt of [].concat(m.material)) if(all||PUP3_TINT.has(String(mt.name).replace(/\.\d+$/,''))) mt.color.copy(col); }); }
+function ch3Dress(inst,o,opt){ opt=opt||{}; if(!inst||!inst.id.startsWith('pup')) return; const studs=+inst.id.slice(3)+1, ci=opt.ci!=null?opt.ci:pupColorOf(o), w=opt.wear||accWear(o||{});
+  const worn={}; for(const [slot,v] of Object.entries(w)) if(slot!=='feet'&&slot!=='prop') worn[PUP3_OUTFIT[v[0]]]=v[1];
+  const shoes=!w.feet||w.feet[0]!=='bare';
+  inst.root.traverse(n=>{ const u=n.userData;
+    if(u.brickVariant){ n.visible=u.brickVariant===studs; if(n.visible) ch3Tint(n,ch3Col(ci),true); }
+    else if(u.outfit){ n.visible=worn[u.outfit]!=null; if(n.visible&&u.outfit!=='crown') ch3Tint(n,ch3Col(worn[u.outfit])); }
+    else if(u.wardrobeSlot==='shoes'){ n.visible=shoes; if(shoes&&w.feet) ch3Tint(n,ch3Col(w.feet[1])); }
+    else if(u.wardrobeSlot==='accessory') n.visible=!!w.prop; }); }
+const accName=(a,o)=>ch3On()&&PUP3_NAMES[a.id]?PUP3_NAMES[a.id][pupStage(o||worldStore())]:a.name;
+
+// Small 3D characters in the page (the build buddy, menu cards, dialogs): one shared renderer draws each into its own canvas.
+// frame 'full' shows the whole character, 'bust' the head and brick (for round badges). The drawing underneath stays as the stand-in.
+const CV3={views:[],raf:0,t:0,snaps:new Map()};
+function cv3R(){ if(CV3.r) return CV3.r; const r=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true}); r.outputEncoding=THREE.sRGBEncoding; r.setClearColor(0x000000,0); r.setPixelRatio(1); CV3.r=r; return r; }
+function cv3Lights(sc){ sc.add(new THREE.HemisphereLight(0xfff3db,0x8a8070,1.05)); const k=new THREE.DirectionalLight(0xfff1df,.85); k.position.set(-3,5,4); sc.add(k); const f=new THREE.DirectionalLight(0xe5efff,.35); f.position.set(4,2,-3); sc.add(f); }
+function cv3Aim(cam,ids,frame,aspect,turn){ const H=Math.max(...ids.map(id=>(CH3.size[id]||{h:2}).h)), W=ids.reduce((s,id)=>s+((CH3.size[id]||{w:1.2}).w*.9),0);
+  const bust=frame==='bust', ty=bust?H*.6:H*.5, fh=bust?H*.8:H*1.08, fw=bust?W*.95:W*1.1, t=Math.tan(cam.fov*Math.PI/360);
+  const d=Math.max(fh/2/t,fw/2/(t*aspect)); cam.aspect=aspect; cam.position.set(Math.sin(turn||0)*d,ty+(bust?H*.04:H*.1),Math.cos(turn||0)*d); cam.lookAt(0,ty,0); cam.updateProjectionMatrix(); }
+// Mount (or update) a 3D view on a host element. opts: who (an id, or a list side by side), frame, o (world record for the pup), ci/wear (a preview), clip (played once), mode
+function cv3(host,opts){ if(!host||!ch3On()) return null; let v=host.__cv3;
+  if(!v){ v={host,canvas:document.createElement('canvas'),sc:new THREE.Scene(),cam:new THREE.PerspectiveCamera(24,1,.05,60),insts:[],key:''}; v.canvas.className='c3-canvas'; v.canvas.setAttribute('aria-hidden','true'); cv3Lights(v.sc); host.__cv3=v; CV3.views.push(v); }
+  v.opts=opts; if(v.canvas.parentNode!==host) host.appendChild(v.canvas); host.classList.add('c3-host');
+  const ids=[].concat(opts.who).map(w=>w==='pup'?ch3PupId(opts.o||worldStore()):w), key=ids.join('+');
+  const go=()=>{ if(host.__cv3!==v) return;
+    if(v.key!==key){ for(const i of v.insts){ v.sc.remove(i.root); i.ctl.dispose(); } v.insts=ids.map(ch3Make); v.key=key; let x=-(ids.length-1)/2;
+      v.insts.forEach((i,k)=>{ i.root.position.x=(x+k)*(CH3.size[ids[k]].w*.95); v.sc.add(i.root); i.ctl.update(Math.random()); }); }
+    for(const i of v.insts){ ch3Dress(i,opts.o||worldStore(),opts); if(opts.mode!=null) i.ctl.setMode(opts.mode); }
+    host.classList.add('c3on'); cv3Kick(); };
+  if(ch3Ready(...ids)) go(); else Promise.all(ids.map(ch3Get)).then(go,()=>{});
+  return v; }
+function cv3Play(host,clip,i){ const v=host&&host.__cv3; if(!v||!v.insts.length) return; const list=i==null?v.insts:[v.insts[i]]; for(const x of list) if(x) clip==='poke'?x.ctl.poke():x.ctl.play(clip); cv3Kick(); }
+function cv3Kick(){ if(!CV3.raf) CV3.raf=requestAnimationFrame(cv3Loop); }
+function cv3Loop(t){ CV3.raf=0; const dt=Math.min(.05,CV3.t?(t-CV3.t)/1000:0); CV3.t=t; if(document.hidden){ CV3.t=0; return; }
+  const vis=CV3.views.filter(v=>v.insts.length&&v.host.isConnected&&v.host.offsetParent!==null&&v.host.classList.contains('c3on')); if(!vis.length){ CV3.t=0; return; }
+  const r=cv3R(), dpr=Math.min(2,devicePixelRatio||1), sz=vis.map(v=>[Math.max(2,Math.round(v.host.clientWidth*dpr)),Math.max(2,Math.round(v.host.clientHeight*dpr))]);
+  const W=Math.max(...sz.map(s=>s[0])), H=Math.max(...sz.map(s=>s[1])), c=r.domElement; if(c.width<W||c.height<H) r.setSize(Math.max(W,c.width),Math.max(H,c.height),false);
+  r.setScissorTest(true);
+  vis.forEach((v,k)=>{ const [w,h]=sz[k]; for(const i of v.insts) i.ctl.update(reduceMotion?0:dt); cv3Aim(v.cam,v.insts.map(i=>i.id),v.opts.frame,w/h,v.opts.turn);
+    r.setViewport(0,0,w,h); r.setScissor(0,0,w,h); r.clear(); r.render(v.sc,v.cam);
+    if(v.canvas.width!==w||v.canvas.height!==h){ v.canvas.width=w; v.canvas.height=h; } const x=v.canvas.getContext('2d'); x.clearRect(0,0,w,h); x.drawImage(c,0,c.height-h,w,h,0,0,w,h); });
+  r.setScissorTest(false); if(!reduceMotion) CV3.raf=requestAnimationFrame(cv3Loop); }
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) cv3Kick(); });
+// A still portrait (a data URL) for small icons: the pup in its outfit, a Longtail's head. Null until the model has loaded.
+function cv3Snap(id,o,frame,px,opt){ if(!ch3On()||!ch3Ready(id)) return null; opt=opt||{}; const key=JSON.stringify([id,frame,px,id.startsWith('pup')?[opt.ci!=null?opt.ci:pupColorOf(o),opt.wear||accWear(o||{})]:0]);
+  if(CV3.snaps.has(key)) return CV3.snaps.get(key);
+  try{ const r=cv3R(), sc=new THREE.Scene(), cam=new THREE.PerspectiveCamera(24,1,.05,60), i=ch3Make(id); cv3Lights(sc); sc.add(i.root); ch3Dress(i,o,opt); i.ctl.update(.6);
+    cv3Aim(cam,[id],frame,1,-.25); r.setScissorTest(false); r.setSize(px,px,false); r.setViewport(0,0,px,px); r.clear(); r.render(sc,cam); const url=r.domElement.toDataURL('image/png'); i.ctl.dispose();
+    if(CV3.snaps.size>40) CV3.snaps.delete(CV3.snaps.keys().next().value); CV3.snaps.set(key,url); return url; }catch(e){ return null; } }
+// Load the characters in the background soon after the page opens (most visits meet Bloppit and the pup)
+function ch3Warm(){ if(!ch3On()) return; const o=worldStore(), lv=typeof longtailNow==='function'?longtailNow():'easy';
+  ch3Get('bloppit').then(()=>{ ui3Mount(); return ch3Get(ch3PupId(o)); }).then(()=>{ ch3Refresh(); return ch3Get(LT3[lv]||'swoop'); }).then(()=>ch3Refresh(),()=>{}); }
+// A picture (an <img>) that becomes a 3D character: the picture moves into a holder that the 3D view draws over
+function cv3Img(img,opts){ if(!img||!ch3On()) return null; let host=img.parentNode;
+  if(!host.classList.contains('c3-wrap')){ host=document.createElement('span'); host.className=img.className+' c3-wrap'; img.className=''; img.parentNode.insertBefore(host,img); host.appendChild(img); }
+  cv3(host,opts); return host; }
+// The build buddy: Bloppit acting out what his bubble says, or on a Blitz turn the Longtail you're racing
+const BUD3={cheer:'cheer',hug:'happy_hop',oops:'surprised_jump',reach:'giggle_wiggle',offer:'show_brick',point:'look_at_you',think:'look_at_you',hop:'happy_hop'};
+const BUD3_BIRD={cheer:'cheeky_taunt',hug:'cheer',oops:'surprised_jump',reach:'surprised_jump',offer:'cheeky_taunt',point:'look_at_you',think:'look_at_you',hop:'happy_hop'};
+function buddy3(){ const b=$('#buddy'), art=b&&b.querySelector('.bud-art'); if(!art||!ch3On()) return;
+  const lv=b.classList.contains('big')&&typeof mp!=='undefined'&&mp&&mp.cpu&&mp.state&&mp.state.cpuLevel, who=lv?(LT3[lv]||'swoop'):'bloppit';
+  if(!cv3(art,{who,frame:'full'})) return;
+  const st=Object.keys(BUD3).find(k=>b.classList.contains(k))||'';
+  if(st!==art.__st||who!==art.__who){ const swap=who!==art.__who; art.__st=st; art.__who=who; if(st) setTimeout(()=>cv3Play(art,(lv?BUD3_BIRD:BUD3)[st]),swap?60:0); } }
+// Finish screens: Bloppit cheers and your otter hops along; after a race the Longtail reacts to who won
+function cheer3(el,who,clips){ if(!el) return; const ids=[].concat(who).map(w=>w==='pup'?ch3PupId(worldStore()):w);
+  if(!ch3On()||!ch3Ready(...ids)){ el.hidden=true; return; } el.hidden=false; cv3(el,{who,frame:'full'}); [].concat(clips).forEach((c,i)=>cv3Play(el,c,i)); }
+const hasPup=o=>!!(pupName(o)||worldCount(o));
+// Pictures already on the page when the models arrive
+function ui3Mount(){ if(!ch3On()) return; cv3Img($('#hmCont .hc-pic'),{who:'bloppit',frame:'full'}); cv3Img($('#welcomeDlg .wc-pic'),{who:'bloppit',frame:'full'}); buddy3();
+  if(!CH3.waveI) CH3.waveI=setInterval(()=>{ const h=$('#hmCont .hc-pic'); if(h&&h.__cv3&&h.offsetParent&&!document.hidden) cv3Play(h,Math.random()<.6?'wave':'show_brick'); },8000); }
+// When models arrive, swap the drawings still on screen for 3D (pictures and icons that were drawn before they loaded)
+function ch3Refresh(){ clearTimeout(CH3.refT); CH3.refT=setTimeout(()=>{ try{ if(tab==='home') renderHome(); if(ISL3.on) isl3CharsLive(); buddy3(); }catch(e){ console.warn(e); } },60); }
+
+// On Bloppitopia: a character model in the world (scaled to the island), with a tap box, turning to face whoever is looking
+const CH3S=.85;
+function ch3Isle(id,g,y,hh){ if(!ch3On()||!ch3Ready(id)) return null; const i=ch3Make(id); i.root.scale.setScalar(CH3S); i.root.position.y=y; i.root.traverse(m=>{ if(m.isMesh) m.raycast=()=>{}; }); g.add(i.root);
+  if(hh){ const tb=new THREE.Mesh(new THREE.BoxGeometry(1.1,hh,1.1),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); tb.visible=false; tb.position.y=y+hh/2; g.add(tb); }
+  const cd=CAM_DIR3(); g.rotation.y=Math.atan2(cd.x,cd.z); g.userData.face3=i; (ISL3.chars3=ISL3.chars3||[]).push(i); return i; }
+// Models that arrive after the island was built: rebuild it once with them (never in the middle of a reveal or a flight)
+function isl3CharsLive(){ if(!ISL3.on||!ISL3.world) return; if(ISL3.revealing||ISL3.arrive||ISL3.fly||ISL3.dragging){ clearTimeout(ISL3.c3T); ISL3.c3T=setTimeout(isl3CharsLive,1200); return; }
+  const o=worldStore(), lt=LT3[longtailNow()], want=(have,id)=>!have&&ch3Ready(id);
+  if(want(ISL3.b3,'bloppit')||(ISL3.pupG&&want(ISL3.p3,ch3PupId(o)))||want(ISL3.l3,lt)){ isl3Build(o); isl3Kick(); } }
+function isl3CharsLoad(o){ if(!ch3On()) return; Promise.all(['bloppit',ch3PupId(o),LT3[longtailNow()]].map(id=>ch3Get(id).catch(()=>null))).then(()=>isl3CharsLive()); }
 const REACT_LINES={
   bloppit:['Hee hee! That tickles!','Let’s build something!','Click! Snap! Done!','Whoa, careful!','Wheee!','High five!','Have you seen my red brick? Oh, here it is.'],
   pup:['Wheee!','Hello, friend!','Again! Again!','Let’s build!','Look at me!','Hee hee!'],
   longtail:['Squawk!','Race you!','Shiny brick… mine!','You can’t catch me!','Squawk squawk!']};
 const REACT_POSES=['/art/bud-happy.png','/art/bud-reach.png','/art/bud-offer.png','/art/bud-oops.png','/art/bud-hug.png'];
 function charReact(info){ const now=performance.now(), kinds=['jump','wiggle','spin','squash'], pick=a=>a[Math.floor(Math.random()*a.length)];
+  const i3=info==='bloppit'?ISL3.b3:info==='pup'?ISL3.p3:ISL3.l3;
+  if(i3){ const who=info==='bloppit'?'bloppit':info==='pup'?'pup':'longtail', grp=info==='bloppit'?ISL3.bloppit:info==='pup'?ISL3.pupG:ISL3.longtail;
+    i3.ctl.poke(); if(who==='longtail'&&ISL3.ltNight){ longtailSquawk(); return; }
+    isl3Say(grp,who==='pup'&&Math.random()<.4&&pupName(worldStore())?`I’m ${pupName(worldStore())}!`:pick(REACT_LINES[who]));
+    try{ (who==='longtail'?sfx.bonk:who==='pup'?sfx.chime:sfx.chirp)(); }catch(e){}
+    if(Math.random()<.35){ const p=grp.position; isl3Confetti(p.x,TOP3+1.6,p.z,12); } track('char_poke:'+who); isl3Kick(); return; }
   let sp=null, grp=null, who='bloppit';
   if(info==='bloppit'){ sp=ISL3.bloppitSprite; grp=ISL3.bloppit; const was=ISL3.bloppitPose, pose=pick(REACT_POSES); if(sp){ sp.material.map=tex3(pose); sp.material.needsUpdate=true; clearTimeout(ISL3.cheerT); ISL3.cheerT=setTimeout(()=>{ if(ISL3.bloppitSprite===sp){ sp.material.map=tex3(was); sp.material.needsUpdate=true; isl3Kick(); } },1700); } }
   else if(info==='pup'){ grp=ISL3.pupG; sp=grp&&grp.children[0]; who='pup'; }
@@ -6811,7 +6985,7 @@ function isl3ReactStep(now){ const R=ISL3.react; if(!R) return false; const k=(n
 function isl3Say(grp,text){ const el=ISL3.box&&ISL3.box.querySelector('.is3-say'); if(!el) return; el.textContent=text; el.hidden=false; ISL3.say={grp,until:performance.now()+2000}; clearTimeout(ISL3.sayT); ISL3.sayT=setTimeout(()=>{ el.hidden=true; ISL3.say=null; },2000); }
 function isl3SayPlace(){ const S=ISL3.say, el=ISL3.box&&ISL3.box.querySelector('.is3-say'); if(!S||!el||el.hidden) return; const v=S.grp.position.clone(); v.y=TOP3+(S.grp===ISL3.bloppit?3.1:S.grp===ISL3.longtail?2.9:2.4); v.project(ISL3.cam);
   const r=ISL3.r.domElement, x=(v.x+1)/2*r.clientWidth, y=(1-v.y)/2*r.clientHeight; el.style.left=Math.max(70,Math.min(r.clientWidth-70,x))+'px'; el.style.top=Math.max(40,y)+'px'; }
-function bloppitCheer(){ ISL3.jumpT=performance.now(); sfx.chirp(); const s=ISL3.bloppitSprite; if(!s) return; const was=ISL3.bloppitPose; s.material.map=tex3('/art/bud-happy.png'); s.material.needsUpdate=true;
+function bloppitCheer(){ if(ISL3.b3){ ISL3.b3.ctl.play('cheer'); try{ sfx.chirp(); }catch(e){} isl3Kick(); return; } ISL3.jumpT=performance.now(); sfx.chirp(); const s=ISL3.bloppitSprite; if(!s) return; const was=ISL3.bloppitPose; s.material.map=tex3('/art/bud-happy.png'); s.material.needsUpdate=true;
   clearTimeout(ISL3.cheerT); ISL3.cheerT=setTimeout(()=>{ if(ISL3.bloppitSprite===s){ s.material.map=tex3(was); s.material.needsUpdate=true; isl3Kick(); } },1600); isl3Kick(); }
 
 /* ---------- Bloppitopia: the world that grows with you ----------
@@ -7117,6 +7291,7 @@ function seenSet(a){ try{ localStorage.setItem(pkey(SEEN_KEY),JSON.stringify(a.s
 
 function isl3Build(o){
   const sc=ISL3.sc; if(ISL3.world){ sc.remove(ISL3.world); ISL3.world.traverse(x=>{ if(x.geometry&&!geo3.has(x.geometry)) x.geometry.dispose(); }); }
+  for(const i of ISL3.chars3||[]) i.ctl.dispose(); ISL3.chars3=[]; ISL3.b3=ISL3.p3=ISL3.l3=null;
   const W=new THREE.Group(), n=worldCount(o); ISL3.world=W; ISL3.hits=[]; ISL3.labels=[]; ISL3.pieces={}; ISL3.isles={};
   const add=(g,info,x,z,ry)=>{ if(x!=null) g.position.set(x,g.position.y,z); if(ry) g.rotation.y=ry; if(info) tag3(g,info); W.add(g); return g; };
   // Home Island
@@ -7147,7 +7322,7 @@ function isl3Build(o){
   ISL3.labels.push({id:'land:beach',name:'Home Island',sub:pupName(o)?`${pupName(o)}’s home`:'Your home',x:0,z:HOME_R*.55,y:.9,home:1});
   // sky things: a few clouds, stars for the night
   // the Longtail you race (the Blitz level picked), on the beach facing Blitz Bay, up to no good
-  { const lv=longtailNow(), art=LONGTAIL_ART[lv], g=new THREE.Group(), sp=sprite3(`/art/longtail-${art.id}.png`,2.1,art.aspect); sp.position.y=TOP3; g.add(sp); { const tb=new THREE.Mesh(new THREE.BoxGeometry(1.1,1.9,1.1),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); tb.visible=false; tb.position.y=TOP3+.95; g.add(tb); }
+  { const lv=longtailNow(), art=LONGTAIL_ART[lv], g=new THREE.Group(), l3=ch3Isle(LT3[lv],g,TOP3,0), sp=l3?null:sprite3(`/art/longtail-${art.id}.png`,2.1,art.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } ISL3.l3=l3; { const tb=new THREE.Mesh(new THREE.BoxGeometry(1.1,1.9,1.1),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); tb.visible=false; tb.position.y=TOP3+.95; g.add(tb); }
     const night=isNight3(); ISL3.ltNight=night; let bx,bz;
     if(night){   // home to a nest on the cliff edge for the night: an open bit of rim, away from buildings and bridges
       const obst=isl3Obstacles(W), bridges=Object.values(ISLES).map(I=>Math.atan2(I.z,I.x)), angd=(a,b)=>Math.abs(Math.atan2(Math.sin(a-b),Math.cos(a-b)));
@@ -7155,8 +7330,9 @@ function isl3Build(o){
       const base=Math.atan2(cd.z,cd.x)-.85; let best=null;
       for(let i=0;i<48&&!best;i++){ const a=base+(i%2?1:-1)*Math.ceil(i/2)*.13; if(bridges.some(b=>angd(a,b)<.32)) continue; const [x,z]=beachPoint(a); if(obst.every(([cx,cz,hx,hz])=>Math.abs(x-cx)>hx+.9||Math.abs(z-cz)>hz+.9)) best=[x,z]; }
       [bx,bz]=best||beachPoint(base); const k=1.03; bx*=k; bz*=k;
-      const nest=new THREE.Mesh(new THREE.TorusGeometry(.42,.16,6,12),m3('#8A6A43')); nest.rotation.x=-Math.PI/2; nest.position.y=TOP3+.08; g.add(nest); sp.position.y=TOP3+.06; sp.scale.multiplyScalar(.85); }
+      if(sp){ const nest=new THREE.Mesh(new THREE.TorusGeometry(.42,.16,6,12),m3('#8A6A43')); nest.rotation.x=-Math.PI/2; nest.position.y=TOP3+.08; g.add(nest); sp.position.y=TOP3+.06; sp.scale.multiplyScalar(.85); } }   // the 3D Longtail brings its own nest
     else [bx,bz]=beachPoint(Math.atan2(ISLES.blitzbay.z,ISLES.blitzbay.x)+.35);
+    if(l3){ if(night) l3.ctl.setMode(5); else if(!ISL3.ltLanded){ ISL3.ltLanded=1; l3.ctl.play('fly_in_land'); } }
     g.position.set(bx,0,bz); g.userData.longtail=1; ISL3.longtail=g; ISL3.longtailSprite=sp; add(g,'longtail:'+lv); }
   const box=ISL3.box, tall=ISL3.tallBuild=!!(box&&box.clientWidth&&CAM_TALL(box.clientWidth/(box.clientHeight||box.clientWidth)));   // clouds sit behind the world, whichever way it's seen
   for(let i=0;i<5;i++){ const c=cloud3(), a=-24+i*12, b=-18+((i*7)%11); if(tall) c.position.set(b-6,10+(i%2)*2,a); else c.position.set(a,10+(i%2)*2,b); c.userData.cloud=i; c.userData.ax=tall?'z':'x'; W.add(c); }
@@ -7164,7 +7340,7 @@ function isl3Build(o){
     g.setAttribute('position',new THREE.Float32BufferAttribute(p,3)); ISL3.stars=new THREE.Points(g,new THREE.PointsMaterial({color:0xffffff,size:.6,transparent:true,opacity:0,fog:false})); ISL3.sc.add(ISL3.stars); }
   ISL3.sc.add(W);
   W.traverse(x=>{ if(x.isMesh||x.isSprite||x.isInstancedMesh) ISL3.hits.push(x); });
-  const AK=['flame','firepool','beam','belt','bloppit','bob','burst','cheer','cloud','crane','flap','fly','fount','hand','kite','longtail','mist','race','roty','smoke','spin','swing','twinkle','upright','waddle','wheel','zzz'];
+  const AK=['face3','flame','firepool','beam','belt','bloppit','bob','burst','cheer','cloud','crane','flap','fly','fount','hand','kite','longtail','mist','race','roty','smoke','spin','swing','twinkle','upright','waddle','wheel','zzz'];
   ISL3.anim=[]; ISL3.sc.traverse(x=>{ const u=x.userData; if(AK.some(k=>u[k]!=null&&u[k]!==false)) ISL3.anim.push(x); });
   isl3Labels(); isl3Tod(true); isl3Kick();
 }
@@ -7195,17 +7371,20 @@ function isl3Characters(o,W){
   ISL3.obst=isl3Obstacles(W); const onJetty=r==='fish'&&!ISL3.arrival; if(!onJetty){ const c=clearSpot3(at[0],at[1],.55); at[0]=c[0]; at[1]=c[1]; }
   const pose=ISL3.arrival?'/art/bud-offer.png':{garden:'/art/bud-3q.png',fish:'/art/bud-focused.png',read:'/art/bud-focused.png',fire:'/art/bud-3q.png'}[r];
   const dozing=!ISL3.arrival&&!!ISL3.wakeDue; ISL3.dozing=dozing; const pose0=dozing?'/art/bud-hug.png':pose;
-  const g=new THREE.Group(), b=sprite3(pose0,2.2,.75); b.position.y=r==='fish'&&!ISL3.arrival?TOP3-.05:TOP3; g.add(b); g.userData.bloppit=1; ISL3.bloppit=g; ISL3.bloppitSprite=b; ISL3.bloppitPose=pose;
+  const g=new THREE.Group(), b3=ch3Isle('bloppit',g,onJetty?TOP3-.05:TOP3,2.1), b=b3?null:sprite3(pose0,2.2,.75); if(b){ b.position.y=onJetty?TOP3-.05:TOP3; g.add(b); }
+  g.userData.bloppit=1; ISL3.bloppit=g; ISL3.bloppitSprite=b; ISL3.bloppitPose=pose; ISL3.b3=b3; ISL3.bMode=ISL3.arrival?0:{garden:1,fish:2,read:3,fire:4}[r];
+  if(b3){ b3.ctl.setMode(dozing?5:ISL3.bMode); if(ISL3.arrival) b3.ctl.play('wave'); }   // his own watering can, rod and book come with the 3D model
   if(!ISL3.arrival){
-    if(r==='garden'){ const c=new THREE.Group(); c.add(cyl3(.14,.16,.24,8,'#9ED3F2',0,0,0)); const s=cyl3(.03,.03,.3,4,'#9ED3F2',.18,.12,0); s.rotation.z=-1; c.add(s); c.position.set(.55,TOP3,.25); g.add(c); }
-    if(r==='fish'){ const rod=cyl3(.02,.025,2.0,4,'#7A4E2E',.45,TOP3+.6,.2); rod.rotation.z=-.7; g.add(rod); const line=cyl3(.006,.006,1.6,3,'#FFFFFF',1.15,TOP3-.4,.2); g.add(line); const bob=mesh3(new THREE.SphereGeometry(.07,6,4),m3('#FE8A18'),1.15,-1.25,.2); bob.userData.bob=1; g.add(bob); }
-    if(r==='read'){ g.add(box3(.34,.06,.26,'#0055BF',.55,TOP3+.02,.35)); }
+    if(r==='garden'&&!b3){ const c=new THREE.Group(); c.add(cyl3(.14,.16,.24,8,'#9ED3F2',0,0,0)); const s=cyl3(.03,.03,.3,4,'#9ED3F2',.18,.12,0); s.rotation.z=-1; c.add(s); c.position.set(.55,TOP3,.25); g.add(c); }
+    if(r==='fish'&&!b3){ const rod=cyl3(.02,.025,2.0,4,'#7A4E2E',.45,TOP3+.6,.2); rod.rotation.z=-.7; g.add(rod); const line=cyl3(.006,.006,1.6,3,'#FFFFFF',1.15,TOP3-.4,.2); g.add(line); const bob=mesh3(new THREE.SphereGeometry(.07,6,4),m3('#FE8A18'),1.15,-1.25,.2); bob.userData.bob=1; g.add(bob); }
+    if(r==='read'&&!b3){ g.add(box3(.34,.06,.26,'#0055BF',.55,TOP3+.02,.35)); }
     if(r==='fire'){ const f=campfire3(), fr=ISL3.tallBuild?[1.25,.3]:[.3,1.25]; f.scale.setScalar(1.35); f.position.set(fr[0],0,fr[1]); g.add(f); ISL3.fireAt=fr; }
     if(dozing){ const z=new THREE.Sprite(new THREE.SpriteMaterial({map:zzzTex3(),transparent:true,depthWrite:false})); z.scale.set(.9,.6,1); z.position.set(.6,TOP3+2.3,0); z.userData.zzz=1; g.add(z); ISL3.zzz=z; }
   }
   g.position.set(at[0],0,at[1]); tag3(g,'bloppit'); W.add(g);
-  if(n>0||ISL3.arrival||pupName(o)){ const ps=pupStage(o), p=new THREE.Sprite(new THREE.SpriteMaterial({map:pupTex3(o),transparent:true,alphaTest:.15})); const h=[1.3,1.5,1.7][ps]*346/300; p.scale.set(h*239/346,h,1); p.center.set(.5,0); p.position.y=TOP3;
-    const pg=new THREE.Group(); pg.add(p); pg.userData.bob=2; const onIsle=(x,z)=>inPoly(x,z,scalePoly(HOMEP,0,0,.92)), offs=r==='fish'&&!ISL3.arrival?[[-1.15,-1.7],[-1.25,-2.6],[-.6,-3.4],[.9,-3.2]]:r==='fire'&&!ISL3.arrival?(ISL3.tallBuild?[[1.1,1.6],[1.1,-1.4],[-.3,1.6]]:[[1.6,1.1],[-1.4,1.1],[1.6,-.3]]):[[1.25,.35],[-1.25,.35],[1.2,-.9],[-1.2,-.9],[0,-1.6]];
+  if(n>0||ISL3.arrival||pupName(o)){ const ps=pupStage(o), pg=new THREE.Group(), p3=ch3Isle(ch3PupId(o),pg,TOP3,[1.1,1.5,1.8][ps]); ISL3.p3=p3;
+    if(p3){ ch3Dress(p3,o); p3.ctl.setMode(r==='fire'&&!ISL3.arrival?4:0); }
+    else { const p=new THREE.Sprite(new THREE.SpriteMaterial({map:pupTex3(o),transparent:true,alphaTest:.15})); const h=[1.3,1.5,1.7][ps]*346/300; p.scale.set(h*239/346,h,1); p.center.set(.5,0); p.position.y=TOP3; pg.add(p); pg.userData.bob=2; } const onIsle=(x,z)=>inPoly(x,z,scalePoly(HOMEP,0,0,.92)), offs=r==='fish'&&!ISL3.arrival?[[-1.15,-1.7],[-1.25,-2.6],[-.6,-3.4],[.9,-3.2]]:r==='fire'&&!ISL3.arrival?(ISL3.tallBuild?[[1.1,1.6],[1.1,-1.4],[-.3,1.6]]:[[1.6,1.1],[-1.4,1.1],[1.6,-.3]]):[[1.25,.35],[-1.25,.35],[1.2,-.9],[-1.2,-.9],[0,-1.6]];
     const [ox,oz]=offs.find(([dx,dz])=>onIsle(at[0]+dx,at[1]+dz))||[-(at[0])*.25,-(at[1])*.25], spot=clearSpot3(at[0]+ox,at[1]+oz,.5,r==='fire'&&ISL3.fireAt?[at,[at[0]+ISL3.fireAt[0],at[1]+ISL3.fireAt[1]]]:[at]); pg.position.set(spot[0],0,spot[1]); tag3(pg,'pup'); ISL3.pupG=pg; W.add(pg); }
 }
 // A campfire: logs, stones and a flickering flame that glows brighter as it gets dark
@@ -7236,11 +7415,11 @@ function isl3Tod(force){ const h=isl3Hour(); if(!force&&ISL3.todH!=null&&Math.ab
 // The loop: about 30 frames a second while Bloppitopia is on screen, nothing when it isn't
 function isl3Frame(now){
   ISL3.raf=0; if(!ISL3.on) return;
-  const busy=ISL3.dragging||ISL3.fly||ISL3.react||ISL3.say||(ISL3.pops&&ISL3.pops.length)||(ISL3.parts&&ISL3.parts.length);
+  const busy=ISL3.dragging||ISL3.fly||ISL3.react||ISL3.say||(ISL3.chars3&&ISL3.chars3.length&&!reduceMotion&&!ISL3.lite)||(ISL3.pops&&ISL3.pops.length)||(ISL3.parts&&ISL3.parts.length);
   if(ISL3.hidden){ return; }   // scrolled off screen: the observer starts it again
   const gap=busy||now-(ISL3.input||0)<2500?31:66;
   if(!ISL3.dirty&&!busy&&now-(ISL3.last||0)<gap){ ISL3.raf=requestAnimationFrame(isl3Frame); return; } ISL3.last=now;
-  const t=now/1000; isl3Tod(false);
+  const t=now/1000; ISL3.dt=Math.min(.1,ISL3.lastT?(now-ISL3.lastT)/1000:0); ISL3.lastT=now; isl3Tod(false);
   if(ISL3.fly) isl3FlyStep(now); else if(ISL3.ctl) ISL3.ctl.update();
   const A=ISL3.anim||[]; if(!reduceMotion) for(const x of A) isl3Animate(x,t); else for(const x of A) if(x.userData.hand) isl3Animate(x,t);
   isl3Pops(now);
@@ -7252,11 +7431,13 @@ function isl3Animate(x,t){ const u=x.userData;
   else if(u.bob===2&&x.children[0]) x.children[0].position.y=TOP3+Math.abs(Math.sin(t*2.2))*.08;
   if(u.smoke!=null){ const y0=u.y0??(u.y0=x.position.y), k=((t*.5+u.smoke/3)%1); x.position.y=y0+k*1.2; x.material.opacity=.75*(1-k); x.scale.setScalar(.7+k*.8); }
   if(u.kite){ x.position.x=Math.sin(t*.7)*.5; x.position.y=5.2+Math.sin(t*1.3)*.2; x.rotation.z=Math.sin(t*.9)*.2; }
-  if(u.longtail){ const now=performance.now(), k=ISL3.ltJumpT?(now-ISL3.ltJumpT)/800:2, idle=!ISL3.ltNight&&(t%4.6)<.45?Math.sin((t%4.6)/.45*Math.PI)*.18:0;   // a little hop now and then, a big one when tapped
+  if(u.longtail&&ISL3.l3){ if(ISL3.ltJumpT){ ISL3.ltJumpT=0; if(!ISL3.ltNight) ISL3.l3.ctl.play('happy_hop'); } }
+  else if(u.longtail){ const now=performance.now(), k=ISL3.ltJumpT?(now-ISL3.ltJumpT)/800:2, idle=!ISL3.ltNight&&(t%4.6)<.45?Math.sin((t%4.6)/.45*Math.PI)*.18:0;   // a little hop now and then, a big one when tapped
     x.position.y=k<1?Math.sin(k*Math.PI)*.9:idle; if(k>=1) ISL3.ltJumpT=0; const sp=ISL3.longtailSprite; if(sp){ const face=Math.sin(t*.23)>0?1:-1; sp.scale.x=Math.abs(sp.scale.x)*face; sp.material.rotation=k<1?Math.sin(k*Math.PI*2)*.15:Math.sin(t*1.3)*.03; } }
   if(u.race!=null){ const a=t*1.1+u.race; x.position.set(Math.cos(a)*1.95*1.2,TOP3+.04,Math.sin(a)*1.95); x.rotation.y=-a-Math.PI/2; }
   if(u.swing) x.rotation.x=Math.sin(t*1.6)*.35;
   if(u.spin) x.rotation.z=t*.5;
+  if(u.face3){ const dt=ISL3.dt||0; u.face3.ctl.update(dt); const c=ISL3.cam.position, p=x.position, want=Math.atan2(c.x-p.x,c.z-p.z), d=Math.atan2(Math.sin(want-x.rotation.y),Math.cos(want-x.rotation.y)); x.rotation.y+=d*Math.min(1,dt*5); }
   if(u.roty) x.rotation.y=(u.r0??(u.r0=x.rotation.y))+t*u.roty;
   if(u.wheel) x.rotation.z=t*u.wheel;
   if(u.upright&&x.parent) x.rotation.z=-x.parent.rotation.z;
@@ -7276,6 +7457,7 @@ function isl3Animate(x,t){ const u=x.userData;
   if(u.flame){ const k=1+Math.sin(t*9.1)*.08+Math.sin(t*13.7)*.06; x.scale.set(1+Math.sin(t*7.3)*.06,k,1+Math.cos(t*8.1)*.06); x.rotation.y=t*.8; }
   if(u.firepool) x.material.opacity=(ISL3.night||0)*(.26+Math.sin(t*9.3)*.04);
   if(u.zzz){ const k=(t*.4)%1; x.position.y=TOP3+2.0+k*.8; x.material.opacity=1-k; }
+  if(u.bloppit&&ISL3.jumpT&&ISL3.b3){ ISL3.b3.ctl.play('happy_hop'); ISL3.jumpT=0; }
   if(u.bloppit&&ISL3.jumpT){ const k=(performance.now()-ISL3.jumpT)/700; x.position.y=k<1?Math.sin(k*Math.PI)*.6:0; if(k>=1) ISL3.jumpT=0; }
 }
 // Camera flights (to a new piece and back)
@@ -7345,9 +7527,12 @@ const ACC=[
   {id:'glasses',name:'Sunglasses',slot:'face',lvl:8},
   {id:'sailor',name:'Sailor cap',slot:'head',lvl:11},
   {id:'crown',name:'Legend crown',slot:'head',legend:1},
+  {id:'shoes',name:'Shoes',slot:'feet',lvl:1,d3:1},   // 3D only: worn unless taken off
+  {id:'prop',name:'Toy',slot:'prop',lvl:1,d3:1},      // a toy boat, a skateboard, a laptop bag, by age
 ];
 const accOwned=(a,o)=>a.legend?pupStage(o)>=2:otterLevel(o)>=a.lvl;
-function accWear(o){ const w=o&&o.wear&&typeof o.wear==='object'?o.wear:{}, out={}; for(const s of ['neck','head','face']){ const v=w[s]; if(Array.isArray(v)&&ACC.some(a=>a.id===v[0]&&a.slot===s)) out[s]=[v[0],Number.isInteger(v[1])?v[1]:0]; } return out; }
+const accOn=(a,w)=>a.slot==='feet'?!(w.feet&&w.feet[0]==='bare'):(w[a.slot]||[])[0]===a.id;
+function accWear(o){ const w=o&&o.wear&&typeof o.wear==='object'?o.wear:{}, out={}; for(const s of ['neck','head','face','feet','prop']){ const v=w[s]; if(Array.isArray(v)&&(ACC.some(a=>a.id===v[0]&&a.slot===s)||(s==='feet'&&v[0]==='bare'))) out[s]=[v[0],Number.isInteger(v[1])?v[1]:0]; } return out; }
 // The shapes, in the pup drawing's own coordinates (239×300, the head's top at y≈0, the chin at y≈140)
 function accShapes(id,c){ const d=pupShade(c,-.3), l=pupShade(c,.35);
   switch(id){
@@ -7369,21 +7554,22 @@ function accCanvas(x,o,where){ const w=accWear(o); for(const [s,[id,ci]] of Obje
     if(p.f){ x.fillStyle=p.f; x.fill(path); } if(p.s){ x.strokeStyle=p.s; x.lineWidth=p.w||3; x.lineCap='round'; x.stroke(path); } else if(p.f){ x.strokeStyle='#3B2314'; x.lineWidth=1.6; x.lineJoin='round'; x.stroke(path); } x.restore(); } } }
 
 // A new outfit piece: offer it with its colour choice (once)
-function accNew(o){ const seen=new Set(seenGet()||[]); return ACC.filter(a=>!(a.lvl===1)&&accOwned(a,o)&&!seen.has('acc:'+a.id)); }
+function accNew(o){ const seen=new Set(seenGet()||[]); return ACC.filter(a=>!(a.lvl===1)&&!a.d3&&accOwned(a,o)&&!seen.has('acc:'+a.id)); }
 function accOffer(a){ const d=$('#accDlg'), o=worldStore(); ISL3.accDraft={id:a.id,slot:a.slot,ci:pupColorOf(o)};
-  $('#accTitle').textContent=`${pupName(o)||'Your otter'} earned ${a.id==='glasses'?'':'a '}${a.name.toLowerCase()}!`; $('#accSub').textContent='Pick its colour.';
+  $('#accTitle').textContent=`${pupName(o)||'Your otter'} earned ${a.id==='glasses'||/s$/.test(accName(a,o))?'':'a '}${accName(a,o).toLowerCase()}!`; $('#accSub').textContent='Pick its colour.';
   accRender(); const s=seenGet()||[]; s.push('acc:'+a.id); seenSet(s); track('acc_earned:'+a.id);
   d.onclose=()=>{ d.onclose=null; renderIsland(); }; if(!d.open){ d.showModal(); sfx.hatch(); } }
 function wardrobeOpen(){ const d=$('#accDlg'), o=worldStore(), w=accWear(o), first=ACC.find(a=>accOwned(a,o));
-  const cur=Object.values(w)[0]; ISL3.accDraft={id:cur?cur[0]:first.id,slot:(ACC.find(a=>a.id===(cur?cur[0]:first.id))||first).slot,ci:cur?cur[1]:pupColorOf(o)};
+  const cur=Object.values(w).find(v=>v[0]!=='bare'); ISL3.accDraft={id:cur?cur[0]:first.id,slot:(ACC.find(a=>a.id===(cur?cur[0]:first.id))||first).slot,ci:cur?cur[1]:pupColorOf(o)};
   $('#accTitle').textContent=`${pupName(o)||'Your otter'}’s wardrobe`; $('#accSub').textContent=`Level ${otterLevel(o)} ${PUP_STAGES[pupStage(o)].name}. Tap one to try it on.`;
   accRender(true); d.onclose=()=>{ d.onclose=null; renderIsland(); renderHome(); }; if(!d.open) d.showModal(); }
 function accRender(all){ const o=worldStore(), D=ISL3.accDraft, prev={...o,wear:{...accWear(o),[D.slot]:[D.id,D.ci]}};
-  $('#accPic').innerHTML=pupFig(prev,{vb:PUP_ROUND,par:'xMidYMid slice'});
-  $('#accList').innerHTML=ACC.map(a=>{ const own=accOwned(a,o), on=(accWear(o)[a.slot]||[])[0]===a.id; return `<button type="button" data-acc="${a.id}" aria-pressed="${a.id===D.id}" ${own?'':'disabled'}>${escapeHTML(a.name)}<small>${own?(on?'Wearing':'Yours'):a.legend?'At Legend':'Level '+a.lvl}</small></button>`; }).join('');
+  $('#accPic').innerHTML=pupFig(prev,{vb:PUP_ROUND,par:'xMidYMid slice',svg:1});
+  { const h=$('#accPic'), feet=D.slot==='feet'||D.slot==='prop'; cv3(h,{who:'pup',frame:feet?'full':'bust',o:prev,wear:prev.wear}); if(h.__try!==D.id+D.ci){ const first=h.__try==null; h.__try=D.id+D.ci; if(!first) setTimeout(()=>cv3Play(h,'spin'),30); } }
+  $('#accList').innerHTML=ACC.filter(a=>!a.d3||ch3On()).map(a=>{ const own=accOwned(a,o), on=accOn(a,accWear(o)); return `<button type="button" data-acc="${a.id}" aria-pressed="${a.id===D.id}" ${own?'':'disabled'}>${escapeHTML(accName(a,o))}<small>${own?(on?'Wearing':'Yours'):a.legend?'At Legend':'Level '+a.lvl}</small></button>`; }).join('');
   $('#accCols').innerHTML=PUP_COLORS.map((c,i)=>`<button type="button" role="radio" aria-checked="${i===D.ci}" aria-label="${c.n}" title="${c.n}" data-col="${i}" style="--c:${c.c}"></button>`).join('');
-  $('#accOff').hidden=!(accWear(o)[D.slot]); }
-function accSave(on){ const o=worldStore(), D=ISL3.accDraft, w=accWear(o); if(on) w[D.slot]=[D.id,D.ci]; else delete w[D.slot]; o.wear=w; o.wearAt=Date.now(); worldSet(o); track(on?'acc_wear:'+D.id:'acc_off'); sfx.chirp(); }
+  $('#accOff').hidden=!accOn(ACC.find(a=>a.id===D.id)||{slot:D.slot},accWear(o)); }
+function accSave(on){ const o=worldStore(), D=ISL3.accDraft, w=accWear(o); if(on) w[D.slot]=[D.id,D.ci]; else if(D.slot==='feet') w.feet=['bare',0]; else delete w[D.slot]; o.wear=w; o.wearAt=Date.now(); worldSet(o); track(on?'acc_wear:'+D.id:'acc_off'); sfx.chirp(); }
 // Ten builds: a choice that makes two children's worlds a little different
 function pickOpen(){ const d=$('#pickDlg'); if(!d.open){ d.showModal(); track('pick_offered'); } }
 
@@ -7397,11 +7583,14 @@ const LASTSEEN_KEY='bloppit-island-seen-v1';
 function isl3WakeCheck(){ if(ISL3.wakeChecked) return; ISL3.wakeChecked=true; let last=0; try{ last=+localStorage.getItem(pkey(LASTSEEN_KEY))||0; }catch(e){}
   ISL3.wakeDue=last>0&&Date.now()-last>3*3600e3; try{ localStorage.setItem(pkey(LASTSEEN_KEY),String(Date.now())); }catch(e){} }
 function isl3Wake(quiet){ if(!ISL3.dozing) return; ISL3.dozing=false; ISL3.wakeDue=false; const s=ISL3.bloppitSprite, z=ISL3.zzz;
-  if(z&&z.parent) z.parent.remove(z); ISL3.zzz=null; if(quiet||!s){ if(s){ s.material.map=tex3(ISL3.bloppitPose); s.material.needsUpdate=true; } isl3Kick(); return; }
-  s.material.map=tex3('/art/bud-happy.png'); s.material.needsUpdate=true; ISL3.jumpT=performance.now(); try{ sfx.chirp(); }catch(e){}
+  if(z&&z.parent) z.parent.remove(z); ISL3.zzz=null;
+  if(ISL3.b3){ const c=ISL3.b3.ctl; if(quiet) c.setMode(ISL3.bMode||0); else { c.play('wake'); c.mode=ISL3.bMode||0; }   // wakes, stretches, back to what he was doing
+    if(quiet){ isl3Kick(); return; } try{ sfx.chirp(); }catch(e){} }
+  else if(quiet||!s){ if(s){ s.material.map=tex3(ISL3.bloppitPose); s.material.needsUpdate=true; } isl3Kick(); return; }
+  if(s){ s.material.map=tex3('/art/bud-happy.png'); s.material.needsUpdate=true; ISL3.jumpT=performance.now(); try{ sfx.chirp(); }catch(e){} }
   const nm=pupName(worldStore()); isl3Banner(nm?`Bloppit and ${nm}: You’re back!`:'Bloppit: You’re back!',true); track('island_welcome_back');
-  clearTimeout(ISL3.wakeT); ISL3.wakeT=setTimeout(()=>{ if(ISL3.bloppitSprite===s){ s.material.map=tex3(ISL3.bloppitPose); s.material.needsUpdate=true; } isl3Banner(''); isl3Kick(); },2600); isl3Kick(); }
-function isl3Show(box,o){ isl3Immersive(); isl3WakeCheck();
+  clearTimeout(ISL3.wakeT); ISL3.wakeT=setTimeout(()=>{ if(s&&ISL3.bloppitSprite===s){ s.material.map=tex3(ISL3.bloppitPose); s.material.needsUpdate=true; } isl3Banner(''); isl3Kick(); },2600); isl3Kick(); }
+function isl3Show(box,o){ isl3Immersive(); isl3WakeCheck(); isl3CharsLoad(o);
   if(ISL3.revealing&&ISL3.on&&ISL3.box===box) return;   // a reveal is playing: don't pull the world out from under it
   ISL3.box=box; if(!box.contains(ISL3.r.domElement)){ box.innerHTML=''; box.appendChild(ISL3.r.domElement); box.classList.add('is3'); }
   const n=worldCount(o); ISL3.arrival=n===0?(!pupName(o)&&!o.pupAsked&&!o.arrived?(ISL3.arrival==='home'?'home':'boat'):'home'):null;
@@ -7948,7 +8137,7 @@ function welcomeDone(){
   $('#wcPupGo').hidden=!askPup; ['#wcTrail','#wcWeekly','#wcLibrary'].forEach(q=>$(q).hidden=askPup);
   $('#wcNote').textContent=askPup?'A little otter is waiting on your island…':'What next?';
   { const n=nextBuild(); $('#wcTrail').innerHTML=n?`<img class="nb-pic" src="${n.thumb}" alt=""><span>Keep building<small>${escapeHTML(n.t)}</small></span>`:'Keep building'; }
-  const d=$('#welcomeDlg'); if(!d.open) d.showModal(); worldSound(); if(askPup) setTimeout(()=>sfx.hatch(),1600);
+  const d=$('#welcomeDlg'); if(!d.open) d.showModal(); worldSound(); setTimeout(()=>cv3Play($('#welcomeDlg .wc-pic'),'wave'),250); if(askPup) setTimeout(()=>sfx.hatch(),1600);
 }
 $('#wcPupGo').onclick=()=>{ const d=$('#welcomeDlg'); d.close(); endReveal(true); track('welcome_fork:pup'); pupOpen(); };
 { const d=$('#welcomeDlg'), go=f=>{ d.close(); endReveal(true); f(); };
@@ -8020,6 +8209,9 @@ function homeGo(where){
 }
 document.querySelectorAll('#view-home [data-go]').forEach(b=>b.addEventListener('click',()=>homeGo(b.dataset.go)));
 window.bloppitHome=()=>setTab('home');
+setTimeout(()=>{ try{ ch3Warm(); }catch(e){} },1200);
+new MutationObserver(()=>buddy3()).observe($('#buddy'),{attributes:true,attributeFilter:['class','hidden']});
+window.bloppitChars3d=()=>({on:ch3On(),loaded:Object.keys(CH3.gltf),island:{bloppit:!!ISL3.b3,pup:!!ISL3.p3,longtail:!!ISL3.l3,clips:[ISL3.b3,ISL3.p3,ISL3.l3].map(i=>i&&(i.ctl.current||i.ctl.activeBase)?(i.ctl.current||i.ctl.activeBase).getClip().name:null)},views:CV3.views.filter(v=>v.host.classList.contains('c3on')&&v.host.offsetParent).map(v=>v.host.id||v.host.className.split(' ')[0])});
 // On the website the logo opens the menu; on the menu itself it goes to bloppit.com's front page. (The app handles its own links above.)
 $('#brandLink').addEventListener('click',e=>{ if(APP||tab==='home') return; e.preventDefault(); setTab('home'); });
 // Links straight to a page: /build/#photos, #library, #trails, #otter, #brain, #together, #blitz, #daily (anything else opens the menu).

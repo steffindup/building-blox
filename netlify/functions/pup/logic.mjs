@@ -89,7 +89,7 @@ export function merge(server, incoming) {
     const pupAt = Math.max(num(wa.pupAt) ?? 0, num(wb.pupAt) ?? 0);
     // What the otter wears (outfit ids and colour numbers, the latest set wins), the treehouse/lighthouse choice, the arrival
     const wl = (num(wb.wearAt) ?? 0) >= (num(wa.wearAt) ?? 0) ? wb : wa, wearIn = obj(wl.wear), wear = {};
-    for (const slot of ['neck', 'head', 'face']) { const v = wearIn[slot]; if (Array.isArray(v) && typeof v[0] === 'string' && /^[a-z]{2,12}$/.test(v[0]) && Number.isInteger(v[1]) && v[1] >= 0 && v[1] < 16) wear[slot] = [v[0], v[1]]; }
+    for (const slot of ['neck', 'head', 'face', 'feet', 'prop']) { const v = wearIn[slot]; if (Array.isArray(v) && typeof v[0] === 'string' && /^[a-z]{2,12}$/.test(v[0]) && Number.isInteger(v[1]) && v[1] >= 0 && v[1] < 16) wear[slot] = [v[0], v[1]]; }
     const pick = ['treehouse', 'lighthouse'].includes(wa.pick) ? wa.pick : ['treehouse', 'lighthouse'].includes(wb.pick) ? wb.pick : null;
     const pupColor = [later.pupColor, other.pupColor].map(num).find((v) => Number.isInteger(v) && v >= 0 && v < 16) ?? -1;
     const decor = [...new Set([...(wa.decor || []), ...(wb.decor || [])].filter((d) => typeof d === 'string' && d.length <= 20))];
