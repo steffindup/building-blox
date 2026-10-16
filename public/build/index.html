@@ -961,6 +961,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 @media (max-width:559px){.is3-play{min-width:0;font-size:16px;padding:8px 18px}.is3-play small{font-size:11px}.is3-banner{font-size:15px}.is3-banner.big{font-size:18px}}
 @keyframes is3-in{from{transform:translateY(-10px)}to{transform:none}}
 .is3-views{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);display:flex;align-items:center;gap:4px;pointer-events:auto;padding:4px;border-radius:999px;background:rgba(20,32,44,.72);color:#fff;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 3px 10px rgba(0,0,0,.2)}
+.is3-views .v-world{background:#fff;color:#14202C;font-size:20px}
 .is3-views button{font:inherit;font-size:22px;line-height:1;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;cursor:pointer}
 .is3-views .v-mid{display:grid;justify-items:center;gap:3px;min-width:132px;padding:0 6px}.is3-views .v-name{font-weight:800;font-size:14px;white-space:nowrap}
 .is3-views .v-dots{display:flex;gap:4px}.is3-views .v-dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35)}.is3-views .v-dots i.on{background:#fff}
@@ -6694,7 +6695,7 @@ function isl3ViewOf(info){ const V=isl3Views(), f=id=>V.findIndex(v=>v.id===id);
   if(info==='bloppit'||info==='pup') return f('friends'); if(info==='land:beach'||info.startsWith('home:')) return f('home'); return -1; }
 function isl3WholeBtn(){ const el=ISL3.box&&ISL3.box.querySelector('.is3-views'); if(!el) return; const V=isl3Views(), i=Math.max(0,Math.min(V.length-1,ISL3.viewI||0));
   const nm=el.querySelector('.v-name'); if(nm.textContent!==V[i].name) nm.textContent=V[i].name; const dots=V.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join(''); const dd=el.querySelector('.v-dots'); if(dd.innerHTML!==dots) dd.innerHTML=dots;
-  const h=!!(ISL3.revealing||ISL3.arrive||ISL3.arrival); if(el.hidden!==h) el.hidden=h; }
+  const h=!!(ISL3.revealing||ISL3.arrive||ISL3.arrival); if(el.hidden!==h) el.hidden=h; const wb=el.querySelector('.v-world'), wh=!i; if(wb.hidden!==wh) wb.hidden=wh; el.querySelector('.v-mid').style.cursor=i?'pointer':''; }
 function isl3Events(cv){
   cv.tabIndex=0; const pts=new Map(), touched=()=>{ ISL3.input=performance.now(); isl3Kick(); };
   for(const ev of ['pointerdown','pointermove','wheel','touchstart']) cv.addEventListener(ev,touched,{passive:true});
@@ -7249,8 +7250,8 @@ function revealText(id,o){ const [k,a,b]=id.split(':');
 function isl3Banner(t,big){ const b=ISL3.box&&ISL3.box.querySelector('.is3-banner'); if(!b) return; b.textContent=t; b.hidden=!t; b.classList.toggle('big',!!big); }
 // The buttons over the world: Play Next (one obvious next step), and the arrival's Build Our First Home
 function isl3Chrome(){ const box=ISL3.box; if(!box) return; let c=box.querySelector('.is3-chrome');
-  if(!c){ c=document.createElement('div'); c.className='is3-chrome'; c.innerHTML='<div class="is3-banner" hidden></div><button class="primary is3-play" type="button"></button><div class="is3-views" hidden><button class="v-prev" type="button" aria-label="Previous view">‹</button><span class="v-mid"><span class="v-name"></span><span class="v-dots" aria-hidden="true"></span></span><button class="v-next" type="button" aria-label="Next view">›</button></div><div class="is3-say" hidden></div>'; box.appendChild(c);
-    c.querySelector('.v-prev').onclick=()=>isl3GoView((ISL3.viewI||0)-1); c.querySelector('.v-next').onclick=()=>isl3GoView((ISL3.viewI||0)+1);
+  if(!c){ c=document.createElement('div'); c.className='is3-chrome'; c.innerHTML='<div class="is3-banner" hidden></div><button class="primary is3-play" type="button"></button><div class="is3-views" hidden><button class="v-world" type="button" aria-label="Back to the whole world" title="Whole world" hidden>🌍</button><button class="v-prev" type="button" aria-label="Previous view">‹</button><span class="v-mid"><span class="v-name"></span><span class="v-dots" aria-hidden="true"></span></span><button class="v-next" type="button" aria-label="Next view">›</button></div><div class="is3-say" hidden></div>'; box.appendChild(c);
+    c.querySelector('.v-world').onclick=()=>isl3GoView(0); c.querySelector('.v-mid').onclick=()=>{ if(ISL3.viewI) isl3GoView(0); }; c.querySelector('.v-prev').onclick=()=>isl3GoView((ISL3.viewI||0)-1); c.querySelector('.v-next').onclick=()=>isl3GoView((ISL3.viewI||0)+1);
     c.querySelector('.is3-play').onclick=()=>{ const a=c.querySelector('.is3-play').dataset.act; if(a==='home'){ track('first_home_start'); welcomeStart(); return; } const n=nextBuild(); track('play_next:island'); if(n) n.go(); else homeGo('quick'); }; }
   const b=c.querySelector('.is3-play'), o=worldStore();
   if(ISL3.arrival==='home'){ b.dataset.act='home'; b.innerHTML='🔨 Build Our First Home'; b.hidden=false; }

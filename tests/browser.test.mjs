@@ -248,8 +248,9 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   { await still(); const c = await pt('isle:sunrise'); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(600); await still();
     assert.equal(await t.page.evaluate(() => { const I = window.bloppitIsland3(), s = I.isles.sunrise; return Math.hypot(I.ctl.target.x - s.x, I.ctl.target.z - s.z) < 1; }), true);   // flew there
     assert.match(await t.text('#isWorld .is3-views .v-name'), /misty island/);
-    await t.page.evaluate(() => { document.querySelector('#isTip .tt-x')?.click(); window.bloppitView(0); }); await still();
-    assert.equal(await t.text('#isWorld .is3-views .v-name'), 'Whole world');
+    assert.equal(await t.page.evaluate(() => document.querySelector('#isWorld .is3-views .v-world').hidden), false);   // one tap back to the whole world, from any view
+    await t.page.evaluate(() => { document.querySelector('#isTip .tt-x')?.click(); document.querySelector('#isWorld .is3-views .v-world').click(); }); await still();
+    assert.equal(await t.text('#isWorld .is3-views .v-name'), 'Whole world'); assert.equal(await t.page.evaluate(() => document.querySelector('#isWorld .is3-views .v-world').hidden), true);
     // a one-finger slide doesn't spin the world; a swipe moves to the next view
     const dir = () => t.page.evaluate(() => { const I = window.bloppitIsland3(); return I.cam.position.clone().sub(I.ctl.target).normalize().toArray().map((v) => +v.toFixed(2)); });
     const d0 = await dir(), w = await t.page.evaluate(() => { const r = document.querySelector('#isWorld canvas').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height * .8 }; });
