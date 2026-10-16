@@ -1,29 +1,31 @@
-# Bloppit preview experiment v1
+# Full-game A/B experiment, version 2
 
-## Assignment and isolation
+Entry: https://bloppit-chatgpt-challenger.netlify.app/experiment/
+Report: https://bloppit-chatgpt-challenger.netlify.app/experiment/report.html
 
-Recruit fresh browser profiles through `/experiment/` on the **new preview site**. A cryptographically random bit assigns A (existing experience) or B (challenger), stored locally as `bloppit-experiment-v1`. Returning profiles keep their arm. Neither participant identifiers nor the random bit are sent separately to a server. The arm is included in an event name. The assignment unit is a browser profile, not a person; shared devices and cleared storage can bias results.
+Both arms use the same game engine, content, rules, progression and preview backend. A preserves the original presentation; B uses the new character, scenery and interface presentation. This measures the combined redesign, not a causal graphics-only effect. No participant results or superiority claim are available yet.
 
-The entry sends players to `?ab=random`. Reviewer links use `?ab=review`; direct visits also count as reviewer traffic. Randomized event names start `ab_a_` or `ab_b_`; reviewer names start `review_a_` or `review_b_`. Never combine them. Assignment entry clicks are diagnostic, not unique participants. Exposure, first completion and second build are deduplicated in localStorage per arm/scope/experiment version. Clearing storage resets deduplication. Do not switch reviewers to randomized testing in the same browser profile: existing progress would bias first-completion eligibility.
+Use new browser profiles and first-time testers, balanced across device types. The entry page assigns an arm randomly using the browser's crypto generator and saves it as bloppit-experiment-v2. Keep existing experienced users in a separate study. Ask the same enjoyment, mascot appeal, ease-of-building and desire-to-return questions on a 1–5 scale after ten minutes. Collect ratings before showing the other arm; randomize presentation order for any later crossover review.
 
-Only local counts are stored by default. An adult tester may enable aggregate sharing before entry. Shared payload is `{events:[eventName],p:'web'}` to the preview site's `/api/event`. It carries no names, photos, arbitrary strings, precise timestamps, session IDs or device IDs. The existing server groups counts by day/country/platform. It has an admin key for reads. It is best effort with no offline retry queue; old local events are not backfilled after consent. Opting in late can produce incomplete funnels. Recruit with one consistent consent procedure and analyze only cohorts enrolled with sharing already enabled. Native previews do not send analytics.
+Shared event collection is optional and off by default. Choose consent at entry before exposure. Local counts remain on the device. Late opt-in does not backfill earlier events, so recruit through the entry page with a consistent consent process. Do not treat local exports as pooled participant results.
 
-## Primary and secondary outcomes
+## Measures
 
-Pre-register before recruiting:
+v2_ab_a_* and v2_ab_b_* contain randomized-arm counts. v2_review_* is excluded. Version 1 prototype data uses different keys and is excluded. No player name, photo, family code or persistent device identifier is sent by the new event adapter. Existing gameplay server functionality is unchanged.
 
-- Primary: `ab_ARM_first_completion / ab_ARM_exposure` for newly enrolled browser profiles over a fixed study window.
-- Secondary: `ab_ARM_second_build / ab_ARM_first_completion`, interpreted as return to another build in the available observation window, not retention.
-- Run diagnostics: `build_completed / build_started` is a ratio of event counts, **not** a per-player conversion rate. Multiple attempts and exits cross sessions.
-- Challenger-only diagnostics: `wrong_piece`, `hint`, `undo`, `mascot_pet`, `world_reveal`, `render_error`. Do not compare these to nonexistent control events.
-- Collect enjoyment, mascot appeal, clarity and desire to return with the same questions and scale (1–5), fixed play duration and equivalent device mix. Record who rates first and whether they have seen the other version. Do not infer happiness from pet clicks.
+- exposure: once per arm/scope on a browser installation.
+- first_completion: first completed build since this experiment was exposed, counted once.
+- second_build: at least two build starts in that arm on the browser, counted once. This is a repeat-start proxy, not proof of a deliberate choice after completion.
+- ten_minutes: ten foreground minutes in one page lifetime; reloads reset this timer.
+- return_visit: any later UTC date after first exposure, counted once. This is not exact D1/D7 retention.
+- build_started, build_completed and mascot_pet: total action counts.
 
-Do not call this a graphics-only test. Models, instruction density, starting flow, mechanics and content breadth differ. To isolate graphics in a later experiment, apply both art systems to the same models, controls, onboarding and rewards before randomization. This iteration tests the first ten minutes of the overall experience. Experienced existing users require a separate cohort; do not mix them with new users.
+Early game events are queued until the adapter initializes. Reviewer links use ?ab=review; randomized entry uses ?ab=random. Production tracking is disabled in both generated experimental arms. Clearing browser storage resets assignment and deduplication. Multiple people on one device share counts; one person using multiple devices can count more than once. Server writes are best effort and not retried or deduplicated by identity.
 
-## Report
+## Reporting and decision
 
-On the preview's `/stats/`, use the new site's `EVENTS_KEY`; the existing aggregate report includes the prefixed events. Never paste the production key into the challenger. Download counts or use the authenticated `/api/event?from=YYYY-MM-DD&to=YYYY-MM-DD` response for a fixed date interval. Local event export is available from Playtest notes or the entry page. Local exports are diagnostics, not an automatically merged participant database.
+Set a new EVENTS_KEY on the separate Netlify project. Enter it into the report page; it is sent in the x-admin header and is not stored in local storage. The report also offers a local browser-only view. Server date ranges are capped by the existing API at 120 days.
 
-Report raw numerators/denominators, completion and second-build rates, missing telemetry, device/browser split, recruitment channel, study dates, and confidence intervals. Do a sample-size calculation from an agreed baseline rate and minimum meaningful difference before running; do not stop when results happen to look favourable. There are **no real participant results yet**. Browser tests verify instrumentation but are excluded from the hosted dataset.
+The report shows raw numerators and denominators, conversion percentages and 95% Wilson intervals for the browser-level measures. It makes no automatic winner declaration. Use the same recruitment period and consent policy; report missing telemetry, device mix and existing progress. Aggregate counts cannot reconstruct individual cohorts, identify exact return intervals or support cohort-adjusted funnels. Conversion rates over a cropped date interval can be distorted when exposure occurred before that interval: use the full experiment window.
 
-Retention at D1/D7, cohort-adjusted funnels, latency percentiles and robust duplicate protection are not implemented. They cannot be inferred from these aggregate counts. A future telemetry design must preserve the product's privacy commitments and be reviewed separately before deployment.
+Agree the primary measure, baseline rate, minimum useful difference and sample size before recruitment. Do not stop when a favorable result appears. Review crash/performance observations and qualitative ratings alongside completion. The current tests check instrumentation and functional parity, not commercial superiority or child enjoyment.

@@ -39,6 +39,7 @@ workflows:
           npm ci
           npx cap add ios
           npx cap sync ios
+          node ../scripts/configure-challenger-ios.mjs
       - name: Sign only the challenger project
         script: xcode-project use-profiles --project mobile-challenger/ios/App/App.xcodeproj
       - name: Assign a separate build number

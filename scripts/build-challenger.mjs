@@ -1,5 +1,6 @@
 import {mkdirSync,cpSync,copyFileSync,readFileSync,writeFileSync} from 'node:fs';
 import {resolve} from 'node:path';
+import {fullChallenger} from './full-challenger.mjs';
 const root=resolve(import.meta.dirname,'..'),out=resolve(root,'challenger-dist');
 // Additive packaging: production HTML, native app and Netlify config remain untouched.
 mkdirSync(out,{recursive:true});cpSync(resolve(root,'public'),out,{recursive:true});
@@ -8,15 +9,22 @@ for(const [to,from] of [['three.min.js','three/build/three.min.js'],['OrbitContr
 copyFileSync(resolve(root,'node_modules/three/LICENSE'),resolve(vendor,'THREE-LICENSE.txt'));
 copyFileSync(resolve(root,'node_modules/@fontsource/nunito/LICENSE'),resolve(vendor,'NUNITO-LICENSE.txt'));
 cpSync(vendor,resolve(out,'challenger/vendor'),{recursive:true});
+for(const weight of [400,800])copyFileSync(resolve(root,`node_modules/@fontsource/nunito/files/nunito-latin-${weight}-normal.woff2`),resolve(out,`challenger/vendor/nunito-${weight}.woff2`));
+copyFileSync(resolve(root,'node_modules/@fontsource/lilita-one/files/lilita-one-latin-400-normal.woff2'),resolve(out,'challenger/vendor/lilita.woff2'));
+copyFileSync(resolve(root,'node_modules/@fontsource/lilita-one/LICENSE'),resolve(out,'challenger/vendor/LILITA-LICENSE.txt'));
+writeFileSync(resolve(out,'challenger/vendor/fonts.css'),`@font-face{font-family:Nunito;src:url(nunito-400.woff2);font-weight:400;font-display:swap}@font-face{font-family:Nunito;src:url(nunito-800.woff2);font-weight:600 1000;font-display:swap}@font-face{font-family:'Lilita One';src:url(lilita.woff2);font-display:swap}`);
 let baseline=readFileSync(resolve(root,'public/build/index.html'),'utf8');
 if(!baseline.includes('function track(...names){'))throw Error('Baseline analytics hook changed; review adapter before packaging.');
-baseline=baseline.replace('function track(...names){','function track(...names){ window.__abTrack?.(...names); return; // Preview adapter: original tracking disabled.\n');
-baseline=baseline.replace('<head>','<head>\n<meta name="robots" content="noindex,nofollow"><script type="module" src="/experiment/baseline.mjs"></script>');
+baseline=baseline.replace('function track(...names){','function track(...names){ if(window.__abTrack)window.__abTrack(...names);else if((window.__abQueue ||= []).length<100)window.__abQueue.push(names); return; // Preview adapter: original tracking disabled.\n');
+baseline=baseline.replace('<head>','<head>\n<meta name="robots" content="noindex,nofollow"><script>window.__abScope=new URLSearchParams(location.search).get("ab")==="random"?"ab":"review";</script><script type="module" src="/experiment/baseline.mjs"></script>');
 baseline=baseline.replaceAll('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','/challenger/vendor/three.min.js').replaceAll('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js','/challenger/vendor/OrbitControls.js').replaceAll('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js','/challenger/vendor/BufferGeometryUtils.js');
 // Control share links must stay on this isolated site, not send testers to production.
 const previewOrigin=new URL(process.env.URL || 'http://localhost:8788').origin;
 baseline=baseline.replaceAll('https://bloppit.com',previewOrigin);
+baseline=baseline.replace(/<link rel="preconnect" href="https:\/\/fonts.googleapis.com">/g,'').replace(/<link rel="stylesheet" href="https:\/\/fonts.googleapis.com[^>]*>/g,'<link rel="stylesheet" href="/challenger/vendor/fonts.css">');
 writeFileSync(resolve(out,'build/index.html'),baseline);
+cpSync(resolve(out,'challenger'),resolve(out,'prototype'),{recursive:true});
+writeFileSync(resolve(out,'challenger/index.html'),fullChallenger(baseline));
 writeFileSync(resolve(out,'index.html'),'<!doctype html><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=/challenger/"><a href="/challenger/">Play Bloppit challenger</a>');
 writeFileSync(resolve(out,'robots.txt'),'User-agent: *\nDisallow: /\n');
 writeFileSync(resolve(out,'_headers'),'/*\n  X-Robots-Tag: noindex, nofollow\n  Referrer-Policy: same-origin\n');

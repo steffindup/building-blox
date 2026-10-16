@@ -5,7 +5,9 @@ import assert from 'node:assert/strict';
 import { start } from './devserver.mjs';
 let chromium; try { ({ chromium } = await import('playwright')); } catch { chromium = null; }
 
-const PORT = 8799, BASE = `http://localhost:${PORT}/build/`;
+const FULL = process.env.GAME_VARIANT === "challenger";
+if(FULL)process.env.PREVIEW_DIST="1";
+const PORT = 8799, BASE = `http://localhost:${PORT}/${FULL?"challenger":"build"}/`;
 let server, browser;
 before(async () => { server = await start(PORT); if (chromium) browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM || undefined, args: ['--use-gl=swiftshader'] }); });
 const skip = () => !chromium;  // decided when the file loads; the browser itself starts in before()
@@ -13,7 +15,7 @@ after(async () => { if (browser) await browser.close(); server?.close(); });
 
 // Keep placing until the first build is really finished (slow machines), then let the home appear
 async function finishFirst(page) {
-  for (let i = 0; i < 30; i++) { if (await page.evaluate(() => (JSON.parse(localStorage.getItem('bloppit-world-v1') || '{}').log || []).length > 0)) break; await autoPlace(page, 1); }
+  for (let i = 0; i < 30; i++) { if (await page.evaluate(() => (JSON.parse(window.__testStorage.getItem('bloppit-world-v1') || '{}').log || []).length > 0)) break; await autoPlace(page, 1); }
   await page.waitForTimeout(5000);
 }
 async function open(url, { viewport = { width: 1000, height: 800 }, init, at, touch } = {}) {
@@ -24,6 +26,7 @@ async function open(url, { viewport = { width: 1000, height: 800 }, init, at, to
     if (/fonts\.g/.test(u)) return r.fulfill({ status: 200, body: '', contentType: 'text/css' });
     r.continue(); });
   const page = await ctx.newPage(); const errors = []; page.on('pageerror', (e) => errors.push(e.message));
+  await page.addInitScript(full=>{const prefix=full?"bloppit-full-v2:":"";window.__testStorage={getItem:k=>localStorage.getItem(prefix+k),setItem:(k,v)=>localStorage.setItem(prefix+k,v),removeItem:k=>localStorage.removeItem(prefix+k)};},FULL);
   if (init) await page.addInitScript(init.fn, init.arg);
   if (at) await page.clock.setFixedTime(new Date(at));
   const u = url.replace(/^([^#]*)/, (m) => m + (m.includes('?') ? '&' : '?') + 'lite3d=1');   // a light 3D world: the test machine has no GPU
@@ -52,7 +55,7 @@ test('first visit: Start here → a boat brings the otter → name it → Build 
   // Bloppit shows the unfinished home, and there is one button
   assert.match(await t.text('#isWorld .is3-play'), /Build Our First Home/);
   assert.ok(await t.page.evaluate(() => window.bloppitIslandPoint('pup')));
-  let w = JSON.parse(await t.page.evaluate(() => localStorage.getItem('bloppit-world-v1')));
+  let w = JSON.parse(await t.page.evaluate(() => window.__testStorage.getItem('bloppit-world-v1')));
   assert.equal(w.pupText, 'Captain Fizz'); assert.equal(w.pupName, -1); assert.equal(w.pupColor, 2); assert.equal(w.arrived, 1); assert.equal(w.wear.neck[0], 'scarf');
   await t.page.evaluate(() => document.querySelector('#isWorld .is3-play').click()); await t.page.waitForTimeout(1500);
   assert.equal(await t.view(), 'view-build'); const m = (await t.text('#progress')).match(/0 of (\d+)/); assert.ok(m && +m[1] >= 4 && +m[1] <= 14, 'a short first build');
@@ -62,7 +65,7 @@ test('first visit: Start here → a boat brings the otter → name it → Build 
   assert.equal(await t.view(), 'view-island');
   assert.equal(await t.page.evaluate(() => document.getElementById('isIntro').hidden), true);
   await t.page.waitForTimeout(6000); await shot(6);
-  w = JSON.parse(await t.page.evaluate(() => localStorage.getItem('bloppit-world-v1')));
+  w = JSON.parse(await t.page.evaluate(() => window.__testStorage.getItem('bloppit-world-v1')));
   assert.equal(w.log.length, 1); assert.equal(w.builds[`m:Little house:${m[1]}`].s, 3);
   assert.match(await t.text('#isStage'), /Captain Fizz · Level 1 Pup/); assert.match(await t.text('#isNext'), /Home Island|mist/);
   await t.page.goto(BASE + '?nosplash=1'); await t.page.waitForTimeout(2500);
@@ -70,13 +73,13 @@ test('first visit: Start here → a boat brings the otter → name it → Build 
   // from now on the island leads: first on the menu, and the hero of bloppit.com on this device
   assert.equal(await t.page.evaluate(() => { const w = document.getElementById('hmWorld'); return !w.hidden && !!w.querySelector('.hw-isle img, .hw-isle svg') && w.compareDocumentPosition(document.getElementById('hmCont')) === Node.DOCUMENT_POSITION_FOLLOWING; }), true);
   assert.match(await t.text('#hmWorld'), /Captain Fizz/);
-  await t.page.goto(new URL('/', BASE).href); await t.page.waitForTimeout(1500);
-  assert.match(await t.text('.hero h1'), /Captain Fizz’s.*island is waiting/s);
+  if(!FULL){await t.page.goto(new URL('/', BASE).href); await t.page.waitForTimeout(1500);
+  assert.match(await t.text('.hero h1'), /Captain Fizz’s.*island is waiting/s);}
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
 test('a finger on the brick in hand slides the brick, and the view stays still', { skip: skip() }, async () => {
-  const t = await open('?nosplash=1#island', { viewport: { width: 402, height: 874 }, touch: true, init: { fn: () => { if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); } } });
+  const t = await open('?nosplash=1#island', { viewport: { width: 402, height: 874 }, touch: true, init: { fn: () => { if (!window.__testStorage.getItem('bloppit-world-v1')) window.__testStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); } } });
   await t.page.evaluate(() => document.querySelector('#isWorld .is3-play').click()); await t.page.waitForTimeout(1500);
   await autoPlace(t.page, 4);
   const g = await t.page.evaluate(() => window.bloppitGhost()); assert.ok(g, 'a brick in hand');
@@ -117,7 +120,7 @@ test('a Longtail race starts and shows the Longtail in the banner on his turn', 
 });
 
 test('share links: a Weekly, a library model, and /p/start', { skip: skip() }, async () => {
-  const seeded = { fn: () => localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 })) };
+  const seeded = { fn: () => window.__testStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 })) };
   let t = await open('?nosplash=1&p=w-2026-10-12', { init: seeded, at: '2026-10-14T18:00:00Z' });
   assert.equal(await t.page.evaluate(() => document.getElementById('shareDlg').open), true); assert.match(await t.text('#shTitle'), /This week/);
   await t.page.evaluate(() => document.getElementById('shGo').click()); await t.page.waitForTimeout(4500);
@@ -138,7 +141,7 @@ test('the Weekly bank: each planned Monday shows its model', { skip: skip() }, a
 
 test('Bloppitopia renders every stage in 3D (models, buildings, the islands nearby), and as a drawing without WebGL', { skip: skip() }, async () => {
   const seed = (n) => { const builds = {}, log = []; for (let i = 0; i < n; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1 }; log.push(k); }
-    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: n * 10, bonus: 0, builds, log, decor: n >= 3 ? ['flag'] : [], pupName: 3, pupAsked: true, isle: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: n, finished: n, welcome: 1 })); };
+    window.__testStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: n * 10, bonus: 0, builds, log, decor: n >= 3 ? ['flag'] : [], pupName: 3, pupAsked: true, isle: 1 })); window.__testStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: n, finished: n, welcome: 1 })); };
   const isles = ['otterwood', 'brainpeak', 'sunrise', 'blitzbay', 'brickworks'];
   for (const [n, models] of [[0, 0], [1, 1], [3, 3], [10, 10]]) {
     const t = await open('?nosplash=1#island', { init: { fn: seed, arg: n } });
@@ -148,13 +151,13 @@ test('Bloppitopia renders every stage in 3D (models, buildings, the islands near
     assert.deepEqual(t.errors, []); await t.ctx.close();
   }
   // no WebGL: the drawn island, still tappable
-  const t = await open('?nosplash=1&island3d=0#island', { init: { fn: (n) => { const builds = { 'm:Heart:9': { n: 9, s: 3, t: 1e12, c: 1 } }; localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 10, bonus: 0, builds, log: ['m:Heart:9'], decor: [], pupName: 3, pupAsked: true, isle: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); }, arg: 1 } });
+  const t = await open('?nosplash=1&island3d=0#island', { init: { fn: (n) => { const builds = { 'm:Heart:9': { n: 9, s: 3, t: 1e12, c: 1 } }; window.__testStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 10, bonus: 0, builds, log: ['m:Heart:9'], decor: [], pupName: 3, pupAsked: true, isle: 1 })); window.__testStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); }, arg: 1 } });
   assert.equal(await t.page.evaluate(() => document.querySelectorAll('#isWorld svg [data-info="place:hut"]').length), 1);
   await t.ctx.close();
 });
 
 test('a relay: one friend builds half, the other finishes, both islands get the model', { skip: skip() }, async () => {
-  const seeded = { fn: () => localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 })) };
+  const seeded = { fn: () => window.__testStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 })) };
   const a = await open('?nosplash=1&welcome=0#blitz', { init: seeded });
   await a.page.evaluate(() => { document.getElementById('bzName').value = 'A'; const sel = document.getElementById('bzModel'); sel.value = [...sel.options].find((o) => o.value !== 'cur').value; sel.dispatchEvent(new Event('change')); });
   await a.page.waitForTimeout(600);
@@ -173,19 +176,19 @@ test('a relay: one friend builds half, the other finishes, both islands get the 
   for (let i = 0; i < 60; i++) { await autoPlace(b.page, 1); if (await b.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; }
   await b.page.waitForTimeout(4500);
   assert.match(await b.text('#trTitle'), /Finished together/);
-  const wb = JSON.parse(await b.page.evaluate(() => localStorage.getItem('bloppit-world-v1'))); assert.equal(wb.log.length, 1); assert.match(wb.log[0], /^r:/);
+  const wb = JSON.parse(await b.page.evaluate(() => window.__testStorage.getItem('bloppit-world-v1'))); assert.equal(wb.log.length, 1); assert.match(wb.log[0], /^r:/);
   assert.deepEqual(b.errors, []); await b.ctx.close();
   // the first player hears about it on the Blitz page
   await a.page.evaluate(() => window.bloppitHome()); await a.page.waitForTimeout(300);
   await a.page.evaluate(() => document.querySelector('[data-go="friend"]').click()); await a.page.waitForTimeout(2500);
   assert.match(await a.text('#trTitle'), /Your relay is finished/);
-  const wa = JSON.parse(await a.page.evaluate(() => localStorage.getItem('bloppit-world-v1'))); assert.equal(wa.log.length, 1);
+  const wa = JSON.parse(await a.page.evaluate(() => window.__testStorage.getItem('bloppit-world-v1'))); assert.equal(wa.log.length, 1);
   assert.deepEqual(a.errors, []); await a.ctx.close();
 });
 
 test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the board, a report hides it', { skip: skip() }, async () => {
   // Each player needs a pup: a finished build mints one
-  const mkPlayer = async () => { const t = await open('?nosplash=1#island', { init: { fn: () => { if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, builds: {}, log: [] })); } } });
+  const mkPlayer = async () => { const t = await open('?nosplash=1#island', { init: { fn: () => { if (!window.__testStorage.getItem('bloppit-world-v1')) window.__testStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, builds: {}, log: [] })); } } });
     await t.page.evaluate(() => document.querySelector('#isWorld .is3-play').click()); await t.page.waitForTimeout(1500);
     await autoPlace(t.page, +(await t.text('#progress')).match(/0 of (\d+)/)[1]); await finishFirst(t.page); return t; };
   const a = await mkPlayer(), b = await mkPlayer();
@@ -220,7 +223,7 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
 
 test('island: tap anything for its card; drag a model anywhere on the grass; put away and back; the weekly board shows when a grown-up switches it on', { skip: skip() }, async () => {
   const t = await open('?nosplash=1#island', { init: { fn: () => { const builds = {}, log = []; for (let i = 0; i < 3; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1, d: 95000 }; log.push(k); }
-    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: ['flag'], pupName: 3, pupAsked: true, isle: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); localStorage.setItem('bloppit-board-v1', '1'); } } });
+    window.__testStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: ['flag'], pupName: 3, pupAsked: true, isle: 1 })); window.__testStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); window.__testStorage.setItem('bloppit-board-v1', '1'); } } });
   const models = () => t.page.evaluate(() => window.bloppitIsland3().shown.list.map((m) => m.key));
   assert.equal((await models()).length, 3);
   const pt = (id) => t.page.evaluate((i) => window.bloppitIslandPoint(i), id);
@@ -269,7 +272,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   // drag it to a new spot: it stays where it's dropped, on the grass
   const a = await pt('model:' + key);
   await t.page.mouse.move(a.x, a.y); await t.page.mouse.down(); await t.page.mouse.move(a.x - 20, a.y + 10, { steps: 4 }); await t.page.mouse.move(a.x - 60, a.y + 30, { steps: 8 }); await t.page.mouse.up(); await t.page.waitForTimeout(600);
-  const w = JSON.parse(await t.page.evaluate(() => localStorage.getItem('bloppit-world-v1')));
+  const w = JSON.parse(await t.page.evaluate(() => window.__testStorage.getItem('bloppit-world-v1')));
   assert.ok(Array.isArray(w.pos[key]), JSON.stringify(w.pos));
   const m = await t.page.evaluate((k) => window.bloppitIsland3().shown.list.find((x) => x.key === k), key);
   assert.ok(m && m.placed, JSON.stringify(m));
@@ -280,8 +283,8 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   assert.match(await t.text('#decorGrid [data-decor="bench"]'), /Tap again to buy/);
   await t.page.evaluate(() => document.querySelector('#decorGrid [data-decor="bench"]').click());
   await t.page.waitForFunction(() => /bench is here.*drag it/i.test(document.querySelector('#isWorld .is3-banner')?.textContent || ''), null, { timeout: 30000, polling: 100 })
-    .catch(async (e) => { console.log('NOBANNER', await t.page.evaluate(() => JSON.stringify([document.querySelector('#isWorld .is3-banner')?.textContent, window.bloppitIsland3().on, JSON.parse(localStorage.getItem('bloppit-world-v1')).decor, document.getElementById('isShop').hidden]))); throw e; });
-  const benchMoved = () => t.page.waitForFunction(() => Array.isArray((JSON.parse(localStorage.getItem('bloppit-world-v1')).pos || {})['decor:bench']), null, { timeout: 6000, polling: 100 }).then(() => true, () => false);
+    .catch(async (e) => { console.log('NOBANNER', await t.page.evaluate(() => JSON.stringify([document.querySelector('#isWorld .is3-banner')?.textContent, window.bloppitIsland3().on, JSON.parse(window.__testStorage.getItem('bloppit-world-v1')).decor, document.getElementById('isShop').hidden]))); throw e; });
+  const benchMoved = () => t.page.waitForFunction(() => Array.isArray((JSON.parse(window.__testStorage.getItem('bloppit-world-v1')).pos || {})['decor:bench']), null, { timeout: 6000, polling: 100 }).then(() => true, () => false);
   let moved = false;
   for (let i = 0; i < 2 && !moved; i++) { await still(); const bc = await pt('decor:bench');
     await t.page.mouse.move(bc.x, bc.y); await t.page.mouse.down(); await t.page.mouse.move(bc.x + 20, bc.y + 10, { steps: 4 }); await t.page.mouse.move(bc.x + 70, bc.y + 30, { steps: 8 }); await t.page.mouse.up();
@@ -297,7 +300,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
 });
 
 test('family key: make, attach a player, bring the player to another device', { skip: skip() }, async () => {
-  const a = await open('?nosplash=1#island', { init: { fn: () => { if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 5, builds: {}, log: [] })); } } });
+  const a = await open('?nosplash=1#island', { init: { fn: () => { if (!window.__testStorage.getItem('bloppit-world-v1')) window.__testStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 5, builds: {}, log: [] })); } } });
   await a.page.evaluate(() => document.querySelector('#isWorld .is3-play').click()); await a.page.waitForTimeout(1500);
   await autoPlace(a.page, +(await a.text('#progress')).match(/0 of (\d+)/)[1]); await finishFirst(a.page);
   await a.page.evaluate(() => window.bloppitHome()); await a.page.waitForTimeout(500);
@@ -314,7 +317,7 @@ test('family key: make, attach a player, bring the player to another device', { 
   await b.page.evaluate(() => document.querySelector('[data-fam-bring]').click()); await b.page.waitForTimeout(1500);
   for (let i = 0; i < 20 && !/on this device/.test(await b.text('#famList')); i++) await b.page.waitForTimeout(500);
   assert.match(await b.text('#famList'), /on this device/);
-  assert.equal(await b.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-players-v1')).list.filter((p) => p.pup).length), 1);
+  assert.equal(await b.page.evaluate(() => JSON.parse(window.__testStorage.getItem('bloppit-players-v1')).list.filter((p) => p.pup).length), 1);
   assert.deepEqual(b.errors, []); await b.ctx.close();
 });
 

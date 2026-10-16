@@ -1,34 +1,26 @@
-# Delivery verification · 16 October 2026
+# Full challenger verification · 16 October 2026
 
-Live challenger: https://bloppit-chatgpt-challenger.netlify.app/challenger/
+Target: https://bloppit-chatgpt-challenger.netlify.app/challenger/
+Branch: chatgpt/bloppit-challenger
+Control baseline: 765ec30552e8698449cb3d28a9cdaf6e4f894107
 
-Randomized entry: https://bloppit-chatgpt-challenger.netlify.app/experiment/
+## Automated verification
 
-Control preview: https://bloppit-chatgpt-challenger.netlify.app/build/?ab=review
+39 tests passed across the current release checks on Windows, Node 22 and Chrome:
 
-Branch: https://github.com/steffindup/building-blox/tree/chatgpt/bloppit-challenger
+- 12 original gameplay regression scenarios run against the full challenger: first arrival and naming, first home completion, touch dragging, Trail completion, Longtail races, share links, weekly puzzles, world stages and fallback, relay, crew, island interactions, family transfer and drawings (some scenarios cover several features).
+- 5 new full-challenger tests: checked build hooks, full menu/mobile/settings, articulated world and independent saves, version 2 analytics and reporting, bundled native webview shell with isolated API origin.
+- 4 prototype browser tests, including the updated control adapter; the old four-build prototype remains at /prototype/.
+- 4 prototype rules tests and 14 existing server tests.
 
-The new Netlify project is **bloppit-chatgpt-challenger**, deployed from **chatgpt/bloppit-challenger**. Netlify's build log confirmed the branch-specific build command, `challenger-dist` publish directory, successful secret scanning and deployment of six functions. The original `bloppit` project was not modified. No production domain was reassigned. Original game HTML, original `mobile/` and original function code are unchanged relative to the inspected baseline.
+The five new tests were repeated after the final analytics initialization and packaging updates and passed. Server and rules tests were repeated successfully. Desktop and phone screenshots were visually inspected; the capture script additionally follows the real arrival/naming/first-build flow. The advanced-world image uses ten seeded sample completions for visual inspection and does not represent actual tester activity.
 
-## Automated results
+No production game HTML, original mobile/ files or original server function code changed relative to the baseline. The root Netlify context publishes only the challenger branch to its separate site. The manual iOS workflow installs the original challenger icon into mobile-challenger/ios and retains the separate bundle identity.
 
-All **34 tests passed** on Windows with Node 22 and installed Chrome:
+## Scope of the evidence
 
-- Four challenger rule tests: all models finish, repeat rewards stay unique, colour/orientation validation, valid resume and undo, corrupt-save recovery, nonoverlapping/supported authored bricks.
-- Four challenger browser tests: complete every model and reload the finished island; wrong brick and undo; phone layout and persistent settings; reviewer/randomized count separation and opt-in requests; generated control adapter and bundled Three.js.
-- Fourteen existing server tests: progress merges, transfer, weekly boundaries, groups, family keys and aggregate events.
-- Twelve existing browser tests: first visit/home build, touch placement, trail completion, Longtail race, share links, weekly bank, island stages/fallback, relay, crew, island interactions, family transfer and drawing.
+This verifies a complete-game presentation challenger, including the existing rules and content. It does not establish equivalence of every possible user interaction, superior enjoyment, commercial art quality, frame-rate/thermal behavior on physical phones, or actual participant conversion improvement. The new procedural character rig is original; it is not a Talking Tom asset or a claim to that studio's production quality.
 
-Live browser smoke test: the new site's root opened the challenger, the 3D world rendered, and Snap advanced the first build from 0/13 to 1/13. Desktop and 390px phone layouts were captured and visually inspected. Visual checks found and corrected washed-out materials, an oversized mouth animation and overlapping phone controls.
+Local A/B counts and the report are implemented. Hosted count reads need a new EVENTS_KEY on the separate Netlify project. No production key was copied. The report distinguishes randomized and reviewer counts and excludes version 1 prototype data.
 
-Hosted endpoint checks: `/challenger/` returned HTTP 200 with `X-Robots-Tag: noindex, nofollow`; a reviewer-only smoke event returned `{ok:true}` from the isolated `/api/event`; unauthenticated reporting returned HTTP 403. Final challenger browser tests were rerun successfully after correcting next-build copy for out-of-order completion and keeping generated control share URLs on the preview origin.
-
-## Limits and next actions
-
-This is a **four-build playable prototype**, not a complete replacement of all existing modes, and not verified to meet Talking Tom's production art quality. No real-player A/B results or superiority claim exists. Art appeal needs blinded human evaluation. Read `CHALLENGER.md` and `EXPERIMENT.md` for the feature comparison and study constraints.
-
-Local metrics/export work immediately. To read hosted aggregate counts at `/stats/`, the site owner must set a **new `EVENTS_KEY`** on the challenger Netlify project. No production key was copied. Shared counts are best effort and exclude reviewer traffic from the randomized prefixes; no backfill is performed after late opt-in.
-
-The offline native package builds, and a separate manual Codemagic workflow is supplied. An IPA was not built or submitted from Windows. Register `com.bloppit.challenger`, provide its own App Store Connect record/signing profile and `CHALLENGER_APPLE_ID`, add final icons, review the native CLI dependency audit, and run iPhone/iPad acceptance tests before TestFlight distribution. The production native workflow and identity remain separate.
-
-Software-rendered browser testing does not establish frame-rate, thermal, battery or memory performance on physical iPhones. No device benchmark or long-term retention claim is made.
+The full native web package is built and its local shell was checked in a browser with external requests blocked. Signing, native rendering, VoiceOver, background/resume, heat/battery, App Store validation and TestFlight install require the separate Apple app record and real iPhone/iPad tests. No IPA has been uploaded from this Windows session. Deployment and signing instructions are in CHALLENGER.md and mobile-challenger/README.md.

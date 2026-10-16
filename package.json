@@ -18,6 +18,9 @@
     "dev": "node tests/devserver.mjs",
     "build:www": "cd mobile && npm run build",
     "build:challenger": "node scripts/build-challenger.mjs",
-    "test:challenger": "node --test tests/challenger.test.mjs tests/challenger-browser.test.mjs"
+    "test:challenger": "node --test tests/challenger.test.mjs tests/challenger-browser.test.mjs",
+    "dev:challenger": "node scripts/dev-challenger.mjs",
+    "test:full": "node scripts/build-challenger-mobile.mjs && node --test tests/full-challenger.test.mjs",
+    "test:parity": "node scripts/test-parity.mjs"
   }
 }
