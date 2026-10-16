@@ -960,8 +960,12 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 .is3-banner.big{font-size:22px;background:#008F9B}
 @media (max-width:559px){.is3-play{min-width:0;font-size:16px;padding:8px 18px}.is3-play small{font-size:11px}.is3-banner{font-size:15px}.is3-banner.big{font-size:18px}}
 @keyframes is3-in{from{transform:translateY(-10px)}to{transform:none}}
-.is3-whole{position:absolute;bottom:18px;right:12px;pointer-events:auto;font:inherit;font-weight:800;font-size:13px;padding:8px 12px;border-radius:999px;border:0;background:rgba(255,255,255,.94);color:#14202C;box-shadow:0 2px 8px rgba(0,0,0,.18);cursor:pointer}
-.is3-whole .w-txt{display:none}@media (min-width:700px){.is3-whole .w-txt{display:inline}}
+.is3-views{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);display:flex;align-items:center;gap:4px;pointer-events:auto;padding:4px;border-radius:999px;background:rgba(20,32,44,.72);color:#fff;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 3px 10px rgba(0,0,0,.2)}
+.is3-views button{font:inherit;font-size:22px;line-height:1;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;cursor:pointer}
+.is3-views .v-mid{display:grid;justify-items:center;gap:3px;min-width:132px;padding:0 6px}.is3-views .v-name{font-weight:800;font-size:14px;white-space:nowrap}
+.is3-views .v-dots{display:flex;gap:4px}.is3-views .v-dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35)}.is3-views .v-dots i.on{background:#fff}
+.is3-say{position:absolute;left:0;top:0;pointer-events:none;padding:6px 12px 7px;border-radius:16px;background:#fff;color:#14202C;font-family:var(--f-display);font-size:16px;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.2);transform:translate(-50%,-100%);will-change:left,top}
+.is3-say::after{content:'';position:absolute;left:50%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-bottom:0;border-top-color:#fff}
 .is3-play{pointer-events:auto;margin-top:auto;display:grid;justify-items:center;gap:0;min-width:220px;max-width:92%;font-size:18px;padding:10px 22px;border-radius:999px;box-shadow:0 5px 0 #8f1f18,0 8px 18px rgba(0,0,0,.25)}
 .is3-play small{font-family:var(--f-body,inherit);font-size:12px;font-weight:700;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .pup-suggest{width:100%;margin:0 0 8px}
@@ -6613,7 +6617,7 @@ function isl3Init(){
     ISL3.r=r; ISL3.sc=sc; ISL3.cam=camera; ISL3.ok=true; ISL3.sun=sunL; ISL3.hemi=hemi; ISL3.sea=sea;
     r.domElement.className='is3-canvas'; r.domElement.setAttribute('role','img'); r.domElement.setAttribute('aria-label','Bloppitopia: Home Island and the five islands around it. Drag to turn, pinch to zoom, tap anything to see what it is.');
     isl3Events(r.domElement);
-    const ctl=new THREE.OrbitControls(camera,r.domElement); ctl.enableDamping=true; ctl.dampingFactor=.09; ctl.enablePan=true; ctl.screenSpacePanning=false; ctl.panSpeed=.8;
+    const ctl=new THREE.OrbitControls(camera,r.domElement); ctl.enableDamping=true; ctl.dampingFactor=.09; ctl.enableRotate=false; ctl.enablePan=false;   // guided: swipe between views, pinch to look closer
     ctl.minDistance=9; ctl.maxDistance=70; ctl.minPolarAngle=.35; ctl.maxPolarAngle=1.12; ctl.target.set(0,0,-1.5);
     ctl.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN}; ctl.addEventListener('change',()=>{ isl3ZoomFollow(); isl3Kick(); }); ctl.addEventListener('start',()=>{ ISL3.moved=true; }); ISL3.ctl=ctl;
     camera.position.set(0,26,33); ctl.update();
@@ -6668,7 +6672,7 @@ function isl3ZoomFollow(){ const Z=ISL3.zoomAt, ctl=ISL3.ctl, cam=ISL3.cam; if(!
   if(t.y!==0){ cam.position.y-=t.y; t.y=0; }
   isl3WholeBtn(); }
 // Fly to a thing that was tapped: an island, the home, Bloppit or the otter
-function isl3Focus(info,h){ let x,z,d;
+function isl3Focus(info,h){ const vi=isl3ViewOf(info); if(vi>=0){ if(ISL3.viewI===vi&&!ISL3.fly) return false; isl3GoView(vi); return true; } let x,z,d;
   if(info.startsWith('isle:')){ const I=ISL3.isles[info.slice(5)]; if(!I) return false; x=I.x; z=I.z; d=I.r*3.4+4; }
   else if(info==='land:beach'||info.startsWith('home:')){ x=0; z=0; d=HOME_R*2.9; }
   else if(info==='bloppit'||info==='pup'||info.startsWith('longtail:')){ const p=h&&h.obj?h.obj.getWorldPosition(new THREE.Vector3()):null; if(!p) return false; x=p.x; z=p.z; d=12; }
@@ -6676,7 +6680,21 @@ function isl3Focus(info,h){ let x,z,d;
   else return false;
   const cur=ISL3.cam.position.distanceTo(ISL3.ctl.target); if(Math.hypot(ISL3.ctl.target.x-x,ISL3.ctl.target.z-z)<.8&&cur<=d+.5) return false;
   isl3FlyTo(x,0,z,Math.min(cur,d),900); ISL3.moved=true; isl3WholeBtn(); return true; }
-function isl3WholeBtn(){ const b=ISL3.box&&ISL3.box.querySelector('.is3-whole'); if(!b) return; const far=ISL3.ctl.target.distanceTo(CAM_T3)>1.5||ISL3.cam.position.distanceTo(ISL3.ctl.target)<ISL3.fitD*.8; const h=!(far&&!ISL3.revealing&&!ISL3.arrive); if(b.hidden!==h) b.hidden=h; }
+// The guided camera: a few set views to swipe between (the whole world, Home Island, Bloppit and your otter, each island)
+function isl3Views(){ const v=[{id:'world',name:'Whole world'},{id:'home',name:'Home Island',x:0,z:.4,R:HOME_R*1.08},{id:'friends',name:'Bloppit & '+(pupName(worldStore())||'your otter'),R:3.3}];
+  for(const id of Object.keys(ISLES)){ const I=ISL3.isles&&ISL3.isles[id]; if(I) v.push({id:'isle:'+id,name:isleCount(id,worldStore())>0?ISLES[id].name:'A misty island',x:I.x,z:I.z,R:I.r*1.2}); }
+  const cam=ISL3.cam, vf=cam?THREE.MathUtils.degToRad(cam.fov)/2:.5, hf=cam?Math.atan(Math.tan(vf)*cam.aspect):.6; for(const x of v) if(x.R) x.d=Math.max(7,x.R/Math.tan(Math.min(vf,hf))*1.05); return v; }
+function isl3GoView(i,dur){ const V=isl3Views(); if(!V.length||!ISL3.ctl) return; i=((i%V.length)+V.length)%V.length; const v=V[i]; ISL3.viewI=i; islandTipHide(); ISL3.zoomAt=null;
+  if(v.id==='world'){ isl3FlyHome(dur||900); ISL3.fly.done=()=>{ ISL3.moved=false; }; ISL3.ctl.minDistance=Math.max(9,ISL3.fitD*.55); ISL3.ctl.maxDistance=ISL3.fitD+6; }
+  else { let x=v.x, z=v.z; if(v.id==='friends'&&ISL3.bloppit){ const p=ISL3.bloppit.position, q=ISL3.pupG?ISL3.pupG.position:p; x=(p.x+q.x)/2; z=(p.z+q.z)/2; }
+    isl3FlyTo(x,0,z,v.d,dur||900); ISL3.moved=true; ISL3.ctl.minDistance=Math.max(6,v.d*.55); ISL3.ctl.maxDistance=v.d*1.35; }
+  track('island_view:'+v.id.replace('isle:','')); isl3WholeBtn(); }
+function isl3ViewOf(info){ const V=isl3Views(), f=id=>V.findIndex(v=>v.id===id);
+  if(info.startsWith('isle:')) return f(info); if(info.startsWith('piece:')) return f('isle:'+info.split(':')[1]);
+  if(info==='bloppit'||info==='pup') return f('friends'); if(info==='land:beach'||info.startsWith('home:')) return f('home'); return -1; }
+function isl3WholeBtn(){ const el=ISL3.box&&ISL3.box.querySelector('.is3-views'); if(!el) return; const V=isl3Views(), i=Math.max(0,Math.min(V.length-1,ISL3.viewI||0));
+  const nm=el.querySelector('.v-name'); if(nm.textContent!==V[i].name) nm.textContent=V[i].name; const dots=V.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join(''); const dd=el.querySelector('.v-dots'); if(dd.innerHTML!==dots) dd.innerHTML=dots;
+  const h=!!(ISL3.revealing||ISL3.arrive||ISL3.arrival); if(el.hidden!==h) el.hidden=h; }
 function isl3Events(cv){
   cv.tabIndex=0; const pts=new Map(), touched=()=>{ ISL3.input=performance.now(); isl3Kick(); };
   for(const ev of ['pointerdown','pointermove','wheel','touchstart']) cv.addEventListener(ev,touched,{passive:true});
@@ -6684,7 +6702,7 @@ function isl3Events(cv){
   if('IntersectionObserver' in window){ new IntersectionObserver(es=>{ for(const e of es){ ISL3.hidden=!e.isIntersecting; if(!ISL3.hidden) isl3Kick(); } }).observe(cv); }
   document.addEventListener('visibilitychange',()=>{ if(!document.hidden) isl3Kick(); });
   cv.addEventListener('wheel',e=>{ if(!ISL3.revealing&&!ISL3.arrive) isl3ZoomAt(e.clientX,e.clientY); ISL3.moved=true; },{capture:true,passive:true});
-  cv.addEventListener('pointerdown',e=>{ pts.set(e.pointerId,[e.clientX,e.clientY]); if(pts.size===2){ const [a,b]=[...pts.values()]; isl3ZoomAt((a[0]+b[0])/2,(a[1]+b[1])/2); } },{capture:true});
+  cv.addEventListener('pointerdown',e=>{ pts.set(e.pointerId,[e.clientX,e.clientY]); if(pts.size>=2&&ISL3.down) ISL3.down.multi=true; if(pts.size===2){ const [a,b]=[...pts.values()]; isl3ZoomAt((a[0]+b[0])/2,(a[1]+b[1])/2); } },{capture:true});
   cv.addEventListener('pointermove',e=>{ if(!pts.has(e.pointerId)) return; pts.set(e.pointerId,[e.clientX,e.clientY]); if(pts.size===2&&ISL3.zoomAt){ const [a,b]=[...pts.values()], p=isl3Ground({clientX:(a[0]+b[0])/2,clientY:(a[1]+b[1])/2}); if(p){ ISL3.zoomAt.p=p; ISL3.zoomAt.t=performance.now(); } } },{capture:true});
   const ptsUp=e=>pts.delete(e.pointerId); cv.addEventListener('pointerup',ptsUp,{capture:true}); cv.addEventListener('pointercancel',ptsUp,{capture:true});
   cv.addEventListener('dblclick',e=>{ if(ISL3.revealing||ISL3.arrive) return; const p=isl3Ground(e); if(!p) return; const d=ISL3.cam.position.distanceTo(ISL3.ctl.target); isl3FlyTo(p.x,0,p.z,Math.max(ISL3.ctl.minDistance,d*.55),600); ISL3.moved=true; });
@@ -6698,7 +6716,13 @@ function isl3Events(cv){
   const up=e=>{ const d=ISL3.down; ISL3.down=null; if(ISL3.ctl) ISL3.ctl.enabled=true; if(!d) return;
     if(d.drag&&d.moved){ ISL3.dragging=false; let x=d.drag.position.x, z=d.drag.position.z; const fits=d.drag.userData.decor?((a,b)=>inPoly(a,b,scalePoly(HOMEP,0,0,.9))):onGrass; for(let i=0;i<30&&!fits(x,z);i++){ x*=.92; z*=.92; }
       const o=worldStore(); o.pos={...(o.pos||{}),[d.drag.userData.key]:[W2P(x),W2P(z)]}; worldSet(o); track('island_arranged'); sfx.snap(); islandShown=worldCount(o); renderIsland(); return; }
-    if(e.type==='pointerup'&&!d.moved&&performance.now()-d.t<600&&d.h){ islandHover(null); if(d.h.info==='bloppit'){ if(ISL3.dozing) isl3Wake(); else bloppitCheer(); } if(d.h.info.startsWith('longtail:')) longtailSquawk(); const info=d.h.info; if(/^(piece|home):/.test(d.h.info)){ const c=d.h.point; isl3Confetti(c.x,c.y+.6,c.z,24); } if(isl3Focus(info,d.h)){ islandTipHide(); clearTimeout(ISL3.tipT); ISL3.tipT=setTimeout(()=>{ const v=ISL3.ctl.target.clone().setY(TOP3).project(ISL3.cam), r=ISL3.r.domElement.getBoundingClientRect(), sx=r.left+(v.x+1)/2*r.width, sy=r.top+(1-v.y)/2*r.height;
+    if(e.type==='pointerup'&&d.moved&&!d.drag&&!d.multi){ const dx=e.clientX-d.x, dy=e.clientY-d.y; if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3){ isl3GoView((ISL3.viewI||0)+(dx<0?1:-1)); sfx.tick&&sfx.tick(); } return; }
+    if(e.type==='pointerup'&&!d.moved&&performance.now()-d.t<600&&d.h){ islandHover(null); const info0=d.h.info;
+      // characters: a reaction first; a second tap soon after shows who they are
+      if(info0==='bloppit'||info0==='pup'||info0.startsWith('longtail:')){ const again=ISL3.lastPoke&&ISL3.lastPoke.info===info0&&performance.now()-ISL3.lastPoke.t<4000;
+        if(!again){ ISL3.lastPoke={info:info0,t:performance.now()}; if(info0==='bloppit'&&ISL3.dozing) isl3Wake(); else charReact(info0); const vi=isl3ViewOf(info0); if(vi>=0&&ISL3.viewI!==vi) isl3GoView(vi); return; }
+        ISL3.lastPoke=null; islandTip(info0,anchorAt(e.clientX,e.clientY)); return; }
+      const info=d.h.info; if(/^(piece|home):/.test(d.h.info)){ const c=d.h.point; isl3Confetti(c.x,c.y+.6,c.z,24); } if(isl3Focus(info,d.h)){ islandTipHide(); clearTimeout(ISL3.tipT); ISL3.tipT=setTimeout(()=>{ const v=ISL3.ctl.target.clone().setY(TOP3).project(ISL3.cam), r=ISL3.r.domElement.getBoundingClientRect(), sx=r.left+(v.x+1)/2*r.width, sy=r.top+(1-v.y)/2*r.height;
         if(r.width>=700){ const a=anchorAt(sx,sy), R=Math.min(r.width*.2,170); a.getBoundingClientRect=()=>({left:sx-R,right:sx+R,top:sy,bottom:sy,width:2*R,height:0}); a.side=true; islandTip(info,a); }
         else { const a=anchorAt(r.left+r.width/2,r.bottom-4); a.below=true; islandTip(info,a); } },950); }
       else islandTip(info,anchorAt(e.clientX,e.clientY)); } };
@@ -6716,7 +6740,7 @@ function isl3Point(info){ if(!ISL3.world) return null; let found=null;
   if(info==='decor:kite') c.y=TOP3+5.2;
   c.project(ISL3.cam);
   const r=ISL3.r.domElement.getBoundingClientRect(); return {x:r.left+(c.x+1)/2*r.width,y:r.top+(1-c.y)/2*r.height}; }
-window.bloppitIslandPoint=isl3Point; window.bloppitIsland3=()=>ISL3; window.bloppitPick=(x,y)=>{ const h=isl3Pick({clientX:x,clientY:y}); return h&&h.info; };   // for tests
+window.bloppitView=i=>isl3GoView(i); window.bloppitIslandPoint=isl3Point; window.bloppitIsland3=()=>ISL3; window.bloppitPick=(x,y)=>{ const h=isl3Pick({clientX:x,clientY:y}); return h&&h.info; };   // for tests
 // Everything on the island as a list of buttons, for keyboards and screen readers (shown when tabbed into)
 function isl3A11y(o){ let L=$('#isA11y'); if(!L) return; const ids=[]; ISL3.world.traverse(x=>{ const i=x.userData.info; if(i&&!ids.includes(i)&&i!=='land:sea') ids.push(i); });
   L.innerHTML=`<b>On Bloppitopia</b>`+ids.map(i=>`<button type="button" data-info="${escapeHTML(i)}">${escapeHTML(islandInfo(i,o).title)}</button>`).join(''); }
@@ -6754,6 +6778,35 @@ const STORIES={
   hard:{who:'The oldest and cleverest Longtail',story:'Squint found his monocle on the beach after a storm. Now he can spot a wonky brick from the top of the lighthouse, and he keeps a little notebook of every brick on Bloppitopia.',loves:'Neat rows, straight walls, and winning (fairly)',secret:'When nobody is looking, he quietly straightens other people’s crooked bricks.'},
 };
 const LONGTAIL_FACT='Real Longtails are white-tailed tropicbirds. They fly back to Bermuda every spring and nest in holes in the cliffs.';
+// Tap a character: something funny happens straight away (a hop, a wiggle, a spin, a squash), with a word and a sound
+const REACT_LINES={
+  bloppit:['Hee hee! That tickles!','Let’s build something!','Click! Snap! Done!','Whoa, careful!','Wheee!','High five!','Have you seen my red brick? Oh, here it is.'],
+  pup:['Wheee!','Hello, friend!','Again! Again!','Let’s build!','Look at me!','Hee hee!'],
+  longtail:['Squawk!','Race you!','Shiny brick… mine!','You can’t catch me!','Squawk squawk!']};
+const REACT_POSES=['/art/bud-happy.png','/art/bud-reach.png','/art/bud-offer.png','/art/bud-oops.png','/art/bud-hug.png'];
+function charReact(info){ const now=performance.now(), kinds=['jump','wiggle','spin','squash'], pick=a=>a[Math.floor(Math.random()*a.length)];
+  let sp=null, grp=null, who='bloppit';
+  if(info==='bloppit'){ sp=ISL3.bloppitSprite; grp=ISL3.bloppit; const was=ISL3.bloppitPose, pose=pick(REACT_POSES); if(sp){ sp.material.map=tex3(pose); sp.material.needsUpdate=true; clearTimeout(ISL3.cheerT); ISL3.cheerT=setTimeout(()=>{ if(ISL3.bloppitSprite===sp){ sp.material.map=tex3(was); sp.material.needsUpdate=true; isl3Kick(); } },1700); } }
+  else if(info==='pup'){ grp=ISL3.pupG; sp=grp&&grp.children[0]; who='pup'; }
+  else { grp=ISL3.longtail; sp=ISL3.longtailSprite; who='longtail'; if(ISL3.ltNight){ longtailSquawk(); return; } }
+  if(!sp||!grp) return; if(!sp.userData.s0) sp.userData.s0=[Math.abs(sp.scale.x),sp.scale.y];
+  ISL3.react={sp,grp,kind:pick(kinds),t0:now}; const line=pick(REACT_LINES[who]);
+  isl3Say(grp,who==='pup'&&Math.random()<.4&&pupName(worldStore())?`I’m ${pupName(worldStore())}!`:line);
+  try{ (who==='longtail'?sfx.bonk:who==='pup'?sfx.chime:sfx.chirp)(); }catch(e){}
+  if(Math.random()<.35){ const p=grp.position; isl3Confetti(p.x,TOP3+1.6,p.z,12); }
+  track('char_poke:'+who); isl3Kick(); }
+function isl3ReactStep(now){ const R=ISL3.react; if(!R) return false; const k=(now-R.t0)/900, sp=R.sp, [sx,sy]=sp.userData.s0, flip=Math.sign(sp.scale.x)||1;
+  if(k>=1){ sp.scale.set(sx*flip,sy,1); sp.material.rotation=0; if(R.kind==='jump'&&R.grp!==ISL3.bloppit&&R.grp!==ISL3.longtail) R.grp.position.y=0; ISL3.react=null; return true; }
+  const e=Math.sin(k*Math.PI);
+  if(R.kind==='jump'){ if(R.grp===ISL3.bloppit) ISL3.jumpT=R.t0; else if(R.grp===ISL3.longtail) ISL3.ltJumpT=R.t0; else R.grp.position.y=e*.8; }
+  if(R.kind==='wiggle') sp.material.rotation=Math.sin(k*Math.PI*6)*.22*(1-k);
+  if(R.kind==='spin') sp.scale.x=sx*Math.cos(k*Math.PI*2);
+  if(R.kind==='squash'){ const q=Math.sin(k*Math.PI*3)*(1-k)*.25; sp.scale.set(sx*(1+q)*flip,sy*(1-q),1); }
+  return true; }
+// A speech bubble over a character for a moment
+function isl3Say(grp,text){ const el=ISL3.box&&ISL3.box.querySelector('.is3-say'); if(!el) return; el.textContent=text; el.hidden=false; ISL3.say={grp,until:performance.now()+2000}; clearTimeout(ISL3.sayT); ISL3.sayT=setTimeout(()=>{ el.hidden=true; ISL3.say=null; },2000); }
+function isl3SayPlace(){ const S=ISL3.say, el=ISL3.box&&ISL3.box.querySelector('.is3-say'); if(!S||!el||el.hidden) return; const v=S.grp.position.clone(); v.y=TOP3+(S.grp===ISL3.bloppit?3.1:S.grp===ISL3.longtail?2.9:2.4); v.project(ISL3.cam);
+  const r=ISL3.r.domElement, x=(v.x+1)/2*r.clientWidth, y=(1-v.y)/2*r.clientHeight; el.style.left=Math.max(70,Math.min(r.clientWidth-70,x))+'px'; el.style.top=Math.max(40,y)+'px'; }
 function bloppitCheer(){ ISL3.jumpT=performance.now(); sfx.chirp(); const s=ISL3.bloppitSprite; if(!s) return; const was=ISL3.bloppitPose; s.material.map=tex3('/art/bud-happy.png'); s.material.needsUpdate=true;
   clearTimeout(ISL3.cheerT); ISL3.cheerT=setTimeout(()=>{ if(ISL3.bloppitSprite===s){ s.material.map=tex3(was); s.material.needsUpdate=true; isl3Kick(); } },1600); isl3Kick(); }
 
@@ -7116,7 +7169,7 @@ function isl3Tod(force){ const h=isl3Hour(); if(!force&&ISL3.todH!=null&&Math.ab
 // The loop: about 30 frames a second while Bloppitopia is on screen, nothing when it isn't
 function isl3Frame(now){
   ISL3.raf=0; if(!ISL3.on) return;
-  const busy=ISL3.dragging||ISL3.fly||(ISL3.pops&&ISL3.pops.length)||(ISL3.parts&&ISL3.parts.length);
+  const busy=ISL3.dragging||ISL3.fly||ISL3.react||ISL3.say||(ISL3.pops&&ISL3.pops.length)||(ISL3.parts&&ISL3.parts.length);
   if(ISL3.hidden){ return; }   // scrolled off screen: the observer starts it again
   const gap=busy||now-(ISL3.input||0)<2500?31:66;
   if(!ISL3.dirty&&!busy&&now-(ISL3.last||0)<gap){ ISL3.raf=requestAnimationFrame(isl3Frame); return; } ISL3.last=now;
@@ -7124,7 +7177,7 @@ function isl3Frame(now){
   if(ISL3.fly) isl3FlyStep(now); else if(ISL3.ctl) ISL3.ctl.update();
   const A=ISL3.anim||[]; if(!reduceMotion) for(const x of A) isl3Animate(x,t); else for(const x of A) if(x.userData.hand) isl3Animate(x,t);
   isl3Pops(now);
-  ISL3.r.render(ISL3.sc,ISL3.cam); { const k=ISL3.cam.matrixWorld.elements.join()+'|'+ISL3.r.domElement.width; if(k!==ISL3.labK||ISL3.dirty){ ISL3.labK=k; isl3PlaceLabels(); } } ISL3.dirty=false;
+  isl3ReactStep(now); ISL3.r.render(ISL3.sc,ISL3.cam); isl3SayPlace(); { const k=ISL3.cam.matrixWorld.elements.join()+'|'+ISL3.r.domElement.width; if(k!==ISL3.labK||ISL3.dirty){ ISL3.labK=k; isl3PlaceLabels(); } } ISL3.dirty=false;
   if(ISL3.on&&(!reduceMotion||busy||(ISL3.settle-->0))) ISL3.raf=requestAnimationFrame(isl3Frame);
 }
 function isl3Animate(x,t){ const u=x.userData;
@@ -7158,7 +7211,7 @@ function isl3Animate(x,t){ const u=x.userData;
 const ease3=k=>k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
 function isl3FlyTo(x,y,z,dist,dur){ const cam=ISL3.cam, ctl=ISL3.ctl, dir=cam.position.clone().sub(ctl.target).normalize();
   ISL3.fly={t0:performance.now(),dur:dur||1100,p0:cam.position.clone(),q0:ctl.target.clone(),q1:new THREE.Vector3(x,y,z),p1:new THREE.Vector3(x,y,z).addScaledVector(dir,dist)}; isl3Kick(); }
-function isl3FlyHome(dur){ const cam=ISL3.cam, box=ISL3.box, w=box.clientWidth, h=box.clientHeight, c=cam.clone(); isl3Fit(c,w/h); const d=c.position.distanceTo(CAM_T3);
+function isl3FlyHome(dur){ ISL3.viewI=0; const cam=ISL3.cam, box=ISL3.box, w=box.clientWidth, h=box.clientHeight, c=cam.clone(); isl3Fit(c,w/h); const d=c.position.distanceTo(CAM_T3);
   ISL3.fly={t0:performance.now(),dur:dur||1000,p0:cam.position.clone(),q0:ISL3.ctl.target.clone(),q1:CAM_T3.clone(),p1:c.position.clone()}; isl3Kick(); }
 function isl3FlyStep(now){ const F=ISL3.fly, k=Math.min(1,(now-F.t0)/F.dur), e=ease3(k); ISL3.cam.position.lerpVectors(F.p0,F.p1,e); ISL3.ctl.target.lerpVectors(F.q0,F.q1,e); ISL3.cam.lookAt(ISL3.ctl.target); if(k>=1){ ISL3.fly=null; ISL3.ctl.update(); if(F.done) F.done(); } }
 // Pops (a new piece springs up), islands rising from the mist, confetti
@@ -7196,8 +7249,8 @@ function revealText(id,o){ const [k,a,b]=id.split(':');
 function isl3Banner(t,big){ const b=ISL3.box&&ISL3.box.querySelector('.is3-banner'); if(!b) return; b.textContent=t; b.hidden=!t; b.classList.toggle('big',!!big); }
 // The buttons over the world: Play Next (one obvious next step), and the arrival's Build Our First Home
 function isl3Chrome(){ const box=ISL3.box; if(!box) return; let c=box.querySelector('.is3-chrome');
-  if(!c){ c=document.createElement('div'); c.className='is3-chrome'; c.innerHTML='<div class="is3-banner" hidden></div><button class="primary is3-play" type="button"></button><button class="is3-whole" type="button" hidden aria-label="See the whole world" title="See the whole world">🌍<span class="w-txt"> Whole world</span></button>'; box.appendChild(c);
-    c.querySelector('.is3-whole').onclick=()=>{ islandTipHide(); ISL3.zoomAt=null; isl3FlyHome(800); ISL3.fly.done=()=>{ ISL3.moved=false; isl3WholeBtn(); }; };
+  if(!c){ c=document.createElement('div'); c.className='is3-chrome'; c.innerHTML='<div class="is3-banner" hidden></div><button class="primary is3-play" type="button"></button><div class="is3-views" hidden><button class="v-prev" type="button" aria-label="Previous view">‹</button><span class="v-mid"><span class="v-name"></span><span class="v-dots" aria-hidden="true"></span></span><button class="v-next" type="button" aria-label="Next view">›</button></div><div class="is3-say" hidden></div>'; box.appendChild(c);
+    c.querySelector('.v-prev').onclick=()=>isl3GoView((ISL3.viewI||0)-1); c.querySelector('.v-next').onclick=()=>isl3GoView((ISL3.viewI||0)+1);
     c.querySelector('.is3-play').onclick=()=>{ const a=c.querySelector('.is3-play').dataset.act; if(a==='home'){ track('first_home_start'); welcomeStart(); return; } const n=nextBuild(); track('play_next:island'); if(n) n.go(); else homeGo('quick'); }; }
   const b=c.querySelector('.is3-play'), o=worldStore();
   if(ISL3.arrival==='home'){ b.dataset.act='home'; b.innerHTML='🔨 Build Our First Home'; b.hidden=false; }
@@ -7281,7 +7334,7 @@ function isl3Show(box,o){ isl3Immersive(); isl3WakeCheck();
   if(ISL3.revealing&&ISL3.on&&ISL3.box===box) return;   // a reveal is playing: don't pull the world out from under it
   ISL3.box=box; if(!box.contains(ISL3.r.domElement)){ box.innerHTML=''; box.appendChild(ISL3.r.domElement); box.classList.add('is3'); }
   const n=worldCount(o); ISL3.arrival=n===0?(!pupName(o)&&!o.pupAsked&&!o.arrived?(ISL3.arrival==='home'?'home':'boat'):'home'):null;
-  isl3Build(o); isl3Size(); ISL3.on=true; ISL3.settle=30; isl3Chrome(); isl3Kick();
+  isl3Build(o); isl3Size(); ISL3.on=true; ISL3.settle=30; isl3Chrome(); isl3Kick(); if(!ISL3.moved) ISL3.viewI=0; isl3WholeBtn();
   if(!ISL3.ro){ ISL3.ro=new ResizeObserver(()=>{ if(ISL3.on){ isl3Size(); isl3Kick(); } }); ISL3.ro.observe(box); }
   isl3A11y(o);
   ISL3.pending_acc=accNew(o);
@@ -7323,7 +7376,7 @@ function renderIsland(){
     $('#isNext').innerHTML=g?`<span>${escapeHTML(g.text)}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*g.frac))}%"></i></span>`:'<span>Every island is complete. What a world!</span>'; }
   else $('#isStage').innerHTML=`${ISLAND_STAGES[stage].name}<small>${n} build${n===1?'':'s'} finished · ${worldStars(o)} Build Star${worldStars(o)===1?'':'s'} to spend</small>`;
   if(!ISL3.ok) $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>Your village is built. Now grow the five islands around it.</span>';
-  $('#isNote').textContent=n?`${pupName(o)||'Your pup'} and Bloppit are home. Tap anything to see what it is${n>1?`, and drag a model anywhere on the ${ISL3.ok?'grass':'sand'}`:''}${ISL3.ok?'. Tap an island to fly there; turn with one finger, pinch to zoom in where you like, slide two fingers to move':''}.`:ISL3.ok?`${pupName(o)?pupName(o)+'’s':'Your'} home is waiting to be built. Tap anything to see what it is.`:'Finish any build and the first hut rises from the sand. Tap anything to see what it is.';
+  $('#isNote').textContent=n?`${pupName(o)||'Your pup'} and Bloppit are home. Tap anything to see what it is${n>1?`, and drag a model anywhere on the ${ISL3.ok?'grass':'sand'}`:''}${ISL3.ok?'. Swipe to move between views, pinch to look closer, and tap anyone to say hello':''}.`:ISL3.ok?`${pupName(o)?pupName(o)+'’s':'Your'} home is waiting to be built. Tap anything to see what it is.`:'Finish any build and the first hut rises from the sand. Tap anything to see what it is.';
   $('#isCard').hidden=stage<3; $('#isDecor').hidden=!n;
   renderDecorShop(); renderBuilds();
 }
