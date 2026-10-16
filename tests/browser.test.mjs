@@ -228,20 +228,34 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   const tap = async (id) => { await still(); const c = await pt(id); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(1200);
     await t.page.waitForFunction(() => !document.getElementById('isTip').hidden, null, { timeout: 4000, polling: 100 }).catch(() => {}); const txt = await t.text('#isTip');
     await t.page.evaluate(() => document.querySelector('#isTip .tt-x')?.click());
-    if (await t.page.evaluate(() => { const b = document.querySelector('#isWorld .is3-whole'); if (b && !b.hidden) { b.click(); return true; } return false; })) await still();   // tapping flies there; back to the whole world
+    if (await t.page.evaluate(() => { if (window.bloppitIsland3().viewI) { window.bloppitView(0); return true; } return false; })) await still();   // tapping flies there; back to the whole world
+    return txt; };
+  // characters: the first tap is a reaction (a word in a bubble), the second shows who they are
+  const tapChar = async (id) => { await still(); let c = await pt(id); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(300);
+    const said = await t.page.evaluate(() => { const b = document.querySelector('#isWorld .is3-say'); return b && !b.hidden ? b.textContent : ''; });
+    assert.ok(said, 'a reaction for ' + id); assert.equal(await t.page.evaluate(() => document.getElementById('isTip').hidden), true);
+    await still(); c = await pt(id); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(400); const txt = await t.text('#isTip');
+    await t.page.evaluate(() => document.querySelector('#isTip .tt-x')?.click()); if (await t.page.evaluate(() => { if (window.bloppitIsland3().viewI) { window.bloppitView(0); return true; } return false; })) await still();
     return txt; };
   // places, Bloppit, the pup, a decoration, the islands nearby: each says what it is, its level and what's next
   assert.match(await tap('land:beach'), /Home Island.*Builds finished3.*Islands discovered/);
-  assert.match(await tap('bloppit'), /Bloppit.*storm.*build buddy.*Secret.*red brick/);
-  assert.match(await tap('longtail:easy'), /Scraps.*(A Longtail|Roosting in a cliff nest).*feather.*Secret.*Did you know\?.*tropicbirds.*Race Scraps/);
-  assert.match(await tap('pup'), /Bubbles.*Level \d+ Pup.*1 stud.*Otter level.*Wardrobe.*Name or colour/);
+  assert.match(await tapChar('bloppit'), /Bloppit.*storm.*build buddy.*Secret.*red brick/);
+  assert.match(await tapChar('longtail:easy'), /Scraps.*(A Longtail|Roosting in a cliff nest).*feather.*Secret.*Did you know\?.*tropicbirds.*Race Scraps/);
+  assert.match(await tapChar('pup'), /Bubbles.*Level \d+ Pup.*1 stud.*Otter level.*Wardrobe.*Name or colour/);
   assert.match(await tap('decor:flag'), /Flag/);
   assert.match(await tap('isle:sunrise'), /A misty island.*Play Weekly Bloppit to discover it.*This week’s Bloppit/);
   assert.match(await tap('isle:blitzbay'), /A misty island.*Race a Longtail/);
   { await still(); const c = await pt('isle:sunrise'); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(600); await still();
-    assert.equal(await t.page.evaluate(() => { const I = window.bloppitIsland3(), s = I.isles.sunrise; return Math.hypot(I.ctl.target.x - s.x, I.ctl.target.z - s.z) < 1 && !document.querySelector('#isWorld .is3-whole').hidden; }), true);   // flew there
-    await t.page.evaluate(() => { document.querySelector('#isTip .tt-x')?.click(); document.querySelector('#isWorld .is3-whole').click(); }); await still();
-    assert.equal(await t.page.evaluate(() => document.querySelector('#isWorld .is3-whole').hidden), true); }
+    assert.equal(await t.page.evaluate(() => { const I = window.bloppitIsland3(), s = I.isles.sunrise; return Math.hypot(I.ctl.target.x - s.x, I.ctl.target.z - s.z) < 1; }), true);   // flew there
+    assert.match(await t.text('#isWorld .is3-views .v-name'), /misty island/);
+    await t.page.evaluate(() => { document.querySelector('#isTip .tt-x')?.click(); window.bloppitView(0); }); await still();
+    assert.equal(await t.text('#isWorld .is3-views .v-name'), 'Whole world');
+    // a one-finger slide doesn't spin the world; a swipe moves to the next view
+    const dir = () => t.page.evaluate(() => { const I = window.bloppitIsland3(); return I.cam.position.clone().sub(I.ctl.target).normalize().toArray().map((v) => +v.toFixed(2)); });
+    const d0 = await dir(), w = await t.page.evaluate(() => { const r = document.querySelector('#isWorld canvas').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height * .8 }; });
+    await t.page.mouse.move(w.x + 120, w.y); await t.page.mouse.down(); await t.page.mouse.move(w.x, w.y, { steps: 5 }); await t.page.mouse.move(w.x - 120, w.y, { steps: 5 }); await t.page.mouse.up(); await t.page.waitForTimeout(400); await still();
+    assert.deepEqual(await dir(), d0); assert.equal(await t.text('#isWorld .is3-views .v-name'), 'Home Island');
+    await t.page.evaluate(() => window.bloppitView(0)); await still(); }
   // a model: where it came from, when, stars, best time; then put it away (the card's button)
   const key = (await models())[0];
   const c = await pt('model:' + key); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(400);
