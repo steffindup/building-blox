@@ -250,7 +250,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
     assert.match(await t.text('#isWorld .is3-views .v-name'), /misty island/);
     assert.equal(await t.page.evaluate(() => document.querySelector('#isWorld .is3-views .v-world').hidden), false);   // one tap back to the whole world, from any view
     await t.page.evaluate(() => { document.querySelector('#isTip .tt-x')?.click(); document.querySelector('#isWorld .is3-views .v-world').click(); }); await still();
-    assert.equal(await t.text('#isWorld .is3-views .v-name'), 'Whole world'); assert.equal(await t.page.evaluate(() => document.querySelector('#isWorld .is3-views .v-world').hidden), true);
+    assert.equal(await t.text('#isWorld .is3-views .v-name'), 'Bloppitopia'); assert.equal(await t.page.evaluate(() => document.querySelector('#isWorld .is3-views .v-world').hidden), true);
     // a one-finger slide doesn't spin the world; a swipe moves to the next view
     const dir = () => t.page.evaluate(() => { const I = window.bloppitIsland3(); return I.cam.position.clone().sub(I.ctl.target).normalize().toArray().map((v) => +v.toFixed(2)); });
     const d0 = await dir(), w = await t.page.evaluate(() => { const r = document.querySelector('#isWorld canvas').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height * .8 }; });
