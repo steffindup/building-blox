@@ -6681,8 +6681,8 @@ function isl3Focus(info,h){ const vi=isl3ViewOf(info); if(vi>=0){ if(ISL3.viewI=
   else return false;
   const cur=ISL3.cam.position.distanceTo(ISL3.ctl.target); if(Math.hypot(ISL3.ctl.target.x-x,ISL3.ctl.target.z-z)<.8&&cur<=d+.5) return false;
   isl3FlyTo(x,0,z,Math.min(cur,d),900); ISL3.moved=true; isl3WholeBtn(); return true; }
-// The guided camera: a few set views to swipe between (the whole world, Home Island, Bloppit and your otter, each island)
-function isl3Views(){ const v=[{id:'world',name:'Whole world'},{id:'home',name:'Home Island',x:0,z:.4,R:HOME_R*1.08},{id:'friends',name:'Bloppit & '+(pupName(worldStore())||'your otter'),R:3.3}];
+// The guided camera: a few set views to swipe between (all of Bloppitopia, Home Island, Bloppit and your otter, each island)
+function isl3Views(){ const v=[{id:'world',name:'Bloppitopia'},{id:'home',name:'Home Island',x:0,z:.4,R:HOME_R*1.08},{id:'friends',name:'Bloppit & '+(pupName(worldStore())||'your otter'),R:3.3}];
   for(const id of Object.keys(ISLES)){ const I=ISL3.isles&&ISL3.isles[id]; if(I) v.push({id:'isle:'+id,name:isleCount(id,worldStore())>0?ISLES[id].name:'A misty island',x:I.x,z:I.z,R:I.r*1.2}); }
   const cam=ISL3.cam, vf=cam?THREE.MathUtils.degToRad(cam.fov)/2:.5, hf=cam?Math.atan(Math.tan(vf)*cam.aspect):.6; for(const x of v) if(x.R) x.d=Math.max(7,x.R/Math.tan(Math.min(vf,hf))*1.05); return v; }
 function isl3GoView(i,dur){ const V=isl3Views(); if(!V.length||!ISL3.ctl) return; i=((i%V.length)+V.length)%V.length; const v=V[i]; ISL3.viewI=i; islandTipHide(); ISL3.zoomAt=null;
@@ -7250,7 +7250,7 @@ function revealText(id,o){ const [k,a,b]=id.split(':');
 function isl3Banner(t,big){ const b=ISL3.box&&ISL3.box.querySelector('.is3-banner'); if(!b) return; b.textContent=t; b.hidden=!t; b.classList.toggle('big',!!big); }
 // The buttons over the world: Play Next (one obvious next step), and the arrival's Build Our First Home
 function isl3Chrome(){ const box=ISL3.box; if(!box) return; let c=box.querySelector('.is3-chrome');
-  if(!c){ c=document.createElement('div'); c.className='is3-chrome'; c.innerHTML='<div class="is3-banner" hidden></div><button class="primary is3-play" type="button"></button><div class="is3-views" hidden><button class="v-world" type="button" aria-label="Back to the whole world" title="Whole world" hidden>🌍</button><button class="v-prev" type="button" aria-label="Previous view">‹</button><span class="v-mid"><span class="v-name"></span><span class="v-dots" aria-hidden="true"></span></span><button class="v-next" type="button" aria-label="Next view">›</button></div><div class="is3-say" hidden></div>'; box.appendChild(c);
+  if(!c){ c=document.createElement('div'); c.className='is3-chrome'; c.innerHTML='<div class="is3-banner" hidden></div><button class="primary is3-play" type="button"></button><div class="is3-views" hidden><button class="v-world" type="button" aria-label="Back to all of Bloppitopia" title="Bloppitopia" hidden>🏝️</button><button class="v-prev" type="button" aria-label="Previous view">‹</button><span class="v-mid"><span class="v-name"></span><span class="v-dots" aria-hidden="true"></span></span><button class="v-next" type="button" aria-label="Next view">›</button></div><div class="is3-say" hidden></div>'; box.appendChild(c);
     c.querySelector('.v-world').onclick=()=>isl3GoView(0); c.querySelector('.v-mid').onclick=()=>{ if(ISL3.viewI) isl3GoView(0); }; c.querySelector('.v-prev').onclick=()=>isl3GoView((ISL3.viewI||0)-1); c.querySelector('.v-next').onclick=()=>isl3GoView((ISL3.viewI||0)+1);
     c.querySelector('.is3-play').onclick=()=>{ const a=c.querySelector('.is3-play').dataset.act; if(a==='home'){ track('first_home_start'); welcomeStart(); return; } const n=nextBuild(); track('play_next:island'); if(n) n.go(); else homeGo('quick'); }; }
   const b=c.querySelector('.is3-play'), o=worldStore();
@@ -7301,7 +7301,7 @@ function accCanvas(x,o,where){ const w=accWear(o); for(const [s,[id,ci]] of Obje
 // A new outfit piece: offer it with its colour choice (once)
 function accNew(o){ const seen=new Set(seenGet()||[]); return ACC.filter(a=>!(a.lvl===1)&&accOwned(a,o)&&!seen.has('acc:'+a.id)); }
 function accOffer(a){ const d=$('#accDlg'), o=worldStore(); ISL3.accDraft={id:a.id,slot:a.slot,ci:pupColorOf(o)};
-  $('#accTitle').textContent=`${pupName(o)||'Your otter'} earned a ${a.name.toLowerCase()}!`; $('#accSub').textContent='Pick its colour.';
+  $('#accTitle').textContent=`${pupName(o)||'Your otter'} earned ${a.id==='glasses'?'':'a '}${a.name.toLowerCase()}!`; $('#accSub').textContent='Pick its colour.';
   accRender(); const s=seenGet()||[]; s.push('acc:'+a.id); seenSet(s); track('acc_earned:'+a.id);
   d.onclose=()=>{ d.onclose=null; renderIsland(); }; if(!d.open){ d.showModal(); sfx.hatch(); } }
 function wardrobeOpen(){ const d=$('#accDlg'), o=worldStore(), w=accWear(o), first=ACC.find(a=>accOwned(a,o));
