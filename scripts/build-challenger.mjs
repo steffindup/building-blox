@@ -13,6 +13,9 @@ if(!baseline.includes('function track(...names){'))throw Error('Baseline analyti
 baseline=baseline.replace('function track(...names){','function track(...names){ window.__abTrack?.(...names); return; // Preview adapter: original tracking disabled.\n');
 baseline=baseline.replace('<head>','<head>\n<meta name="robots" content="noindex,nofollow"><script type="module" src="/experiment/baseline.mjs"></script>');
 baseline=baseline.replaceAll('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','/challenger/vendor/three.min.js').replaceAll('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js','/challenger/vendor/OrbitControls.js').replaceAll('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js','/challenger/vendor/BufferGeometryUtils.js');
+// Control share links must stay on this isolated site, not send testers to production.
+const previewOrigin=new URL(process.env.URL || 'http://localhost:8788').origin;
+baseline=baseline.replaceAll('https://bloppit.com',previewOrigin);
 writeFileSync(resolve(out,'build/index.html'),baseline);
 writeFileSync(resolve(out,'index.html'),'<!doctype html><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=/challenger/"><a href="/challenger/">Play Bloppit challenger</a>');
 writeFileSync(resolve(out,'robots.txt'),'User-agent: *\nDisallow: /\n');
