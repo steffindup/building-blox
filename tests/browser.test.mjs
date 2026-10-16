@@ -234,7 +234,9 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   const tapChar = async (id) => { await still(); let c = await pt(id); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(300);
     const said = await t.page.evaluate(() => { const b = document.querySelector('#isWorld .is3-say'); return b && !b.hidden ? b.textContent : ''; });
     assert.ok(said, 'a reaction for ' + id); assert.equal(await t.page.evaluate(() => document.getElementById('isTip').hidden), true);
-    await still(); c = await pt(id); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(400); const txt = await t.text('#isTip');
+    await still(); c = await pt(id);
+    await t.page.evaluate(() => { const I = window.bloppitIsland3(); if (I.lastPoke) I.lastPoke.t = performance.now(); });   // 'soon after': the camera's flight takes seconds on a test machine with no GPU
+    await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(400); const txt = await t.text('#isTip');
     await t.page.evaluate(() => document.querySelector('#isTip .tt-x')?.click()); if (await t.page.evaluate(() => { if (window.bloppitIsland3().viewI) { window.bloppitView(0); return true; } return false; })) await still();
     return txt; };
   // places, Bloppit, the pup, a decoration, the islands nearby: each says what it is, its level and what's next
@@ -257,7 +259,8 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
     await t.page.mouse.move(w.x + 120, w.y); await t.page.mouse.down(); await t.page.mouse.move(w.x, w.y, { steps: 5 }); await t.page.mouse.move(w.x - 120, w.y, { steps: 5 }); await t.page.mouse.up(); await t.page.waitForTimeout(400); await still();
     assert.deepEqual(await dir(), d0); assert.equal(await t.text('#isWorld .is3-views .v-name'), 'Home Island');
     // in a chosen view the camera is free: the same drag looks around instead of moving on
-    { const d1 = await dir(); await t.page.mouse.move(w.x + 120, w.y); await t.page.mouse.down(); await t.page.mouse.move(w.x, w.y, { steps: 5 }); await t.page.mouse.move(w.x - 120, w.y, { steps: 5 }); await t.page.mouse.up(); await t.page.waitForTimeout(600); await still();
+    { const d1 = await dir(), m = await t.page.evaluate(() => { const r = document.querySelector('#isWorld canvas').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height * .4 }; });
+      await t.page.mouse.move(m.x + 120, m.y); await t.page.mouse.down(); await t.page.mouse.move(m.x, m.y, { steps: 5 }); await t.page.mouse.move(m.x - 120, m.y, { steps: 5 }); await t.page.mouse.up(); await t.page.waitForTimeout(600); await still();
       assert.notDeepEqual(await dir(), d1); assert.equal(await t.text('#isWorld .is3-views .v-name'), 'Home Island'); }
     await t.page.evaluate(() => window.bloppitView(0)); await still(); }
   // a model: where it came from, when, stars, best time; then put it away (the card's button)
