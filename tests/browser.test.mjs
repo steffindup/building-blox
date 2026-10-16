@@ -256,6 +256,9 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
     const d0 = await dir(), w = await t.page.evaluate(() => { const r = document.querySelector('#isWorld canvas').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height * .8 }; });
     await t.page.mouse.move(w.x + 120, w.y); await t.page.mouse.down(); await t.page.mouse.move(w.x, w.y, { steps: 5 }); await t.page.mouse.move(w.x - 120, w.y, { steps: 5 }); await t.page.mouse.up(); await t.page.waitForTimeout(400); await still();
     assert.deepEqual(await dir(), d0); assert.equal(await t.text('#isWorld .is3-views .v-name'), 'Home Island');
+    // in a chosen view the camera is free: the same drag looks around instead of moving on
+    { const d1 = await dir(); await t.page.mouse.move(w.x + 120, w.y); await t.page.mouse.down(); await t.page.mouse.move(w.x, w.y, { steps: 5 }); await t.page.mouse.move(w.x - 120, w.y, { steps: 5 }); await t.page.mouse.up(); await t.page.waitForTimeout(600); await still();
+      assert.notDeepEqual(await dir(), d1); assert.equal(await t.text('#isWorld .is3-views .v-name'), 'Home Island'); }
     await t.page.evaluate(() => window.bloppitView(0)); await still(); }
   // a model: where it came from, when, stars, best time; then put it away (the card's button)
   const key = (await models())[0];
