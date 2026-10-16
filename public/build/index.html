@@ -6061,7 +6061,7 @@ function pupOpen(then,opt){
 }
 function pupColsRender(){
   const o=worldStore(), prev=pupDraft.out?{...o,wear:{...accWear(o),[ACC.find(a=>a.id===pupDraft.out).slot]:[pupDraft.out,pupDraft.ci]}}:o;
-  $('#pupPic').innerHTML=pupFig(prev,{ci:pupDraft.ci,vb:PUP_ROUND,par:'xMidYMid slice'});
+  $('#pupPic').innerHTML=pupFig(prev,{ci:pupDraft.ci,vb:PUP_ROUND,par:'xMidYMid slice',svg:1});
   { const h=$('#pupPic'); cv3(h,{who:'pup',frame:'bust',o:prev,ci:pupDraft.ci,wear:prev.wear}); if(h.__ci!==pupDraft.ci){ const first=h.__ci==null; h.__ci=pupDraft.ci; if(!first) setTimeout(()=>cv3Play(h,'happy_hop'),30); } }
   $('#pupCols').innerHTML=PUP_COLORS.map((c,i)=>`<button type="button" role="radio" aria-checked="${i===pupDraft.ci}" aria-label="${c.n}" title="${c.n}" data-col="${i}" style="--c:${c.c}"></button>`).join('');
 }
@@ -6093,7 +6093,7 @@ function islandIntro(){ setTab('island'); }
 function renderIslandIntro(o){
   const el=$('#isIntro'), show=!o.isle&&worldCount(o)>0&&!(ISL3.ok&&o.arrived); el.hidden=!show; if(!show) return;
   const nm=pupName(o);
-  $('#iiPup').innerHTML=pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'}); cv3($('#iiPup'),{who:'pup',frame:'bust',o});
+  $('#iiPup').innerHTML=pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice',svg:1}); cv3($('#iiPup'),{who:'pup',frame:'bust',o});
   $('#iiTxt').textContent=nm?`${nm} lives here with Bloppit.`:'Your otter lives here with Bloppit.';
   const n0=worldCount(o); $('#iiSteps').innerHTML=ISLAND_STAGES.slice(1).map(st=>`<li class="${n0>=st.at?'done':''}"><b>${n0>=st.at?'✓':st.at}</b>${n0>=st.at?st.at+' ':''}build${st.at===1?'':'s'}: ${st.name==='Hut'?'a hut':st.name==='Workshop'?'a workshop':'a village'}</li>`).join('');
   const n=nextBuild(); $('#iiNext').innerHTML=n?`<img class="nb-pic" src="${n.thumb}" alt=""><span>Keep building<small>${escapeHTML(n.t)}</small></span>`:'Keep building';
@@ -6735,7 +6735,7 @@ function isl3Events(cv){
     if(e.type==='pointerup'&&d.moved&&!d.drag&&!d.multi){ const dx=e.clientX-d.x, dy=e.clientY-d.y; if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3){ isl3GoView((ISL3.viewI||0)+(dx<0?1:-1)); sfx.tick&&sfx.tick(); } return; }
     if(e.type==='pointerup'&&!d.moved&&performance.now()-d.t<600&&d.h){ islandHover(null); const info0=d.h.info;
       // characters: a reaction first; a second tap soon after shows who they are
-      if(info0==='bloppit'||info0==='pup'||info0.startsWith('longtail:')){ const again=ISL3.lastPoke&&ISL3.lastPoke.info===info0&&performance.now()-ISL3.lastPoke.t<4000;
+      if(info0==='bloppit'||info0==='pup'||info0.startsWith('longtail:')){ const again=ISL3.lastPoke&&ISL3.lastPoke.info===info0&&performance.now()-ISL3.lastPoke.t<8000;
         if(!again){ ISL3.lastPoke={info:info0,t:performance.now()}; if(info0==='bloppit'&&ISL3.dozing) isl3Wake(); else charReact(info0); const vi=isl3ViewOf(info0); if(vi>=0&&ISL3.viewI!==vi) isl3GoView(vi); return; }
         ISL3.lastPoke=null; islandTip(info0,anchorAt(e.clientX,e.clientY)); return; }
       const info=d.h.info; if(/^(piece|home):/.test(d.h.info)){ const c=d.h.point; isl3Confetti(c.x,c.y+.6,c.z,24); } if(isl3Focus(info,d.h)){ islandTipHide(); clearTimeout(ISL3.tipT); ISL3.tipT=setTimeout(()=>{ const v=ISL3.ctl.target.clone().setY(TOP3).project(ISL3.cam), r=ISL3.r.domElement.getBoundingClientRect(), sx=r.left+(v.x+1)/2*r.width, sy=r.top+(1-v.y)/2*r.height;
@@ -7564,7 +7564,7 @@ function wardrobeOpen(){ const d=$('#accDlg'), o=worldStore(), w=accWear(o), fir
   $('#accTitle').textContent=`${pupName(o)||'Your otter'}’s wardrobe`; $('#accSub').textContent=`Level ${otterLevel(o)} ${PUP_STAGES[pupStage(o)].name}. Tap one to try it on.`;
   accRender(true); d.onclose=()=>{ d.onclose=null; renderIsland(); renderHome(); }; if(!d.open) d.showModal(); }
 function accRender(all){ const o=worldStore(), D=ISL3.accDraft, prev={...o,wear:{...accWear(o),[D.slot]:[D.id,D.ci]}};
-  $('#accPic').innerHTML=pupFig(prev,{vb:PUP_ROUND,par:'xMidYMid slice'});
+  $('#accPic').innerHTML=pupFig(prev,{vb:PUP_ROUND,par:'xMidYMid slice',svg:1});
   { const h=$('#accPic'), feet=D.slot==='feet'||D.slot==='prop'; cv3(h,{who:'pup',frame:feet?'full':'bust',o:prev,wear:prev.wear}); if(h.__try!==D.id+D.ci){ const first=h.__try==null; h.__try=D.id+D.ci; if(!first) setTimeout(()=>cv3Play(h,'spin'),30); } }
   $('#accList').innerHTML=ACC.filter(a=>!a.d3||ch3On()).map(a=>{ const own=accOwned(a,o), on=accOn(a,accWear(o)); return `<button type="button" data-acc="${a.id}" aria-pressed="${a.id===D.id}" ${own?'':'disabled'}>${escapeHTML(accName(a,o))}<small>${own?(on?'Wearing':'Yours'):a.legend?'At Legend':'Level '+a.lvl}</small></button>`; }).join('');
   $('#accCols').innerHTML=PUP_COLORS.map((c,i)=>`<button type="button" role="radio" aria-checked="${i===D.ci}" aria-label="${c.n}" title="${c.n}" data-col="${i}" style="--c:${c.c}"></button>`).join('');
