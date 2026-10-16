@@ -6738,7 +6738,7 @@ function isl3Events(cv){
       const o=worldStore(); o.pos={...(o.pos||{}),[d.drag.userData.key]:[W2P(x),W2P(z)]}; worldSet(o); track('island_arranged'); sfx.snap(); islandShown=worldCount(o); renderIsland(); return; }
     if(e.type==='pointerup'&&d.moved&&!d.drag&&!d.multi){ const dx=e.clientX-d.x, dy=e.clientY-d.y; if(ISL3.ctl.enableRotate) return;   // looking around, not swiping
       if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3){ isl3GoView((ISL3.viewI||0)+(dx<0?1:-1)); sfx.tick&&sfx.tick(); } return; }
-    if(e.type==='pointerup'&&!d.moved&&performance.now()-d.t<600&&d.h){ islandHover(null); const info0=d.h.info;
+    if(e.type==='pointerup'&&!d.moved&&performance.now()-d.t<1000&&d.h){ islandHover(null); const info0=d.h.info;
       // characters: a reaction first; a second tap soon after shows who they are
       if(info0==='bloppit'||info0==='pup'||info0.startsWith('longtail:')){ const again=ISL3.lastPoke&&ISL3.lastPoke.info===info0&&performance.now()-ISL3.lastPoke.t<8000;
         if(!again){ ISL3.lastPoke={info:info0,t:performance.now()}; if(info0==='bloppit'&&ISL3.dozing) isl3Wake(); else charReact(info0); const vi=isl3ViewOf(info0); if(vi>=0&&ISL3.viewI!==vi) isl3GoView(vi); return; }
