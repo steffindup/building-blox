@@ -231,7 +231,8 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
     if (await t.page.evaluate(() => { if (window.bloppitIsland3().viewI) { window.bloppitView(0); return true; } return false; })) await still();   // tapping flies there; back to the whole world
     return txt; };
   // characters: the first tap is a reaction (a word in a bubble), the second shows who they are
-  const tapChar = async (id) => { await still(); let c = await pt(id); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(300);
+  const tapChar = async (id) => { await still(); let c = await pt(id); await t.page.mouse.click(c.x, c.y);
+    await t.page.waitForFunction(() => { const b = document.querySelector('#isWorld .is3-say'); return b && !b.hidden; }, null, { timeout: 4000, polling: 100 }).catch(() => {});
     const said = await t.page.evaluate(() => { const b = document.querySelector('#isWorld .is3-say'); return b && !b.hidden ? b.textContent : ''; });
     assert.ok(said, 'a reaction for ' + id); assert.equal(await t.page.evaluate(() => document.getElementById('isTip').hidden), true);
     await still(); c = await pt(id);

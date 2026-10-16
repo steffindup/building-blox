@@ -6093,7 +6093,7 @@ function islandIntro(){ setTab('island'); }
 function renderIslandIntro(o){
   const el=$('#isIntro'), show=!o.isle&&worldCount(o)>0&&!(ISL3.ok&&o.arrived); el.hidden=!show; if(!show) return;
   const nm=pupName(o);
-  $('#iiPup').innerHTML=pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice',svg:1}); cv3($('#iiPup'),{who:'pup',frame:'bust',o});
+  $('#iiPup').innerHTML=pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice',svg:1});   // the drawn cartoon otter as its profile picture
   $('#iiTxt').textContent=nm?`${nm} lives here with Bloppit.`:'Your otter lives here with Bloppit.';
   const n0=worldCount(o); $('#iiSteps').innerHTML=ISLAND_STAGES.slice(1).map(st=>`<li class="${n0>=st.at?'done':''}"><b>${n0>=st.at?'✓':st.at}</b>${n0>=st.at?st.at+' ':''}build${st.at===1?'':'s'}: ${st.name==='Hut'?'a hut':st.name==='Workshop'?'a workshop':'a village'}</li>`).join('');
   const n=nextBuild(); $('#iiNext').innerHTML=n?`<img class="nb-pic" src="${n.thumb}" alt=""><span>Keep building<small>${escapeHTML(n.t)}</small></span>`:'Keep building';
