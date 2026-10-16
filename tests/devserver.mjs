@@ -3,14 +3,14 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const mods = {
-  '/api/room': await import(ROOT + '/netlify/functions/room/logic.mjs'),
-  '/api/challenge': await import(ROOT + '/netlify/functions/challenge/logic.mjs'),
-  '/api/pup': await import(ROOT + '/netlify/functions/pup/logic.mjs'),
-  '/api/group': await import(ROOT + '/netlify/functions/group/logic.mjs'),
-  '/api/event': await import(ROOT + '/netlify/functions/event/logic.mjs'),
+  '/api/room': await import(pathToFileURL(ROOT + '/netlify/functions/room/logic.mjs').href),
+  '/api/challenge': await import(pathToFileURL(ROOT + '/netlify/functions/challenge/logic.mjs').href),
+  '/api/pup': await import(pathToFileURL(ROOT + '/netlify/functions/pup/logic.mjs').href),
+  '/api/group': await import(pathToFileURL(ROOT + '/netlify/functions/group/logic.mjs').href),
+  '/api/event': await import(pathToFileURL(ROOT + '/netlify/functions/event/logic.mjs').href),
 };
 export const mem = new Map();
 export const store = {
@@ -36,7 +36,7 @@ export function start(port = +(process.env.PORT || 8788)) {
     }
     let p = decodeURIComponent(url.pathname);
     if (vendor[p]) p = null;
-    const f = vendor[url.pathname] ? path.join(ROOT, 'node_modules', vendor[url.pathname]) : path.join(ROOT, 'public', p.endsWith('/') ? p + 'index.html' : p);
+    const f = vendor[url.pathname] ? path.join(ROOT, 'node_modules', vendor[url.pathname]) : path.join(ROOT, process.env.PREVIEW_DIST === '1' ? 'challenger-dist' : 'public', p.endsWith('/') ? p + 'index.html' : p);
     if (!fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); res.end('nope'); return; }
     res.writeHead(200, { 'content-type': types[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(res);
   });

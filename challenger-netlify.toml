@@ -1,0 +1,9 @@
+# Use only for a NEW, isolated Netlify project, never the bloppit.com site.
+[build]
+  command = "npm ci && node scripts/build-challenger.mjs"
+  publish = "challenger-dist"
+  functions = "netlify/functions"
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

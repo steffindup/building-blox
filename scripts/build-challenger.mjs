@@ -1,0 +1,20 @@
+import {mkdirSync,cpSync,copyFileSync,readFileSync,writeFileSync} from 'node:fs';
+import {resolve} from 'node:path';
+const root=resolve(import.meta.dirname,'..'),out=resolve(root,'challenger-dist');
+// Additive packaging: production HTML, native app and Netlify config remain untouched.
+mkdirSync(out,{recursive:true});cpSync(resolve(root,'public'),out,{recursive:true});
+const vendor=resolve(root,'public/challenger/vendor');mkdirSync(vendor,{recursive:true});
+for(const [to,from] of [['three.min.js','three/build/three.min.js'],['OrbitControls.js','three/examples/js/controls/OrbitControls.js'],['BufferGeometryUtils.js','three/examples/js/utils/BufferGeometryUtils.js'],['nunito.woff2','@fontsource/nunito/files/nunito-latin-800-normal.woff2']])copyFileSync(resolve(root,'node_modules',from),resolve(vendor,to));
+copyFileSync(resolve(root,'node_modules/three/LICENSE'),resolve(vendor,'THREE-LICENSE.txt'));
+copyFileSync(resolve(root,'node_modules/@fontsource/nunito/LICENSE'),resolve(vendor,'NUNITO-LICENSE.txt'));
+cpSync(vendor,resolve(out,'challenger/vendor'),{recursive:true});
+let baseline=readFileSync(resolve(root,'public/build/index.html'),'utf8');
+if(!baseline.includes('function track(...names){'))throw Error('Baseline analytics hook changed; review adapter before packaging.');
+baseline=baseline.replace('function track(...names){','function track(...names){ window.__abTrack?.(...names); return; // Preview adapter: original tracking disabled.\n');
+baseline=baseline.replace('<head>','<head>\n<meta name="robots" content="noindex,nofollow"><script type="module" src="/experiment/baseline.mjs"></script>');
+baseline=baseline.replaceAll('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','/challenger/vendor/three.min.js').replaceAll('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js','/challenger/vendor/OrbitControls.js').replaceAll('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js','/challenger/vendor/BufferGeometryUtils.js');
+writeFileSync(resolve(out,'build/index.html'),baseline);
+writeFileSync(resolve(out,'index.html'),'<!doctype html><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=/challenger/"><a href="/challenger/">Play Bloppit challenger</a>');
+writeFileSync(resolve(out,'robots.txt'),'User-agent: *\nDisallow: /\n');
+writeFileSync(resolve(out,'_headers'),'/*\n  X-Robots-Tag: noindex, nofollow\n  Referrer-Policy: same-origin\n');
+console.log('Challenger packaged in challenger-dist; production files unchanged.');

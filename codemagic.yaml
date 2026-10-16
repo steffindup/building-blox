@@ -11,6 +11,48 @@
 #     change the home page, the room server or other files are skipped, which saves build minutes.
 #     If automatic builds don't start: Codemagic > this app > Webhooks > "Update webhook".
 workflows:
+  ios-challenger:
+    name: Bloppit Lab - separate TestFlight app (manual)
+    instance_type: mac_mini_m2
+    max_build_duration: 45
+    integrations:
+      app_store_connect: Bloppit ASC
+    environment:
+      groups:
+        - bloppit_challenger
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.bloppit.challenger
+      node: 22
+      xcode: 26.5
+    scripts:
+      - name: Verify separate App Store record
+        script: |
+          case "$CHALLENGER_APPLE_ID" in
+            ''|*[!0-9]*|6821449219) echo "Set CHALLENGER_APPLE_ID to a separate Bloppit Lab app record."; exit 1 ;;
+          esac
+      - name: Package offline challenger and create its own iOS project
+        script: |
+          npm ci
+          node scripts/build-challenger-mobile.mjs
+          cd mobile-challenger
+          npm ci
+          npx cap add ios
+          npx cap sync ios
+      - name: Sign only the challenger project
+        script: xcode-project use-profiles --project mobile-challenger/ios/App/App.xcodeproj
+      - name: Assign a separate build number
+        script: |
+          LATEST=$(app-store-connect get-latest-testflight-build-number "$CHALLENGER_APPLE_ID" || echo 0)
+          sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]*;/CURRENT_PROJECT_VERSION = $((LATEST + 1));/g" mobile-challenger/ios/App/App.xcodeproj/project.pbxproj
+      - name: Build Bloppit Lab
+        script: xcode-project build-ipa --project mobile-challenger/ios/App/App.xcodeproj --scheme App
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
   ios-testflight:
     name: iOS to TestFlight
     instance_type: mac_mini_m2

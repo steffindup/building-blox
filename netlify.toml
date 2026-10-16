@@ -5,6 +5,11 @@
   publish = "public"
   command = ""
 
+# Isolated challenger branch only. The main/production build remains unchanged.
+[context."chatgpt/bloppit-challenger"]
+  command = "npm ci && node scripts/build-challenger.mjs"
+  publish = "challenger-dist"
+
 # The landing page is at / and the app at /build/. Play together invites made before the move
 # point at /?room=CODE: send those straight into the app.
 [[redirects]]

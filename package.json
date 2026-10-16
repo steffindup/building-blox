@@ -16,6 +16,8 @@
     "test": "node --test tests/*.test.mjs",
     "test:server": "node --test tests/server.test.mjs",
     "dev": "node tests/devserver.mjs",
-    "build:www": "cd mobile && npm run build"
+    "build:www": "cd mobile && npm run build",
+    "build:challenger": "node scripts/build-challenger.mjs",
+    "test:challenger": "node --test tests/challenger.test.mjs tests/challenger-browser.test.mjs"
   }
 }
