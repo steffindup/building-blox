@@ -231,12 +231,14 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
     if (await t.page.evaluate(() => { if (window.bloppitIsland3().viewI) { window.bloppitView(0); return true; } return false; })) await still();   // tapping flies there; back to the whole world
     return txt; };
   // characters: the first tap is a reaction (a word in a bubble), the second shows who they are
-  const tapChar = async (id) => { await still(); let c = await pt(id); await t.page.mouse.click(c.x, c.y);
+  const tapChar = async (id) => { await still(); let c = await pt(id);
+    // record what's said the moment it appears: a bubble lasts 2s, and on a test machine with no GPU the camera's flight can hold the page longer than that
+    await t.page.evaluate(() => { window.__said = ''; const grab = () => document.querySelectorAll('#isWorld .is3-say, #isWorld .is3-banner').forEach((b) => { if (!b.hidden && b.textContent) window.__said = b.textContent; });
+      (window.__saidObs ||= new MutationObserver(grab)).disconnect(); document.querySelectorAll('#isWorld .is3-say, #isWorld .is3-banner').forEach((b) => window.__saidObs.observe(b, { attributes: true, childList: true, characterData: true, subtree: true })); });
+    await t.page.mouse.click(c.x, c.y);
     // a word in a bubble, or (a Longtail woken at night) a grumble in the banner
-    const sel = '#isWorld .is3-say, #isWorld .is3-banner';
-    await t.page.waitForFunction((sel) => [...document.querySelectorAll(sel)].some((b) => !b.hidden && b.textContent), sel, { timeout: 4000, polling: 100 }).catch(() => {});
-    const said = await t.page.evaluate((sel) => [...document.querySelectorAll(sel)].filter((b) => !b.hidden).map((b) => b.textContent).join(' '), sel);
-    if (!said) console.log('TAPDBG', id, JSON.stringify(c), await t.page.evaluate((c) => { const I = window.bloppitIsland3(); return [window.bloppitPick(c.x, c.y), document.elementFromPoint(c.x, c.y)?.className, 'tip:' + document.getElementById('isTip').hidden, 'view:' + I.viewI, 'arr:' + I.arrival, 'p3:' + !!I.p3, 'pupG:' + !!I.pupG, 'poke:' + JSON.stringify(I.lastPoke), 'down:' + JSON.stringify(I.down)].join(' | '); }, c));
+    await t.page.waitForFunction(() => window.__said, null, { timeout: 4000, polling: 100 }).catch(() => {});
+    const said = await t.page.evaluate(() => window.__said);
     assert.ok(said, 'a reaction for ' + id); assert.equal(await t.page.evaluate(() => document.getElementById('isTip').hidden), true);
     await still(); c = await pt(id);
     await t.page.evaluate(() => { const I = window.bloppitIsland3(); if (I.lastPoke) I.lastPoke.t = performance.now(); });   // 'soon after': the camera's flight takes seconds on a test machine with no GPU
