@@ -1154,7 +1154,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
     </label>
     <div class="card draw-card" id="drawCard">
       <div class="lib-head"><h2>Or draw your own</h2><span class="tag">Stud by stud</span></div>
-      <p class="note" style="margin:0 0 8px">Paint a picture on the studs, then build it as a brick picture. Drawings are saved with your pup and can be sent as a link.</p>
+      <p class="note" style="margin:0 0 8px">Paint a picture on the studs, then build it as a brick picture. Drawings are saved with your otter and can be sent as a link.</p>
       <div class="draw-tools">
         <div class="draw-pal" id="drawPal" role="radiogroup" aria-label="Colour"></div>
         <div class="draw-btns">
@@ -1497,10 +1497,10 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 
 <div class="is-tip" id="isTip" role="dialog" hidden></div><div class="is-hover" id="isHover" aria-hidden="true" hidden></div>
 <section class="view" id="view-island" hidden>
-  <div class="gm-head"><div><h2>🏝️ Bloppitopia</h2><p class="note" id="isNote">Every build you finish grows your island.</p></div>
+  <div class="gm-head"><div><h2>🏝️ Bloppitopia</h2><p class="note" id="isNote">Every build you finish grows your world.</p></div>
     <div class="is-btns"><button class="ghost" id="isDecor" type="button">✨ Decorate</button><button class="ghost" id="isCard" type="button" hidden>📮 Postcard</button><button class="ghost" id="isBuildsGo" type="button" hidden>📦 Your builds</button></div></div>
   <div class="card is-intro" id="isIntro" hidden>
-    <div class="ii-head"><span class="ii-pup" id="iiPup"></span><div><h2 id="iiTitle">Welcome to Bloppitopia</h2><p id="iiTxt">Your pup lives here with Bloppit.</p></div></div>
+    <div class="ii-head"><span class="ii-pup" id="iiPup"></span><div><h2 id="iiTitle">Welcome to Bloppitopia</h2><p id="iiTxt">Your otter lives here with Bloppit.</p></div></div>
     <p style="margin:0">Every build you finish grows the island, and your models stand on it. Build Stars buy decorations.</p>
     <ol class="ii-steps" id="iiSteps"></ol>
     <div class="ii-btns"><button class="primary sm" id="iiNext" type="button">Keep building</button><button class="ghost" id="iiWeekly" type="button">📅 This week’s Bloppit</button><button class="ghost" id="iiLook" type="button">Look around</button></div>
@@ -1568,7 +1568,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
   <section class="grown-sec">
     <h3>Saved progress</h3>
     <p class="note" id="grownSaved"></p>
-    <p class="note">Bloppit saves scores and dates under an anonymous pup code. No name, age, photo or device details are ever stored. <a href="/privacy/" target="_blank" rel="noopener">Privacy policy</a></p>
+    <p class="note">Bloppit saves scores and dates under an anonymous progress code. No name, age, photo or device details are ever stored. <a href="/privacy/" target="_blank" rel="noopener">Privacy policy</a></p>
   </section>
   <section class="grown-sec">
     <h3>Move this player to another device</h3>
@@ -1661,11 +1661,11 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
   <h2 id="wcTitle">You built it!</h2>
   <div class="world-strip" data-ws></div>
   <p class="win-best" id="wcNote">What next?</p>
-  <div class="win-btns wc-btns"><button class="primary sm" id="wcPupGo" type="button" hidden>🥚 Meet your pup</button><button class="primary sm" id="wcTrail" type="button">Keep building</button><button class="ghost" id="wcWeekly" type="button">📅 This week’s Bloppit</button><button class="ghost" id="wcLibrary" type="button">Explore builds</button></div>
+  <div class="win-btns wc-btns"><button class="primary sm" id="wcPupGo" type="button" hidden>🦦 Meet your otter</button><button class="primary sm" id="wcTrail" type="button">Keep building</button><button class="ghost" id="wcWeekly" type="button">📅 This week’s Bloppit</button><button class="ghost" id="wcLibrary" type="button">Explore builds</button></div>
 </dialog>
 <dialog class="windlg pupdlg" id="pupDlg" aria-labelledby="pupTitle">
   <div class="pup-pic" id="pupPic"></div>
-  <h2 id="pupTitle">Meet your pup!</h2>
+  <h2 id="pupTitle">Meet your otter!</h2>
   <p class="win-best pup-lead" id="pupLead">Your own little otter, with its own brick. Pick its colour:</p>
   <div class="pup-cols" id="pupCols" role="radiogroup" aria-label="Brick colour"></div>
   <form class="pup-own" id="pupOwn" autocomplete="off">
@@ -1676,7 +1676,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
   <button class="ghost pup-suggest" id="pupSuggest" type="button" hidden></button>
   <div class="pup-outfit" id="pupOutfit" hidden><span>Add a scarf or a hat?</span><div role="group" aria-label="Outfit"><button type="button" data-out="" aria-pressed="true">Not now</button><button type="button" data-out="scarf" aria-pressed="false">🧣 Scarf</button><button type="button" data-out="beanie" aria-pressed="false">🧢 Beanie</button></div></div>
   <button class="ghost pup-pick-t" id="pupPickT" type="button" aria-expanded="false" aria-controls="pupNames">Pick a name</button>
-  <div class="pup-names" id="pupNames" role="group" aria-label="Pup names" hidden></div>
+  <div class="pup-names" id="pupNames" role="group" aria-label="Otter names" hidden></div>
   <button class="pup-later" id="pupLater" type="button">Pick later</button>
 </dialog>
 <dialog class="windlg accdlg" id="accDlg" aria-labelledby="accTitle">
@@ -4276,7 +4276,7 @@ const SAMPLES=[
    x.fillStyle='#1B2A34'; x.rr(92,200,16,24,6);
    x.fillStyle='#1B2A34'; x.fillRect(40,224,120,10);
    return [['front',c]]; }},
- {name:'Curled-up pup',theme:'Animals',weekly:'2026-11-16',beat:'Your pup fell asleep on the beach.',ws:{shape:'flat',size:8},make(){ const [c,x]=sheet(240,180,'#ffffff');
+ {name:'Curled-up pup',theme:'Animals',weekly:'2026-11-16',beat:'A little otter fell asleep on the beach.',ws:{shape:'flat',size:8},make(){ const [c,x]=sheet(240,180,'#ffffff');
    x.oval(120,112,98,58,0,'#8B5A2B');
    x.oval(196,130,30,18,-.5,'#8B5A2B'); x.oval(206,140,16,10,-.5,'#D9B98B');
    x.oval(126,120,62,34,0,'#D9B98B');
@@ -4855,7 +4855,7 @@ async function pupSync(){
   }catch(e){ /* offline or busy: the local copy stands and the next finish tries again */ }
   finally{ pupBusy=false; if(pupAgain){ pupAgain=false; pupPush(); } renderGrown(); }
 }
-function pupStatus(){ const me=curPlayer(); return me&&me.pup?`Saved on Bloppit’s server as pup …${me.pup.slice(-4)}.`:'Saved on this device only. The server copy starts with the first finished build.'; }
+function pupStatus(){ const me=curPlayer(); return me&&me.pup?`Saved on Bloppit’s server as player …${me.pup.slice(-4)}.`:'Saved on this device only. The server copy starts with the first finished build.'; }
 function renderGrown(){ const el=$('#grownSaved'); if(el) el.textContent=pupStatus(); const w=$('#grownWho'); if(w){ const me=curPlayer(); w.textContent=`Settings for ${me?me.name:'this player'}.`; } }
 async function openGrown(){
   if(!(await gate.ask('The Grown-ups corner is for parents.'))) return;
@@ -6011,7 +6011,7 @@ function worldStripHTML(r){
   if(r.kind==='weekly'&&r.first) parts.push('<span>+1 Weekly star</span>');
   if(r.memory) parts.push('<span>🧠 From memory! +1 star</span>');
   if(r.decor) parts.push(`<span class="ws-up">🏝️ A ${r.decor.name.toLowerCase()} for your island</span>`);
-  if(r.pupUp) parts.push(`<span class="ws-up">${pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'})}${escapeHTML(pupName(o))||'Your pup'} is a ${PUP_STAGES[r.after.pup].name}!</span>`);
+  if(r.pupUp) parts.push(`<span class="ws-up">${pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'})}${escapeHTML(pupName(o))||'Your otter'} is a ${PUP_STAGES[r.after.pup].name}!</span>`);
   else if(r.islandUp) parts.push(`<span class="ws-up">🏝️ ${ISLAND_STAGES[r.after.island].name} built!</span>`);
   return parts.join('');
 }
@@ -6037,7 +6037,7 @@ function pupOpen(then,opt){
   // On arrival: a suggested name in one tap, and an optional scarf or hat
   const sug=PUP_NAMES[Math.floor(Math.random()*PUP_NAMES.length)]; $('#pupSuggest').hidden=!arr; $('#pupSuggest').textContent=`Call it ${sug}`; $('#pupSuggest').dataset.pup=PUP_NAMES.indexOf(sug);
   $('#pupOutfit').hidden=!arr; document.querySelectorAll('#pupOutfit [data-out]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.out==='')));
-  $('#pupTitle').textContent=arr?'Meet your otter!':has?escapeHTML(has):'Meet your pup!';
+  $('#pupTitle').textContent=arr?'Meet your otter!':has?escapeHTML(has):'Meet your otter!';
   $('#pupLead').textContent=has?'Change its brick colour or its name.':'Your own little otter, with its own brick. Pick its colour:';
   $('#pupIn').value=cleanPupText(o.pupText); $('#pupErr').hidden=true;
   $('#pupNames').hidden=true; $('#pupPickT').setAttribute('aria-expanded','false');
@@ -6081,7 +6081,7 @@ function renderIslandIntro(o){
   const el=$('#isIntro'), show=!o.isle&&worldCount(o)>0&&!(ISL3.ok&&o.arrived); el.hidden=!show; if(!show) return;
   const nm=pupName(o);
   $('#iiPup').innerHTML=pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'});
-  $('#iiTxt').textContent=nm?`${nm} lives here with Bloppit.`:'Your pup lives here with Bloppit.';
+  $('#iiTxt').textContent=nm?`${nm} lives here with Bloppit.`:'Your otter lives here with Bloppit.';
   const n0=worldCount(o); $('#iiSteps').innerHTML=ISLAND_STAGES.slice(1).map(st=>`<li class="${n0>=st.at?'done':''}"><b>${n0>=st.at?'✓':st.at}</b>${n0>=st.at?st.at+' ':''}build${st.at===1?'':'s'}: ${st.name==='Hut'?'a hut':st.name==='Workshop'?'a workshop':'a village'}</li>`).join('');
   const n=nextBuild(); $('#iiNext').innerHTML=n?`<img class="nb-pic" src="${n.thumb}" alt=""><span>Keep building<small>${escapeHTML(n.t)}</small></span>`:'Keep building';
 }
@@ -6096,13 +6096,13 @@ function renderHomeWorld(){
   const pct=next?Math.round(100*(n-PUP_STAGES[ps].at)/(next.at-PUP_STAGES[ps].at)):100;
   const pic=isl3Init()?isl3Still(o,900,620):'', isle=pic?`<img src="${pic}" alt="">`:islandSVG(o,{uid:'hm'});
   el.hidden=false; el.classList.add('lead');
-  el.setAttribute('aria-label',`Bloppitopia, ${ISLAND_STAGES[is].name}. ${nm||'Your pup'}, ${n} build${n===1?'':'s'}.`);
+  el.setAttribute('aria-label',`Bloppitopia. ${nm||'Your otter'}, level ${otterLevel(o)} ${PUP_STAGES[ps].name}, ${n} build${n===1?'':'s'}, ${islandsOpen(o).length} of 5 islands.`);
   el.innerHTML=`<span class="hw-isle">${isle}<span class="hw-tag">🏝️ Bloppitopia · ${ISL3.ok?islandsOpen(o).length+' of 5 islands':ISLAND_STAGES[is].name}</span></span>
     <span class="pup ps-${PUP_STAGES[ps].name.toLowerCase()}">${pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'})}</span>
-    <div class="wt">${nm?`<b>${escapeHTML(nm)} <span class="sub">· Level ${otterLevel(o)} ${PUP_STAGES[ps].name}</span></b>`:`<span class="wname" id="wName" role="button" tabindex="0">Name your pup</span>`}
+    <div class="wt">${nm?`<b>${escapeHTML(nm)} <span class="sub">· Level ${otterLevel(o)} ${PUP_STAGES[ps].name}</span></b>`:`<span class="wname" id="wName" role="button" tabindex="0">Name your otter</span>`}
       <span class="sub">${next?`${next.at-n} more build${next.at-n===1?'':'s'} to ${next.name} (another stud on its brick)`:'Legend of Bloppitopia'}</span><span class="bar"><i style="width:${Math.max(4,pct)}%"></i></span></div>
     <div class="wn"><div><b>${n}</b><span>build${n===1?'':'s'}</span></div><div><b class="st">${worldStars(o)}</b><span>Build Stars</span></div><div><b>${worldXP(o)}</b><span>XP</span></div></div>
-    ${inext?`<span class="sub" style="grid-column:1/-1;font-size:13px;font-weight:700;color:var(--muted)">${inext.at-n} more build${inext.at-n===1?'':'s'} to the ${inext.name}</span>`:''}`;
+    ${(()=>{ const g=ISL3.ok&&typeof worldNextGoal==='function'?worldNextGoal(o):null; if(g) return `<span class="sub" style="grid-column:1/-1">Next: ${escapeHTML(g.text)}</span>`; return inext?`<span class="sub" style="grid-column:1/-1;font-size:13px;font-weight:700;color:var(--muted)">${inext.at-n} more build${inext.at-n===1?'':'s'} to the ${inext.name}</span>`:''; })()}`;
   const w=$('#wName'); if(w){ w.onclick=e=>{ e.stopPropagation(); pupOpen(); }; w.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); e.stopPropagation(); pupOpen(); } }; }
   islandSnap(o,pic?'':isle,nm,n,ISLAND_STAGES[is].name,pic);
 }
@@ -7377,7 +7377,7 @@ function renderIsland(){
     $('#isNext').innerHTML=g?`<span>${escapeHTML(g.text)}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*g.frac))}%"></i></span>`:'<span>Every island is complete. What a world!</span>'; }
   else $('#isStage').innerHTML=`${ISLAND_STAGES[stage].name}<small>${n} build${n===1?'':'s'} finished · ${worldStars(o)} Build Star${worldStars(o)===1?'':'s'} to spend</small>`;
   if(!ISL3.ok) $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>Your village is built. Now grow the five islands around it.</span>';
-  $('#isNote').textContent=n?`${pupName(o)||'Your pup'} and Bloppit are home. Tap anything to see what it is${n>1?`, and drag a model anywhere on the ${ISL3.ok?'grass':'sand'}`:''}${ISL3.ok?'. Swipe to move between views, pinch to look closer, and tap anyone to say hello':''}.`:ISL3.ok?`${pupName(o)?pupName(o)+'’s':'Your'} home is waiting to be built. Tap anything to see what it is.`:'Finish any build and the first hut rises from the sand. Tap anything to see what it is.';
+  $('#isNote').textContent=n?`${pupName(o)||'Your otter'} and Bloppit are home. Tap anything to see what it is${n>1?`, and drag a model anywhere on the ${ISL3.ok?'grass':'sand'}`:''}${ISL3.ok?'. Swipe to move between views, pinch to look closer, and tap anyone to say hello':''}.`:ISL3.ok?`${pupName(o)?pupName(o)+'’s':'Your'} home is waiting to be built. Tap anything to see what it is.`:'Finish any build and the first hut rises from the sand. Tap anything to see what it is.';
   $('#isCard').hidden=stage<3; $('#isDecor').hidden=!n;
   renderDecorShop(); renderBuilds();
 }
@@ -7617,7 +7617,7 @@ $('#drawBuild').onclick=()=>drawBuild(draw);
 // Saved drawings, with the pup
 function drawList(){ const o=worldStore(); return Array.isArray(o.draw)?o.draw:[]; }
 function renderDrawSaved(){ const list=drawList(); $('#drawSaved').innerHTML=list.map(d=>{ const dd=drawDecode(d.c); return dd?`<button type="button" data-draw="${d.id}" aria-current="${d.id===draw.id}" title="Open this drawing"><img src="${drawThumb(dd,64)}" alt=""></button>`:''; }).join(''); }
-$('#drawSave').onclick=()=>{ if(!draw.cells.some(v=>v)){ showMsg('Paint something first.','err'); return; } const o=worldStore(), c=drawEncode(draw); o.draw=drawList().filter(d=>d.c!==c); const id=draw.id||hash32(c+Date.now()); o.draw.unshift({id,c,t:Date.now()}); o.draw=o.draw.slice(0,12); worldSet(o); draw.id=id; renderDrawSaved(); showMsg('Saved with your pup. Up to 12 drawings are kept.','ok'); track('drawing_saved'); };
+$('#drawSave').onclick=()=>{ if(!draw.cells.some(v=>v)){ showMsg('Paint something first.','err'); return; } const o=worldStore(), c=drawEncode(draw); o.draw=drawList().filter(d=>d.c!==c); const id=draw.id||hash32(c+Date.now()); o.draw.unshift({id,c,t:Date.now()}); o.draw=o.draw.slice(0,12); worldSet(o); draw.id=id; renderDrawSaved(); showMsg('Saved with your otter. Up to 12 drawings are kept.','ok'); track('drawing_saved'); };
 $('#drawSaved').addEventListener('click',e=>{ const b=e.target.closest('[data-draw]'); if(!b) return; const d=drawList().find(x=>x.id===b.dataset.draw); const dd=d&&drawDecode(d.c); if(!dd) return;
   if(b.dataset.del){ return; }
   draw={...draw,w:dd.w,h:dd.h,cells:dd.cells,undo:[],id:d.id}; $('#drawSize').value=dd.w; drawRender(); renderDrawSaved(); });
@@ -7872,7 +7872,7 @@ function welcomeDone(){
   // A first pup goes to "Meet your pup" (and from there to the island); otherwise the usual next steps.
   const o=worldStore(), askPup=!pupName(o)&&!o.pupAsked; if(askPup){ o.pupAsked=true; worldSet(o); }
   $('#wcPupGo').hidden=!askPup; ['#wcTrail','#wcWeekly','#wcLibrary'].forEach(q=>$(q).hidden=askPup);
-  $('#wcNote').textContent=askPup?'Something just hatched on your island…':'What next?';
+  $('#wcNote').textContent=askPup?'A little otter is waiting on your island…':'What next?';
   { const n=nextBuild(); $('#wcTrail').innerHTML=n?`<img class="nb-pic" src="${n.thumb}" alt=""><span>Keep building<small>${escapeHTML(n.t)}</small></span>`:'Keep building'; }
   const d=$('#welcomeDlg'); if(!d.open) d.showModal(); worldSound(); if(askPup) setTimeout(()=>sfx.hatch(),1600);
 }
