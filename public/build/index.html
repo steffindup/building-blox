@@ -859,6 +859,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 #view-island.immersive .is-foot{position:absolute;top:10px;left:10px;max-width:calc(100% - 160px);padding:8px 12px;border:0;border-radius:16px;background:rgba(20,32,44,.78);color:#fff;pointer-events:none;display:grid;gap:2px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 #view-island.immersive .is-stage{font-size:17px;line-height:1.15}#view-island.immersive .is-stage small{display:none}
 #view-island.immersive .is-next{font-size:12px;color:rgba(255,255,255,.85);gap:8px}#view-island.immersive .is-next .bar{width:60px;height:6px;background:rgba(255,255,255,.25)}
+#view-island.immersive .is3-banner{margin-top:84px;max-width:min(560px,92%)}@media (max-width:559px){#view-island.immersive .is3-banner{margin-top:118px}}
 #view-island.immersive .is-btns{position:absolute;top:10px;right:10px;flex-direction:column;align-items:flex-end;gap:6px;z-index:2}
 #view-island.immersive .is-btns button{font-size:13px;font-weight:800;padding:7px 12px;border-radius:999px;border:0;background:rgba(255,255,255,.94);color:#14202C;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 @media (min-width:700px){#view-island.immersive .is-foot{top:14px;left:14px;padding:10px 16px}#view-island.immersive .is-stage{font-size:20px}#view-island.immersive .is-btns{top:14px;right:14px}}
@@ -6343,10 +6344,10 @@ function islandInfo(id,o){
         garden:['The garden','More flowers bloom with every build'],shop:['Bloppit’s workshop','Opened at 5 builds'],museum:['The museum','Your three best builds are on show'],pick:[o.pick==='lighthouse'?'Your lighthouse':'Your treehouse','You chose it at 10 builds'],harbour:['The harbour',friendCount(o)?`${friendCount(o)} build${friendCount(o)===1?'':'s'} with friends: a boat for every few`:'Build with a friend and a boat ties up here']}[arg]||[arg,''];
       const nx=HOME_PIECES.find(x=>x.at>n&&!x.hide); return {title:H[0],hint:'Home Island',rows:[['Story',H[1]],...(nx?[['Next on Home Island',`${nx.name} at ${nx.at} builds (${nx.at-n} more)`]]:[])],actions:arg==='harbour'?[{label:'Build with a friend',fn:()=>setTab('mp','hub')}]:arg==='home0'?[{label:'🔨 Build our first home',fn:()=>welcomeStart(),primary:true}]:[]}; }
     case 'stand': return {title:'An empty stand',hint:'Your next build stands here',rows:[['Fills with','Your next finished build'],['Stands',`${shown.list.length} of ${shown.cap} in use`],['Tip','Drag any model here, or anywhere on the sand']]};
-    case 'bloppit': return {title:'Bloppit',hint:ISL3.ok?{garden:'Tending the garden',fish:'Fishing off the jetty',read:'Reading a good book',sleep:'Fast asleep. Shh!'}[routine3(isl3Hour())]:'Your build buddy',icon:'<img src="/art/head-bloppit.png" alt="" width="256" height="256">',story:STORIES.bloppit.story,rows:[['Who','Your build buddy. '+STORIES.bloppit.who+'.'],['Loves',STORIES.bloppit.loves],['Secret',STORIES.bloppit.secret],['Lives',ISL3.ok?'On Home Island, with your otter':st>=2?'At the workshop door':'On the beach'],['Built together',`${n} build${n===1?'':'s'}`]],
+    case 'bloppit': return {title:'Bloppit',hint:ISL3.ok?(ISL3.dozing?'Having a little nap':{garden:'Tending the garden',fish:'Fishing off the jetty',read:'Reading a good book',fire:'Warm by the campfire, looking at the stars'}[routine3(isl3Hour())]):'Your build buddy',icon:'<img src="/art/head-bloppit.png" alt="" width="256" height="256">',story:STORIES.bloppit.story,rows:[['Who','Your build buddy. '+STORIES.bloppit.who+'.'],['Loves',STORIES.bloppit.loves],['Secret',STORIES.bloppit.secret],['Lives',ISL3.ok?'On Home Island, with your otter':st>=2?'At the workshop door':'On the beach'],['Built together',`${n} build${n===1?'':'s'}`]],
       actions:[{label:'Build something',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
     case 'longtail': { const L=CPU_LEVELS[arg], S=STORIES[arg]; if(!L||!S) break; const wins=Object.values(o.builds).filter(b=>b.k==='blitz').length;
-      return {title:L.name,hint:'A Longtail · your Blitz rival',icon:`<img src="/art/head-${LONGTAIL_ART[arg].id}.png" alt="" width="256" height="256">`,story:S.story,
+      return {title:L.name,hint:ISL3.ltNight?'Roosting in a cliff nest for the night':'A Longtail · your Blitz rival',icon:`<img src="/art/head-${LONGTAIL_ART[arg].id}.png" alt="" width="256" height="256">`,story:S.story,
         rows:[['Who',S.who],['Loves',S.loves],['Secret',S.secret],['Your Blitz wins',String(wins)],['Longtails beaten',(()=>{ const m=longtailBeaten(o); return m<0?'None yet. Start with Scraps!':['Scraps','Scraps and Swoop','All three!'][m]; })()],['Did you know?',LONGTAIL_FACT]],
         actions:[{label:`Race ${L.name}`,fn:()=>{ try{ bzLevelSet(arg); bzLevelSync(); }catch(e){} homeGo('cpu'); },primary:true}]}; }
     case 'pup': { const nm=pupName(o), ps=pupStage(o), nx=PUP_STAGES[ps+1], c=PUP_COLORS[pupColorOf(o)];
@@ -6697,7 +6698,7 @@ function isl3Events(cv){
   const up=e=>{ const d=ISL3.down; ISL3.down=null; if(ISL3.ctl) ISL3.ctl.enabled=true; if(!d) return;
     if(d.drag&&d.moved){ ISL3.dragging=false; let x=d.drag.position.x, z=d.drag.position.z; const fits=d.drag.userData.decor?((a,b)=>inPoly(a,b,scalePoly(HOMEP,0,0,.9))):onGrass; for(let i=0;i<30&&!fits(x,z);i++){ x*=.92; z*=.92; }
       const o=worldStore(); o.pos={...(o.pos||{}),[d.drag.userData.key]:[W2P(x),W2P(z)]}; worldSet(o); track('island_arranged'); sfx.snap(); islandShown=worldCount(o); renderIsland(); return; }
-    if(e.type==='pointerup'&&!d.moved&&performance.now()-d.t<600&&d.h){ islandHover(null); if(d.h.info==='bloppit') bloppitCheer(); if(d.h.info.startsWith('longtail:')) longtailSquawk(); const info=d.h.info; if(/^(piece|home):/.test(d.h.info)){ const c=d.h.point; isl3Confetti(c.x,c.y+.6,c.z,24); } if(isl3Focus(info,d.h)){ islandTipHide(); clearTimeout(ISL3.tipT); ISL3.tipT=setTimeout(()=>{ const v=ISL3.ctl.target.clone().setY(TOP3).project(ISL3.cam), r=ISL3.r.domElement.getBoundingClientRect(), sx=r.left+(v.x+1)/2*r.width, sy=r.top+(1-v.y)/2*r.height;
+    if(e.type==='pointerup'&&!d.moved&&performance.now()-d.t<600&&d.h){ islandHover(null); if(d.h.info==='bloppit'){ if(ISL3.dozing) isl3Wake(); else bloppitCheer(); } if(d.h.info.startsWith('longtail:')) longtailSquawk(); const info=d.h.info; if(/^(piece|home):/.test(d.h.info)){ const c=d.h.point; isl3Confetti(c.x,c.y+.6,c.z,24); } if(isl3Focus(info,d.h)){ islandTipHide(); clearTimeout(ISL3.tipT); ISL3.tipT=setTimeout(()=>{ const v=ISL3.ctl.target.clone().setY(TOP3).project(ISL3.cam), r=ISL3.r.domElement.getBoundingClientRect(), sx=r.left+(v.x+1)/2*r.width, sy=r.top+(1-v.y)/2*r.height;
         if(r.width>=700){ const a=anchorAt(sx,sy), R=Math.min(r.width*.2,170); a.getBoundingClientRect=()=>({left:sx-R,right:sx+R,top:sy,bottom:sy,width:2*R,height:0}); a.side=true; islandTip(info,a); }
         else { const a=anchorAt(r.left+r.width/2,r.bottom-4); a.below=true; islandTip(info,a); } },950); }
       else islandTip(info,anchorAt(e.clientX,e.clientY)); } };
@@ -6719,7 +6720,7 @@ window.bloppitIslandPoint=isl3Point; window.bloppitIsland3=()=>ISL3; window.blop
 // Everything on the island as a list of buttons, for keyboards and screen readers (shown when tabbed into)
 function isl3A11y(o){ let L=$('#isA11y'); if(!L) return; const ids=[]; ISL3.world.traverse(x=>{ const i=x.userData.info; if(i&&!ids.includes(i)&&i!=='land:sea') ids.push(i); });
   L.innerHTML=`<b>On Bloppitopia</b>`+ids.map(i=>`<button type="button" data-info="${escapeHTML(i)}">${escapeHTML(islandInfo(i,o).title)}</button>`).join(''); }
-function isl3Sig(o){ return JSON.stringify([longtailNow(),o.log,o.decor,o.pos,o.away,o.pupColor,pupStage(o),Object.keys(ISLES).map(id=>isleCount(id,o)),Object.keys(worldShapes()).length,accWear(o),o.pick,friendCount(o),routine3(isl3Hour())]); }
+function isl3Sig(o){ return JSON.stringify([routine3(isl3Hour()),longtailNow(),o.log,o.decor,o.pos,o.away,o.pupColor,pupStage(o),Object.keys(ISLES).map(id=>isleCount(id,o)),Object.keys(worldShapes()).length,accWear(o),o.pick,friendCount(o),routine3(isl3Hour())]); }
 function isl3Still(o,w,h){
   if(!isl3Init()) return '';
   const sig=isl3Sig(o)+w; if(ISL3.on) return ISL3.still||''; if(ISL3.stillSig===sig&&ISL3.still) return ISL3.still;
@@ -6744,7 +6745,7 @@ const LONGTAIL_ART={easy:{id:'scraps',aspect:238/300},medium:{id:'swoop',aspect:
 function longtailBeaten(o){ o=o||worldStore(); let m=-1; for(const b of Object.values(o.builds||{})) if(b&&b.k==='blitz') m=Math.max(m,Number.isInteger(b.lv)?b.lv:0); return m; }
 function longtailNow(){ return ['easy','medium','hard'][Math.min(2,longtailBeaten()+1)]; }
 function beachPoint(a){ const P=scalePoly(HOMEP,0,0,.93); let r=1; while(r<12&&inPoly(Math.cos(a)*(r+.2),Math.sin(a)*(r+.2),P)) r+=.2; return [Math.cos(a)*r,Math.sin(a)*r]; }
-function longtailSquawk(){ ISL3.ltJumpT=performance.now(); try{ sfx.chirp(); }catch(e){} isl3Kick(); }
+function longtailSquawk(){ ISL3.ltJumpT=performance.now(); try{ sfx.chirp(); }catch(e){} if(ISL3.ltNight){ const L=CPU_LEVELS[longtailNow()]; isl3Banner(`${L.name}: “Wha? It’s the middle of the night! …Fine, one race.”`); clearTimeout(ISL3.ltT); ISL3.ltT=setTimeout(()=>isl3Banner(''),3500); } isl3Kick(); }
 // Who they are (tap Bloppit or a Longtail). Gentle, and true to the character sheet: Bloppit's brick is red; Longtails never hold red.
 const STORIES={
   bloppit:{who:'An otter who loves building more than anything',story:'Long ago a storm washed Bloppit up on a bare little island with nothing but a red brick in his paws. He snapped it to a rock, then found another brick, and another. That island became Bloppitopia.',loves:'The click when two bricks fit, fishing (he always lets the fish go), and a good book in the hammock',secret:'That red brick is the very first brick of Bloppitopia. He has never once put it down.'},
@@ -7027,14 +7028,23 @@ function isl3Build(o){
   // sky things: a few clouds, stars for the night
   // the Longtail you race (the Blitz level picked), on the beach facing Blitz Bay, up to no good
   { const lv=longtailNow(), art=LONGTAIL_ART[lv], g=new THREE.Group(), sp=sprite3(`/art/longtail-${art.id}.png`,2.1,art.aspect); sp.position.y=TOP3; g.add(sp); { const tb=new THREE.Mesh(new THREE.BoxGeometry(1.1,1.9,1.1),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); tb.visible=false; tb.position.y=TOP3+.95; g.add(tb); }
-    const [bx,bz]=beachPoint(Math.atan2(ISLES.blitzbay.z,ISLES.blitzbay.x)+.35); g.position.set(bx,0,bz); g.userData.longtail=1; ISL3.longtail=g; ISL3.longtailSprite=sp; add(g,'longtail:'+lv); }
+    const night=isNight3(); ISL3.ltNight=night; let bx,bz;
+    if(night){   // home to a nest on the cliff edge for the night: an open bit of rim, away from buildings and bridges
+      const obst=isl3Obstacles(W), bridges=Object.values(ISLES).map(I=>Math.atan2(I.z,I.x)), angd=(a,b)=>Math.abs(Math.atan2(Math.sin(a-b),Math.cos(a-b)));
+      const box3=ISL3.box, tl=!!(box3&&box3.clientWidth&&CAM_TALL(box3.clientWidth/(box3.clientHeight||box3.clientWidth))), cd=CAM_DIR3(tl?.5:1.5);   // the side facing the camera, a little off-centre
+      const base=Math.atan2(cd.z,cd.x)-.85; let best=null;
+      for(let i=0;i<48&&!best;i++){ const a=base+(i%2?1:-1)*Math.ceil(i/2)*.13; if(bridges.some(b=>angd(a,b)<.32)) continue; const [x,z]=beachPoint(a); if(obst.every(([cx,cz,hx,hz])=>Math.abs(x-cx)>hx+.9||Math.abs(z-cz)>hz+.9)) best=[x,z]; }
+      [bx,bz]=best||beachPoint(base); const k=1.03; bx*=k; bz*=k;
+      const nest=new THREE.Mesh(new THREE.TorusGeometry(.42,.16,6,12),m3('#8A6A43')); nest.rotation.x=-Math.PI/2; nest.position.y=TOP3+.08; g.add(nest); sp.position.y=TOP3+.06; sp.scale.multiplyScalar(.85); }
+    else [bx,bz]=beachPoint(Math.atan2(ISLES.blitzbay.z,ISLES.blitzbay.x)+.35);
+    g.position.set(bx,0,bz); g.userData.longtail=1; ISL3.longtail=g; ISL3.longtailSprite=sp; add(g,'longtail:'+lv); }
   const box=ISL3.box, tall=ISL3.tallBuild=!!(box&&box.clientWidth&&CAM_TALL(box.clientWidth/(box.clientHeight||box.clientWidth)));   // clouds sit behind the world, whichever way it's seen
   for(let i=0;i<5;i++){ const c=cloud3(), a=-24+i*12, b=-18+((i*7)%11); if(tall) c.position.set(b-6,10+(i%2)*2,a); else c.position.set(a,10+(i%2)*2,b); c.userData.cloud=i; c.userData.ax=tall?'z':'x'; W.add(c); }
   if(!ISL3.stars){ const g=new THREE.BufferGeometry(), p=[]; for(let i=0;i<260;i++){ const a=Math.random()*Math.PI*2, e=.15+Math.random()*1.2; p.push(Math.cos(a)*90*Math.cos(e),40+Math.sin(e)*60,Math.sin(a)*90*Math.cos(e)-30); }
     g.setAttribute('position',new THREE.Float32BufferAttribute(p,3)); ISL3.stars=new THREE.Points(g,new THREE.PointsMaterial({color:0xffffff,size:.6,transparent:true,opacity:0,fog:false})); ISL3.sc.add(ISL3.stars); }
   ISL3.sc.add(W);
   W.traverse(x=>{ if(x.isMesh||x.isSprite||x.isInstancedMesh) ISL3.hits.push(x); });
-  const AK=['beam','belt','bloppit','bob','cheer','cloud','crane','flap','fly','fount','hand','kite','longtail','mist','race','smoke','spin','swing','twinkle','waddle','zzz'];
+  const AK=['flame','firepool','beam','belt','bloppit','bob','cheer','cloud','crane','flap','fly','fount','hand','kite','longtail','mist','race','smoke','spin','swing','twinkle','waddle','zzz'];
   ISL3.anim=[]; ISL3.sc.traverse(x=>{ const u=x.userData; if(AK.some(k=>u[k]!=null&&u[k]!==false)) ISL3.anim.push(x); });
   isl3Labels(); isl3Tod(true); isl3Kick();
 }
@@ -7047,11 +7057,12 @@ function sparkTex3(){ const c=document.createElement('canvas'); c.width=c.height
 
 // Bloppit's day: gardening in the morning, fishing at midday, reading in the afternoon, asleep at night.
 function isl3Hour(){ const q=new URLSearchParams(location.search).get('hour'); if(q!=null&&q!==''&&!isNaN(+q)) return +q; const d=new Date(); return d.getHours()+d.getMinutes()/60; }
-function routine3(h){ return h>=6&&h<10?'garden':h>=10&&h<15?'fish':h>=15&&h<19.5?'read':'sleep'; }
+function routine3(h){ return h>=6&&h<10?'garden':h>=10&&h<15?'fish':h>=15&&h<19.5?'read':'fire'; }
+const isNight3=()=>routine3(isl3Hour())==='fire';
 // Where a character can stand: the nearest patch of open grass to a spot, clear of houses, lamps, trees and models.
 // (They are pictures that always face the camera, so anything just behind them would cut through them.)
 function isl3Obstacles(W){ const out=[], b=new THREE.Box3(); W.updateMatrixWorld(true);
-  W.traverse(x=>{ if(!(x.isMesh||x.isInstancedMesh)||!x.visible||x.isSprite) return; let p=x, skip=false; while(p){ const i=p.userData.info; if(i&&/^(land:|isle:|piece:|longtail|bloppit|pup)/.test(i)){ skip=true; break; } p=p.parent; } if(skip) return;
+  W.traverse(x=>{ if(!(x.isMesh||x.isInstancedMesh)||!x.visible||x.isSprite) return; let p=x, skip=false; while(p){ const i=p.userData.info; if(i&&/^(land:sea|isle:|piece:|longtail|bloppit|pup)/.test(i)){ skip=true; break; } p=p.parent; } if(skip) return;
     b.setFromObject(x); if(b.isEmpty()||b.max.y<TOP3+.3||b.min.y>TOP3+4) return; const r=Math.hypot(b.max.x-b.min.x,b.max.z-b.min.z)/2; if(r>6) return;
     out.push([(b.min.x+b.max.x)/2,(b.min.z+b.max.z)/2,(b.max.x-b.min.x)/2,(b.max.z-b.min.z)/2]); });
   return out; }
@@ -7059,22 +7070,32 @@ function clearSpot3(ax,az,gap,taken){ const O=ISL3.obst||[], P=scalePoly(HOMEP,0
   if(ok(ax,az)) return [ax,az]; for(let r=.35;r<=4.2;r+=.35) for(let k=0;k<16;k++){ const a=k/16*Math.PI*2+(r*1.7), x=ax+Math.cos(a)*r, z=az+Math.sin(a)*r*1.0; if(ok(x,z)) return [x,z]; }
   return [ax,az]; }
 function isl3Characters(o,W){
-  const r=routine3(isl3Hour()), n=worldCount(o), at={garden:[HOME_AT.garden[0]-1.5,HOME_AT.garden[1]+.6],fish:[HOME_AT.jetty[0]+.2,HOME_AT.jetty[1]+2.6],read:[HOME_AT.home[0]+1.6,HOME_AT.home[1]+1.6],sleep:[HOME_AT.home[0]+.2,HOME_AT.home[1]+1.4]}[r];
+  const r=routine3(isl3Hour()), n=worldCount(o), at={garden:[HOME_AT.garden[0]-1.5,HOME_AT.garden[1]+.6],fish:[HOME_AT.jetty[0]+.2,HOME_AT.jetty[1]+2.6],read:[HOME_AT.home[0]+1.6,HOME_AT.home[1]+1.6],fire:[HOME_AT.home[0]+1.4,HOME_AT.home[1]+2.4]}[r];
   if(ISL3.arrival) { at[0]=HOME_AT.home[0]+1.8; at[1]=HOME_AT.home[1]+1.8; }
   ISL3.obst=isl3Obstacles(W); const onJetty=r==='fish'&&!ISL3.arrival; if(!onJetty){ const c=clearSpot3(at[0],at[1],.55); at[0]=c[0]; at[1]=c[1]; }
-  const pose=ISL3.arrival?'/art/bud-offer.png':{garden:'/art/bud-3q.png',fish:'/art/bud-focused.png',read:'/art/bud-focused.png',sleep:'/art/bud-hug.png'}[r];
-  const g=new THREE.Group(), b=sprite3(pose,2.2,.75); b.position.y=r==='fish'&&!ISL3.arrival?TOP3-.05:TOP3; g.add(b); g.userData.bloppit=1; ISL3.bloppit=g; ISL3.bloppitSprite=b; ISL3.bloppitPose=pose;
+  const pose=ISL3.arrival?'/art/bud-offer.png':{garden:'/art/bud-3q.png',fish:'/art/bud-focused.png',read:'/art/bud-focused.png',fire:'/art/bud-3q.png'}[r];
+  const dozing=!ISL3.arrival&&!!ISL3.wakeDue; ISL3.dozing=dozing; const pose0=dozing?'/art/bud-hug.png':pose;
+  const g=new THREE.Group(), b=sprite3(pose0,2.2,.75); b.position.y=r==='fish'&&!ISL3.arrival?TOP3-.05:TOP3; g.add(b); g.userData.bloppit=1; ISL3.bloppit=g; ISL3.bloppitSprite=b; ISL3.bloppitPose=pose;
   if(!ISL3.arrival){
     if(r==='garden'){ const c=new THREE.Group(); c.add(cyl3(.14,.16,.24,8,'#9ED3F2',0,0,0)); const s=cyl3(.03,.03,.3,4,'#9ED3F2',.18,.12,0); s.rotation.z=-1; c.add(s); c.position.set(.55,TOP3,.25); g.add(c); }
     if(r==='fish'){ const rod=cyl3(.02,.025,2.0,4,'#7A4E2E',.45,TOP3+.6,.2); rod.rotation.z=-.7; g.add(rod); const line=cyl3(.006,.006,1.6,3,'#FFFFFF',1.15,TOP3-.4,.2); g.add(line); const bob=mesh3(new THREE.SphereGeometry(.07,6,4),m3('#FE8A18'),1.15,-1.25,.2); bob.userData.bob=1; g.add(bob); }
     if(r==='read'){ g.add(box3(.34,.06,.26,'#0055BF',.55,TOP3+.02,.35)); }
-    if(r==='sleep'){ const z=new THREE.Sprite(new THREE.SpriteMaterial({map:zzzTex3(),transparent:true,depthWrite:false})); z.scale.set(.9,.6,1); z.position.set(.6,TOP3+2.3,0); z.userData.zzz=1; g.add(z); }
+    if(r==='fire'){ const f=campfire3(), fr=ISL3.tallBuild?[1.25,.3]:[.3,1.25]; f.scale.setScalar(1.35); f.position.set(fr[0],0,fr[1]); g.add(f); ISL3.fireAt=fr; }
+    if(dozing){ const z=new THREE.Sprite(new THREE.SpriteMaterial({map:zzzTex3(),transparent:true,depthWrite:false})); z.scale.set(.9,.6,1); z.position.set(.6,TOP3+2.3,0); z.userData.zzz=1; g.add(z); ISL3.zzz=z; }
   }
   g.position.set(at[0],0,at[1]); tag3(g,'bloppit'); W.add(g);
   if(n>0||ISL3.arrival||pupName(o)){ const ps=pupStage(o), p=new THREE.Sprite(new THREE.SpriteMaterial({map:pupTex3(o),transparent:true,alphaTest:.15})); const h=[1.3,1.5,1.7][ps]*346/300; p.scale.set(h*239/346,h,1); p.center.set(.5,0); p.position.y=TOP3;
-    const pg=new THREE.Group(); pg.add(p); pg.userData.bob=2; const onIsle=(x,z)=>inPoly(x,z,scalePoly(HOMEP,0,0,.92)), offs=r==='fish'&&!ISL3.arrival?[[-1.15,-1.7],[-1.25,-2.6],[-.6,-3.4],[.9,-3.2]]:[[1.25,.35],[-1.25,.35],[1.2,-.9],[-1.2,-.9],[0,-1.6]];
-    const [ox,oz]=offs.find(([dx,dz])=>onIsle(at[0]+dx,at[1]+dz))||[-(at[0])*.25,-(at[1])*.25], spot=clearSpot3(at[0]+ox,at[1]+oz,.5,[at]); pg.position.set(spot[0],0,spot[1]); tag3(pg,'pup'); ISL3.pupG=pg; W.add(pg); }
+    const pg=new THREE.Group(); pg.add(p); pg.userData.bob=2; const onIsle=(x,z)=>inPoly(x,z,scalePoly(HOMEP,0,0,.92)), offs=r==='fish'&&!ISL3.arrival?[[-1.15,-1.7],[-1.25,-2.6],[-.6,-3.4],[.9,-3.2]]:r==='fire'&&!ISL3.arrival?(ISL3.tallBuild?[[1.1,1.6],[1.1,-1.4],[-.3,1.6]]:[[1.6,1.1],[-1.4,1.1],[1.6,-.3]]):[[1.25,.35],[-1.25,.35],[1.2,-.9],[-1.2,-.9],[0,-1.6]];
+    const [ox,oz]=offs.find(([dx,dz])=>onIsle(at[0]+dx,at[1]+dz))||[-(at[0])*.25,-(at[1])*.25], spot=clearSpot3(at[0]+ox,at[1]+oz,.5,r==='fire'&&ISL3.fireAt?[at,[at[0]+ISL3.fireAt[0],at[1]+ISL3.fireAt[1]]]:[at]); pg.position.set(spot[0],0,spot[1]); tag3(pg,'pup'); ISL3.pupG=pg; W.add(pg); }
 }
+// A campfire: logs, stones and a flickering flame that glows brighter as it gets dark
+function campfire3(){ const g=new THREE.Group();
+  for(let i=0;i<7;i++){ const a=i/7*Math.PI*2; g.add(mesh3(new THREE.DodecahedronGeometry(.1,0),m3('#8D96A3'),Math.cos(a)*.32,TOP3+.05,Math.sin(a)*.32)); }
+  for(const a of [0,1.1,2.2]){ const l=cyl3(.05,.05,.55,6,'#6B4229',0,TOP3+.08,0); l.rotation.z=Math.PI/2; l.rotation.y=a; g.add(l); }
+  const fl=new THREE.Group(); fl.position.y=TOP3+.12; fl.userData.flame=1;
+  fl.add(mesh3(new THREE.ConeGeometry(.17,.48,6),glow3('#FF8A1F'),0,.22,0)); fl.add(mesh3(new THREE.ConeGeometry(.1,.32,6),glow3('#FFE27A'),0,.17,.02)); g.add(fl);
+  const pool=new THREE.Mesh(new THREE.CircleGeometry(1.25,24),new THREE.MeshBasicMaterial({color:0xFFB347,transparent:true,opacity:0,depthWrite:false})); pool.rotation.x=-Math.PI/2; pool.position.y=TOP3+.012; pool.userData.firepool=1; g.add(pool);
+  return g; }
 function zzzTex3(){ const c=document.createElement('canvas'); c.width=96; c.height=64; const x=c.getContext('2d'); x.font='bold 30px system-ui,sans-serif'; x.fillStyle='#FFFFFF'; x.strokeStyle='#14202C'; x.lineWidth=4; for(const [t,a,b] of [['z',8,58],['z',34,40],['Z',58,26]]){ x.strokeText(t,a,b); x.fillText(t,a,b); } const t=new THREE.CanvasTexture(c); return t; }
 
 // Time of day: sunrise, day, sunset and night from the device's clock (?hour=21 to try)
@@ -7111,7 +7132,7 @@ function isl3Animate(x,t){ const u=x.userData;
   else if(u.bob===2&&x.children[0]) x.children[0].position.y=TOP3+Math.abs(Math.sin(t*2.2))*.08;
   if(u.smoke!=null){ const y0=u.y0??(u.y0=x.position.y), k=((t*.5+u.smoke/3)%1); x.position.y=y0+k*1.2; x.material.opacity=.75*(1-k); x.scale.setScalar(.7+k*.8); }
   if(u.kite){ x.position.x=Math.sin(t*.7)*.5; x.position.y=5.2+Math.sin(t*1.3)*.2; x.rotation.z=Math.sin(t*.9)*.2; }
-  if(u.longtail){ const now=performance.now(), k=ISL3.ltJumpT?(now-ISL3.ltJumpT)/800:2, idle=(t%4.6)<.45?Math.sin((t%4.6)/.45*Math.PI)*.18:0;   // a little hop now and then, a big one when tapped
+  if(u.longtail){ const now=performance.now(), k=ISL3.ltJumpT?(now-ISL3.ltJumpT)/800:2, idle=!ISL3.ltNight&&(t%4.6)<.45?Math.sin((t%4.6)/.45*Math.PI)*.18:0;   // a little hop now and then, a big one when tapped
     x.position.y=k<1?Math.sin(k*Math.PI)*.9:idle; if(k>=1) ISL3.ltJumpT=0; const sp=ISL3.longtailSprite; if(sp){ const face=Math.sin(t*.23)>0?1:-1; sp.scale.x=Math.abs(sp.scale.x)*face; sp.material.rotation=k<1?Math.sin(k*Math.PI*2)*.15:Math.sin(t*1.3)*.03; } }
   if(u.race!=null){ const a=t*1.1+u.race; x.position.set(Math.cos(a)*1.95*1.2,TOP3+.04,Math.sin(a)*1.95); x.rotation.y=-a-Math.PI/2; }
   if(u.swing) x.rotation.x=Math.sin(t*1.6)*.35;
@@ -7128,6 +7149,8 @@ function isl3Animate(x,t){ const u=x.userData;
   if(u.twinkle!=null){ const k=(Math.sin(t*3+u.twinkle*1.7)+1)/2; x.scale.setScalar(.25+k*.55); x.material.opacity=.4+k*.6; }
   if(u.mist!=null) x.position.x+=Math.sin(t*.3+u.mist)*.002;
   if(u.cloud!=null){ const k=u.ax||'x'; x.position[k]+=.01; if(x.position[k]>40) x.position[k]=-40; }
+  if(u.flame){ const k=1+Math.sin(t*9.1)*.08+Math.sin(t*13.7)*.06; x.scale.set(1+Math.sin(t*7.3)*.06,k,1+Math.cos(t*8.1)*.06); x.rotation.y=t*.8; }
+  if(u.firepool) x.material.opacity=(ISL3.night||0)*(.26+Math.sin(t*9.3)*.04);
   if(u.zzz){ const k=(t*.4)%1; x.position.y=TOP3+2.0+k*.8; x.material.opacity=1-k; }
   if(u.bloppit&&ISL3.jumpT){ const k=(performance.now()-ISL3.jumpT)/700; x.position.y=k<1?Math.sin(k*Math.PI)*.6:0; if(k>=1) ISL3.jumpT=0; }
 }
@@ -7245,7 +7268,16 @@ function isl3Immersive(){ const v=$('#view-island'), card=v&&v.querySelector('.i
   v.classList.add('immersive'); v.setAttribute('aria-label','Bloppitopia'); if(btns.parentElement!==card) card.appendChild(btns);
   const bg=$('#isBuildsGo'); bg.hidden=false; bg.onclick=()=>{ try{ v.querySelector('.is-builds').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}); }catch(e){} }; }
 addEventListener('resize',()=>{ if(ISL3&&ISL3.on){ isl3Size(); isl3Kick(); } });
-function isl3Show(box,o){ isl3Immersive();
+// Welcome back: after 3 hours away Bloppit is napping when you open the island, and wakes up to greet you
+const LASTSEEN_KEY='bloppit-island-seen-v1';
+function isl3WakeCheck(){ if(ISL3.wakeChecked) return; ISL3.wakeChecked=true; let last=0; try{ last=+localStorage.getItem(pkey(LASTSEEN_KEY))||0; }catch(e){}
+  ISL3.wakeDue=last>0&&Date.now()-last>3*3600e3; try{ localStorage.setItem(pkey(LASTSEEN_KEY),String(Date.now())); }catch(e){} }
+function isl3Wake(quiet){ if(!ISL3.dozing) return; ISL3.dozing=false; ISL3.wakeDue=false; const s=ISL3.bloppitSprite, z=ISL3.zzz;
+  if(z&&z.parent) z.parent.remove(z); ISL3.zzz=null; if(quiet||!s){ if(s){ s.material.map=tex3(ISL3.bloppitPose); s.material.needsUpdate=true; } isl3Kick(); return; }
+  s.material.map=tex3('/art/bud-happy.png'); s.material.needsUpdate=true; ISL3.jumpT=performance.now(); try{ sfx.chirp(); }catch(e){}
+  const nm=pupName(worldStore()); isl3Banner(nm?`Bloppit and ${nm}: You’re back!`:'Bloppit: You’re back!',true); track('island_welcome_back');
+  clearTimeout(ISL3.wakeT); ISL3.wakeT=setTimeout(()=>{ if(ISL3.bloppitSprite===s){ s.material.map=tex3(ISL3.bloppitPose); s.material.needsUpdate=true; } isl3Banner(''); isl3Kick(); },2600); isl3Kick(); }
+function isl3Show(box,o){ isl3Immersive(); isl3WakeCheck();
   if(ISL3.revealing&&ISL3.on&&ISL3.box===box) return;   // a reveal is playing: don't pull the world out from under it
   ISL3.box=box; if(!box.contains(ISL3.r.domElement)){ box.innerHTML=''; box.appendChild(ISL3.r.domElement); box.classList.add('is3'); }
   const n=worldCount(o); ISL3.arrival=n===0?(!pupName(o)&&!o.pupAsked&&!o.arrived?(ISL3.arrival==='home'?'home':'boat'):'home'):null;
@@ -7257,9 +7289,12 @@ function isl3Show(box,o){ isl3Immersive();
   if(seen===null){ seenSet([...un,...ACC.filter(a=>accOwned(a,o)).map(a=>'acc:'+a.id)]); ISL3.pending_acc=[]; }
   else { const nw=un.filter(i=>!seen.includes(i));
     if(nw.length){ seenSet([...seen,...nw]); const rank=i=>i.startsWith('home:')?0:i.startsWith('isle:')?1:2; nw.sort((a,b)=>rank(a)-rank(b));
-      clearTimeout(ISL3.revealT); ISL3.revealT=setTimeout(()=>isl3Reveal(nw,o),600); return; } }
+      isl3Wake(true); clearTimeout(ISL3.revealT); ISL3.revealT=setTimeout(()=>isl3Reveal(nw,o),600); return; } }
   if(ISL3.arrival==='boat') isl3Arrive(o);
   else if(ISL3.arrival==='home') isl3ShowHome();
+  else if(ISL3.dozing){ clearTimeout(ISL3.afterT); const bp=ISL3.bloppit.position;
+    setTimeout(()=>{ if(!ISL3.dozing) return; isl3FlyTo(bp.x,.8,bp.z,11,1100); ISL3.moved=true; ISL3.fly.done=()=>setTimeout(()=>{ isl3Wake();
+      setTimeout(()=>{ if(!ISL3.revealing&&!ISL3.down){ isl3FlyHome(1100); ISL3.fly.done=()=>{ ISL3.moved=false; isl3WholeBtn(); isl3AfterReveal(o); }; } },2700); },500); },300); }
   else { clearTimeout(ISL3.afterT); ISL3.afterT=setTimeout(()=>isl3AfterReveal(o),500); }
 }
 // The first visit: a little boat brings the young otter to the jetty, Bloppit waves, and we meet it
