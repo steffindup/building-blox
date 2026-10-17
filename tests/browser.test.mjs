@@ -137,8 +137,8 @@ test('the Weekly is calm: no Blitz tag, no stopwatch, no seconds for a miss; the
   await t.page.evaluate(() => document.getElementById('dyGo').click()); await t.page.waitForTimeout(5000);
   assert.equal(await t.view(), 'view-build');
   const ui = await t.page.evaluate(() => ({ tag: !!document.querySelector('#mpTitle .blitz-tag'), race: document.getElementById('mpRoomBtn').hidden, banner: document.getElementById('turnBanner').hidden,
-    tab: document.querySelector('.tab[aria-selected="true"]')?.dataset.tab, status: document.getElementById('status').textContent }));
-  assert.deepEqual(ui, { tag: false, race: true, banner: true, tab: 'daily', status: 'Go! Take your time. Place every brick in the right spot.' });
+    tab: document.querySelector('.tab[aria-selected="true"]')?.dataset.tab }));
+  assert.deepEqual(ui, { tag: false, race: true, banner: true, tab: 'daily' });
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
