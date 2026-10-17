@@ -12,6 +12,10 @@ test('pup: a decoration put away stays put away; a made-up one is dropped', () =
   const w = merge({ world: { decor: ['bench', 'kite'], away: { 'decor:bench': 1 } } }, cleanData({ world: { decor: ['bench', 'kite'], away: { 'decor:kite': 1, 'decor:castle': 1, 'm:Nope:3': 1 } } })).world;
   assert.deepEqual(w.away, { 'decor:bench': 1, 'decor:kite': 1 });
 });
+test('pup: putting a decoration back wins over an older copy that still has it put away', () => {
+  const older = { world: { decor: ['bench', 'kite'], away: { 'decor:bench': 1700000000000, 'decor:kite': 1 } } }, newer = { world: { decor: ['bench', 'kite'], away: { 'decor:bench': -1700000005000 } } };
+  for (const [a, b] of [[older, newer], [newer, older]]) { const w = merge(a, cleanData(b)).world; assert.equal(w.away['decor:bench'] > 0, false, 'back on the island'); assert.equal(w.away['decor:kite'] > 0, true, 'still away'); }
+});
 test('pup: world merge keeps best stars, earliest time, union of log/decor, the name, From Memory', () => {
   const a = { world: { xp: 20, builds: { 'm:Tree:6': { n: 6, s: 2, t: 100, c: 1 }, 'm:Duck:18': { n: 18, s: 3, t: 200, c: 1, m: 1 } }, log: ['m:Tree:6', 'm:Duck:18'], decor: ['flag'], pupName: -1 } };
   const b = { world: { xp: 30, bonus: 1, builds: { 'm:Tree:6': { n: 6, s: 3, t: 90, c: 2 }, 'w:2026-10-26': { n: 48, s: 2, t: 300, c: 1 } }, log: ['m:Tree:6', 'w:2026-10-26'], decor: ['crab'], pupName: 4 } };

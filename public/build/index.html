@@ -5943,7 +5943,7 @@ function worldMerge(a,b){
   // The name (typed or picked) and brick colour: whichever was set last (pupAt); a later 'no name yet' never wipes one
   const later=(b.pupAt||0)>(a.pupAt||0)?b:a, other=later===b?a:b, named=w=>(cleanPupText(w.pupText)||w.pupName>=0)?w:null, nw=named(later)||named(other)||{};
   const pn=typeof nw.pupName==='number'&&nw.pupName>=0?nw.pupName:null, pc=[later.pupColor,other.pupColor].find(v=>Number.isInteger(v)&&v>=0);
-  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},pos:{...(a.pos||{}),...(b.pos||{})},away:{...(a.away||{}),...(b.away||{})},draw:[...new Map([...(b.draw||[]),...(a.draw||[])].map(d=>[d.id,d])).values()].sort((x,y)=>(y.t||0)-(x.t||0)).slice(0,12),pupName:pn==null?-1:pn,pupText:cleanPupText(nw.pupText),pupAt:Math.max(a.pupAt||0,b.pupAt||0),pupColor:pc==null?-1:pc,isle:(a.isle||b.isle)?1:0,arrived:(a.arrived||b.arrived)?1:0,pick:a.pick||b.pick||undefined,...(((b.wearAt||0)>(a.wearAt||0)?b:a).wear?{wear:((b.wearAt||0)>(a.wearAt||0)?b:a).wear,wearAt:Math.max(a.wearAt||0,b.wearAt||0)}:{}),pupAsked:!!(a.pupAsked||b.pupAsked)};
+  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},pos:{...(a.pos||{}),...(b.pos||{})},away:awayMerge(a.away,b.away),draw:[...new Map([...(b.draw||[]),...(a.draw||[])].map(d=>[d.id,d])).values()].sort((x,y)=>(y.t||0)-(x.t||0)).slice(0,12),pupName:pn==null?-1:pn,pupText:cleanPupText(nw.pupText),pupAt:Math.max(a.pupAt||0,b.pupAt||0),pupColor:pc==null?-1:pc,isle:(a.isle||b.isle)?1:0,arrived:(a.arrived||b.arrived)?1:0,pick:a.pick||b.pick||undefined,...(((b.wearAt||0)>(a.wearAt||0)?b:a).wear?{wear:((b.wearAt||0)>(a.wearAt||0)?b:a).wear,wearAt:Math.max(a.wearAt||0,b.wearAt||0)}:{}),pupAsked:!!(a.pupAsked||b.pupAsked)};
 }
 function worldSet(o){ try{ localStorage.setItem(pkey(WORLD_KEY),JSON.stringify(o)); }catch(e){} pupPush(); }
 const worldCount=o=>o.log.length;                                   // distinct models finished
@@ -5952,7 +5952,10 @@ const worldCount=o=>o.log.length;                                   // distinct 
 const buildXP=(k,b)=>(b.k==='blitz'?10:b.n<=20?10:b.n<=40?20:35)+(k.startsWith('w:')?10:0)+(b.m?5:0);
 const worldXP=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+buildXP(k,b),0);
 const worldStarsEarned=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+(b.s||0)+(k.startsWith('w:')?1:0)+(b.m?1:0),0);
-const decorOut=o=>(o.decor||[]).filter(id=>(o.away||{})['decor:'+id]!==1);   // decorations on the island (not put away)
+// Put away / put back: the time it was put away, or minus the time it came back; on a merge the latest choice wins (old 1/0 lose to any timed one)
+const isAway=(o,k)=>((o.away||{})[k]||0)>0, awayMark=back=>back?-Date.now():Date.now();
+function awayMerge(a,b){ const o={...(a||{})}; for(const [k,v] of Object.entries(b||{})) if(!(k in o)||Math.abs(+v||0)>Math.abs(+o[k]||0)) o[k]=v; return o; }
+const decorOut=o=>(o.decor||[]).filter(id=>!isAway(o,'decor:'+id));   // decorations on the island (not put away)   // decorations on the island (not put away)
 const worldStarsSpent=o=>(o.decor||[]).reduce((a,id)=>{ if((o.free||[]).includes(id)) return a; const d=DECOR.find(x=>x.id===id); return a+(d?d.cost:0); },0);
 const worldStars=o=>worldStarsEarned(o)-worldStarsSpent(o);
 const stageOf=(list,n)=>{ let k=0; list.forEach((st,i)=>{ if(n>=st.at) k=i; }); return k; };
@@ -6257,7 +6260,7 @@ function islandSVG(o,opts){
 function islandModelsAny(o){ return ISL3.ok?islandModels3(o):islandModels(o); }
 function islandModels(o){
   const cap=ISLAND_STAGES[islandStage(o)].slots, pos=o.pos||{}, away=o.away||{}, legacy=o.slot||{};
-  const all=o.log.filter(k=>!k.startsWith('w:')&&o.builds[k]&&away[k]!==1).reverse();   // newest first
+  const all=o.log.filter(k=>!k.startsWith('w:')&&o.builds[k]&&!((away[k]||0)>0)).reverse();   // newest first
   const at=k=>Array.isArray(pos[k])?pos[k]:(Number.isInteger(legacy[k])&&SLOTS[legacy[k]]?SLOTS[legacy[k]]:null);
   const show=all.slice(0,cap), list=[]; for(const k of show){ const p=at(k); if(p) list.push({key:k,x:p[0],y:p[1],placed:true}); }   // the newest builds always get the spaces
   const near=(x,y)=>list.some(m=>Math.hypot(m.x-x,m.y-y)<70), stands=SLOTS.slice(0,cap).map(([x,y],i)=>[x,y,i]);
@@ -6412,7 +6415,7 @@ document.body.append($('#isTip'),$('#isHover'));
 $('#isA11y').addEventListener('click',e=>{ const b=e.target.closest('[data-info]'); if(!b) return; const p=ISL3.ok&&isl3Point(b.dataset.info); islandTip(b.dataset.info,p?anchorAt(p.x,p.y):b); });   // positioned against the page
 // Put a model on Bloppitopia (on a free stand) or away (it stays in the list)
 function islandPut(k,on){
-  const o=worldStore(); o.away={...(o.away||{}),[k]:on?0:1};
+  const o=worldStore(); o.away={...(o.away||{}),[k]:awayMark(on)};
   if(on){ const sh=islandModelsAny(o), spot=sh.empty[0]; if(spot) o.pos={...(o.pos||{}),[k]:ISL3.ok?[W2P(spot[0]),W2P(spot[1])]:[spot[0],spot[1]]}; }
   worldSet(o); track(on?'island_put_on':'island_put_away'); sfx.snap(); islandShown=worldCount(o); renderIsland();
 }
@@ -6618,7 +6621,7 @@ function isl3Init(){
     const r=new THREE.WebGLRenderer({antialias:true,alpha:false,preserveDrawingBuffer:true});
     const lite=/[?&]lite3d=1/.test(location.search); ISL3.lite=lite;   // tests on machines without a GPU: no shadows, half the pixels
     const coarse=matchMedia('(pointer: coarse)').matches;   // phones and tablets: fewer pixels, simpler shadow edges
-    r.setPixelRatio(lite?.5:Math.min(devicePixelRatio||1,coarse?1.5:2)); r.outputEncoding=THREE.sRGBEncoding; r.shadowMap.enabled=!lite; r.shadowMap.type=coarse?THREE.PCFShadowMap:THREE.PCFSoftShadowMap;
+    r.setPixelRatio(lite?.5:Math.min(devicePixelRatio||1,coarse?1.5:2)); r.outputEncoding=THREE.sRGBEncoding; r.shadowMap.enabled=!lite; r.shadowMap.autoUpdate=false; r.shadowMap.type=coarse?THREE.PCFShadowMap:THREE.PCFSoftShadowMap;
     r.setClearColor(new THREE.Color('#BFE6F7'));
     const sc=new THREE.Scene(); sc.fog=new THREE.Fog(new THREE.Color('#BFE6F7').convertSRGBToLinear(),80,170);
     const camera=new THREE.PerspectiveCamera(34,1.4,.5,300);
@@ -6641,7 +6644,7 @@ function isl3Init(){
 // Which models stand where (3D positions; the record keeps them as 0..1000)
 function islandModels3(o){
   const cap=ISLAND_STAGES[islandStage(o)].slots, pos=o.pos||{}, away=o.away||{};
-  const all=o.log.filter(k=>!k.startsWith('w:')&&o.builds[k]&&away[k]!==1).reverse();
+  const all=o.log.filter(k=>!k.startsWith('w:')&&o.builds[k]&&!((away[k]||0)>0)).reverse();
   // The newest builds always get the spaces: a model you dragged somewhere keeps its spot, but never pushes a newer build off the island
   const show=all.slice(0,cap), list=[]; for(const k of show){ const p=pos[k]; if(Array.isArray(p)){ const x=P2W(p[0]), z=P2W(p[1]); if(onGrass(x,z)) list.push({key:k,x,z,placed:true}); } }
   const near=(x,z)=>list.some(m=>Math.hypot(m.x-x,m.z-z)<1.5), stands=STANDS3.slice(0,cap).map(([x,z],i)=>[x,z,i]);
@@ -6916,7 +6919,7 @@ function cv3(host,opts){ if(!host||!ch3On()) return null; let v=host.__cv3;
   return v; }
 function cv3Play(host,clip,i){ const v=host&&host.__cv3; if(!v||!v.insts.length) return; const list=i==null?v.insts:[v.insts[i]]; for(const x of list) if(x) clip==='poke'?x.ctl.poke():x.ctl.play(clip); cv3Kick(); }
 function cv3Kick(){ if(!CV3.raf) CV3.raf=requestAnimationFrame(cv3Loop); }
-function cv3Loop(t){ CV3.raf=0; const dt=Math.min(.05,CV3.t?(t-CV3.t)/1000:0); CV3.t=t; if(document.hidden){ CV3.t=0; return; }
+function cv3Loop(t){ CV3.raf=0; if(CV3.t&&t-CV3.t<30){ CV3.raf=requestAnimationFrame(cv3Loop); return; } const dt=Math.min(.05,CV3.t?(t-CV3.t)/1000:0); CV3.t=t; if(document.hidden){ CV3.t=0; return; }
   const vis=CV3.views.filter(v=>v.insts.length&&v.host.isConnected&&v.host.offsetParent!==null&&v.host.classList.contains('c3on')); if(!vis.length){ CV3.t=0; return; }
   const r=cv3R(), dpr=Math.min(2,devicePixelRatio||1), sz=vis.map(v=>[Math.max(2,Math.round(v.host.clientWidth*dpr)),Math.max(2,Math.round(v.host.clientHeight*dpr))]);
   const W=Math.max(...sz.map(s=>s[0])), H=Math.max(...sz.map(s=>s[1])), c=r.domElement; if(c.width<W||c.height<H) r.setSize(Math.max(W,c.width),Math.max(H,c.height),false);
@@ -7305,7 +7308,7 @@ const SEEN_KEY='bloppit-seen3-v1';
 function seenGet(){ try{ const v=JSON.parse(localStorage.getItem(pkey(SEEN_KEY))); return Array.isArray(v)?v:null; }catch(e){ return null; } }
 function seenSet(a){ try{ localStorage.setItem(pkey(SEEN_KEY),JSON.stringify(a.slice(-400))); }catch(e){} }
 
-function isl3Build(o){
+function isl3Build(o){ ISL3.shadowDirty=true;
   const sc=ISL3.sc; if(ISL3.world){ sc.remove(ISL3.world); ISL3.world.traverse(x=>{ if(x.geometry&&!geo3.has(x.geometry)) x.geometry.dispose(); }); }
   for(const i of ISL3.chars3||[]) i.ctl.dispose(); ISL3.chars3=[]; ISL3.b3=ISL3.p3=ISL3.l3=null;
   const W=new THREE.Group(), n=worldCount(o); ISL3.world=W; ISL3.hits=[]; ISL3.labels=[]; ISL3.pieces={}; ISL3.isles={};
@@ -7415,7 +7418,7 @@ function zzzTex3(){ const c=document.createElement('canvas'); c.width=96; c.heig
 
 // Time of day: sunrise, day, sunset and night from the device's clock (?hour=21 to try)
 const TOD3=[[0,'#0B1D3A',.08,'#7F96E6',.17,'#0E3F68',1],[5,'#0B1D3A',.08,'#7F96E6',.17,'#0E3F68',1],[6.5,'#FFB98A',.6,'#FFC59A',.48,'#2A8FD0',.35],[8,'#BFE6F7',.95,'#FFFFFF',.62,'#22B4EE',0],[17,'#BFE6F7',.95,'#FFFFFF',.62,'#22B4EE',0],[18.7,'#FF9E6E',.6,'#FFB070',.45,'#2C86C4',.35],[20.2,'#0B1D3A',.08,'#7F96E6',.17,'#0E3F68',1],[24,'#0B1D3A',.08,'#7F96E6',.17,'#0E3F68',1]];
-function isl3Tod(force){ const h=isl3Hour(); if(!force&&ISL3.todH!=null&&Math.abs(h-ISL3.todH)<.02) return; ISL3.todH=h;
+function isl3Tod(force){ const h=isl3Hour(); if(!force&&ISL3.todH!=null&&Math.abs(h-ISL3.todH)<.02) return; ISL3.todH=h; ISL3.shadowDirty=true;
   let i=0; while(i<TOD3.length-2&&TOD3[i+1][0]<=h) i++; const A=TOD3[i], B=TOD3[i+1], t=(h-A[0])/Math.max(.001,B[0]-A[0]);
   const col=(a,b)=>new THREE.Color(a).convertSRGBToLinear().lerp(new THREE.Color(b).convertSRGBToLinear(),t), num=(a,b)=>a+(b-a)*t;
   const sky=col(A[1],B[1]); ISL3.r.setClearColor(sky); ISL3.sc.fog.color.copy(sky);
@@ -7431,15 +7434,19 @@ function isl3Tod(force){ const h=isl3Hour(); if(!force&&ISL3.todH!=null&&Math.ab
 // The loop: about 30 frames a second while Bloppitopia is on screen, nothing when it isn't
 function isl3Frame(now){
   ISL3.raf=0; if(!ISL3.on) return;
-  const busy=ISL3.dragging||ISL3.fly||ISL3.react||ISL3.say||(ISL3.chars3&&ISL3.chars3.length&&!reduceMotion&&!ISL3.lite)||(ISL3.pops&&ISL3.pops.length)||(ISL3.parts&&ISL3.parts.length);
+  // never more than 30 frames a second, even under a finger (asking a phone's GPU for every screen refresh piles up work faster
+  // than it can draw it, and touches start to lag); 30 while touched, flying or animating, 15 when the world is still
+  const touching=ISL3.dragging||ISL3.fly||ISL3.down||now-(ISL3.input||0)<2500, anim=ISL3.react||ISL3.say||(ISL3.chars3&&ISL3.chars3.length&&!reduceMotion&&!ISL3.lite)||(ISL3.pops&&ISL3.pops.length)||(ISL3.parts&&ISL3.parts.length), busy=touching||anim;
   if(ISL3.hidden){ return; }   // scrolled off screen: the observer starts it again
-  const gap=busy||now-(ISL3.input||0)<2500?31:66;
-  if(!ISL3.dirty&&!busy&&now-(ISL3.last||0)<gap){ ISL3.raf=requestAnimationFrame(isl3Frame); return; } ISL3.last=now;
+  const gap=busy?33:66;
+  if(now-(ISL3.last||0)<gap-6){ ISL3.raf=requestAnimationFrame(isl3Frame); return; } ISL3.last=now;
   const t=now/1000; ISL3.dt=Math.min(.1,ISL3.lastT?(now-ISL3.lastT)/1000:0); ISL3.lastT=now; isl3Tod(false);
   if(ISL3.fly) isl3FlyStep(now); else if(ISL3.ctl) ISL3.ctl.update();
   const A=ISL3.anim||[]; if(!reduceMotion) for(const x of A) isl3Animate(x,t); else for(const x of A) if(x.userData.hand) isl3Animate(x,t);
   isl3Pops(now);
-  isl3ReactStep(now); ISL3.r.render(ISL3.sc,ISL3.cam); isl3SayPlace(); { const k=ISL3.cam.matrixWorld.elements.join()+'|'+ISL3.r.domElement.width; if(k!==ISL3.labK||ISL3.dirty){ ISL3.labK=k; isl3PlaceLabels(); } } ISL3.dirty=false;
+  isl3ReactStep(now);
+  if(ISL3.r.shadowMap.enabled){ const sh=ISL3.shadowDirty||ISL3.dragging||(ISL3.pops&&ISL3.pops.length)||ISL3.revealing||ISL3.arrive||now-(ISL3.shT||0)>400; ISL3.r.shadowMap.needsUpdate=!!sh; if(sh){ ISL3.shT=now; ISL3.shadowDirty=false; } }
+  ISL3.r.render(ISL3.sc,ISL3.cam); isl3SayPlace(); { const k=ISL3.cam.matrixWorld.elements.join()+'|'+ISL3.r.domElement.width; if(k!==ISL3.labK||ISL3.dirty){ ISL3.labK=k; isl3PlaceLabels(); } } ISL3.dirty=false;
   if(ISL3.on&&(!reduceMotion||busy||(ISL3.settle-->0))) ISL3.raf=requestAnimationFrame(isl3Frame);
 }
 function isl3Animate(x,t){ const u=x.userData;
@@ -7635,7 +7642,7 @@ function isl3Arrive(o){
     Promise.race([ch3Get('pup0').catch(()=>{}),new Promise(r=>setTimeout(r,2500))]).then(()=>{ ISL3.arrive=null; if(ISL3.on&&ISL3.arrival==='boat') isl3Arrive(o); }); return; }
   const [jx,jz]=HOME_AT.jetty, boat=boat3('#FFFFFF',1.3), p3=ch3On()&&ch3Ready('pup0')?ch3Make('pup0'):null;
   if(p3){ ch3Dress(p3,o); p3.root.scale.setScalar(CH3S*.95); p3.root.position.set(-.1,.32,0); p3.root.rotation.y=-Math.PI/2; p3.root.traverse(m=>{ if(m.isMesh) m.raycast=()=>{}; }); boat.add(p3.root); p3.ctl.play('wave');
-    let last=performance.now(); const live=t=>{ if(!boat.parent||!ISL3.on){ p3.ctl.dispose(); return; } const dt=Math.min(.05,(t-last)/1000); last=t; p3.ctl.update(reduceMotion?0:dt);
+    let last=performance.now(); const live=t=>{ if(boat.parent!==ISL3.world||ISL3.arrival!=='boat'||!ISL3.on){ p3.ctl.dispose(); return; } const dt=Math.min(.05,(t-last)/1000); last=t; p3.ctl.update(reduceMotion?0:dt);
       if(!p3.ctl.current&&!reduceMotion) p3.ctl.play(ISL3.arrive?'wave':Math.random()<.5?'happy_hop':'giggle_wiggle'); isl3Kick(); requestAnimationFrame(live); }; requestAnimationFrame(live); }
   else { const pup=new THREE.Sprite(new THREE.SpriteMaterial({map:pupTex3(o),transparent:true,alphaTest:.15})); pup.scale.set(.75,1.08,1); pup.center.set(.5,0); pup.position.set(-.1,.35,0); boat.add(pup); } boat.position.set(jx+.6,-1.25,jz+13); boat.rotation.y=Math.PI/2; ISL3.world.add(boat);
   ISL3.cam.position.set(jx+2,9,jz+20); ISL3.ctl.target.set(jx,0,jz+5); ISL3.ctl.update(); ISL3.moved=true;
@@ -7667,7 +7674,7 @@ function renderIsland(){
 function renderDecorShop(){
   const o=worldStore(), left=worldStars(o);
   $('#isStars').textContent=`You have ${left} Build Star${left===1?'':'s'}.`;
-  $('#decorGrid').innerHTML=DECOR.map(d=>{ const owned=o.decor.includes(d.id), away=owned&&(o.away||{})['decor:'+d.id]===1; return `<button type="button" data-decor="${d.id}"${away?' data-owned="1" data-back="1"':owned?' data-owned="1" disabled':left<d.cost?' disabled':''}><svg viewBox="-64 -136 128 148">${decorSVG(d.id,0,d.id==='kite'?-110:6)}</svg>${d.name}<span class="cost">${away?'Put away · tap to put it back':owned?((o.free||[]).includes(d.id)?'From a Weekly':'On your island'):`Buy · ★ ${d.cost}`}</span></button>`; }).join('');
+  $('#decorGrid').innerHTML=DECOR.map(d=>{ const owned=o.decor.includes(d.id), away=owned&&isAway(o,'decor:'+d.id); return `<button type="button" data-decor="${d.id}"${away?' data-owned="1" data-back="1"':owned?' data-owned="1" disabled':left<d.cost?' disabled':''}><svg viewBox="-64 -136 128 148">${decorSVG(d.id,0,d.id==='kite'?-110:6)}</svg>${d.name}<span class="cost">${away?'Put away · tap to put it back':owned?((o.free||[]).includes(d.id)?'From a Weekly':'On your island'):`Buy · ★ ${d.cost}`}</span></button>`; }).join('');
 }
 $('#decorGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-decor]'); if(!b||b.disabled) return;
   const d=DECOR.find(x=>x.id===b.dataset.decor); if(!d) return;
@@ -7676,7 +7683,7 @@ $('#decorGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-de
   const o=worldStore(); if(o.decor.includes(d.id)||worldStars(o)<d.cost) return;
   o.decor.push(d.id); worldSet(o); track('decor_bought:'+d.id); sfx.chime(); islandShown=-1; renderIsland(); decorPlaced(d); });
 // Put a decoration away (it stays yours, in the Decorate list) or back out where it was
-function decorPut(id,on){ const o=worldStore(), d=DECOR.find(x=>x.id===id); if(!d||!o.decor.includes(id)) return; o.away={...(o.away||{}),['decor:'+id]:on?0:1};
+function decorPut(id,on){ const o=worldStore(), d=DECOR.find(x=>x.id===id); if(!d||!o.decor.includes(id)) return; o.away={...(o.away||{}),['decor:'+id]:awayMark(on)};
   worldSet(o); track(on?'decor_put_back:'+id:'decor_put_away:'+id); sfx.snap(); islandTipHide(); islandShown=-1; renderIsland(); renderDecorShop(); if(on) decorPlaced(d,true); }
 // Just bought: close the shop, go to the island, fly to it and say how to move it
 function decorPlaced(d,back){ $('#isShop').hidden=true; try{ if($('#view-island').classList.contains('immersive')){ const up=()=>scrollTo({top:0,behavior:'instant'}); up(); setTimeout(up,60); setTimeout(up,400); } else $('#isWorld').scrollIntoView({behavior:'auto',block:'center'}); }catch(e){}
@@ -7690,7 +7697,7 @@ function renderBuilds(){
   const B=Object.values(o.builds), clean=B.filter(b=>(b.s||0)>=3).length, nohint=B.filter(b=>(b.s||0)>=2).length, mem=B.filter(b=>b.m).length;
   $('#isBuildsNote').innerHTML=keys.length?`${keys.length} model${keys.length===1?'':'s'} finished. Stars are the best of every try. <span class="mastery"><b>${clean}</b> clean · <b>${nohint}</b> no hints · <b>${mem}</b> from memory</span>`:'Nothing finished yet.';
   $('#buildsGrid').innerHTML=keys.map(k=>{ const b=o.builds[k], u=worldThumb(k), nm=k.startsWith('w:')?'Weekly Bloppit':(/^m:(.+):\d+$/.exec(k)||/^t:[a-z]+:\d+:(.+)$/.exec(k)||[])[1]||'Your photo';
-    const away=(o.away||{})[k]===1, on=shownKeys.has(k)||k.startsWith('w:');
+    const away=isAway(o,k), on=shownKeys.has(k)||k.startsWith('w:');
     return `<button type="button" class="${on?'':'away'}" data-mkey="${escapeHTML(k)}" aria-label="${escapeHTML(modelFacts(k,o).name)}">${on?'<span class="on-isle" title="On Bloppitopia">🏝️</span>':''}${u?`<img src="${u}" alt="">`:'<span style="height:72px"></span>'}<span>${escapeHTML(modelFacts(k,o).name)}</span>${wsStars(b.s||0)}<small>${b.n} bricks${b.m?' · 🧠':''}${k.startsWith('w:')?' · 📅':''}${away?' · put away':''}</small></button>`; }).join('');
 }
 $('#buildsGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-mkey]'); if(b) islandTip('model:'+b.dataset.mkey,b); });

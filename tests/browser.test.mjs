@@ -224,7 +224,8 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   const models = () => t.page.evaluate(() => window.bloppitIsland3().shown.list.map((m) => m.key));
   assert.equal((await models()).length, 3);
   const pt = (id) => t.page.evaluate((i) => window.bloppitIslandPoint(i), id);
-  const still = () => t.page.waitForFunction(() => !window.bloppitIsland3().fly, null, { timeout: 20000, polling: 100 }).then(() => t.page.waitForTimeout(300));
+  const still = () => t.page.waitForFunction(() => !window.bloppitIsland3().fly, null, { timeout: 20000, polling: 100 }).then(() => t.page.waitForTimeout(300),
+    async (e) => { console.log('STILLDBG', await t.page.evaluate(() => { const I = window.bloppitIsland3(); return JSON.stringify({ fly: I.fly && { dur: I.fly.dur, el: Math.round(performance.now() - I.fly.t0) }, raf: I.raf, hidden: I.hidden, on: I.on, down: I.down, lastAgo: Math.round(performance.now() - (I.last || 0)), view: I.viewI, rev: I.revealing, arr: I.arrive && Object.keys(I.arrive) }); })); throw e; });
   const tap = async (id) => { await still(); const c = await pt(id); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(1200);
     await t.page.waitForFunction(() => !document.getElementById('isTip').hidden, null, { timeout: 4000, polling: 100 }).catch(() => {}); const txt = await t.text('#isTip');
     await t.page.evaluate(() => document.querySelector('#isTip .tt-x')?.click());
@@ -303,12 +304,12 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   await still(); { const bc = await pt('decor:bench'); await t.page.mouse.click(bc.x, bc.y); }
   await t.page.waitForFunction(() => !document.getElementById('isTip').hidden && /Bench/.test(document.getElementById('isTip').textContent), null, { timeout: 6000, polling: 100 });
   await t.page.evaluate(() => [...document.querySelectorAll('#isTip [data-a]')].find((b) => /Put it away/.test(b.textContent)).click()); await t.page.waitForTimeout(800);
-  assert.equal(await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1')).away['decor:bench']), 1);
+  assert.equal(await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1')).away['decor:bench'] > 0), true);
   assert.equal(await pt('decor:bench'), null);   // gone from the island
   await t.page.evaluate(() => document.getElementById('isDecor').click());
   assert.match(await t.text('#decorGrid [data-decor="bench"]'), /tap to put it back/);
   await t.page.evaluate(() => document.querySelector('#decorGrid [data-decor="bench"]').click()); await t.page.waitForTimeout(1500);
-  assert.equal(await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1')).away['decor:bench']), 0);
+  assert.equal(await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1')).away['decor:bench'] > 0), false);
   assert.ok(await pt('decor:bench'), 'the bench is back');
   // the keyboard list has everything too
   assert.ok(await t.page.evaluate(() => document.querySelectorAll('#isA11y [data-info]').length > 15));
