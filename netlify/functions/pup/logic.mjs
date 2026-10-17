@@ -99,7 +99,9 @@ export function merge(server, incoming) {
       draw: [...new Map([...(Array.isArray(wb.draw) ? wb.draw : []), ...(Array.isArray(wa.draw) ? wa.draw : [])].filter((d) => d && typeof d.id === 'string' && typeof d.c === 'string' && d.c.length <= 2600).map((d) => [d.id, { id: d.id, c: d.c, t: num(d.t) ?? 0 }])).values()].sort((x, y) => y.t - x.t).slice(0, 12),
       // Where the child put each model and decoration on the island, and the models put away
       pos: Object.fromEntries([...new Set([...Object.keys(obj(wa.pos)), ...Object.keys(obj(wb.pos))])].filter((k) => kept[k] || (k.startsWith('decor:') && decor.includes(k.slice(6)))).map((k) => [k, [obj(wb.pos)[k], obj(wa.pos)[k]].find((v) => Array.isArray(v) && v.length === 2 && v.every((n) => Number.isInteger(n) && n >= 0 && n <= 1000))]).filter(([, v]) => v)),
-      away: Object.fromEntries(Object.entries({ ...obj(wa.away), ...obj(wb.away) }).filter(([k, v]) => (kept[k] || (k.startsWith('decor:') && decor.includes(k.slice(6)))) && v === 1)),
+      // put away = the time (or 1), put back = minus the time (or 0): the latest choice wins
+      away: Object.fromEntries([...new Set([...Object.keys(obj(wa.away)), ...Object.keys(obj(wb.away))])].filter((k) => kept[k] || (k.startsWith('decor:') && decor.includes(k.slice(6))))
+        .map((k) => [k, [obj(wa.away)[k], obj(wb.away)[k]].filter((v) => Number.isFinite(v) && Math.abs(v) < 1e14).sort((x, y) => Math.abs(y) - Math.abs(x))[0]]).filter(([, v]) => v !== undefined && v !== 0)),
       slot: Object.fromEntries(Object.entries({ ...obj(wa.slot), ...obj(wb.slot) }).filter(([k, v]) => kept[k] && Number.isInteger(v) && v >= 0 && v < 12)), pupName, pupAsked: !!(wa.pupAsked || wb.pupAsked),
       ...(pupAt ? { pupAt } : {}), ...(pupColor >= 0 ? { pupColor } : {}), ...((wa.isle || wb.isle) ? { isle: 1 } : {}), ...((wa.arrived || wb.arrived) ? { arrived: 1 } : {}), ...(pick ? { pick } : {}),
       ...(Object.keys(wear).length || num(wl.wearAt) ? { wear, wearAt: num(wl.wearAt) || 0 } : {}) };
