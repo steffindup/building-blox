@@ -2576,7 +2576,7 @@ var subOf={game:'hub',blitz:'hub',mp:'hub'};
 const SUB_OK={game:['hub','otter','brain'],blitz:['hub','cpu','friend'],mp:['hub','start','join']};
 // Which top-bar game a page belongs to (the build screen belongs to whatever you're playing)
 function sectionOf(t){
-  if(t==='build'||t==='box'||t==='booklet'){ if(game) return 'game'; if(mp) return trialOn&&trialOn()&&mp.state&&/Daily/.test(mp.state.label||'')?'daily':mpHomeTab(); return 'create'; }
+  if(t==='build'||t==='box'||t==='booklet'){ if(game) return 'game'; if(mp) return trialOn()&&mp.state.calm?'daily':mpHomeTab(); return 'create'; }
   return t==='home'?'':t;
 }
 function syncSub(t){
@@ -3026,7 +3026,7 @@ function buddyUpdate(){
     return;
   }
   if(isLocked(cur)){ budSay('point','This page is locked! Solve my math puzzle to open it.'); if(budStep!==cur){ budStep=cur; budPing(); } return; }
-  if(mpBlitz()){ budSay('point', mpMyTurn()?(mp.state.solo?`Step ${cur+1}! Go go go!`:mp.cpu?`Your turn! Step ${cur+1}. Beat my time!`:`Step ${cur+1}! Check the booklet. Quick!`):`Step ${cur+1}. Get ready for your turn!`); if(budStep!==cur){ budStep=cur; budPing(); } return; }
+  if(mpBlitz()){ budSay('point', mpMyTurn()?(mp.state.calm?`Step ${cur+1}. Take your time.`:mp.state.solo?`Step ${cur+1}! Go go go!`:mp.cpu?`Your turn! Step ${cur+1}. Beat my time!`:`Step ${cur+1}! Check the booklet. Quick!`):`Step ${cur+1}. Get ready for your turn!`); if(budStep!==cur){ budStep=cur; budPing(); } return; }
   const left=stepLeft(cur), total=model.steps[cur].bricks.length;
   if(welcomeOn()){ const lead=cur===0?'Hi! I’m Bloppit. Here’s your first brick. Tap the faded one!':left.length===total?['Here’s the next one!','Another one. Tap the faded brick!','Nice. Next brick!','Keep going!'][cur%4]:'One more for this step:';
     budSay('offer', `${lead}<div class="callout">${calloutHTML(left)}</div>`); if(budStep!==cur){ budStep=cur; budPing(); } return; }
@@ -3105,7 +3105,7 @@ function renderHints(){
   if(!hintOn||!model||cur>=model.steps.length) return;
   run.hints.add(cur); run.memory=false;
   { const g=game||mp; if(g&&!g.hintSteps.includes(cur)){ g.hintSteps.push(cur);
-      if(mpBlitz()){ mpPost({action:'hint'}).then(j=>mpApply(j.state)).catch(()=>{}); mpFlash('+5s'); }
+      if(mpBlitz()){ mpPost({action:'hint'}).then(j=>mpApply(j.state)).catch(()=>{}); if(!mp.state.calm) mpFlash('+5s'); }
       else charge('hint',5); } }
   const o=curOff()||{x:0,z:0}, u=usedSet();
   for(const b of model.steps[cur].bricks){ if(u.has(b)) continue;
@@ -3163,8 +3163,8 @@ function tryPlace(){
   if(t){ if(cands.length===1) lock(); placeBrick(t,ax,az); return; }
   if(mpBlitz()){ const o0=curOff(), u0=usedSet();
     const turn0=sel.sx!==sel.sz&&s.bricks.some(b=>!u0.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o0||Math.abs(b.x+o0.x-ax)<=2&&Math.abs(b.z+o0.z-az)<=2));
-    setStatus(turn0?'Miss! +1 second. Try turning it.':'Miss! +1 second','err'); sfx.bonk(); mpPost({action:'miss'}).then(j=>mpApply(j.state)).catch(()=>{});
-    const g=ghostGroup.children[0]; if(g){g.material=errMat; setTimeout(()=>{if(g.parent) g.material=ghostMat(sel?sel.c:0);},380);} mpFlash('+1s'); return; }
+    const calm=mp.state&&mp.state.calm; setStatus(calm?(turn0?'Close. Try turning it with R.':'Not quite. Compare with the picture in the booklet.'):turn0?'Miss! +1 second. Try turning it.':'Miss! +1 second','err'); sfx.bonk(); mpPost({action:'miss'}).then(j=>mpApply(j.state)).catch(()=>{});
+    const g=ghostGroup.children[0]; if(g){g.material=errMat; setTimeout(()=>{if(g.parent) g.material=ghostMat(sel?sel.c:0);},380);} if(!calm) mpFlash('+1s'); return; }
   const o=curOff(), u=usedSet();
   const turned=sel.sx!==sel.sz&&s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o||Math.abs(b.x+o.x-ax)<=2&&Math.abs(b.z+o.z-az)<=2));
   const unused=!s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&Math.min(b.sx,b.sz)===Math.min(sel.sx,sel.sz)&&Math.max(b.sx,b.sz)===Math.max(sel.sx,sel.sz));
@@ -5083,7 +5083,7 @@ function updateMpBar(){
   if(bz){ $('#hintBtn').textContent=s.calm?'Hint':mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'; $('#hintBtn').disabled=done||(!mpMyTurn()&&!hintOn); }
   $('#mpBar').classList.toggle('calm',!!s.calm);
   $('#mpBar').classList.toggle('blitz',bz);
-  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?`vs ${CPU_LEVELS[s.cpuLevel].name}`:'Room'; $('#mpRoomBtn').textContent=mp.cpu?'Race':'Room'; $('#mpTitle').innerHTML=(bz?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
+  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?`vs ${CPU_LEVELS[s.cpuLevel].name}`:'Room'; $('#mpRoomBtn').textContent=mp.cpu?'Race':'Room'; $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
   const cp=s.players[s.turn], mine=s.turn===mp.me, left=mpLeft(s), el=$('#mpTurn');
   el.classList.toggle('mine',mine&&!s.finished&&s.started);
   if(bz&&s.solo&&s.calm) el.innerHTML=s.finished?'Finished!<small>Let’s see how clean it was</small>':`Build it clean<small>${(s.players[0].n||0)} of ${s.quota} placed</small>`;
@@ -5376,7 +5376,7 @@ function GULL_HEAD(lvl){ const id=LT3[lvl]||'swoop', u=cv3Snap(id,null,'bust',16
 let bannerKey='';
 $('#turnBanner').addEventListener('click',e=>{ if(e.target.closest('#tbDone')&&!$('#mpEndTurn').hidden) $('#mpEndTurn').click(); });
 function turnBanner(s){
-  const el=$('#turnBanner'), on=!!(s&&mp&&mp.cpu&&s.started&&!s.finished);
+  const el=$('#turnBanner'), on=!!(s&&mp&&mp.cpu&&s.started&&!s.finished&&!s.calm);
   $('#buildStage').classList.toggle('cpu-turn',on&&s.turn===1); $('#mpBar').classList.toggle('cpu-turn',on&&s.turn===1);
   if(!on){ el.hidden=true; bannerKey=''; return; }
   const bot=s.turn===1, p=s.players[s.turn], left=mpLeft(s), key=bot+'|'+s.turnPlaced;
@@ -5611,7 +5611,7 @@ async function trialEnd(){
         W.weeks[info.week].n=j.n; W.weeks[info.week].pct=j.pct; weeklyStoreSet(W);
         const beat=weeklyPuzzle(info.week).beat;
         trialDialog({icon:clean?'✨':'📅',card:true,next:true,isle:'sunrise',title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,
-          note:(beat?beat+' ':'')+(clean?`You and ${j.pct}% of this week’s builders finished clean.`:`${j.pct}% of this week’s builders finished clean. Build it again for a clean one!`)+streakNote()+' A new puzzle arrives on Monday.'});
+          note:(beat?beat+' ':'')+(clean?(j.clean<=1?'You’re the first clean build this week!':`You and ${j.pct}% of this week’s builders finished clean.`):!j.clean?'Nobody has built it clean yet this week. Build it again and be the first!':`${j.pct}% of this week’s builders finished clean. Build it again for a clean one!`)+streakNote()+' A new puzzle arrives on Monday.'});
       }catch(e){ trialDialog({icon:'📅',card:true,next:true,isle:'sunrise',title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,note:`Your build is saved on this device, but it couldn’t be counted with everyone else’s (${e.message}).`+streakNote()}); }
     }
   };
@@ -5736,7 +5736,7 @@ let weeklyPeek=null;
 // How many Weeklies this player has built (the list only keeps the last 60, so there's a running total too)
 function weeklyTotal(){ const o=weeklyStore(); return Math.max(o.total||0,Object.values(o.weeks).filter(d=>d.first!=null).length); }
 async function weeklyFetch(){ const week=weekOf(); const j=await chApi('GET',null,`?weekly=${week}`); weeklyPeek=j; return j; }
-const cleanLine=(j,me)=>!j||!j.n?'':me&&me.clean?`You and ${j.pct}% of this week’s builders finished clean.`:`${j.n} built it this week · ${j.pct}% clean`;
+const cleanLine=(j,me)=>!j||!j.n?'':me&&me.clean?(j.clean<=1?'You’re the first clean build this week!':`You and ${j.pct}% of this week’s builders finished clean.`):!j.clean?`${j.n} built it this week · no clean builds yet`:`${j.n} built it this week · ${j.pct}% clean`;
 async function renderHomeWeekly(){
   $('#hdStreak').textContent=weeklyStreak(); $('#hdTotal').textContent=weeklyTotal();
   const el=$('#hdClean'), week=weekOf(), me=weeklyStore().weeks[week];
@@ -5751,11 +5751,11 @@ async function renderDaily(){
   $('#dyDate').textContent=`Week of ${mon.toLocaleDateString(undefined,{day:'numeric',month:'long'})}`;
   $('#dyInfo').textContent=`${o.n} bricks · ${o.theme} · place every brick in the right spot. A clean build has no misses and no hints.`;
   const st=[]; if(me) st.push(`<span>${me.clean?'Clean build <b>✓</b>':'Done <b>✓</b> · not clean yet'}</span>`);
-  st.push(`<span>Streak <b>${streak}</b> 🔥</span>`); st.push(`<span id="dyCount">${weeklyPeek&&weeklyPeek.week===week?cleanLine(weeklyPeek,me):'&nbsp;'}</span>`);
+  if(streak>0) st.push(`<span>Streak <b>${streak}</b> 🔥</span>`); { const t=weeklyPeek&&weeklyPeek.week===week?cleanLine(weeklyPeek,me):''; st.push(`<span id="dyCount"${t?'':' hidden'}>${t}</span>`); }
   $('#dyStats').innerHTML=st.join('');
   $('#dyGo').textContent=me?(me.clean?'Build it again':'Build it again for a clean one'):'Build this week’s Bloppit'; $('#dyBook').hidden=!me;
   $('#dyMsg').hidden=true;
-  weeklyFetch().then(j=>{ const el=$('#dyCount'); if(el&&tab==='daily') el.textContent=cleanLine(j,me); }).catch(()=>{});
+  weeklyFetch().then(j=>{ const el=$('#dyCount'); if(el&&tab==='daily'){ el.textContent=cleanLine(j,me); el.hidden=!el.textContent; } }).catch(()=>{});
 }
 $('#dyGo').onclick=async()=>{
   const b=$('#dyGo'); b.disabled=true;
@@ -8199,7 +8199,7 @@ $('#wcPupGo').onclick=()=>{ const d=$('#welcomeDlg'); d.close(); endReveal(true)
 function homeContinue(){
   const bar=(a,b)=>b?Math.round(100*a/b):0;
   if(game&&model&&levelsOf(gameTrail())[game.lvl]) return {t:`Back to ${TRAILS[gameTrail()].name} level ${game.lvl+1}`,s:`${levelsOf(gameTrail())[game.lvl].name}: ${placedN} of ${model.bricks.length} bricks placed`,p:bar(placedN,model.bricks.length),go:()=>setTab('build')};
-  if(mp) return {t:mp.cpu?'Back to your race':'Back to your room',s:mp.state&&mp.state.solo?`Your ${mp.state.label} is still going`:mp.cpu?`Your Blitz race against ${mp.state&&mp.state.cpuLevel?CPU_LEVELS[mp.state.cpuLevel].name:'the Longtail'} is still going`:mpBlitz()?'Your Bloppit Blitz game is still going':'Your Play together game is still going',p:-1,go:()=>setTab(mp.state&&mp.state.started?'build':mpHomeTab())};
+  if(mp) return {t:mp.state&&mp.state.calm?'Back to this week’s Bloppit':mp.cpu?'Back to your race':'Back to your room',s:mp.state&&mp.state.solo?`Your ${mp.state.label} is still going`:mp.cpu?`Your Blitz race against ${mp.state&&mp.state.cpuLevel?CPU_LEVELS[mp.state.cpuLevel].name:'the Longtail'} is still going`:mpBlitz()?'Your Bloppit Blitz game is still going':'Your Play together game is still going',p:-1,go:()=>setTab(mp.state&&mp.state.started?'build':mpHomeTab())};
   if(pendingSave){ const o=pendingSave;
     return {t:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`Continue ${TRAILS[o.game.trail==='brain'?'brain':'otter'].name} level ${o.game.lvl+1}`:'Continue building',
       s:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`${levelsOf(o.game&&o.game.trail)[o.game.lvl].name}: ${o.placedN} of ${o.nBricks} bricks placed`:`Your ${niceName(o.name)}: ${o.placedN} of ${o.nBricks} bricks placed`,

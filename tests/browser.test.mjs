@@ -129,6 +129,19 @@ test('share links: a Weekly, a library model, and /p/start', { skip: skip() }, a
   assert.equal(await t.view(), 'view-home'); assert.match(await t.text('#hmContT'), /Start here/); assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('the Weekly is calm: no Blitz tag, no stopwatch, no seconds for a miss; the menu shows Weekly', { skip: skip() }, async () => {
+  const seeded = { fn: () => localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 })) };
+  const t = await open('?nosplash=1#daily', { init: seeded, at: '2026-10-14T18:00:00Z' });
+  // a first visit to the page: no "Streak 0" and no empty chip
+  assert.equal(await t.page.evaluate(() => [...document.querySelectorAll('#dyStats span')].filter((e) => !e.hidden).length), 0);
+  await t.page.evaluate(() => document.getElementById('dyGo').click()); await t.page.waitForTimeout(5000);
+  assert.equal(await t.view(), 'view-build');
+  const ui = await t.page.evaluate(() => ({ tag: !!document.querySelector('#mpTitle .blitz-tag'), race: document.getElementById('mpRoomBtn').hidden, banner: document.getElementById('turnBanner').hidden,
+    tab: document.querySelector('.tab[aria-selected="true"]')?.dataset.tab, status: document.getElementById('status').textContent }));
+  assert.deepEqual(ui, { tag: false, race: true, banner: true, tab: 'daily', status: 'Go! Take your time. Place every brick in the right spot.' });
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('the Weekly bank: each planned Monday shows its model', { skip: skip() }, async () => {
   for (const [when, name] of [['2026-10-26T13:00:00Z', 'Jack-o’-lantern'], ['2026-11-02T14:00:00Z', 'Red boat'], ['2026-11-23T14:00:00Z', 'Hot-air balloon'], ['2026-12-14T14:00:00Z', 'Gingerbread house']]) {
     const t = await open('?nosplash=1&welcome=0', { at: when });
