@@ -978,6 +978,24 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 .is3-say::after{content:'';position:absolute;left:50%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-bottom:0;border-top-color:#fff}
 .is3-play{pointer-events:auto;margin-top:auto;display:grid;justify-items:center;gap:0;min-width:220px;max-width:92%;font-size:18px;padding:10px 22px;border-radius:999px;box-shadow:0 5px 0 #8f1f18,0 8px 18px rgba(0,0,0,.25)}
 .is3-play small{font-family:var(--f-body,inherit);font-size:12px;font-weight:700;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+/* The first arrival, told like the opening of a film */
+#view-island.cine .is-foot,#view-island.cine .is-btns,#view-island.cine #isBuildsGo,#view-island.cine .is3-labels,#view-island.cine .is3-views,#view-island.cine .is3-say,#view-island.cine .is3-play{opacity:0!important;pointer-events:none!important;transition:opacity .6s}
+.is3-cine{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:3}
+.is3-cine .cn-bar{position:absolute;left:0;right:0;height:11%;max-height:96px;background:#05101a;transition:transform 1.1s cubic-bezier(.65,0,.35,1)}
+.is3-cine .cn-bar.t{top:0;transform:translateY(-100%)}.is3-cine .cn-bar.b{bottom:0;transform:translateY(100%)}
+.is3-cine.on .cn-bar{transform:none}
+.is3-cine .cn-veil{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,#fff 0%,#E9F6FC 55%,#CDEAF6 100%);transition:opacity 2.2s ease}
+.is3-cine .cn-veil.off{opacity:0}
+.is3-cine .cn-cap{position:absolute;left:0;right:0;bottom:calc(min(11%,96px) + 14px);text-align:center;padding:0 24px;color:#fff;font-family:var(--f-display);font-size:clamp(18px,3.4vw,30px);letter-spacing:.01em;text-shadow:0 2px 10px rgba(0,20,40,.65),0 0 2px rgba(0,20,40,.8);opacity:0;transform:translateY(8px);transition:opacity .9s ease,transform .9s ease}
+.is3-cine .cn-cap.on{opacity:1;transform:none}
+.is3-cine .cn-title{position:absolute;left:0;right:0;top:30%;display:grid;justify-items:center;gap:6px;text-align:center;opacity:0;transform:scale(.92);transition:opacity 1.1s ease,transform 2.6s cubic-bezier(.2,.7,.2,1);filter:drop-shadow(0 6px 18px rgba(0,30,60,.45))}
+.is3-cine .cn-title.on{opacity:1;transform:none}
+.is3-cine .cn-title b{font-family:var(--f-display);font-weight:400;font-size:clamp(44px,10vw,104px);line-height:1;color:#fff;-webkit-text-stroke:2px #0b4f6c;paint-order:stroke fill;background:linear-gradient(100deg,#fff 35%,#FFF1B8 48%,#fff 61%) 0 0/250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:cn-shine 3.2s ease .4s both}
+.is3-cine .cn-title span{font-family:var(--f-display);font-size:clamp(16px,2.8vw,24px);color:#fff;text-shadow:0 2px 8px rgba(0,30,60,.7)}
+@keyframes cn-shine{from{background-position:120% 0}to{background-position:-30% 0}}
+.is3-cine .cn-skip{position:absolute;right:12px;top:calc(min(11%,96px) + 10px);pointer-events:auto;font:inherit;font-weight:800;font-size:14px;padding:7px 14px;border-radius:999px;border:0;background:rgba(5,16,26,.55);color:#fff;cursor:pointer;opacity:0;transition:opacity .6s;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.is3-cine .cn-skip.on{opacity:1}
+@media (prefers-reduced-motion:reduce){.is3-cine .cn-bar,.is3-cine .cn-cap,.is3-cine .cn-title{transition:opacity .3s}.is3-cine .cn-title b{animation:none}}
 .pup-suggest{width:100%;margin:0 0 8px}
 .pup-outfit{display:grid;gap:6px;margin:0 0 10px;text-align:left}.pup-outfit span{font-weight:800;font-size:14px}.pup-outfit>div{display:flex;gap:6px;flex-wrap:wrap}
 .pup-outfit button{font:inherit;font-weight:800;font-size:14px;padding:8px 12px;border-radius:12px;border:2px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer}.pup-outfit button[aria-pressed="true"]{border-color:var(--ink);background:#E8F1F8}
@@ -2973,7 +2991,32 @@ const sfx=(()=>{
     // The pup hatching: a little squeak and a trill
     hatch(){ haptic('light'); const c=ok('hatch',.8); if(!c) return; const t=c.currentTime+.02;
       tone(c,t,660,.09,{type:'sine',vol:.18,to:990}); tone(c,t+.12,990,.08,{type:'sine',vol:.16,to:1320});
-      [0,.07,.14,.21].forEach((d,i)=>tone(c,t+.3+d,1046.5*(i%2?1.125:1),.07,{type:'triangle',vol:.1})); }
+      [0,.07,.14,.21].forEach((d,i)=>tone(c,t+.3+d,1046.5*(i%2?1.125:1),.07,{type:'triangle',vol:.1})); },
+    // The first arrival: the sea, a soft pad and a little wondering tune that comes home as the boat docks (~12 s).
+    // Returns stop() for Skip. Everything is scheduled at once on its own bus, so stopping is one fade.
+    voyage(){ const c=ok('voyage',5); if(!c) return {stop(){}}; const t0=c.currentTime+.05, bus=c.createGain(), main=out; bus.gain.value=1; bus.connect(main); out=bus;
+      const hz=m=>440*Math.pow(2,(m-69)/12);
+      try{
+        // the sea: slow brown noise through a low filter, breathing in and out
+        const len=Math.ceil(c.sampleRate*12.6), b=c.createBuffer(1,len,c.sampleRate), x=b.getChannelData(0); let v=0; for(let i=0;i<len;i++){ v=(v+.02*(Math.random()*2-1))/1.02; x[i]=v*3.2; }
+        const src=c.createBufferSource(), lp=c.createBiquadFilter(), g=c.createGain(); src.buffer=b; lp.type='lowpass'; lp.frequency.value=520; g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(.16,t0+1.6);
+        for(let k=0;k<5;k++){ const a=t0+1.6+k*2.1; g.gain.linearRampToValueAtTime(.09,a+1.05); g.gain.linearRampToValueAtTime(.16,a+2.1); } g.gain.linearRampToValueAtTime(0,t0+12.5);
+        src.connect(lp); lp.connect(g); g.connect(bus); src.start(t0); src.stop(t0+12.6);
+        // the pad: Fmaj7, Am7, Dm7, Gsus, then home to Cmaj9 as the boat touches the jetty
+        const pad=(t,f,d,vol)=>{ const o=c.createOscillator(), o2=c.createOscillator(), gg=c.createGain(); o.type='triangle'; o2.type='sine'; o.frequency.value=f; o2.frequency.value=f*1.004;
+          gg.gain.setValueAtTime(0,t); gg.gain.linearRampToValueAtTime(vol,t+.9); gg.gain.setValueAtTime(vol,t+Math.max(.95,d-.1)); gg.gain.linearRampToValueAtTime(0,t+d+1); o.connect(gg); o2.connect(gg); gg.connect(bus); o.start(t); o2.start(t); o.stop(t+d+1.05); o2.stop(t+d+1.05); };
+        [[0,3,[53,57,60,64]],[3,2.8,[57,60,64,67]],[5.8,2,[50,57,60,65]],[7.8,1.4,[55,60,62,67]],[9.2,3.2,[48,55,64,71,74]]].forEach(([d,l,ns])=>ns.forEach(m=>pad(t0+d,hz(m),l,.032)));
+        // the bells: a few notes looking around, a shimmer for the island's name, then the tune comes in to land
+        const bell=(d,m,vol=.085)=>{ const t=t0+d, f=hz(m); tone(c,t,f,1.5,{vol}); tone(c,t,f*2,.7,{vol:vol*.22}); tone(c,t,f*3.01,.3,{vol:vol*.07}); };
+        [[.7,76],[1.25,79],[1.8,81],[2.45,84]].forEach(([d,m])=>bell(d,m));
+        [72,74,76,79,81,84,86,88,91,93].forEach((m,i)=>bell(3.0+i*.065,m,.05));
+        [[4.3,81],[4.85,79],[5.5,76],[6.15,74],[6.55,76],[6.95,79],[7.7,81],[8.2,79],[8.7,86]].forEach(([d,m])=>bell(d,m));
+        [[9.2,84,.1],[9.33,88,.09],[9.46,91,.09],[9.62,96,.07],[10.3,88,.06],[10.75,91,.06],[11.3,84,.05]].forEach(([d,m,vol])=>bell(d,m,vol));
+      } finally { out=main; }
+      return {stop(){ try{ const n=c.currentTime; bus.gain.cancelScheduledValues(n); bus.gain.setValueAtTime(bus.gain.value,n); bus.gain.linearRampToValueAtTime(0,n+.35); setTimeout(()=>{ try{ bus.disconnect(); }catch(e){} },500); }catch(e){} }}; },
+    // A boat bumping the jetty: a soft wooden knock
+    dock(){ haptic('medium'); const c=ok('dock',.5); if(!c) return; const t=c.currentTime+.01;
+      noise(c,t,.09,{vol:.35,freq:380,q:1.2,type:'lowpass'}); tone(c,t,150,.22,{vol:.26,to:95,att:.006}); tone(c,t+.05,230,.12,{type:'triangle',vol:.08,to:160}); }
   };
 })();
 function syncSoundBtn(){ const b=$('#sndBtn'); b.setAttribute('aria-pressed',sfx.on); b.title=(sfx.on?'Sound is on':'Sound is off')+' (M)'; }
@@ -7404,8 +7447,9 @@ function clearSpot3(ax,az,gap,taken){ const O=ISL3.obst||[], P=scalePoly(HOMEP,0
   return [ax,az]; }
 function isl3Characters(o,W){
   const r=routine3(isl3Hour()), n=worldCount(o), at={garden:POL3(22,4.5),fish:[HOME_AT.jetty[0]+.2,HOME_AT.jetty[1]+2.6],read:POL3(190,4.6),fire:POL3(176,5.5)}[r];
-  if(ISL3.arrival) { [at[0],at[1]]=POL3(198,4.5); }
-  ISL3.obst=isl3Obstacles(W); const onJetty=r==='fish'&&!ISL3.arrival; if(!onJetty){ const c=clearSpot3(at[0],at[1],.55); at[0]=c[0]; at[1]=c[1]; }
+  if(ISL3.arrival==='boat') { at[0]=HOME_AT.jetty[0]-.2; at[1]=HOME_AT.jetty[1]+1.2; }   // waiting at the end of the jetty for the boat
+  else if(ISL3.arrival) { [at[0],at[1]]=POL3(198,4.5); }
+  ISL3.obst=isl3Obstacles(W); const onJetty=(r==='fish'&&!ISL3.arrival)||ISL3.arrival==='boat'; if(!onJetty){ const c=clearSpot3(at[0],at[1],.55); at[0]=c[0]; at[1]=c[1]; }
   const pose=ISL3.arrival?'/art/bud-offer.png':{garden:'/art/bud-3q.png',fish:'/art/bud-focused.png',read:'/art/bud-focused.png',fire:'/art/bud-3q.png'}[r];
   const dozing=!ISL3.arrival&&!!ISL3.wakeDue; ISL3.dozing=dozing; const pose0=dozing?'/art/bud-hug.png':pose;
   const g=new THREE.Group(), b3=ch3Isle('bloppit',g,onJetty?TOP3-.05:TOP3,2.1), b=b3?null:sprite3(pose0,2.2,.75); if(b){ b.position.y=onJetty?TOP3-.05:TOP3; g.add(b); }
@@ -7454,12 +7498,12 @@ function isl3Frame(now){
   ISL3.raf=0; if(!ISL3.on) return;
   // never more than 30 frames a second, even under a finger (asking a phone's GPU for every screen refresh piles up work faster
   // than it can draw it, and touches start to lag); 30 while touched, flying or animating, 15 when the world is still
-  const touching=ISL3.dragging||ISL3.fly||ISL3.down||now-(ISL3.input||0)<2500, anim=ISL3.react||ISL3.say||(ISL3.chars3&&ISL3.chars3.length&&!reduceMotion&&!ISL3.lite)||(ISL3.pops&&ISL3.pops.length)||(ISL3.parts&&ISL3.parts.length), busy=touching||anim;
+  const touching=ISL3.dragging||ISL3.fly||ISL3.down||now-(ISL3.input||0)<2500, anim=ISL3.react||ISL3.say||(ISL3.chars3&&ISL3.chars3.length&&!reduceMotion&&!ISL3.lite)||(ISL3.pops&&ISL3.pops.length)||(ISL3.parts&&ISL3.parts.length), busy=touching||anim||!!ISL3.cine;
   if(ISL3.hidden){ return; }   // scrolled off screen: the observer starts it again
-  const gap=busy?33:66;
+  const gap=ISL3.cine?(ISL3.coarse??(ISL3.coarse=matchMedia('(pointer: coarse)').matches)?24:16):busy?33:66;   // the arrival film runs smoother
   if(now-(ISL3.last||0)<gap-6){ ISL3.raf=requestAnimationFrame(isl3Frame); return; } ISL3.last=now;
   const t=now/1000; ISL3.dt=Math.min(.1,ISL3.lastT?(now-ISL3.lastT)/1000:0); ISL3.lastT=now; isl3Tod(false);
-  if(ISL3.fly) isl3FlyStep(now); else if(ISL3.ctl) ISL3.ctl.update();
+  if(ISL3.cine) isl3CineStep(now); else if(ISL3.fly) isl3FlyStep(now); else if(ISL3.ctl) ISL3.ctl.update();
   const A=ISL3.anim||[]; if(!reduceMotion) for(const x of A) isl3Animate(x,t); else for(const x of A) if(x.userData.hand) isl3Animate(x,t);
   isl3Pops(now);
   isl3ReactStep(now);
@@ -7635,6 +7679,7 @@ function isl3Wake(quiet){ if(!ISL3.dozing) return; ISL3.dozing=false; ISL3.wakeD
   clearTimeout(ISL3.wakeT); ISL3.wakeT=setTimeout(()=>{ if(s&&ISL3.bloppitSprite===s){ s.material.map=tex3(ISL3.bloppitPose); s.material.needsUpdate=true; } isl3Banner(''); isl3Kick(); },2600); isl3Kick(); }
 function isl3Show(box,o){ isl3Immersive(); isl3WakeCheck(); isl3CharsLoad(o);
   if(ISL3.revealing&&ISL3.on&&ISL3.box===box) return;   // a reveal is playing: don't pull the world out from under it
+  if(ISL3.cine&&ISL3.on&&ISL3.box===box) return;   // nor the arrival film
   ISL3.box=box; if(!box.contains(ISL3.r.domElement)){ box.innerHTML=''; box.appendChild(ISL3.r.domElement); box.classList.add('is3'); }
   const n=worldCount(o); ISL3.arrival=n===0?(!pupName(o)&&!o.pupAsked&&!o.arrived?(ISL3.arrival==='home'?'home':'boat'):'home'):null;
   isl3Build(o); isl3Size(); ISL3.on=true; ISL3.settle=30; isl3Chrome(); isl3Kick(); if(!ISL3.moved) ISL3.viewI=0; isl3WholeBtn();
@@ -7653,23 +7698,105 @@ function isl3Show(box,o){ isl3Immersive(); isl3WakeCheck(); isl3CharsLoad(o);
       setTimeout(()=>{ if(!ISL3.revealing&&!ISL3.down){ isl3FlyHome(1100); ISL3.fly.done=()=>{ ISL3.moved=false; isl3WholeBtn(); isl3AfterReveal(o); }; } },2700); },500); },300); }
   else { clearTimeout(ISL3.afterT); ISL3.afterT=setTimeout(()=>isl3AfterReveal(o),500); }
 }
-// The first visit: a little boat brings the young otter to the jetty, Bloppit waves, and we meet it
+/* The first visit, told like the opening of a film (about 12 s; Skip at any time). Out of the clouds high over the whole
+   world as the mist clears, the island's name, then down to the sea behind a little boat carrying the young otter, wake
+   and sparkles trailing; Bloppit waits at the end of the jetty and waves, the boat bumps alongside, the pup leaps ashore,
+   and we meet it. Its own music. With reduced motion it starts at the jetty, with no flying and no music. */
+const ARR3={dock:9.2,leap:9.65,end:12.4};
+function arr3Boat(u){ const [jx,jz]=HOME_AT.jetty, P=[[jx+14,jz+48],[jx-6,jz+26],[jx+1.2,jz+9],[jx+1.2,jz+2.3]], v=1-u;
+  return [0,1].map(i=>v*v*v*P[0][i]+3*v*v*u*P[1][i]+3*v*u*u*P[2][i]+u*u*u*P[3][i]); }
+const arr3U=t=>t>=ARR3.dock?1:1-Math.pow(1-Math.max(0,t)/ARR3.dock,1.7);
+const smooth3=(a,b,t)=>{ const k=Math.min(1,Math.max(0,(t-a)/(b-a))); return k*k*(3-2*k); };
+// The camera: one continuous move made of four shots melting into each other
+function arr3Cam(t,bx,bz){ const V=THREE.Vector3, [jx,jz]=HOME_AT.jetty, f=CAM_TALL(ISL3.cam.aspect)?1.55:1;   // phones held upright stand further back
+  const ea=smooth3(0,5.4,t), th=-2.4+2.82*ea, R=70-40*ea, H=52-39*Math.pow(ea,.85);
+  const p=new V(Math.sin(th)*R*f,H*f,Math.cos(th)*R*f), q=new V(0,0,-2).lerp(new V(jx+.5,0,jz+2.5),ea);   // the sweep down out of the sky
+  const w1=smooth3(4.2,6.2,t); if(w1>0){ const qb=new V(bx*.5+jx*.5,.3,bz*.5+(jz+.5)*.5); p.lerp(new V(bx+5*f,1.5+.6*(f-1),bz+6.2*f),w1); q.lerp(qb,w1); }   // low over the water behind the boat
+  const w2=smooth3(7.9,9.4,t); if(w2>0){ const k=smooth3(7.9,11.5,t), qc=new V(jx+.35,.95,jz+1.9); p.lerp(qc.clone().add(new V(5.85,2.05,7.9).lerp(new V(3.95,1.25,5.5),k).multiplyScalar(f)),w2); q.lerp(qc,w2); }   // the jetty
+  const w3=smooth3(10.9,ARR3.end,t); if(w3>0){ const qd=new V(jx,.6,jz-3.2); p.lerp(qd.clone().addScaledVector(CAM_DIR3(),24*(f>1?1.25:1)),w3); q.lerp(qd,w3); }   // and up to see home
+  return [p,q]; }
+function arr3Tex(){ if(ISL3.foamTex) return ISL3.foamTex; const c=document.createElement('canvas'); c.width=c.height=64; const x=c.getContext('2d'), g=x.createRadialGradient(32,32,4,32,32,30);
+  g.addColorStop(0,'rgba(255,255,255,.95)'); g.addColorStop(.6,'rgba(255,255,255,.55)'); g.addColorStop(1,'rgba(255,255,255,0)'); x.fillStyle=g; x.fillRect(0,0,64,64); return ISL3.foamTex=new THREE.CanvasTexture(c); }
+// A puff of foam or a spark: rises (or spreads) and fades
+function arr3Bit(A,spark,x,y,z,v,life,s0,s1){ const m=new THREE.SpriteMaterial({map:spark?(ISL3.sparkTex||(ISL3.sparkTex=ISL3.sparkMat?ISL3.sparkMat.map:sparkTex3())):arr3Tex(),transparent:true,depthWrite:false,blending:spark?THREE.AdditiveBlending:THREE.NormalBlending,fog:!spark});
+  const sp=new THREE.Sprite(m); sp.position.set(x,y,z); sp.scale.setScalar(s0); ISL3.sc.add(sp); A.bits.push({sp,v,life,s0,s1,t0:A.t,op:spark?1:.7}); }
 function isl3Arrive(o){
   // the 3D otter rides the boat: wait a moment for it if it's still loading (then the drawing comes instead)
   if(ch3On()&&!ch3Ready('pup0')&&!ISL3.arriveWaited){ ISL3.arriveWaited=1; ISL3.arrive={wait:1};
     Promise.race([ch3Get('pup0').catch(()=>{}),new Promise(r=>setTimeout(r,2500))]).then(()=>{ ISL3.arrive=null; if(ISL3.on&&ISL3.arrival==='boat') isl3Arrive(o); }); return; }
-  const [jx,jz]=HOME_AT.jetty, boat=boat3('#FFFFFF',1.3), p3=ch3On()&&ch3Ready('pup0')?ch3Make('pup0'):null;
-  if(p3){ ch3Dress(p3,o); p3.root.scale.setScalar(CH3S*.95); p3.root.position.set(-.1,.32,0); p3.root.rotation.y=-Math.PI/2; p3.root.traverse(m=>{ if(m.isMesh) m.raycast=()=>{}; }); boat.add(p3.root); p3.ctl.play('wave');
+  if(ISL3.cine) return;
+  const [jx,jz]=HOME_AT.jetty, boat=boat3('#FFFFFF',1.3), p3=ch3On()&&ch3Ready('pup0')?ch3Make('pup0'):null; boat.rotation.order='YXZ';
+  // a little red-and-yellow pennant at the top of the mast
+  { const fl=new THREE.Shape([new THREE.Vector2(0,0),new THREE.Vector2(.42,.1),new THREE.Vector2(0,.22)]), fm=mesh3(new THREE.ShapeGeometry(fl),m3('#D2352B',{side:THREE.DoubleSide}),.39*1.3,1.36*1.3,0); boat.add(fm); boat.userData.flag=fm; }
+  let pup;
+  if(p3){ ch3Dress(p3,o); p3.root.scale.setScalar(CH3S*.95); p3.root.position.set(-.1,.32,0); p3.root.traverse(m=>{ if(m.isMesh) m.raycast=()=>{}; }); boat.add(p3.root); p3.ctl.play('wave'); pup=p3.root;
     let last=performance.now(); const live=t=>{ if(boat.parent!==ISL3.world||ISL3.arrival!=='boat'||!ISL3.on){ p3.ctl.dispose(); return; } const dt=Math.min(.05,(t-last)/1000); last=t; p3.ctl.update(reduceMotion?0:dt);
-      if(!p3.ctl.current&&!reduceMotion) p3.ctl.play(ISL3.arrive?'wave':Math.random()<.5?'happy_hop':'giggle_wiggle'); isl3Kick(); requestAnimationFrame(live); }; requestAnimationFrame(live); }
-  else { const pup=new THREE.Sprite(new THREE.SpriteMaterial({map:pupTex3(o),transparent:true,alphaTest:.15})); pup.scale.set(.75,1.08,1); pup.center.set(.5,0); pup.position.set(-.1,.35,0); boat.add(pup); } boat.position.set(jx+.6,-1.25,jz+13); boat.rotation.y=Math.PI/2; ISL3.world.add(boat);
-  ISL3.cam.position.set(jx+2,9,jz+20); ISL3.ctl.target.set(jx,0,jz+5); ISL3.ctl.update(); ISL3.moved=true;
-  ISL3.arrive={boat,t0:performance.now()+400}; isl3Kick(); track('arrival_started');
-  const tick=()=>{ if(!ISL3.on||!ISL3.arrive) return; const k=Math.min(1,(performance.now()-ISL3.arrive.t0)/3200); if(k>0) boat.position.z=jz+13-ease3(k)*9.2; isl3Kick();
-    if(k<1){ requestAnimationFrame(tick); return; }
-    ISL3.arrive=null; ISL3.jumpT=performance.now(); sfx.hatch(); isl3Banner('A little otter has arrived!'); isl3FlyTo(HOME_AT.home[0]+1,1,HOME_AT.home[1]+2,14,1400);
-    setTimeout(()=>{ isl3Banner(''); pupOpen(()=>{ const w=worldStore(); w.arrived=1; worldSet(w); ISL3.arrival='home'; renderIsland(); },{arrival:true}); },1700); };
-  requestAnimationFrame(tick);
+      if(!p3.ctl.current&&!reduceMotion) p3.ctl.play(ISL3.cine&&!ISL3.cine.leapT?'wave':Math.random()<.5?'happy_hop':'giggle_wiggle'); isl3Kick(); requestAnimationFrame(live); }; requestAnimationFrame(live); }
+  else { pup=new THREE.Sprite(new THREE.SpriteMaterial({map:pupTex3(o),transparent:true,alphaTest:.15})); pup.scale.set(.75,1.08,1); pup.center.set(.5,0); pup.position.set(-.1,.35,0); boat.add(pup); }
+  ISL3.world.add(boat); ISL3.moved=true; isl3StopSpin(); ISL3.fly=null;
+  // the film's frame: letterbox bars, a misty veil that lifts, captions, the title and Skip
+  const v=$('#view-island'); v.classList.add('cine'); const ov=document.createElement('div'); ov.className='is3-cine';
+  ov.innerHTML='<div class="cn-veil"></div><div class="cn-bar t"></div><div class="cn-bar b"></div><div class="cn-title" aria-hidden="true"><b>Bloppitopia</b><span>an island waiting to grow</span></div><div class="cn-cap" aria-live="polite"></div><button class="cn-skip" type="button">Skip ›</button>';
+  ISL3.box.appendChild(ov); ov.querySelector('.cn-skip').onclick=()=>{ track('arrival_skipped'); arr3Finish(true); };
+  const rm=!!reduceMotion, from=rm?8.6:0, F=ISL3.sc.fog;
+  const A=ISL3.cine={t:from,t0:performance.now()-from*1000,boat,p3,pup,ov,bits:[],clouds:[],fog:[F.near,F.far],did:{},spawn:0,spark:0,music:rm?{stop(){}}:sfx.voyage(),o};
+  ISL3.arrive={cine:1};
+  // clouds to fall through on the way down
+  if(!rm) for(const [tt,dx,dy,sc] of [[.35,-3,1,3.6],[.7,4,-1,3],[1.05,-1,0,4],[1.45,3,1.5,3.2],[1.9,-4,-1,2.8],[2.4,2,-2,2.6]]){ const [p]=arr3Cam(tt,0,40), c=cloud3(); c.scale.setScalar(sc); c.position.set(p.x+dx,p.y-3+dy,p.z+dx*.6); c.traverse(m=>{ if(m.material) m.material.fog=false; }); ISL3.sc.add(c); A.clouds.push(c); }
+  requestAnimationFrame(()=>{ ov.classList.add('on'); setTimeout(()=>ov.querySelector('.cn-veil').classList.add('off'),rm?0:250); });
+  track('arrival_started'); isl3CineStep(performance.now()); isl3Kick();
+}
+function arr3Cap(A,txt){ const c=A.ov.querySelector('.cn-cap'); if(!txt){ c.classList.remove('on'); return; } c.textContent=txt; c.classList.add('on'); }
+// One frame of the film
+function isl3CineStep(now){ const A=ISL3.cine; if(!A) return; const t=A.t=(now-A.t0)/1000, D=A.did, once=k=>D[k]?false:(D[k]=1,true), [jx,jz]=HOME_AT.jetty;
+  // the boat: along the voyage, turning with it, rocking on the swell, settling when it docks
+  const u=arr3U(t), [bx,bz]=arr3Boat(u), boat=A.boat;
+  if(u<.999){ const [nx,nz]=arr3Boat(Math.min(1,u+.003)); boat.rotation.y=Math.atan2(-(nz-bz),nx-bx); }
+  const calm=1-smooth3(ARR3.dock,ARR3.dock+2,t)*.6, bump=t>ARR3.dock?Math.sin(Math.min(1,(t-ARR3.dock)/.5)*Math.PI)*.1:0;
+  boat.position.set(bx+bump,-1.25+Math.sin(t*2.4)*.05*calm,bz); boat.rotation.x=Math.sin(t*1.7)*.07*calm; boat.rotation.z=Math.sin(t*2.3+1)*.035*calm;
+  if(boat.userData.flag) boat.userData.flag.rotation.y=Math.sin(t*7)*.25;
+  // the pup looks at us from the boat, then leaps onto the jetty
+  const pup=A.pup, cam=ISL3.cam.position;
+  if(!A.leapT&&pup.parent===boat&&A.p3){ const want=Math.atan2(cam.x-bx,cam.z-bz)-boat.rotation.y; pup.rotation.y+=Math.atan2(Math.sin(want-pup.rotation.y),Math.cos(want-pup.rotation.y))*.12; }
+  if(t>=ARR3.dock&&once('dock')){ try{ sfx.dock(); }catch(e){} }
+  if(t>=ARR3.leap&&!A.leapT){ A.leapT=t; ISL3.world.attach(pup); A.l0=pup.position.clone(); A.l1=new THREE.Vector3(jx+.22,TOP3-.03,jz+2.2); if(A.p3) A.p3.ctl.play('surprised_jump'); }
+  if(A.leapT){ const k=Math.min(1,(t-A.leapT)/.75), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2; pup.position.lerpVectors(A.l0,A.l1,e); pup.position.y+=Math.sin(k*Math.PI)*1.15;
+    if(A.p3){ const want=Math.atan2(cam.x-pup.position.x,cam.z-pup.position.z); pup.rotation.y+=Math.atan2(Math.sin(want-pup.rotation.y),Math.cos(want-pup.rotation.y))*.15; }
+    if(k>=1&&once('land')){ try{ sfx.hatch(); }catch(e){} if(A.p3) A.p3.ctl.play('happy_hop'); ISL3.jumpT=performance.now();
+      for(let i=0;i<22;i++){ const a=i/22*Math.PI*2; arr3Bit(A,1,A.l1.x,A.l1.y+.5,A.l1.z,[Math.cos(a)*1.6,1.2+Math.random()*1.6,Math.sin(a)*1.6],1.1,.5,.15); }
+      setTimeout(()=>{ if(ISL3.cine===A) isl3Banner('A little otter has arrived!',true); },350); } }
+  // Bloppit at the end of the jetty: waves as the boat comes in
+  if(t>=7.3&&once('wave')){ if(ISL3.b3) ISL3.b3.ctl.play('wave'); else ISL3.jumpT=performance.now(); }
+  // wake and sparkles behind the boat while it sails
+  if(u<.995&&!reduceMotion){ const hx=Math.cos(boat.rotation.y), hz=-Math.sin(boat.rotation.y);
+    if(t-A.spawn>.07){ A.spawn=t; for(const side of [-1,1]) arr3Bit(A,0,bx-hx*1.05+hz*side*.35,-1.24,bz-hz*1.05-hx*side*.35,[hz*side*.35,0,-hx*side*.35],1.9,.45,1.9); }
+    if(t-A.spark>.11){ A.spark=t; arr3Bit(A,1,bx+(Math.random()-.5)*1.4,-.6+Math.random()*1.2,bz+(Math.random()-.5)*1.4,[(Math.random()-.5)*.3,.7+Math.random()*.5,(Math.random()-.5)*.3],1.3,.35,.05); } }
+  for(let i=A.bits.length-1;i>=0;i--){ const b=A.bits[i], k=(t-b.t0)/b.life; if(k>=1){ ISL3.sc.remove(b.sp); b.sp.material.dispose(); A.bits.splice(i,1); continue; }
+    const dt=ISL3.dt||.03; b.sp.position.x+=b.v[0]*dt; b.sp.position.y+=b.v[1]*dt; b.sp.position.z+=b.v[2]*dt; if(b.op===1) b.v[1]-=.9*dt; b.sp.scale.setScalar(b.s0+(b.s1-b.s0)*k); b.sp.material.opacity=b.op*(1-k)*(k<.12?k/.12:1); }
+  // the mist clears and the clouds go once we're through them
+  const F=ISL3.sc.fog, kf=smooth3(0,3.8,t); F.near=4+(A.fog[0]-4)*kf; F.far=55+(A.fog[1]-55)*kf;
+  if(A.clouds.length){ const op=1-smooth3(2.9,4.1,t); if(op<=0){ for(const c of A.clouds) ISL3.sc.remove(c); A.clouds=[]; } else for(const c of A.clouds) c.traverse(m=>{ if(m.material) m.material.opacity=.95*op; }); }
+  // words on screen
+  if(t>=.9&&once('c1')) arr3Cap(A,'Far across the sparkling sea…'); if(t>=2.8&&once('c1x')) arr3Cap(A,'');
+  if(t>=3.1&&once('ti')) A.ov.querySelector('.cn-title').classList.add('on'); if(t>=5.7&&once('tix')) A.ov.querySelector('.cn-title').classList.remove('on');
+  if(t>=6.1&&once('c2')) arr3Cap(A,'…a little boat is bringing someone special home.'); if(t>=8.9&&once('c2x')) arr3Cap(A,'');
+  if(t>=11&&once('bars')){ A.ov.classList.remove('on'); A.ov.querySelector('.cn-skip').classList.remove('on'); }
+  if(t>=1.2&&t<10.5&&once('skip')) A.ov.querySelector('.cn-skip').classList.add('on');
+  // the camera
+  const [p,q]=arr3Cam(t,bx,bz); ISL3.cam.position.copy(p); ISL3.ctl.target.copy(q); ISL3.cam.lookAt(q);
+  if(t>=ARR3.end) arr3Finish(false);
+}
+// The end of the film (or Skip): everything in its final place, the frame goes, and we meet the otter
+function arr3Finish(skipped){ const A=ISL3.cine; if(!A) return; ISL3.cine=null; const [jx,jz]=HOME_AT.jetty, end=Math.max(A.t,ARR3.end);
+  if(skipped){ A.music.stop(); const [bx,bz]=arr3Boat(1); A.boat.position.set(bx,-1.25,bz); A.boat.rotation.set(0,Math.PI/2,0);
+    if(A.pup.parent!==ISL3.world) ISL3.world.attach(A.pup); A.pup.position.set(jx+.22,TOP3-.03,jz+2.2); if(A.p3){ A.pup.rotation.y=Math.atan2(ISL3.cam.position.x-A.pup.position.x,ISL3.cam.position.z-A.pup.position.z); A.p3.ctl.play('happy_hop'); }
+    const [p,q]=arr3Cam(end,bx,bz), cam=ISL3.cam; ISL3.fly={t0:performance.now(),dur:900,p0:cam.position.clone(),q0:ISL3.ctl.target.clone(),q1:q,p1:p}; }
+  for(const b of A.bits){ ISL3.sc.remove(b.sp); b.sp.material.dispose(); } A.bits=[]; for(const c of A.clouds) ISL3.sc.remove(c);
+  const F=ISL3.sc.fog; F.near=A.fog[0]; F.far=A.fog[1];
+  A.ov.classList.remove('on'); A.ov.querySelector('.cn-veil').classList.add('off'); A.ov.querySelectorAll('.cn-cap,.cn-title,.cn-skip').forEach(e=>e.classList.remove('on')); setTimeout(()=>A.ov.remove(),1300);
+  $('#view-island').classList.remove('cine'); ISL3.arrive=null; ISL3.ctl.update(); isl3Kick();
+  if(skipped) setTimeout(()=>{ if(!A.did.land) try{ sfx.hatch(); }catch(e){} isl3Banner('A little otter has arrived!',true); },300);
+  setTimeout(()=>{ isl3Banner(''); pupOpen(()=>{ const w=worldStore(); w.arrived=1; worldSet(w); ISL3.arrival='home'; renderIsland(); },{arrival:true}); },skipped?1700:1500);
 }
 // Bloppit shows the unfinished home; one button: Build Our First Home
 function isl3ShowHome(){ const [x,z]=HOME_AT.home; isl3FlyTo(x,.8,z,12,1200); isl3Banner('This is your home. Let’s finish it together!'); isl3Chrome(); ISL3.jumpT=performance.now(); }
