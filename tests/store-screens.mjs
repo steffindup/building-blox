@@ -9,9 +9,7 @@ const FONT_CSS=[['Lilita One','lilita-one/files/lilita-one-latin-400-normal.woff
 const b = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM || undefined, args: ['--use-gl=swiftshader'] });
 // Places the next brick as a player tapping the right spot would (unlike "Place one for me", nothing counts as help),
 // so a Trail level finishes clean with three stars
-const clean = async (p,n)=>{ for(let i=0;i<n;i++){ await p.evaluate(()=>{ if(busy||!model||cur>=model.steps.length) return;
-  const s=model.steps[cur]; let o,t; if(off){ o=off; t=s.bricks.find(b=>!placed.has(b)); } else if(cands.length){ o=cands[0]; t=s.bricks.find(b=>!o.used.has(b)); } else { o={x:0,z:0}; t=s.bricks[0]; }
-  if(!t) return; sel={sx:t.sx,sz:t.sz,c:t.c}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2}; tryPlace(); lastAnchor=null; ghostGroup.visible=false; if(held) setGhost(); else { sel=null; ghostGroup.clear(); } }); await p.waitForTimeout(1100); } };
+const clean = async (p,n)=>{ for(let i=0;i<n;i++){ await p.evaluate(()=>window.bloppitPlaceRight()); await p.waitForTimeout(1100); } };
 const auto = async (p,n)=>{ for(let i=0;i<n;i++){ await p.evaluate(()=>document.getElementById('autoBtn')?.click()); await p.waitForTimeout(1100); } };
 for (const [tag, vp, dsf] of [['iphone',{width:440,height:956},3],['ipad',{width:1032,height:1376},2]]) {
   const ctx = await b.newContext({ viewport: vp, deviceScaleFactor: dsf, isMobile: true, hasTouch: true });
