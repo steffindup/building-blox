@@ -3336,6 +3336,11 @@ $('#hintBtn').onclick=()=>{
   if(mpBlitz()&&!hintOn&&mp.cpu&&Date.now()<mp.state.turnStart){ setStatus('Wait for Go!','err'); return; }
   if(isLocked(cur)){ openMath(cur); return; } hintOn=!hintOn; renderHints(); if(hintOn) setStatus(curOff()?'Faded bricks show where this step’s parts go.':'Faded bricks show one place to start. Anywhere works.');};
 $('#autoBtn').onclick=autoPlace;
+// For tests and store screenshots: place the next brick the way a player tapping the right spot would (nothing counts as help)
+window.bloppitPlaceRight=()=>{ if(busy||!model||cur>=model.steps.length) return false; const s=model.steps[cur]; let o,t;
+  if(off){ o=off; t=s.bricks.find(b=>!placed.has(b)); } else if(cands.length){ o=cands[0]; t=s.bricks.find(b=>!o.used.has(b)); } else { o={x:0,z:0}; t=s.bricks[0]; }
+  if(!t) return false; const n0=placedN; sel={sx:t.sx,sz:t.sz,c:t.c}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2}; tryPlace(); lastAnchor=null; ghostGroup.visible=false;
+  if(held) setGhost(); else { sel=null; ghostGroup.clear(); } return placedN>n0; };
 $('#fitBtn').onclick=()=>frameBuild(true);
 $('#openBox').onclick=openBox;
 $('#putBack').onclick=putBack;
@@ -7714,7 +7719,7 @@ const smooth3=(a,b,t)=>{ const k=Math.min(1,Math.max(0,(t-a)/(b-a))); return k*k
 function arr3Cam(t,bx,bz){ const V=THREE.Vector3, [jx,jz]=HOME_AT.jetty, f=CAM_TALL(ISL3.cam.aspect)?1.55:1;   // phones held upright stand further back
   const ea=smooth3(0,5.4,t), th=-2.4+2.82*ea, R=70-40*ea, H=52-39*Math.pow(ea,.85);
   const p=new V(Math.sin(th)*R*f,H*f,Math.cos(th)*R*f), q=new V(0,0,-2).lerp(new V(jx+.5,0,jz+2.5),ea);   // the sweep down out of the sky
-  const w1=smooth3(4.2,6.2,t); if(w1>0){ const qb=new V(bx*.72+jx*.28,.2,bz*.72+(jz+.5)*.28); p.lerp(new V(bx+5*f,1.5+.6*(f-1),bz+6.2*f),w1); q.lerp(qb,w1); }   // low over the water behind the boat
+  const w1=smooth3(4.2,6.2,t); if(w1>0){ const bw=f>1?.92:.78, qb=new V(bx*bw+jx*(1-bw),.2,bz*bw+(jz+.5)*(1-bw));   /* upright screens keep the boat in frame */ p.lerp(new V(bx+5*f,1.5+.6*(f-1),bz+6.2*f),w1); q.lerp(qb,w1); }   // low over the water behind the boat
   // through the pup's eyes from the bow: the island growing ahead, a glance down at the sparkles on the water, then up at Bloppit waving
   const wp=smooth3(7.6,8.8,t)*(1-smooth3(12.6,13.8,t)); let roll=0;
   if(wp>0){ const u=arr3U(t), [nx,nz]=arr3Boat(Math.min(1,u+.003)), hd=Math.atan2(-(nz-bz),nx-bx), fx=Math.cos(hd), fz=-Math.sin(hd);
