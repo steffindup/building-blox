@@ -47,7 +47,11 @@ test('first visit: Start here → a boat brings the otter → name it → Build 
   // naming it yourself is the main way: an empty name is refused, digits and symbols are dropped
   await t.page.evaluate(() => document.querySelector('#pupOwn button[type=submit]').click()); await t.page.waitForTimeout(200);
   assert.equal(await t.page.evaluate(() => document.getElementById('pupErr').hidden), false);
-  await t.page.fill('#pupIn', 'Captain Fizz!7'); await t.page.press('#pupIn', 'Enter'); await t.page.waitForTimeout(2000); await shot(3);
+  await t.page.fill('#pupIn', 'Captain Fizz!7'); await t.page.press('#pupIn', 'Enter'); await t.page.waitForTimeout(300);
+  // a name doesn't close the card: the look can still change, and "All done!" finishes
+  assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), true);
+  assert.match(await t.text('#pupTitle'), /Meet Captain Fizz!/); assert.match(await t.text('#pupLater'), /All done/);
+  await t.page.evaluate(() => document.getElementById('pupLater').click()); await t.page.waitForTimeout(2000); await shot(3);
   assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), false);
   // Bloppit shows the unfinished home, and there is one button
   assert.match(await t.text('#isWorld .is3-play'), /Build Our First Home/);
@@ -64,6 +68,9 @@ test('first visit: Start here → a boat brings the otter → name it → Build 
   await t.page.waitForTimeout(6000); await shot(6);
   w = JSON.parse(await t.page.evaluate(() => localStorage.getItem('bloppit-world-v1')));
   assert.equal(w.log.length, 1); assert.equal(w.builds[`m:Little house:${m[1]}`].s, 3);
+  // the first home build became the cottage: it doesn't also stand on the island as a model
+  assert.equal(await t.page.evaluate(() => { let n = 0; window.bloppitIsland3().world.traverse((x) => { if (/^model:m:Little house/.test(x.userData.info || '')) n++; }); return n; }), 0);
+  assert.match(await t.text('#buildsGrid'), /Your home/);
   assert.match(await t.text('#isStage'), /Captain Fizz · Level 1 Pup/); assert.match(await t.text('#isNext'), /Home Island|mist/);
   await t.page.goto(BASE + '?nosplash=1'); await t.page.waitForTimeout(2500);
   assert.equal(await t.view(), 'view-home'); assert.equal(await t.page.evaluate(() => document.getElementById('hmCont').hidden), true);
