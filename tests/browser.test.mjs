@@ -50,7 +50,7 @@ test('first visit: Start here → a boat brings the otter → name it → Build 
   assert.equal(await t.view(), 'view-island');
   // the arrival plays like a film: letterbox, title, a Skip button, and the boat at sea
   assert.equal(await t.page.evaluate(() => !!document.querySelector('#isWorld .is3-cine .cn-skip') && document.getElementById('view-island').classList.contains('cine')), true);
-  await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 30000 }); await t.page.waitForTimeout(500); await shot(2);
+  await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 45000 }); await t.page.waitForTimeout(500); await shot(2);
   assert.equal(await t.page.evaluate(() => !!document.querySelector('.is3-cine') || document.getElementById('view-island').classList.contains('cine')), false);
   assert.match(await t.text('#pupTitle'), /Meet your otter/); assert.equal(await t.page.evaluate(() => document.getElementById('pupSuggest').hidden), false);
   // the otter's brick: one stud, never red; the colour follows the pick
