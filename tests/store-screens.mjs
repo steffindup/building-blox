@@ -32,12 +32,18 @@ for (const [tag, vp, dsf] of [['iphone',{width:440,height:956},3],['ipad',{width
   await page.evaluate(() => document.querySelector('#isWorld .is3-play').click()); await page.waitForTimeout(1500);
   await auto(page,5); await page.waitForTimeout(400); await page.screenshot({ path: `${OUT}${tag}-build.png` });
   for(let i=0;i<20;i++){ await auto(page,1); if(await page.evaluate(()=>/You built your home/.test(document.querySelector('#isWorld .is3-banner')?.textContent||''))) break; }
-  await page.waitForTimeout(1200); await page.screenshot({ path: `${OUT}${tag}-finish.png` });
+  await page.waitForTimeout(1200);
   await page.waitForTimeout(4000); await page.evaluate(() => document.querySelector('#isWorld .is3-play').click()); await page.waitForTimeout(1500);
   // play next through a few Trail levels for real thumbnails
+  let shotFinish = false;
   for (let k=0;k<6;k++){ if (k) { await page.evaluate(() => document.getElementById('budNext')?.click()); await page.waitForTimeout(1500); }
     for (let i=0;i<60;i++){ await auto(page,1); if (await page.evaluate(()=>/Every step complete/.test(document.getElementById('status').textContent))) break; }
-    await page.waitForTimeout(3500); await page.evaluate(() => document.getElementById('winDlg').close()); await page.waitForTimeout(500); }
+    // the finish card (stars, See Bloppitopia, Play next): wait for it to open, take the first one
+    const won = await page.waitForFunction(() => document.getElementById('winDlg').open, null, { timeout: 12000 }).then(() => true, () => false);
+    if (won && !shotFinish) { await page.waitForTimeout(1500); await page.screenshot({ path: `${OUT}${tag}-finish.png` }); shotFinish = true; }
+    await page.evaluate(() => document.getElementById('winDlg').close()); await page.waitForTimeout(500);
+    // a newly found island plays its reveal on the island; Play next from there starts the next level
+    if (await page.evaluate(() => !document.getElementById('view-island').hidden)) { await page.waitForTimeout(6000); await page.evaluate(() => document.querySelector('#isWorld .is3-play')?.click()); await page.waitForTimeout(1500); } }
   // grow the world from the real builds (no placeholders): four Blitz wins on real models, Brain Trail and Weekly progress
   await page.evaluate(() => { const o=JSON.parse(localStorage.getItem('bloppit-world-v1')), t=JSON.parse(localStorage.getItem('bloppit-thumbs-v1'));
     const real=o.log.filter(k=>k.startsWith('m:')&&t[k]);
