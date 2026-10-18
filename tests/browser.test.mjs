@@ -32,12 +32,26 @@ async function open(url, { viewport = { width: 1000, height: 800 }, init, at, to
 }
 const autoPlace = async (page, n) => { for (let i = 0; i < n; i++) { await page.evaluate(() => document.getElementById('autoBtn')?.click()); await page.waitForTimeout(1100); } };
 
+test('first visit: the arrival film can be skipped straight to meeting the otter', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1');
+  await t.page.evaluate(() => document.getElementById('hmCont').click());
+  await t.page.waitForFunction(() => !!document.querySelector('#isWorld .is3-cine .cn-skip'), null, { timeout: 10000 }); await t.page.waitForTimeout(800);
+  const t0 = Date.now(); await t.page.evaluate(() => document.querySelector('#isWorld .is3-cine .cn-skip').click());
+  await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 8000 });
+  assert.ok(Date.now() - t0 < 6000); assert.match(await t.text('#pupTitle'), /Meet your otter/);
+  assert.equal(await t.page.evaluate(() => document.getElementById('view-island').classList.contains('cine')), false);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('first visit: Start here → a boat brings the otter → name it → Build Our First Home → the home appears', { skip: skip() }, async () => {
   const t = await open('?nosplash=1'); const shot = (n) => process.env.SHOTS ? t.page.screenshot({ path: `${process.env.SHOTS}/first-${n}.png` }) : null;
   assert.equal(await t.view(), 'view-home'); assert.match(await t.text('#hmContT'), /Start here: meet your otter/);
   await t.page.evaluate(() => document.getElementById('hmCont').click()); await t.page.waitForTimeout(2200); await shot(1);
   assert.equal(await t.view(), 'view-island');
-  await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 15000 }); await t.page.waitForTimeout(500); await shot(2);
+  // the arrival plays like a film: letterbox, title, a Skip button, and the boat at sea
+  assert.equal(await t.page.evaluate(() => !!document.querySelector('#isWorld .is3-cine .cn-skip') && document.getElementById('view-island').classList.contains('cine')), true);
+  await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 30000 }); await t.page.waitForTimeout(500); await shot(2);
+  assert.equal(await t.page.evaluate(() => !!document.querySelector('.is3-cine') || document.getElementById('view-island').classList.contains('cine')), false);
   assert.match(await t.text('#pupTitle'), /Meet your otter/); assert.equal(await t.page.evaluate(() => document.getElementById('pupSuggest').hidden), false);
   // the otter's brick: one stud, never red; the colour follows the pick
   assert.equal(await t.page.evaluate(() => document.querySelectorAll('#pupPic .pupfig path[opacity]').length), 1);
