@@ -24,24 +24,28 @@ Never mention LEGO or other toy brands anywhere in the listing (Apple rejects ot
 No child-audience words ("kids", "children") in the listing text itself: the landing page says 8–13, the listing says "for families".
 The home-screen name stays **Bloppit** (set by `CFBundleDisplayName` in the iOS project).
 
-Two listings, from the strategy (v5): **1.0** (submitted Fri 13 Nov) is a puzzle game and says so; the subtitle is the one forward
-promise it makes. **1.1** (by Mon 7 Dec) adds Bloppitopia and the otter. Paste the column for the version being submitted.
+**1.0 is the full game, Bloppitopia included** (decided 18 Oct 2026). The old plan of a puzzle-only 1.0 followed by 1.1
+with the island is dropped: everything below is the one listing to paste.
 
 ## Promotional text (170)
 
-**1.0:** A calm brick puzzle game for families. Finish a model in minutes, scored on how cleanly you build. A new puzzle every week. Free, no ads, no account.
-
-**1.1:** Every build you finish grows your own world of islands, and your otter grows with you. A new puzzle every week. Free, no ads, no account.
+Every build you finish grows your own world of islands, and your otter grows with you. A new puzzle every week. Free, no ads, no account.
 
 ## Description (4000)
 
-### 1.0
-
 Bloppit is a calm brick puzzle game for families. Snap bricks together on screen, page by page, and finish a model in minutes, scored on how cleanly you build.
+
+Every build you finish grows your own world. A little otter arrives by boat, your first build finishes its home, and five islands wait in the mist.
 
 A new puzzle every week, a library to explore, and Blitz races against the Longtails.
 
 Free, no ads, no tracking, no account needed.
+
+YOUR WORLD: BLOPPITOPIA
+• Home Island grows with every build: a cottage, a garden, a workshop, a museum of your best models, then a lively village
+• Five islands rise from the mist as you play: Otterwood (Otter Trail), Brainpeak (Brain Trail), Sunrise Shores (Weekly Bloppit), Blitz Bay (Blitz) and Brickworks Island (your own creations)
+• Your otter grows with you, Pup, Splash, Legend, and earns outfits; you pick the colours
+• Build Stars buy decorations. Nothing is ever for sale, and nothing is ever lost
 
 WEEKLY BLOPPIT
 • One new puzzle every Monday, the same for everyone
@@ -60,7 +64,7 @@ TRAILS
 
 THE LIBRARY
 • About 60 models in 10 themes, plus a new one every week, each with a full instruction booklet you can build from for real
-• Turn a photo on your device into a brick picture; it never leaves the device
+• Draw your own brick picture on a stud grid, or turn a photo on your device into one; the photo never leaves the device
 
 BLOPPIT BLITZ
 • Race the Longtails: Scraps, Swoop or Squint, each sharper than the last
@@ -75,92 +79,86 @@ MADE FOR FAMILIES
 
 Bloppit is an independent project and is not affiliated with any toy brick brand.
 
-### 1.1 (adds the island)
-
-Bloppit is a calm brick puzzle game for families. Snap bricks together on screen, page by page, and finish a model in minutes, scored on how cleanly you build.
-
-Every build you finish grows your own world. A little otter arrives by boat, your first build finishes its home, and five islands wait in the mist.
-
-A new puzzle every week, a library to explore, and Blitz races against the Longtails.
-
-Free, no ads, no tracking, no account needed.
-
-YOUR WORLD: BLOPPITOPIA
-• Home Island grows with every build: a cottage, a garden, a workshop, a museum of your best models, then a lively village
-• Five islands rise from the mist as you play: Otterwood (Otter Trail), Brainpeak (Brain Trail), Sunrise Shores (Weekly Bloppit), Blitz Bay (Blitz) and Brickworks Island (your own creations)
-• Your otter grows with you, Pup, Splash, Legend, and earns outfits; you pick the colours
-• Build Stars buy decorations. Nothing is ever for sale, and nothing is ever lost
-
-(then the 1.0 sections from WEEKLY BLOPPIT down, unchanged)
-
 ## Keywords (100)
 
-**1.0:** blocks,building,bricks,construction,puzzle,family,calm,race,weekly,otter,model,booklet
-
-**1.1:** blocks,building,bricks,construction,puzzle,family,calm,race,island,world,adventure,otter
+blocks,building,bricks,construction,puzzle,family,calm,race,island,world,adventure,otter
 
 ## Screenshots
 
-In `screenshots/`: six per device in the 1.1 order, captioned, ready to upload. `iphone-*` for the 6.9" iPhone display
+In `screenshots/`: seven per device, captioned, ready to upload in this order. `iphone-*` for the 6.9" iPhone display
 (1320 × 2868) and `ipad-*` for the 13" iPad display (2064 × 2752); App Store Connect scales them for smaller devices.
 
-| # | Caption (1.1) | Screen |
-|---|---|---|
-| 1 | Every build you finish grows Bloppitopia. | Bloppitopia: Home Island with the otter, Bloppit and the islands found so far |
-| 2 | Snap bricks into place, page by page. | A build in progress with Bloppit |
-| 3 | Finish clean. Earn three stars. | The finish card: stars, See Bloppitopia, Play next |
-| 4 | A new puzzle every week. See how many built it clean. | The Weekly page |
-| 5 | Race the Longtails in Blitz. | A race against Squint |
-| 6 | Your otter grows with every build. | The menu with the Bloppitopia card |
+| # | File | Caption | Screen |
+|---|---|---|---|
+| 1 | `*-1-island` | Every build you finish grows Bloppitopia. | Bloppitopia: Home Island with the otter, Bloppit and the islands found so far |
+| 2 | `*-2-arrival` | A little otter is coming home. | The arrival film: the boat with the pup, Bloppit waiting on the jetty |
+| 3 | `*-3-build` | Snap bricks into place, page by page. | A build in progress with Bloppit |
+| 4 | `*-4-finish` | Finish clean. Earn three stars. | The finish card: stars, See Bloppitopia, Play next |
+| 5 | `*-5-weekly` | A new puzzle every week. See how many built it clean. | The Weekly page |
+| 6 | `*-6-blitz` | Race the Longtails in Blitz. | A race against Squint |
+| 7 | `*-7-menu` | Your otter grows with every build. | The menu with the Bloppitopia card |
 
-For a 1.0 submission without the island, drop #1 and #6 and lead with #2. They are regenerated by the capture script
-(`tests/store-screens.mjs` against `npm run dev`: headless Chromium at device scale, then captions composed with Lilita One);
-retake them after any visual change. Preview video: capture the snap, a finish and a Longtail race in the simulator, ending on the island.
+They are regenerated by the capture script (`tests/store-screens.mjs` against `npm run dev`: headless Chromium at device
+scale, then captions composed with Lilita One); retake them after any visual change.
+
+## App previews (optional, up to 3 per device)
+
+`previews/iphone-arrival.mp4` (886 × 1920) and `previews/ipad-arrival.mp4` (1200 × 1600): the first-arrival film, 21.6 s,
+30 fps, H.264 with stereo AAC. Apple's limits: 15–30 s, at most 30 fps, footage from the app. Set the poster frame to
+the moment the title appears (about 4 s in).
 
 ## What's New
 
-**1.0:** Bloppit's first App Store release.
-
-**1.1:** Bloppitopia! Every build you finish grows your world: Home Island and five islands to discover. Your otter grows with you and earns outfits. Build Stars buy decorations. Plus the From Memory star and four new Weeklies.
+Not asked for on a first version. For the first update, write what changed in a line or two.
 
 ## App Review notes
 
 Bloppit is a brick-building puzzle game for children. No account or login is needed.
-To try it quickly: on the menu tap the yellow Start here card for a guided six-brick build; tap the faded brick to place each piece. Then on the menu tap Blitz → vs the Longtails, type a name and tap Start the race (works offline).
+To try it quickly: on the menu tap the Start here card. A short film shows the otter arriving by boat (Skip at the top
+right ends it). Name the otter or pick a name, then tap Build Our First Home and tap the faded brick to place each piece of
+the 12-brick house; the home then appears on the island. Then on the menu tap Blitz → vs the Longtails, type a name and tap
+Start the race (works offline).
 Challenges: on the Blitz page tap Make a challenge, build the puzzle, and you get a 6-letter code; type that code
 into Got a code? on another device (the website bloppit.com/build works too) to race the same puzzle.
 Weekly Bloppit: tap the Weekly Bloppit banner on the menu. Only a finish and whether it was clean are counted (two counts per week, no name); the time and misses are sent only to check it's a real finish and aren't kept. Counts are deleted after 8 weeks.
-Progress (scores, finished models, stars, the otter's name as a number from a fixed list) is saved under an anonymous progress code minted by our server; nothing typed by a child is sent. Grown-ups corner (behind the parental gate) shows the transfer code and the Family Link QR, and can delete the record.
+Progress (scores, finished models, stars, outfits, the otter's name as a number from a fixed list) is saved under an anonymous progress code minted by our server. A name the child types for the otter stays on the device and is never sent. Grown-ups corner (behind the parental gate) shows the transfer code and the Family Link QR, and can delete the record.
+Usage counts: the app adds one to a daily count for a few events (a build started or finished, the arrival seen) with the country from the request and whether it was the app or the website. There is no identifier for the player or the device, and nothing is shared with anyone.
 Rooms (Build together, live Blitz): friends join with a 5-letter code and the host lets them in. Players appear under generated labels ("Brave Otter 214"); typed names never leave the device. Relays: one friend builds half a model, the other finishes it from a code. Crews (Together page): a shared lighthouse goal for an approved group; the maker lets each member in; the board only takes fixed phrases and stickers under generated names; report on every post; parents can remove a player from any crew in the Grown-ups corner.
 There is no chat and no voice: players in a room only place bricks.
 Links out of the app and sharing an invite are behind a parental gate (type a number written in words as digits).
 
 ## Age rating questionnaire
 
-Answer **None / No** to everything (violence, mature themes, gambling, horror, medical, alcohol, profanity, sexual content,
-contests, unrestricted web access). For "user-generated content / messaging and chat": **No**. There is no typed chat and no voice anywhere in the app; crews can
-only exchange phrases and stickers from a fixed list, under generated names, with a report button on every post. Rooms are invite-only (a code, and
-the host lets each player in), and there is no way to find or message strangers. The rating should come out at **4+**.
+Apple's questionnaire now has three parts; required for every new submission from September 2026.
+
+**In-app controls and capabilities** (all of these sit at 4+; only social media and unrestricted web access raise it):
+- Parental controls: **Yes** (the Grown-ups corner, behind the parental gate: delete progress, remove a player from a crew)
+- Age assurance: **No**
+- Unrestricted web access: **No** (the few links out open fixed pages, behind the parental gate)
+- User-generated content: **Yes** (crews exchange fixed phrases and stickers; drawings and photo builds can be shared by code)
+- Messaging and chat: **Yes**, to be safe (crew phrases are fixed, from a list; there is no typed chat and no voice)
+- Advertising: **No**
+- Social media: **No** (no feed or discovery of other people's content; rooms and crews are invite-only)
+
+**Content:** None for everything (violence, mature themes, profanity, horror, medical, alcohol and drugs, sexual content,
+gambling, loot boxes, contests).
+
+**Age categories:** Not Applicable (not Made for Kids). The rating should come out at **4+**.
 
 ## App Privacy ("privacy label")
 
 Data used to track you: **No**.
 
-Data collected (only through rooms, Blitz challenges, the Weekly Bloppit and the progress save; rooms are deleted 3 days after their last
-activity, challenges 30 days after the last player, Weekly counts after 8 weeks):
+Data collected (only through rooms, Blitz challenges, crews, the Weekly Bloppit, the progress save and the usage counts; rooms are
+deleted 3 days after their last activity, challenges 30 days after the last player, Weekly counts after 8 weeks):
 
 | Data type | Collected | Linked to the user's identity | Used for tracking | Purpose |
 |---|---|---|---|---|
 | User Content › Photos or Videos (the photos a shared model is made from) | Yes | No | No | App Functionality |
-| User Content › Gameplay Content (bricks placed, scores, Blitz times, Weekly Bloppit finishes, finished models, stars, XP, island decorations, progress save) | Yes | No | No | App Functionality |
+| User Content › Gameplay Content (bricks placed, scores, Blitz times, Weekly Bloppit finishes, finished models, stars, XP, outfits, island decorations, shared drawings, crew phrases and stickers, progress save) | Yes | No | No | App Functionality |
+| Usage Data › Product Interaction (daily counts of a few events, by country and app/website; no identifier) | Yes | No | No | Analytics |
 
-Everything else (contact info, identifiers, location, usage data, diagnostics, etc.): **Not collected**.
-
-## Screenshots
-
-In `screenshots/`. Upload the `iphone-*` set as the 6.9" iPhone display (1320 × 2868) and the `ipad-*` set as the
-13" iPad display (2064 × 2752). App Store Connect scales them down for smaller devices.
-`iphone-5-blitz` and `ipad-6-blitz` show Bloppit Blitz; drag them earlier in the order if you want Blitz featured.
+Everything else (contact info, identifiers, location, diagnostics, etc.): **Not collected**.
 
 ## Updating the app
 
