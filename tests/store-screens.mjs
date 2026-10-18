@@ -21,7 +21,7 @@ for (const [tag, vp, dsf] of [['iphone',{width:440,height:956},3],['ipad',{width
   await page.evaluate(() => document.getElementById('hmCont').click());
   await page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 20000 }); await page.waitForTimeout(600);
   await page.screenshot({ path: `${OUT}${tag}-meet.png` });
-  await page.evaluate(() => { document.getElementById('pupPickT').click(); document.querySelector('#pupNames [data-pup="0"]').click(); }); await page.waitForTimeout(2500);
+  await page.evaluate(() => { document.getElementById('pupPickT').click(); document.querySelector('#pupNames [data-pup="0"]').click(); document.getElementById('pupLater').click(); }); await page.waitForTimeout(2500);
   // Build Our First Home → the build → back home, where the cottage appears
   await page.evaluate(() => document.querySelector('#isWorld .is3-play').click()); await page.waitForTimeout(1500);
   await auto(page,5); await page.waitForTimeout(400); await page.screenshot({ path: `${OUT}${tag}-build.png` });

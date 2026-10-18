@@ -400,6 +400,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .hand-txt{display:grid;gap:2px;min-width:0}
 .hand-txt h2{font-size:20px}
 .hand-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+@media (hover: none) and (pointer: coarse){ kbd{display:none!important} }
 .primary kbd{font-family:var(--f-mono);font-size:11px;border:1px solid currentColor;border-radius:4px;padding:0 4px;opacity:.75;margin-left:4px;vertical-align:2px}
 .primary.sm{font-size:16px;padding:9px 16px}
 
@@ -677,6 +678,8 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .family-txt code{font-size:14px;font-weight:700;word-break:break-all}
 .windlg .pup-pic{height:150px;border-radius:50%;width:150px;overflow:hidden;background:#E8F1F8;border:4px solid #fff;box-shadow:0 4px 0 var(--shadow);margin:0 auto 6px}
 .windlg .pup-pic svg{width:100%;height:100%;display:block}
+.pupdlg .pup-pic{width:168px;height:196px;border-radius:28px;background:radial-gradient(circle at 50% 62%,color-mix(in srgb,var(--pc,#8FB8DE) 45%,#fff) 0 38%,color-mix(in srgb,var(--pc,#8FB8DE) 16%,#fff) 70%);transition:background .25s}
+.pupdlg .pup-suggest[aria-pressed="true"]{background:var(--hi);color:#14202C;border-color:transparent}
 .pupdlg .pup-lead{margin:2px 0 8px}
 .pup-cols{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 0 14px}
 .pup-cols button{width:36px;height:36px;border-radius:50%;border:3px solid #fff;background:var(--c);box-shadow:0 0 0 2px var(--line);cursor:pointer;padding:0}
@@ -707,6 +710,8 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .wc-pup .pup-names button[aria-pressed="true"]{background:#14202C;color:#fff;border-color:#14202C}
 .pup-names button{font:inherit;font-weight:800;font-size:15px;padding:10px 6px;border-radius:12px;border:2px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer}
 .pup-names button:hover{border-color:var(--ink)}
+.pup-names button[aria-pressed="true"]{background:#14202C;color:#fff;border-color:#14202C}
+.pup-later.primary{display:block;width:100%;margin-top:6px;padding:12px;border-radius:14px;background:#14202C;color:#fff;text-decoration:none;font-size:17px;font-weight:800;box-shadow:0 4px 0 var(--shadow)}
 .world-strip:empty{display:none}
 .world-strip{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 12px;margin:8px 0 2px;padding:8px 12px;border-radius:12px;background:#FFF6D6;color:#14202C;font-weight:800;font-size:14px}
 .world-strip .ws-stars{font-size:22px;letter-spacing:3px;color:#E9A800;line-height:1}
@@ -1674,13 +1679,13 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
   <h2 id="pupTitle">Meet your otter!</h2>
   <p class="win-best pup-lead" id="pupLead">Your own little otter, with its own brick. Pick its colour:</p>
   <div class="pup-cols" id="pupCols" role="radiogroup" aria-label="Brick colour"></div>
+  <div class="pup-outfit" id="pupOutfit" hidden><span>Add a scarf or a hat?</span><div role="group" aria-label="Outfit"><button type="button" data-out="" aria-pressed="true">Not now</button><button type="button" data-out="scarf" aria-pressed="false">🧣 Scarf</button><button type="button" data-out="beanie" aria-pressed="false">🧢 Beanie</button></div></div>
   <form class="pup-own" id="pupOwn" autocomplete="off">
     <label for="pupIn">Name it yourself</label>
     <div><input id="pupIn" type="text" maxlength="14" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done" placeholder="Type a name"><button class="primary sm" type="submit">That’s it!</button></div>
     <p class="pup-err" id="pupErr" hidden>Use letters for its name.</p>
   </form>
-  <button class="ghost pup-suggest" id="pupSuggest" type="button" hidden></button>
-  <div class="pup-outfit" id="pupOutfit" hidden><span>Add a scarf or a hat?</span><div role="group" aria-label="Outfit"><button type="button" data-out="" aria-pressed="true">Not now</button><button type="button" data-out="scarf" aria-pressed="false">🧣 Scarf</button><button type="button" data-out="beanie" aria-pressed="false">🧢 Beanie</button></div></div>
+  <button class="ghost pup-suggest" id="pupSuggest" type="button" aria-pressed="false" hidden></button>
   <button class="ghost pup-pick-t" id="pupPickT" type="button" aria-expanded="false" aria-controls="pupNames">Pick a name</button>
   <div class="pup-names" id="pupNames" role="group" aria-label="Otter names" hidden></div>
   <button class="pup-later" id="pupLater" type="button">Pick later</button>
@@ -3028,7 +3033,7 @@ function buddyUpdate(){
   if(isLocked(cur)){ budSay('point','This page is locked! Solve my math puzzle to open it.'); if(budStep!==cur){ budStep=cur; budPing(); } return; }
   if(mpBlitz()){ budSay('point', mpMyTurn()?(mp.state.calm?`Step ${cur+1}. Take your time.`:mp.state.solo?`Step ${cur+1}! Go go go!`:mp.cpu?`Your turn! Step ${cur+1}. Beat my time!`:`Step ${cur+1}! Check the booklet. Quick!`):`Step ${cur+1}. Get ready for your turn!`); if(budStep!==cur){ budStep=cur; budPing(); } return; }
   const left=stepLeft(cur), total=model.steps[cur].bricks.length;
-  if(welcomeOn()){ const lead=cur===0?'Hi! I’m Bloppit. Here’s your first brick. Tap the faded one!':left.length===total?['Here’s the next one!','Another one. Tap the faded brick!','Nice. Next brick!','Keep going!'][cur%4]:'One more for this step:';
+  if(welcomeOn()){ const lead=left.length===total?(cur===0?(total>1?'Hi! I’m Bloppit. Here are your first bricks. Tap a faded one!':'Hi! I’m Bloppit. Here’s your first brick. Tap the faded one!'):['Here’s the next one!','Another one. Tap the faded brick!','Nice. Next brick!','Keep going!'][cur%4]):left.length===1?'One more for this step:':`${left.length} more for this step:`;
     budSay('offer', `${lead}<div class="callout">${calloutHTML(left)}</div>`); if(budStep!==cur){ budStep=cur; budPing(); } return; }
   const lead=left.length===total?`Step ${cur+1}! You need these:`:left.length===1?'Just one more for this step:':`${left.length} more for this step:`;
   budSay('point', `${lead}<div class="callout">${calloutHTML(left)}</div>`);
@@ -3163,13 +3168,13 @@ function tryPlace(){
   if(t){ if(cands.length===1) lock(); placeBrick(t,ax,az); return; }
   if(mpBlitz()){ const o0=curOff(), u0=usedSet();
     const turn0=sel.sx!==sel.sz&&s.bricks.some(b=>!u0.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o0||Math.abs(b.x+o0.x-ax)<=2&&Math.abs(b.z+o0.z-az)<=2));
-    const calm=mp.state&&mp.state.calm; setStatus(calm?(turn0?'Close. Try turning it with R.':'Not quite. Compare with the picture in the booklet.'):turn0?'Miss! +1 second. Try turning it.':'Miss! +1 second','err'); sfx.bonk(); mpPost({action:'miss'}).then(j=>mpApply(j.state)).catch(()=>{});
+    const calm=mp.state&&mp.state.calm; setStatus(calm?(turn0?turnTip():'Not quite. Compare with the picture in the booklet.'):turn0?'Miss! +1 second. Try turning it.':'Miss! +1 second','err'); sfx.bonk(); mpPost({action:'miss'}).then(j=>mpApply(j.state)).catch(()=>{});
     const g=ghostGroup.children[0]; if(g){g.material=errMat; setTimeout(()=>{if(g.parent) g.material=ghostMat(sel?sel.c:0);},380);} if(!calm) mpFlash('+1s'); return; }
   const o=curOff(), u=usedSet();
   const turned=sel.sx!==sel.sz&&s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o||Math.abs(b.x+o.x-ax)<=2&&Math.abs(b.z+o.z-az)<=2));
   const unused=!s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&Math.min(b.sx,b.sz)===Math.min(sel.sx,sel.sz)&&Math.max(b.sx,b.sz)===Math.max(sel.sx,sel.sz));
   if(!autoBusy) run.miss++;
-  setStatus(unused?`Step ${cur+1} doesn’t use this brick. Put it back and check the booklet.`:turned?'Close. Try turning it with R.':'Not quite. Compare with the picture in the booklet.','err');
+  setStatus(unused?`Step ${cur+1} doesn’t use this brick. Put it back and check the booklet.`:turned?turnTip():'Not quite. Compare with the picture in the booklet.','err');
   sfx.bonk();
   const g=ghostGroup.children[0]; if(g){g.material=errMat; setTimeout(()=>{if(g.parent) g.material=ghostMat(sel?sel.c:0);},380);}
 }
@@ -3190,7 +3195,7 @@ function placeBrick(t,ax,az){
   const done=off?s.bricks.every(b=>placed.has(b)):cands[0].used.size>=s.bricks.length;
   const first=placedN===1; if(first){ buildStarted(game?'trail':mp?(mp.state&&mp.state.calm?'weekly':mp.cpu?'blitz':'room'):'quick'); if(run.memory===null) run.memory=$('.build-grid').classList.contains('no-book')&&!welcomeOn(); }
   if(!done){
-    setStatus(first?'First brick down. The model builds out from here.':(['Nice!','Snapped in.','Perfect fit.','Got it.'][placedN%4])+(hand.length?'':' Your hand is empty.'),'ok');
+    setStatus(first?(welcomeOn()?'First brick down!':'First brick down. The model builds out from here.'):(['Nice!','Snapped in.','Perfect fit.','Got it.'][placedN%4])+(hand.length?'':' Your hand is empty.'),'ok');
     updateBuildUI(); if(first) frameBuild(true); return;
   }
   if(!off) lock();
@@ -3278,6 +3283,8 @@ document.querySelectorAll('#placePad [data-mv]').forEach(b=>b.addEventListener('
 $('#ppTurn').onclick=rotateSel;
 $('#ppPlace').onclick=()=>tryPlace();
 $('#rotBtn').onclick=rotateSel;
+// Phones and tablets have no R key: point at the Rotate button instead
+function turnTip(){ return matchMedia('(hover: none) and (pointer: coarse)').matches?'Close. Tap Rotate to turn it.':'Close. Try turning it with R.'; }
 function toggleBook(){ const g=$('.build-grid'), off=!g.classList.toggle('no-book'); if(off&&placedN>0) run.memory=false; $('#bookBtn').setAttribute('aria-pressed',off); saveSoon(); requestAnimationFrame(()=>{resize(); bookResize(); frameBuild(true);}); }
 $('#bookBtn').onclick=()=>{ toggleBook(); if($('.build-grid').classList.contains('no-book')&&placedN===0&&!mp&&!welcomeOn()) setStatus('Booklet hidden. Finish without it, no hints, for a From Memory star.'); };
 $('#hintBtn').onclick=()=>{
@@ -6048,7 +6055,7 @@ function pupMaybe(then){ const o=worldStore(); if(pupName(o)||worldCount(o)!==1|
 var pupDraft={ci:0};
 function pupOpen(then,opt){
   const d=$('#pupDlg'), o=worldStore(), has=pupName(o), first=!o.isle, arr=!!(opt&&opt.arrival);
-  pupDraft={ci:pupColorOf(o),out:''}; ISL3.pupArrival=arr;
+  pupDraft={ci:pupColorOf(o),out:'',name:null,has:!!has}; ISL3.pupArrival=arr;
   // On arrival: a suggested name in one tap, and an optional scarf or hat
   const sug=PUP_NAMES[Math.floor(Math.random()*PUP_NAMES.length)]; $('#pupSuggest').hidden=!arr; $('#pupSuggest').textContent=`Call it ${sug}`; $('#pupSuggest').dataset.pup=PUP_NAMES.indexOf(sug);
   $('#pupOutfit').hidden=!arr; document.querySelectorAll('#pupOutfit [data-out]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.out==='')));
@@ -6057,7 +6064,7 @@ function pupOpen(then,opt){
   $('#pupIn').value=cleanPupText(o.pupText); $('#pupErr').hidden=true;
   $('#pupNames').hidden=true; $('#pupPickT').setAttribute('aria-expanded','false');
   $('#pupNames').innerHTML=PUP_NAMES.map((n,i)=>`<button type="button" data-pup="${i}" aria-pressed="${o.pupName===i&&!o.pupText}">${n}</button>`).join('');
-  $('#pupLater').textContent=has?'Done':'Pick later'; if(arr) $('#pupLead').textContent='Your very own little otter, with its own brick. Pick its colour:';
+  pupDoneBtn(); if(arr) $('#pupLead').textContent='Your very own little otter, with its own brick. Pick its colour (it colours the outfit too):';
   pupColsRender();
   d.onclose=()=>{ d.onclose=null; renderHome(); if(then) then(); else if(first&&worldCount(worldStore())) islandIntro(); };
   if(!d.open){ d.showModal(); if(!has) sfx.hatch(); }
@@ -6065,15 +6072,24 @@ function pupOpen(then,opt){
 function pupColsRender(){
   const o=worldStore(), prev=pupDraft.out?{...o,wear:{...accWear(o),[ACC.find(a=>a.id===pupDraft.out).slot]:[pupDraft.out,pupDraft.ci]}}:o;
   $('#pupPic').innerHTML=pupFig(prev,{ci:pupDraft.ci,vb:PUP_ROUND,par:'xMidYMid slice',svg:1});
-  { const h=$('#pupPic'); cv3(h,{who:'pup',frame:'bust',o:prev,ci:pupDraft.ci,wear:prev.wear}); if(h.__ci!==pupDraft.ci){ const first=h.__ci==null; h.__ci=pupDraft.ci; if(!first) setTimeout(()=>cv3Play(h,'happy_hop'),30); } }
+  { const h=$('#pupPic'); h.style.setProperty('--pc',PUP_COLORS[pupDraft.ci].c); cv3(h,{who:'pup',frame:'full',o:prev,ci:pupDraft.ci,wear:prev.wear}); if(h.__ci!==pupDraft.ci){ const first=h.__ci==null; h.__ci=pupDraft.ci; if(!first) setTimeout(()=>cv3Play(h,'happy_hop'),30); } }
   $('#pupCols').innerHTML=PUP_COLORS.map((c,i)=>`<button type="button" role="radio" aria-checked="${i===pupDraft.ci}" aria-label="${c.n}" title="${c.n}" data-col="${i}" style="--c:${c.c}"></button>`).join('');
 }
 $('#pupCols').addEventListener('click',e=>{ const b=e.target.closest('[data-col]'); if(!b) return;
   pupDraft.ci=+b.dataset.col; const o=worldStore(); o.pupColor=pupDraft.ci; o.pupAt=Date.now(); worldSet(o); track('pup_colour'); sfx.chirp(); pupColsRender();
   const f=$(`#pupCols [data-col="${pupDraft.ci}"]`); if(f) f.focus(); });
+// A name (typed, suggested or from the list) is only held until "All done!", so the colour and outfit can still change
+function pupPick(patch,how){ pupDraft.name={patch,how}; const nm=patch.pupText||PUP_NAMES[patch.pupName]||'';
+  $('#pupTitle').textContent=nm?`Meet ${nm}!`:'Meet your otter!'; $('#pupErr').hidden=true;
+  $('#pupSuggest').setAttribute('aria-pressed',String(how==='pup_named_suggested'));
+  document.querySelectorAll('#pupNames [data-pup]').forEach(b=>b.setAttribute('aria-pressed',String(how==='pup_named'&&+b.dataset.pup===patch.pupName)));
+  if(how!=='pup_named_own') $('#pupIn').value=''; sfx.chirp(); pupDoneBtn(); try{ cv3Play($('#pupPic'),'happy_hop'); }catch(e){} }
+function pupDoneBtn(){ const b=$('#pupLater'), ready=!!pupDraft.name||pupDraft.has; b.textContent=ready?'All done!':'Pick later'; b.classList.toggle('primary',!!pupDraft.name); }
+function pupFinish(){ if(pupDraft.name){ pupSave(pupDraft.name.patch,pupDraft.name.how); return; }
+  if(!pupName(worldStore())) track('pup_name_later'); const o=worldStore(); if(ISL3.pupArrival&&pupDraft.out){ pupOutfitSave(o); worldSet(o); } $('#pupDlg').close(); }
 function pupSave(patch,how){ const o=worldStore(); Object.assign(o,patch,{pupAt:Date.now()}); pupOutfitSave(o); worldSet(o); track(how); sfx.chime(); $('#pupDlg').close(); }
 function pupOutfitSave(o){ if(!ISL3.pupArrival||!pupDraft.out) return; const a=ACC.find(x=>x.id===pupDraft.out); if(a){ o.wear={...accWear(o),[a.slot]:[a.id,pupDraft.ci]}; o.wearAt=Date.now(); track('acc_wear:'+a.id); } }
-$('#pupSuggest').onclick=()=>pupSave({pupName:+$('#pupSuggest').dataset.pup,pupText:''},'pup_named_suggested');
+$('#pupSuggest').onclick=()=>pupPick({pupName:+$('#pupSuggest').dataset.pup,pupText:''},'pup_named_suggested');
 $('#pupOutfit').addEventListener('click',e=>{ const b=e.target.closest('[data-out]'); if(!b) return; pupDraft.out=b.dataset.out; document.querySelectorAll('#pupOutfit [data-out]').forEach(x=>x.setAttribute('aria-pressed',String(x===b))); sfx.chirp(); pupColsRender(); });
 // The wardrobe (and a newly earned piece): try one on, pick its colour, wear it or take it off
 $('#accList').addEventListener('click',e=>{ const b=e.target.closest('[data-acc]'); if(!b||b.disabled) return; const a=ACC.find(x=>x.id===b.dataset.acc), w=accWear(worldStore())[a.slot]; ISL3.accDraft={id:a.id,slot:a.slot,ci:w&&w[0]===a.id?w[1]:ISL3.accDraft.ci}; accRender(); });
@@ -6084,12 +6100,12 @@ $('#accDlg').addEventListener('cancel',e=>{ e.preventDefault(); $('#accDlg').clo
 document.querySelectorAll('#pickDlg [data-pick]').forEach(b=>b.onclick=()=>{ const o=worldStore(); o.pick=b.dataset.pick; worldSet(o); track('pick:'+o.pick); sfx.chime(); $('#pickDlg').close(); renderIsland(); });
 $('#pickDlg').addEventListener('cancel',e=>{ e.preventDefault(); });
 $('#pupOwn').addEventListener('submit',e=>{ e.preventDefault(); const v=cleanPupText($('#pupIn').value);
-  if(!v){ $('#pupErr').hidden=false; $('#pupIn').focus(); return; } pupSave({pupText:v,pupName:-1},'pup_named_own'); });
+  if(!v){ $('#pupErr').hidden=false; $('#pupIn').focus(); return; } $('#pupIn').blur(); pupPick({pupText:v,pupName:-1},'pup_named_own'); });
 $('#pupIn').addEventListener('input',()=>{ $('#pupErr').hidden=true; });
 $('#pupPickT').onclick=()=>{ const open=$('#pupNames').hidden; $('#pupNames').hidden=!open; $('#pupPickT').setAttribute('aria-expanded',String(open)); };
-$('#pupNames').addEventListener('click',e=>{ const b=e.target.closest('[data-pup]'); if(!b) return; pupSave({pupName:+b.dataset.pup,pupText:''},'pup_named'); });
-$('#pupLater').onclick=()=>{ if(!pupName(worldStore())) track('pup_name_later'); const o=worldStore(); if(ISL3.pupArrival&&pupDraft.out){ pupOutfitSave(o); worldSet(o); } $('#pupDlg').close(); };
-$('#pupDlg').addEventListener('cancel',e=>{ e.preventDefault(); $('#pupDlg').close(); });
+$('#pupNames').addEventListener('click',e=>{ const b=e.target.closest('[data-pup]'); if(!b) return; pupPick({pupName:+b.dataset.pup,pupText:''},'pup_named'); });
+$('#pupLater').onclick=pupFinish;
+$('#pupDlg').addEventListener('cancel',e=>{ e.preventDefault(); pupFinish(); });
 // Bloppitopia, introduced once after the pup: the island page with a card on top. The card's buttons are the
 // next steps (what the first-build screen used to offer).
 function islandIntro(){ setTab('island'); }
@@ -6257,10 +6273,12 @@ function islandSVG(o,opts){
 }
 // The models standing on the island: the ones the child placed stay where they put them; the newest others
 // fill the free stands. Up to the stage's number of stands; models put away stay in the list below the island.
+// The Little house (the first home build) became the cottage, so it never stands on the island as a model too
+const isHomeBuild=k=>k.startsWith('m:Little house:');
 function islandModelsAny(o){ return ISL3.ok?islandModels3(o):islandModels(o); }
 function islandModels(o){
   const cap=ISLAND_STAGES[islandStage(o)].slots, pos=o.pos||{}, away=o.away||{}, legacy=o.slot||{};
-  const all=o.log.filter(k=>!k.startsWith('w:')&&o.builds[k]&&!((away[k]||0)>0)).reverse();   // newest first
+  const all=o.log.filter(k=>!k.startsWith('w:')&&!isHomeBuild(k)&&o.builds[k]&&!((away[k]||0)>0)).reverse();   // newest first
   const at=k=>Array.isArray(pos[k])?pos[k]:(Number.isInteger(legacy[k])&&SLOTS[legacy[k]]?SLOTS[legacy[k]]:null);
   const show=all.slice(0,cap), list=[]; for(const k of show){ const p=at(k); if(p) list.push({key:k,x:p[0],y:p[1],placed:true}); }   // the newest builds always get the spaces
   const near=(x,y)=>list.some(m=>Math.hypot(m.x-x,m.y-y)<70), stands=SLOTS.slice(0,cap).map(([x,y],i)=>[x,y,i]);
@@ -6379,8 +6397,8 @@ function islandInfo(id,o){
         actions:[{label:'👕 Wardrobe',fn:()=>wardrobeOpen(),primary:true},{label:nm?'Name or colour':'Name your otter',fn:()=>pupOpen()}]}; }
     case 'model': { const f=modelFacts(arg,o), b=f.b, onIsle=shown.list.some(m=>m.key===arg)||arg.startsWith('w:');
       const acts=[]; if(f.again) acts.push({label:'Build it again',fn:f.again,primary:true});
-      if(!arg.startsWith('w:')) acts.push(onIsle?{label:'Put away',fn:()=>islandPut(arg,false)}:{label:'Put on Bloppitopia',fn:()=>islandPut(arg,true),off:shown.list.length>=shown.cap?`Bloppitopia is full (${shown.cap} stands). Put one away first.`:''});
-      return {title:f.name,hint:`${'★'.repeat(b.s||0)}${'☆'.repeat(3-(b.s||0))} · ${f.from}`,icon:worldThumb(arg)?`<img src="${worldThumb(arg)}" alt="">`:'',
+      if(!arg.startsWith('w:')&&!isHomeBuild(arg)) acts.push(onIsle?{label:'Put away',fn:()=>islandPut(arg,false)}:{label:'Put on Bloppitopia',fn:()=>islandPut(arg,true),off:shown.list.length>=shown.cap?`Bloppitopia is full (${shown.cap} stands). Put one away first.`:''});
+      return {title:f.name,hint:isHomeBuild(arg)?'Your first build: it became your home on Bloppitopia':`${'★'.repeat(b.s||0)}${'☆'.repeat(3-(b.s||0))} · ${f.from}`,icon:worldThumb(arg)?`<img src="${worldThumb(arg)}" alt="">`:'',
         rows:[['From',f.from],['First built',fmtDay(b.t)||'—'],['Stars',`${'★'.repeat(b.s||0)}${'☆'.repeat(3-(b.s||0))} ${b.s>=3?'clean':b.s===2?'no hints':'finished'}${b.m?' · from memory 🧠':''}`],
           ['Best time',b.d?fmtDur(b.d):'Not timed yet'],['Bricks',String(b.n||'—')],['Built',`${b.c||1} time${(b.c||1)===1?'':'s'}`]],actions:acts}; }
   }
@@ -6644,7 +6662,7 @@ function isl3Init(){
 // Which models stand where (3D positions; the record keeps them as 0..1000)
 function islandModels3(o){
   const cap=ISLAND_STAGES[islandStage(o)].slots, pos=o.pos||{}, away=o.away||{};
-  const all=o.log.filter(k=>!k.startsWith('w:')&&o.builds[k]&&!((away[k]||0)>0)).reverse();
+  const all=o.log.filter(k=>!k.startsWith('w:')&&!isHomeBuild(k)&&o.builds[k]&&!((away[k]||0)>0)).reverse();
   // The newest builds always get the spaces: a model you dragged somewhere keeps its spot, but never pushes a newer build off the island
   const show=all.slice(0,cap), list=[]; for(const k of show){ const p=pos[k]; if(Array.isArray(p)){ const x=P2W(p[0]), z=P2W(p[1]); if(onGrass(x,z)) list.push({key:k,x,z,placed:true}); } }
   const near=(x,z)=>list.some(m=>Math.hypot(m.x-x,m.z-z)<1.5), stands=STANDS3.slice(0,cap).map(([x,z],i)=>[x,z,i]);
@@ -7697,8 +7715,8 @@ function renderBuilds(){
   const B=Object.values(o.builds), clean=B.filter(b=>(b.s||0)>=3).length, nohint=B.filter(b=>(b.s||0)>=2).length, mem=B.filter(b=>b.m).length;
   $('#isBuildsNote').innerHTML=keys.length?`${keys.length} model${keys.length===1?'':'s'} finished. Stars are the best of every try. <span class="mastery"><b>${clean}</b> clean · <b>${nohint}</b> no hints · <b>${mem}</b> from memory</span>`:'Nothing finished yet.';
   $('#buildsGrid').innerHTML=keys.map(k=>{ const b=o.builds[k], u=worldThumb(k), nm=k.startsWith('w:')?'Weekly Bloppit':(/^m:(.+):\d+$/.exec(k)||/^t:[a-z]+:\d+:(.+)$/.exec(k)||[])[1]||'Your photo';
-    const away=isAway(o,k), on=shownKeys.has(k)||k.startsWith('w:');
-    return `<button type="button" class="${on?'':'away'}" data-mkey="${escapeHTML(k)}" aria-label="${escapeHTML(modelFacts(k,o).name)}">${on?'<span class="on-isle" title="On Bloppitopia">🏝️</span>':''}${u?`<img src="${u}" alt="">`:'<span style="height:72px"></span>'}<span>${escapeHTML(modelFacts(k,o).name)}</span>${wsStars(b.s||0)}<small>${b.n} bricks${b.m?' · 🧠':''}${k.startsWith('w:')?' · 📅':''}${away?' · put away':''}</small></button>`; }).join('');
+    const home=isHomeBuild(k), away=!home&&isAway(o,k), on=home||shownKeys.has(k)||k.startsWith('w:');
+    return `<button type="button" class="${on?'':'away'}" data-mkey="${escapeHTML(k)}" aria-label="${escapeHTML(modelFacts(k,o).name)}">${home?'<span class="on-isle" title="It became your home">🏠</span>':on?'<span class="on-isle" title="On Bloppitopia">🏝️</span>':''}${u?`<img src="${u}" alt="">`:'<span style="height:72px"></span>'}<span>${escapeHTML(modelFacts(k,o).name)}</span>${wsStars(b.s||0)}<small>${home?'Your home · ':''}${b.n} bricks${b.m?' · 🧠':''}${k.startsWith('w:')?' · 📅':''}${away?' · put away':''}</small></button>`; }).join('');
 }
 $('#buildsGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-mkey]'); if(b) islandTip('model:'+b.dataset.mkey,b); });
 // The postcard: the island as a picture, no name, no photo, no location
