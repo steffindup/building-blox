@@ -4808,7 +4808,7 @@ $('#whoList').addEventListener('keydown',e=>{ const c=e.target.closest('.who-car
 $('#whoForm').addEventListener('submit',e=>{ e.preventDefault();
   const name=$('#whoNm').value.trim().slice(0,16); if(!name) return; const age=+$('#whoAge').value||null;
   if(whoEditing){ const p=players.list.find(q=>q.id===whoEditing); Object.assign(p,{name,age,color:whoColor}); playersSave(); renderWho(); syncMathUI(); if(tab==='game') renderGameMap(); whoFormClose(); return; }
-  const id='p'+(++players.n+1); players.list.push({id,name,age,color:whoColor}); playersSave(); switchPlayer(id); });
+  const id='p'+(++players.n+1); players.list.push({id,name,age,color:whoColor,fresh:1}); playersSave(); switchPlayer(id); });
 $('#whoDel').onclick=()=>{ const b=$('#whoDel'), p=players.list.find(q=>q.id===whoEditing); if(!p) return;
   if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent=`Tap again to remove ${p.name} and their scores`; setTimeout(()=>{delete b.dataset.confirm; b.textContent='Remove player';},3000); return; }
   delete b.dataset.confirm; b.textContent='Remove player';
@@ -8131,7 +8131,11 @@ var WELCOME={sample:'Little house',S:{kind:'model',shape:'flat',thick:1,tol:48,m
 var welcomeVer=-1, welcomeBook=false;  // var: the buddy can update before this line runs
 function welcomeOn(){ return welcomeVer===modelVersion&&!mp&&!game; }
 function welcomeDue(){ const usp=new URLSearchParams(location.search); if(usp.get('welcome')==='1') return true; if(usp.get('welcome')==='0') return false;
-  const o=evStore(); return !o.welcome&&!(o.started||0)&&!(o.finished||0)&&!pendingSave&&!game&&!mp; }
+  if(pendingSave||game||mp) return false;
+  // Per player: anyone who hasn't met their otter or finished a build yet gets the card. The device-wide counts
+  // only decide it for the device's original player; a player added with "New player" starts fresh (#54).
+  const w=worldStore(); if(w.arrived||worldCount(w)||pupName(w)||w.pupAsked) return false;
+  const o=evStore(); return !!curPlayer().fresh||(!o.welcome&&!(o.started||0)&&!(o.finished||0)); }
 function welcomeStart(){
   const i=SAMPLES.findIndex(x=>x.name===WELCOME.sample); if(i<0) return false;
   try{
