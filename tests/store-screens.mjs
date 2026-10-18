@@ -7,6 +7,11 @@ const FONTS=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../node_m
 const FONT_CSS=[['Lilita One','lilita-one/files/lilita-one-latin-400-normal.woff2',400],['Nunito','nunito/files/nunito-latin-400-normal.woff2',400],['Nunito','nunito/files/nunito-latin-700-normal.woff2',700],['Nunito','nunito/files/nunito-latin-800-normal.woff2',800]]
   .map(([fam,file,w])=>`@font-face{font-family:'${fam}';font-weight:${w};font-display:block;src:url(http://fonts.local/${file}) format('woff2')}`).join('');
 const b = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM || undefined, args: ['--use-gl=swiftshader'] });
+// Places the next brick as a player tapping the right spot would (unlike "Place one for me", nothing counts as help),
+// so a Trail level finishes clean with three stars
+const clean = async (p,n)=>{ for(let i=0;i<n;i++){ await p.evaluate(()=>{ if(busy||!model||cur>=model.steps.length) return;
+  const s=model.steps[cur]; let o,t; if(off){ o=off; t=s.bricks.find(b=>!placed.has(b)); } else if(cands.length){ o=cands[0]; t=s.bricks.find(b=>!o.used.has(b)); } else { o={x:0,z:0}; t=s.bricks[0]; }
+  if(!t) return; sel={sx:t.sx,sz:t.sz,c:t.c}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2}; tryPlace(); lastAnchor=null; ghostGroup.visible=false; if(held) setGhost(); else { sel=null; ghostGroup.clear(); } }); await p.waitForTimeout(1100); } };
 const auto = async (p,n)=>{ for(let i=0;i<n;i++){ await p.evaluate(()=>document.getElementById('autoBtn')?.click()); await p.waitForTimeout(1100); } };
 for (const [tag, vp, dsf] of [['iphone',{width:440,height:956},3],['ipad',{width:1032,height:1376},2]]) {
   const ctx = await b.newContext({ viewport: vp, deviceScaleFactor: dsf, isMobile: true, hasTouch: true });
@@ -37,7 +42,7 @@ for (const [tag, vp, dsf] of [['iphone',{width:440,height:956},3],['ipad',{width
   // play next through a few Trail levels for real thumbnails
   let shotFinish = false;
   for (let k=0;k<6;k++){ if (k) { await page.evaluate(() => document.getElementById('budNext')?.click()); await page.waitForTimeout(1500); }
-    for (let i=0;i<60;i++){ await auto(page,1); if (await page.evaluate(()=>/Every step complete/.test(document.getElementById('status').textContent))) break; }
+    for (let i=0;i<60;i++){ await clean(page,1); if (await page.evaluate(()=>/Every step complete/.test(document.getElementById('status').textContent))) break; }
     // the finish card (stars, See Bloppitopia, Play next): wait for it to open, take the first one
     const won = await page.waitForFunction(() => document.getElementById('winDlg').open, null, { timeout: 12000 }).then(() => true, () => false);
     if (won && !shotFinish) { await page.waitForTimeout(1500); await page.screenshot({ path: `${OUT}${tag}-finish.png` }); shotFinish = true; }
