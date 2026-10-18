@@ -990,7 +990,8 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 .is3-cine .cn-cap.on{opacity:1;transform:none}
 .is3-cine .cn-title{position:absolute;left:0;right:0;top:30%;display:grid;justify-items:center;gap:6px;text-align:center;opacity:0;transform:scale(.92);transition:opacity 1.1s ease,transform 2.6s cubic-bezier(.2,.7,.2,1);filter:drop-shadow(0 6px 18px rgba(0,30,60,.45))}
 .is3-cine .cn-title.on{opacity:1;transform:none}
-.is3-cine .cn-title b{font-family:var(--f-display);font-weight:400;font-size:clamp(44px,10vw,104px);line-height:1;color:#fff;-webkit-text-stroke:2px #0b4f6c;paint-order:stroke fill;background:linear-gradient(100deg,#fff 35%,#FFF1B8 48%,#fff 61%) 0 0/250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:cn-shine 3.2s ease .4s both}
+.is3-cine .cn-title b{font-family:var(--f-display);font-weight:400;font-size:clamp(44px,10vw,104px);line-height:1;color:#fff;-webkit-text-stroke:2px #0b4f6c;paint-order:stroke fill;background:linear-gradient(100deg,#fff 35%,#FFF1B8 48%,#fff 61%) 0 0/250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.is3-cine .cn-title.on b{animation:cn-shine 3.2s ease .4s both}   /* the shine starts with the title, not with the film */
 .is3-cine .cn-title span{font-family:var(--f-display);font-size:clamp(16px,2.8vw,24px);color:#fff;text-shadow:0 2px 8px rgba(0,30,60,.7)}
 @keyframes cn-shine{from{background-position:120% 0}to{background-position:-30% 0}}
 .is3-cine .cn-skip{position:absolute;right:12px;top:calc(min(11%,96px) + 10px);pointer-events:auto;font:inherit;font-weight:800;font-size:14px;padding:7px 14px;border-radius:999px;border:0;background:rgba(5,16,26,.55);color:#fff;cursor:pointer;opacity:0;transition:opacity .6s;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
