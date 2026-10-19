@@ -6494,9 +6494,9 @@ function islandInfo(id,o){
         rows:[['Otter level',`${lv} (${worldXP(o)} XP, next at ${nl})`],...(nAcc?[['Next outfit',`${nAcc.name} at level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at ${nx.at} builds: another stud`:'A Legend. That’s the top']],
         bar:nx?{pct:Math.max(4,Math.round(100*(n-PUP_STAGES[ps].at)/(nx.at-PUP_STAGES[ps].at))),label:`${nx.at-n} more build${nx.at-n===1?'':'s'} to ${nx.name}`}:null,
         actions:[{label:'👕 Wardrobe',fn:()=>wardrobeOpen(),primary:true},{label:nm?'Name or colour':'Name your otter',fn:()=>pupOpen()}]}; }
-    case 'model': { const f=modelFacts(arg,o), b=f.b, onIsle=shown.list.some(m=>m.key===arg)||arg.startsWith('w:');
+    case 'model': { const f=modelFacts(arg,o), b=f.b, flagW=arg.startsWith('w:')&&!ISL3.ok, onIsle=shown.list.some(m=>m.key===arg)||flagW;
       const acts=[]; if(f.again) acts.push({label:'Build it again',fn:f.again,primary:true});
-      if(!arg.startsWith('w:')&&!isHomeBuild(arg)) acts.push(onIsle?{label:'Put away',fn:()=>islandPut(arg,false)}:{label:'Put on Bloppitopia',fn:()=>islandPut(arg,true),off:shown.list.length>=shown.cap?`Bloppitopia is full (${shown.cap} stands). Put one away first.`:''});
+      if(!flagW&&!isHomeBuild(arg)) acts.push(onIsle?{label:'Put away',fn:()=>islandPut(arg,false)}:{label:'Put on Bloppitopia',fn:()=>islandPut(arg,true),off:shown.list.length>=shown.cap?`Bloppitopia is full (${shown.cap} stands). Put one away first.`:''});
       return {title:f.name,hint:isHomeBuild(arg)?'Your first build: it became your home on Bloppitopia':`${'★'.repeat(b.s||0)}${'☆'.repeat(3-(b.s||0))} · ${f.from}`,icon:worldThumb(arg)?`<img src="${worldThumb(arg)}" alt="">`:'',
         rows:[['From',f.from],['First built',fmtDay(b.t)||'—'],['Stars',`${'★'.repeat(b.s||0)}${'☆'.repeat(3-(b.s||0))} ${b.s>=3?'clean':b.s===2?'no hints':'finished'}${b.m?' · from memory 🧠':''}`],
           ['Best time',b.d?fmtDur(b.d):'Not timed yet'],['Bricks',String(b.n||'—')],['Built',`${b.c||1} time${(b.c||1)===1?'':'s'}`]],actions:acts}; }
@@ -6761,7 +6761,8 @@ function isl3Init(){
 // Which models stand where (3D positions; the record keeps them as 0..1000)
 function islandModels3(o){
   const cap=ISLAND_STAGES[islandStage(o)].slots, pos=o.pos||{}, away=o.away||{};
-  const all=o.log.filter(k=>!k.startsWith('w:')&&!isHomeBuild(k)&&o.builds[k]&&!((away[k]||0)>0)).reverse();
+  // (Weekly builds too: the drawn island has a flag spot for them, the 3D one puts them on a stand like any build)
+  const all=o.log.filter(k=>!isHomeBuild(k)&&o.builds[k]&&!((away[k]||0)>0)).reverse();
   // The newest builds always get the spaces: a model you dragged somewhere keeps its spot, but never pushes a newer build off the island
   const show=all.slice(0,cap), list=[]; for(const k of show){ const p=pos[k]; if(Array.isArray(p)){ const x=P2W(p[0]), z=P2W(p[1]); if(onGrass(x,z)) list.push({key:k,x,z,placed:true}); } }
   const near=(x,z)=>list.some(m=>Math.hypot(m.x-x,m.z-z)<1.5), stands=STANDS3.slice(0,cap).map(([x,z],i)=>[x,z,i]);
@@ -7909,7 +7910,7 @@ function renderBuilds(){
   const B=Object.values(o.builds), clean=B.filter(b=>(b.s||0)>=3).length, nohint=B.filter(b=>(b.s||0)>=2).length, mem=B.filter(b=>b.m).length;
   $('#isBuildsNote').innerHTML=keys.length?`${keys.length} model${keys.length===1?'':'s'} finished. Stars are the best of every try. <span class="mastery"><b>${clean}</b> clean · <b>${nohint}</b> no hints · <b>${mem}</b> from memory</span>`:'Nothing finished yet.';
   $('#buildsGrid').innerHTML=keys.map(k=>{ const b=o.builds[k], u=worldThumb(k), nm=k.startsWith('w:')?'Weekly Bloppit':(/^m:(.+):\d+$/.exec(k)||/^t:[a-z]+:\d+:(.+)$/.exec(k)||[])[1]||'Your photo';
-    const home=isHomeBuild(k), away=!home&&isAway(o,k), on=home||shownKeys.has(k)||k.startsWith('w:');
+    const home=isHomeBuild(k), away=!home&&isAway(o,k), on=home||shownKeys.has(k)||(k.startsWith('w:')&&!ISL3.ok);
     return `<button type="button" class="${on?'':'away'}" data-mkey="${escapeHTML(k)}" aria-label="${escapeHTML(modelFacts(k,o).name)}">${home?'<span class="on-isle" title="It became your home">🏠</span>':on?'<span class="on-isle" title="On Bloppitopia">🏝️</span>':''}${u?`<img src="${u}" alt="">`:'<span style="height:72px"></span>'}<span>${escapeHTML(modelFacts(k,o).name)}</span>${wsStars(b.s||0)}<small>${home?'Your home · ':''}${b.n} bricks${b.m?' · 🧠':''}${k.startsWith('w:')?' · 📅':''}${away?' · put away':''}</small></button>`; }).join('');
 }
 $('#buildsGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-mkey]'); if(b) islandTip('model:'+b.dataset.mkey,b); });

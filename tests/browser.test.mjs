@@ -189,6 +189,27 @@ test('the Weekly: a brick of the wrong colour says which colour the step needs, 
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('a finished Weekly stands on the 3D island, and can be put away and back', { skip: skip() }, async () => {
+  const world = { fn: () => { localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 }));
+    if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: { 'm:Little house:12': { n: 12, s: 2, k: 'quick', t: Date.now() - 864e5, c: 1 } }, log: ['m:Little house:12'], decor: [] })); } };
+  const t = await open('?nosplash=1#daily', { init: world });
+  await t.page.evaluate(() => document.getElementById('dyGo').click());
+  await t.page.waitForFunction(() => /Go!/.test(document.getElementById('status').textContent), null, { timeout: 20000 });
+  for (let i = 0; i < 80; i++) { const more = await t.page.evaluate(() => window.bloppitPlaceRight()); if (!more && await t.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; await t.page.waitForTimeout(150); }
+  await t.page.waitForTimeout(3000);
+  const key = await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1')).log.find((k) => k.startsWith('w:')));
+  assert.ok(key, 'the Weekly was recorded');
+  await t.page.goto(new URL('/build/?nosplash=1&lite3d=1#island', 'http://localhost:8799').href); await t.page.waitForTimeout(3000);
+  const on = () => t.page.evaluate((k) => { const I = window.bloppitIsland3(); return !!(I && I.shown && I.shown.list.some((m) => m.key === k)); }, key);
+  assert.equal(await t.page.evaluate(() => !!window.bloppitIsland3().ok), true, 'the 3D island');
+  assert.equal(await on(), true, 'the Weekly stands on the island');
+  // its card in Your builds offers Put away, and it comes back with Put on Bloppitopia
+  const act = (label) => t.page.evaluate(([k, label]) => { document.querySelector(`#buildsGrid [data-mkey="${k}"]`).click(); const b = [...document.querySelectorAll('#isTip button')].find((x) => x.textContent.trim() === label); if (b) b.click(); return !!b; }, [key, label]);
+  assert.equal(await act('Put away'), true); await t.page.waitForTimeout(800); assert.equal(await on(), false);
+  assert.equal(await act('Put on Bloppitopia'), true); await t.page.waitForTimeout(800); assert.equal(await on(), true);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('the Weekly bank: each planned Monday shows its model', { skip: skip() }, async () => {
   for (const [when, name] of [['2026-10-26T13:00:00Z', 'Jack-o’-lantern'], ['2026-11-02T14:00:00Z', 'Red boat'], ['2026-11-23T14:00:00Z', 'Hot-air balloon'], ['2026-12-14T14:00:00Z', 'Gingerbread house']]) {
     const t = await open('?nosplash=1&welcome=0', { at: when });
