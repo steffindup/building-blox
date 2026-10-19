@@ -174,6 +174,21 @@ test('the Weekly is calm: no Blitz tag, no stopwatch, no seconds for a miss; the
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('the Weekly: a brick of the wrong colour says which colour the step needs, and the right one fits', { skip: skip() }, async () => {
+  const seeded = { fn: () => localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 })) };
+  const t = await open('?nosplash=1#daily', { init: seeded, viewport: { width: 402, height: 874 }, touch: true });
+  await t.page.evaluate(() => document.getElementById('dyGo').click());
+  await t.page.waitForFunction(() => /Go!/.test(document.getElementById('status').textContent), null, { timeout: 20000 });
+  // the first brick of this step, held in a colour it isn't (White, or Light Grey if the brick is White)
+  const c = await t.page.evaluate(() => window.bloppitPeek().c);
+  const wrong = await t.page.evaluate((c) => window.bloppitTryBrick(c === 0 ? 1 : 0), c);
+  assert.equal(wrong.ok, false); assert.match(wrong.status, /^Step \d+ needs [A-Za-z ]+ here, not (White|Light Grey)\./);
+  assert.doesNotMatch(wrong.status, /second/, 'the Weekly is calm');
+  const right = await t.page.evaluate((c) => window.bloppitTryBrick(c), c);
+  assert.equal(right.ok, true);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('the Weekly bank: each planned Monday shows its model', { skip: skip() }, async () => {
   for (const [when, name] of [['2026-10-26T13:00:00Z', 'Jack-o’-lantern'], ['2026-11-02T14:00:00Z', 'Red boat'], ['2026-11-23T14:00:00Z', 'Hot-air balloon'], ['2026-12-14T14:00:00Z', 'Gingerbread house']]) {
     const t = await open('?nosplash=1&welcome=0', { at: when });
