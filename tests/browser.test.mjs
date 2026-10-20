@@ -210,6 +210,14 @@ test('a finished Weekly stands on the 3D island, and can be put away and back', 
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('the Brain Trail Ghost keeps its face', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0');
+  const m = await t.page.evaluate(() => window.bloppitLevel('brain', 4)); await t.page.waitForTimeout(500);
+  assert.ok(m.n >= 20 && m.n <= 60, `about 40 bricks, got ${m.n}`);
+  assert.ok(m.colors.includes('White') && m.colors.includes('Black'), `a white ghost with a dark face, got ${m.colors}`);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('the Weekly bank: each planned Monday shows its model', { skip: skip() }, async () => {
   for (const [when, name] of [['2026-10-26T13:00:00Z', 'Jack-o’-lantern'], ['2026-11-02T14:00:00Z', 'Red boat'], ['2026-11-23T14:00:00Z', 'Hot-air balloon'], ['2026-12-14T14:00:00Z', 'Gingerbread house']]) {
     const t = await open('?nosplash=1&welcome=0', { at: when });
