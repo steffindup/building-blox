@@ -2769,6 +2769,15 @@ playScene.add(new THREE.HemisphereLight(0xffffff,0x8a97a8,.75));
 const playCam=new THREE.PerspectiveCamera(32,1,.1,2000);
 const playControls=new THREE.OrbitControls(playCam,renderer.domElement);
 playControls.enableDamping=true; playControls.dampingFactor=.1; playControls.enabled=false;
+// One finger turns the view, two fingers zoom. No panning, and the view can't slide away from the model or dip under the table
+playControls.enablePan=false; playControls.maxPolarAngle=Math.PI*.47;
+// If turning or zooming leaves the brick in hand off screen, swing back to the build
+playControls.addEventListener('end',()=>{ if(!sel||!ghostGroup.visible||camAnim) return;
+  const c=new THREE.Box3().setFromObject(ghostGroup).getCenter(new THREE.Vector3()).project(playCam);
+  if(!(Math.abs(c.x)>.95||Math.abs(c.y)>.95||c.z>1)) return;
+  // (a brick left far out on the table comes back to the build too)
+  if(!buildBox().expandByScalar(2).containsPoint(new THREE.Box3().setFromObject(ghostGroup).getCenter(new THREE.Vector3()))){ const h=ghostHome(); lastAnchor=null; placeGhost(h.px,h.pz); }
+  frameBuild(true); });
 const playGroup=new THREE.Group(), placedGroup=new THREE.Group(), ghostGroup=new THREE.Group(), hintGroup=new THREE.Group();
 playGroup.add(placedGroup,ghostGroup,hintGroup); playScene.add(playGroup);
 let floor=null, layerGrid=null, cur=0, viewPage=0, follow=true, placed=new Set(), sel=null, hintOn=false, drops=[], busy=false, lastAnchor=null, run={miss:0,hints:new Set(),auto:0,memory:null};
@@ -2781,7 +2790,7 @@ const stepImgs=new Map(); let stepImgsFor=-1;
 const tMat=(hex,op)=>new THREE.MeshStandardMaterial({color:new THREE.Color(hex).convertSRGBToLinear(),roughness:.4,transparent:true,opacity:op,depthWrite:false});
 const ghostMats=new Map(), hintMats=new Map();
 const ghostMat=c=>{if(!ghostMats.has(c)) ghostMats.set(c,xrayFix(tMat(PALETTE[c][1],.6))); return ghostMats.get(c);};
-const hintMat=c=>{if(!hintMats.has(c)) hintMats.set(c,xrayFix(tMat(PALETTE[c][1],.28))); return hintMats.get(c);};
+const hintMat=c=>{if(!hintMats.has(c)) hintMats.set(c,xrayFix(tMat(PALETTE[c][1],.42))); return hintMats.get(c);};
 const errMat=tMat('#E03A2F',.7);
 const ghostEdge=new THREE.LineBasicMaterial({color:0x14202c,transparent:true,opacity:.5});
 // On a step whose bricks clip on underneath, the ghost and hints show through the bricks above them
@@ -2824,6 +2833,7 @@ function frameBuild(animate){
   dir.normalize(); if(dir.y<.25){ dir.y=.25; dir.normalize(); }
   const p2=center.clone().addScaledVector(dir,dist);
   playCam.near=Math.max(.05,dist/100); playCam.far=dist*40; playCam.updateProjectionMatrix();
+  playControls.minDistance=dist*.4; playControls.maxDistance=dist*2.5;   // zoom stays around the build
   if(animate&&!reduceMotion) camAnim={t0:performance.now(),t1:playControls.target.clone(),t2:center,p1:playCam.position.clone(),p2};
   else { camAnim=null; playControls.target.copy(center); playCam.position.copy(p2); playControls.update(); }
 }
@@ -2847,6 +2857,7 @@ function setupPlay(m){
   playGroup.add(layerGrid);
   if(playBase){ playGroup.remove(playBase); playBase=null; }
   if(m.kind==='picture'){ playBase=makeBase(m); playGroup.add(playBase); }
+  playControls.minDistance=0; playControls.maxDistance=Infinity;
   frame(playCam,playControls); frame(bookCam,bookControls); bookK=-1;
   resetBuild();
 }
@@ -2881,7 +2892,7 @@ function renderHand(){
   // Other bricks in hand, grouped by kind. Tap one to hold that kind instead.
   const groups=[]; for(const p of hand){const g=groups.find(g=>sameKind(g.p,p)); if(g) g.n++; else groups.push({p,n:1});}
   $('#handMore').innerHTML=hand.length>1?groups.map((g,i)=>`<button class="hm" type="button" data-i="${i}" aria-pressed="${!!held&&sameKind(g.p,held)}" title="${pieceName(g.p)}"><img alt="" src="${brickIcon(g.p.a,g.p.l,g.p.c)}">${g.n}x</button>`).join(''):'';
-  $('#handMore').querySelectorAll('.hm').forEach(b=>b.onclick=()=>{ const p=groups[+b.dataset.i].p; setActive(p); setStatus(`${pieceName(p)} in hand.`); updateBuildUI(); });
+  $('#handMore').querySelectorAll('.hm').forEach(b=>b.onclick=()=>{ const p=groups[+b.dataset.i].p; setActive(p); setStatus(`${pieceName(p)} in hand.`); lookAlikeWarn(); updateBuildUI(); });
   if(held){
     slot.innerHTML=`<img alt="" src="${brickIcon(held.a,held.l,held.c)}">`;
     $('#handTitle').textContent=`${pieceName(held)} in hand`;
@@ -3096,6 +3107,8 @@ function setActive(p){
   if(!keepTurn) sel={sx:p.l,sz:p.a,c:p.c};
   setGhost();
 }
+// White and Light Grey (and other near colours) look alike on screen: warn as soon as the wrong one is in hand
+function lookAlikeWarn(){ if(!held||!model||cur>=model.steps.length) return; const w=wrongBrickMsg(); if(w&&/ needs /.test(w)) setStatus(`${pieceName(held)} in hand. Heads up: ${w}`,'err'); }
 function takeToHand(list){
   if(list.length) sfx.rattle(list.length);
   for(const p of list) if(!hand.includes(p)){ hand.push(p); p.hand=true; }
@@ -3200,6 +3213,15 @@ function fitBrick(c,sx,sz,ax,az){
   }
   return t;
 }
+// When the brick in hand isn't one this step uses: say so plainly (and name the colour it needs when only the colour is wrong)
+function wrongBrickMsg(){
+  if(!sel||!model||cur>=model.steps.length) return null;
+  const s=model.steps[cur], u=usedSet(), a=Math.min(sel.sx,sel.sz), l=Math.max(sel.sx,sel.sz);
+  const size=b=>Math.min(b.sx,b.sz)===a&&Math.max(b.sx,b.sz)===l, left=s.bricks.filter(b=>!u.has(b));
+  if(left.some(b=>b.c===sel.c&&size(b))) return null;
+  const other=left.find(size);
+  return other?`Step ${cur+1} needs ${PALETTE[other.c][0]} here, not ${PALETTE[sel.c][0]}. Swap it in the parts box.`:`Step ${cur+1} doesn’t use this brick. Put it back and check the booklet.`;
+}
 function tryPlace(){
   if(!sel||!lastAnchor||busy) return;
   if(isLocked(cur)){ setStatus('This page is locked. Solve Bloppit’s math puzzle to open it.','err'); openMath(cur); return; }
@@ -3212,13 +3234,13 @@ function tryPlace(){
   if(t){ if(cands.length===1) lock(); placeBrick(t,ax,az); return; }
   if(mpBlitz()){ const o0=curOff(), u0=usedSet();
     const turn0=sel.sx!==sel.sz&&s.bricks.some(b=>!u0.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o0||Math.abs(b.x+o0.x-ax)<=2&&Math.abs(b.z+o0.z-az)<=2));
-    const calm=mp.state&&mp.state.calm; setStatus(calm?(turn0?turnTip():'Not quite. Compare with the picture in the booklet.'):turn0?'Miss! +1 second. Try turning it.':'Miss! +1 second','err'); sfx.bonk(); mpPost({action:'miss'}).then(j=>mpApply(j.state)).catch(()=>{});
+    const calm=mp.state&&mp.state.calm, wrong=wrongBrickMsg(); setStatus(calm?(wrong||(turn0?turnTip():'Not quite. Compare with the picture in the booklet.')):wrong?'Wrong brick! +1 second. '+wrong:turn0?'Miss! +1 second. Try turning it.':'Miss! +1 second','err'); sfx.bonk(); mpPost({action:'miss'}).then(j=>mpApply(j.state)).catch(()=>{});
     const g=ghostGroup.children[0]; if(g){g.material=errMat; setTimeout(()=>{if(g.parent) g.material=ghostMat(sel?sel.c:0);},380);} if(!calm) mpFlash('+1s'); return; }
   const o=curOff(), u=usedSet();
   const turned=sel.sx!==sel.sz&&s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o||Math.abs(b.x+o.x-ax)<=2&&Math.abs(b.z+o.z-az)<=2));
-  const unused=!s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&Math.min(b.sx,b.sz)===Math.min(sel.sx,sel.sz)&&Math.max(b.sx,b.sz)===Math.max(sel.sx,sel.sz));
+  const wrong=wrongBrickMsg();
   if(!autoBusy) run.miss++;
-  setStatus(unused?`Step ${cur+1} doesn’t use this brick. Put it back and check the booklet.`:turned?turnTip():'Not quite. Compare with the picture in the booklet.','err');
+  setStatus(wrong||(turned?turnTip():'Not quite. Compare with the picture in the booklet.'),'err');
   sfx.bonk();
   const g=ghostGroup.children[0]; if(g){g.material=errMat; setTimeout(()=>{if(g.parent) g.material=ghostMat(sel?sel.c:0);},380);}
 }
@@ -3341,6 +3363,11 @@ window.bloppitPlaceRight=()=>{ if(busy||!model||cur>=model.steps.length) return 
   if(off){ o=off; t=s.bricks.find(b=>!placed.has(b)); } else if(cands.length){ o=cands[0]; t=s.bricks.find(b=>!o.used.has(b)); } else { o={x:0,z:0}; t=s.bricks[0]; }
   if(!t) return false; const n0=placedN; sel={sx:t.sx,sz:t.sz,c:t.c}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2}; tryPlace(); lastAnchor=null; ghostGroup.visible=false;
   if(held) setGhost(); else { sel=null; ghostGroup.clear(); } return placedN>n0; };
+// For tests: hold a brick of this kind over the spot a brick of the current step fills (k), and try to place it
+window.bloppitPeek=()=>{ if(!model||cur>=model.steps.length) return null; const u=usedSet(), t=model.steps[cur].bricks.find(b=>!u.has(b)); return t?{c:t.c,sx:t.sx,sz:t.sz,step:cur}:null; };
+window.bloppitTryBrick=(c,k=0)=>{ if(busy||!model||cur>=model.steps.length) return null; const s=model.steps[cur], u=usedSet(), o=curOff()||{x:0,z:0}, t=s.bricks.filter(b=>!u.has(b))[k]; if(!t) return null;
+  sel={sx:t.sx,sz:t.sz,c}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2}; const n0=placedN; tryPlace(); const ok=placedN>n0; lastAnchor=null; ghostGroup.visible=false;
+  if(held) setGhost(); else { sel=null; ghostGroup.clear(); } return {ok,status:$('#status').textContent}; };
 $('#fitBtn').onclick=()=>frameBuild(true);
 $('#openBox').onclick=openBox;
 $('#putBack').onclick=putBack;
@@ -3438,8 +3465,30 @@ function fitBoard(){
   board.style.width=Math.max(boardWrap.clientWidth-2,r+60)+'px';
   board.style.height=Math.max(boardWrap.clientHeight-2,btm+60)+'px';
 }
+// After bricks leave the box (taken to your hand or built), the ones left close up the gaps, keeping their order.
+// Only when something has left since the last tidy, so a box you've arranged by hand stays as it is otherwise.
+let boxSig='';
+const boxSigNow=()=>pieces.filter(p=>!p.hand).map(p=>p.id).join(',');
+function closeGaps(){
+  const W=boardW(), byPos=(p,q)=>p.y-q.y||p.x-q.x, jit=(p,k)=>((p.id*9301+k*49297)%233280)/233280;
+  // loose bricks: the same grid the box was tipped out on, bricks in hand at the end
+  const loose=pieces.filter(p=>p.bin==null||!binById(p.bin));
+  if(loose.length){
+    const area=loose.reduce((s,p)=>s+p.w*p.h,0), cell=Math.sqrt(area*2.1/loose.length), cols=Math.max(1,Math.floor(W/cell)), cw=W/cols, ch=cell*.82;
+    const top=bins.length?Math.max(...bins.map(b=>b.y+b.h))+18:14;
+    const rowOf=p=>Math.round(p.y/ch), order=[...loose.filter(p=>!p.hand).sort((p,q)=>rowOf(p)-rowOf(q)||p.x-q.x),...loose.filter(p=>p.hand).sort(byPos)];
+    order.forEach((p,i)=>{ const col=i%cols,row=Math.floor(i/cols);
+      p.x=14+col*cw+jit(p,1)*Math.max(0,cw-p.w*.8); p.y=top+row*ch+jit(p,2)*Math.max(0,ch-p.h*.7); });
+  }
+  // bricks sorted into segments: packed from the top of their segment
+  for(const b of bins){ const list=pieces.filter(p=>p.bin===b.id); if(!list.length) continue;
+    const cw=Math.max(...list.map(p=>p.w))+2, ch=Math.max(...list.map(p=>p.h))*.86, cols=Math.max(1,Math.floor((b.w-22)/cw));
+    [...list.filter(p=>!p.hand).sort(byPos),...list.filter(p=>p.hand).sort(byPos)].forEach((p,j)=>{ p.x=b.x+11+(j%cols)*cw; p.y=b.y+44+Math.floor(j/cols)*ch; p.r=0; });
+    b.h=Math.max(b.h>120?120:b.h,48+Math.ceil(list.length/cols)*ch+18); }
+}
 function showBox(){
-  if(!laidOut){ laidOut=true; tipOut(); } else renderBox();
+  if(!laidOut){ laidOut=true; tipOut(); boxSig=boxSigNow(); }
+  else { const sig=boxSigNow(); if(sig!==boxSig){ const had=boxSig.split(',').length, now=sig?sig.split(',').length:0; if(boxSig&&now<had) closeGaps(); boxSig=sig; } renderBox(); }
   $('#boxInfo').textContent=`${pieces.length.toLocaleString()} ${PIECE()}${pieces.length===1?'':'s'} left${hand.length?` · ${hand.length} in your hand`:''}`;
   updatePick();
 }
@@ -3485,6 +3534,7 @@ function takeChosen(){
   if(mpBlitz()) setStatus(list.length>1?`${list.length} bricks in hand. Check the booklet for where they go.`:`${pieceName(list[0])} in hand. Check the booklet for where it goes.`);
   else setStatus(list.length>1?`${list.length} bricks in hand. ${held&&stepNeeds(held)?'Click where the first one goes.':'Check the booklet for where they go.'}`:
     stepNeeds(list[0])?`${pieceName(list[0])} in hand. Click where it goes.`:`${pieceName(list[0])} in hand, but step ${cur+1} doesn’t use it.`, held&&stepNeeds(held)?'':'err');
+  lookAlikeWarn();
   updateBuildUI();
 }
 function binAt(cx,cy){
@@ -6444,9 +6494,9 @@ function islandInfo(id,o){
         rows:[['Otter level',`${lv} (${worldXP(o)} XP, next at ${nl})`],...(nAcc?[['Next outfit',`${nAcc.name} at level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at ${nx.at} builds: another stud`:'A Legend. That’s the top']],
         bar:nx?{pct:Math.max(4,Math.round(100*(n-PUP_STAGES[ps].at)/(nx.at-PUP_STAGES[ps].at))),label:`${nx.at-n} more build${nx.at-n===1?'':'s'} to ${nx.name}`}:null,
         actions:[{label:'👕 Wardrobe',fn:()=>wardrobeOpen(),primary:true},{label:nm?'Name or colour':'Name your otter',fn:()=>pupOpen()}]}; }
-    case 'model': { const f=modelFacts(arg,o), b=f.b, onIsle=shown.list.some(m=>m.key===arg)||arg.startsWith('w:');
+    case 'model': { const f=modelFacts(arg,o), b=f.b, flagW=arg.startsWith('w:')&&!ISL3.ok, onIsle=shown.list.some(m=>m.key===arg)||flagW;
       const acts=[]; if(f.again) acts.push({label:'Build it again',fn:f.again,primary:true});
-      if(!arg.startsWith('w:')&&!isHomeBuild(arg)) acts.push(onIsle?{label:'Put away',fn:()=>islandPut(arg,false)}:{label:'Put on Bloppitopia',fn:()=>islandPut(arg,true),off:shown.list.length>=shown.cap?`Bloppitopia is full (${shown.cap} stands). Put one away first.`:''});
+      if(!flagW&&!isHomeBuild(arg)) acts.push(onIsle?{label:'Put away',fn:()=>islandPut(arg,false)}:{label:'Put on Bloppitopia',fn:()=>islandPut(arg,true),off:shown.list.length>=shown.cap?`Bloppitopia is full (${shown.cap} stands). Put one away first.`:''});
       return {title:f.name,hint:isHomeBuild(arg)?'Your first build: it became your home on Bloppitopia':`${'★'.repeat(b.s||0)}${'☆'.repeat(3-(b.s||0))} · ${f.from}`,icon:worldThumb(arg)?`<img src="${worldThumb(arg)}" alt="">`:'',
         rows:[['From',f.from],['First built',fmtDay(b.t)||'—'],['Stars',`${'★'.repeat(b.s||0)}${'☆'.repeat(3-(b.s||0))} ${b.s>=3?'clean':b.s===2?'no hints':'finished'}${b.m?' · from memory 🧠':''}`],
           ['Best time',b.d?fmtDur(b.d):'Not timed yet'],['Bricks',String(b.n||'—')],['Built',`${b.c||1} time${(b.c||1)===1?'':'s'}`]],actions:acts}; }
@@ -6711,7 +6761,8 @@ function isl3Init(){
 // Which models stand where (3D positions; the record keeps them as 0..1000)
 function islandModels3(o){
   const cap=ISLAND_STAGES[islandStage(o)].slots, pos=o.pos||{}, away=o.away||{};
-  const all=o.log.filter(k=>!k.startsWith('w:')&&!isHomeBuild(k)&&o.builds[k]&&!((away[k]||0)>0)).reverse();
+  // (Weekly builds too: the drawn island has a flag spot for them, the 3D one puts them on a stand like any build)
+  const all=o.log.filter(k=>!isHomeBuild(k)&&o.builds[k]&&!((away[k]||0)>0)).reverse();
   // The newest builds always get the spaces: a model you dragged somewhere keeps its spot, but never pushes a newer build off the island
   const show=all.slice(0,cap), list=[]; for(const k of show){ const p=pos[k]; if(Array.isArray(p)){ const x=P2W(p[0]), z=P2W(p[1]); if(onGrass(x,z)) list.push({key:k,x,z,placed:true}); } }
   const near=(x,z)=>list.some(m=>Math.hypot(m.x-x,m.z-z)<1.5), stands=STANDS3.slice(0,cap).map(([x,z],i)=>[x,z,i]);
@@ -7859,7 +7910,7 @@ function renderBuilds(){
   const B=Object.values(o.builds), clean=B.filter(b=>(b.s||0)>=3).length, nohint=B.filter(b=>(b.s||0)>=2).length, mem=B.filter(b=>b.m).length;
   $('#isBuildsNote').innerHTML=keys.length?`${keys.length} model${keys.length===1?'':'s'} finished. Stars are the best of every try. <span class="mastery"><b>${clean}</b> clean · <b>${nohint}</b> no hints · <b>${mem}</b> from memory</span>`:'Nothing finished yet.';
   $('#buildsGrid').innerHTML=keys.map(k=>{ const b=o.builds[k], u=worldThumb(k), nm=k.startsWith('w:')?'Weekly Bloppit':(/^m:(.+):\d+$/.exec(k)||/^t:[a-z]+:\d+:(.+)$/.exec(k)||[])[1]||'Your photo';
-    const home=isHomeBuild(k), away=!home&&isAway(o,k), on=home||shownKeys.has(k)||k.startsWith('w:');
+    const home=isHomeBuild(k), away=!home&&isAway(o,k), on=home||shownKeys.has(k)||(k.startsWith('w:')&&!ISL3.ok);
     return `<button type="button" class="${on?'':'away'}" data-mkey="${escapeHTML(k)}" aria-label="${escapeHTML(modelFacts(k,o).name)}">${home?'<span class="on-isle" title="It became your home">🏠</span>':on?'<span class="on-isle" title="On Bloppitopia">🏝️</span>':''}${u?`<img src="${u}" alt="">`:'<span style="height:72px"></span>'}<span>${escapeHTML(modelFacts(k,o).name)}</span>${wsStars(b.s||0)}<small>${home?'Your home · ':''}${b.n} bricks${b.m?' · 🧠':''}${k.startsWith('w:')?' · 📅':''}${away?' · put away':''}</small></button>`; }).join('');
 }
 $('#buildsGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-mkey]'); if(b) islandTip('model:'+b.dataset.mkey,b); });
