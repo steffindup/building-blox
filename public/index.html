@@ -221,6 +221,14 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 @keyframes sp-wink{0.00%{background-position:0.0% 0}17.31%{background-position:12.5% 0}24.04%{background-position:25.0% 0}31.73%{background-position:37.5% 0}41.35%{background-position:50.0% 0}52.88%{background-position:62.5% 0}62.50%{background-position:75.0% 0}70.19%{background-position:87.5% 0}78.85%{background-position:100.0% 0}100%{background-position:0 0}}
 @keyframes sp-fail{to{opacity:0;visibility:hidden}}
 @media (prefers-reduced-motion: reduce){.splash *,.splash{animation:none!important}}
+
+/* How to play video */
+.howto-video{margin:0;background:var(--white);border:2px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink);padding:10px;overflow:hidden;min-width:0}
+.howto-video video{display:block;width:100%;height:auto;aspect-ratio:16/9;border-radius:14px;background:var(--ink)}
+.howto{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,8fr);gap:40px;align-items:center;padding-block:24px 64px}
+.howto h2{font-size:clamp(2.2rem,5vw,3.2rem);margin-top:12px}
+.howto p{font-size:19px;color:var(--muted);margin:12px 0 22px}
+@media (max-width:860px){.howto{grid-template-columns:1fr;gap:22px}}
 </style>
 </head>
 <body>
@@ -268,6 +276,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
         <a class="btn primary" href="/build/">Play now</a>
         <a class="btn" href="/build/#daily">This week’s Bloppit</a>
       </div>
+      <p style="margin-top:16px"><a href="#how-to-play" style="font-weight:800">▶ Watch how to play (30 seconds)</a></p>
     </div>
 
     <div class="hero-visual">
@@ -312,6 +321,16 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
     vis.replaceWith(f);
   }catch(e){} })();
   </script>
+
+  <section class="wrap howto" id="how-to-play" aria-labelledby="howto-h">
+    <div>
+      <span class="pill">30 seconds</span>
+      <h2 id="howto-h">How to play</h2>
+      <p>Pick a puzzle, grab the brick the booklet shows, and drag it into place. Build it clean for three stars, and every build you finish grows your island.</p>
+      <a class="btn primary sm" href="/build/">Try it now</a>
+    </div>
+    <figure class="howto-video"><video controls playsinline preload="none" poster="/video/how-to-play.jpg" aria-label="How to play Bloppit, a 30-second video"><source src="/video/how-to-play.mp4" type="video/mp4"></video></figure>
+  </section>
 
   <div class="band cream" id="meet">
     <section class="wrap meet" aria-labelledby="meet-h">

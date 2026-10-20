@@ -103,3 +103,11 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 .foot .social span{font-weight:800;color:var(--ink);margin-right:4px}
 .foot .social a{display:inline-block;padding:5px 12px;border-radius:999px;border:2px solid var(--line,#E2D9CC);color:var(--ink);font-weight:800;font-size:14px;text-decoration:none}
 .foot .social a:hover,.foot .social a:focus-visible{border-color:var(--red);color:var(--red)}
+
+/* How to play video (front page and How it works) */
+.howto-video{margin:0;background:var(--white);border:2px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink);padding:10px;overflow:hidden}
+.howto-video video{display:block;width:100%;height:auto;aspect-ratio:16/9;border-radius:14px;background:var(--ink)}
+.howto{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,8fr);gap:40px;align-items:center;padding-block:24px 64px}
+.howto h2{font-size:clamp(2.2rem,5vw,3.2rem)}
+.howto p{font-size:19px;color:var(--muted);margin:12px 0 22px}
+@media (max-width:860px){.howto{grid-template-columns:1fr;gap:22px}}
