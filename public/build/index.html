@@ -4503,7 +4503,7 @@ const BRAIN_LEVELS=[
  {name:'Apple',         art:'apple',             size:9,  shape:'flat',   thick:1,  colors:3, pts:120},
  {name:'Ice cream',     sample:'Ice cream',      size:13, shape:'flat',   thick:.5, colors:4, pts:150},
  {name:'Lighthouse',    sample:'Lighthouse',     size:10, shape:'flat',   thick:.5, colors:4, pts:180},
- {name:'Ghost',         sample:'Ghost',          size:7,  shape:'puffed', thick:.6, colors:3, pts:220},
+ {name:'Ghost',         sample:'Ghost',          size:9,  shape:'puffed', thick:.3, colors:3, pts:220},   // 9 wide so the eyes and mouth survive (at 7 the face vanished); thin keeps it at 40 bricks
  {name:'Bunny',         sample:'Bunny',          size:11, shape:'puffed', thick:.7, colors:4, pts:260},
  {name:'Penguin',       sample:'Penguin',        size:8,  shape:'puffed', thick:.7, colors:4, pts:300},
  {name:'Guitar',        sample:'Guitar',         size:14, shape:'puffed', thick:.7, colors:5, pts:350},
@@ -4586,6 +4586,7 @@ function updateGameBar(){
   if(game.math) bits.push(`Math ${game.math.solved.length} of ${game.math.locks.length} pages${game.math.pts?` +${game.math.pts}`:''}`);
   $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>';
 }
+window.bloppitLevel=(t,i)=>{ trail=t; startLevel(i); return model?{n:model.bricks.length,colors:[...new Set(model.bricks.map(b=>PALETTE[b.c][0]))]}:null; };   // for tests
 function startLevel(i){
   const L=levelsOf(trail)[i]; if(!L) return;
   if(!game) freeS={...S};
