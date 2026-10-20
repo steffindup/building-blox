@@ -218,6 +218,25 @@ test('the Brain Trail Ghost keeps its face', { skip: skip() }, async () => {
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('How to play: the menu opens the video, and the build page offers it for the first builds only', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0');
+  assert.equal(await t.page.evaluate(() => !!document.querySelector('#howVid source[src="/video/how-to-play.mp4"]')), true);
+  await t.page.evaluate(() => document.getElementById('hmHow').click()); await t.page.waitForTimeout(300);
+  assert.equal(await t.page.evaluate(() => document.getElementById('howDlg').open), true);
+  await t.page.evaluate(() => document.getElementById('howClose').click()); await t.page.waitForTimeout(200);
+  assert.equal(await t.page.evaluate(() => document.getElementById('howDlg').open), false);
+  // a new player's first build shows the button on the build page
+  await t.page.evaluate(() => window.bloppitLevel('otter', 0)); await t.page.waitForTimeout(500);
+  assert.equal(await t.page.evaluate(() => document.getElementById('howBtn').hidden), false);
+  await t.ctx.close();
+  // after 3 finished builds it steps aside
+  const seeded = { fn: () => localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: { a: { n: 9, s: 3 }, b: { n: 9, s: 3 }, c: { n: 9, s: 3 } }, log: ['a', 'b', 'c'], decor: [] })) };
+  const t2 = await open('?nosplash=1&welcome=0', { init: seeded });
+  await t2.page.evaluate(() => window.bloppitLevel('otter', 0)); await t2.page.waitForTimeout(500);
+  assert.equal(await t2.page.evaluate(() => document.getElementById('howBtn').hidden), true);
+  assert.deepEqual([...t.errors, ...t2.errors], []); await t2.ctx.close();
+});
+
 test('the Weekly bank: each planned Monday shows its model', { skip: skip() }, async () => {
   for (const [when, name] of [['2026-10-26T13:00:00Z', 'Jack-o’-lantern'], ['2026-11-02T14:00:00Z', 'Red boat'], ['2026-11-23T14:00:00Z', 'Hot-air balloon'], ['2026-12-14T14:00:00Z', 'Gingerbread house']]) {
     const t = await open('?nosplash=1&welcome=0', { at: when });

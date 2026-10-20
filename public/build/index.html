@@ -804,6 +804,15 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 body.on-home .tabs{visibility:hidden}
 .home{max-width:760px;margin:0 auto;display:grid;gap:18px;padding-block:6px 28px}
 .hm-hello{display:flex;align-items:center;gap:14px}
+/* How to play: a 30-second video, on the menu and on the build page for a player's first builds */
+.hm-how{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid var(--line);border-radius:16px;padding:10px 14px;background:var(--page);color:var(--ink);cursor:pointer;font:inherit;box-shadow:0 2px 0 var(--shadow)}
+.hm-how .pl{flex:none;width:44px;height:44px;border-radius:50%;background:#D2352B;color:#fff;display:grid;place-items:center;font-size:18px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
+.hm-how b{display:block;font-family:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;font-weight:400;font-size:20px;line-height:1.1}
+.hm-how small{color:var(--muted);font-size:13px;font-weight:700}
+.tool.how{background:#D2352B;color:#fff;border-color:#B32A22}
+.howdlg{width:min(980px,calc(100vw - 24px));padding:12px 12px 14px}
+.howdlg video{display:block;width:100%;aspect-ratio:16/9;border-radius:12px;background:#14202C}
+.howdlg .win-btns{margin-top:12px}
 .hm-hello img{width:66px;height:66px;flex:none;border-radius:50%}
 .hm-bubble{position:relative;background:var(--page);border:1px solid var(--line);border-radius:16px;padding:10px 16px 12px;box-shadow:0 2px 0 var(--shadow)}
 .hm-bubble::before{content:"";position:absolute;left:-8px;top:50%;width:14px;height:14px;background:var(--page);border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:translateY(-50%) rotate(45deg)}
@@ -1144,6 +1153,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
     <img src="/art/head-bloppit.png" alt="" width="256" height="256">
     <div class="hm-bubble"><h2 id="hmHi">Hi there!</h2><p>What shall we build today?</p></div>
   </div>
+  <button class="hm-how" id="hmHow" type="button"><span class="pl" aria-hidden="true">▶</span><span><b>How to play</b><small>A 30-second video</small></span></button>
   <button class="hm-world" id="hmWorld" data-go="island" type="button" hidden></button>
   <button class="hm-cont" id="hmCont" type="button" hidden><img class="hc-pic" src="/art/bud-offer.png" alt="" width="300" height="398"><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span><span class="go" aria-hidden="true">▶</span></button>
   <button class="hm-daily" data-go="daily" type="button"><img id="hmDailyImg" alt=""><span class="hd-txt"><span class="tag">📅 Weekly Bloppit</span><b id="hmDailyT">This week’s puzzle</b><span id="hmDailyS">One puzzle, the same for everyone</span></span><span class="go" aria-hidden="true">▶</span></button>
@@ -1284,6 +1294,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
     <div class="playcol">
       <div class="stage" id="buildStage">
         <div class="stage-tools">
+          <button class="tool how" id="howBtn" type="button" hidden>▶ How to play</button>
           <button class="tool" id="bookBtn" type="button" aria-pressed="true">Booklet <kbd>B</kbd></button>
           <button class="tool" id="fitBtn" type="button">Zoom to build <kbd>F</kbd></button>
           <button class="tool" id="rotBtn" type="button">Rotate <kbd>R</kbd></button>
@@ -1686,6 +1697,10 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
   <div class="win-btns"><button class="ghost" id="winBook" type="button">📖 Build it for real</button><button class="ghost" id="winReplay" type="button">Play again</button><button class="ghost" id="winMap" type="button">Level map</button><button class="primary sm" id="winNext" type="button">Next level</button></div>
 </dialog>
 
+<dialog class="windlg howdlg" id="howDlg" aria-label="How to play Bloppit">
+  <video id="howVid" controls playsinline preload="none" poster="/video/how-to-play.jpg"><source src="/video/how-to-play.mp4" type="video/mp4"></video>
+  <div class="win-btns"><button class="primary sm" id="howClose" type="button">Let’s build!</button></div>
+</dialog>
 <dialog class="windlg" id="welcomeDlg" aria-labelledby="wcTitle">
   <img class="wc-pic" src="/art/bud-hug.png" alt="" width="300" height="398">
   <h2 id="wcTitle">You built it!</h2>
@@ -2904,8 +2919,20 @@ function renderHand(){
   }
   $('#openBox').disabled=done&&!pieces.length;
 }
+// How to play: the video plays in a dialog. The build page offers it until a player has finished 3 builds.
+const HOW_UNTIL=3;
+function howOpen(from){ const d=$('#howDlg'), v=$('#howVid'); if(d.open) return; d.showModal(); try{ v.currentTime=0; const p=v.play(); if(p&&p.catch) p.catch(()=>{}); }catch(e){} track('howto_open:'+from); }
+function howClose(){ const d=$('#howDlg'), v=$('#howVid'); try{ v.pause(); }catch(e){} if(d.open) d.close(); }
+$('#howDlg').addEventListener('close',()=>{ try{ $('#howVid').pause(); }catch(e){} });
+$('#howDlg').addEventListener('click',e=>{ if(e.target===e.currentTarget) howClose(); });
+$('#howClose').onclick=howClose;
+$('#howVid').addEventListener('ended',()=>track('howto_watched'));
+$('#hmHow').onclick=()=>howOpen('menu');
+$('#howBtn').onclick=()=>howOpen('build');
+function howSync(){ let n=0; try{ n=worldCount(worldStore()); }catch(e){} $('#howBtn').hidden=n>=HOW_UNTIL||!!mp; }
 function updateBuildUI(){
   if(!model) return;
+  howSync();
   padSync();
   const N=model.steps.length, done=cur>=N, s=done?null:model.steps[cur];
   renderHand();
@@ -3532,8 +3559,9 @@ function takeChosen(){
   takeToHand(list);
   setTab('build');
   if(mpBlitz()) setStatus(list.length>1?`${list.length} bricks in hand. Check the booklet for where they go.`:`${pieceName(list[0])} in hand. Check the booklet for where it goes.`);
-  else setStatus(list.length>1?`${list.length} bricks in hand. ${held&&stepNeeds(held)?'Click where the first one goes.':'Check the booklet for where they go.'}`:
-    stepNeeds(list[0])?`${pieceName(list[0])} in hand. Click where it goes.`:`${pieceName(list[0])} in hand, but step ${cur+1} doesn’t use it.`, held&&stepNeeds(held)?'':'err');
+  else { const tapW=matchMedia('(hover: none) and (pointer: coarse)').matches?'Drag it where it goes, then tap ✓ Place.':'Click where it goes.';
+  setStatus(list.length>1?`${list.length} bricks in hand. ${held&&stepNeeds(held)?(tapW==='Click where it goes.'?'Click where the first one goes.':'Drag the first one where it goes, then tap ✓ Place.'):'Check the booklet for where they go.'}`:
+    stepNeeds(list[0])?`${pieceName(list[0])} in hand. ${tapW}`:`${pieceName(list[0])} in hand, but step ${cur+1} doesn’t use it.`, held&&stepNeeds(held)?'':'err'); }
   lookAlikeWarn();
   updateBuildUI();
 }

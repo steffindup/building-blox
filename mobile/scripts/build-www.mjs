@@ -13,6 +13,8 @@ rmSync(www, { recursive: true, force: true });
 mkdirSync(join(www, 'vendor', 'fonts'), { recursive: true });
 // Character art (public/art): the build buddy, the Gulls and the launch screen load it by relative path.
 cpSync(join(root, 'public', 'art'), join(www, 'art'), { recursive: true });
+// The How to play video (public/video): played from the menu and the first builds.
+cpSync(join(root, 'public', 'video'), join(www, 'video'), { recursive: true });
 // The 3D characters (public/3d): models, the glTF/Draco loaders and the decoder, loaded on first need.
 cpSync(join(root, 'public', '3d'), join(www, '3d'), { recursive: true });
 
@@ -51,6 +53,7 @@ html = html.replace(/<link rel="(canonical|manifest|apple-touch-icon|icon)"[^>]*
 swap('<body>\n', '<body>\n<script>window.BLOPPIT_APP=true;</script>\n');
 
 html = html.replace(/src="\/art\//g, 'src="art/');
+html = html.replace(/(src|poster)="\/video\//g, '$1="video/');
 if (/https:\/\/(cdn|fonts)\./.test(html)) throw new Error('build-www: the app still loads something from a CDN');
 writeFileSync(join(www, 'index.html'), html);
 console.log(`build-www: wrote ${join('mobile', 'www')} (index.html ${(html.length / 1024).toFixed(0)} KB, three.js and ${fonts.length} fonts bundled)`);
