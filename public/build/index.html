@@ -1577,7 +1577,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
   <div class="win-rows" id="trRows"></div>
   <div class="world-strip" data-ws></div>
   <p class="win-best" id="trNote"></p>
-  <div class="win-btns"><button class="primary sm" id="trIsland" type="button" hidden>🏝️ See Bloppitopia</button><button class="ghost" id="trNext" type="button" hidden>▶ Play next</button><button class="ghost" id="trBook" type="button">📖 Build it for real</button><button class="ghost" id="trShare" type="button" hidden>Share the code</button><button class="ghost" id="trCard" type="button" hidden>📮 Weekly card</button><button class="ghost" id="trRetry" type="button" hidden>Try sending again</button><button class="primary sm" id="trDone" type="button">Done</button></div>
+  <div class="win-btns"><button class="primary sm" id="trIsland" type="button" hidden>🏝️ See Bloppitopia</button><button class="ghost" id="trNext" type="button" hidden>▶ Play next</button><button class="ghost" id="trShare" type="button" hidden>Share the code</button><button class="ghost" id="trCard" type="button" hidden>📮 Weekly card</button><button class="ghost" id="trRetry" type="button" hidden>Try sending again</button><button class="primary sm" id="trDone" type="button">Done</button></div>
 </dialog>
 <dialog class="windlg" id="mpEndDlg" aria-label="Game finished">
   <div class="win-stars">🏆</div>
@@ -1586,7 +1586,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
   <div class="win-rows" id="mpEndRows"></div>
   <div class="world-strip" data-ws></div>
   <p class="win-best" id="mpEndNote"></p>
-  <div class="win-btns"><button class="ghost" id="mpEndClose" type="button">Look at the model</button><button class="ghost" id="mpEndBook" type="button">📖 Build it for real</button><button class="primary sm" id="mpEndNew" type="button">New game</button></div>
+  <div class="win-btns"><button class="ghost" id="mpEndClose" type="button">Look at the model</button><button class="primary sm" id="mpEndNew" type="button">New game</button></div>
 </dialog>
 
 <dialog class="windlg whodlg" id="whoDlg" aria-labelledby="whoTitle">
@@ -1694,7 +1694,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
   <div class="win-rows" id="winRows"></div>
   <div class="world-strip" data-ws></div>
   <p class="win-best" id="winBest"></p>
-  <div class="win-btns"><button class="ghost" id="winBook" type="button">📖 Build it for real</button><button class="ghost" id="winReplay" type="button">Play again</button><button class="ghost" id="winMap" type="button">Level map</button><button class="primary sm" id="winNext" type="button">Next level</button></div>
+  <div class="win-btns"><button class="ghost" id="winReplay" type="button">Play again</button><button class="ghost" id="winMap" type="button">Level map</button><button class="primary sm" id="winNext" type="button">Next level</button></div>
 </dialog>
 
 <dialog class="windlg howdlg" id="howDlg" aria-label="How to play Bloppit">
@@ -4744,7 +4744,6 @@ function winLevel(){
 $('#winNext').onclick=()=>{ $('#winDlg').close(); startLevel(winLvl+1); };
 $('#winDlg').addEventListener('close',()=>endReveal());
 $('#winReplay').onclick=()=>{ $('#winDlg').close(); startLevel(winLvl); };
-$('#winBook').onclick=()=>{ $('#winDlg').close(); setTab('booklet'); };
 $('#winMap').onclick=()=>{ $('#winDlg').close(); setTab('game'); };
 $('#gbMap').onclick=()=>{ if(game) setTrail(gameTrail()); setTab('game'); };
 function renderGameMap(){
@@ -5400,7 +5399,6 @@ function mpShowBlitzEnd(){
   $('#mpEndDlg').showModal();
 }
 $('#mpEndClose').onclick=()=>{ $('#mpEndDlg').close(); setTab('build'); };
-$('#mpEndBook').onclick=()=>{ $('#mpEndDlg').close(); setTab('booklet'); };
 $('#mpEndNew').onclick=()=>{ $('#mpEndDlg').close(); const to=mpHomeTab(); mpLeave(); setTab(to); };
 // Load what to build: a level, or whatever is on Photos & model now
 function mpUseModel(choice){
@@ -5754,7 +5752,6 @@ async function trialEnd(){
 }
 $('#trRetry').onclick=()=>{ if(trialDone&&trialDone.relayRetry) relayHalfDone(); else if(cpu&&cpu.trial) trialEnd(); };
 $('#trShare').onclick=()=>{ if(trialDone&&trialDone.code) chShare(trialDone.code,trialDone.relay?'relay':''); };
-$('#trBook').onclick=()=>{ $('#trialDlg').close(); setTab('booklet'); };
 const trLeave=()=>{ $('#trialDlg').close(); if(cpu&&cpu.trial) mpLeave(); };
 $('#trIsland').onclick=()=>{ track('finish_next:island'); trLeave(); setTab('island'); };
 $('#trNext').onclick=()=>{ const n=nextBuild(); track('finish_next:play'); trLeave(); if(n) n.go(); else homeGo('quick'); };
