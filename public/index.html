@@ -221,6 +221,14 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 @keyframes sp-wink{0.00%{background-position:0.0% 0}17.31%{background-position:12.5% 0}24.04%{background-position:25.0% 0}31.73%{background-position:37.5% 0}41.35%{background-position:50.0% 0}52.88%{background-position:62.5% 0}62.50%{background-position:75.0% 0}70.19%{background-position:87.5% 0}78.85%{background-position:100.0% 0}100%{background-position:0 0}}
 @keyframes sp-fail{to{opacity:0;visibility:hidden}}
 @media (prefers-reduced-motion: reduce){.splash *,.splash{animation:none!important}}
+
+/* How to play video */
+.howto-video{margin:0;background:var(--white);border:2px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink);padding:10px;overflow:hidden;min-width:0}
+.howto-video video{display:block;width:100%;height:auto;aspect-ratio:16/9;border-radius:14px;background:var(--ink)}
+.howto{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,8fr);gap:40px;align-items:center;padding-block:24px 64px}
+.howto h2{font-size:clamp(2.2rem,5vw,3.2rem);margin-top:12px}
+.howto p{font-size:19px;color:var(--muted);margin:12px 0 22px}
+@media (max-width:860px){.howto{grid-template-columns:1fr;gap:22px}}
 </style>
 </head>
 <body>
