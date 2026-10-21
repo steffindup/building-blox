@@ -237,6 +237,17 @@ test('How to play: the menu opens the video, and the build page offers it for th
   assert.deepEqual([...t.errors, ...t2.errors], []); await t2.ctx.close();
 });
 
+test('How to play in the app: the tall cut on an iPhone held upright, the wide app cut on an iPad, the website keeps its own', { skip: skip() }, async () => {
+  const app = { fn: () => { window.BLOPPIT_APP = true; } };
+  const src = (t) => t.page.evaluate(() => { document.getElementById('hmHow').click(); const s = document.querySelector('#howVid source').getAttribute('src'), tall = document.getElementById('howDlg').classList.contains('tall'); document.getElementById('howClose').click(); return [s, tall]; });
+  let t = await open('?nosplash=1&welcome=0', { init: app, viewport: { width: 393, height: 852 }, touch: true });
+  assert.deepEqual(await src(t), ['/video/how-to-play-app-tall.mp4', true]); assert.deepEqual(t.errors, []); await t.ctx.close();
+  t = await open('?nosplash=1&welcome=0', { init: app, viewport: { width: 1180, height: 820 }, touch: true });
+  assert.deepEqual(await src(t), ['/video/how-to-play-app.mp4', false]); assert.deepEqual(t.errors, []); await t.ctx.close();
+  t = await open('?nosplash=1&welcome=0', { viewport: { width: 393, height: 852 }, touch: true });
+  assert.deepEqual(await src(t), ['/video/how-to-play.mp4', false]); assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('the Weekly bank: each planned Monday shows its model', { skip: skip() }, async () => {
   for (const [when, name] of [['2026-10-26T13:00:00Z', 'Jack-o’-lantern'], ['2026-11-02T14:00:00Z', 'Red boat'], ['2026-11-23T14:00:00Z', 'Hot-air balloon'], ['2026-12-14T14:00:00Z', 'Gingerbread house']]) {
     const t = await open('?nosplash=1&welcome=0', { at: when });
