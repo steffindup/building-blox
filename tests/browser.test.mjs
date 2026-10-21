@@ -248,6 +248,29 @@ test('How to play in the app: the tall cut on an iPhone held upright, the wide a
   assert.deepEqual(await src(t), ['/video/how-to-play.mp4', false]); assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('Brain Trail math: age 9 in October is 4th grade, later levels stay in 4th grade, and puzzles adapt (at most one grade up)', { skip: skip() }, async () => {
+  const kid = { fn: () => { localStorage.setItem('bloppit-players-v1', JSON.stringify({ cur: 'p1', n: 1, list: [{ id: 'p1', name: 'Alex', age: 9, color: '#D2352B' }] })); localStorage.setItem('bloppit-trail', 'brain'); } };
+  const t = await open('?nosplash=1&welcome=0', { init: kid, at: '2026-10-14T15:00:00Z' });
+  const st = () => t.page.evaluate(() => window.bloppitMath.state());
+  await t.page.evaluate(() => window.bloppitLevel('brain', 13)); await t.page.waitForTimeout(500);
+  let m = await st(); assert.equal(m.grade, 4); assert.equal(m.tier, 17, '4th grade, hard step on level 14');
+  assert.ok(m.locks.length >= 6, 'enough locked pages to adapt');
+  // answer one page: right first time, or wrong first time
+  const page = async (k, right) => t.page.evaluate(([k, right]) => { window.bloppitMath.open(k); const M = window.bloppitMath.state(), a = M.q[k].a;
+    window.bloppitMath.answer(right ? a : a + 1); if (!right) window.bloppitMath.answer(a); document.getElementById('mathDlg').close(); }, [k, right]);
+  for (const k of m.locks.slice(0, 3)) await page(k, true);
+  m = await st(); assert.equal(m.tier, 18, 'three right in a row: one step up (5th grade, easy)');
+  for (const k of m.locks.slice(3, 6)) await page(k, true);
+  m = await st(); assert.equal(m.tier, 18, 'never more than one grade up');
+  await t.page.evaluate(() => window.bloppitLevel('brain', 12)); await t.page.waitForTimeout(500);
+  m = await st(); assert.equal(m.tier, 18, 'remembered for the next level');
+  for (const k of m.locks.slice(0, 2)) await page(k, false);
+  m = await st(); assert.equal(m.tier, 17, 'two misses in a row: one step down');
+  // the grown-ups' setting says the grade it starts at
+  assert.match(await t.page.evaluate(() => document.getElementById('mathTier').textContent), /4th grade math/);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('the Weekly bank: each planned Monday shows its model', { skip: skip() }, async () => {
   for (const [when, name] of [['2026-10-26T13:00:00Z', 'Jack-o’-lantern'], ['2026-11-02T14:00:00Z', 'Red boat'], ['2026-11-23T14:00:00Z', 'Hot-air balloon'], ['2026-12-14T14:00:00Z', 'Gingerbread house']]) {
     const t = await open('?nosplash=1&welcome=0', { at: when });
