@@ -4630,7 +4630,7 @@ function startLevel(i){
   game={lvl:i,trail,pen:{hint:0,auto:0,miss:0},hintSteps:[]}; subOf.game=trail;
   rebuild();
   const mp_=mathPrefs(); mathAsked=-1;
-  if(trail==='brain'&&model) game.math={tier:mathTier(mp_.age,i),locks:mathLocks(i,model.steps.length),solved:[],pts:0,q:{}};
+  if(trail==='brain'&&model) game.math={v:2,tier:mathRung(mp_.grade,i,mathAdj()),grade:mp_.grade,locks:mathLocks(i,model.steps.length),solved:[],pts:0,q:{},right:0,miss:0};
   setTab('build'); updateGameBar();
   setStatus(`${TRAILS[trail].icon} Level ${i+1}: build the ${L.name}! Open the parts box to pick up bricks.`,'ok');
   saveNow();
@@ -4782,61 +4782,121 @@ $('#gmReset').onclick=()=>{ const b=$('#gmReset'); if(!b.dataset.confirm){ b.dat
   delete b.dataset.confirm; b.textContent='Reset game progress'; const g=gameStore(); if(trail==='brain') g.bbest={}; else g.best={}; gameStoreSet(g); renderGameMap(); };
 
 /* ---------- Math challenge (Play the Game) ---------- */
-// Some booklet pages are locked behind a math puzzle. How hard the puzzles are comes from the player's
-// age, plus a notch every 5 levels; higher levels also lock more pages. Answers are always whole numbers.
-const MATH_TIERS=['Counting bricks','Adding up to 10','Adding and taking away to 20','Missing numbers to 20','Bigger numbers, and the 2, 5 and 10 times tables',
-  'Times tables and dividing','Bigger sums, halves and quarters','Fractions, percentages and order of operations','Simple equations and squares','Equations, square roots and percentages'];
+// Some booklet pages are locked behind a math puzzle; higher levels lock more pages.
+// The player's age is the only input. In the background it becomes a US school grade (Pre-K to 8th), and the
+// puzzles follow the Common Core standards for that grade. Each grade has three steps (easy, medium, hard):
+// Brain Trail levels 1-5 use the easy step, 6-10 medium, 11-14 hard, so later levels get harder WITHIN the grade.
+// Puzzles also adapt: two first-try misses in a row drop a step, three first-try rights in a row raise one,
+// never more than one grade above the player's own (and never more than two below). Answers are whole numbers.
+const MATH_GRADES=['Pre-K','Kindergarten','1st grade','2nd grade','3rd grade','4th grade','5th grade','6th grade','7th grade','8th grade'];
+const MATH_TOPICS=['Counting bricks','Adding and taking away to 10','Adding and taking away to 20','Adding to 100 and equal groups','Times tables and dividing',
+  'Bigger numbers, multiplying, dividing and perimeter','Order of operations, powers of 10 and fractions of numbers','Percents, powers and one-step equations',
+  'Negative numbers, two-step equations and discounts','Square roots, equations and right triangles'];
+const MATH_DEFAULT_GRADE=2;   // no age given: 2nd grade, and the puzzles adapt from there
+// A US school year starts around September 1. From September to February most children of a given age are in
+// grade (age - 5); from March on (and over the summer) most have had their birthday, so grade (age - 6).
+function gradeFor(age,date){ if(!age) return MATH_DEFAULT_GRADE; const m=(date||new Date()).getMonth(), sinceSep=(m-8+12)%12;
+  return clamp(Math.round(age)-5-(sinceSep>=6?1:0),-1,8); }
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)), pickOne=a=>a[rnd(0,a.length-1)];
-function mathPrefs(){ return {on:trail==='brain', age:curPlayer().age||8, set:!!curPlayer().age}; }
+function mathPrefs(){ const a=curPlayer().age||null; return {on:trail==='brain', age:a||8, set:!!a, grade:gradeFor(a)}; }
 function mathPrefsSet(p){ if(p.set&&p.age){ curPlayer().age=p.age; playersSave(); renderWho(); } }
-const ageTier=age=>clamp(age-4,0,9);
-const mathTier=(age,lvl)=>clamp(ageTier(age)+Math.floor(lvl/5),0,9);
+// The ladder: rung = (grade + 1) * 3 + step, from Pre-K easy (0) to 8th grade hard (29)
+const rungOf=(grade,step)=>(grade+1)*3+step, gradeOfRung=r=>Math.floor(r/3)-1, stepOfRung=r=>r%3;
+const levelStep=lvl=>lvl<5?0:lvl<10?1:2;
+const rungLimits=grade=>({lo:Math.max(0,rungOf(grade-2,0)),hi:Math.min(29,rungOf(grade+1,0))});
+function mathAdj(){ const g=gameStore(); return Number.isInteger(g.madj)?g.madj:0; }
+function mathAdjSet(v){ const g=gameStore(); g.madj=v; gameStoreSet(g); }
+function mathRung(grade,lvl,adj){ const L=rungLimits(grade); return clamp(rungOf(grade,levelStep(lvl))+(adj||0),L.lo,L.hi); }
 function mathLocks(lvl,N){
   const every=[5,4,3,2][Math.min(3,Math.floor(lvl/4))], locks=[];
   for(let k=0;k<N&&locks.length<15;k+=every) locks.push(k);
   return locks;
 }
 function isLocked(k){ return !!(game&&game.math&&game.math.locks.includes(k)&&!game.math.solved.includes(k)); }
-function makePuzzle(t){
+function makePuzzle(rung){
+  const G=gradeOfRung(rung), s=stepOfRung(rung);
   const brickPic=n=>Array.from({length:n},()=>`<img alt="" src="${brickIcon(2,2,4)}">`).join('');
-  const W=(q,a,hint,extra={})=>({q,a,hint,...extra});
-  switch(t){
-    case 0: { if(Math.random()<.5){ const n=rnd(2,7); return W('How many bricks?',n,'Point at each brick and count out loud.',{vis:brickPic(n),choice:true}); }
-      const a=rnd(1,3), b=rnd(1,3); return W(`${a} + ${b} = ?`,a+b,'Count all the bricks together.',{vis:brickPic(a)+'<span class="plus">+</span>'+brickPic(b),choice:true}); }
-    case 1: { const a=rnd(1,8), b=rnd(1,10-a); return W(`${a} + ${b} = ?`,a+b,`Start at ${Math.max(a,b)} and count on ${Math.min(a,b)} more.`,{choice:true}); }
-    case 2: { if(Math.random()<.5){ const a=rnd(3,15), b=rnd(2,20-a); return W(`${a} + ${b} = ?`,a+b,'Make a 10 first, then add the rest.',{choice:true}); }
-      const a=rnd(8,20), b=rnd(2,a-1); return W(`${a} − ${b} = ?`,a-b,`Count back ${b} from ${a}.`,{choice:true}); }
-    case 3: { const r=Math.random();
-      if(r<.35){ const a=rnd(2,12), c=rnd(a+2,20); return W(`${a} + ? = ${c}`,c-a,`What do you add to ${a} to make ${c}?`); }
-      if(r<.7){ const n=rnd(8,20), m=rnd(2,n-2); return W(`A step needs ${n} bricks. You’ve placed ${m}. How many more do you need?`,n-m,`Take ${m} away from ${n}.`,{long:true}); }
-      const a=rnd(4,10); return W(`Double ${a} = ?`,a*2,`Double means ${a} + ${a}.`); }
-    case 4: { const r=Math.random();
-      if(r<.4){ const a=rnd(21,89), b=rnd(11,99-a); return W(`${a} + ${b} = ?`,a+b,'Add the tens, then add the ones.'); }
-      if(r<.65){ const a=rnd(40,99), b=rnd(12,a-10); return W(`${a} − ${b} = ?`,a-b,'Take away the tens first, then the ones.'); }
-      const f=pickOne([2,5,10]), n=rnd(2,12); return W(`${n} × ${f} = ?`,n*f,`Count in ${f}s, ${n} times.`); }
-    case 5: { const r=Math.random(), a=rnd(3,10), b=rnd(3,10);
-      if(r<.4) return W(`${a} × ${b} = ?`,a*b,`Think of ${a} rows of ${b} studs.`);
-      if(r<.75) return W(`${a*b} ÷ ${a} = ?`,b,`What times ${a} makes ${a*b}?`);
-      const w=rnd(2,8), l=rnd(3,10); return W(`A plate is ${w} studs wide and ${l} studs long. How many studs does it have?`,w*l,`Multiply ${w} × ${l}.`,{long:true}); }
-    case 6: { const r=Math.random();
-      if(r<.3){ const a=rnd(120,780), b=rnd(110,999-a); return W(`${a} + ${b} = ?`,a+b,'Add the hundreds, tens and ones separately.'); }
-      if(r<.55){ const a=rnd(12,29), b=rnd(3,9); return W(`${a} × ${b} = ?`,a*b,`Do ${Math.floor(a/10)*10} × ${b}, then ${a%10} × ${b}, and add them.`); }
-      if(r<.8){ const n=rnd(6,40)*2; return W(`Half of ${n} = ?`,n/2,'Split it into two equal parts.'); }
-      const n=rnd(3,20)*4; return W(`A quarter of ${n} = ?`,n/4,'Halve it, then halve it again.'); }
-    case 7: { const r=Math.random();
-      if(r<.3){ const d=pickOne([3,4,5]), nn=pickOne(d===4?[3]:[2,d-1]), tot=d*rnd(3,12); return W(`${nn}/${d} of ${tot} = ?`,tot/d*nn,`Find 1/${d} of ${tot} first, then times by ${nn}.`); }
-      if(r<.55){ const p=pickOne([10,25,50]), tot=(p===10?10:p===25?4:2)*rnd(3,25); return W(`${p}% of ${tot} = ?`,tot*p/100,p===50?'50% is a half.':p===25?'25% is a quarter.':'10% means divide by 10.'); }
-      if(r<.8){ const a=rnd(2,12), b=rnd(2,6), c=rnd(2,9); return W(`${a} + ${b} × ${c} = ?`,a+b*c,'Multiply before you add.'); }
-      const a=rnd(3,15), b=rnd(1,a+8); return W(`−${a} + ${b} = ?`,b-a,'Start below zero and count up.'); }
-    case 8: { const r=Math.random();
-      if(r<.45){ const a=rnd(2,9), x=rnd(1,12), b=rnd(1,20); return W(`${a}x + ${b} = ${a*x+b}.  x = ?`,x,`Take ${b} from both sides, then divide by ${a}.`); }
-      if(r<.75){ const n=rnd(4,15); return W(`${n}² = ?`,n*n,`${n}² means ${n} × ${n}.`); }
-      const p=pickOne([20,30,40,75]), tot=(p===75?4:10)*rnd(2,20); return W(`${p}% of ${tot} = ?`,tot*p/100,p===75?'Find 25%, then times by 3.':`Find 10%, then times by ${p/10}.`); }
-    default: { const r=Math.random();
-      if(r<.35){ const x=rnd(2,12), c=rnd(1,4), a=c+rnd(1,4), b=rnd(1,15), d=(a-c)*x-b; return W(`${a}x − ${b} = ${c}x ${d<0?'−':'+'} ${Math.abs(d)}.  x = ?`,x,`Get all the x’s on one side: ${a-c}x = ${d+b}.`); }
-      if(r<.6){ const n=rnd(6,15); return W(`√${n*n} = ?`,n,'Which number times itself makes this?'); }
-      if(r<.8){ const a=rnd(2,9), b=rnd(2,9); return W(`${a}² + ${b}² = ?`,a*a+b*b,'Square each one, then add.'); }
-      const pr=rnd(2,16)*20, p=pickOne([5,15,25]); return W(`A brick set costs $${pr}. The price goes up ${p}%. What is the new price?`,pr+pr*p/100,`Find ${p}% of ${pr}, then add it on.`,{long:true}); }
+  const W=(q,a,hint,extra={})=>({q,a,hint,grade:G,step:s,choice:G<=1,...extra});
+  const r=Math.random();
+  switch(G){
+    case -1: {   // Pre-K: counting objects (CCSS K.CC.4-5 readiness)
+      if(s===2&&r<.5){ const n=rnd(1,5); return W(`What is one more than ${n}?`,n+1,`Count ${n}, then one more.`,{vis:brickPic(n)}); }
+      const n=s===0?rnd(1,5):rnd(3,s===1?8:10); return W('How many bricks?',n,'Point at each brick and count out loud.',{vis:brickPic(n)}); }
+    case 0: {    // Kindergarten: add and subtract within 10 (K.OA.1-5)
+      if(s===0){ const a=rnd(1,3), b=rnd(1,5-a); return W(`${a} + ${b} = ?`,a+b,'Count all the bricks together.',{vis:brickPic(a)+'<span class="plus">+</span>'+brickPic(b)}); }
+      if(s===1){ if(r<.6){ const a=rnd(1,6), b=rnd(1,10-a); return W(`${a} + ${b} = ?`,a+b,`Start at ${Math.max(a,b)} and count on ${Math.min(a,b)}.`); }
+        const a=rnd(3,5), b=rnd(1,a-1); return W(`${a} − ${b} = ?`,a-b,`Take ${b} away from ${a}.`,{vis:brickPic(a)}); }
+      if(r<.5){ const a=rnd(1,9); return W(`${a} + ? = 10`,10-a,`How many more make 10? Count up from ${a}.`); }
+      const a=rnd(5,10), b=rnd(1,a-1); return W(`${a} − ${b} = ?`,a-b,`Count back ${b} from ${a}.`); }
+    case 1: {    // 1st grade: within 20, missing addends, 2-digit + 1-digit, 10 more (1.OA.6, 1.OA.8, 1.NBT.4-5)
+      if(s===0){ if(r<.5){ const a=rnd(2,9), b=rnd(1,10-a); return W(`${a} + ${b} = ?`,a+b,`Start at ${Math.max(a,b)} and count on.`); }
+        const a=rnd(6,10), b=rnd(1,a-1); return W(`${a} − ${b} = ?`,a-b,`Count back ${b} from ${a}.`); }
+      if(s===1){ if(r<.35){ const a=rnd(5,9), b=rnd(11-a,9); return W(`${a} + ${b} = ?`,a+b,'Make a 10 first, then add the rest.'); }
+        if(r<.7){ const a=rnd(11,19), b=rnd(2,9); return W(`${a} − ${b} = ?`,a-b,`Count back ${b} from ${a}.`); }
+        const a=rnd(3,12), c=rnd(a+2,20); return W(`${a} + ? = ${c}`,c-a,`Count up from ${a} to ${c}.`); }
+      if(r<.35){ const a=rnd(2,8)*10+rnd(0,9), b=rnd(1,9); const t=a+b; if(t<100) return W(`${a} + ${b} = ?`,t,'Add the ones first.'); }
+      if(r<.6){ const a=rnd(1,8)*10, b=rnd(1,9-a/10)*10; return W(`${a} + ${b} = ?`,a+b,`Count on in tens from ${a}.`); }
+      if(r<.8){ const n=rnd(11,89); return W(`What is 10 more than ${n}?`,n+10,'The tens go up by one.'); }
+      const n=rnd(9,18), m=rnd(2,n-3); return W(`A step needs ${n} bricks. You have placed ${m}. How many more do you need?`,n-m,`Count up from ${m} to ${n}.`,{long:true}); }
+    case 2: {    // 2nd grade: fluent within 20, within 100, skip counting, equal groups, within 1000 by tens/hundreds (2.OA.1-4, 2.NBT.2,5,7)
+      if(s===0){ if(r<.35){ const a=rnd(6,12), b=rnd(3,20-a); return W(`${a} + ${b} = ?`,a+b,'Make a 10 first.'); }
+        if(r<.65){ const a=rnd(11,20), b=rnd(3,9); return W(`${a} − ${b} = ?`,a-b,'Take away to get to 10 first.'); }
+        const f=pickOne([5,10]), k=rnd(1,6); return W(`${f*k}, ${f*(k+1)}, ${f*(k+2)}, ? What comes next?`,f*(k+3),`Count on in ${f}s.`); }
+      if(s===1){ if(r<.5){ const a=rnd(15,69), b=rnd(11,99-a); return W(`${a} + ${b} = ?`,a+b,'Add the tens, then add the ones.'); }
+        const a=rnd(30,99), b=rnd(11,a-10); return W(`${a} − ${b} = ?`,a-b,'Take away the tens first, then the ones.'); }
+      if(r<.3){ const rows=rnd(2,5), cols=rnd(2,5); return W(`A plate has ${rows} rows of ${cols} studs. How many studs is that?`,rows*cols,`Add ${cols} again for each row.`,{long:true}); }
+      if(r<.6){ const a=rnd(1,6)*100+rnd(0,9)*10, b=rnd(1,9-Math.ceil(a/100))*100; return W(`${a} + ${b} = ?`,a+b,'Add the hundreds.'); }
+      const n=rnd(40,95), m=rnd(12,n-8); return W(`You have ${n} bricks. You use ${m} of them. How many are left?`,n-m,`Take ${m} away from ${n}.`,{long:true}); }
+    case 3: {    // 3rd grade: multiply and divide within 100, ×multiples of 10, within 1000, two-step problems, area (3.OA.3-8, 3.NBT.2-3, 3.MD.7)
+      if(s===0){ const f=pickOne([2,5,10,3,4]), n=rnd(2,10); return r<.6?W(`${n} × ${f} = ?`,n*f,`Count in ${f}s, ${n} times.`):W(`${n*f} ÷ ${f} = ?`,n,`How many ${f}s make ${n*f}?`); }
+      if(s===1){ const a=rnd(3,10), b=rnd(3,10); if(r<.45) return W(`${a} × ${b} = ?`,a*b,`Think of ${a} rows of ${b} studs.`);
+        if(r<.8) return W(`${a*b} ÷ ${a} = ?`,b,`What number times ${a} makes ${a*b}?`);
+        return W(`A plate is ${a} studs wide and ${b} studs long. How many studs does it have?`,a*b,`Multiply ${a} by ${b}.`,{long:true}); }
+      if(r<.3){ const a=rnd(2,9), b=rnd(2,9)*10; return W(`${a} × ${b} = ?`,a*b,`Do ${a} × ${b/10}, then multiply by 10.`); }
+      if(r<.55){ const a=rnd(120,560), b=rnd(110,980-a); return W(`${a} + ${b} = ?`,a+b,'Add the hundreds, tens and ones.'); }
+      if(r<.8){ const p=rnd(3,8), e=rnd(2,6), extra=rnd(2,9); return W(`You build ${p} towers with ${e} bricks each, then add ${extra} more bricks. How many bricks in all?`,p*e+extra,`Multiply ${p} × ${e} first, then add ${extra}.`,{long:true}); }
+      const a=rnd(310,900), b=rnd(120,a-50); return W(`${a} − ${b} = ?`,a-b,'Take away the hundreds, then the tens, then the ones.'); }
+    case 4: {    // 4th grade: within 10,000, multi-digit ×, ÷ by 1 digit, perimeter (4.NBT.4-6, 4.MD.3)
+      if(s===0){ if(r<.5){ const a=rnd(12,68)*100, b=rnd(11,99-a/100)*100; return W(`${a} + ${b} = ?`,a+b,`Add the hundreds: ${a/100} + ${b/100} hundreds.`); }
+        const a=rnd(30,99)*100, b=rnd(11,a/100-5)*100; return W(`${a} − ${b} = ?`,a-b,`Take away the hundreds: ${a/100} − ${b/100} hundreds.`); }
+      if(s===1){ if(r<.6){ const a=rnd(12,49), b=rnd(3,9); return W(`${a} × ${b} = ?`,a*b,`Do ${Math.floor(a/10)*10} × ${b}, then ${a%10} × ${b}, and add them.`); }
+        const b=rnd(3,9), q=rnd(12,40); return W(`${b*q} ÷ ${b} = ?`,q,`What number times ${b} makes ${b*q}?`); }
+      if(r<.3){ const a=rnd(11,25), b=rnd(11,19); return W(`${a} × ${b} = ?`,a*b,`Do ${a} × 10, then ${a} × ${b-10}, and add them.`); }
+      if(r<.6){ const b=rnd(4,9), q=rnd(105,450); return W(`${b*q} ÷ ${b} = ?`,q,`Share ${b*q} into ${b} equal groups: hundreds first.`); }
+      const w=rnd(3,15), l=rnd(w+1,25); return W(`A rectangle is ${w} studs wide and ${l} studs long. How far is it all the way around?`,2*(w+l),'Add all four sides.',{long:true}); }
+    case 5: {    // 5th grade: powers of 10, order of operations with parentheses, fraction of a whole number, volume (5.NBT.2, 5.OA.1, 5.NF.4, 5.MD.5)
+      if(s===0){ if(r<.5){ const a=rnd(12,99), p=pickOne([10,100,1000]); return W(`${a} × ${p} = ?`,a*p,`Multiplying by ${p} moves each digit ${String(p).length-1} place${p>10?'s':''} to the left.`); }
+        const p=pickOne([10,100]), q=rnd(3,95); return W(`${q*p} ÷ ${p} = ?`,q,`Dividing by ${p} moves each digit ${p===10?'one place':'two places'} to the right.`); }
+      if(s===1){ const a=rnd(2,12), b=rnd(2,9), c=rnd(2,9); if(r<.5) return W(`(${a} + ${b}) × ${c} = ?`,(a+b)*c,'Work out the parentheses first.');
+        const x=rnd(2,6), y=rnd(2,6), t=x*y+rnd(2,20); return W(`${t} − (${x} × ${y}) = ?`,t-x*y,'Work out the parentheses first.'); }
+      if(r<.55){ const [n,d]=pickOne([[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5],[1,6],[5,6],[1,8],[3,8],[5,8],[7,8],[1,10],[3,10],[7,10],[9,10]]), tot=d*rnd(2,12); return W(`${n}/${d} of ${tot} = ?`,tot/d*n,`Find 1/${d} of ${tot} first, then multiply by ${n}.`); }
+      const a=rnd(2,6), b=rnd(2,6), c=rnd(2,5); return W(`A box is ${a} by ${b} by ${c} studs. How many 1-stud cubes fill it?`,a*b*c,`Multiply ${a} × ${b} × ${c}.`,{long:true}); }
+    case 6: {    // 6th grade: exponents, one-step equations, percent of a quantity, unit rate, GCF, triangle area (6.EE.1,7, 6.RP.3, 6.NS.4, 6.G.1)
+      if(s===0){ if(r<.5){ const a=rnd(2,12), x=rnd(2,30); return W(`x + ${a} = ${x+a}.  x = ?`,x,`Take ${a} from both sides.`); }
+        if(r<.75){ const a=rnd(2,9), x=rnd(2,12); return W(`${a}x = ${a*x}.  x = ?`,x,`Divide both sides by ${a}.`); }
+        const n=rnd(2,12); return W(`${n}² = ?`,n*n,`${n}² means ${n} × ${n}.`); }
+      if(s===1){ if(r<.55){ const p=pickOne([10,20,25,50]), tot=(p===10||p===20?10:p===25?4:2)*rnd(3,25); return W(`${p}% of ${tot} = ?`,tot*p/100,p===50?'50% is half.':p===25?'25% is a quarter.':`Find 10% (divide by 10)${p===20?', then double it':''}.`); }
+        if(r<.8){ const b=pickOne([2,3,5]), e=b===5?2:3; return W(`${b}^${e} = ?`.replace('^2','²').replace('^3','³'),b**e,`Multiply ${b} by itself ${e} times.`); }
+        const a=rnd(2,9), c=rnd(2,3), b=c===2?rnd(2,9):rnd(2,4); return W(`${a} + ${b}${c===2?'²':'³'} = ?`,a+b**c,'Do the power first, then add.'); }
+      if(r<.35){ const n=rnd(2,6), each=rnd(2,9), m=rnd(n+1,12); return W(`${n} packs cost $${n*each}. How much do ${m} packs cost?`,m*each,`Find the cost of 1 pack first.`,{long:true}); }
+      if(r<.65){ const g=pickOne([2,3,4,5,6]), a=g*rnd(2,6), b=g*rnd(2,6); if(a!==b){ const gcd=(x,y)=>y?gcd(y,x%y):x; return W(`What is the greatest common factor of ${a} and ${b}?`,gcd(a,b),'List the factors of each number and find the biggest one they share.',{long:true}); } }
+      const bs=rnd(2,10)*2, h=rnd(2,12); return W(`A triangle has a base of ${bs} and a height of ${h}. What is its area?`,bs*h/2,'Area of a triangle = base × height ÷ 2.',{long:true}); }
+    case 7: {    // 7th grade: integers, two-step equations, percent increase/decrease (7.NS.1-2, 7.EE.4a, 7.RP.3)
+      if(s===0){ if(r<.5){ const a=rnd(2,15), b=rnd(1,20); return W(`−${a} + ${b} = ?`,b-a,'Start below zero and count up.'); }
+        const a=rnd(1,12), b=rnd(a+1,a+15); return W(`${a} − ${b} = ?`,a-b,`Go down ${b} from ${a}. You will pass zero.`); }
+      if(s===1){ if(r<.5){ const a=rnd(2,9), b=rnd(2,9), sg=pickOne([[-1,1],[1,-1],[-1,-1]]); const x=sg[0]*a, y=sg[1]*b;
+          return W(`${x<0?'−'+a:a} × ${y<0?'(−'+b+')':b} = ?`,x*y,'Same signs make a positive answer; different signs make a negative one.'); }
+        const a=rnd(2,9), x=rnd(1,12), b=rnd(1,20); return W(`${a}x + ${b} = ${a*x+b}.  x = ?`,x,`Take ${b} from both sides, then divide by ${a}.`); }
+      if(r<.5){ const pr=rnd(2,20)*20, p=pickOne([10,25,50,20]), off=r<.25; return W(`A brick set costs $${pr}. ${off?`It is ${p}% off.`:`The price goes up ${p}%.`} What is the new price?`,off?pr-pr*p/100:pr+pr*p/100,`Find ${p}% of ${pr}, then ${off?'take it away':'add it on'}.`,{long:true}); }
+      const a=rnd(2,6), x=rnd(-9,-1), b=rnd(1,15); const c=a*x+b; return W(`${a}x + ${b} = ${c<0?'−'+(-c):c}.  x = ?`,x,`Take ${b} from both sides, then divide by ${a}. The answer is negative.`); }
+    default: {   // 8th grade: square and cube roots, exponent rules, variables on both sides, Pythagorean theorem (8.EE.1-2, 8.EE.7b, 8.G.7)
+      if(s===0){ if(r<.45){ const n=rnd(4,15); return W(`√${n*n} = ?`,n,'Which number times itself makes this?'); }
+        if(r<.7){ const n=rnd(2,5); return W(`∛${n**3} = ?`,n,'Which number times itself three times makes this?'); }
+        const m=rnd(2,6), n=rnd(2,6), sup=k=>String(k).split('').map(c=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[c]).join(''); return W(`2${sup(m)} × 2${sup(n)} = 2 to the power of ?`,m+n,'When you multiply powers of the same number, add the exponents.'); }
+      if(s===1){ let x,c,a,b,d; do{ x=rnd(2,12); c=rnd(1,4); a=c+rnd(1,4); b=rnd(1,15); d=(a-c)*x-b; }while(d===0); const cx=c===1?'x':c+'x'; return W(`${a}x − ${b} = ${cx} ${d<0?'−':'+'} ${Math.abs(d)}.  x = ?`,x,`Get the x’s on one side: ${a-c===1?'':a-c}x = ${d+b}.`); }
+      const [p,q,h]=pickOne([[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15],[12,16,20]]);
+      if(r<.6) return W(`A right triangle has legs of ${p} and ${q}. How long is the longest side?`,h,'a² + b² = c². Square, add, then take the square root.',{long:true});
+      return W(`A right triangle has a longest side of ${h} and one leg of ${p}. How long is the other leg?`,q,'c² − a² = b². Square, subtract, then take the square root.',{long:true}); }
   }
 }
 function puzzleChoices(a){
@@ -4844,13 +4904,14 @@ function puzzleChoices(a){
   for(const o of opts.sort(()=>Math.random()-.5)){ if(o>=0&&set.size<4) set.add(o); }
   return [...set].sort((x,y)=>x-y);
 }
+window.bloppitMath={gradeFor,makePuzzle,rungOf,gradeOfRung,rungLimits,mathRung,levelStep,state:()=>game&&game.math?{...game.math}:null,answer:v=>mathAnswer(v),open:k=>openMath(k)};   // for tests
 var mq=null, mathAsked=-1;
 function openMath(k){
   if(!isLocked(k)) return;
   const g=game.math; g.q=g.q||{};
   if(!g.q[k]) g.q[k]=makePuzzle(g.tier);
   const P=g.q[k]; mq={k,P,tries:0};
-  $('#mqTag').textContent=`Math puzzle · ${MATH_TIERS[g.tier]}`;
+  $('#mqTag').textContent=`Math puzzle · ${MATH_TOPICS[gradeOfRung(g.tier)+1]}`;
   $('#mqTitle').textContent=`Page ${k+1} is locked!`;
   $('#mqVis').innerHTML=P.vis||'';
   $('#mqQ').textContent=P.q; $('#mqQ').classList.toggle('long',!!P.long);
@@ -4865,12 +4926,13 @@ function mathAnswer(v){
   if(String(v).trim()===''){ fb.textContent='Type your answer first.'; fb.dataset.kind='err'; return; }
   const n=Number(String(v).replace('−','-').trim());
   if(n===P.a){
-    const first=mq.tries===0; game.math.solved.push(k); if(first){ game.math.pts+=10; }
+    const first=mq.tries===0; game.math.solved.push(k); if(first){ game.math.pts+=10; mathStreak(true); }
     fb.dataset.kind='ok'; fb.textContent=first?'Yes! Page unlocked. +10 points':'Yes! Page unlocked.';
     sfx.chime(); sfx.chirp(); mq=null; updateGameBar(); unlockPage(k); saveSoon();
     setTimeout(()=>{ if($('#mathDlg').open) $('#mathDlg').close(); },900);
     return;
   }
+  if(mq.tries===0) mathStreak(false);
   mq.tries++; sfx.bonk(); const d=$('#mathDlg'); d.classList.remove('shake'); void d.offsetWidth; if(!reduceMotion) d.classList.add('shake');
   if(P.choice){ const b=$('#mqChoices').querySelector(`[data-v="${n}"]`); if(b){ b.classList.add('no'); b.disabled=true; } }
   if(mq.tries>=3){
@@ -4882,6 +4944,13 @@ function mathAnswer(v){
   fb.dataset.kind='err'; fb.innerHTML=mq.tries===1?'Not quite. Have another go!':`Not quite. <span class="hint">Hint: ${escapeHTML(P.hint)}</span>`;
   $('#mqIn').select();
 }
+// Adapt: 3 first-try rights in a row → one step harder; 2 first-try misses in a row → one step easier.
+// Kept within rungLimits (at most one grade above, two below), and remembered for this player's next levels.
+function mathStreak(ok){ const m=game&&game.math; if(!m||m.v!==2) return;
+  if(ok){ m.right=(m.right||0)+1; m.miss=0; } else { m.miss=(m.miss||0)+1; m.right=0; }
+  const L=rungLimits(m.grade); let t=m.tier;
+  if(m.right>=3){ t=Math.min(L.hi,t+1); m.right=0; } else if(m.miss>=2){ t=Math.max(L.lo,t-1); m.miss=0; }
+  if(t!==m.tier){ m.tier=t; mathAdjSet(clamp(t-rungOf(m.grade,levelStep(game.lvl)),-9,3)); for(const k of Object.keys(m.q)) if(!m.solved.includes(+k)) delete m.q[k]; } }
 function unlockPage(k){
   showPage(viewPage); updateBuildUI();
   const img=$('#pg-'+k); if(img&&bookletFor===modelVersion){ img.src=TILES?chartURL(k,400,300):snap(k); img.closest('.page').classList.remove('locked'); showStep(model.steps.length,false); }
@@ -4900,7 +4969,7 @@ $('#bpUnlock').onclick=()=>openMath(viewPage);
 $('#mathAge').innerHTML='<option value="" disabled>Age</option>'+AGE_OPTS;
 function syncMathUI(){ const p=mathPrefs(); $('#mathAge').value=p.set?Math.min(15,p.age):''; $('#gmMath').classList.toggle('on',p.on); $('#gmMath').hidden=!p.on;
   $('#mathAgeFor').textContent=curPlayer().name;
-  $('#mathTier').textContent=p.set?`Starts with: ${MATH_TIERS[mathTier(p.age,0)]}`:'Choose an age to set how hard the puzzles are'; }
+  $('#mathTier').textContent=p.set?`Starts with ${MATH_GRADES[p.grade+1]} math: ${MATH_TOPICS[p.grade+1].toLowerCase()}. Puzzles adjust as you play.`:'Choose an age to set how hard the puzzles are'; }
 $('#mathAge').addEventListener('change',e=>{ const p=mathPrefs(); p.age=+e.target.value; p.set=true; mathPrefsSet(p); syncMathUI(); });
 syncMathUI();
 
@@ -5955,7 +6024,7 @@ function snapshot(){
     bins:bins.map(b=>({...b})),
     hand:hand.map(p=>pi.get(p)), held:held?pi.get(held):-1, sel:sel?{...sel}:null,
     noBook:$('.build-grid').classList.contains('no-book'),
-    game:game?{lvl:game.lvl,trail:gameTrail(),pen:{...game.pen},hintSteps:[...game.hintSteps],math:game.math?{tier:game.math.tier,locks:game.math.locks,solved:game.math.solved,pts:game.math.pts}:null}:null
+    game:game?{lvl:game.lvl,trail:gameTrail(),pen:{...game.pen},hintSteps:[...game.hintSteps],math:game.math?{v:game.math.v,tier:game.math.tier,grade:game.math.grade,locks:game.math.locks,solved:game.math.solved,pts:game.math.pts}:null}:null
   };
 }
 function saveNow(){
@@ -6019,7 +6088,7 @@ function applyProgress(o){
   const h=pieces[o.held]; if(h){ setActive(h); if(o.sel&&o.sel.c===h.c) { sel={...o.sel}; setGhost(); } }
   $('.build-grid').classList.toggle('no-book',!!o.noBook); $('#bookBtn').setAttribute('aria-pressed',!o.noBook);
   busy=false; lastAnchor=null; follow=true;
-  game=o.game?{lvl:o.game.lvl,trail:o.game.trail==='brain'?'brain':'otter',pen:{hint:0,auto:0,miss:0,...o.game.pen},hintSteps:[...(o.game.hintSteps||[])],math:o.game.math?{...o.game.math,solved:[...o.game.math.solved],q:{}}:null}:null; mathAsked=-1;
+  game=o.game?{lvl:o.game.lvl,trail:o.game.trail==='brain'?'brain':'otter',pen:{hint:0,auto:0,miss:0,...o.game.pen},hintSteps:[...(o.game.hintSteps||[])],math:o.game.math?(o.game.math.v===2?{...o.game.math,solved:[...o.game.math.solved],q:{},right:0,miss:0}:{...o.game.math,v:2,grade:mathPrefs().grade,tier:mathRung(mathPrefs().grade,o.game.lvl,mathAdj()),solved:[...o.game.math.solved],q:{},right:0,miss:0}):null}:null; mathAsked=-1;
   updateGameBar();
 }
 function dismissResume(){ $('#resume').hidden=true; pendingSave=null; saveOn=true; }
