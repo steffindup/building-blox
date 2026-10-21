@@ -812,6 +812,7 @@ body.on-home .tabs{visibility:hidden}
 .tool.how{background:#D2352B;color:#fff;border-color:#B32A22}
 .howdlg{width:min(980px,calc(100vw - 24px));padding:12px 12px 14px}
 .howdlg video{display:block;width:100%;aspect-ratio:16/9;border-radius:12px;background:#14202C}
+.howdlg.tall{width:min(420px,calc(100vw - 24px))}.howdlg.tall video{aspect-ratio:9/16;max-height:calc(100vh - 130px);max-height:calc(100dvh - 130px);margin:0 auto;width:auto;max-width:100%}
 .howdlg .win-btns{margin-top:12px}
 .hm-hello img{width:66px;height:66px;flex:none;border-radius:50%}
 .hm-bubble{position:relative;background:var(--page);border:1px solid var(--line);border-radius:16px;padding:10px 16px 12px;box-shadow:0 2px 0 var(--shadow)}
@@ -2921,7 +2922,12 @@ function renderHand(){
 }
 // How to play: the video plays in a dialog. The build page offers it until a player has finished 3 builds.
 const HOW_UNTIL=3;
-function howOpen(from){ const d=$('#howDlg'), v=$('#howVid'); if(d.open) return; d.showModal(); try{ v.currentTime=0; const p=v.play(); if(p&&p.catch) p.catch(()=>{}); }catch(e){} track('howto_open:'+from); }
+// The app has its own cuts (no web address at the end); on an iPhone held upright it plays the tall one
+function howPick(){ const d=$('#howDlg'), v=$('#howVid'), base=(v.getAttribute('poster')||'/video/how-to-play.jpg').replace(/[^\/]*$/,'');
+  const tall=APP&&innerHeight>innerWidth&&innerWidth<700, name=APP?(tall?'how-to-play-app-tall':'how-to-play-app'):'how-to-play';
+  d.classList.toggle('tall',tall); const src=base+name+'.mp4', s=v.querySelector('source');
+  if(s.getAttribute('src')!==src){ s.setAttribute('src',src); v.setAttribute('poster',base+name+'.jpg'); v.load(); } }
+function howOpen(from){ const d=$('#howDlg'), v=$('#howVid'); if(d.open) return; howPick(); d.showModal(); try{ v.currentTime=0; const p=v.play(); if(p&&p.catch) p.catch(()=>{}); }catch(e){} track('howto_open:'+from); }
 function howClose(){ const d=$('#howDlg'), v=$('#howVid'); try{ v.pause(); }catch(e){} if(d.open) d.close(); }
 $('#howDlg').addEventListener('close',()=>{ try{ $('#howVid').pause(); }catch(e){} });
 $('#howDlg').addEventListener('click',e=>{ if(e.target===e.currentTarget) howClose(); });
