@@ -2927,7 +2927,7 @@ function howPick(){ const d=$('#howDlg'), v=$('#howVid'), base=(v.getAttribute('
   const tall=APP&&innerHeight>innerWidth&&innerWidth<700, name=APP?(tall?'how-to-play-app-tall':'how-to-play-app'):'how-to-play';
   d.classList.toggle('tall',tall); const src=base+name+'.mp4', s=v.querySelector('source');
   if(s.getAttribute('src')!==src){ s.setAttribute('src',src); v.setAttribute('poster',base+name+'.jpg'); v.load(); } }
-function howOpen(from){ const d=$('#howDlg'), v=$('#howVid'); if(d.open) return; howPick(); d.showModal(); try{ v.currentTime=0; const p=v.play(); if(p&&p.catch) p.catch(()=>{}); }catch(e){} track('howto_open:'+from); }
+function howOpen(from){ const d=$('#howDlg'), v=$('#howVid'); if(d.open) return; howPick(); d.showModal(); try{ v.muted=!sfx.on; v.currentTime=0; const p=v.play(); if(p&&p.catch) p.catch(()=>{}); }catch(e){} track('howto_open:'+from); }
 function howClose(){ const d=$('#howDlg'), v=$('#howVid'); try{ v.pause(); }catch(e){} if(d.open) d.close(); }
 $('#howDlg').addEventListener('close',()=>{ try{ $('#howVid').pause(); }catch(e){} });
 $('#howDlg').addEventListener('click',e=>{ if(e.target===e.currentTarget) howClose(); });
