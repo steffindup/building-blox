@@ -111,7 +111,7 @@ Not asked for on a first version. For the first update, write what changed in a 
 
 ## App Review notes
 
-Bloppit is a brick-building puzzle game for children. No account or login is needed.
+Bloppit is a brick-building puzzle game for families and anyone who loves bricks. No account or login is needed.
 To try it quickly: on the menu tap the Start here card. A short film shows the otter arriving by boat (Skip at the top
 right ends it). Name the otter or pick a name, then tap Build Our First Home and tap the faded brick to place each piece of
 the 12-brick house; the home then appears on the island. Then on the menu tap Blitz → vs the Longtails, type a name and tap
@@ -119,7 +119,7 @@ Start the race (works offline).
 Challenges: on the Blitz page tap Make a challenge, build the puzzle, and you get a 6-letter code; type that code
 into Got a code? on another device (the website bloppit.com/build works too) to race the same puzzle.
 Weekly Bloppit: tap the Weekly Bloppit banner on the menu. Only a finish and whether it was clean are counted (two counts per week, no name); the time and misses are sent only to check it's a real finish and aren't kept. Counts are deleted after 8 weeks.
-Progress (scores, finished models, stars, outfits, the otter's name as a number from a fixed list) is saved under an anonymous progress code minted by our server. A name the child types for the otter stays on the device and is never sent. Grown-ups corner (behind the parental gate) shows the transfer code and the Family Link QR, and can delete the record.
+Progress (scores, finished models, stars, outfits, the otter's name as a number from a fixed list) is saved under an anonymous progress code minted by our server. A name the player types for the otter stays on the device and is never sent. Grown-ups corner (behind the parental gate) shows the transfer code and the Family Link QR, and can delete the record.
 Usage counts: the app adds one to a daily count for a few events (a build started or finished, the arrival seen) with the country from the request and whether it was the app or the website. There is no identifier for the player or the device, and nothing is shared with anyone.
 Rooms (Build together, live Blitz): friends join with a 5-letter code and the host lets them in. Players appear under generated labels ("Brave Otter 214"); typed names never leave the device. Relays: one friend builds half a model, the other finishes it from a code. Crews (Together page): a shared lighthouse goal for an approved group; the maker lets each member in; the board only takes fixed phrases and stickers under generated names; report on every post; parents can remove a player from any crew in the Grown-ups corner.
 There is no chat and no voice: players in a room only place bricks.
