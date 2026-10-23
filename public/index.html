@@ -180,8 +180,6 @@ nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;padding-block:12
 .meet-art{flex:0 1 300px;display:flex;flex-direction:column;align-items:center;gap:8px}
 .bubble{background:var(--white);border:2px solid var(--ink);border-radius:22px;padding:10px 20px;font-family:var(--display);font-size:26px}
 .meet-art img{width:260px;max-width:100%;height:auto}
-.meet-3d{position:relative;display:block;width:260px;max-width:100%}.meet-3d canvas{position:absolute;inset:-6% -18% 0;width:136%;height:106%;opacity:0;transition:opacity .4s;cursor:pointer;touch-action:manipulation}
-.meet-3d.on canvas{opacity:1}.meet-3d.on img{visibility:hidden}
 .meet-text{flex:1 1 380px;min-width:0;display:flex;flex-direction:column;gap:16px}
 .meet-text h2{text-align:left;font-size:clamp(2.2rem,4vw,3.2rem);line-height:1.05}
 .meet-text p{font-size:19px}
@@ -253,7 +251,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 <header>
   <nav class="wrap" aria-label="Main">
     <a class="logo" href="/" aria-label="Bloppit home">
-      <img src="/art/head-bloppit.png" width="46" height="46" alt="" style="border-radius:50%">
+      <img src="/art/bloppit-avatar.png" width="46" height="46" alt="">
       <span>Bloppit</span>
     </a>
     <div class="nav-links">
@@ -297,7 +295,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
       <div class="model">
         <span class="race-chip">⭐ <b>Puzzle complete!</b></span>
         <div class="mosaic" id="mosaic" role="img" aria-label="The same boat as a brick model"></div>
-        <img class="buddy" src="/art/bloppit-3q.svg" width="120" height="179" alt="">
+        <img class="buddy" src="/art/bloppit-front.svg" width="120" height="179" alt="">
       </div>
     </div>
   </section>
@@ -336,7 +334,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
     <section class="wrap meet" aria-labelledby="meet-h">
       <div class="meet-art">
         <span class="bubble">Let’s bloppit!</span>
-        <span class="meet-3d" id="meet3d"><img src="/art/bloppit-front.svg" width="260" height="387" alt="Bloppit the otter, holding a red brick"></span>
+        <img src="/art/bloppit-front.svg" width="260" height="387" alt="Bloppit the otter, holding his red brick">
       </div>
       <div class="meet-text">
         <h2 id="meet-h">Meet Bloppit, your building buddy</h2>
@@ -404,45 +402,6 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
   var el=document.getElementById('mosaic'), html=''; if(!el) return;   // a returning player's hero is their island
   rows.forEach(function(row){ for(var i=0;i<row.length;i++) html+='<i style="background:'+colors[row[i]]+'"></i>'; });
   el.innerHTML=html;
-})();
-</script>
-<script>
-/* Meet Bloppit in 3D: when the section comes near, the real model (the same one as in the game) loads in place of the drawing,
-   waves hello, and does something different each time he's tapped. Without WebGL, or before it loads, the drawing stays. */
-(function(){
-  var host=document.getElementById('meet3d'); if(!host||!window.IntersectionObserver) return;
-  try{ var t=document.createElement('canvas'); if(!(t.getContext('webgl')||t.getContext('experimental-webgl'))) return; }catch(e){ return; }
-  var calm=matchMedia('(prefers-reduced-motion: reduce)').matches, started=false;
-  function js(src){ return new Promise(function(ok,no){ var s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=no; document.head.appendChild(s); }); }
-  function go(){ if(started) return; started=true;
-    (window.THREE?Promise.resolve():js('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'))
-      .then(function(){ return js('/3d/GLTFLoader.js?v=1'); }).then(function(){ return js('/3d/DRACOLoader.js?v=1'); })
-      .then(function(){ var d=new THREE.DRACOLoader(); d.setDecoderPath('/3d/draco/'); var L=new THREE.GLTFLoader(); L.setDRACOLoader(d); return L.loadAsync('/3d/bloppit.glb?v=1'); })
-      .then(show).catch(function(){});
-  }
-  function show(g){
-    var c=document.createElement('canvas'); c.setAttribute('aria-hidden','true'); host.appendChild(c);
-    var r=new THREE.WebGLRenderer({canvas:c,antialias:true,alpha:true}); r.outputEncoding=THREE.sRGBEncoding; r.setPixelRatio(Math.min(2,devicePixelRatio||1));
-    var sc=new THREE.Scene(), cam=new THREE.PerspectiveCamera(24,1,.05,60); sc.add(new THREE.HemisphereLight(0xfff3db,0x8a8070,1.05));
-    var k=new THREE.DirectionalLight(0xfff1df,.85); k.position.set(-3,5,4); sc.add(k); var f=new THREE.DirectionalLight(0xe5efff,.35); f.position.set(4,2,-3); sc.add(f);
-    g.scene.traverse(function(m){ if(m.isMesh) m.frustumCulled=false; }); sc.add(g.scene);
-    var mx=new THREE.AnimationMixer(g.scene), A={}; g.animations.forEach(function(a){ A[a.name]=mx.clipAction(a); });
-    var idle=A.logo_idle||A.idle, cur=null, picks=['happy_hop','giggle_wiggle','surprised_jump','show_brick','cheer','look_at_you'], n=0, blink=3;
-    idle.play();
-    function once(name){ var a=A[name]; if(!a) return; if(cur) cur.fadeOut(.15); idle.fadeOut(.15); a.reset().setLoop(THREE.LoopOnce,1); a.clampWhenFinished=true; a.fadeIn(.15).play(); cur=a; kick(); }
-    mx.addEventListener('finished',function(e){ if(e.action===A.blink) return; if(e.action===cur){ cur.fadeOut(.25); idle.reset().fadeIn(.25).play(); cur=null; } });
-    function size(){ var w=c.clientWidth, h=c.clientHeight; if(!w||!h) return; r.setSize(w,h,false); cam.aspect=w/h; var t=Math.tan(cam.fov*Math.PI/360), H=2.5, d=H/2/t; cam.position.set(Math.sin(-.2)*d,1.32,Math.cos(-.2)*d); cam.lookAt(0,1.18,0); cam.updateProjectionMatrix(); }
-    size(); addEventListener('resize',function(){ size(); kick(); });
-    var last=0, raf=0, seen=true;
-    function frame(t){ raf=0; var dt=last?Math.min(.05,(t-last)/1000):0; last=t; if(!calm){ mx.update(dt); blink-=dt; if(blink<=0&&A.blink){ A.blink.reset().setLoop(THREE.LoopOnce,1).play(); blink=3+Math.random()*3; } } else mx.update(0);
-      r.render(sc,cam); if(!calm&&seen&&!document.hidden) raf=requestAnimationFrame(frame); else last=0; }
-    function kick(){ if(!raf) raf=requestAnimationFrame(frame); }
-    new IntersectionObserver(function(es){ seen=es[0].isIntersecting; if(seen){ kick(); } }).observe(host);
-    document.addEventListener('visibilitychange',function(){ if(!document.hidden) kick(); });
-    c.addEventListener('click',function(){ once(picks[n++%picks.length]); var b=host.parentNode.querySelector('.bubble'); if(b) b.textContent=['Hee hee!','Again!','Whoa!','My red brick!','Let’s build!','Hello!'][(n-1)%6]; });
-    mx.update(.01); host.classList.add('on'); kick(); setTimeout(function(){ once('wave'); },400);
-  }
-  new IntersectionObserver(function(es,o){ if(es[0].isIntersecting){ o.disconnect(); go(); } },{rootMargin:'300px'}).observe(host);
 })();
 </script>
 <script>/* one count for this page (no cookies, nothing about the visitor) */try{navigator.sendBeacon('/api/event',new Blob([JSON.stringify({events:['page:landing'],p:'web'})],{type:'application/json'}))}catch(e){}</script>
