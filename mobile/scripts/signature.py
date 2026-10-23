@@ -8,6 +8,7 @@ Makes
   public/brand/*                     full figure, bust, profile picture for social accounts
   public/og-image.png                link preview (keeps the existing words, swaps in the signature)
   app icons                          iOS, web/PWA, maskable, apple-touch, favicons
+  iOS launch screen                  the whole figure on brand blue (mobile/assets and the Splash image set)
 """
 import io, os, re
 import cairosvg
@@ -22,8 +23,8 @@ BUST_BOX = (25, 75, 700, 700)   # x, y, w, h inside the 784 × 1168 drawing: ear
 svg = open(SRC, encoding='utf-8').read()
 
 # The traced drawing left the whites of the eyes see-through (fine on cream, odd on blue): paint them in underneath.
-EYES = ('<g id="eye-whites"><ellipse cx="262" cy="315" rx="37" ry="43" fill="#EEF2F5"/>'
-        '<ellipse cx="462" cy="320" rx="41" ry="44" fill="#EEF2F5"/></g>')
+EYES = ('<g id="eye-whites"><ellipse cx="261" cy="316" rx="40" ry="46" fill="#EEF2F5"/>'
+        '<ellipse cx="462" cy="322" rx="43" ry="47" fill="#EEF2F5"/></g>')
 if 'id="eye-whites"' not in svg:
     svg = re.sub(r'(<svg[^>]*>)', r'\1\n' + EYES, svg, count=1)
     open(SRC, 'w', encoding='utf-8').write(svg)
@@ -40,6 +41,7 @@ def bust_svg():
     return out
 
 BUST = bust_svg()
+ICON = dict(scale=.94, drop=.10)   # app icon framing (the splash wink uses it too)
 
 def full(w):
     im = render(svg, w)
@@ -48,7 +50,7 @@ def full(w):
 def bust(w):
     return render(BUST, w, w)
 
-def badge(size, scale=1.06, drop=0.10, circle=False, glow=True):
+def badge(size, scale=1.06, drop=0.10, circle=False, glow=True, face=None):
     """The bust on brand blue. scale = bust width / tile width; drop pushes it down so the body runs off the bottom."""
     tile = Image.new('RGBA', (size, size), BLUE + (255,))
     if glow:  # a soft light behind the head, like a spotlight on stage
@@ -57,7 +59,7 @@ def badge(size, scale=1.06, drop=0.10, circle=False, glow=True):
         d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=70)
         g = g.filter(ImageFilter.GaussianBlur(size * .12))
         tile = Image.composite(Image.new('RGBA', (size, size), (80, 160, 230, 255)), tile, g)
-    bw = int(size * scale); b = bust(bw)
+    bw = int(size * scale); b = bust(bw) if face is None else face.resize((bw, bw), Image.LANCZOS)
     x = (size - bw) // 2; y = int(size * drop)
     layer = Image.new('RGBA', (size, size), (0, 0, 0, 0)); layer.paste(b, (x, y), b)  # anything past the edge is cut off
     tile.alpha_composite(layer)
@@ -85,7 +87,7 @@ def main():
     save(badge(1080, scale=.92, drop=.07), 'public', 'brand', 'bloppit-profile-1080.png', rgb=True)
 
     # app icons: full bleed, bigger, body runs off the bottom
-    icon = badge(1024, scale=.94, drop=.10)
+    icon = badge(1024, **ICON)
     save(icon, 'public', 'icon-1024.png', rgb=True)
     save(icon, 'mobile', 'assets', 'icon-only.png', rgb=True)
     save(icon, 'mobile', 'ios', 'App', 'App', 'Assets.xcassets', 'AppIcon.appiconset', 'AppIcon-512@2x.png', rgb=True)
@@ -97,6 +99,17 @@ def main():
     fav = badge(256, scale=1.12, drop=.04, glow=False)
     save(fav.resize((96, 96), Image.LANCZOS), 'public', 'favicon-96.png', rgb=True)
     fav.convert('RGB').save(P('public', 'favicon.ico'), sizes=[(16, 16), (32, 32), (48, 48)]); print('   public/favicon.ico')
+
+    # iOS launch screen (shown by iOS before the web splash): the whole figure, centred on brand blue
+    launch = Image.new('RGBA', (2732, 2732), BLUE + (255,)); f = full(1000)
+    f = f.resize((int(f.width * 900 / f.height), 900), Image.LANCZOS)
+    launch.alpha_composite(f, (1366 - f.width // 2, 1366 - f.height // 2))
+    for f in ('splash.png', 'splash-dark.png'):
+        save(launch, 'mobile', 'assets', f, rgb=True)
+    for scale in ('1x', '2x', '3x'):
+        for dark in ('', '-dark'):
+            save(launch, 'mobile', 'ios', 'App', 'App', 'Assets.xcassets', 'Splash.imageset',
+                 'Default@%s~universal~anyany%s.png' % (scale, dark), rgb=True)
 
     # og-image: the existing words on the right stay; the signature figure takes the left
     og = Image.open(P('public', 'og-image.png')).convert('RGBA')
