@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Add a photo and Bloppit turns it into a brick model and a step-by-step instruction booklet. Build it yourself on screen, play the levels, or build together.">
+<meta name="description" content="Play Bloppit: build with Bloppit the otter, raise your pup, grow your own island, Bloppitopia, and race the Longtails.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="canonical" href="https://bloppit.com/build/">
 <meta name="theme-color" content="#0369BD">
@@ -12,16 +12,16 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Bloppit">
 <meta property="og:url" content="https://bloppit.com/build/">
-<meta property="og:title" content="Bloppit: Brick Puzzle Game">
-<meta property="og:description" content="Add a photo, get a brick model and an instruction booklet, then build it step by step. Free to play.">
+<meta property="og:title" content="Bloppit: Build it. Grow your world.">
+<meta property="og:description" content="Play Bloppit: build with Bloppit the otter, raise your pup, grow your own island, Bloppitopia, and race the Longtails.">
 <meta property="og:image" content="https://bloppit.com/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Bloppit: Brick. Build. Bloppit.">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Bloppit: Brick Puzzle Game">
-<meta name="twitter:description" content="Add a photo, get a brick model and an instruction booklet, then build it step by step. Free to play.">
+<meta name="twitter:title" content="Bloppit: Build it. Grow your world.">
+<meta name="twitter:description" content="Play Bloppit: build with Bloppit the otter, raise your pup, grow your own island, Bloppitopia, and race the Longtails.">
 <meta name="twitter:image" content="https://bloppit.com/og-image.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
 <link rel="manifest" href="/site.webmanifest">
@@ -29,7 +29,7 @@
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "Bloppit: Brick Puzzle Game",
+  "name": "Bloppit: Brick Building Game",
   "alternateName": "Bloppit",
   "url": "https://bloppit.com/build/",
   "description": "Turn your photos into a brick model and a step-by-step instruction booklet, then build it yourself.",
@@ -62,7 +62,7 @@
 @keyframes sp-blink{0%,100%{transform:none}50%{transform:scaleY(.1)}}
 @media (prefers-reduced-motion: reduce){.splash *{animation:none!important}}
 </style>
-<title>Bloppit: Brick Puzzle Game</title>
+<title>Bloppit: Build it. Grow your world.</title>
 </head>
 <body>
 <svg class="sr" width="0" height="0" aria-hidden="true" focusable="false"><defs>
@@ -8176,7 +8176,7 @@ function familyUrl(){ return `${SHARE_BASE}/p/start${familyCode?`?x=${familyCode
 function renderFamily(){ const u=familyUrl(); $('#familyUrl').textContent=u.replace(/^https:\/\//,''); try{ $('#familyQr').innerHTML=qrSVG(u); }catch(e){ $('#familyQr').textContent=''; } }
 $('#familyCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(familyUrl()); $('#familyCopy').textContent='Copied!'; setTimeout(()=>$('#familyCopy').textContent='Copy link',2000); track('family_link_copied'); }catch(e){} };
 $('#familyShare').onclick=async()=>{ if(APP&&!await gate.ask('Sharing sends a link to another app.')) return; track('family_link_shared');
-  const url=familyUrl(), text='Bloppit, a calm brick puzzle game. Open this on the device they play on:'; try{ if(navigator.share) await navigator.share({title:'Bloppit',text,url}); else await navigator.clipboard.writeText(`${text} ${url}`); }catch(e){} };
+  const url=familyUrl(), text='Bloppit, the brick-building game with Bloppit the otter. Open this on the device they play on:'; try{ if(navigator.share) await navigator.share({title:'Bloppit',text,url}); else await navigator.clipboard.writeText(`${text} ${url}`); }catch(e){} };
 
 /* ---------- Draw your own: a stud-grid drawing that builds as a brick picture ----------
    Cells hold a palette index (0 = empty/white). Saved drawings live in the world record under the pup (small

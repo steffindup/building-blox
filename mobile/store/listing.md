@@ -7,7 +7,7 @@ Never mention LEGO or other toy brands anywhere in the listing (Apple rejects ot
 
 | Field | Value |
 |---|---|
-| Name (30) | Bloppit: Brick Puzzle Game |
+| Name (30) | Bloppit: Brick Building Game |
 | Subtitle (30) | Build it. Grow your world. |
 | Bundle ID | com.bloppit.app |
 | SKU | bloppit-ios-1 |
@@ -29,17 +29,15 @@ with the island is dropped: everything below is the one listing to paste.
 
 ## Promotional text (170)
 
-Every build you finish grows your own world of islands, and your otter grows with you. A new puzzle every week. Free, no ads, no account.
+Build with Bloppit the otter, raise your pup and grow your own world of islands, Bloppitopia. A new puzzle every Monday, and the Longtails to race.
 
 ## Description (4000)
 
-Bloppit is a calm brick puzzle game for families. Snap bricks together on screen, page by page, and finish a model in minutes, scored on how cleanly you build.
+Bloppit is a brick-building game for anyone who loves bricks. Build with Bloppit the otter: snap bricks together on screen, page by page, and finish a model in minutes, scored on how cleanly you build.
 
-Every build you finish grows your own world. A little otter arrives by boat, your first build finishes its home, and five islands wait in the mist.
+Every build you finish grows your own world, Bloppitopia. Your otter pup arrives by boat, your first build finishes its home, and five islands wait in the mist.
 
 A new puzzle every week, a library to explore, and Blitz races against the Longtails.
-
-Free, no ads, no tracking, no account needed.
 
 YOUR WORLD: BLOPPITOPIA
 • Home Island grows with every build: a cottage, a garden, a workshop, a museum of your best models, then a lively village
@@ -81,7 +79,7 @@ Bloppit is an independent project and is not affiliated with any toy brick brand
 
 ## Keywords (100)
 
-blocks,building,bricks,construction,puzzle,family,calm,race,island,world,adventure,otter
+blocks,building,bricks,construction,puzzle,family,pup,race,island,world,adventure,otter
 
 ## Screenshots
 

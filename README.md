@@ -1,7 +1,8 @@
-# Bloppit: Brick Puzzle Game
+# Bloppit
 
-A brick-building puzzle game for kids 8–13. Any photo (or a library model) becomes a brick puzzle with a step-by-step
-instruction booklet, and you build it on screen. The menu is game-first:
+A brick-building game for anyone who loves bricks: build with Bloppit the otter, raise your pup, grow Bloppitopia and
+race the Longtails. A library model (or your own photo) becomes a build with a step-by-step instruction booklet, and you
+build it on screen. The menu is game-first:
 
 - **Weekly Bloppit**: one puzzle a week, the same for everyone, changing Monday 8 am US Eastern (`weekOf()` in the app
   and in `netlify/functions/challenge/logic.mjs` compute the same week key, a Monday date). It is scored on cleanness
@@ -41,7 +42,7 @@ Live at https://bloppit.com (bloppit.netlify.app redirects there). Every push to
 Formerly called Building Blox; the browser save keys still use the old `building-blox-*` names so existing saves keep working.
 
 - `public/index.html` is the landing page at bloppit.com (static HTML, no build step).
-- The front page is: hero ("The brick puzzle game."), Meet Bloppit, Four ways to play. **How it works**, **FAQ** and
+- The front page is: hero ("Build it. Grow your world."), Meet Bloppit, Four ways to play. **How it works**, **FAQ** and
   **About us** are separate pages (`public/how-it-works/`, `public/faq/`, `public/about/`), linked only from the top
   ribbon; they share `public/site.css`. Keep their facts in step with the game (levels, limits, privacy promises).
 - `public/build/index.html` is the whole app, at bloppit.com/build/ (no build step).
