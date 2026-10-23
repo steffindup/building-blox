@@ -1116,7 +1116,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 
 <header class="top">
   <h1 class="brand"><a href="/" id="brandLink" aria-label="Bloppit menu">
-    <img class="brand-otter" src="/art/head-bloppit.png" alt="" width="256" height="256">
+    <img class="brand-otter" src="/art/bloppit-avatar.png" alt="" width="256" height="256">
     <span>Bloppit</span></a></h1>
   <nav class="tabs" role="tablist" aria-label="Games">
     <button class="tab play5" role="tab" id="tab-island" data-tab="island" aria-selected="false"><span class="n"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span>Island</button>
@@ -1151,7 +1151,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 <section class="view home" id="view-home">
 <div class="hm-side">
   <div class="hm-hello">
-    <img src="/art/head-bloppit.png" alt="" width="256" height="256">
+    <img src="/art/bloppit-avatar.png" alt="" width="256" height="256">
     <div class="hm-bubble"><h2 id="hmHi">Hi there!</h2><p>What shall we build today?</p></div>
   </div>
   <button class="hm-how" id="hmHow" type="button"><span class="pl" aria-hidden="true">▶</span><span><b>How to play</b><small>A 30-second video</small></span></button>
@@ -8160,7 +8160,7 @@ async function weeklyCard(){
     x.fillStyle='#fff'; x.font='800 30px Nunito,sans-serif'; x.fillText('Finished this week’s Bloppit', 540, 150);
     x.font='400 64px "Lilita One",Nunito,sans-serif'; x.fillText(o.name.slice(0,22), 540, 240);
     x.font='700 28px Nunito,sans-serif'; const words=line.split(' '); let ln='', yy=320; for(const w of words){ const t=ln?ln+' '+w:w; if(x.measureText(t).width>580){ x.fillText(ln,540,yy); yy+=40; ln=w; } else ln=t; } if(ln) x.fillText(ln,540,yy);
-    try{ const otter=await load('/art/head-bloppit.png'); x.save(); x.beginPath(); x.arc(600,520,56,0,7); x.clip(); x.drawImage(otter,544,464,112,112); x.restore(); }catch(e){}
+    try{ const otter=await load('/art/bloppit-avatar.png'); x.drawImage(otter,544,464,112,112); }catch(e){}
     x.fillStyle='#F4BC22'; x.font='800 26px Nunito,sans-serif'; x.fillText('Build it: bloppit.com/p/w-'+info.week, 672, 530);
     const blob=await new Promise(r=>c.toBlob(r,'image/png')), file=new File([blob],'weekly-bloppit.png',{type:'image/png'});
     const url=`${SHARE_BASE}/p/w-${info.week}`, text=`Finished this week’s Bloppit: ${o.name}. ${line} Build it: ${url}`;
