@@ -44,7 +44,7 @@ export function merge(server, incoming) {
   const a = server || {}, b = incoming || {}, out = { ...a, ...b };
   for (const key of ['game']) {
     const ga = a[key] || {}, gb = b[key] || {}, g = { ...ga, ...gb };
-    for (const bk of ['best', 'bbest']) {
+    for (const bk of ['best', 'bbest', 'sbest']) {
       const x = ga[bk] || {}, y = gb[bk] || {}, m = { ...x };
       for (const lvl of Object.keys(y)) m[lvl] = Math.max(num(x[lvl]) ?? -Infinity, num(y[lvl]) ?? -Infinity);
       if (Object.keys(m).length) g[bk] = m;

@@ -40,6 +40,10 @@ test('pup: a typed name never reaches the server; latest list name, colour and i
   m = merge(w({ pupColor: 15, pupHex: 'red', pupAt: 5 }), w({})).world; assert.equal(m.pupHex, undefined);
   assert.equal(JSON.stringify(merge({}, w({ pupText: 'Zoë' }))).includes('Zo'), false);
 });
+test('pup: Pippa’s Puzzles scores (sbest) merge like the trails, keeping the higher score', () => {
+  const g = merge({ game: { best: { 0: 90 }, sbest: { 0: 100, 1: 50 } } }, cleanData({ game: { sbest: { 1: 120, 2: 80 } } })).game;
+  assert.deepEqual(g.sbest, { 0: 100, 1: 120, 2: 80 }); assert.deepEqual(g.best, { 0: 90 });
+});
 test('pup: odd input does not throw', () => { assert.equal(merge({ world: 1 }, { world: [1] }).world.xp, 0); });
 test('pup: create → save (merge) → transfer → claim', async () => {
   mem.clear();

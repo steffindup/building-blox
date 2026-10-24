@@ -178,7 +178,7 @@ test('the Weekly: a brick of the wrong colour says which colour the step needs, 
   const seeded = { fn: () => localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 })) };
   const t = await open('?nosplash=1#daily', { init: seeded, viewport: { width: 402, height: 874 }, touch: true });
   await t.page.evaluate(() => document.getElementById('dyGo').click());
-  await t.page.waitForFunction(() => /Go!/.test(document.getElementById('status').textContent), null, { timeout: 20000 });
+  await t.page.waitForFunction(() => (s => /Go!/.test(s) && !/Wait for Go/.test(s))(document.getElementById('status').textContent), null, { timeout: 20000 });
   // the first brick of this step, held in a colour it isn't (White, or Light Grey if the brick is White)
   const c = await t.page.evaluate(() => window.bloppitPeek().c);
   const wrong = await t.page.evaluate((c) => window.bloppitTryBrick(c === 0 ? 1 : 0), c);
@@ -194,8 +194,8 @@ test('a finished Weekly stands on the 3D island, and can be put away and back', 
     if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: { 'm:Little house:12': { n: 12, s: 2, k: 'quick', t: Date.now() - 864e5, c: 1 } }, log: ['m:Little house:12'], decor: [] })); } };
   const t = await open('?nosplash=1#daily', { init: world });
   await t.page.evaluate(() => document.getElementById('dyGo').click());
-  await t.page.waitForFunction(() => /Go!/.test(document.getElementById('status').textContent), null, { timeout: 20000 });
-  for (let i = 0; i < 80; i++) { const more = await t.page.evaluate(() => window.bloppitPlaceRight()); if (!more && await t.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; await t.page.waitForTimeout(150); }
+  await t.page.waitForFunction(() => (s => /Go!/.test(s) && !/Wait for Go/.test(s))(document.getElementById('status').textContent), null, { timeout: 20000 });
+  for (let i = 0; i < 200; i++) { const more = await t.page.evaluate(() => window.bloppitPlaceRight()); if (!more && await t.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; await t.page.waitForTimeout(150); }
   await t.page.waitForTimeout(3000);
   const key = await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1')).log.find((k) => k.startsWith('w:')));
   assert.ok(key, 'the Weekly was recorded');
@@ -396,10 +396,10 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   assert.match(await tap('land:beach'), /Home Island.*Builds finished3.*Islands discovered/);
   assert.match(await tapChar('bloppit'), /Bloppit.*storm.*build buddy.*Secret.*red brick/);
   assert.match(await tapChar('longtail:easy'), /Swoop the Longtail.*(Blitz Bay’s racer|Asleep on Blitz Bay).*goggles.*Secret.*Speeds beaten.*Did you know\?.*tropicbirds.*Race Swoop · Warm-up/);
-  assert.match(await tapChar('char:pippa'), /Pippa the Penguin.*Sunrise Shores.*Secret.*A yellow two-stud brick.*still in the mist.*This week’s Bloppit/);
+  assert.match(await tapChar('char:pippa'), /Pippa the Penguin.*Sunrise Shores.*Secret.*A yellow two-stud brick.*still in the mist.*Play Pippa’s puzzle/);
   assert.match(await tapChar('pup'), /Bubbles.*Level \d+ Pup.*1 stud.*Otter level.*Wardrobe.*Name or colour/);
   assert.match(await tap('decor:flag'), /Flag/);
-  assert.match(await tap('isle:sunrise'), /A misty island.*Play Weekly Bloppit to discover it.*This week’s Bloppit/);
+  assert.match(await tap('isle:sunrise'), /A misty island.*Pippa’s first puzzle washes ashore at 8%.*Play next/);
   assert.match(await tap('isle:blitzbay'), /A misty island.*Race Swoop/);
   { await still(); const c = await pt('isle:sunrise'); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(600); await still();
     assert.equal(await t.page.evaluate(() => { const I = window.bloppitIsland3(), s = I.isles.sunrise; return Math.hypot(I.ctl.target.x - s.x, I.ctl.target.z - s.z) < 1; }), true);   // flew there
