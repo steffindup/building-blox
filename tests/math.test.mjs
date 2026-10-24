@@ -33,7 +33,14 @@ test('later levels get harder inside the grade, never above it; adapting stays w
     assert.ok(M.gradeOfRung(L.hi) <= Math.min(8, g + 1) && M.stepOfRung(L.hi) === (g + 1 > 8 ? M.stepOfRung(L.hi) : 0), `top for grade ${g}`);
     assert.ok(M.gradeOfRung(L.lo) >= Math.max(-1, g - 2));
     assert.ok(M.mathRung(g, 13, 99) <= L.hi && M.mathRung(g, 0, -99) >= L.lo);
+    for (let lvl = 0; lvl < 14; lvl++) assert.equal(M.gradeOfRung(M.mathRung(g, lvl, 3)), g, `grade ${g} level ${lvl + 1}: adapting up stays in the grade until it has stepped up`);
+    assert.ok(M.gradeOfRung(M.mathRung(g, 13, 3, true)) <= Math.min(8, g + 1));
   }
+});
+
+test('5th grade: fractions of numbers come up at every step, not only the hardest', () => {
+  for (let s = 0; s < 3; s++) { let n = 0; for (let i = 0; i < 600; i++) if (/\d\/\d+ of \d+/.test(M.makePuzzle(M.rungOf(5, s)).q)) n++;
+    assert.ok(n > 600 * 0.15, `step ${s + 1}: ${n} of 600 were fractions of numbers`); }
 });
 
 for (let rung = 0; rung < 30; rung++) {

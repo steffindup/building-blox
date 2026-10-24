@@ -3774,16 +3774,18 @@ const SAMPLES=[
    x.poly([[96,140],[104,140],[104,186],[96,186]],'#C91A09');
    return [['front',c]]; }},
  {name:'Cat',theme:'Animals',make(){ const [c,x]=sheet(200,220,'#ffffff');
-   x.lineCap='round'; x.strokeStyle='#E07B22'; x.lineWidth=16; x.beginPath(); x.moveTo(140,196); x.quadraticCurveTo(190,190,178,140); x.stroke();
-   x.oval(100,160,52,52,0,'#F0A04B'); x.oval(100,172,26,36,0,'#F6D7B3');
-   x.poly([[64,62],[70,18],[94,46]],'#F0A04B'); x.poly([[136,62],[130,18],[106,46]],'#F0A04B');
-   x.poly([[72,52],[74,30],[88,46]],'#E4ADC8'); x.poly([[128,52],[126,30],[112,46]],'#E4ADC8');
-   x.oval(100,78,46,40,0,'#F0A04B');
-   x.fillStyle='#C9661A'; [[-14,0],[0,-2],[14,0]].forEach(([d,y])=>x.fillRect(100+d-3,40+y,6,14));
-   x.fillStyle='#C9661A'; x.fillRect(52,150,14,6); x.fillRect(134,150,14,6); x.fillRect(50,166,14,6); x.fillRect(136,166,14,6);
-   x.oval(83,74,7,9,0,'#4B9F4A'); x.oval(117,74,7,9,0,'#4B9F4A'); x.oval(83,75,2.5,7,0,'#1B2A34'); x.oval(117,75,2.5,7,0,'#1B2A34');
-   x.poly([[94,90],[106,90],[100,98]],'#FF698F');
-   x.oval(76,206,16,10,0,'#F6D7B3'); x.oval(124,206,16,10,0,'#F6D7B3');
+   // Front-facing, with a big head so the face survives at brick size: green eyes with black pupils, a pink nose, whiskers
+   x.lineCap='round'; x.strokeStyle='#A95500'; x.lineWidth=18; x.beginPath(); x.moveTo(142,200); x.quadraticCurveTo(196,194,184,146); x.stroke();
+   x.oval(100,176,46,40,0,'#FE8A18'); x.oval(100,184,24,28,0,'#F6D7B3');
+   x.oval(72,212,18,10,0,'#F6D7B3'); x.oval(128,212,18,10,0,'#F6D7B3');
+   x.poly([[42,70],[46,6],[90,44]],'#FE8A18'); x.poly([[158,70],[154,6],[110,44]],'#FE8A18');
+   x.poly([[52,58],[54,22],[80,44]],'#FF698F'); x.poly([[148,58],[146,22],[120,44]],'#FF698F');
+   x.oval(100,90,66,58,0,'#FE8A18');
+   x.fillStyle='#A95500'; [[-22,6],[0,0],[22,6]].forEach(([d,y])=>x.fillRect(100+d-6,32+y,12,22));
+   x.oval(100,118,30,20,0,'#F6D7B3');
+   x.oval(74,86,15,17,0,'#4B9F4A'); x.oval(126,86,15,17,0,'#4B9F4A'); x.oval(74,88,7,13,0,'#1B2A34'); x.oval(126,88,7,13,0,'#1B2A34');
+   x.poly([[88,104],[112,104],[100,118]],'#FF698F');
+   x.strokeStyle='#1B2A34'; x.lineWidth=5; [[-1,-6],[-1,6],[1,-6],[1,6]].forEach(([sd,dy])=>{ x.beginPath(); x.moveTo(100+sd*30,118+dy*.5); x.lineTo(100+sd*70,112+dy*1.6); x.stroke(); });
    return [['front',c]]; }},
  {name:'Dog',theme:'Animals',make(){ const [c,x]=sheet(200,232,'#ffffff');
    x.lineCap='round'; x.strokeStyle='#D09168'; x.lineWidth=14; x.beginPath(); x.moveTo(140,190); x.quadraticCurveTo(178,182,172,138); x.stroke();
@@ -3985,20 +3987,22 @@ const SAMPLES=[
    x.poly([[200,80],[254,30],[244,80],[254,128]],'#6C6E68');
    x.fillStyle='#6C6E68'; x.beginPath(); x.moveTo(10,86); x.quadraticCurveTo(40,46,120,44); x.quadraticCurveTo(190,44,214,80); x.quadraticCurveTo(190,112,120,114); x.quadraticCurveTo(40,112,10,86); x.closePath(); x.fill();
    x.poly([[100,48],[128,4],[146,46]],'#6C6E68');
-   x.fillStyle='#E4E4E4'; x.beginPath(); x.moveTo(16,90); x.quadraticCurveTo(60,116,130,112); x.quadraticCurveTo(180,108,206,86); x.quadraticCurveTo(120,98,16,90); x.closePath(); x.fill();
+   x.fillStyle='#A0BCAC'; x.beginPath(); x.moveTo(14,88); x.quadraticCurveTo(60,122,130,116); x.quadraticCurveTo(184,110,208,84); x.quadraticCurveTo(120,90,14,88); x.closePath(); x.fill();
    x.poly([[110,104],[146,104],[120,140]],'#6C6E68');
-   x.dot(48,72,6,'#1B2A34'); x.dot(49.5,70.5,2,'#FFFFFF');
+   x.dot(50,70,9,'#1B2A34');   // a pale belly and a big eye: grey alone read as a rock
    x.fillStyle='#F4F4F4'; for(let k=0;k<5;k++) x.poly([[24+k*8,92],[30+k*8,92],[27+k*8,99]],'#F4F4F4');
-   x.strokeStyle='#1B2A34'; x.lineWidth=3; for(const k of [72,80,88]){ x.beginPath(); x.moveTo(k,70); x.lineTo(k-4,86); x.stroke(); }
+   x.strokeStyle='#1B2A34'; x.lineWidth=5; for(const k of [74,84,94]){ x.beginPath(); x.moveTo(k,70); x.lineTo(k-4,86); x.stroke(); }
    return [['front',c]]; }},
  {name:'Turtle',theme:'Ocean',make(){ const [c,x]=sheet(240,180,'#ffffff');
-   x.oval(50,64,22,12,-.6,'#4B9F4A'); x.oval(190,64,22,12,.6,'#4B9F4A'); x.oval(60,140,22,12,.6,'#4B9F4A'); x.oval(180,140,22,12,-.6,'#4B9F4A');
-   x.oval(120,26,20,22,0,'#4B9F4A'); x.dot(112,20,3.5,'#1B2A34'); x.dot(128,20,3.5,'#1B2A34');
-   x.poly([[116,166],[124,166],[120,176]],'#4B9F4A');
-   x.oval(120,100,70,62,0,'#237841');
-   x.fillStyle='#958A73';
+   // Seen from above: bright green head and flippers, a brown-rimmed dark shell with big lime plates, so shell and body read apart
+   x.oval(46,62,28,15,-.6,'#4B9F4A'); x.oval(194,62,28,15,.6,'#4B9F4A'); x.oval(58,142,26,14,.6,'#4B9F4A'); x.oval(182,142,26,14,-.6,'#4B9F4A');
+   x.oval(120,22,24,24,0,'#4B9F4A'); x.dot(110,16,5,'#1B2A34'); x.dot(130,16,5,'#1B2A34');
+   x.poly([[112,160],[128,160],[120,178]],'#4B9F4A');
+   x.oval(120,100,76,66,0,'#AA7D55');
+   x.oval(120,100,64,55,0,'#184632');
+   x.fillStyle='#BBE90B';
    const hx=(a,b,r)=>{ x.beginPath(); for(let i=0;i<6;i++){ const t=i/6*Math.PI*2+Math.PI/6; x.lineTo(a+Math.cos(t)*r,b+Math.sin(t)*r); } x.closePath(); x.fill(); };
-   hx(120,100,22); hx(82,82,16); hx(158,82,16); hx(82,120,16); hx(158,120,16); hx(120,58,14); hx(120,142,14);
+   hx(120,100,22); hx(80,86,15); hx(160,86,15); hx(80,118,15); hx(160,118,15); hx(120,64,13); hx(120,136,13);
    return [['front',c]]; }},
  {name:'Octopus',theme:'Ocean',make(){ const [c,x]=sheet(220,220,'#ffffff');
    x.lineCap='round'; x.strokeStyle='#923978'; x.lineWidth=18;
@@ -4491,7 +4495,14 @@ function renderSamples(){
     return `<button class="smp" type="button" data-i="${i}" aria-pressed="${on&&i===sampleIdx}"><img alt="" src="${s.thumb}" loading="lazy">${s.name}${s.two?'<small>2 photos</small>':''}</button>`; }).join('');
 }
 $('#libThemes').addEventListener('click',e=>{ const b=e.target.closest('[data-t]'); if(!b) return; libTheme=b.dataset.t; renderSamples(); $('#samples').scrollTop=0; });
-$('#samples').addEventListener('click',e=>{ const b=e.target.closest('.smp'); if(b){ loadSample(+b.dataset.i); usePicked=true; } });
+// A library model starts from the library's own settings (up to 4 colours, 10 bricks tall), not whatever the last
+// trail level or Weekly left on the sliders; once the player moves a slider themselves, their choice stays.
+const LIB_S={kind:'model',shape:'puffed',thick:1,tol:48,maxColors:4,gray:true,size:10,pw:48,pcol:24};
+var libTuned=false;
+['size','thick','tol','colors'].forEach(id=>$('#'+id).addEventListener('input',e=>{ if(e.isTrusted) libTuned=true; }));
+document.querySelectorAll('input[name=shape]').forEach(r=>r.addEventListener('change',e=>{ if(e.isTrusted) libTuned=true; }));
+function libDefaults(){ if(!libTuned) setControls(LIB_S); }
+$('#samples').addEventListener('click',e=>{ const b=e.target.closest('.smp'); if(b){ libDefaults(); loadSample(+b.dataset.i); usePicked=true; } });
 
 /* ---------- Play the Game ---------- */
 function levelArt(kind){
@@ -4507,8 +4518,9 @@ function levelArt(kind){
     x.dot(42,38,5,'#1B2A34'); x.oval(92,74,24,12,-.3,'#F8BB3D');
     return [['front',c]]; }
   if(kind==='star'){ const [c,x]=sheet(120,116,'#ffffff');
-    const pts=[]; for(let k=0;k<10;k++){ const r=k%2?24:56, a=-Math.PI/2+k*Math.PI/5; pts.push([60+r*Math.cos(a),62+r*Math.sin(a)]); }
-    x.poly(pts,'#F2CD37'); return [['front',c]]; }
+    // slimmer points and an orange heart, so even 10 bricks read as a star rather than a blob
+    const star=(R,r,f)=>{ const pts=[]; for(let k=0;k<10;k++){ const q=k%2?r:R, a=-Math.PI/2+k*Math.PI/5; pts.push([60+q*Math.cos(a),62+q*Math.sin(a)]); } x.poly(pts,f); };
+    star(58,22,'#F2CD37'); star(22,9,'#FE8A18'); return [['front',c]]; }
   if(kind==='apple'){ const [c,x]=sheet(120,130,'#ffffff');
     x.fillStyle='#582A12'; x.fillRect(56,10,8,24);
     x.oval(80,22,18,9,-.5,'#4B9F4A');
@@ -4517,36 +4529,36 @@ function levelArt(kind){
 }
 const OTTER_LEVELS=[
  {name:'Heart',      art:'heart',  size:6,  shape:'flat',    thick:.5, colors:2,  pts:100},
- {name:'Duck',       art:'duck',   size:7,  shape:'flat',    thick:1,  colors:3,  pts:120},
+ {name:'Duck',       art:'duck',   size:6,  shape:'flat',    thick:1,  colors:3,  pts:120},
  {name:'Smiley',     art:'smiley', size:7,  shape:'flat',    thick:.5, colors:2,  pts:150},
- {name:'Toadstool',  sample:'Toadstool', size:8,  shape:'flat', thick:1, colors:4, pts:180},
- {name:'Rocket',     sample:'Rocket',    size:10, shape:'puffed', thick:.7, colors:5, pts:220},
- {name:'Palm tree',  sample:'Palm tree', size:12, shape:'puffed', thick:.9, colors:5, pts:260},
- {name:'Fish',       sample:'Fish',      size:7,  shape:'puffed', thick:.6, colors:4, pts:300},
- {name:'Cat',        sample:'Cat',       size:10, shape:'puffed', thick:.8, colors:5, pts:350},
- {name:'Robot',      sample:'Robot',     size:14, shape:'puffed', thick:1,  colors:7, pts:400},
- {name:'Dog',        sample:'Dog',       size:12, shape:'puffed', thick:1,  colors:6, pts:450},
- {name:'Dinosaur',   sample:'Dinosaur',  size:14, shape:'puffed', thick:1,  colors:7, pts:500},
- {name:'Sailboat',   sample:'Sailboat',  size:14, shape:'puffed', thick:1,  colors:6, pts:600},
+ {name:'Toadstool',  sample:'Toadstool', size:11,  shape:'flat', thick:1, colors:4, pts:180},
+ {name:'Rocket',     sample:'Rocket',    size:15, shape:'puffed', thick:.4, colors:5, pts:220},
+ {name:'Palm tree',  sample:'Palm tree', size:12, shape:'puffed', thick:.6, colors:5, pts:260},
+ {name:'Fish',       sample:'Fish',      size:7,  shape:'puffed', thick:.4, colors:4, pts:300},
+ {name:'Cat',        sample:'Cat',       size:11, shape:'puffed', thick:.4, colors:7, pts:350},
+ {name:'Robot',      sample:'Robot',     size:11, shape:'puffed', thick:1,  colors:7, pts:400},
+ {name:'Dog',        sample:'Dog',       size:13, shape:'puffed', thick:.6,  colors:6, pts:450},
+ {name:'Dinosaur',   sample:'Dinosaur',  size:14, shape:'puffed', thick:.9,  colors:7, pts:500},
+ {name:'Sailboat',   sample:'Sailboat',  size:14, shape:'puffed', thick:.9,  colors:6, pts:600},
  {name:'Cottage',    sample:'Cottage',   size:11, shape:'puffed', thick:1,  colors:8, pts:750},
- {name:'Otter',      sample:'Otter',     size:11, shape:'puffed', thick:1,  colors:8, pts:1000},
+ {name:'Otter',      sample:'Otter',     size:12, shape:'puffed', thick:.5,  colors:8, pts:1000},
 ];
 // Brain Trail has its own puzzles (same climb from tiny to tricky, same points), so the two trails feel different
 const BRAIN_LEVELS=[
- {name:'Star',          art:'star',              size:7,  shape:'flat',   thick:.5, colors:2, pts:100},
- {name:'Apple',         art:'apple',             size:9,  shape:'flat',   thick:1,  colors:3, pts:120},
- {name:'Ice cream',     sample:'Ice cream',      size:13, shape:'flat',   thick:.5, colors:4, pts:150},
- {name:'Lighthouse',    sample:'Lighthouse',     size:10, shape:'flat',   thick:.5, colors:4, pts:180},
+ {name:'Star',          art:'star',              size:8,  shape:'flat',   thick:.5, colors:2, pts:100},
+ {name:'Apple',         art:'apple',             size:7,  shape:'flat',   thick:1,  colors:3, pts:120},
+ {name:'Ice cream',     sample:'Ice cream',      size:12, shape:'flat',   thick:.5, colors:4, pts:150},
+ {name:'Lighthouse',    sample:'Lighthouse',     size:16, shape:'flat',   thick:.5, colors:4, pts:180},
  {name:'Ghost',         sample:'Ghost',          size:9,  shape:'puffed', thick:.3, colors:3, pts:220},   // 9 wide so the eyes and mouth survive (at 7 the face vanished); thin keeps it at 40 bricks
- {name:'Bunny',         sample:'Bunny',          size:11, shape:'puffed', thick:.7, colors:4, pts:260},
- {name:'Penguin',       sample:'Penguin',        size:8,  shape:'puffed', thick:.7, colors:4, pts:300},
- {name:'Guitar',        sample:'Guitar',         size:14, shape:'puffed', thick:.7, colors:5, pts:350},
- {name:'Owl',           sample:'Owl',            size:10, shape:'puffed', thick:.9, colors:6, pts:400},
- {name:'Frog',          sample:'Frog',           size:10, shape:'puffed', thick:1,  colors:6, pts:450},
- {name:'Crab',          sample:'Crab',           size:14, shape:'puffed', thick:1,  colors:6, pts:500},
- {name:'Turtle',        sample:'Turtle',         size:11, shape:'puffed', thick:1,  colors:6, pts:600},
- {name:'Castle',        sample:'Castle',         size:13, shape:'puffed', thick:1,  colors:7, pts:750},
- {name:'Treasure chest',sample:'Treasure chest', size:13, shape:'puffed', thick:1,  colors:8, pts:1000},
+ {name:'Bunny',         sample:'Bunny',          size:13, shape:'puffed', thick:.4, colors:4, pts:260},
+ {name:'Penguin',       sample:'Penguin',        size:8,  shape:'puffed', thick:.6, colors:4, pts:300},
+ {name:'Guitar',        sample:'Guitar',         size:14, shape:'puffed', thick:.9, colors:5, pts:350},
+ {name:'Owl',           sample:'Owl',            size:9, shape:'puffed', thick:1, colors:6, pts:400},
+ {name:'Frog',          sample:'Frog',           size:9, shape:'puffed', thick:1,  colors:6, pts:450},
+ {name:'Crab',          sample:'Crab',           size:13, shape:'puffed', thick:1,  colors:6, pts:500},
+ {name:'Turtle',        sample:'Turtle',         size:12, shape:'puffed', thick:.7,  colors:6, pts:600},
+ {name:'Castle',        sample:'Castle',         size:14, shape:'puffed', thick:1,  colors:7, pts:750},
+ {name:'Treasure chest',sample:'Treasure chest', size:12, shape:'puffed', thick:.7,  colors:8, pts:1000},
 ];
 const levelsOf=tr=>tr==='brain'?BRAIN_LEVELS:OTTER_LEVELS;
 // Ready-made Blitz races, small enough to be quick (Blitz keeps races to 30 bricks or fewer)
@@ -4620,6 +4632,7 @@ function updateGameBar(){
   if(game.math) bits.push(`Math ${game.math.solved.length} of ${game.math.locks.length} pages${game.math.pts?` +${game.math.pts}`:''}`);
   $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>';
 }
+window.bloppitLevels={otter:OTTER_LEVELS,brain:BRAIN_LEVELS,lib:()=>SAMPLES.filter(released).map(s=>s.name),weekly:w=>weeklyPuzzle(w),count:L=>{ delete L.count; return levelCount(L); }};   // for tests and tuning
 window.bloppitLevel=(t,i)=>{ trail=t; startLevel(i); return model?{n:model.bricks.length,colors:[...new Set(model.bricks.map(b=>PALETTE[b.c][0]))]}:null; };   // for tests
 function startLevel(i){
   const L=levelsOf(trail)[i]; if(!L) return;
@@ -4630,7 +4643,7 @@ function startLevel(i){
   game={lvl:i,trail,pen:{hint:0,auto:0,miss:0},hintSteps:[]}; subOf.game=trail;
   rebuild();
   const mp_=mathPrefs(); mathAsked=-1;
-  if(trail==='brain'&&model) game.math={v:2,tier:mathRung(mp_.grade,i,mathAdj()),grade:mp_.grade,locks:mathLocks(i,model.steps.length),solved:[],pts:0,q:{},right:0,miss:0};
+  if(trail==='brain'&&model) game.math={v:2,tier:mathRung(mp_.grade,i,mathAdj(),mathUp()),grade:mp_.grade,locks:mathLocks(i,model.steps.length),solved:[],pts:0,q:{},right:0,miss:0};
   setTab('build'); updateGameBar();
   setStatus(`${TRAILS[trail].icon} Level ${i+1}: build the ${L.name}! Open the parts box to pick up bricks.`,'ok');
   saveNow();
@@ -4786,11 +4799,15 @@ $('#gmReset').onclick=()=>{ const b=$('#gmReset'); if(!b.dataset.confirm){ b.dat
 // The player's age is the only input. In the background it becomes a US school grade (Pre-K to 8th), and the
 // puzzles follow the Common Core standards for that grade. Each grade has three steps (easy, medium, hard):
 // Brain Trail levels 1-5 use the easy step, 6-10 medium, 11-14 hard, so later levels get harder WITHIN the grade.
-// Puzzles also adapt: two first-try misses in a row drop a step, three first-try rights in a row raise one,
-// never more than one grade above the player's own (and never more than two below). Answers are whole numbers.
+// Puzzles also adapt: two first-try misses in a row drop a step, three first-try rights in a row raise one, up to
+// the hardest step of the player's own grade. Going beyond it, into the next grade's topics, only happens on
+// levels 11-14 and takes eight first-try rights in a row at that top step (the label then says so); never more
+// than one grade above, two below.
+// Answers are whole numbers.
 const MATH_GRADES=['Pre-K','Kindergarten','1st grade','2nd grade','3rd grade','4th grade','5th grade','6th grade','7th grade','8th grade'];
-const MATH_TOPICS=['Counting bricks','Adding and taking away to 10','Adding and taking away to 20','Adding to 100 and equal groups','Times tables and dividing',
-  'Bigger numbers, multiplying, dividing and perimeter','Order of operations, powers of 10 and fractions of numbers','Percents, powers and one-step equations',
+// What each grade's puzzles cover (the label says exactly what the puzzles ask; nothing from a later grade)
+const MATH_TOPICS=['Counting bricks','Adding and taking away to 10','Adding and taking away to 20, and tens to 100','Adding to 100, skip counting and equal groups','Times tables, dividing, adding to 1,000 and area',
+  'Bigger numbers, multiplying, dividing and perimeter','Order of operations, powers of 10, fractions of numbers and volume','Powers, one-step equations, percents, rates and area',
   'Negative numbers, two-step equations and discounts','Square roots, equations and right triangles'];
 const MATH_DEFAULT_GRADE=2;   // no age given: 2nd grade, and the puzzles adapt from there
 // A US school year starts around September 1. From September to February most children of a given age are in
@@ -4806,7 +4823,10 @@ const levelStep=lvl=>lvl<5?0:lvl<10?1:2;
 const rungLimits=grade=>({lo:Math.max(0,rungOf(grade-2,0)),hi:Math.min(29,rungOf(grade+1,0))});
 function mathAdj(){ const g=gameStore(); return Number.isInteger(g.madj)?g.madj:0; }
 function mathAdjSet(v){ const g=gameStore(); g.madj=v; gameStoreSet(g); }
-function mathRung(grade,lvl,adj){ const L=rungLimits(grade); return clamp(rungOf(grade,levelStep(lvl))+(adj||0),L.lo,L.hi); }
+const ownTop=grade=>Math.min(29,rungOf(grade,2));   // the hardest step of the player's own grade
+function mathUp(){ const g=gameStore(); return !!g.mup; }
+function mathUpSet(v){ const g=gameStore(); g.mup=v?1:0; gameStoreSet(g); }
+function mathRung(grade,lvl,adj,up){ const L=rungLimits(grade); return clamp(rungOf(grade,levelStep(lvl))+(adj||0),L.lo,up?L.hi:ownTop(grade)); }
 function mathLocks(lvl,N){
   const every=[5,4,3,2][Math.min(3,Math.floor(lvl/4))], locks=[];
   for(let k=0;k<N&&locks.length<15;k+=every) locks.push(k);
@@ -4865,9 +4885,11 @@ function makePuzzle(rung){
       if(r<.6){ const b=rnd(4,9), q=rnd(105,450); return W(`${b*q} ÷ ${b} = ?`,q,`Share ${b*q} into ${b} equal groups: hundreds first.`); }
       const w=rnd(3,15), l=rnd(w+1,25); return W(`A rectangle is ${w} studs wide and ${l} studs long. How far is it all the way around?`,2*(w+l),'Add all four sides.',{long:true}); }
     case 5: {    // 5th grade: powers of 10, order of operations with parentheses, fraction of a whole number, volume (5.NBT.2, 5.OA.1, 5.NF.4, 5.MD.5)
-      if(s===0){ if(r<.5){ const a=rnd(12,99), p=pickOne([10,100,1000]); return W(`${a} × ${p} = ?`,a*p,`Multiplying by ${p} moves each digit ${String(p).length-1} place${p>10?'s':''} to the left.`); }
+      if(s===0&&r<.3){ const d=pickOne([2,3,4,5,10]), tot=d*rnd(2,9); return W(`1/${d} of ${tot} = ?`,tot/d,`Share ${tot} into ${d} equal groups.`); }
+      if(s===1&&r<.3){ const [n,d]=pickOne([[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[1,10]]), tot=d*rnd(2,10); return W(`${n}/${d} of ${tot} = ?`,tot/d*n,`Find 1/${d} of ${tot} first, then multiply by ${n}.`); }
+      if(s===0){ if(r<.65){ const a=rnd(12,99), p=pickOne([10,100,1000]); return W(`${a} × ${p} = ?`,a*p,`Multiplying by ${p} moves each digit ${String(p).length-1} place${p>10?'s':''} to the left.`); }
         const p=pickOne([10,100]), q=rnd(3,95); return W(`${q*p} ÷ ${p} = ?`,q,`Dividing by ${p} moves each digit ${p===10?'one place':'two places'} to the right.`); }
-      if(s===1){ const a=rnd(2,12), b=rnd(2,9), c=rnd(2,9); if(r<.5) return W(`(${a} + ${b}) × ${c} = ?`,(a+b)*c,'Work out the parentheses first.');
+      if(s===1){ const a=rnd(2,12), b=rnd(2,9), c=rnd(2,9); if(r<.65) return W(`(${a} + ${b}) × ${c} = ?`,(a+b)*c,'Work out the parentheses first.');
         const x=rnd(2,6), y=rnd(2,6), t=x*y+rnd(2,20); return W(`${t} − (${x} × ${y}) = ?`,t-x*y,'Work out the parentheses first.'); }
       if(r<.55){ const [n,d]=pickOne([[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5],[1,6],[5,6],[1,8],[3,8],[5,8],[7,8],[1,10],[3,10],[7,10],[9,10]]), tot=d*rnd(2,12); return W(`${n}/${d} of ${tot} = ?`,tot/d*n,`Find 1/${d} of ${tot} first, then multiply by ${n}.`); }
       const a=rnd(2,6), b=rnd(2,6), c=rnd(2,5); return W(`A box is ${a} by ${b} by ${c} studs. How many 1-stud cubes fill it?`,a*b*c,`Multiply ${a} × ${b} × ${c}.`,{long:true}); }
@@ -4911,7 +4933,7 @@ function openMath(k){
   const g=game.math; g.q=g.q||{};
   if(!g.q[k]) g.q[k]=makePuzzle(g.tier);
   const P=g.q[k]; mq={k,P,tries:0};
-  $('#mqTag').textContent=`Math puzzle · ${MATH_TOPICS[gradeOfRung(g.tier)+1]}`;
+  const gr=gradeOfRung(g.tier); $('#mqTag').textContent=gr>g.grade?`Stepping up: ${MATH_GRADES[gr+1]} math, you’re on a roll!`:`Math puzzle · ${MATH_TOPICS[gr+1]}`;
   $('#mqTitle').textContent=`Page ${k+1} is locked!`;
   $('#mqVis').innerHTML=P.vis||'';
   $('#mqQ').textContent=P.q; $('#mqQ').classList.toggle('long',!!P.long);
@@ -4948,8 +4970,11 @@ function mathAnswer(v){
 // Kept within rungLimits (at most one grade above, two below), and remembered for this player's next levels.
 function mathStreak(ok){ const m=game&&game.math; if(!m||m.v!==2) return;
   if(ok){ m.right=(m.right||0)+1; m.miss=0; } else { m.miss=(m.miss||0)+1; m.right=0; }
-  const L=rungLimits(m.grade); let t=m.tier;
-  if(m.right>=3){ t=Math.min(L.hi,t+1); m.right=0; } else if(m.miss>=2){ t=Math.max(L.lo,t-1); m.miss=0; }
+  const L=rungLimits(m.grade), top=ownTop(m.grade); let t=m.tier, up=mathUp();
+  if(t<top&&m.right>=3){ t=t+1; m.right=0; }
+  else if(t>=top&&levelStep(game.lvl)===2&&m.right>=8){ if(t<L.hi){ t=t+1; up=true; } m.right=0; }   // next grade only on levels 11-14, after 8 right in a row
+  else if(m.miss>=2){ t=Math.max(L.lo,t-1); m.miss=0; if(t<=top) up=false; }
+  if(up!==mathUp()) mathUpSet(up);
   if(t!==m.tier){ m.tier=t; mathAdjSet(clamp(t-rungOf(m.grade,levelStep(game.lvl)),-9,3)); for(const k of Object.keys(m.q)) if(!m.solved.includes(+k)) delete m.q[k]; } }
 function unlockPage(k){
   showPage(viewPage); updateBuildUI();
@@ -4969,7 +4994,7 @@ $('#bpUnlock').onclick=()=>openMath(viewPage);
 $('#mathAge').innerHTML='<option value="" disabled>Age</option>'+AGE_OPTS;
 function syncMathUI(){ const p=mathPrefs(); $('#mathAge').value=p.set?Math.min(15,p.age):''; $('#gmMath').classList.toggle('on',p.on); $('#gmMath').hidden=!p.on;
   $('#mathAgeFor').textContent=curPlayer().name;
-  $('#mathTier').textContent=p.set?`Starts with ${MATH_GRADES[p.grade+1]} math: ${MATH_TOPICS[p.grade+1].toLowerCase()}. Puzzles adjust as you play.`:'Choose an age to set how hard the puzzles are'; }
+  $('#mathTier').textContent=p.set?`Starts with ${MATH_GRADES[p.grade+1]} math: ${MATH_TOPICS[p.grade+1].toLowerCase()}. Puzzles adjust as you play, and step up to ${MATH_GRADES[p.grade+2]||'harder'} topics only after a long run of right answers.`:'Choose an age to set how hard the puzzles are'; }
 $('#mathAge').addEventListener('change',e=>{ const p=mathPrefs(); p.age=+e.target.value; p.set=true; mathPrefsSet(p); syncMathUI(); });
 syncMathUI();
 
@@ -5565,7 +5590,7 @@ bzLevelNote();
 
 function cpuPub(){ const o=JSON.parse(JSON.stringify(cpu.s)); o.now=Date.now(); return o; }
 function cpuSend(){ cpu.s.ver++; if(mp&&mp.cpu) mpApply(cpuPub()); }
-function cpuEnd(){ if(cpu){ clearTimeout(cpu.timer); clearTimeout(cpu.aimT); cpu=null; } cpuAimGroup.clear(); }
+function cpuEnd(){ if(cpu){ clearTimeout(cpu.timer); clearTimeout(cpu.aimT); clearInterval(cpu.dog); cpu=null; } cpuAimGroup.clear(); }
 const cpuTurnNow=()=>!!(mp&&mp.cpu&&cpu&&cpu.s.started&&!cpu.s.finished&&cpu.s.turn===1);
 // What Bloppit says while it's his turn (the building buddy in the corner shows it)
 function cpuSay(cls,html){ if(!cpu) return; cpu.say={cls,html}; if(tab==='build') buddyUpdate(); }
@@ -5634,40 +5659,72 @@ async function cpuApi(method,body,query){
   s.ver++; setTimeout(cpuKick,0);
   return {state:cpuPub()};
 }
-// Bloppit's next brick: one still needed for the earliest unfinished step
+// The Longtail's next brick: one still needed for the earliest unfinished step from the player's page on,
+// and if those are all in (the bricks left over belong to an earlier step), any brick still missing.
 function cpuPick(){
   const s=cpu.s, o=curOff()||{x:0,z:0}, u=usedSet();
   if(s.moves.length>=s.nBricks) return null;
   let list=[];
   for(let k=Math.min(cur,model.steps.length);k<model.steps.length&&!list.length;k++) list=model.steps[k].bricks.filter(b=>!u.has(b));
+  for(let k=0;k<model.steps.length&&!list.length;k++) list=model.steps[k].bricks.filter(b=>!u.has(b));
   if(!list.length) return null;
   const t=list[Math.floor(Math.random()*list.length)];
   return {b:mpToken(t,s.moves),x:t.x+o.x,z:t.z+o.z};
 }
+// The race can't go on (no brick left the Longtail can find): any odd bricks go in off the clock and it ends
+function cpuFinishNow(){
+  const s=cpu.s; if(s.finished) return; cpuStopClock();
+  const done=new Set(s.moves.map(m=>m.b));
+  for(let k=0;k<s.nBricks;k++) if(!done.has(k)) s.moves.push({p:-1,b:k,x:0,z:0,a:1});
+  s.finished=true; if(!s.solo) buildFinished('blitz');
+}
+// Nothing for the Longtail to place: hand the turn on, and if nobody else can play either, finish the race
+function cpuGiveUp(){
+  const s=cpu.s; cpuAimGroup.clear(); cpu.lastAct=Date.now();
+  cpuNextTurn(); if(s.turn===1&&!s.finished) cpuFinishNow();
+  cpuSend();
+}
+// Watchdog: a Longtail's turn must always move on. If he has no move queued 15 s after his turn (or his last brick),
+// nudge him; if he still hasn't placed after 30 s, his turn ends.
+function cpuWatch(){
+  if(!cpuTurnNow()) return;
+  const s=cpu.s, since=Date.now()-Math.max(s.turnStart,cpu.lastAct||0);
+  if(since<15000) return;
+  if(!cpu.timer){ cpu.lastAct=Date.now(); cpuKick(); return; }
+  if(since<30000) return;
+  clearTimeout(cpu.timer); cpu.timer=null;
+  if(s.turnPlaced>0){ cpu.lastAct=Date.now(); cpuSay('point','Your turn. Go go go!'); cpuNextTurn(); if(s.turn===1&&!s.finished) cpuFinishNow(); cpuSend(); }
+  else { cpu.lastAct=Date.now(); cpuKick(); }
+}
 function cpuKick(){
-  const s=cpu&&cpu.s; if(!s||cpu.timer||!s.started||s.finished||s.turn!==1||!mp||!mp.cpu) return;
+  const s=cpu&&cpu.s; if(s&&!cpu.dog) cpu.dog=setInterval(()=>{ try{ cpuWatch(); }catch(e){} },3000);
+  if(!s||cpu.timer||!s.started||s.finished||s.turn!==1||!mp||!mp.cpu) return;
   const L=CPU_LEVELS[s.cpuLevel], want=Math.round(rndIn(L.turn[0]-.49,L.turn[1]+.49));
   cpu.left=Math.max(1,Math.min(want,s.perTurn,s.quota-s.players[1].n));
   cpuStep(Math.max(0,s.turnStart-Date.now())+500);
 }
-function cpuStep(extra=0){
-  const s=cpu.s, L=CPU_LEVELS[s.cpuLevel], wait=rndIn(L.ms[0],L.ms[1])+extra;
-  const m=cpuPick(), miss=Math.random()<L.miss, wrong=miss?[{x:2,z:0},{x:-2,z:0},{x:0,z:2},{x:0,z:-2}][Math.floor(Math.random()*4)]:null;
-  if(m) cpuSay('think',`${s.turnPlaced?'Next one.':`${CPU_LEVELS[s.cpuLevel].name}’s turn.`} He wants this<span class="bud-dots"></span><div class="callout">${calloutHTML([model.bricks[m.b]])}</div>`);
+function cpuStep(extra=0,retry=false){
+  // after a dropped brick he grabs it straight back: never more than ~12 s without a brick going in
+  const s=cpu.s, L=CPU_LEVELS[s.cpuLevel], wait=retry?rndIn(1500,2500):rndIn(L.ms[0],L.ms[1])+extra;
+  const m=cpuPick(), miss=!!m&&!cpu.missed&&Math.random()<L.miss, wrong=miss?[{x:2,z:0},{x:-2,z:0},{x:0,z:2},{x:0,z:-2}][Math.floor(Math.random()*4)]:null;
+  cpu.missed=false;
+  if(!m) cpuSay('point','Hmm, nothing left for him to place.');
+  else cpuSay('think',`${s.turnPlaced?'Next one.':`${CPU_LEVELS[s.cpuLevel].name}’s turn.`} He wants this<span class="bud-dots"></span><div class="callout">${calloutHTML([model.bricks[m.b]])}</div>`);
   clearTimeout(cpu.aimT); cpu.aimT=setTimeout(()=>{ if(cpu&&cpu.s===s&&s.turn===1&&!s.finished) cpuAim(m,wrong); },Math.max(0,wait-1100));
   cpu.timer=setTimeout(()=>{
     if(!cpu||cpu.s!==s) return; cpu.timer=null;
     if(!mp||!mp.cpu||s.finished||s.turn!==1){ cpuAimGroup.clear(); return; }
     if(miss){
+      cpu.missed=true; cpu.lastAct=Date.now();   // never two drops in a row: a turn mustn't drag on
       s.players[1].miss++; cpuSend(); mpFlash('+1s'); if(tab==='build') sfx.bonk();
       const g=cpuAimGroup.children[0]; if(g) g.material=errMat;
       cpuSay('reach',`Ha! ${CPU_LEVELS[s.cpuLevel].name} dropped it. +1 second for him.`);
-      cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; cpuAimGroup.clear(); if(!s.finished&&s.turn===1) cpuStep(); },1300);
+      cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; cpuAimGroup.clear(); if(!s.finished&&s.turn===1) cpuStep(0,true); },1300);
       return;
     }
     cpuAimGroup.clear();
-    const pick=m&&!s.moves.some(x=>x.b===m.b)?m:cpuPick(); if(!pick){ cpuNextTurn(); cpuSend(); return; }
-    cpuPlace(1,pick.b,pick.x,pick.z); cpu.left--;
+    const pick=m&&!s.moves.some(x=>x.b===m.b)?m:cpuPick(); if(!pick){ cpuGiveUp(); return; }
+    cpuPlace(1,pick.b,pick.x,pick.z); cpu.left--; cpu.lastAct=Date.now();
     cpu.say={cls:'hop',html:['Click! Got it.','Snap! In it goes.','Yes! That one fits.'][s.players[1].n%3]};
     cpuSend();
     if(s.finished||s.turn!==1) return;     // the Longtail placed 3, or his last one
@@ -6039,6 +6096,7 @@ document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==
 
 function loadPng(src){ return new Promise((res,rej)=>{ const img=new Image(); img.onload=()=>{ const c=document.createElement('canvas'); c.width=img.naturalWidth; c.height=img.naturalHeight; c.getContext('2d').drawImage(img,0,0); res(canvasData(c)); }; img.onerror=rej; img.src=src; }); }
 function setControls(s){
+  libTuned=false;
   Object.assign(S,s);
   S.kind=s.kind||'model'; if(s.pw==null) S.pw=48; if(s.pcol==null) S.pcol=24;
   for(const [id,k] of [['size','size'],['thick','thick'],['tol','tol'],['colors','maxColors'],['pw','pw'],['pcol','pcol']]){ const el=$('#'+id); el.value=S[k]; el.dispatchEvent(new Event('input')); }
@@ -6120,7 +6178,11 @@ loadSample(0); setTab('create'); clearTimeout(timer); rebuild(); requestAnimatio
    index into a fixed list, and a photo build is keyed by a hash of its file name. */
 var WORLD_KEY='bloppit-world-v1', worldLast=null;
 var PUP_NAMES=['Pebble','Kelp','Sandy','Bubbles','Coral','Finn','Misty','Shelly','Ripple','Dash','Mango','Tide'];
-var PUP_STAGES=[{name:'Pup',at:0},{name:'Splash',at:10},{name:'Legend',at:40}];
+// Splash at 25 builds, Legend at 65 (of about 71 core builds), so Legend comes near the end of the core content.
+var PUP_STAGES=[{name:'Pup',at:0},{name:'Splash',at:25},{name:'Legend',at:65}];
+// Until 24 Oct 2026 it was Splash at 10 and Legend at 40: an otter keeps any stage it reached under those
+// (worked out from when its builds were finished, so every device agrees and nothing new is stored).
+var PUP_STAGES_OLD=[0,10,40], PUP_SWITCH=Date.UTC(2026,9,24,3);
 // The pup's own brick: never red (red is Bloppit's), in the colour the child picks, with one stud per stage
 // (Pup 1, Splash 2, Legend 3). The drawing is three layers: the pup, the brick (drawn here), the paws holding it.
 var PUP_COLORS=[{n:'Blue',c:'#0055BF'},{n:'Yellow',c:'#F2CD37'},{n:'Green',c:'#237841'},{n:'Orange',c:'#FE8A18'},{n:'Purple',c:'#81007B'},{n:'Teal',c:'#008F9B'},{n:'Lime',c:'#A5CA18'},{n:'Pink',c:'#FF698F'}];
@@ -6156,7 +6218,14 @@ function worldSet(o){ try{ localStorage.setItem(pkey(WORLD_KEY),JSON.stringify(o
 const worldCount=o=>o.log.length;                                   // distinct models finished
 // XP and bonus stars are worked out from the builds themselves (size, Weekly, From Memory), so two devices
 // playing the same pup add up correctly after a merge instead of keeping the larger of two running totals.
-const buildXP=(k,b)=>(b.k==='blitz'?10:b.n<=20?10:b.n<=40?20:35)+(k.startsWith('w:')?10:0)+(b.m?5:0);
+// A model is worth its size: 0.55 XP a brick (at least 10). Tuned so finishing all the core content (both trails,
+// 12 Weeklies, 15 library builds, 15 Blitz wins) comes to about 3,000 XP, and level 11 (the Sailor cap, the last
+// outfit) arrives in the last ~10% of it. A Blitz win is 10, a Weekly +10, From Memory +5.
+// Builds finished before the change (24 Oct 2026) keep at least what they were worth then: nobody's XP goes down.
+const XP_PER_BRICK=.55, XP_SWITCH=Date.UTC(2026,9,24,3);
+const sizeXP=n=>Math.max(10,Math.round(XP_PER_BRICK*(n||0)));
+const oldSizeXP=n=>n<=20?10:n<=40?20:35;
+const buildXP=(k,b)=>(b.k==='blitz'?10:Math.max(sizeXP(b.n),(b.t||Infinity)<XP_SWITCH?oldSizeXP(b.n):0))+(k.startsWith('w:')?10:0)+(b.m?5:0);
 const worldXP=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+buildXP(k,b),0);
 const worldStarsEarned=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+(b.s||0)+(k.startsWith('w:')?1:0)+(b.m?1:0),0);
 // Put away / put back: the time it was put away, or minus the time it came back; on a merge the latest choice wins (old 1/0 lose to any timed one)
@@ -6166,7 +6235,10 @@ const decorOut=o=>(o.decor||[]).filter(id=>!isAway(o,'decor:'+id));   // decorat
 const worldStarsSpent=o=>(o.decor||[]).reduce((a,id)=>{ if((o.free||[]).includes(id)) return a; const d=DECOR.find(x=>x.id===id); return a+(d?d.cost:0); },0);
 const worldStars=o=>worldStarsEarned(o)-worldStarsSpent(o);
 const stageOf=(list,n)=>{ let k=0; list.forEach((st,i)=>{ if(n>=st.at) k=i; }); return k; };
-const pupStage=o=>stageOf(PUP_STAGES,worldCount(o)), islandStage=o=>stageOf(ISLAND_STAGES,worldCount(o));
+const pupHeld=o=>{ const n=Object.values(o.builds||{}).filter(b=>b&&(b.t||Infinity)<PUP_SWITCH).length; return n>=PUP_STAGES_OLD[2]?2:n>=PUP_STAGES_OLD[1]?1:0; };
+const pupStage=o=>Math.max(stageOf(PUP_STAGES,worldCount(o)),pupHeld(o)), islandStage=o=>stageOf(ISLAND_STAGES,worldCount(o));
+// How far to the next stage (0–100); an otter that kept a stage early starts its bar from where it is
+const pupPct=(o,ps)=>{ const n=worldCount(o), nx=PUP_STAGES[ps+1]; if(!nx) return 100; const from=Math.min(PUP_STAGES[ps].at,n); return Math.max(0,Math.min(100,Math.round(100*(n-from)/Math.max(1,nx.at-from)))); };
 const pupName=o=>cleanPupText(o.pupText)||(o.pupName>=0&&PUP_NAMES[o.pupName])||'';
 function hash32(str){ let h=2166136261; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0).toString(36); }
 // A model's key: catalogue models by name, photo models by a hash (the file name never leaves the device)
@@ -6191,7 +6263,7 @@ function worldFinish(kind){
   const key=modelKey(), prev=o.builds[key], first=!prev;
   const noHint=hint+auto===0, clean=noHint&&miss===0;
   const stars=blitz?1:1+(noHint?1:0)+(clean?1:0);
-  let xp=first?(blitz?10:N<=20?10:N<=40?20:35):0, bonus=0;
+  let xp=first?(blitz?10:sizeXP(N)):0, bonus=0;
   if(kind==='weekly'&&first){ xp+=10; bonus=1; const d=DECOR.filter(x=>!o.decor.includes(x.id)).sort((a,b)=>a.cost-b.cost)[0]; if(d){ o.decor.push(d.id); o.free=[...(o.free||[]),d.id]; r_decor=d; } }
   const memory=!!run.memory&&!mp&&!blitz&&clean&&!(prev&&prev.m); if(memory){ xp+=5; bonus+=1; }
   const before={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
@@ -6325,7 +6397,7 @@ function renderHomeWorld(){
   const el=$('#hmWorld'), o=worldStore(), n=worldCount(o);
   if(!n){ el.hidden=true; return; }
   const ps=pupStage(o), is=islandStage(o), next=PUP_STAGES[ps+1], inext=ISLAND_STAGES[is+1], nm=pupName(o);
-  const pct=next?Math.round(100*(n-PUP_STAGES[ps].at)/(next.at-PUP_STAGES[ps].at)):100;
+  const pct=pupPct(o,ps);
   const pic=isl3Init()?isl3Still(o,900,620):'', isle=pic?`<img src="${pic}" alt="">`:islandSVG(o,{uid:'hm'});
   el.hidden=false; el.classList.add('lead');
   el.setAttribute('aria-label',`Bloppitopia. ${nm||'Your otter'}, level ${otterLevel(o)} ${PUP_STAGES[ps].name}, ${n} build${n===1?'':'s'}, ${islandsOpen(o).length} of 5 islands.`);
@@ -6593,7 +6665,7 @@ function islandInfo(id,o){
       const lv=otterLevel(o), nl=levelXP(lv+1), nAcc=ACC.find(a=>!a.legend&&a.lvl>lv);
       return {title:nm||'Your otter',hint:`Level ${lv} ${PUP_STAGES[ps].name} · ${ps+1} stud${ps?'s':''} on its brick`,icon:pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'}),
         rows:[['Otter level',`${lv} (${worldXP(o)} XP, next at ${nl})`],...(nAcc?[['Next outfit',`${nAcc.name} at level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at ${nx.at} builds: another stud`:'A Legend. That’s the top']],
-        bar:nx?{pct:Math.max(4,Math.round(100*(n-PUP_STAGES[ps].at)/(nx.at-PUP_STAGES[ps].at))),label:`${nx.at-n} more build${nx.at-n===1?'':'s'} to ${nx.name}`}:null,
+        bar:nx?{pct:Math.max(4,pupPct(o,ps)),label:`${nx.at-n} more build${nx.at-n===1?'':'s'} to ${nx.name}`}:null,
         actions:[{label:'👕 Wardrobe',fn:()=>wardrobeOpen(),primary:true},{label:nm?'Name or colour':'Name your otter',fn:()=>pupOpen()}]}; }
     case 'model': { const f=modelFacts(arg,o), b=f.b, flagW=arg.startsWith('w:')&&!ISL3.ok, onIsle=shown.list.some(m=>m.key===arg)||flagW;
       const acts=[]; if(f.again) acts.push({label:'Build it again',fn:f.again,primary:true});
@@ -8131,7 +8203,7 @@ function shareOpen(code,xfer){
   const d=$('#shareDlg'), go=()=>{ d.close();
     if(week===weekOf()){ $('#dyGo').click(); return; }
     if(week){ const o=weeklyPuzzle(week); if(mp) mpLeave(); if(game) endGame(); weeklyLoad(o); setTab('build'); return; }
-    const i=SAMPLES.indexOf(smp); if(mp) mpLeave(); if(game) endGame(); loadSample(i); clearTimeout(timer); rebuild(); setTab('build'); };
+    const i=SAMPLES.indexOf(smp); if(mp) mpLeave(); if(game) endGame(); libDefaults(); loadSample(i); clearTimeout(timer); rebuild(); setTab('build'); };
   $('#shGo').onclick=()=>{ track('share_build_started'); go(); };
   $('#shLook').onclick=()=>{ d.close(); setTab('home'); };
   d.onclose=null; if(!d.open) d.showModal();

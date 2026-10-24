@@ -7,7 +7,7 @@ let chromium; try { ({ chromium } = await import('playwright')); } catch { chrom
 
 const PORT = 8799, BASE = `http://localhost:${PORT}/build/`;
 let server, browser;
-before(async () => { server = await start(PORT); if (chromium) browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM || undefined, args: ['--use-gl=swiftshader'] }); });
+before(async () => { server = await start(PORT); if (chromium) browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM || undefined, args: process.env.PLAYWRIGHT_ARGS ? process.env.PLAYWRIGHT_ARGS.split(' ') : ['--use-gl=swiftshader'] }); });
 const skip = () => !chromium;  // decided when the file loads; the browser itself starts in before()
 after(async () => { if (browser) await browser.close(); server?.close(); });
 
@@ -248,19 +248,23 @@ test('How to play in the app: the tall cut on an iPhone held upright, the wide a
   assert.deepEqual(await src(t), ['/video/how-to-play.mp4', false]); assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('Brain Trail math: age 9 in October is 4th grade, later levels stay in 4th grade, and puzzles adapt (at most one grade up)', { skip: skip() }, async () => {
+test('Brain Trail math: age 9 in October is 4th grade, later levels stay in 4th grade, and puzzles step up a grade only after a long run', { skip: skip() }, async () => {
   const kid = { fn: () => { localStorage.setItem('bloppit-players-v1', JSON.stringify({ cur: 'p1', n: 1, list: [{ id: 'p1', name: 'Alex', age: 9, color: '#D2352B' }] })); localStorage.setItem('bloppit-trail', 'brain'); } };
   const t = await open('?nosplash=1&welcome=0', { init: kid, at: '2026-10-14T15:00:00Z' });
   const st = () => t.page.evaluate(() => window.bloppitMath.state());
   await t.page.evaluate(() => window.bloppitLevel('brain', 13)); await t.page.waitForTimeout(500);
   let m = await st(); assert.equal(m.grade, 4); assert.equal(m.tier, 17, '4th grade, hard step on level 14');
-  assert.ok(m.locks.length >= 6, 'enough locked pages to adapt');
+  assert.ok(m.locks.length >= 11, 'enough locked pages to adapt');
   // answer one page: right first time, or wrong first time
   const page = async (k, right) => t.page.evaluate(([k, right]) => { window.bloppitMath.open(k); const M = window.bloppitMath.state(), a = M.q[k].a;
     window.bloppitMath.answer(right ? a : a + 1); if (!right) window.bloppitMath.answer(a); document.getElementById('mathDlg').close(); }, [k, right]);
   for (const k of m.locks.slice(0, 3)) await page(k, true);
-  m = await st(); assert.equal(m.tier, 18, 'three right in a row: one step up (5th grade, easy)');
-  for (const k of m.locks.slice(3, 6)) await page(k, true);
+  m = await st(); assert.equal(m.tier, 17, 'three right in a row at the top of their own grade: still 4th grade');
+  for (const k of m.locks.slice(3, 8)) await page(k, true);
+  m = await st(); assert.equal(m.tier, 18, 'eight right in a row on a late level: one step up (5th grade, easy)');
+  await t.page.evaluate(() => window.bloppitMath.open(window.bloppitMath.state().locks[8]));
+  assert.match(await t.text('#mqTag'), /Stepping up: 5th grade/); await t.page.evaluate(() => document.getElementById('mathDlg').close());
+  for (const k of m.locks.slice(8, 11)) await page(k, true);
   m = await st(); assert.equal(m.tier, 18, 'never more than one grade up');
   await t.page.evaluate(() => window.bloppitLevel('brain', 12)); await t.page.waitForTimeout(500);
   m = await st(); assert.equal(m.tier, 18, 'remembered for the next level');
