@@ -10,6 +10,13 @@ build it on screen. The menu is game-first:
   "finished" and "clean" to the server, which keeps two counts per week and answers "you and N% of this week's builders
   finished clean". No names, no times, no ranks. The streak counts weeks, with one missed week in 13 forgiven.
   `WEEKLY_PLAN` maps a week key to an authored puzzle; weeks without one get a library pick from the hash.
+  A finished Weekly counts as a creation on Brickworks Island.
+- **Pippa's Puzzles** (trail id `sea`, scores in `g.sbest`): twelve seaside builds that grow Sunrise Shores. Puzzle *n*
+  washes ashore at *n*/12 of `gameProgress()` (pieces built on Frog Forest, Brainpeak, Blitz Bay and Brickworks Island,
+  out of 61) and needs the one before it; the twelfth is the Festival Clock.
+- **The story ends.** Moonstone Isle opens once the other five islands are complete; its eighth chapter (the moon
+  crystal, lufu found) completes the world, and `theEnd()` plays the closing sequence (friends' thank-yous, the child's
+  creations as credits, the numbers, "The end."). Nothing locks afterwards; it can be rewatched from Moonstone Isle.
 - **Solo**: **Quick Build** (pick Library or Your photo, build at your own pace), **Frog Trail** (the 14 levels) and
   **Brain Trail** (the same levels, with math puzzles locking booklet pages). Each trail keeps its own scores
   (`best` and `bbest` in the game save).

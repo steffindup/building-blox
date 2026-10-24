@@ -986,6 +986,34 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 .is-tip .tt-btns{display:flex;flex-wrap:wrap;gap:8px}
 .is-tip .tt-story{margin:0 0 8px;font-size:14px;line-height:1.45}
 .is-tip .tt-chips{display:flex;flex-wrap:wrap;gap:4px;max-height:132px;overflow:auto}.is-tip .tt-chips span{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--bg);color:var(--muted)}.is-tip .tt-chips span.ok{background:#D9F2EF;color:#00616A}
+/* The end: the closing sequence after the whole world is complete */
+.the-end{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:16px 16px 22px;cursor:pointer;background:linear-gradient(180deg,transparent 55%,rgba(8,14,24,.55))}
+#view-island:has(.the-end) :is(.is-btns,.is-foot,.is3-labels){visibility:hidden}
+.the-end .te-skip{position:absolute;bottom:14px;right:14px;border:0;border-radius:999px;padding:6px 14px;background:rgba(20,32,44,.7);color:#fff;font:inherit;font-size:14px;cursor:pointer}
+.the-end .te-card{display:flex;gap:14px;align-items:center;max-width:min(560px,100%);padding:12px 18px 12px 12px;border-radius:20px;background:rgba(20,32,44,.88);color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.3);animation:te-in .6s ease both}
+.the-end .te-card img{width:76px;height:76px;flex:none;object-fit:contain}
+.the-end .te-card b{display:block;font-family:var(--f-display);font-size:20px}
+.the-end .te-card q{display:block;font-size:17px;quotes:'“' '”'}
+.the-end .te-card small{display:block;margin-top:4px;color:#FFE27A;font-size:14px}
+.the-end .te-roll{position:absolute;inset:0;overflow:hidden;display:flex;justify-content:center;pointer-events:none;background:rgba(8,14,24,.62)}
+.the-end .te-roll .te-col{display:flex;flex-direction:column;align-items:center;gap:18px;padding:30px 0;animation:te-roll var(--d,10s) linear both}
+.the-end .te-roll h3{font-family:var(--f-display);color:#fff;font-size:24px;margin:0;text-align:center}
+.the-end .te-roll .te-pics{display:grid;grid-template-columns:repeat(3,96px);gap:14px}
+.the-end .te-roll img{width:96px;height:96px;object-fit:contain;background:rgba(255,255,255,.1);border-radius:14px}
+.the-end .te-nums{display:grid;gap:8px;min-width:min(340px,100%);padding:18px 22px;border-radius:20px;background:rgba(20,32,44,.9);color:#fff;animation:te-in .6s ease both}
+.the-end .te-nums h3{margin:0 0 4px;font-family:var(--f-display);font-size:22px;text-align:center}
+.the-end .te-nums div{display:flex;justify-content:space-between;gap:20px;font-size:17px}
+.the-end .te-nums div b{color:#FFE27A}
+.the-end.final{justify-content:flex-start;padding-top:24px;background:linear-gradient(180deg,rgba(8,14,24,.6),transparent 45%);cursor:default}
+.the-end .te-fin{text-align:center;color:#fff;animation:te-in 1.6s ease both}
+.the-end .te-fin h2{font-family:var(--f-display);font-size:clamp(40px,7vw,64px);margin:0;text-shadow:0 4px 18px rgba(0,0,0,.45)}
+.the-end .te-fin p{margin:6px 0 18px;font-size:18px;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+.the-end .te-fin .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.the-end .te-fin .ghost{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.6)}
+@keyframes te-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes te-roll{from{transform:translateY(100vh)}to{transform:translateY(-100%)}}
+@media (prefers-reduced-motion:reduce){.the-end .te-roll .te-col{animation:none;justify-content:center}.the-end .te-card,.the-end .te-nums,.the-end .te-fin{animation:none}}
+@media (max-width:559px){.the-end .te-card img{width:60px;height:60px}.the-end .te-card q{font-size:15px}.the-end .te-roll .te-pics{grid-template-columns:repeat(3,76px)}.the-end .te-roll img{width:76px;height:76px}}
 .is3-chrome{position:absolute;inset:0;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:12px}
 .is3-banner{pointer-events:none;max-width:90%;text-align:center;padding:8px 16px;border-radius:999px;background:rgba(20,32,44,.86);color:#fff;font-family:var(--f-display);font-size:18px;box-shadow:0 4px 14px rgba(0,0,0,.2);animation:is3-in .4s ease both}
 .is3-banner.big{font-size:22px;background:#008F9B}
@@ -1042,11 +1070,14 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 .tab.play4[aria-selected="true"] .n{background:var(--hi);color:#14202C}
 .hm-sec{font-size:22px;margin:6px 0 -6px}
 .hm-grid.three{grid-template-columns:repeat(3,1fr)}
+.hm-grid.four{grid-template-columns:repeat(4,1fr)}
+@media (max-width:760px){.hm-grid.four{grid-template-columns:1fr 1fr}}
 @media (max-width:560px){.hm-grid.three{grid-template-columns:1fr 1fr}.hm-grid.three .t-quick{grid-column:1 / -1;min-height:104px}}
 /* Yellow so Bloppit's red brick stands out */
 .hm-tile.t-quick{--c:#F4BC22;color:#14202C}
 .hm-tile.t-quick .ic{background:rgba(255,255,255,.35)}
 .hm-tile.t-brain{--c:#0055BF}
+.hm-tile.t-sea{--c:#008F9B}
 .hm-tile.t-friend{--c:#923978}
 .hm-tile.t-together{--c:#6A3FB5}
 .hm-tile.t-join{--c:#1B2A34}
@@ -1085,10 +1116,12 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 .hm-daily .go{width:46px;height:46px;border-radius:50%;background:#F4BC22;color:#14202C;display:grid;place-items:center;font-size:20px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
 .hm-more{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .pick-banner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;background:#F4BC22;color:#14202C;border-radius:14px;padding:10px 14px;font-weight:700;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}
-.trail-pick{justify-self:start;width:max-content;max-width:100%;display:inline-grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:999px;background:var(--page);border:2px solid var(--line);margin-bottom:12px}
+.trail-pick{justify-self:start;width:max-content;max-width:100%;display:inline-grid;grid-template-columns:1fr 1fr 1fr;gap:4px;padding:4px;border-radius:999px;background:var(--page);border:2px solid var(--line);margin-bottom:12px}
 .trail-pick button{font-family:var(--f-display);font-size:18px;border:0;border-radius:999px;padding:8px 18px;background:transparent;color:var(--ink);cursor:pointer}
 .trail-pick button[aria-selected="true"]{background:#237841;color:#fff}
 .trail-pick button#trBrain[aria-selected="true"]{background:#0055BF}
+.trail-pick button#trSea[aria-selected="true"]{background:#008F9B}
+.sea .gm-levels.river{background:linear-gradient(180deg,color-mix(in srgb,#F2CD37 14%,var(--page)),color-mix(in srgb,#36AEBF 16%,var(--page)))}
 .trail-pick button:focus-visible{outline:3px solid var(--hi)}
 .gm-mt{font-size:17px}
 .bz-speed .spd{display:block;font-size:30px;line-height:1.25;margin:2px 0 4px}
@@ -1178,10 +1211,11 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 </div>
 <div class="hm-main">
   <h3 class="hm-sec">Solo</h3>
-  <div class="hm-grid three">
+  <div class="hm-grid four">
     <button class="hm-tile t-quick" data-go="quick" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-lemmie.png" alt="" width="256" height="256"></span><b>Quick Build</b><span>Any puzzle, at your own pace</span></button>
     <button class="hm-tile t-game" data-go="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Frog Trail</b><span id="hmOtterSub">Levels from tiny to tricky</span></button>
     <button class="hm-tile t-brain" data-go="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Brain Trail</b><span id="hmBrainSub">Levels with math puzzles</span></button>
+    <button class="hm-tile t-sea" data-go="sea" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span><b>Pippa’s Puzzles</b><span id="hmSeaSub">Seaside puzzles that wash ashore</span></button>
   </div>
   <h3 class="hm-sec">Blitz</h3>
   <div class="hm-grid">
@@ -1385,11 +1419,13 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
     <div class="hm-grid hub-grid">
       <button class="hm-tile t-game" data-sub="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Frog Trail</b><span id="hubOtterSub">Levels from tiny to tricky</span></button>
       <button class="hm-tile t-brain" data-sub="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Brain Trail</b><span id="hubBrainSub">Levels with math puzzles</span></button>
+      <button class="hm-tile t-sea" data-sub="sea" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span><b>Pippa’s Puzzles</b><span id="hubSeaSub">Seaside puzzles that wash ashore</span></button>
     </div>
   </div>
   <div class="trail-pick" role="tablist" aria-label="Which trail" hidden>
     <button type="button" role="tab" data-trail="otter" id="trOtter">🐸 Frog Trail</button>
     <button type="button" role="tab" data-trail="brain" id="trBrain">🧠 Brain Trail</button>
+    <button type="button" role="tab" data-trail="sea" id="trSea">🐧 Pippa’s Puzzles</button>
   </div>
   <button class="crumb" data-up type="button">‹ Trails</button>
   <div class="gm-head">
@@ -2627,7 +2663,7 @@ function niceName(n){ const b=String(n||'').replace(/\.[^.]+$/,'').trim();
 // Trails, Blitz and Together each have a hub page ('hub') and a page per game. setTab(t) keeps the page the
 // section was last on; setTab(t,'hub') or setTab('blitz','cpu') picks one.
 var subOf={game:'hub',blitz:'hub',mp:'hub'};
-const SUB_OK={game:['hub','otter','brain'],blitz:['hub','cpu','friend'],mp:['hub','start','join']};
+const SUB_OK={game:['hub','otter','brain','sea'],blitz:['hub','cpu','friend'],mp:['hub','start','join']};
 // Which top-bar game a page belongs to (the build screen belongs to whatever you're playing)
 function sectionOf(t){
   if(t==='build'||t==='box'||t==='booklet'){ if(game) return 'game'; if(mp) return trialOn()&&mp.state.calm?'daily':mpHomeTab(); return 'create'; }
@@ -2643,7 +2679,8 @@ function syncSub(t){
   if(t==='mp') $('#mpHeadT').textContent=s==='join'?'🔑 Join a game':'🧩 Build together';
   if(t==='game'&&s==='hub'){ const st=playerStats(players.cur);
     $('#hubOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
-    $('#hubBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} new levels, with math puzzles`; }
+    $('#hubBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} new levels, with math puzzles`;
+    $('#hubSeaSub').textContent=st.slv?`${st.slv} of ${SEA_LEVELS.length} puzzles built`:seaWashed(0)?'A puzzle has washed ashore!':`The first washes ashore at ${seaPct(0)}%`; }
 }
 function setTab(t,sub){
   if(t!=='island'&&ISL3&&ISL3.on) isl3Hide();
@@ -2686,7 +2723,7 @@ function setTab(t,sub){
 /* Browser Back and Forward on the website: each page gets its own address (/build/ is the menu, /build/#blitz, #daily, …),
    so Back goes to the page before instead of leaving Bloppit. The App Store app has no Back button, so it skips this. */
 const NAV_HASH={home:'',create:'photos',build:'build',box:'build',booklet:'booklet',game:'trails',mp:'together',blitz:'blitz',daily:'daily',island:'island'};
-const SUB_HASH={game:{hub:'trails',otter:'otter',brain:'brain'},blitz:{hub:'blitz',cpu:'blitz-bloppit',friend:'blitz-friend'},mp:{hub:'together',start:'together-start',join:'together-join'}};
+const SUB_HASH={game:{hub:'trails',otter:'otter',brain:'brain',sea:'pippa'},blitz:{hub:'blitz',cpu:'blitz-bloppit',friend:'blitz-friend'},mp:{hub:'together',start:'together-start',join:'together-join'}};
 const navHash=t=>SUB_HASH[t]?SUB_HASH[t][subOf[t]]:NAV_HASH[t];
 // Address → [page, part]
 function hashPage(h){
@@ -4566,6 +4603,58 @@ const SAMPLES=[
      x.poly([[a,b-r*1.6],[a+r*.45,b-r*.45],[a+r*1.6,b],[a+r*.45,b+r*.45],[a,b+r*1.6],[a-r*.45,b+r*.45],[a-r*1.6,b],[a-r*.45,b-r*.45]],k); }
    x.fillStyle='#F4F4F4'; x.fillRect(48,70,8,120);
    return [['front',c]]; }},
+ {name:'Scallop shell',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(200,180,'#ffffff');
+   for(let k=0;k<7;k++){ const a0=Math.PI*(1.06+k*.126), a1=a0+.126; x.poly([[100,162],[100+Math.cos(a0)*96,150+Math.sin(a0)*118],[100+Math.cos(a1)*96,150+Math.sin(a1)*118]],k%2?'#FE8A18':'#F2CD37'); }
+   x.poly([[78,150],[122,150],[112,176],[88,176]],'#FE8A18');
+   return [['front',c]]; }},
+ {name:'Beach ball',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(200,200,'#BFE3F5');
+   const C=['#0055BF','#F4F4F4','#F2CD37','#F4F4F4','#4B9F4A','#F4F4F4'];
+   for(let k=0;k<6;k++){ x.fillStyle=C[k]; x.beginPath(); x.moveTo(100,100); x.arc(100,100,88,k*Math.PI/3,(k+1)*Math.PI/3); x.closePath(); x.fill(); }
+   x.dot(100,100,18,'#FE8A18');
+   return [['front',c]]; }},
+ {name:'Starfish',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(220,220,'#ffffff');
+   const P=[]; for(let k=0;k<10;k++){ const a=-Math.PI/2+k*Math.PI/5, r=k%2?40:104; P.push([110+Math.cos(a)*r,118+Math.sin(a)*r]); } x.poly(P,'#FE8A18');
+   for(let k=0;k<5;k++){ const a=-Math.PI/2+k*Math.PI*2/5; for(const r of [30,58]) x.dot(110+Math.cos(a)*r,118+Math.sin(a)*r,7,'#F2CD37'); }
+   x.dot(110,118,10,'#F2CD37');
+   return [['front',c]]; }},
+ {name:'Bucket and spade',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(240,220,'#ffffff');
+   x.lineWidth=8; x.strokeStyle='#1B2A34'; x.beginPath(); x.arc(96,82,58,Math.PI,0); x.stroke();
+   x.poly([[30,80],[162,80],[146,206],[46,206]],'#0055BF'); x.fillStyle='#36AEBF'; x.fillRect(26,74,140,18); x.fillStyle='#F2CD37'; x.fillRect(40,140,112,16);
+   x.fillStyle='#A95500'; x.fillRect(196,20,12,126); x.fillStyle='#F2CD37'; x.rr(186,10,32,20,6); x.poly([[178,140],[226,140],[222,190],[202,212],[182,190]],'#F2CD37');
+   return [['front',c]]; }},
+ {name:'Beach hut',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(220,250,'#ffffff');
+   x.fillStyle='#E4CD9E'; x.rr(0,222,220,28,8);
+   for(let k=0;k<6;k++){ x.fillStyle=k%2?'#F4F4F4':'#36AEBF'; x.fillRect(34+k*25.4,100,25.4,126); }
+   x.poly([[18,104],[110,26],[202,104]],'#0055BF'); x.fillStyle='#F2CD37'; x.rr(86,140,48,86,6); x.dot(124,186,4,'#1B2A34');
+   x.fillStyle='#A95500'; x.fillRect(20,222,180,8);
+   return [['front',c]]; }},
+ {name:'Sandcastle',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(260,240,'#ffffff');
+   x.fillStyle='#E4CD9E'; x.rr(0,206,260,34,10);
+   x.fillStyle='#F2CD37'; x.fillRect(40,120,180,96);
+   for(const [a,w,h] of [[22,56,150],[102,56,186],[182,56,150]]){ x.fillRect(a,216-h,w,h); for(let k=0;k<3;k++) x.fillRect(a+k*21,216-h-14,14,16); }
+   x.fillStyle='#A95500'; x.rr(110,160,40,56,18); x.dot(50,110,8,'#A95500'); x.dot(210,110,8,'#A95500'); x.dot(130,74,8,'#A95500');
+   x.fillStyle='#1B2A34'; x.fillRect(128,0,4,34); x.poly([[132,2],[160,12],[132,22]],'#0055BF');
+   x.oval(30,214,16,6,0,'#F4F4F4'); x.oval(236,214,12,5,0,'#E4ADC8');
+   return [['front',c]]; }},
+ {name:'Pippa surfing',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(260,250,'#ffffff');
+   x.fillStyle='#36AEBF'; x.beginPath(); x.moveTo(0,250); x.lineTo(0,200); x.quadraticCurveTo(70,168,130,206); x.quadraticCurveTo(190,240,260,196); x.lineTo(260,250); x.closePath(); x.fill();
+   x.oval(128,196,104,15,-.06,'#FE8A18'); x.fillStyle='#F4F4F4'; x.fillRect(40,194,176,5);
+   x.oval(128,120,52,66,0,'#1B2A34'); x.oval(128,134,36,50,0,'#F4F4F4');
+   x.oval(74,124,12,34,.6,'#1B2A34'); x.oval(182,124,12,34,-.6,'#1B2A34');
+   x.dot(112,92,8,'#F4F4F4'); x.dot(144,92,8,'#F4F4F4'); x.dot(113,93,4,'#1B2A34'); x.dot(143,93,4,'#1B2A34');
+   x.poly([[118,104],[138,104],[128,118]],'#FE8A18'); x.dot(100,108,6,'#E4ADC8'); x.dot(156,108,6,'#E4ADC8');
+   x.lineWidth=7; x.strokeStyle='#F2CD37'; for(const a of [110,146]){ x.beginPath(); x.arc(a,62,13,0,7); x.stroke(); }
+   x.oval(108,180,16,8,0,'#FE8A18'); x.oval(148,180,16,8,0,'#FE8A18');
+   return [['front',c]]; }},
+ {name:'Festival Clock',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(240,300,'#BFE3F5');
+   x.fillStyle='#E4CD9E'; x.rr(0,270,240,30,8); x.fillStyle='#A95500'; x.fillRect(50,256,140,16);
+   x.fillStyle='#F4F4F4'; x.fillRect(70,92,100,166); x.fillStyle='#008F9B'; x.fillRect(64,86,112,14); x.fillRect(64,170,112,10);
+   x.poly([[60,92],[120,10],[180,92]],'#F2CD37'); x.dot(120,12,9,'#FFF03A');
+   x.dot(120,134,32,'#1B2A34'); x.dot(120,134,27,'#F4F4F4'); x.lineWidth=5; x.strokeStyle='#1B2A34'; x.beginPath(); x.moveTo(120,134); x.lineTo(120,114); x.moveTo(120,134); x.lineTo(134,140); x.stroke();
+   x.fillStyle='#0055BF'; x.rr(102,206,36,52,14);
+   const F=['#0055BF','#F2CD37','#4B9F4A','#FE8A18','#AC78BA','#36AEBF'];
+   for(const sx of [-1,1]) for(let k=0;k<4;k++){ const px=120+sx*(66+k*14), py=100+k*16; x.poly([[px,py],[px+sx*12,py+4],[px+sx*2,py+18]],F[(k+(sx>0?2:0))%6]); }
+   return [['front',c]]; }},
  {name:'Rowboat',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(260,150,'#ffffff');
    x.fillStyle='#0055BF'; x.fillRect(0,120,260,30);
    x.fillStyle='#A95500'; x.beginPath(); x.moveTo(14,70); x.lineTo(246,70); x.quadraticCurveTo(232,124,190,126); x.lineTo(70,126); x.quadraticCurveTo(28,124,14,70); x.closePath(); x.fill();
@@ -4722,7 +4811,31 @@ const BRAIN_LEVELS=[
  // The boss: Nora's Great Telescope, broken just when she needs it. Rebuilding it (math pages and all) completes Brainpeak.
  {name:'Great Telescope', sample:'Great Telescope', size:22, shape:'puffed', thick:.7,  colors:7, pts:1500, boss:true},
 ];
-const levelsOf=tr=>tr==='brain'?BRAIN_LEVELS:OTTER_LEVELS;
+// Pippa's Puzzles: twelve seaside builds that grow Sunrise Shores. A new one washes ashore every twelfth of the way
+// through Bloppitopia (Frog Forest, Brainpeak, Blitz Bay and Brickworks Island together), and each also needs the one
+// before it. The last is the Festival Clock. Scores are kept in g.sbest.
+const SEA_LEVELS=[
+ {name:'Scallop shell',   sample:'Scallop shell',   size:10,  shape:'flat',   thick:.5, colors:2, pts:100},
+ {name:'Beach ball',      sample:'Beach ball',      size:8,  shape:'flat',   thick:.6, colors:5, pts:130},
+ {name:'Starfish',        sample:'Starfish',        size:12, shape:'flat',   thick:.6, colors:2, pts:160},
+ {name:'Jellyfish',       sample:'Jellyfish',       size:10,  shape:'puffed', thick:.5, colors:4, pts:200},
+ {name:'Bucket and spade',sample:'Bucket and spade',size:10, shape:'puffed', thick:.4, colors:6, pts:250},
+ {name:'Octopus',         sample:'Octopus',         size:9, shape:'puffed', thick:.6, colors:5, pts:300},
+ {name:'Beach hut',       sample:'Beach hut',       size:10, shape:'puffed', thick:.6, colors:6, pts:360},
+ {name:'Shark',           sample:'Shark',           size:12, shape:'puffed', thick:.6, colors:5, pts:430},
+ {name:'Sandcastle',      sample:'Sandcastle',      size:11, shape:'puffed', thick:.8, colors:6, pts:520},
+ {name:'Whale',           sample:'Whale',           size:12, shape:'puffed', thick:.5, colors:5, pts:640},
+ {name:'Pippa surfing',   sample:'Pippa surfing',   size:14, shape:'puffed', thick:.7, colors:7, pts:800},
+ // The last one: the Festival Clock. Building it completes Sunrise Shores and starts Pippa's festival.
+ {name:'Festival Clock',  sample:'Festival Clock',  size:21, shape:'puffed', thick:.8, colors:8, pts:1200, boss:true},
+];
+const PROGRESS_ISLES=['otterwood','brainpeak','blitzbay','brickworks'];
+// How far through Bloppitopia the child is, 0 to 1: the pieces built on the four islands, out of all of them
+function gameProgress(o){ let a=0,t=0; for(const id of PROGRESS_ISLES){ const P=PIECES[id], n=P[P.length-1].at; a+=Math.min(isleCount(id,o),n); t+=n; } return t?a/t:0; }
+const seaPct=i=>Math.round((i+1)*100/SEA_LEVELS.length);
+const seaWashed=(i,o)=>gameProgress(o)+1e-9>=(i+1)/SEA_LEVELS.length;      // has puzzle i washed ashore yet?
+const progressPct=o=>Math.floor(gameProgress(o)*100);
+const levelsOf=tr=>tr==='brain'?BRAIN_LEVELS:tr==='sea'?SEA_LEVELS:OTTER_LEVELS;
 // Ready-made Blitz races, small enough to be quick (Blitz keeps races to 30 bricks or fewer)
 const BLITZ_PICKS=[
  {name:'Heart',     art:'heart',          size:6,  shape:'flat',   thick:.5, colors:2, diff:'Easy'},
@@ -4761,11 +4874,12 @@ const GAME_KEY='building-blox-game-v1';
 let game=null, autoBusy=false, freeS=null, winLvl=0;
 // Two trails, each with its own levels: Frog Trail (id otter) (just building) and Brain Trail (math puzzles lock some pages).
 // Each keeps its own scores: Frog Trail in g.best (where the levels have always been saved), Brain Trail in g.bbest.
-const TRAILS={otter:{name:'Frog Trail',icon:'🐸'},brain:{name:'Brain Trail',icon:'🧠'}};
-let trail=(()=>{ try{ return localStorage.getItem('bloppit-trail')==='brain'?'brain':'otter'; }catch(e){ return 'otter'; } })();
-function setTrail(t){ trail=t==='brain'?'brain':'otter'; try{ localStorage.setItem('bloppit-trail',trail); }catch(e){} }
-const bestOf=(g,tr)=>tr==='brain'?(g.bbest||(g.bbest={})):(g.best||(g.best={}));
-const gameTrail=()=>game&&game.trail==='brain'?'brain':'otter';
+const TRAILS={otter:{name:'Frog Trail',icon:'🐸'},brain:{name:'Brain Trail',icon:'🧠'},sea:{name:'Pippa’s Puzzles',icon:'🐧'}};
+const trailOk=t=>t==='brain'||t==='sea'?t:'otter';
+let trail=(()=>{ try{ return trailOk(localStorage.getItem('bloppit-trail')); }catch(e){ return 'otter'; } })();
+function setTrail(t){ trail=trailOk(t); try{ localStorage.setItem('bloppit-trail',trail); }catch(e){} }
+const bestOf=(g,tr)=>tr==='brain'?(g.bbest||(g.bbest={})):tr==='sea'?(g.sbest||(g.sbest={})):(g.best||(g.best={}));
+const gameTrail=()=>game?trailOk(game.trail):'otter';
 function gameStore(id){ try{ return JSON.parse(localStorage.getItem(keyFor(id||players.cur,GAME_KEY)))||{best:{}}; }catch(e){ return {best:{}}; } }
 function gameStoreSet(g){ if(leavingPlayer) return; try{ localStorage.setItem(pkey(GAME_KEY),JSON.stringify(g)); }catch(e){} pupPush(); }
 function levelMake(L){ return L.art?levelArt(L.art):SAMPLES.find(s=>s.name===L.sample).make(); }
@@ -4800,7 +4914,7 @@ function updateGameBar(){
   if(game.math) bits.push(`Math ${game.math.solved.length} of ${game.math.locks.length} pages${game.math.pts?` +${game.math.pts}`:''}`);
   $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>';
 }
-window.bloppitLevels={otter:OTTER_LEVELS,brain:BRAIN_LEVELS,lib:()=>SAMPLES.filter(released).map(s=>s.name),weekly:w=>weeklyPuzzle(w),count:L=>{ delete L.count; return levelCount(L); },pic:n=>{ const S=SAMPLES.find(x=>x.name===n); return S?S.make()[0][1].toDataURL():null; },thumb:L=>levelThumb(L)};   // for tests and tuning
+window.bloppitLevels={otter:OTTER_LEVELS,brain:BRAIN_LEVELS,sea:SEA_LEVELS,progress:()=>gameProgress(worldStore()),lib:()=>SAMPLES.filter(released).map(s=>s.name),weekly:w=>weeklyPuzzle(w),count:L=>{ delete L.count; return levelCount(L); },pic:n=>{ const S=SAMPLES.find(x=>x.name===n); return S?S.make()[0][1].toDataURL():null; },thumb:L=>levelThumb(L)};   // for tests and tuning
 window.bloppitLevel=(t,i)=>{ trail=t; startLevel(i); return model?{n:model.bricks.length,colors:[...new Set(model.bricks.map(b=>PALETTE[b.c][0]))]}:null; };   // for tests
 function startLevel(i){
   const L=levelsOf(trail)[i]; if(!L) return;
@@ -4813,7 +4927,7 @@ function startLevel(i){
   const mp_=mathPrefs(); mathAsked=-1;
   if(trail==='brain'&&model) game.math={v:2,tier:mathRung(mp_.grade,i,mathAdj(),mathUp()),grade:mp_.grade,locks:mathLocks(i,model.steps.length),solved:[],pts:0,q:{},right:0,miss:0};
   setTab('build'); updateGameBar();
-  setStatus(`${TRAILS[trail].icon} Level ${i+1}: build the ${L.name}! Open the parts box to pick up bricks.`,'ok');
+  setStatus(trail==='sea'?`🐧 Pippa’s puzzle ${i+1}: build ${/^Pippa/.test(L.name)?'':'the '}${L.name}! Open the parts box to pick up bricks.`:`${TRAILS[trail].icon} Level ${i+1}: build the ${L.name}! Open the parts box to pick up bricks.`,'ok');
   saveNow();
 }
 function endGame(){
@@ -4923,8 +5037,8 @@ function winLevel(){
   $('#winRows').innerHTML=rows.map(([a,b,c])=>`<div class="${c}"><span>${a}</span><span>${b>0?'+':''}${b}</span></div>`).join('')+`<div class="tot"><span>Points</span><span>${sc}</span></div>`;
   const total=Object.values(B).reduce((a,b)=>a+b,0);
   $('#winBest').textContent=(sc>prev&&prev?`New best! (was ${prev}) · `:'')+`${TRAILS[tr].name}: ${total.toLocaleString()} points`;
-  const last=i>=LV.length-1;
-  $('#winNext').innerHTML=last?'All levels done!':`<img class="nb-pic" src="${levelThumb(LV[i+1])}" alt=""><span>Next<small>Level ${i+2}: ${escapeHTML(LV[i+1].name)}</small></span>`; $('#winNext').disabled=last;
+  const last=i>=LV.length-1, wait=!last&&tr==='sea'&&!seaWashed(i+1);
+  $('#winNext').innerHTML=last?'All levels done!':wait?`<img class="nb-pic" src="${levelThumb(LV[i+1])}" alt=""><span>Next puzzle<small>Washes ashore at ${seaPct(i+1)}% of Bloppitopia</small></span>`:`<img class="nb-pic" src="${levelThumb(LV[i+1])}" alt=""><span>Next<small>Level ${i+2}: ${escapeHTML(LV[i+1].name)}</small></span>`; $('#winNext').disabled=last||wait;
   game=null; updateGameBar(); storeClear();
   $('#winDlg').showModal();
 }
@@ -4936,21 +5050,22 @@ $('#gbMap').onclick=()=>{ if(game) setTrail(gameTrail()); setTab('game'); };
 function renderGameMap(){
   const g=gameStore(), B=bestOf(g,trail), done=Object.keys(B).map(Number), unlocked=done.length?Math.max(...done)+1:0;
   const total=Object.values(B).reduce((a,b)=>a+b,0), T=TRAILS[trail];
-  $('#view-game').classList.toggle('brain',trail==='brain');
-  $('#trOtter').setAttribute('aria-selected',trail==='otter'); $('#trBrain').setAttribute('aria-selected',trail==='brain');
+  $('#view-game').classList.toggle('brain',trail==='brain'); $('#view-game').classList.toggle('sea',trail==='sea');
+  $('#trOtter').setAttribute('aria-selected',trail==='otter'); $('#trBrain').setAttribute('aria-selected',trail==='brain'); $('#trSea').setAttribute('aria-selected',trail==='sea');
   $('#gmTitle').textContent=`${T.icon} ${T.name}`;
-  $('#gmIntro').textContent=trail==='brain'?'A different set of puzzles, with Bloppit’s math puzzles locking some booklet pages. Solve them to keep building and earn bonus points.':'Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, so they’re worth more points.';
+  const pct=trail==='sea'?progressPct(worldStore()):0;
+  $('#gmIntro').textContent=trail==='brain'?'A different set of puzzles, with Bloppit’s math puzzles locking some booklet pages. Solve them to keep building and earn bonus points.':trail==='sea'?`Pippa’s seaside puzzles wash ashore as Bloppitopia grows: a new one about every 8% (you’re at ${pct}%). Each one you build grows Sunrise Shores.`:'Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, so they’re worth more points.';
   $('#gmTotal').textContent=total.toLocaleString(); $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} points`; syncMathUI();
-  $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} levels done`;
+  $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} ${trail==='sea'?'puzzles built':'levels done'}`;
   $('#gmLevels').innerHTML=levelsOf(trail).map((L,i)=>{
-    const best=B[i], open=i<=unlocked, cur_=game&&game.lvl===i&&gameTrail()===trail;
+    const best=B[i], ashore=trail!=='sea'||seaWashed(i), open=i<=unlocked&&(ashore||!!best), cur_=game&&game.lvl===i&&gameTrail()===trail;
     const st=best?starsFor(best,L):0;
     return `<button class="lvl${i===unlocked&&!best?' next':''}" type="button" data-i="${i}" ${open?'':'disabled'}>
       <span class="ln">${i+1}</span>${cur_?'<span class="tagnew">Playing</span>':(i===unlocked&&!best?'<span class="tagnew">Next</span>':'')}
       <img alt="" src="${levelThumb(L)}"><span class="lt">${L.boss?'👑 Boss: ':''}${L.name}</span>
       <span class="lm" data-c="${i}">${L.count?`${L.count} bricks`:'&nbsp;'}</span>
       <span class="lp">${L.pts} points</span>
-      ${best?`<span class="ls">${starHTML(st)}</span><span class="lb">Best: ${best}</span>`:open?'<span class="lb">Not played yet</span>':`<span class="lb">Finish level ${i} to unlock</span>`}
+      ${best?`<span class="ls">${starHTML(st)}</span><span class="lb">Best: ${best}</span>`:open?'<span class="lb">Not played yet</span>':!ashore?`<span class="lb">🌊 Washes ashore at ${seaPct(i)}%</span>`:`<span class="lb">Finish level ${i} to unlock</span>`}
     </button>`; }).join('');
   // Work out brick counts a few at a time so the map appears straight away
   let k=0; (function next(){ if(tab!=='game'||k>=levelsOf(trail).length) return; const L=levelsOf(trail)[k], el=document.querySelector(`[data-c="${k}"]`); if(el&&!L.count){ levelCount(L); el.textContent=`${L.count} bricks`; } k++; setTimeout(next,0); })();
@@ -4960,7 +5075,7 @@ $('#gmLevels').addEventListener('click',e=>{ const b=e.target.closest('.lvl'); i
 document.querySelector('.trail-pick').addEventListener('click',e=>{ const b=e.target.closest('[data-trail]'); if(!b) return; setTrail(b.dataset.trail); renderGameMap(); });
 $('#gmSwitch').onclick=openWho;
 $('#gmReset').onclick=()=>{ const b=$('#gmReset'); if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent=`Tap again to wipe your ${TRAILS[trail].name} scores`; setTimeout(()=>{delete b.dataset.confirm; b.textContent='Reset game progress';},3000); return; }
-  delete b.dataset.confirm; b.textContent='Reset game progress'; const g=gameStore(); if(trail==='brain') g.bbest={}; else g.best={}; gameStoreSet(g); renderGameMap(); };
+  delete b.dataset.confirm; b.textContent='Reset game progress'; const g=gameStore(); if(trail==='brain') g.bbest={}; else if(trail==='sea') g.sbest={}; else g.best={}; gameStoreSet(g); renderGameMap(); };
 
 /* ---------- Math challenge (Play the Game) ---------- */
 // Some booklet pages are locked behind a math puzzle; higher levels lock more pages.
@@ -5170,7 +5285,7 @@ syncMathUI();
 $('#whoAge').innerHTML+=AGE_OPTS;
 const initial=n=>escapeHTML((n.trim()[0]||'?').toUpperCase());
 function playerStats(id){ const g=gameStore(id), sum=o=>Object.values(o||{}).reduce((a,b)=>a+b,0);
-  return {pts:sum(g.best)+sum(g.bbest), lv:Object.keys(g.best||{}).length, blv:Object.keys(g.bbest||{}).length}; }
+  return {pts:sum(g.best)+sum(g.bbest)+sum(g.sbest), lv:Object.keys(g.best||{}).length, blv:Object.keys(g.bbest||{}).length, slv:Object.keys(g.sbest||{}).length}; }
 function renderWho(){
   const p=curPlayer(); $('#whoAv').textContent=(p.name.trim()[0]||'?').toUpperCase(); $('#whoAv').style.background=p.color; $('#whoName').textContent=p.name;
 }
@@ -5245,7 +5360,7 @@ function pupApply(id,d){
   if(d.world) d={...d,world:worldMerge(worldStore(),d.world)};  // what this device did since the push wins
   for(const k of PUP_FIELDS){ if(d[k]) try{ localStorage.setItem(keyFor(id||players.cur,{game:GAME_KEY,daily:DAILY_KEY,weekly:WEEKLY_KEY,world:WORLD_KEY}[k]),JSON.stringify(d[k])); }catch(e){} }
 }
-function pupHasProgress(d){ if(d.world&&d.world.builds&&Object.keys(d.world.builds).length) return true; return !!((d.game&&((d.game.best&&Object.keys(d.game.best).length)||(d.game.bbest&&Object.keys(d.game.bbest).length)))||(d.daily&&Object.keys(d.daily.days||{}).length)||(d.weekly&&Object.keys(d.weekly.days||{}).length)); }
+function pupHasProgress(d){ if(d.world&&d.world.builds&&Object.keys(d.world.builds).length) return true; return !!((d.game&&((d.game.best&&Object.keys(d.game.best).length)||(d.game.bbest&&Object.keys(d.game.bbest).length)||(d.game.sbest&&Object.keys(d.game.sbest).length)))||(d.daily&&Object.keys(d.daily.days||{}).length)||(d.weekly&&Object.keys(d.weekly.days||{}).length)); }
 // Push this device's record; the server merges it with what it holds and sends the merged record back.
 function pupPush(){ if(leavingPlayer) return; clearTimeout(pupTimer); pupTimer=setTimeout(pupSync,1500); }
 async function pupSync(){
@@ -6036,7 +6151,7 @@ async function trialEnd(){
       W.weeks[info.week]={...(prev||{}),best,first:prev?prev.first:t,at:Date.now(),clean:!!((prev&&prev.clean)||clean)}; if(first) W.total=weeklyTotal()+1; weeklyStoreSet(W);
       const cleanRow=clean?'<div class="tot"><span>Clean build</span><span>✓</span></div>':`<div><span>Not clean yet</span><span>${r.miss?`${r.miss} miss${r.miss===1?'':'es'}`:''}${r.miss&&r.hint?', ':''}${r.hint?`${r.hint} hint${r.hint===1?'':'s'}`:''}</span></div>`;
       const streakNote=()=>{ const k=weeklyStreak(); return k>1?` Streak: ${k} weeks 🔥.`:''; };
-      if(!first){ trialDialog({icon:'📅',card:true,next:true,isle:'sunrise',title:clean?'Clean build!':'Nice practice!',rows:cleanRow,note:(clean&&!prev.clean?'That one counts as clean now. ':'')+'Come back on Monday for a new puzzle!'+streakNote()}); return; }
+      if(!first){ trialDialog({icon:'📅',card:true,next:true,isle:'brickworks',title:clean?'Clean build!':'Nice practice!',rows:cleanRow,note:(clean&&!prev.clean?'That one counts as clean now. ':'')+'Come back on Monday for a new puzzle!'+streakNote()}); return; }
       trialDialog({icon:'📅',title:'Weekly Bloppit done!',rows:cleanRow,note:'Checking how everyone else did…'});
       try{
         const j=await chApi('POST',{action:'weekly',week:info.week,ms:r.ms,miss:r.miss,hint:r.hint,nBricks:model.bricks.length,board:boardOn(),stars:worldLast?worldLast.stars:0});
@@ -6044,9 +6159,9 @@ async function trialEnd(){
         weeklyPeek={week:info.week,n:j.n,clean:j.clean,pct:j.pct};
         W.weeks[info.week].n=j.n; W.weeks[info.week].pct=j.pct; weeklyStoreSet(W);
         const beat=weeklyPuzzle(info.week).beat;
-        trialDialog({icon:clean?'✨':'📅',card:true,next:true,isle:'sunrise',title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,
+        trialDialog({icon:clean?'✨':'📅',card:true,next:true,isle:'brickworks',title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,
           note:(beat?beat+' ':'')+(clean?(j.clean<=1?'You’re the first clean build this week!':`You and ${j.pct}% of this week’s builders finished clean.`):!j.clean?'Nobody has built it clean yet this week. Build it again and be the first!':`${j.pct}% of this week’s builders finished clean. Build it again for a clean one!`)+streakNote()+' A new puzzle arrives on Monday.'});
-      }catch(e){ trialDialog({icon:'📅',card:true,next:true,isle:'sunrise',title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,note:`Your build is saved on this device, but it couldn’t be counted with everyone else’s (${e.message}).`+streakNote()}); }
+      }catch(e){ trialDialog({icon:'📅',card:true,next:true,isle:'brickworks',title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,note:`Your build is saved on this device, but it couldn’t be counted with everyone else’s (${e.message}).`+streakNote()}); }
     }
   };
   await send();
@@ -6315,7 +6430,7 @@ function applyProgress(o){
   const h=pieces[o.held]; if(h){ setActive(h); if(o.sel&&o.sel.c===h.c) { sel={...o.sel}; setGhost(); } }
   $('.build-grid').classList.toggle('no-book',!!o.noBook); $('#bookBtn').setAttribute('aria-pressed',!o.noBook);
   busy=false; lastAnchor=null; follow=true;
-  game=o.game?{lvl:o.game.lvl,trail:o.game.trail==='brain'?'brain':'otter',pen:{hint:0,auto:0,miss:0,...o.game.pen},hintSteps:[...(o.game.hintSteps||[])],math:o.game.math?(o.game.math.v===2?{...o.game.math,solved:[...o.game.math.solved],q:{},right:0,miss:0}:{...o.game.math,v:2,grade:mathPrefs().grade,tier:mathRung(mathPrefs().grade,o.game.lvl,mathAdj()),solved:[...o.game.math.solved],q:{},right:0,miss:0}):null}:null; mathAsked=-1;
+  game=o.game?{lvl:o.game.lvl,trail:trailOk(o.game.trail),pen:{hint:0,auto:0,miss:0,...o.game.pen},hintSteps:[...(o.game.hintSteps||[])],math:o.game.math?(o.game.math.v===2?{...o.game.math,solved:[...o.game.math.solved],q:{},right:0,miss:0}:{...o.game.math,v:2,grade:mathPrefs().grade,tier:mathRung(mathPrefs().grade,o.game.lvl,mathAdj()),solved:[...o.game.math.solved],q:{},right:0,miss:0}):null}:null; mathAsked=-1;
   updateGameBar();
 }
 function dismissResume(){ $('#resume').hidden=true; pendingSave=null; saveOn=true; }
@@ -6333,7 +6448,7 @@ loadSample(0); setTab('create'); clearTimeout(timer); rebuild(); requestAnimatio
   const o=storeGet();
   if(o&&o.v===1&&(o.placedN>0||o.laidOut)){
     pendingSave=o;
-    $('#resumeTxt').textContent=o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`You’re partway through ${TRAILS[o.game.trail==='brain'?'brain':'otter'].name} level ${o.game.lvl+1} (${levelsOf(o.game&&o.game.trail)[o.game.lvl].name}): ${o.placedN} of ${o.nBricks} bricks placed.`:`You have a ${niceName(o.name)} build in progress: ${o.placedN} of ${o.nBricks} bricks placed.`;
+    $('#resumeTxt').textContent=o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`You’re partway through ${TRAILS[trailOk(o.game.trail)].name} level ${o.game.lvl+1} (${levelsOf(o.game&&o.game.trail)[o.game.lvl].name}): ${o.placedN} of ${o.nBricks} bricks placed.`:`You have a ${niceName(o.name)} build in progress: ${o.placedN} of ${o.nBricks} bricks placed.`;
     $('#resume').hidden=false;
   } else saveOn=true;
 }
@@ -6832,10 +6947,11 @@ function islandInfo(id,o){
       return {title:d.name,hint:gift?'A gift for a Weekly Bloppit':`Bought for ★ ${d.cost}`,rows:[...(arg!=='buoy'?[['Move it',ISL3.ok?'Hold it and drag it anywhere on the island':'Drag it anywhere on the sand']]:[]),['How you got it',gift?'A gift for finishing a Weekly Bloppit':`Bought with ${d.cost} Build Stars`],['Decorations',`${decorOut(o).length} of ${DECOR.length} on Bloppitopia`]],actions:[{label:'Put it away',fn:()=>decorPut(arg,false)}]}; }
     case 'dest': { const m={ferry:'sunrise',workshop:'brickworks',brain:'brainpeak',speedway:'blitzbay',harbour:'otterwood'}[arg]; if(m) return islandInfo('isle:'+m,o); break; }
     case 'isle': { const I=ISLES[arg]; if(!I) break; const c=isleCount(arg,o), P=PIECES[arg], total=P[P.length-1].at, built=P.filter(x=>c>=x.at), next=P.find(x=>c<x.at);
-      if(!c&&I.mystery) return {title:'A mystery in the mist',hint:mysteryHint(),rows:[['What’s there','A faint light glows out there at night. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Build ${MYSTERY_WEEKLIES} Weekly Bloppits (${Math.min(weeklyTotal(),MYSTERY_WEEKLIES)} so far)`]],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'This week’s Bloppit',fn:()=>setTab('daily'),primary:true}]};
+      if(!c&&I.mystery) return {title:'A mystery in the mist',hint:mysteryHint(),rows:[['What’s there','A faint light glows out there at night. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Complete the other five islands (${fiveDone(o)} of ${FIVE_ISLES.length} so far)`]],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'▶ Play next',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
+      if(!c&&arg==='sunrise'&&!seaWashed(0,o)) return {title:'A misty island',hint:`Pippa’s first puzzle washes ashore at ${seaPct(0)}%`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Get ${seaPct(0)}% of the way through Bloppitopia (you’re at ${progressPct(o)}%), then build Pippa’s first puzzle`]],actions:[{label:'▶ Play next',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
       if(!c) return {title:'A misty island',hint:`Play ${I.game} to discover it`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Finish your first ${I.unit}`]],actions:[{label:I.play,fn:I.go,primary:true}]};
       return {title:I.name,hint:`${I.game} · ${Math.min(c,total)} of ${total}`,rows:[['Grows with',I.grows],['Built',`${built.length} of ${P.length} pieces`],...(next?[['Next piece',`${next.name}: ${next.at-c} more ${I.unit}${next.at-c===1?'':'s'}`]]:[]),['Milestone',c>=total?`${I.milestone} ✓`:`${I.milestone} at ${total}`]],
-        chips:P.map(x=>[x.name,c>=x.at]),bar:{pct:Math.max(4,Math.min(100,Math.round(100*c/total))),label:c>=total?'Complete!':`${total-c} more to ${I.milestone}`},actions:[{label:I.play,fn:I.go,primary:true}]}; }
+        chips:P.map(x=>[x.name,c>=x.at]),bar:{pct:Math.max(4,Math.min(100,Math.round(100*c/total))),label:c>=total?'Complete!':`${total-c} more to ${I.milestone}`},actions:[...(arg==='moonstone'&&worldComplete(o)?[{label:'🌙 Watch the ending',fn:()=>{ theEnd(); },primary:true}]:[]),{label:I.play,fn:I.go,primary:!(arg==='moonstone'&&worldComplete(o))}]}; }
     case 'piece': { const [isle,i]=arg.split(':'), I=ISLES[isle], P=PIECES[isle]&&PIECES[isle][+i]; if(!P) break; const last=+i===PIECES[isle].length-1;
       return {title:P.name,hint:`${I.name}${last?' · the milestone':''}`,rows:[['Built at',`${P.at} ${I.unit}${P.at===1?'':'s'}`],['Island',`${I.name}: ${Math.min(isleCount(isle,o),PIECES[isle][PIECES[isle].length-1].at)} of ${PIECES[isle][PIECES[isle].length-1].at}`]],actions:[{label:I.play,fn:I.go}]}; }
     case 'home': { const H={home0:['Your unfinished home','Finish your first build and it becomes a cottage'],home1:['Your cottage','Built with your first build'],home3:['Your growing home','It grew at 3 builds'],home10:['The lively village','Your home became a village at 10 builds'],
@@ -7296,7 +7412,7 @@ const CAST={
     who:'Brainpeak’s stargazer and puzzle-setter',story:'Nora is a yellow-crowned night heron. She watches the stars from Brainpeak and tucks a math puzzle into the Brain Trail booklets.',
     loves:'A good “aha”, quiet nights and clear skies',secret:'Her great telescope is broken, and she needs a builder to fix it.',lines:['A clever mind shines in the dark.','Look closer, the answer’s hiding.','Aha! You saw the pattern.']},
   pippa:{name:'Pippa',kind:'the Penguin',isle:'sunrise',brick:'yellow',h:1.8,aspect:229/360,tag:'A new puzzle just washed ashore!',
-    who:'The visitor who never left',story:'Pippa washed up on Sunrise Shores on holiday, fell in love with the sunshine and stayed. Every Monday she brings a new puzzle on the ferry.',
+    who:'The visitor who never left',story:'Pippa washed up on Sunrise Shores on holiday, fell in love with the sunshine and stayed. Every Monday she brings the Weekly Bloppit on the ferry, and her own seaside puzzles wash ashore as Bloppitopia grows.',
     loves:'Surprises, parties, and a swim before breakfast',secret:'She wobbles on land, but she’s the best swimmer in Bloppitopia.',lines:['A new puzzle just washed ashore!','Special delivery!','Ooh, that one’s clean!','See you next Monday!']},
   lemmie:{name:'Lemmie',kind:'the Lion Cub',isle:'brickworks',brick:'orange',h:1.85,aspect:241/360,tag:'Build it bold!',
     who:'The maker of Brickworks Island',story:'Lemmie runs the workshop and paints everything in sight. Whatever you make, he puts it on show and roars with pride.',
@@ -7533,7 +7649,6 @@ function bloppitCheer(){ if(ISL3.b3){ ISL3.b3.ctl.play('cheer'); try{ sfx.chirp(
    Nothing here is stored beyond the world record: what's built is worked out from the counts. */
 // Moonstone Isle: out in the mist from the start, reachable once 9 Weekly Bloppits are built (?mystery=1 to try).
 // Its eight chapters are hidden library drawings, built at fixed sizes, each bigger than the last.
-const MYSTERY_WEEKLIES=9;
 const MYSTERY=[   // one friend per chapter (Character Bible); `was` = the chapter's old build, so saves made before 1.0.1 still count
   {name:'Rowboat',size:10,shape:'puffed',thick:.6,colors:5,who:'Bloppit',story:'One night on the jetty, you and Bloppit spot a faint light far out over the mist. Bloppit fixes up his old rowboat, and you row out together.'},
   {name:'Old map',size:15,shape:'flat',thick:1,colors:6,who:'Pippa',story:'The mist sends you round in circles. Then Pippa swims up with a bottle that just washed ashore. Inside: a map of an island nobody has heard of.'},
@@ -7545,7 +7660,10 @@ const MYSTERY=[   // one friend per chapter (Character Bible); `was` = the chapt
   {name:'Moon crystal',size:15,shape:'puffed',thick:.7,colors:7,who:'lufu',story:'Just the two of you. The little light is too dim to come close. Build the moon crystal at the lighthouse’s heart, and see what happens.'},
 ];
 const MYSTERY_NAMES=new Set(MYSTERY.flatMap(m=>[m.name,...(m.was||[])]));
-const mysteryOpen=()=>weeklyTotal()>=MYSTERY_WEEKLIES||new URLSearchParams(location.search).get('mystery')==='1';
+const FIVE_ISLES=['otterwood','brainpeak','sunrise','blitzbay','brickworks'];
+const fiveDone=o=>FIVE_ISLES.filter(id=>isleComplete(id,o||worldStore())).length;
+// The mystery opens once the other five islands are complete. A child who had already started it keeps going.
+const mysteryOpen=()=>{ const o=worldStore(); return fiveDone(o)===FIVE_ISLES.length||mysteryDone(o)>0||new URLSearchParams(location.search).get('mystery')==='1'; };
 const mysteryHas=(m,ks)=>[m.name,...(m.was||[])].some(n=>ks.some(k=>k.startsWith(`m:${n}:`)));
 const mysteryDone=o=>{ o=o||worldStore(); const ks=Object.keys(o.builds||{}); return MYSTERY.filter(m=>mysteryHas(m,ks)).length; };
 const mysteryNext=o=>{ o=o||worldStore(); const ks=Object.keys(o.builds||{}); return MYSTERY.findIndex(m=>!mysteryHas(m,ks)); };
@@ -7560,12 +7678,12 @@ const ISLES={
     milestone:'The Lily-pad Palace',grows:'Every Frog Trail level you finish (the last is the boss)',play:'Play Frog Trail',go:()=>homeGo('otter')},
   brainpeak:{name:'Brainpeak',game:'Brain Trail',unit:'Brain Trail level',x:-8.4,z:-12.8,r:4.4,seed:4.1,ground:['#79C25A','#4E9E3A'],
     milestone:'The Great Telescope',grows:'Every Brain Trail level you finish (the last is the boss)',play:'Play Brain Trail',go:()=>homeGo('brain')},
-  sunrise:{name:'Sunrise Shores',game:'Weekly Bloppit',unit:'Weekly Bloppit',x:5.6,z:-14.8,r:4.3,seed:5.9,ground:['#8AD06A','#5FA94A'],sand:true,
-    milestone:'The Festival Clock',grows:'Every Weekly Bloppit you build (no streak needed)',play:'This week’s Bloppit',go:()=>setTab('daily')},
+  sunrise:{name:'Sunrise Shores',game:'Pippa’s Puzzles',unit:'Pippa puzzle',x:5.6,z:-14.8,r:4.3,seed:5.9,ground:['#8AD06A','#5FA94A'],sand:true,
+    milestone:'The Festival Clock',grows:'Every one of Pippa’s seaside puzzles you build. A new one washes ashore about every 8% of the way through Bloppitopia',play:'Play Pippa’s puzzle',go:()=>homeGo('sea')},
   blitzbay:{name:'Blitz Bay',game:'Blitz',unit:'Blitz win',x:15.2,z:-4.6,r:4.8,seed:5.3,ground:['#6CC24A','#4E9E3A'],sand:true,
     milestone:'The Grand Prix cup',grows:'Every Blitz race you win against Swoop, then the Grand Prix',play:'Race Swoop',go:()=>homeGo('cpu')},
   brickworks:{name:'Brickworks Island',game:'Creative builds',unit:'creation',x:12.4,z:9.6,r:4.3,seed:6.6,ground:['#7CC45E','#4E9E3A'],
-    milestone:'The Grand Creation Gallery',grows:'Every build from your own photo or drawing, or from the library',play:'Make your own',
+    milestone:'The Grand Creation Gallery',grows:'Every build from your own photo or drawing, from the library, and every Weekly Bloppit',play:'Make your own',
     go:()=>{ pickPuzzle('quick','top'); requestAnimationFrame(()=>{ const c=$('#drawCard'); if(c) c.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}); }); }},
   moonstone:{name:'Moonstone Isle',game:'The mystery',unit:'chapter',x:-18,z:-8.5,r:4.0,seed:7.7,ground:['#6FB7A4','#4E8F7E'],sand:true,mystery:true,
     milestone:'The moon crystal',grows:'Every chapter of the mystery you build',play:'Explore Moonstone Isle',go:()=>mysteryGo()},
@@ -7575,15 +7693,15 @@ const ISLE_TOTAL=Object.keys(ISLES).length;
 const isleComplete=(id,o)=>{ const P=PIECES[id]; return isleCount(id,o)>=P[P.length-1].at; };
 const islesComplete=o=>Object.keys(ISLES).filter(id=>isleComplete(id,o));
 const worldComplete=o=>islesComplete(o).length===ISLE_TOTAL;
-function mysteryHint(){ const w=weeklyTotal(); return mysteryOpen()?'Ready to explore: build the rowboat':`${MYSTERY_WEEKLIES-w} more Weekly Bloppit${MYSTERY_WEEKLIES-w===1?'':'s'} to reach it`; }
+function mysteryHint(){ const n=FIVE_ISLES.length-fiveDone(); return mysteryOpen()?'Ready to explore: build the rowboat':`Complete ${n===1?'one more island':`${n} more islands`} to reach it`; }
 // How far each island has grown
 function isleCount(id,o){
   o=o||worldStore(); const B=Object.entries(o.builds);
   if(id==='otterwood') return Object.keys(bestOf(gameStore(),'otter')).length;
   if(id==='brainpeak') return Object.keys(bestOf(gameStore(),'brain')).length;
-  if(id==='sunrise') return weeklyTotal();
+  if(id==='sunrise') return Object.keys(bestOf(gameStore(),'sea')).length;
   if(id==='blitzbay'){ const w=B.filter(([,b])=>b.k==='blitz'); return Math.min(15,w.length)+(w.some(([,b])=>b.boss)?1:0); }   // 15 wins, then the Grand Prix
-  if(id==='brickworks') return (o.draw||[]).length+B.filter(([k,b])=>k.startsWith('p:')||(k.startsWith('m:')&&(b.k==='quick'||!b.k)&&!MYSTERY_NAMES.has(k.split(':')[1]))).length;
+  if(id==='brickworks') return (o.draw||[]).length+B.filter(([k,b])=>k.startsWith('p:')||k.startsWith('w:')||(k.startsWith('m:')&&(b.k==='quick'||!b.k)&&!MYSTERY_NAMES.has(k.split(':')[1]))).length;
   if(id==='moonstone') return mysteryDone(o);
   return 0;
 }
@@ -8125,20 +8243,65 @@ function isl3WorldFinale(next){
     setTimeout(()=>isl3Confetti(0,4,0,140,true),400+ids.length*650);
     ISL3.revealT=setTimeout(()=>{ ISL3.hourOverride=null; isl3Tod(true); next(); },1600+ids.length*650+2400); };
 }
+/* ---------- The end ----------
+   Bloppitopia is a story with an ending. Once every island is complete (the last is usually Moonstone Isle, where the pup
+   finds lufu) this plays once after the finale: each island friend thanks the child for what THEY did there, their
+   creations roll by as credits, the numbers, then the pup and lufu by the campfire on Home Island: The end. Nothing is
+   locked or reset afterwards, and it can be watched again from Moonstone Isle. Tap to go on; Skip goes to the end. */
+function theEnd(then){
+  if(!ISL3.on||!ISL3.box){ if(then) then(); return; }
+  track('the_end'); const o=worldStore(), B=Object.entries(o.builds), nf=n=>n.toLocaleString(), who=pupName(o)||'your otter';
+  const sum=f=>B.filter(([k,b])=>f(k,b)).reduce((a,[,b])=>a+(b.n||0),0), wins=B.filter(([,b])=>b.k==='blitz').length;
+  const steps=[
+    {at:'otterwood',img:'tiny',name:'Tiny',say:'You climbed all of Frog Trail. Small otter, big forest!',got:`${OTTER_LEVELS.length} Frog Trail levels · ${nf(sum(k=>k.startsWith('t:otter:')))} bricks`},
+    {at:'brainpeak',img:'nora',name:'Nora',say:'You fixed my telescope. Look how many stars there are now.',got:`${BRAIN_LEVELS.length} Brain Trail levels, math pages and all`},
+    {at:'sunrise',img:'pippa',name:'Pippa',say:'Every puzzle that washed ashore, you built. Best festival ever!',got:`${SEA_LEVELS.length} of Pippa’s puzzles · ${nf(sum(k=>k.startsWith('t:sea:')))} bricks`},
+    {at:'blitzbay',img:'swoop',name:'Swoop',say:'You beat me at full throttle. Rematch one day?',got:`${wins} Blitz win${wins===1?'':'s'} and the Grand Prix cup`},
+    {at:'brickworks',img:'lemmie',name:'Lemmie',say:'Your creations fill my whole gallery. ROAR!',got:`${isleCount('brickworks',o)} creations of your own`},
+    {at:'home',img:'bloppit',name:'Bloppit',say:'And you built the home it all started from.',got:`${nf(worldCount(o))} builds in all`},
+    {roll:true},{nums:true},{fin:true}];
+  const el=document.createElement('div'); el.className='the-end'; ISL3.box.appendChild(el);
+  ISL3.revealing=true; isl3Banner(''); isl3Chrome(); if(ISL3.ctl) ISL3.ctl.enabled=false; ISL3.hourOverride=21.5; isl3Tod(true);
+  let i=-1, timer=0; const fit=d=>{ const w=ISL3.box.clientWidth||1, h=ISL3.box.clientHeight||1; return d*Math.min(2.6,Math.max(1,1.35*h/w)); };
+  const done=()=>{ clearTimeout(timer); el.remove(); ISL3.revealing=false; ISL3.hourOverride=null; isl3Tod(true); if(ISL3.ctl) ISL3.ctl.enabled=true; isl3FlyHome(1400); isl3Chrome(); if(then) then(); };
+  const go=k=>{ clearTimeout(timer); i=k; const S=steps[i]; if(!S) return done(); el.className='the-end'; el.innerHTML=S.fin?'':'<button class="te-skip" type="button">Skip ›</button>';
+    const sk=el.querySelector('.te-skip'); if(sk) sk.onclick=e=>{ e.stopPropagation(); go(steps.length-1); };
+    if(S.at){ const I=ISL3.isles[S.at]; if(I) isl3FlyTo(I.x,1.2,I.z,fit({home:11,brickworks:17,blitzbay:16}[S.at]||14),1500);
+      el.insertAdjacentHTML('beforeend',`<div class="te-card"><img src="/art/head-${S.img}.png" alt=""><span><b>${S.name}</b><q>${escapeHTML(S.say)}</q><small>${escapeHTML(S.got)}</small></span></div>`);
+      sfx.chime&&sfx.chime(); timer=setTimeout(()=>go(i+1),6000); return; }
+    if(S.roll){ isl3FlyHome(2200); const keys=[...new Set(o.log)].filter(k=>worldThumb(k)).slice(-48), dur=reduceMotion?7:Math.max(9,Math.min(22,6+keys.length*.45));
+      el.insertAdjacentHTML('beforeend',`<div class="te-roll"><div class="te-col" style="--d:${dur}s"><h3>Built by ${escapeHTML(who)}</h3><div class="te-pics">${keys.map(k=>`<img src="${worldThumb(k)}" alt="">`).join('')}</div><h3>with Bloppit, Tiny, Nora, Pippa, Swoop, Lemmie and lufu</h3></div></div>`);
+      timer=setTimeout(()=>go(i+1),dur*1000+400); return; }
+    if(S.nums){ const ts=B.map(([,b])=>b.t).filter(t=>t>0), days=new Set(ts.map(t=>new Date(t).toDateString())).size, since=ts.length?new Date(Math.min(...ts)):null;
+      el.insertAdjacentHTML('beforeend',`<div class="te-nums"><h3>${escapeHTML(who)}’s Bloppitopia</h3><div><span>Bricks placed</span><b>${nf(B.reduce((a,[,b])=>a+(b.n||0),0))}</b></div><div><span>Builds finished</span><b>${nf(worldCount(o))}</b></div><div><span>Days of building</span><b>${nf(days)}</b></div>${since?`<div><span>Started</span><b>${since.toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'})}</b></div>`:''}<div><span>Islands complete</span><b>${ISLE_TOTAL} of ${ISLE_TOTAL}</b></div><div><span>Friends made</span><b>7</b></div></div>`);
+      timer=setTimeout(()=>go(i+1),8000); return; }
+    // The end: the whole of Bloppitopia under the stars
+    isl3FlyHome(2600);   // the whole of Bloppitopia at night, every island lit (a close-up of Home Island is too busy on a full island)
+    el.className='the-end final';
+    el.innerHTML=`<div class="te-fin"><h2>The end.</h2><p>${escapeHTML(who)} and lufu, home at last.<br>Bloppitopia is yours. Keep building.</p><div class="row"><button class="primary" type="button" data-te="keep">Keep playing</button><button class="ghost" type="button" data-te="replay">Replay a level</button></div></div>`;
+    el.querySelector('[data-te="keep"]').onclick=e=>{ e.stopPropagation(); done(); };
+    el.querySelector('[data-te="replay"]').onclick=e=>{ e.stopPropagation(); done(); setTab('game','hub'); };
+  };
+  el.onclick=e=>{ if(e.target.closest('button')||steps[i]&&steps[i].fin) return; go(i+1); };
+  isl3FlyHome(1600); setTimeout(()=>go(0),reduceMotion?200:900);
+}
+window.bloppitEnd=()=>theEnd();   // for tests
 // The card after a finale: what the child did there, and the stars it earned
 function finaleCard(id){
   // when it closes, the next finale (or an outfit earned) follows
-  $('#trialDlg').addEventListener('close',()=>{ if(ISL3.on) setTimeout(()=>isl3AfterReveal(worldStore()),400); },{once:true});
+  const endNow=id==='final:all'&&ISL3.on;
+  if(!endNow) $('#trialDlg').addEventListener('close',()=>{ if(ISL3.on) setTimeout(()=>isl3AfterReveal(worldStore()),400); },{once:true});
   const o=worldStore(), B=Object.entries(o.builds), sum=f=>B.filter(([k,b])=>f(k,b)).reduce((a,[,b])=>a+(b.n||0),0), nf=n=>n.toLocaleString();
+  if(id==='final:all'&&ISL3.on){ theEnd(()=>setTimeout(()=>isl3AfterReveal(worldStore()),400)); return; }
   if(id==='final:all'){ const n=worldCount(o), bricks=B.reduce((a,[,b])=>a+(b.n||0),0);
     trialDialog({icon:'🌟',title:'You built a whole world!',quick:true,rows:`<div><span>Builds finished</span><span>${nf(n)}</span></div><div><span>Bricks placed</span><span>${nf(bricks)}</span></div><div><span>Islands complete</span><span>${ISLE_TOTAL} of ${ISLE_TOTAL}</span></div><div><span>Moonstone crown</span><span>👑</span></div><div class="tot"><span>Bonus Build Stars</span><span>+10</span></div>`,
       note:`Every island in Bloppitopia is finished, and lufu has given ${pupName(o)||'your otter'} the Moonstone crown! A new Weekly Bloppit still comes every Monday, so keep building.`}); return; }
   const isle=id.split(':')[1], N=ISLES[isle]; if(!N) return;
   const line={otterwood:()=>`All ${OTTER_LEVELS.length} Frog Trail levels, boss and all: ${nf(sum(k=>k.startsWith('t:otter:')))} bricks`,
     brainpeak:()=>`All ${BRAIN_LEVELS.length} Brain Trail levels, math pages and all: ${nf(sum(k=>k.startsWith('t:brain:')))} bricks`,
-    sunrise:()=>`${weeklyTotal()} Weekly Bloppits built`,
+    sunrise:()=>`All ${SEA_LEVELS.length} of Pippa’s seaside puzzles: ${nf(sum(k=>k.startsWith('t:sea:')))} bricks`,
     blitzbay:()=>`${B.filter(([,b])=>b.k==='blitz').length} Blitz wins, and the Grand Prix against Swoop`,
-    brickworks:()=>`${isleCount('brickworks',o)} creations of your own and from the library`,
+    brickworks:()=>`${isleCount('brickworks',o)} creations: your own, the library and the Weekly Bloppit`,
     moonstone:()=>`The mystery solved: all ${MYSTERY.length} chapters, and lufu found`}[isle];
   trialDialog({icon:isle==='moonstone'?'✨':'🏆',title:isle==='moonstone'?'You found lufu!':`${N.name} is complete!`,quick:true,rows:`<div><span>${escapeHTML(line?line():'')}</span><span></span></div><div><span>${escapeHTML(N.milestone)}</span><span>✓</span></div><div class="tot"><span>Bonus Build Stars</span><span>+5</span></div>`,
     note:(isle==='moonstone'?`“We have found each other.” lufu sails home with ${pupName(o)||'your otter'} and lives on Home Island now. `:'')+(islesComplete(o).length<ISLE_TOTAL?`${islesComplete(o).length} of ${ISLE_TOTAL} islands complete. ${ISLE_TOTAL-islesComplete(o).length===1?'One to go!':'Keep going!'}`:'Every island is complete!')});
@@ -8250,7 +8413,10 @@ function isl3Show(box,o){ isl3Immersive(); isl3WakeCheck(); isl3CharsLoad(o);
   if(!ISL3.ro){ ISL3.ro=new ResizeObserver(()=>{ if(ISL3.on){ isl3Size(); isl3Kick(); } }); ISL3.ro.observe(box); }
   isl3A11y(o);
   ISL3.pending_acc=accNew(o);
-  const un=worldUnlocked(o), seen=seenGet();
+  const un=worldUnlocked(o); let seen=seenGet();
+  // Sunrise Shores now grows with Pippa's Puzzles (from 24 Oct 2026), so pieces it had from Weekly Bloppits are gone
+  // until they're built again: forget them as seen so each one is revealed again when it comes back
+  if(seen){ const keep=seen.filter(i=>!/^(sunrise:\d+|isle:sunrise|done:sunrise|final:all)$/.test(i)||un.includes(i)); if(keep.length<seen.length){ seen=keep; seenSet(seen); } }
   if(seen===null){ seenSet([...un,...ACC.filter(a=>accOwned(a,o)).map(a=>'acc:'+a.id)]); ISL3.pending_acc=[]; }
   else { const nw=un.filter(i=>!seen.includes(i));
     if(nw.length){ seenSet([...seen,...nw]); const rank=i=>i.startsWith('home:')?0:i.startsWith('isle:')?1:2; nw.sort((a,b)=>rank(a)-rank(b));
@@ -8841,8 +9007,8 @@ function nextMark(k){ try{ localStorage.setItem(pkey(NEXT_KEY),k); }catch(e){} }
 const isleFrac=(id,o)=>{ const P=PIECES[id]; return Math.min(1,isleCount(id,o)/P[P.length-1].at); };
 function nextCandidates(){
   const g=gameStore(), o=worldStore(), out=[];
-  for(const tr of ['otter','brain']){ const LV=levelsOf(tr), B=bestOf(g,tr), i=LV.findIndex((_,k)=>!B[k]);
-    if(i>=0){ const L=LV[i]; out.push({kind:tr,isle:tr==='otter'?'otterwood':'brainpeak',t:`${L.boss?'👑 Boss: ':''}${tr==='otter'?'Frog':'Brain'} Trail level ${i+1}: ${L.name}`,s:'',thumb:levelThumb(L),go:()=>{ setTrail(tr); if(mp) mpLeave(); startLevel(i); }}); } }
+  for(const tr of ['otter','brain','sea']){ const LV=levelsOf(tr), B=bestOf(g,tr), i=LV.findIndex((_,k)=>!B[k]);
+    if(i>=0&&(tr!=='sea'||seaWashed(i,o))){ const L=LV[i]; out.push({kind:tr,isle:{otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr],t:tr==='sea'?`🐧 Pippa’s puzzle ${i+1}: ${L.name}`:`${L.boss?'👑 Boss: ':''}${tr==='otter'?'Frog':'Brain'} Trail level ${i+1}: ${L.name}`,s:'',thumb:levelThumb(L),go:()=>{ setTrail(tr); if(mp) mpLeave(); startLevel(i); }}); } }
   { const beaten=longtailBeaten(o), gp=grandPrixOpen(o)&&!grandPrixWon(o), wins=Object.values(o.builds).filter(b=>b.k==='blitz').length;
     if(gp||wins<15){ const lvl=gp?'hard':['easy','medium','hard'][Math.min(2,beaten+1)], who=`Swoop (${CPU_LEVELS[lvl].speed})`;
       const pick=gp?GP_PICK:'p'+(wins%(BLITZ_PICKS.length-1)), L=pickOf(pick);
@@ -8855,7 +9021,7 @@ function nextCandidates(){
   return out;
 }
 const NEXT_RING=['trail','blitz','library','mystery'];
-const ringOf=k=>k==='otter'||k==='brain'?'trail':k;
+const ringOf=k=>k==='otter'||k==='brain'||k==='sea'?'trail':k;
 function nextBuild(){
   const o=worldStore(), C=nextCandidates(); if(!C.length) return null;
   const at=NEXT_RING.indexOf(ringOf(nextLast()));
@@ -8959,7 +9125,7 @@ function homeContinue(){
   if(game&&model&&levelsOf(gameTrail())[game.lvl]) return {t:`Back to ${TRAILS[gameTrail()].name} level ${game.lvl+1}`,s:`${levelsOf(gameTrail())[game.lvl].name}: ${placedN} of ${model.bricks.length} bricks placed`,p:bar(placedN,model.bricks.length),go:()=>setTab('build')};
   if(mp) return {t:mp.state&&mp.state.calm?'Back to this week’s Bloppit':mp.cpu?'Back to your race':'Back to your room',s:mp.state&&mp.state.solo?`Your ${mp.state.label} is still going`:mp.cpu?`Your Blitz race against ${mp.state&&mp.state.cpuLevel?CPU_LEVELS[mp.state.cpuLevel].name:'Swoop'} is still going`:mpBlitz()?'Your Bloppit Blitz game is still going':'Your Play together game is still going',p:-1,go:()=>setTab(mp.state&&mp.state.started?'build':mpHomeTab())};
   if(pendingSave){ const o=pendingSave;
-    return {t:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`Continue ${TRAILS[o.game.trail==='brain'?'brain':'otter'].name} level ${o.game.lvl+1}`:'Continue building',
+    return {t:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`Continue ${TRAILS[trailOk(o.game.trail)].name} level ${o.game.lvl+1}`:'Continue building',
       s:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`${levelsOf(o.game&&o.game.trail)[o.game.lvl].name}: ${o.placedN} of ${o.nBricks} bricks placed`:`Your ${niceName(o.name)}: ${o.placedN} of ${o.nBricks} bricks placed`,
       p:bar(o.placedN,o.nBricks),go:()=>$('#resumeGo').click()}; }
   if(model&&placedN>0&&placedN<model.bricks.length) return {t:'Continue building',s:`${placedN} of ${model.bricks.length} bricks placed`,p:bar(placedN,model.bricks.length),go:()=>setTab('build')};
@@ -8978,6 +9144,7 @@ function renderHome(){
   const st=playerStats(players.cur);
   $('#hmOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
   $('#hmBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} new levels, with math puzzles`;
+  $('#hmSeaSub').textContent=st.slv?`${st.slv} of ${SEA_LEVELS.length} puzzles built`:seaWashed(0)?'A puzzle has washed ashore!':`The first washes ashore at ${seaPct(0)}%`;
   try{ const week=weekOf(), o=weeklyPuzzle(week), me=weeklyStore().weeks[week], k=weeklyStreak();
     $('#hmDailyImg').src=o.thumb; $('#hmDailyT').textContent=me?`${o.name}: ${me.clean?'clean ✓':'done ✓'}`:`This week: ${o.name}`;
     renderHomeWeekly();
@@ -8985,7 +9152,7 @@ function renderHome(){
 }
 $('#hmCont').onclick=()=>{ if(homeCont) homeCont.go(); };
 function homeGo(where){
-  if(where==='otter'||where==='brain'||where==='game'){ if(mp){ setTab(mpHomeTab()); mpMsg(`Leave ${mpWhat()} first to play the Trails on your own.`); return; } setTab('game',where==='game'?'hub':where); return; }
+  if(where==='otter'||where==='brain'||where==='sea'||where==='game'){ if(mp){ setTab(mpHomeTab()); mpMsg(`Leave ${mpWhat()} first to play the Trails on your own.`); return; } setTab('game',where==='game'?'hub':where); return; }
   if(where==='quick'){ pickPuzzle('quick','top'); return; }  // the puzzle page has both: add a photo at the top, the library below
   if(where==='daily'){ setTab('daily'); return; }
   if(where==='island'){ setTab('island'); return; }
@@ -9010,6 +9177,7 @@ function homeRoute(){
   if(h==='photos'||h==='create') setTab('create');
   else if(h==='library') homeGo('library');
   else if(h==='otter'||h==='brain') homeGo(h);
+  else if(h==='pippa') homeGo('sea');
   else if(!h&&new URLSearchParams(location.search).get('welcome')==='1'&&welcomeStart()) {}
   else { const [t,sub]=hashPage(h); if(t==='build'||t==='booklet'||t==='create') setTab('home'); else setTab(t,sub); }
 }
