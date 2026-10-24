@@ -92,6 +92,8 @@ export function merge(server, incoming) {
     for (const slot of ['neck', 'head', 'face', 'feet', 'prop']) { const v = wearIn[slot]; if (Array.isArray(v) && typeof v[0] === 'string' && /^[a-z]{2,12}$/.test(v[0]) && Number.isInteger(v[1]) && v[1] >= 0 && v[1] < 16) wear[slot] = [v[0], v[1]]; }
     const pick = ['treehouse', 'lighthouse'].includes(wa.pick) ? wa.pick : ['treehouse', 'lighthouse'].includes(wb.pick) ? wb.pick : null;
     const pupColor = [later.pupColor, other.pupColor].map(num).find((v) => Number.isInteger(v) && v >= 0 && v < 16) ?? -1;
+    // colour 15 is the child's own mix (#RRGGBB, kept as pupHex)
+    const pupHex = pupColor === 15 ? [later.pupHex, other.pupHex].find((h) => typeof h === 'string' && /^#[0-9A-Fa-f]{6}$/.test(h)) : undefined;
     const decor = [...new Set([...(wa.decor || []), ...(wb.decor || [])].filter((d) => typeof d === 'string' && d.length <= 20))];
     out.world = { xp: Math.max(num(wa.xp) ?? 0, num(wb.xp) ?? 0), bonus: Math.max(num(wa.bonus) ?? 0, num(wb.bonus) ?? 0), builds: kept, log: keep,
       decor,
@@ -103,7 +105,7 @@ export function merge(server, incoming) {
       away: Object.fromEntries([...new Set([...Object.keys(obj(wa.away)), ...Object.keys(obj(wb.away))])].filter((k) => kept[k] || (k.startsWith('decor:') && decor.includes(k.slice(6))))
         .map((k) => [k, [obj(wa.away)[k], obj(wb.away)[k]].filter((v) => Number.isFinite(v) && Math.abs(v) < 1e14).sort((x, y) => Math.abs(y) - Math.abs(x))[0]]).filter(([, v]) => v !== undefined && v !== 0)),
       slot: Object.fromEntries(Object.entries({ ...obj(wa.slot), ...obj(wb.slot) }).filter(([k, v]) => kept[k] && Number.isInteger(v) && v >= 0 && v < 12)), pupName, pupAsked: !!(wa.pupAsked || wb.pupAsked),
-      ...(pupAt ? { pupAt } : {}), ...(pupColor >= 0 ? { pupColor } : {}), ...((wa.isle || wb.isle) ? { isle: 1 } : {}), ...((wa.arrived || wb.arrived) ? { arrived: 1 } : {}), ...(pick ? { pick } : {}),
+      ...(pupAt ? { pupAt } : {}), ...(pupColor >= 0 ? { pupColor } : {}), ...(pupHex ? { pupHex: pupHex.toUpperCase() } : {}), ...((wa.isle || wb.isle) ? { isle: 1 } : {}), ...((wa.arrived || wb.arrived) ? { arrived: 1 } : {}), ...(pick ? { pick } : {}),
       ...(Object.keys(wear).length || num(wl.wearAt) ? { wear, wearAt: num(wl.wearAt) || 0 } : {}) };
   }
   for (const key of ['stars', 'xp']) out[key] = Math.max(num(a[key]) ?? 0, num(b[key]) ?? 0) || undefined;

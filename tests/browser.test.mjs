@@ -127,7 +127,7 @@ test('a Trail level finish shows the stars strip and counts a build', { skip: sk
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('a Longtail race starts and shows the Longtail in the banner on his turn', { skip: skip() }, async () => {
+test('a race against Swoop starts and shows him in the banner on his turn', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0');
   await t.page.evaluate(() => document.querySelector('[data-go="cpu"]').click()); await t.page.waitForTimeout(400);
   await t.page.evaluate(() => { document.getElementById('bzHard').click(); document.getElementById('bzName').value = 'Tester'; document.getElementById('bzCpuGo').click(); });
@@ -395,11 +395,12 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   // places, Bloppit, the pup, a decoration, the islands nearby: each says what it is, its level and what's next
   assert.match(await tap('land:beach'), /Home Island.*Builds finished3.*Islands discovered/);
   assert.match(await tapChar('bloppit'), /Bloppit.*storm.*build buddy.*Secret.*red brick/);
-  assert.match(await tapChar('longtail:easy'), /Scraps.*(A Longtail|Roosting in a cliff nest).*feather.*Secret.*Did you know\?.*tropicbirds.*Race Scraps/);
+  assert.match(await tapChar('longtail:easy'), /Swoop the Longtail.*(Blitz Bay’s racer|Asleep on Blitz Bay).*goggles.*Secret.*Speeds beaten.*Did you know\?.*tropicbirds.*Race Swoop · Warm-up/);
+  assert.match(await tapChar('char:pippa'), /Pippa the Penguin.*Sunrise Shores.*Secret.*A yellow two-stud brick.*still in the mist.*This week’s Bloppit/);
   assert.match(await tapChar('pup'), /Bubbles.*Level \d+ Pup.*1 stud.*Otter level.*Wardrobe.*Name or colour/);
   assert.match(await tap('decor:flag'), /Flag/);
   assert.match(await tap('isle:sunrise'), /A misty island.*Play Weekly Bloppit to discover it.*This week’s Bloppit/);
-  assert.match(await tap('isle:blitzbay'), /A misty island.*Race a Longtail/);
+  assert.match(await tap('isle:blitzbay'), /A misty island.*Race Swoop/);
   { await still(); const c = await pt('isle:sunrise'); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(600); await still();
     assert.equal(await t.page.evaluate(() => { const I = window.bloppitIsland3(), s = I.isles.sunrise; return Math.hypot(I.ctl.target.x - s.x, I.ctl.target.z - s.z) < 1; }), true);   // flew there
     assert.match(await t.text('#isWorld .is3-views .v-name'), /misty island/);

@@ -36,6 +36,8 @@ test('pup: a typed name never reaches the server; latest list name, colour and i
   m = merge(w({ pupName: 2, pupAt: 100 }), w({ pupName: 4, pupAt: 200 })).world; assert.equal(m.pupName, 4);
   m = merge(w({ pupName: 4, pupAt: 300 }), w({ pupName: -1, pupAt: 400 })).world; assert.equal(m.pupName, 4);   // a later 'no name' never wipes one
   m = merge(w({ pupColor: 99 }), w({})).world; assert.equal(m.pupColor, undefined);
+  m = merge(w({ pupColor: 15, pupHex: '#7a5cff', pupAt: 5 }), w({ pupColor: 2, pupAt: 1 })).world; assert.equal(m.pupColor, 15); assert.equal(m.pupHex, '#7A5CFF');
+  m = merge(w({ pupColor: 15, pupHex: 'red', pupAt: 5 }), w({})).world; assert.equal(m.pupHex, undefined);
   assert.equal(JSON.stringify(merge({}, w({ pupText: 'Zoë' }))).includes('Zo'), false);
 });
 test('pup: odd input does not throw', () => { assert.equal(merge({ world: 1 }, { world: [1] }).world.xp, 0); });
