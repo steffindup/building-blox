@@ -7929,7 +7929,8 @@ function isl3Build(o){ ISL3.shadowDirty=true;
     g.position.set(bx,0,bz); g.userData.longtail=1; ISL3.longtail=g; ISL3.longtailSprite=sp; add(g,'longtail:'+lv); }
   ISL3.cast={};
   for(const id of ['tiny','nora','pippa','lemmie']){ const C=CAST[id], g=new THREE.Group(), sp=sprite3(`/art/char-${id}.png`,C.h,C.aspect); sp.position.y=TOP3; g.add(sp); hitBox(g,C.h);
-    const [x,z]=shore(C.isle,{tiny:.7,nora:.75,pippa:-.7,lemmie:.7}[id],{nora:.5}[id]||.66); g.position.set(x,0,z); g.userData.cast=id; g.userData.bob=2; ISL3.cast[id]={g,sp}; add(g,'char:'+id); }
+    const misty=!isleCount(C.isle,o), [x,z]=shore(C.isle,{tiny:.7,nora:.75,pippa:-.7,lemmie:.7}[id],misty?1.02:({nora:.5}[id]||.66));   // in front of the mist until the island is found
+    g.position.set(x,0,z); g.userData.cast=id; g.userData.bob=2; ISL3.cast[id]={g,sp}; add(g,'char:'+id); }
   // lufu: a light glimpsed over Moonstone Isle until the mystery is solved, then at home beside your otter
   if(lufuHome(o)){ const C=CAST.lufu, g=new THREE.Group(), sp=sprite3('/art/char-lufu.png',C.h,C.aspect); sp.position.y=TOP3; g.add(sp); hitBox(g,C.h);
     const P=ISL3.pupG?ISL3.pupG.position:ISL3.bloppit.position, spot=clearSpot3(P.x+.95,P.z+.55,.45,[[P.x,P.z]]); g.position.set(spot[0],0,spot[1]); g.userData.cast='lufu'; ISL3.cast.lufu={g,sp}; add(g,'char:lufu'); }

@@ -521,7 +521,7 @@ test('island: a new build always shows, even when older models were dragged into
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('3D characters: on the island (dressed pup, tap for a reaction), the wardrobe, the build buddy as the Longtail on its turn, and the drawings with ?chars3d=0', { skip: skip() }, async () => {
+test('3D characters: on the island (dressed pup, tap for a reaction), the wardrobe, the build buddy as Swoop on his turn, and the drawings with ?chars3d=0', { skip: skip() }, async () => {
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; for (let i = 0; i < 3; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1 }; log.push(k); }
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, wear: { head: ['beanie', 2] } })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); } };
   let t = await open('?nosplash=1&hour=11#island', { init: seed });
@@ -540,14 +540,14 @@ test('3D characters: on the island (dressed pup, tap for a reaction), the wardro
   await t.page.waitForFunction(() => document.getElementById('accDlg').open && document.getElementById('accPic').classList.contains('c3on'), null, { timeout: 20000, polling: 250 });
   const list = await t.text('#accList'); assert.match(list, /Pom-pom hat/); assert.match(list, /Soft shoes/); assert.match(list, /Toy boat/);
   assert.deepEqual(t.errors, []); await t.ctx.close();
-  // a Longtail race: the buddy is Bloppit, and the Longtail itself when it's his turn
+  // a race against Swoop (full throttle): the buddy is Bloppit, and Swoop himself when it's his turn
   t = await open('?nosplash=1&welcome=0', { init: seed });
   await t.page.evaluate(() => document.querySelector('[data-go="cpu"]').click()); await t.page.waitForTimeout(400);
   await t.page.evaluate(() => { document.getElementById('bzHard').click(); document.getElementById('bzName').value = 'Tester'; document.getElementById('bzCpuGo').click(); });
   await t.page.waitForFunction(() => window.bloppitChars3d().views.includes('bud-art'), null, { timeout: 60000, polling: 500 });
   assert.equal(await t.page.evaluate(() => document.querySelector('#buddy .bud-art').__who), 'bloppit');
   await t.page.evaluate(() => document.getElementById('buddy').classList.add('big'));
-  await t.page.waitForFunction(() => document.querySelector('#buddy .bud-art').__who === 'squint', null, { timeout: 30000, polling: 250 });
+  await t.page.waitForFunction(() => document.querySelector('#buddy .bud-art').__who === 'swoop', null, { timeout: 30000, polling: 250 });
   assert.deepEqual(t.errors, []); await t.ctx.close();
   // drawings only
   t = await open('?nosplash=1&chars3d=0&hour=11#island', { init: seed }); await t.page.waitForTimeout(4000);
