@@ -815,7 +815,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 body.on-home .tabs{visibility:hidden}
 .home{max-width:760px;margin:0 auto;display:grid;gap:18px;padding-block:6px 28px}
 .hm-hello{display:flex;align-items:center;gap:14px}
-/* How to play: a 30-second video, on the menu and on the build page for a player's first builds */
+/* How to play: a one-minute video, on the menu and on the build page for a player's first builds */
 .hm-how{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid var(--line);border-radius:16px;padding:10px 14px;background:var(--page);color:var(--ink);cursor:pointer;font:inherit;box-shadow:0 2px 0 var(--shadow)}
 .hm-how .pl{flex:none;width:44px;height:44px;border-radius:50%;background:#D2352B;color:#fff;display:grid;place-items:center;font-size:18px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
 .hm-how b{display:block;font-family:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;font-weight:400;font-size:20px;line-height:1.1}
@@ -825,6 +825,8 @@ body.on-home .tabs{visibility:hidden}
 .howdlg video{display:block;width:100%;aspect-ratio:16/9;border-radius:12px;background:#14202C}
 .howdlg.tall{width:min(420px,calc(100vw - 24px))}.howdlg.tall video{aspect-ratio:9/16;max-height:calc(100vh - 130px);max-height:calc(100dvh - 130px);margin:0 auto;width:auto;max-width:100%}
 .howdlg .win-btns{margin-top:12px}
+.howdlg .how-x{position:absolute;top:20px;right:20px;z-index:2;width:40px;height:40px;border-radius:50%;border:0;background:rgba(20,32,44,.72);color:#fff;font-size:26px;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.howdlg .how-x:hover{background:rgba(20,32,44,.9)}.howdlg .how-x:focus-visible{outline:3px solid var(--hi)}
 .hm-hello img{width:66px;height:66px;flex:none;border-radius:50%}
 .hm-bubble{position:relative;background:var(--page);border:1px solid var(--line);border-radius:16px;padding:10px 16px 12px;box-shadow:0 2px 0 var(--shadow)}
 .hm-bubble::before{content:"";position:absolute;left:-8px;top:50%;width:14px;height:14px;background:var(--page);border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:translateY(-50%) rotate(45deg)}
@@ -1200,7 +1202,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
     <img src="/art/bloppit-avatar.png" alt="" width="256" height="256">
     <div class="hm-bubble"><h2 id="hmHi">Hi there!</h2><p>What shall we build today?</p></div>
   </div>
-  <button class="hm-how" id="hmHow" type="button"><span class="pl" aria-hidden="true">▶</span><span><b>How to play</b><small>A 30-second video</small></span></button>
+  <button class="hm-how" id="hmHow" type="button"><span class="pl" aria-hidden="true">▶</span><span><b>How to play</b><small>A one-minute video</small></span></button>
   <button class="hm-world" id="hmWorld" data-go="island" type="button" hidden></button>
   <button class="hm-cont" id="hmCont" type="button" hidden><img class="hc-pic" src="/art/bud-offer.png" alt="" width="300" height="398"><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span><span class="go" aria-hidden="true">▶</span></button>
   <button class="hm-daily" data-go="daily" type="button"><img id="hmDailyImg" alt=""><span class="hd-txt"><span class="tag">📅 Weekly Bloppit</span><b id="hmDailyT">This week’s puzzle</b><span id="hmDailyS">One puzzle, the same for everyone</span></span><span class="go" aria-hidden="true">▶</span></button>
@@ -1748,6 +1750,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 </dialog>
 
 <dialog class="windlg howdlg" id="howDlg" aria-label="How to play Bloppit">
+  <button class="how-x" id="howX" type="button" aria-label="Close">×</button>
   <video id="howVid" controls playsinline preload="none" poster="/video/how-to-play.jpg"><source src="/video/how-to-play.mp4" type="video/mp4"></video>
   <div class="win-btns"><button class="primary sm" id="howClose" type="button">Let’s build!</button></div>
 </dialog>
@@ -1808,7 +1811,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
   <div class="pages" id="pages"></div>
 </section>
 </main>
-<p class="appfoot note"><a href="https://bloppit.com/privacy/" id="privacyLink">Privacy policy</a></p>
+<p class="appfoot note"><a href="https://bloppit.com/about/">About us</a> · <a href="https://bloppit.com/how-it-works/">How it works</a> · <a href="https://bloppit.com/faq/">FAQ</a> · <a href="https://bloppit.com/privacy/" id="privacyLink">Privacy policy</a></p>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -2980,6 +2983,7 @@ function howPick(){ const d=$('#howDlg'), v=$('#howVid'), base=(v.getAttribute('
   if(s.getAttribute('src')!==src){ s.setAttribute('src',src); v.setAttribute('poster',base+name+'.jpg'); v.load(); } }
 function howOpen(from){ const d=$('#howDlg'), v=$('#howVid'); if(d.open) return; howPick(); d.showModal(); try{ v.muted=!sfx.on; v.currentTime=0; const p=v.play(); if(p&&p.catch) p.catch(()=>{}); }catch(e){} track('howto_open:'+from); }
 function howClose(){ const d=$('#howDlg'), v=$('#howVid'); try{ v.pause(); }catch(e){} if(d.open) d.close(); }
+$('#howX').onclick=()=>howClose();
 $('#howDlg').addEventListener('close',()=>{ try{ $('#howVid').pause(); }catch(e){} });
 $('#howDlg').addEventListener('click',e=>{ if(e.target===e.currentTarget) howClose(); });
 $('#howClose').onclick=howClose;
@@ -3388,11 +3392,14 @@ function onGhost(e){
   const overFoot=p&&p.px>=ax-pad&&p.px<=ax+sel.sx+pad&&p.pz>=az-pad&&p.pz<=az+sel.sz+pad;
   if(ray.intersectObject(ghostGroup,true).length||overFoot) return p;
   // or near it on screen: within a fingertip of the brick's middle (bricks up on the model are hard to hit exactly)
-  if(e.pointerType!=='mouse'&&p){ const b=new THREE.Box3().setFromObject(ghostGroup); if(!b.isEmpty()){ const c=b.getCenter(new THREE.Vector3()).project(playCam), sz=b.getSize(new THREE.Vector3());
-    const cx=r.left+(c.x+1)/2*r.width, cy=r.top+(1-c.y)/2*r.height, edge=new THREE.Vector3(b.max.x,c.y,b.max.z).project(playCam), rad=Math.hypot((edge.x-c.x)/2*r.width,(edge.y-c.y)/2*r.height);
-    if(Math.hypot(e.clientX-cx,e.clientY-cy)<Math.max(56,rad+28)) return p; } }
+  // (the brick's own size on screen is measured at its real height: it used to mix in a screen coordinate, so on the
+  // top layers of a tall build the grab circle grew to cover most of the stage and the view could hardly be turned)
+  if(e.pointerType!=='mouse'&&p){ const b=new THREE.Box3().setFromObject(ghostGroup); if(!b.isEmpty()){ const w=b.getCenter(new THREE.Vector3()), c=w.clone().project(playCam);
+    const cx=r.left+(c.x+1)/2*r.width, cy=r.top+(1-c.y)/2*r.height, edge=new THREE.Vector3(b.max.x,w.y,b.max.z).project(playCam), rad=Math.hypot((edge.x-c.x)/2*r.width,(edge.y-c.y)/2*r.height);
+    if(Math.hypot(e.clientX-cx,e.clientY-cy)<Math.min(Math.max(56,rad+28),140)) return p; } }
   return null;
 }
+window.bloppitPlay=()=>({cam:playCam.position.toArray().map(v=>+v.toFixed(3)),tgt:playControls.target.toArray().map(v=>+v.toFixed(3)),anchor:lastAnchor?[lastAnchor.ax,lastAnchor.az]:null,sel:!!sel,ghost:ghostGroup.visible,placed:placedN,total:model?model.bricks.length:0,hand:hand.length,ctl:playControls.enabled,min:playControls.minDistance,max:playControls.maxDistance});   // for tests
 window.bloppitGhost=()=>{ if(!sel||!lastAnchor||!ghostGroup.visible) return null; const r=renderer.domElement.getBoundingClientRect(), b=new THREE.Box3().setFromObject(ghostGroup), c=b.getCenter(new THREE.Vector3()).project(playCam);   // for tests
   return {x:r.left+(c.x+1)/2*r.width,y:r.top+(1-c.y)/2*r.height,ax:lastAnchor.ax,az:lastAnchor.az,cam:playCam.position.toArray().map(v=>+v.toFixed(3))}; };
 // While a finger drags the brick, the view must not turn: these controls listen to touch events, not just pointer ones
@@ -3448,6 +3455,14 @@ window.bloppitPlaceRight=()=>{ if(busy||!model||cur>=model.steps.length) return 
   if(!t) return false; const n0=placedN; sel={sx:t.sx,sz:t.sz,c:t.c}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2}; tryPlace(); lastAnchor=null; ghostGroup.visible=false;
   if(held) setGhost(); else { sel=null; ghostGroup.clear(); } return placedN>n0; };
 // For tests: hold a brick of this kind over the spot a brick of the current step fills (k), and try to place it
+// For recording the How to play video: where the parts box piece this step needs is, and where on screen the brick in hand goes
+window.bloppitDemo={
+  piece:()=>{ const p=pieces.find(stepNeeds); if(!p) return null; const el=board.querySelector(`[data-p="${p.id}"]`); if(!el) return null; el.scrollIntoView({block:'center'}); const r=el.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2}; },
+  target:()=>{ if(!model||!sel||cur>=model.steps.length) return null; const s=model.steps[cur], u=usedSet(), o=curOff()||{x:Math.round(model.W/2)-1,z:Math.round(model.D/2)-1};
+    const fits=b=>!u.has(b)&&b.c===sel.c; const t=s.bricks.find(b=>fits(b)&&b.sx===sel.sx&&b.sz===sel.sz)||s.bricks.find(b=>fits(b)&&b.sx===sel.sz&&b.sz===sel.sx); if(!t) return null;
+    const v=new THREE.Vector3(t.x+o.x+t.sx/2+playGroup.position.x,s.layer*1.2,t.z+o.z+t.sz/2+playGroup.position.z).project(playCam), r=renderer.domElement.getBoundingClientRect();
+    return {x:r.left+(v.x+1)/2*r.width,y:r.top+(1-v.y)/2*r.height,turn:t.sx!==sel.sx}; },
+};
 window.bloppitPeek=()=>{ if(!model||cur>=model.steps.length) return null; const u=usedSet(), t=model.steps[cur].bricks.find(b=>!u.has(b)); return t?{c:t.c,sx:t.sx,sz:t.sz,step:cur}:null; };
 window.bloppitTryBrick=(c,k=0)=>{ if(busy||!model||cur>=model.steps.length) return null; const s=model.steps[cur], u=usedSet(), o=curOff()||{x:0,z:0}, t=s.bricks.filter(b=>!u.has(b))[k]; if(!t) return null;
   sel={sx:t.sx,sz:t.sz,c}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2}; const n0=placedN; tryPlace(); const ok=placedN>n0; lastAnchor=null; ghostGroup.visible=false;
