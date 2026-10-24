@@ -6762,7 +6762,7 @@ function islandInfo(id,o){
         rows:[['Who',S.who],['Loves',S.loves],['Secret',S.secret],['Your Blitz wins',String(wins)],['Longtails beaten',(()=>{ const m=longtailBeaten(o); return m<0?'None yet. Start with Scraps!':['Scraps','Scraps and Swoop','All three!'][m]; })()],['Did you know?',LONGTAIL_FACT]],
         actions:[{label:`Race ${L.name}`,fn:()=>{ try{ bzLevelSet(arg); bzLevelSync(); }catch(e){} homeGo('cpu'); },primary:true}]}; }
     case 'pup': { const nm=pupName(o), ps=pupStage(o), nx=PUP_STAGES[ps+1], c=PUP_COLORS[pupColorOf(o)];
-      const lv=otterLevel(o), nl=levelXP(lv+1), nAcc=ACC.find(a=>!a.legend&&a.lvl>lv);
+      const lv=otterLevel(o), nl=levelXP(lv+1), nAcc=ACC.find(a=>!a.legend&&!a.finale&&a.lvl>lv);
       return {title:nm||'Your otter',hint:`Level ${lv} ${PUP_STAGES[ps].name} · ${ps+1} stud${ps?'s':''} on its brick`,icon:pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'}),
         rows:[['Otter level',`${lv} (${worldXP(o)} XP, next at ${nl})`],...(nAcc?[['Next outfit',`${nAcc.name} at level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at ${nx.at} builds: another stud`:'A Legend. That’s the top']],
         bar:nx?{pct:Math.max(4,pupPct(o,ps)),label:`${nx.at-n} more build${nx.at-n===1?'':'s'} to ${nx.name}`}:null,
@@ -7263,9 +7263,9 @@ class Ch3BirdCtl extends Ch3Ctl{
 
 // Dressing your otter: its age's brick (1, 2 or 3 studs) in the colour the child picked, and what it's wearing.
 // Each outfit changes design with age (a spinner cap, a backward cap, a sun hat); the main fabric takes its colour.
-const PUP3_OUTFIT={scarf:'scarf',beanie:'beanie',bowtie:'bow_tie',straw:'hat',glasses:'sunglasses',sailor:'sailor_cap',crown:'crown'};
+const PUP3_OUTFIT={scarf:'scarf',beanie:'beanie',bowtie:'bow_tie',straw:'hat',glasses:'sunglasses',sailor:'sailor_cap',crown:'crown',moon:'crown'};   // the Moonstone crown: the crown, silvered, with a glowing moonstone
 const PUP3_TINT=new Set(['Pup_Cloth','Wardrobe teal','Wardrobe navy']);
-const PUP3_NAMES={scarf:['Scarf','Long scarf','Neat scarf'],beanie:['Pom-pom hat','Slouch beanie','Fisherman beanie'],bowtie:['Big bow','Bow tie','Smart bow tie'],straw:['Spinner cap','Baseball cap','Sun hat'],
+const PUP3_NAMES={moon:['Moonstone crown','Moonstone crown','Moonstone crown'],scarf:['Scarf','Long scarf','Neat scarf'],beanie:['Pom-pom hat','Slouch beanie','Fisherman beanie'],bowtie:['Big bow','Bow tie','Smart bow tie'],straw:['Spinner cap','Baseball cap','Sun hat'],
   glasses:['Round glasses','Cool shades','Aviators'],sailor:['Sailor hat','Bucket hat','Captain’s cap'],crown:['Play crown','Silver crest','Gold crest'],shoes:['Soft shoes','Sneakers','Deck shoes'],prop:['Toy boat','Skateboard','Laptop bag']};
 const ch3Col=i=>new THREE.Color((PUP_COLORS[i]||PUP_COLORS[0]).c).convertSRGBToLinear();
 function ch3Own(n){ n.traverse(m=>{ if(m.isMesh&&!m.userData.ownMat){ m.material=Array.isArray(m.material)?m.material.map(x=>x.clone()):m.material.clone(); m.userData.ownMat=1; } }); }
@@ -7282,9 +7282,19 @@ function ch3Dress(inst,o,opt){ opt=opt||{}; if(!inst||!inst.id.startsWith('pup')
   const shoes=!!(w.feet&&w.feet[0]==='shoes');
   inst.root.traverse(n=>{ const u=n.userData;
     if(u.brickVariant){ n.visible=u.brickVariant===studs; if(n.visible) ch3Tint(n,ch3Col(ci),true); }
-    else if(u.outfit){ n.visible=worn[u.outfit]!=null; if(n.visible) ch3Paint(n,worn[u.outfit]); }
+    else if(u.outfit){ n.visible=worn[u.outfit]!=null; if(n.visible) ch3Paint(n,worn[u.outfit]);
+      if(u.outfit==='crown') ch3Moon(n,!!(w.head&&w.head[0]==='moon')); }
     else if(u.wardrobeSlot==='shoes'){ n.visible=shoes; if(shoes) ch3Paint(n,w.feet[1]); }
     else if(u.wardrobeSlot==='accessory'){ n.visible=!!w.prop; if(w.prop) ch3Paint(n,w.prop[1]); } }); }
+// The Moonstone crown is the 3D crown made silver, with a glowing moonstone on its front (added once, shown when worn)
+function ch3Moon(n,on){ let gem=n.userData.moonGem;
+  if(on&&!gem){ const box=new THREE.Box3(); n.traverse(m=>{ if(m.isMesh&&m.geometry){ if(!m.geometry.boundingBox) m.geometry.computeBoundingBox(); box.union(m.geometry.boundingBox); } });
+    const sz=box.getSize(new THREE.Vector3()), c=box.getCenter(new THREE.Vector3()), r=Math.max(.01,Math.min(sz.x,sz.y,sz.z||sz.x)*.32);
+    gem=new THREE.Mesh(new THREE.OctahedronGeometry(r,0),new THREE.MeshStandardMaterial({color:0xC9B6F2,emissive:0x8E7BFF,emissiveIntensity:.9,roughness:.25,metalness:.2}));
+    gem.position.set(c.x,c.y+sz.y*.1,box.max.z); gem.scale.set(.8,1.25,.8); gem.userData.moonGemMesh=1; const host=n.isMesh?n:(()=>{ let h=null; n.traverse(m=>{ if(!h&&m.isMesh) h=m; }); return h||n; })(); host.add(gem); n.userData.moonGem=gem; }
+  if(gem) gem.visible=on;
+  n.traverse(m=>{ if(!m.isMesh||m.userData.moonGemMesh) return; for(const mt of [].concat(m.material)){ if(mt.userData.metal0==null) mt.userData.metal0=mt.metalness||0;
+    if(on){ mt.color.set('#D9E2EC').convertSRGBToLinear(); mt.metalness=Math.max(mt.userData.metal0,.5); } else mt.metalness=mt.userData.metal0; } }); }
 const accName=(a,o)=>ch3On()&&PUP3_NAMES[a.id]?PUP3_NAMES[a.id][pupStage(o||worldStore())]:a.name;
 
 // Small 3D characters in the page (the build buddy, menu cards, dialogs): one shared renderer draws each into its own canvas.
@@ -7989,8 +7999,8 @@ function finaleCard(id){
   $('#trialDlg').addEventListener('close',()=>{ if(ISL3.on) setTimeout(()=>isl3AfterReveal(worldStore()),400); },{once:true});
   const o=worldStore(), B=Object.entries(o.builds), sum=f=>B.filter(([k,b])=>f(k,b)).reduce((a,[,b])=>a+(b.n||0),0), nf=n=>n.toLocaleString();
   if(id==='final:all'){ const n=worldCount(o), bricks=B.reduce((a,[,b])=>a+(b.n||0),0);
-    trialDialog({icon:'🌟',title:'You built a whole world!',quick:true,rows:`<div><span>Builds finished</span><span>${nf(n)}</span></div><div><span>Bricks placed</span><span>${nf(bricks)}</span></div><div><span>Islands complete</span><span>${ISLE_TOTAL} of ${ISLE_TOTAL}</span></div><div class="tot"><span>Bonus Build Stars</span><span>+10</span></div>`,
-      note:`Every island in Bloppitopia is finished, and ${pupName(o)||'your otter'} is so proud. A new Weekly Bloppit still comes every Monday, so keep building!`}); return; }
+    trialDialog({icon:'🌟',title:'You built a whole world!',quick:true,rows:`<div><span>Builds finished</span><span>${nf(n)}</span></div><div><span>Bricks placed</span><span>${nf(bricks)}</span></div><div><span>Islands complete</span><span>${ISLE_TOTAL} of ${ISLE_TOTAL}</span></div><div><span>Moonstone crown</span><span>👑</span></div><div class="tot"><span>Bonus Build Stars</span><span>+10</span></div>`,
+      note:`Every island in Bloppitopia is finished, and ${pupName(o)||'your otter'} has earned the Moonstone crown! A new Weekly Bloppit still comes every Monday, so keep building.`}); return; }
   const isle=id.split(':')[1], N=ISLES[isle]; if(!N) return;
   const line={otterwood:()=>`All ${OTTER_LEVELS.length} Otter Trail levels, boss and all: ${nf(sum(k=>k.startsWith('t:otter:')))} bricks`,
     brainpeak:()=>`All ${BRAIN_LEVELS.length} Brain Trail levels, math pages and all: ${nf(sum(k=>k.startsWith('t:brain:')))} bricks`,
@@ -8034,10 +8044,11 @@ const ACC=[
   {id:'glasses',name:'Sunglasses',slot:'face',lvl:8},
   {id:'sailor',name:'Sailor cap',slot:'head',lvl:11},
   {id:'crown',name:'Legend crown',slot:'head',legend:1},
+  {id:'moon',name:'Moonstone crown',slot:'head',finale:1},   // the reward for completing all of Bloppitopia
   {id:'shoes',name:'Shoes',slot:'feet',lvl:2,d3:1},   // 3D only: earned like the rest
   {id:'prop',name:'Toy',slot:'prop',lvl:6,d3:1},      // a toy boat, a skateboard, a laptop bag, by age
 ];
-const accOwned=(a,o)=>a.legend?pupStage(o)>=2:otterLevel(o)>=a.lvl;
+const accOwned=(a,o)=>a.finale?worldComplete(o):a.legend?pupStage(o)>=2:otterLevel(o)>=a.lvl;
 const accOn=(a,w)=>(w[a.slot]||[])[0]===a.id;
 function accWear(o){ const w=o&&o.wear&&typeof o.wear==='object'?o.wear:{}, out={}; for(const s of ['neck','head','face','feet','prop']){ const v=w[s]; if(Array.isArray(v)&&ACC.some(a=>a.id===v[0]&&a.slot===s)) out[s]=[v[0],Number.isInteger(v[1])?v[1]:0]; } return out; }
 // The shapes, in the pup drawing's own coordinates (239×300, the head's top at y≈0, the chin at y≈140)
@@ -8048,6 +8059,7 @@ function accShapes(id,c){ const d=pupShade(c,-.3), l=pupShade(c,.35);
     case 'beanie': return [{d:'M50 30 C48 -22 206 -26 204 22 Z',f:c,r:[-11,128,20]},{d:'M46 18 L206 10 L208 32 L48 40 Z',f:d,r:[-11,128,20]},{c:[126,-24,15],f:l,r:[-11,128,20]}];
     case 'straw': return [{e:[128,22,104,20],f:'#E9C46A',r:[-10,128,22]},{d:'M74 22 C72 -26 184 -30 182 18 Z',f:'#F2D58A',r:[-10,128,22]},{d:'M74 10 L182 6 L183 18 L74 22 Z',f:c,r:[-10,128,22]}];
     case 'sailor': return [{d:'M64 28 C60 -14 194 -18 192 22 Z',f:'#FFFFFF',r:[-11,128,22]},{d:'M60 18 L196 10 L198 30 L62 38 Z',f:c,r:[-11,128,22]},{e:[126,34,72,9],f:'#14202C',r:[-11,128,22]}];
+    case 'moon': return [{d:'M74 26 L76 -26 L100 0 L126 -36 L152 0 L176 -30 L180 22 Z',f:'#D9E2EC',r:[-11,128,10]},{d:'M74 26 L180 22 L180 12 L75 16 Z',f:c,r:[-11,128,10]},{d:'M126 -22 L136 -4 L126 12 L116 -4 Z',f:'#AC78BA',r:[-11,128,10]},{c:[126,-4,4],f:'#FFFFFF',r:[-11,128,10]},{c:[94,6,5],f:'#9FC3E9',r:[-11,128,10]},{c:[158,2,5],f:'#9FC3E9',r:[-11,128,10]}];
     case 'crown': return [{d:'M78 24 L80 -22 L102 2 L126 -30 L150 -2 L172 -26 L176 20 Z',f:'#F4BC22',r:[-11,128,10]},{c:[126,-6,7],f:c,r:[-11,128,10]},{c:[100,4,5],f:c,r:[-11,128,10]},{c:[152,0,5],f:c,r:[-11,128,10]}];
     case 'glasses': return [{e:[113,78,22,18],f:'rgba(20,32,44,.82)',s:c,w:5},{e:[181,63,19,16],f:'rgba(20,32,44,.82)',s:c,w:5},{d:'M134 72 Q148 62 162 66',s:c,w:5}];
   } return []; }
@@ -8073,7 +8085,7 @@ function wardrobeOpen(){ const d=$('#accDlg'), o=worldStore(), w=accWear(o), fir
 function accRender(all){ const o=worldStore(), D=ISL3.accDraft, prev={...o,wear:{...accWear(o),[D.slot]:[D.id,D.ci]}};
   $('#accPic').innerHTML=pupFig(prev,{vb:PUP_ROUND,par:'xMidYMid slice',svg:1});
   { const h=$('#accPic'), feet=D.slot==='feet'||D.slot==='prop'; cv3(h,{who:'pup',frame:feet?'full':'bust',o:prev,wear:prev.wear}); if(h.__try!==D.id+D.ci){ const first=h.__try==null; h.__try=D.id+D.ci; if(!first) setTimeout(()=>cv3Play(h,'spin'),30); } }
-  $('#accList').innerHTML=ACC.filter(a=>!a.d3||ch3On()).map(a=>{ const own=accOwned(a,o), on=accOn(a,accWear(o)); return `<button type="button" data-acc="${a.id}" aria-pressed="${a.id===D.id}" ${own?'':'disabled'}>${escapeHTML(accName(a,o))}<small>${own?(on?'Wearing':'Yours'):a.legend?'At Legend':'Level '+a.lvl}</small></button>`; }).join('');
+  $('#accList').innerHTML=ACC.filter(a=>!a.d3||ch3On()).map(a=>{ const own=accOwned(a,o), on=accOn(a,accWear(o)); return `<button type="button" data-acc="${a.id}" aria-pressed="${a.id===D.id}" ${own?'':'disabled'}>${escapeHTML(accName(a,o))}<small>${own?(on?'Wearing':'Yours'):a.finale?'Finish Bloppitopia':a.legend?'At Legend':'Level '+a.lvl}</small></button>`; }).join('');
   $('#accCols').innerHTML=PUP_COLORS.map((c,i)=>`<button type="button" role="radio" aria-checked="${i===D.ci}" aria-label="${c.n}" title="${c.n}" data-col="${i}" style="--c:${c.c}"></button>`).join('');
   $('#accOff').hidden=!accOn(ACC.find(a=>a.id===D.id)||{slot:D.slot},accWear(o)); }
 function accSave(on){ const o=worldStore(), D=ISL3.accDraft, w=accWear(o); if(on) w[D.slot]=[D.id,D.ci]; else delete w[D.slot]; o.wear=w; o.wearAt=Date.now(); worldSet(o); track(on?'acc_wear:'+D.id:'acc_off'); sfx.chirp(); }
@@ -8720,7 +8732,7 @@ function nextBuild(){
     if(here.length) best=here.sort((a,b)=>isleFrac(a.isle,o)-isleFrac(b.isle,o))[0]; }
   const go=best.go; return {...best,go:()=>{ nextMark(best.kind); go(); }};
 }
-window.bloppitNext={next:()=>{ const n=nextBuild(); return n&&{t:n.t,kind:n.kind}; },cands:()=>nextCandidates().map(c=>c.kind),mark:k=>nextMark(k),complete:()=>islesComplete(worldStore()),mysteryOpen:()=>mysteryOpen(),unlocked:()=>worldUnlocked(worldStore()),seen:()=>seenGet(),reveal:ids=>isl3Reveal(ids,worldStore()),go:()=>{ const n=nextBuild(); if(n) n.go(); },count:id=>isleCount(id,worldStore())};   // for tests
+window.bloppitNext={next:()=>{ const n=nextBuild(); return n&&{t:n.t,kind:n.kind}; },cands:()=>nextCandidates().map(c=>c.kind),mark:k=>nextMark(k),complete:()=>islesComplete(worldStore()),mysteryOpen:()=>mysteryOpen(),unlocked:()=>worldUnlocked(worldStore()),seen:()=>seenGet(),reveal:ids=>isl3Reveal(ids,worldStore()),go:()=>{ const n=nextBuild(); if(n) n.go(); },count:id=>isleCount(id,worldStore()),wardrobe:()=>wardrobeOpen()};   // for tests
 // Start a Blitz race straight from Play next: the race page with the puzzle and the Longtail picked, then Go
 function nextBlitz(pick,lvl){
   homeGo('cpu');
