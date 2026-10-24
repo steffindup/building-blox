@@ -1,7 +1,7 @@
 # Bloppit
 
 A brick-building game for anyone who loves bricks: build with Bloppit the otter, raise your pup, grow Bloppitopia and
-race the Longtails. A library model (or your own photo) becomes a build with a step-by-step instruction booklet, and you
+race Swoop the Longtail. A library model (or your own photo) becomes a build with a step-by-step instruction booklet, and you
 build it on screen. The menu is game-first:
 
 - **Weekly Bloppit**: one puzzle a week, the same for everyone, changing Monday 8 am US Eastern (`weekOf()` in the app
@@ -10,12 +10,12 @@ build it on screen. The menu is game-first:
   "finished" and "clean" to the server, which keeps two counts per week and answers "you and N% of this week's builders
   finished clean". No names, no times, no ranks. The streak counts weeks, with one missed week in 13 forgiven.
   `WEEKLY_PLAN` maps a week key to an authored puzzle; weeks without one get a library pick from the hash.
-- **Solo**: **Quick Build** (pick Library or Your photo, build at your own pace), **Otter Trail** (the 14 levels) and
+- **Solo**: **Quick Build** (pick Library or Your photo, build at your own pace), **Frog Trail** (the 14 levels) and
   **Brain Trail** (the same levels, with math puzzles locking booklet pages). Each trail keeps its own scores
   (`best` and `bbest` in the game save).
 - **Blitz** races are kept short: a puzzle picked for Blitz is shrunk to at most 30 bricks (`BLITZ_MAX`), opening Blitz
   without a small puzzle starts on the Toadstool Trail level, each wrong brick adds 1 second (`MISS_MS`) and each hint 5 seconds (`HINT_MS`, charged once per step).
-- **Blitz**: **vs the Longtails** (Scraps, Swoop or Squint, the comic brick thieves; take turns, 1 to 3 bricks a turn;
+- **Blitz**: **vs Swoop** (the Longtail, at Warm-up, Race or Full throttle speed; take turns, 1 to 3 bricks a turn;
   Bloppit himself is never the opponent) and **vs Friend**:
   *Make a challenge* builds the whole puzzle against the clock and gives a 6-character code; friends type it into
   *Got a code?* (or open the share link `bloppit.com/join/CODE`) and race the same puzzle later. Live Blitz rooms (5-character codes) are still there.
@@ -23,9 +23,9 @@ build it on screen. The menu is game-first:
   (switched off October 2026; the server answers 410 to the old actions). Nothing typed or spoken passes between players.
 - Every finish screen offers **Build it for real**, which opens the printable booklet.
 
-- Racing the Longtails, challenges and the Weekly Bloppit all run on the device: `cpuApi()` in `public/build/index.html`
+- Racing Swoop, challenges and the Weekly Bloppit all run on the device: `cpuApi()` in `public/build/index.html`
   stands in for the room server and follows the same Blitz rules as `logic.mjs`. A challenge or Weekly run is the same
-  engine with one player (`s.solo`); `trialEnd()` sends the result. Each Longtail's speed and miss rate is in `CPU_LEVELS`.
+  engine with one player (`s.solo`); `trialEnd()` sends the result. Swoop's speed and miss rate at each level is in `CPU_LEVELS`.
 - **The pup** (`netlify/functions/pup/`, `/api/pup`): each player profile gets an anonymous pup id, minted by the server
   at the first finish, and its progress (trail scores, Weekly record) is saved under it and merged on every finish
   (`pupPush()`), so an island survives a lost iPad or cleared site data. The id is the credential and travels in the

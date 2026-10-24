@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Play Bloppit: build with Bloppit the otter, raise your pup, grow your own island, Bloppitopia, and race the Longtails.">
+<meta name="description" content="Play Bloppit: build with Bloppit the otter, raise your pup, grow your own island, Bloppitopia, and race Swoop the Longtail.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="canonical" href="https://bloppit.com/build/">
 <meta name="theme-color" content="#0369BD">
@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="Bloppit">
 <meta property="og:url" content="https://bloppit.com/build/">
 <meta property="og:title" content="Bloppit: Build it. Grow your world.">
-<meta property="og:description" content="Play Bloppit: build with Bloppit the otter, raise your pup, grow your own island, Bloppitopia, and race the Longtails.">
+<meta property="og:description" content="Play Bloppit: build with Bloppit the otter, raise your pup, grow your own island, Bloppitopia, and race Swoop the Longtail.">
 <meta property="og:image" content="https://bloppit.com/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -21,7 +21,7 @@
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Bloppit: Build it. Grow your world.">
-<meta name="twitter:description" content="Play Bloppit: build with Bloppit the otter, raise your pup, grow your own island, Bloppitopia, and race the Longtails.">
+<meta name="twitter:description" content="Play Bloppit: build with Bloppit the otter, raise your pup, grow your own island, Bloppitopia, and race Swoop the Longtail.">
 <meta name="twitter:image" content="https://bloppit.com/og-image.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
 <link rel="manifest" href="/site.webmanifest">
@@ -684,6 +684,17 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .pup-cols{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 0 14px}
 .pup-cols button{width:36px;height:36px;border-radius:50%;border:3px solid #fff;background:var(--c);box-shadow:0 0 0 2px var(--line);cursor:pointer;padding:0}
 .pup-cols button[aria-checked="true"]{box-shadow:0 0 0 3px var(--ink);transform:scale(1.08)}
+.pup-cols{max-width:340px;margin-left:auto;margin-right:auto}
+.pup-cols button.mix{background:conic-gradient(from 20deg,#FE8A18,#F2CD37,#A5CA18,#237841,#008F9B,#0055BF,#81007B,#FF698F,#FE8A18);position:relative}
+.pup-cols button.mix::after{content:'';position:absolute;inset:9px;border-radius:50%;background:var(--c);border:2px solid #fff}
+.pup-mix{max-width:320px;margin:-4px auto 14px;display:grid;gap:8px;font-weight:700;font-size:14px}
+.pup-mix label{display:grid;grid-template-columns:64px 1fr;align-items:center;gap:10px;text-align:left}
+.pup-mix input[type=range]{width:100%;accent-color:var(--c)}
+.pup-mix #pupHue{appearance:none;-webkit-appearance:none;height:14px;border-radius:7px;background:linear-gradient(90deg,hsl(20,78%,50%),hsl(60,78%,50%),hsl(120,78%,45%),hsl(180,78%,40%),hsl(240,78%,55%),hsl(300,78%,50%),hsl(340,78%,60%))}
+.pup-mix #pupShade{appearance:none;-webkit-appearance:none;height:14px;border-radius:7px;background:linear-gradient(90deg,#1B1410,var(--c),#fff)}
+.pup-mix input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--ink);cursor:pointer}
+.pup-mix input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--ink);cursor:pointer}
+.pup-mix .note{margin:0;font-weight:400;text-align:center}
 .pup-own{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;text-align:left;margin:0 0 10px}
 .pup-own label{font-family:var(--f-display);font-size:20px}
 .pup-own>div{display:flex;gap:8px}.pup-own>div button{flex:none;width:auto;margin:0}
@@ -1079,6 +1090,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 .trail-pick button#trBrain[aria-selected="true"]{background:#0055BF}
 .trail-pick button:focus-visible{outline:3px solid var(--hi)}
 .gm-mt{font-size:17px}
+.bz-speed .spd{display:block;font-size:30px;line-height:1.25;margin:2px 0 4px}
 .gm-levels.river{position:relative;padding:14px;border-radius:18px;background:linear-gradient(180deg,color-mix(in srgb,#5A93DB 12%,var(--page)),color-mix(in srgb,#36AEBF 9%,var(--page)));
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='90'%3E%3Cpath d='M10 30q15-8 30 0t30 0M140 72q15-8 30 0t30 0' fill='none' stroke='%2336AEBF' stroke-opacity='.22' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"),linear-gradient(180deg,color-mix(in srgb,#5A93DB 12%,var(--page)),color-mix(in srgb,#36AEBF 9%,var(--page)));background-size:240px 90px,auto}
 .brain .gm-levels.river{background-image:radial-gradient(circle 2px at 20px 14px,rgba(0,85,191,.1) 98%,transparent),linear-gradient(180deg,color-mix(in srgb,#0055BF 14%,var(--page)),color-mix(in srgb,#AC78BA 14%,var(--page)));background-size:40px 40px,auto}
@@ -1167,12 +1179,12 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
   <h3 class="hm-sec">Solo</h3>
   <div class="hm-grid three">
     <button class="hm-tile t-quick" data-go="quick" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="13" y="2" width="94" height="82"/><rect x="33" y="77" width="54" height="31" rx="5" fill="#D2352B"/><rect x="39" y="70" width="15" height="10" rx="3" fill="#E5463C"/><rect x="66" y="70" width="15" height="10" rx="3" fill="#E5463C"/><rect x="33" y="99" width="54" height="9" rx="4" fill="#B32A22"/><ellipse cx="33" cy="88" rx="9" ry="8" fill="#8A5A3B"/><ellipse cx="87" cy="88" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Quick Build</b><span>Any puzzle, at your own pace</span></button>
-    <button class="hm-tile t-game" data-go="otter" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="18" y="8" width="84" height="73"/><path d="M4 82 q10 -8 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 V120 H4z" fill="#36AEBF"/><path d="M4 82 q10 -8 20 0 t20 0 t20 0 t20 0 t20 0 t20 0" stroke="#DFF6F8" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M14 100 q8 -5 16 0 M70 104 q8 -5 16 0" stroke="#9EE0E8" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M96 26 v-22" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M97 5 l15 6 -15 6z" fill="#F4BC22"/></svg></span><b>Otter Trail</b><span id="hmOtterSub">Levels from tiny to tricky</span></button>
+    <button class="hm-tile t-game" data-go="otter" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><ellipse cx="60" cy="104" rx="44" ry="10" fill="#4B9F4A"/><ellipse cx="60" cy="74" rx="34" ry="28" fill="#4FA83D" stroke="#3B2314" stroke-width="3"/><ellipse cx="60" cy="82" rx="22" ry="17" fill="#F7E7A6"/><circle cx="40" cy="38" r="15" fill="#4FA83D" stroke="#3B2314" stroke-width="3"/><circle cx="80" cy="38" r="15" fill="#4FA83D" stroke="#3B2314" stroke-width="3"/><circle cx="40" cy="38" r="10" fill="#F4B228"/><circle cx="80" cy="38" r="10" fill="#F4B228"/><circle cx="41" cy="39" r="5.5" fill="#1B1410"/><circle cx="81" cy="39" r="5.5" fill="#1B1410"/><circle cx="43" cy="36" r="2" fill="#fff"/><circle cx="83" cy="36" r="2" fill="#fff"/><path d="M48 60 q12 9 24 0" stroke="#3B2314" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="38" y="78" width="44" height="22" rx="3" fill="#7DA80F" stroke="#3B2314" stroke-width="3"/><rect x="38" y="78" width="44" height="7" rx="2" fill="#A5CA18"/><rect x="44" y="71" width="12" height="8" rx="2" fill="#A5CA18" stroke="#3B2314" stroke-width="2.5"/><rect x="64" y="71" width="12" height="8" rx="2" fill="#A5CA18" stroke="#3B2314" stroke-width="2.5"/><ellipse cx="34" cy="92" rx="8" ry="6" fill="#4FA83D" stroke="#3B2314" stroke-width="2.5"/><ellipse cx="86" cy="92" rx="8" ry="6" fill="#4FA83D" stroke="#3B2314" stroke-width="2.5"/></svg></span><b>Frog Trail</b><span id="hmOtterSub">Levels from tiny to tricky</span></button>
     <button class="hm-tile t-brain" data-go="brain" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="14" y="22" width="92" height="80"/><g transform="rotate(5.9 46.5 65.5)"><circle cx="27" cy="65.5" r="12" fill="rgba(255,255,255,.28)" stroke="#1B1410" stroke-width="3.5"/><circle cx="66" cy="65.5" r="13" fill="rgba(255,255,255,.28)" stroke="#1B1410" stroke-width="3.5"/><path d="M39 64 q7 -5 14 0" stroke="#1B1410" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M79 64 l10 -3" stroke="#1B1410" stroke-width="3.5" stroke-linecap="round"/></g><path d="M30 30 l30 -14 30 14 -30 14z" fill="#1B2A34"/><path d="M42 36 v10 q18 8 36 0 v-10" fill="#1B2A34"/><path d="M90 30 v16" stroke="#F4BC22" stroke-width="3" stroke-linecap="round"/><circle cx="90" cy="48" r="4" fill="#F4BC22"/><text x="8" y="22" font-family="Lilita One, sans-serif" font-size="20" fill="#fff">+</text><text x="100" y="24" font-family="Lilita One, sans-serif" font-size="20" fill="#fff">÷</text></svg></span><b>Brain Trail</b><span id="hmBrainSub">Levels with math puzzles</span></button>
   </div>
   <h3 class="hm-sec">Blitz</h3>
   <div class="hm-grid">
-    <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><path d="M6 52 h18 M2 66 h22 M8 80 h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/><use href="#bh" x="24" y="18" width="88" height="77"/><rect x="26" y="33" width="84" height="10" rx="5" fill="#D2352B"/><path d="M106 36 l12 -8 -2 12z M106 40 l13 6 -12 4z" fill="#D2352B"/><path d="M44 49 l14 5 M92 49 l-14 5" stroke="#1B1410" stroke-width="4" stroke-linecap="round"/></svg></span><b>vs the Longtails</b><span>Race Scraps, Swoop or Squint</span></button>
+    <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><path d="M6 52 h18 M2 66 h22 M8 80 h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/><use href="#bh" x="24" y="18" width="88" height="77"/><rect x="26" y="33" width="84" height="10" rx="5" fill="#D2352B"/><path d="M106 36 l12 -8 -2 12z M106 40 l13 6 -12 4z" fill="#D2352B"/><path d="M44 49 l14 5 M92 49 l-14 5" stroke="#1B1410" stroke-width="4" stroke-linecap="round"/></svg></span><b>vs Swoop</b><span>Race the speediest Longtail</span></button>
     <button class="hm-tile t-friend" data-go="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><ellipse cx="31.6" cy="65.2" rx="10" ry="11" fill="#8A5A3B"/><path d="M24 66 q7.5 6 15 0" stroke="#1B1410" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>vs Friend</b><span>Send a challenge code, or race live</span></button>
   </div>
   <h3 class="hm-sec">Together</h3>
@@ -1368,19 +1380,19 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 
 <section class="view" id="view-game" hidden>
   <div class="hub" data-hub>
-    <div class="gm-head"><div><h2>🦦 Trails</h2><p class="note">Climb 14 levels, from tiny to tricky, then beat the boss. Each trail has its own puzzles and keeps its own points.</p></div></div>
+    <div class="gm-head"><div><h2>🐸 Trails</h2><p class="note">Climb 14 levels, from tiny to tricky, then beat the boss. Each trail has its own puzzles and keeps its own points.</p></div></div>
     <div class="hm-grid hub-grid">
-      <button class="hm-tile t-game" data-sub="otter" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="18" y="8" width="84" height="73"/><path d="M4 82 q10 -8 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 V120 H4z" fill="#36AEBF"/><path d="M4 82 q10 -8 20 0 t20 0 t20 0 t20 0 t20 0 t20 0" stroke="#DFF6F8" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M14 100 q8 -5 16 0 M70 104 q8 -5 16 0" stroke="#9EE0E8" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M96 26 v-22" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M97 5 l15 6 -15 6z" fill="#F4BC22"/></svg></span><b>Otter Trail</b><span id="hubOtterSub">Levels from tiny to tricky</span></button>
+      <button class="hm-tile t-game" data-sub="otter" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><ellipse cx="60" cy="104" rx="44" ry="10" fill="#4B9F4A"/><ellipse cx="60" cy="74" rx="34" ry="28" fill="#4FA83D" stroke="#3B2314" stroke-width="3"/><ellipse cx="60" cy="82" rx="22" ry="17" fill="#F7E7A6"/><circle cx="40" cy="38" r="15" fill="#4FA83D" stroke="#3B2314" stroke-width="3"/><circle cx="80" cy="38" r="15" fill="#4FA83D" stroke="#3B2314" stroke-width="3"/><circle cx="40" cy="38" r="10" fill="#F4B228"/><circle cx="80" cy="38" r="10" fill="#F4B228"/><circle cx="41" cy="39" r="5.5" fill="#1B1410"/><circle cx="81" cy="39" r="5.5" fill="#1B1410"/><circle cx="43" cy="36" r="2" fill="#fff"/><circle cx="83" cy="36" r="2" fill="#fff"/><path d="M48 60 q12 9 24 0" stroke="#3B2314" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="38" y="78" width="44" height="22" rx="3" fill="#7DA80F" stroke="#3B2314" stroke-width="3"/><rect x="38" y="78" width="44" height="7" rx="2" fill="#A5CA18"/><rect x="44" y="71" width="12" height="8" rx="2" fill="#A5CA18" stroke="#3B2314" stroke-width="2.5"/><rect x="64" y="71" width="12" height="8" rx="2" fill="#A5CA18" stroke="#3B2314" stroke-width="2.5"/><ellipse cx="34" cy="92" rx="8" ry="6" fill="#4FA83D" stroke="#3B2314" stroke-width="2.5"/><ellipse cx="86" cy="92" rx="8" ry="6" fill="#4FA83D" stroke="#3B2314" stroke-width="2.5"/></svg></span><b>Frog Trail</b><span id="hubOtterSub">Levels from tiny to tricky</span></button>
       <button class="hm-tile t-brain" data-sub="brain" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="14" y="22" width="92" height="80"/><g transform="rotate(5.9 46.5 65.5)"><circle cx="27" cy="65.5" r="12" fill="rgba(255,255,255,.28)" stroke="#1B1410" stroke-width="3.5"/><circle cx="66" cy="65.5" r="13" fill="rgba(255,255,255,.28)" stroke="#1B1410" stroke-width="3.5"/><path d="M39 64 q7 -5 14 0" stroke="#1B1410" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M79 64 l10 -3" stroke="#1B1410" stroke-width="3.5" stroke-linecap="round"/></g><path d="M30 30 l30 -14 30 14 -30 14z" fill="#1B2A34"/><path d="M42 36 v10 q18 8 36 0 v-10" fill="#1B2A34"/><path d="M90 30 v16" stroke="#F4BC22" stroke-width="3" stroke-linecap="round"/><circle cx="90" cy="48" r="4" fill="#F4BC22"/><text x="8" y="22" font-family="Lilita One, sans-serif" font-size="20" fill="#fff">+</text><text x="100" y="24" font-family="Lilita One, sans-serif" font-size="20" fill="#fff">÷</text></svg></span><b>Brain Trail</b><span id="hubBrainSub">Levels with math puzzles</span></button>
     </div>
   </div>
   <div class="trail-pick" role="tablist" aria-label="Which trail" hidden>
-    <button type="button" role="tab" data-trail="otter" id="trOtter">🦦 Otter Trail</button>
+    <button type="button" role="tab" data-trail="otter" id="trOtter">🐸 Frog Trail</button>
     <button type="button" role="tab" data-trail="brain" id="trBrain">🧠 Brain Trail</button>
   </div>
   <button class="crumb" data-up type="button">‹ Trails</button>
   <div class="gm-head">
-    <div><h2 id="gmTitle">Otter Trail</h2><p class="note" id="gmIntro">Swim up the river one level at a time. The levels start tiny and get bigger, so they’re worth more points.</p></div>
+    <div><h2 id="gmTitle">Frog Trail</h2><p class="note" id="gmIntro">Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, so they’re worth more points.</p></div>
     <div class="gm-total"><span class="tag" id="gmWho">Your points</span><b id="gmTotal">0</b><span class="note" id="gmDone"></span><button class="ghost sm-link" id="gmSwitch" type="button">Switch player</button></div>
   </div>
   <div class="gm-rules">
@@ -1480,7 +1492,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
   <div class="hub" data-hub>
     <div class="gm-head"><div><h2>⚡ Bloppit Blitz</h2><p class="note">A head-to-head brick race. Fastest clean build wins.</p></div></div>
     <div class="hm-grid hub-grid">
-      <button class="hm-tile t-blitz" data-sub="cpu" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><path d="M6 52 h18 M2 66 h22 M8 80 h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/><use href="#bh" x="24" y="18" width="88" height="77"/><rect x="26" y="33" width="84" height="10" rx="5" fill="#D2352B"/><path d="M106 36 l12 -8 -2 12z M106 40 l13 6 -12 4z" fill="#D2352B"/><path d="M44 49 l14 5 M92 49 l-14 5" stroke="#1B1410" stroke-width="4" stroke-linecap="round"/></svg></span><b>vs the Longtails</b><span>Race Scraps, Swoop or Squint</span></button>
+      <button class="hm-tile t-blitz" data-sub="cpu" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><path d="M6 52 h18 M2 66 h22 M8 80 h16" stroke="#fff" stroke-width="5" stroke-linecap="round"/><use href="#bh" x="24" y="18" width="88" height="77"/><rect x="26" y="33" width="84" height="10" rx="5" fill="#D2352B"/><path d="M106 36 l12 -8 -2 12z M106 40 l13 6 -12 4z" fill="#D2352B"/><path d="M44 49 l14 5 M92 49 l-14 5" stroke="#1B1410" stroke-width="4" stroke-linecap="round"/></svg></span><b>vs Swoop</b><span>Race the speediest Longtail</span></button>
       <button class="hm-tile t-friend" data-sub="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><ellipse cx="31.6" cy="65.2" rx="10" ry="11" fill="#8A5A3B"/><path d="M24 66 q7.5 6 15 0" stroke="#1B1410" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>vs Friend</b><span>Send a challenge code, or race live</span></button>
     </div>
   </div>
@@ -1497,13 +1509,13 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
     </div>
     <div class="mp-forms">
       <div class="card bz-card" id="bzCpuCard">
-        <h2><span aria-hidden="true">🐦</span>vs the Longtails</h2>
+        <h2><span aria-hidden="true">🐦</span>vs Swoop</h2>
         <p class="note" style="margin:0">Take turns placing 1, 2 or 3 bricks, then tap Done. Your clock only runs on your turn. Works without internet.</p>
-        <div class="field"><span class="lbl">Which Longtail?</span>
-          <div class="seg" style="grid-template-columns:repeat(3,1fr)" role="radiogroup" aria-label="Which Longtail?">
-            <input type="radio" name="bzLevel" id="bzEasy" value="easy"><label for="bzEasy"><img src="/art/head-scraps.png" alt="" width="256" height="256">Scraps</label>
-            <input type="radio" name="bzLevel" id="bzMed" value="medium" checked><label for="bzMed"><img src="/art/head-swoop.png" alt="" width="256" height="256">Swoop</label>
-            <input type="radio" name="bzLevel" id="bzHard" value="hard"><label for="bzHard"><img src="/art/head-squint.png" alt="" width="256" height="256">Squint</label>
+        <div class="field"><span class="lbl">How fast is Swoop?</span>
+          <div class="seg bz-speed" style="grid-template-columns:repeat(3,1fr)" role="radiogroup" aria-label="How fast is Swoop?">
+            <input type="radio" name="bzLevel" id="bzEasy" value="easy"><label for="bzEasy"><span class="spd" aria-hidden="true">🐢</span>Warm-up</label>
+            <input type="radio" name="bzLevel" id="bzMed" value="medium" checked><label for="bzMed"><span class="spd" aria-hidden="true">🏁</span>Race</label>
+            <input type="radio" name="bzLevel" id="bzHard" value="hard"><label for="bzHard"><span class="spd" aria-hidden="true">🚀</span>Full throttle</label>
           </div>
           <p class="note" id="bzLevelNote" style="margin:6px 0 0"></p></div>
         <button class="primary" id="bzCpuGo" type="button">Start the race</button>
@@ -1714,6 +1726,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
   <h2 id="pupTitle">Meet your otter!</h2>
   <p class="win-best pup-lead" id="pupLead">Your own little otter, with its own brick. Pick its colour:</p>
   <div class="pup-cols" id="pupCols" role="radiogroup" aria-label="Brick colour"></div>
+  <div class="pup-mix" id="pupMix" hidden><label>Colour <input type="range" id="pupHue" min="20" max="340" step="1" aria-label="Colour"></label><label>Shade <input type="range" id="pupShade" min="25" max="80" step="1" aria-label="Shade"></label><p class="note">Any colour except red: red is Bloppit’s.</p></div>
   <div class="pup-outfit" id="pupOutfit" hidden><span>Add a scarf or a hat?</span><div role="group" aria-label="Outfit"><button type="button" data-out="" aria-pressed="true">Not now</button><button type="button" data-out="scarf" aria-pressed="false">🧣 Scarf</button><button type="button" data-out="beanie" aria-pressed="false">🧢 Beanie</button></div></div>
   <form class="pup-own" id="pupOwn" autocomplete="off">
     <label for="pupIn">Name it yourself</label>
@@ -2625,7 +2638,7 @@ function syncSub(t){
   if(mp||mpw){ if(t==='blitz') s=mp&&mp.cpu?'cpu':'friend'; if(t==='mp') s='start'; }
   if(t==='game'&&s!=='hub') setTrail(s);
   const v=$('#view-'+t); v.dataset.sub=s; v.classList.toggle('in-room',!!(mp||mpw));
-  if(t==='blitz') $('#bzHeadT').textContent=s==='cpu'?'⚡ Blitz vs the Longtails':s==='friend'?'⚡ Blitz vs Friend':'⚡ Bloppit Blitz';
+  if(t==='blitz') $('#bzHeadT').textContent=s==='cpu'?'⚡ Blitz vs Swoop':s==='friend'?'⚡ Blitz vs Friend':'⚡ Bloppit Blitz';
   if(t==='mp') $('#mpHeadT').textContent=s==='join'?'🔑 Join a game':'🧩 Build together';
   if(t==='game'&&s==='hub'){ const st=playerStats(players.cur);
     $('#hubOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
@@ -4398,7 +4411,7 @@ const SAMPLES=[
    return [['front',c]]; }},
  // ---- Authored Weeklies (Q4 2026 bank). `weekly` = the release week key: hidden from the library and from
  // the hash pick until that Monday 8 am ET, then they join the library like any other model.
- {name:'Jack-o’-lantern',theme:'Spooky',weekly:'2026-10-26',beat:'Scraps tried to steal the candle. Build it before he’s back.',ws:{shape:'flat',size:9},make(){ const [c,x]=sheet(220,200,'#ffffff');
+ {name:'Jack-o’-lantern',theme:'Spooky',weekly:'2026-10-26',beat:'Pippa found the biggest pumpkin on Sunrise Shores. Give it a grin!',ws:{shape:'flat',size:9},make(){ const [c,x]=sheet(220,200,'#ffffff');
    x.fillStyle='#3E9A3A'; x.rr(100,14,20,34,6); x.oval(132,30,18,8,-.4,'#4B9F4A');
    x.oval(110,118,92,72,0,'#FE8A18');
    x.oval(64,118,34,66,0,'#E5700B'); x.oval(156,118,34,66,0,'#E5700B'); x.oval(110,118,26,70,0,'#FE8A18');
@@ -4443,7 +4456,7 @@ const SAMPLES=[
    x.fillStyle='#5E3A20'; x.fillRect(78,172,6,40); x.fillRect(116,172,6,40);
    x.fillStyle='#8B5A2B'; x.rr(66,208,68,44,8); x.fillStyle='#5E3A20'; x.fillRect(66,224,68,6);
    return [['front',c]]; }},
- {name:'Snowman',theme:'Fantasy',weekly:'2026-11-30',beat:'First frost on Bloppitopia. Squint ran off with the carrot.',ws:{shape:'puffed',size:10},make(){ const [c,x]=sheet(200,260,'#BFE3F5');
+ {name:'Snowman',theme:'Fantasy',weekly:'2026-11-30',beat:'First frost on Bloppitopia. Pippa feels right at home. Build her a snowman!',ws:{shape:'puffed',size:10},make(){ const [c,x]=sheet(200,260,'#BFE3F5');
    x.dot(100,196,62,'#F4F4F4'); x.dot(100,118,46,'#F4F4F4'); x.dot(100,58,34,'#F4F4F4');
    x.fillStyle='#1B2A34'; x.rr(72,24,56,10,3); x.rr(82,2,36,26,3);
    x.dot(88,52,4,'#1B2A34'); x.dot(112,52,4,'#1B2A34'); x.poly([[104,60],[132,66],[104,70]],'#FE8A18');
@@ -4457,7 +4470,7 @@ const SAMPLES=[
    x.poly([[100,22],[110,52],[140,56],[116,74],[122,106],[100,90],[78,106],[84,74],[60,56],[90,52]],'#F2CD37');
    [[70,138,'#C91A09'],[128,140,'#0055BF'],[100,176,'#F2CD37'],[52,190,'#0055BF'],[150,192,'#C91A09'],[88,222,'#C91A09'],[120,226,'#0055BF']].forEach(([a,b,f])=>x.dot(a,b,11,f));
    return [['front',c]]; }},
- {name:'Gingerbread house',theme:'Food',weekly:'2026-12-14',beat:'Scraps ate the door. Bake it a new one.',ws:{shape:'flat',size:11},make(){ const [c,x]=sheet(240,220,'#ffffff');
+ {name:'Gingerbread house',theme:'Food',weekly:'2026-12-14',beat:'Pippa is baking for the whole island. Build the house before it’s eaten!',ws:{shape:'flat',size:11},make(){ const [c,x]=sheet(240,220,'#ffffff');
    x.poly([[120,18],[228,98],[12,98]],'#8B5A2B'); x.fillStyle='#8B5A2B'; x.fillRect(32,98,176,112);
    x.fillStyle='#F4F4F4'; x.rr(20,90,200,14,7); x.poly([[120,18],[228,98],[220,104],[120,30],[20,104],[12,98]],'#F4F4F4');
    [[44,118],[76,118],[108,118],[140,118],[172,118],[196,118]].forEach(([a,b])=>x.dot(a,b,8,'#F4F4F4'));
@@ -4474,7 +4487,7 @@ const SAMPLES=[
    x.poly([[80,10],[150,100],[10,100]],'#2E8B3A'); x.poly([[80,60],[158,160],[2,160]],'#2E8B3A');
    return [['front',c]]; }},
  // ---- Bosses and the mystery of Moonstone Isle: kept out of the library (hidden); they're built from the trails,
- //      Blitz and the island. Bosses are the Longtails' biggest schemes; the mystery is where they hide their loot.
+ //      Blitz and the island. Pirate ship and Robo-Squint were the bosses before 1.0.1: kept so older builds still have pictures.
  {name:'Pirate ship',theme:'Fantasy',hidden:true,make(){ const [c,x]=sheet(260,240,'#BFE3F5');
    x.fillStyle='#0055BF'; x.beginPath(); x.moveTo(0,206); for(let i=0;i<=13;i++) x.quadraticCurveTo(i*20+10,194+(i%2?-8:8),i*20+20,206); x.lineTo(260,240); x.lineTo(0,240); x.closePath(); x.fill();
    x.fillStyle='#6B4229'; x.beginPath(); x.moveTo(18,150); x.lineTo(242,150); x.lineTo(222,206); x.lineTo(40,206); x.closePath(); x.fill();
@@ -4495,6 +4508,62 @@ const SAMPLES=[
    x.fillStyle='#36AEBF'; x.rr(70,134,80,46,8); for(let i=0;i<3;i++) x.dot(88+i*22,196,7,['#C91A09','#F2CD37','#4B9F4A'][i]);
    x.fillStyle='#6C6E68'; x.rr(4,122,30,72,12); x.rr(186,122,30,72,12);
    x.fillStyle='#6C6E68'; x.rr(54,212,40,44,8); x.rr(126,212,40,44,8);
+   return [['front',c]]; }},
+ // ---- Character update (1.0.1): the new bosses and mystery chapters. Friends' dreams to build, nobody's loot.
+ {name:'Lily-pad Palace',theme:'Bermuda',hidden:true,make(){ const [c,x]=sheet(270,240,'#BFE3F5');
+   x.oval(135,214,135,26,0,'#36AEBF'); x.oval(135,206,120,16,0,'#9FC3E9');
+   for(const [a,b,r] of [[46,200,34],[224,202,32],[135,196,58]]){ x.oval(a,b,r,r*.34,0,'#4B9F4A'); x.poly([[a,b],[a+r*.8,b-4],[a+r*.8,b+4]],'#9FC3E9'); }
+   x.fillStyle='#F4F4F4'; x.rr(86,120,98,72,6); x.fillStyle='#E4ADC8'; x.fillRect(86,120,98,10); x.fillRect(86,178,98,8);
+   x.fillStyle='#352100'; x.rr(122,150,26,38,12); x.dot(108,146,7,'#36AEBF'); x.dot(162,146,7,'#36AEBF');
+   for(const [a,h,w] of [[96,58,20],[174,58,20],[135,88,26]]){ x.fillStyle='#F4F4F4'; x.fillRect(a-w/2,120-h,w,h);
+     for(let k=0;k<5;k++){ const t=k/5*Math.PI*2; x.oval(a+Math.cos(t)*w*.42,120-h-6+Math.sin(t)*4,w*.36,w*.22,t,'#E4ADC8'); } x.dot(a,120-h-8,w*.24,'#FFF03A'); }
+   x.fillStyle='#352100'; x.fillRect(134,8,3,30); x.poly([[137,8],[160,15],[137,22]],'#A5CA18');
+   x.lineWidth=7; x.strokeStyle='#A95500'; for(const [a,b,c2,d] of [[46,190,88,176],[182,176,224,190]]){ x.beginPath(); x.moveTo(a,b); x.quadraticCurveTo((a+c2)/2,Math.min(b,d)-26,c2,d); x.stroke(); }
+   x.oval(44,178,13,10,0,'#A5CA18'); x.dot(38,170,5,'#F2CD37'); x.dot(50,170,5,'#F2CD37'); x.dot(38,170,2.5,'#1B2A34'); x.dot(50,170,2.5,'#1B2A34');
+   for(const [a,b] of [[22,190],[250,188],[200,214],[70,214]]) x.dot(a,b,6,'#E4ADC8');
+   return [['front',c]]; }},
+ {name:'Great Telescope',theme:'Space',hidden:true,make(){ const [c,x]=sheet(250,260,'#BFE3F5');
+   for(const [a,b,r] of [[130,22,8],[222,120,8],[30,128,7]]) x.poly([[a,b-r*1.7],[a+r*.5,b-r*.5],[a+r*1.7,b],[a+r*.5,b+r*.5],[a,b+r*1.7],[a-r*.5,b+r*.5],[a-r*1.7,b],[a-r*.5,b-r*.5]],'#FFF03A');
+   x.dot(48,44,24,'#F2CD37'); x.dot(60,36,21,'#BFE3F5');
+   x.fillStyle='#A0A5A9'; x.rr(40,186,170,30,8); x.fillStyle='#6C6E68'; x.rr(26,214,198,40,8);
+   x.lineWidth=12; x.lineCap='round'; x.strokeStyle='#6B4229';
+   x.beginPath(); x.moveTo(125,132); x.lineTo(84,188); x.moveTo(125,132); x.lineTo(166,188); x.moveTo(125,132); x.lineTo(125,190); x.stroke();
+   x.save(); x.translate(125,124); x.rotate(-.62);
+   x.fillStyle='#0055BF'; x.rr(-70,-22,170,44,14); x.fillStyle='#5A93DB'; x.rr(-70,-22,170,12,8);
+   x.fillStyle='#F2CD37'; for(const a of [-50,0,50]) x.fillRect(a,-24,10,48); x.rr(96,-28,26,56,8); x.dot(120,0,14,'#9FC3E9');
+   x.fillStyle='#352100'; x.rr(-96,-9,28,18,5); x.restore();
+   x.dot(125,132,13,'#F2CD37');
+   return [['front',c]]; }},
+ {name:'Lookout tower',theme:'Bermuda',hidden:true,make(){ const [c,x]=sheet(200,270,'#ffffff');
+   x.fillStyle='#4B9F4A'; x.rr(0,232,200,38,8);
+   x.fillStyle='#6B4229'; for(const a of [44,138]) x.fillRect(a,96,18,140); x.fillStyle='#A95500'; for(let k=0;k<5;k++) x.fillRect(50,108+k*25,100,10);
+   x.fillStyle='#A95500'; x.rr(28,74,144,26,4); x.fillStyle='#E4CD9E'; x.fillRect(34,42,132,34); x.fillStyle='#1B2A34'; x.fillRect(54,50,26,18); x.fillRect(120,50,26,18);
+   x.poly([[20,46],[100,2],[180,46]],'#C91A09'); x.fillStyle='#F4F4F4'; x.fillRect(96,0,6,10);
+   for(const [a,b] of [[18,214],[182,216]]) x.oval(a,b,24,30,0,'#237841');
+   return [['front',c]]; }},
+ {name:'Little bridge',theme:'Bermuda',hidden:true,make(){ const [c,x]=sheet(270,170,'#ffffff');
+   x.fillStyle='#36AEBF'; x.fillRect(0,128,270,42); x.fillStyle='#9FC3E9'; for(let k=0;k<5;k++) x.fillRect(20+k*52,140+(k%2)*10,30,5);
+   x.fillStyle='#4B9F4A'; x.rr(0,110,64,40,10); x.rr(206,110,64,40,10);
+   x.lineWidth=16; x.strokeStyle='#A95500'; x.beginPath(); x.moveTo(40,116); x.quadraticCurveTo(135,46,230,116); x.stroke();
+   x.lineWidth=5; x.strokeStyle='#6B4229'; x.beginPath(); x.moveTo(40,92); x.quadraticCurveTo(135,22,230,92); x.stroke();
+   for(let k=0;k<7;k++){ const t=(k+.5)/7, px=40+t*190, py=116-Math.sin(Math.PI*t)*52; x.fillStyle='#6B4229'; x.fillRect(px-3,py-26,6,26); }
+   for(const [a,b] of [[100,140],[170,150]]){ x.oval(a,b,16,6,0,'#4B9F4A'); }
+   for(const [a,b] of [[214,104],[230,100],[246,104]]) x.oval(a,b,4,6,0,'#FFF03A');
+   return [['front',c]]; }},
+ {name:'Moon gate',theme:'Bermuda',hidden:true,make(){ const [c,x]=sheet(240,240,'#ffffff');
+   x.fillStyle='#A0A5A9'; x.fillRect(10,210,220,30);
+   x.fillStyle='#F4F4F4'; x.beginPath(); x.arc(120,120,104,Math.PI,0); x.lineTo(224,212); x.lineTo(16,212); x.closePath(); x.fill();
+   x.fillStyle='#36AEBF'; x.beginPath(); x.arc(120,128,66,0,Math.PI*2); x.fill(); x.fillRect(54,128,132,84);
+   x.dot(120,92,24,'#FFF03A'); x.dot(132,84,22,'#36AEBF');
+   for(let i=0;i<7;i++){ const a=Math.PI+i*Math.PI/6; x.dot(120+Math.cos(a)*86,120+Math.sin(a)*86,7,['#C91A09','#F2CD37','#0055BF','#4B9F4A','#FE8A18','#AC78BA','#C91A09'][i]); }
+   x.oval(40,212,24,10,0,'#4B9F4A'); x.oval(200,212,24,10,0,'#4B9F4A');
+   return [['front',c]]; }},
+ {name:'Jar of stars',theme:'Space',hidden:true,make(){ const [c,x]=sheet(200,250,'#ffffff');
+   x.fillStyle='#A95500'; x.rr(58,6,84,28,6); x.fillStyle='#6B4229'; x.fillRect(58,24,84,8);
+   x.fillStyle='#9FC3E9'; x.rr(34,34,132,208,30); x.fillStyle='#1B2A34'; x.rr(46,58,108,172,22);
+   for(const [a,b,r,k] of [[76,190,9,'#FFF03A'],[120,200,8,'#F2CD37'],[98,160,10,'#FFF03A'],[130,150,7,'#AC78BA'],[74,128,7,'#F2CD37'],[118,108,9,'#FFF03A'],[90,86,6,'#AC78BA']]){
+     x.poly([[a,b-r*1.6],[a+r*.45,b-r*.45],[a+r*1.6,b],[a+r*.45,b+r*.45],[a,b+r*1.6],[a-r*.45,b+r*.45],[a-r*1.6,b],[a-r*.45,b-r*.45]],k); }
+   x.fillStyle='#F4F4F4'; x.fillRect(48,70,8,120);
    return [['front',c]]; }},
  {name:'Rowboat',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(260,150,'#ffffff');
    x.fillStyle='#0055BF'; x.fillRect(0,120,260,30);
@@ -4630,8 +4699,8 @@ const OTTER_LEVELS=[
  {name:'Sailboat',   sample:'Sailboat',  size:14, shape:'puffed', thick:.9,  colors:6, pts:600},
  {name:'Cottage',    sample:'Cottage',   size:11, shape:'puffed', thick:1,  colors:8, pts:750},
  {name:'Otter',      sample:'Otter',     size:12, shape:'puffed', thick:.5,  colors:8, pts:1000},
- // The boss: the Longtails' pirate ship, the biggest Otter Trail build. Finishing it completes Otterwood.
- {name:'Pirate ship',sample:'Pirate ship',size:18, shape:'puffed', thick:.8,  colors:7, pts:1500, boss:true},
+ // The boss: Tiny's Lily-pad Palace, a palace for every frog in the forest and the biggest Frog Trail build. Finishing it completes Frog Forest.
+ {name:'Lily-pad Palace',sample:'Lily-pad Palace',size:18, shape:'puffed', thick:.8,  colors:7, pts:1500, boss:true},
 ];
 // Brain Trail has its own puzzles (same climb from tiny to tricky, same points), so the two trails feel different
 const BRAIN_LEVELS=[
@@ -4649,8 +4718,8 @@ const BRAIN_LEVELS=[
  {name:'Turtle',        sample:'Turtle',         size:12, shape:'puffed', thick:.7,  colors:6, pts:600},
  {name:'Castle',        sample:'Castle',         size:14, shape:'puffed', thick:1,  colors:7, pts:750},
  {name:'Treasure chest',sample:'Treasure chest', size:12, shape:'puffed', thick:.7,  colors:8, pts:1000},
- // The boss: Squint's giant robot. Finishing it (math pages and all) completes Brainpeak.
- {name:'Robo-Squint',   sample:'Robo-Squint',    size:17, shape:'puffed', thick:.7,  colors:7, pts:1500, boss:true},
+ // The boss: Nora's Great Telescope, broken just when she needs it. Rebuilding it (math pages and all) completes Brainpeak.
+ {name:'Great Telescope', sample:'Great Telescope', size:22, shape:'puffed', thick:.7,  colors:7, pts:1500, boss:true},
 ];
 const levelsOf=tr=>tr==='brain'?BRAIN_LEVELS:OTTER_LEVELS;
 // Ready-made Blitz races, small enough to be quick (Blitz keeps races to 30 bricks or fewer)
@@ -4666,7 +4735,7 @@ const BLITZ_PICKS=[
  {name:'Rocket',    sample:'Rocket',      size:8,  shape:'puffed', thick:.7, colors:5, diff:'Hard'},
 ];
 const BLITZ_DEFAULT_PICK='p3';  // the Duck
-// The Blitz boss: a bigger race against Squint, offered once all three Longtails have been beaten. Winning it completes Blitz Bay.
+// The Blitz boss: a bigger race against Swoop at full throttle, offered once he's been beaten at all three speeds. Winning it completes Blitz Bay.
 const GRAND_PRIX={name:'Grand Prix: Race car', sample:'Race car', size:7, shape:'puffed', thick:.4, colors:4, diff:'Grand Prix', boss:true};   // 39 bricks: longer than a normal race
 BLITZ_PICKS.push(GRAND_PRIX);
 const GP_PICK='p'+(BLITZ_PICKS.length-1);
@@ -4689,9 +4758,9 @@ const TOGETHER_DEFAULT_PICK='t1';  // the Toadstool
 const pickOf=v=>/^p\d+$/.test(v)?BLITZ_PICKS[+v.slice(1)]:/^t\d+$/.test(v)?TOGETHER_PICKS[+v.slice(1)]:OTTER_LEVELS[+v];
 const GAME_KEY='building-blox-game-v1';
 let game=null, autoBusy=false, freeS=null, winLvl=0;
-// Two trails, each with its own levels: Otter Trail (just building) and Brain Trail (math puzzles lock some pages).
-// Each keeps its own scores: Otter Trail in g.best (where the levels have always been saved), Brain Trail in g.bbest.
-const TRAILS={otter:{name:'Otter Trail',icon:'🦦'},brain:{name:'Brain Trail',icon:'🧠'}};
+// Two trails, each with its own levels: Frog Trail (id otter) (just building) and Brain Trail (math puzzles lock some pages).
+// Each keeps its own scores: Frog Trail in g.best (where the levels have always been saved), Brain Trail in g.bbest.
+const TRAILS={otter:{name:'Frog Trail',icon:'🐸'},brain:{name:'Brain Trail',icon:'🧠'}};
 let trail=(()=>{ try{ return localStorage.getItem('bloppit-trail')==='brain'?'brain':'otter'; }catch(e){ return 'otter'; } })();
 function setTrail(t){ trail=t==='brain'?'brain':'otter'; try{ localStorage.setItem('bloppit-trail',trail); }catch(e){} }
 const bestOf=(g,tr)=>tr==='brain'?(g.bbest||(g.bbest={})):(g.best||(g.best={}));
@@ -4730,7 +4799,7 @@ function updateGameBar(){
   if(game.math) bits.push(`Math ${game.math.solved.length} of ${game.math.locks.length} pages${game.math.pts?` +${game.math.pts}`:''}`);
   $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>';
 }
-window.bloppitLevels={otter:OTTER_LEVELS,brain:BRAIN_LEVELS,lib:()=>SAMPLES.filter(released).map(s=>s.name),weekly:w=>weeklyPuzzle(w),count:L=>{ delete L.count; return levelCount(L); }};   // for tests and tuning
+window.bloppitLevels={otter:OTTER_LEVELS,brain:BRAIN_LEVELS,lib:()=>SAMPLES.filter(released).map(s=>s.name),weekly:w=>weeklyPuzzle(w),count:L=>{ delete L.count; return levelCount(L); },pic:n=>{ const S=SAMPLES.find(x=>x.name===n); return S?S.make()[0][1].toDataURL():null; },thumb:L=>levelThumb(L)};   // for tests and tuning
 window.bloppitLevel=(t,i)=>{ trail=t; startLevel(i); return model?{n:model.bricks.length,colors:[...new Set(model.bricks.map(b=>PALETTE[b.c][0]))]}:null; };   // for tests
 function startLevel(i){
   const L=levelsOf(trail)[i]; if(!L) return;
@@ -4869,7 +4938,7 @@ function renderGameMap(){
   $('#view-game').classList.toggle('brain',trail==='brain');
   $('#trOtter').setAttribute('aria-selected',trail==='otter'); $('#trBrain').setAttribute('aria-selected',trail==='brain');
   $('#gmTitle').textContent=`${T.icon} ${T.name}`;
-  $('#gmIntro').textContent=trail==='brain'?'A different set of puzzles, with Bloppit’s math puzzles locking some booklet pages. Solve them to keep building and earn bonus points.':'Swim up the river one level at a time. The levels start tiny and get bigger, so they’re worth more points.';
+  $('#gmIntro').textContent=trail==='brain'?'A different set of puzzles, with Bloppit’s math puzzles locking some booklet pages. Solve them to keep building and earn bonus points.':'Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, so they’re worth more points.';
   $('#gmTotal').textContent=total.toLocaleString(); $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} points`; syncMathUI();
   $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} levels done`;
   $('#gmLevels').innerHTML=levelsOf(trail).map((L,i)=>{
@@ -5110,7 +5179,7 @@ function renderWhoList(){
       ${p.id===players.cur?'<span class="now-tag">Playing</span>':''}<button class="who-edit" type="button" data-edit="${p.id}" aria-label="Edit ${escapeHTML(p.name)}">Edit</button>
       <span class="av" style="background:${p.color}">${initial(p.name)}</span><b>${escapeHTML(p.name)}</b>
       <span class="meta">${p.age?`Age ${p.age}${p.age===15?'+':''} · `:''}${st.pts.toLocaleString()} points</span>
-      <span class="meta">🦦 ${st.lv} · 🧠 ${st.blv} of ${OTTER_LEVELS.length} levels</span></div>`; }).join('');
+      <span class="meta">🐸 ${st.lv} · 🧠 ${st.blv} of ${OTTER_LEVELS.length} levels</span></div>`; }).join('');
 }
 let whoEditing=null, whoColor=AV_COLORS[0];
 function whoForm(p){
@@ -5415,7 +5484,7 @@ function updateMpBar(){
   if(bz){ $('#hintBtn').textContent=s.calm?'Hint':mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'; $('#hintBtn').disabled=done||(!mpMyTurn()&&!hintOn); }
   $('#mpBar').classList.toggle('calm',!!s.calm);
   $('#mpBar').classList.toggle('blitz',bz);
-  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?`vs ${CPU_LEVELS[s.cpuLevel].name}`:'Room'; $('#mpRoomBtn').textContent=mp.cpu?'Race':'Room'; $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
+  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?`vs Swoop · ${CPU_LEVELS[s.cpuLevel].speed}`:'Room'; $('#mpRoomBtn').textContent=mp.cpu?'Race':'Room'; $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
   const cp=s.players[s.turn], mine=s.turn===mp.me, left=mpLeft(s), el=$('#mpTurn');
   el.classList.toggle('mine',mine&&!s.finished&&s.started);
   if(bz&&s.solo&&s.calm) el.innerHTML=s.finished?'Finished!<small>Let’s see how clean it was</small>':`Build it clean<small>${(s.players[0].n||0)} of ${s.quota} placed</small>`;
@@ -5512,7 +5581,7 @@ function mpModelOptions(id='#mpModel'){
   const sel_=$(id), keep=sel_.value, mine=`<option value="cur">${model?`Your puzzle: ${escapeHTML(niceName(model.name))} (${model.bricks.length} bricks)`:'Your puzzle'}</option>`;
   if(id==='#bzModel'){
     // Blitz: a few ready-made races, easy to hard
-    sel_.innerHTML=mine+['Easy','Medium','Hard',...(grandPrixOpen()?['Grand Prix']:[])].map(d=>`<optgroup label="${d==='Grand Prix'?'🏆 Grand Prix (vs Squint)':d}">`+BLITZ_PICKS.map((L,i)=>L.diff!==d?'':
+    sel_.innerHTML=mine+['Easy','Medium','Hard',...(grandPrixOpen()?['Grand Prix']:[])].map(d=>`<optgroup label="${d==='Grand Prix'?'🏆 Grand Prix (vs Swoop)':d}">`+BLITZ_PICKS.map((L,i)=>L.diff!==d?'':
       `<option value="p${i}">${L.name} (${levelCount(L)} bricks)</option>`).join('')+'</optgroup>').join('');
   } else sel_.innerHTML=mine+['Small','Medium','Big'].map(d=>`<optgroup label="${d}">`+TOGETHER_PICKS.map((L,i)=>L.diff!==d?'':
       `<option value="t${i}">${L.name} (${levelCount(L)} bricks)</option>`).join('')+'</optgroup>').join('');
@@ -5529,7 +5598,7 @@ async function renderMpView(){
   if(bzv){
     // Racing Bloppit works anywhere; racing friends needs the Bloppit website
     $('#mpOff').hidden=true; $('#bzOff').hidden=ok;
-    if(!ok) $('#bzOff').textContent='Racing friends needs the internet. Check your connection and come back. You can still race the Longtails.';
+    if(!ok) $('#bzOff').textContent='Racing friends needs the internet. Check your connection and come back. You can still race Swoop.';
     ['#bzMake','#bzJoin','#bzCodeIn','#bzChMake','#bzRelayGo'].forEach(id=>$(id).disabled=!ok);
   } else {
     $('#mpOff').hidden=ok;
@@ -5562,7 +5631,7 @@ async function renderMpView(){
   const p0=photos[0]; if(p0) $('#mpThumb').src=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png'));
   $('#mpModelName').textContent=s.title;
   $('#mpModelInfo').innerHTML=s.solo?`<span class="blitz-tag">${escapeHTML(s.label)}</span>${s.nBricks} bricks, all yours. Your clock runs until the last brick is in. A hint adds 5 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
-    :cpuOn?`<span class="blitz-tag">⚡ vs ${CPU_LEVELS[s.cpuLevel].name}</span>${s.nBricks} bricks · you each place ${s.quota} · 1 to 3 bricks a turn. A hint adds 5 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
+    :cpuOn?`<span class="blitz-tag">⚡ vs Swoop · ${CPU_LEVELS[s.cpuLevel].speed}</span>${s.nBricks} bricks · you each place ${s.quota} · 1 to 3 bricks a turn. A hint adds 5 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
     :bz?`<span class="blitz-tag">⚡ Bloppit Blitz</span>${s.nBricks} bricks · ${s.quota?`everyone places ${s.quota}`:`split evenly between ${s.players.length} player${s.players.length===1?'':'s'}: ${Math.floor(s.nBricks/s.players.length)} each`} · 1 to 3 bricks a turn, against the clock. A hint adds 5 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
     :`${s.nBricks} bricks · ${s.perTurn} brick${s.perTurn>1?'s':''} per turn${s.started?` · ${s.moves.length} placed so far`:''}`;
   $('#mpList').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.stale?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.i===s.host&&!cpuOn?' · made the room':''}${s.started?(bz?` <b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>`:` <b>${p.score}</b>`):''}</span>`).join('');
@@ -5591,7 +5660,7 @@ function mpShowBlitzEnd(){
   $('#mpEndNew').textContent=mp.cpu?'Race again':'New game';
   $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span><b>${fmtTime(p.ms)}</b> · ${p.own} brick${p.own===1?'':'s'} · ${p.miss} miss${p.miss===1?'':'es'}${p.hint?` · ${p.hint} hint${p.hint===1?'':'s'}`:''}</span></div>`).join('');
   const extra=s.moves.filter(m=>m.p<0).length;
-  $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and the Longtail put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, every miss added 1 second and every hint 5 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Squint, the cleverest Longtail. Amazing!':' Ready to race a faster Bloppit?'):' Practice makes perfect. Try again?'):''}`;
+  $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and Swoop put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, every miss added 1 second and every hint 5 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Swoop at full throttle. Amazing!':' Ready to race Swoop at a faster speed?'):' Practice makes perfect. Try again?'):''}`;
   { const o=worldStore(), won=w.i===mp.me; if(mp.cpu) cheer3($('#mpEndChars'),hasPup(o)?['pup',LT3[s.cpuLevel]||'swoop']:['bloppit',LT3[s.cpuLevel]||'swoop'],won?['cheer','surprised_jump']:['look_at_you','cheer']);
     else cheer3($('#mpEndChars'),'bloppit','cheer'); }
   $('#mpEndDlg').showModal();
@@ -5668,16 +5737,17 @@ $('#mpToBlitz').onclick=e=>{ e.preventDefault(); setTab('blitz'); };
 // Bloppit takes a few seconds to find and place each brick, and sometimes misses (+1 second, like everyone).
 // Three Bloppits to race: each one is quicker and makes fewer mistakes than the last.
 const CPU_LEVELS={
-  // The Longtails: comic brick thieves. Bloppit himself is the player's buddy and never the opponent.
-  easy:  {name:'Scraps',  ms:[7000,11000],miss:.25,turn:[1,2],note:'Scraps is the scruffiest Longtail. He takes his time and drops plenty of bricks. Great for a first race.'},
-  medium:{name:'Swoop',   ms:[4500,7500], miss:.12,turn:[1,3],note:'Swoop is quick, but careless. A fair race.'},
-  hard:  {name:'Squint',  ms:[2500,4500], miss:.05,turn:[2,3],note:'Squint lines up every brick and hardly ever misses. Can you beat him?'}};
+  // Swoop the Longtail, Blitz Bay's racer, at three speeds (he used to be three Longtails: Scraps, Swoop, Squint).
+  // Bloppit himself is the player's buddy and never the opponent.
+  easy:  {name:'Swoop',speed:'Warm-up',      ms:[7000,11000],miss:.25,turn:[1,2],note:'Warm-up: Swoop takes it slow and drops a lot of bricks. Great for a first race.'},
+  medium:{name:'Swoop',speed:'Race',         ms:[4500,7500], miss:.12,turn:[1,3],note:'Race: Swoop is quick, but careless. A fair race.'},
+  hard:  {name:'Swoop',speed:'Full throttle',ms:[2500,4500], miss:.05,turn:[2,3],note:'Full throttle: Swoop is fast and hardly ever misses. Can you beat him?'}};
 const CPU_IDS={easy:'#bzEasy',medium:'#bzMed',hard:'#bzHard'}, COUNTDOWN_MS=3000;
 let cpu=null;
 const rndIn=(a,b)=>a+Math.random()*(b-a);
 function bzLevel(){ const r=document.querySelector('input[name=bzLevel]:checked'); return r&&CPU_LEVELS[r.value]?r.value:'medium'; }
 function bzLevelNote(){ $('#bzLevelNote').textContent=CPU_LEVELS[bzLevel()].note; }
-// Which Longtail each player races (and who visits their Bloppitopia): their own choice, Scraps until they pick
+// Which speed each player races Swoop at: their own choice, the next one to beat until they pick
 const BZ_LEVEL_KEY='building-blox-bz-level';
 function bzLevelSaved(){ try{ const l=localStorage.getItem(pkey(BZ_LEVEL_KEY)); if(CPU_IDS[l]) return l; }catch(e){} try{ return longtailNow(); }catch(e){ return 'easy'; } }
 function bzLevelSet(l){ try{ localStorage.setItem(pkey(BZ_LEVEL_KEY),l); }catch(e){} }
@@ -5701,8 +5771,8 @@ function cpuAim(m,wrong){
   h.position.set(m.x+(wrong?wrong.x:0),t.y*1.2+.9,m.z+(wrong?wrong.z:0)); cpuAimGroup.add(h);
 }
 // The banner across the top of the build: whose turn it is, with their clock
-// The Longtails, from the character sheet (public/art): Scraps' stuck-up feather, Swoop's goggles, Squint's monocle.
-const GULL_ART={easy:'scraps',medium:'swoop',hard:'squint'};
+// Swoop, from the character sheet (public/art): goggles pushed up, at every speed.
+const GULL_ART={easy:'swoop',medium:'swoop',hard:'swoop'};
 function GULL_HEAD(lvl){ const id=LT3[lvl]||'swoop', u=cv3Snap(id,null,'bust',160); if(!u&&ch3On()) ch3Get(id).catch(()=>{}); return `<img src="${u||`/art/head-${id}.png`}" alt="" width="256" height="256">`; }
 let bannerKey='';
 $('#turnBanner').addEventListener('click',e=>{ if(e.target.closest('#tbDone')&&!$('#mpEndTurn').hidden) $('#mpEndTurn').click(); });
@@ -6283,14 +6353,23 @@ var PUP_STAGES=[{name:'Pup',at:0},{name:'Splash',at:25},{name:'Legend',at:65}];
 var PUP_STAGES_OLD=[0,10,40], PUP_SWITCH=Date.UTC(2026,9,24,3);
 // The pup's own brick: never red (red is Bloppit's), in the colour the child picks, with one stud per stage
 // (Pup 1, Splash 2, Legend 3). The drawing is three layers: the pup, the brick (drawn here), the paws holding it.
-var PUP_COLORS=[{n:'Blue',c:'#0055BF'},{n:'Yellow',c:'#F2CD37'},{n:'Green',c:'#237841'},{n:'Orange',c:'#FE8A18'},{n:'Purple',c:'#81007B'},{n:'Teal',c:'#008F9B'},{n:'Lime',c:'#A5CA18'},{n:'Pink',c:'#FF698F'}];
+// The pup's brick: almost any colour the child likes (never red: red is Bloppit's). Fifteen ready colours, then
+// "Mix your own" (index 15) with a colour and a shade slider; the mix is kept as o.pupHex. Indices stay as before.
+var PUP_HEX='#7A5CFF';
+var PUP_COLORS=[{n:'Blue',c:'#0055BF'},{n:'Yellow',c:'#F2CD37'},{n:'Green',c:'#237841'},{n:'Orange',c:'#FE8A18'},{n:'Purple',c:'#81007B'},{n:'Teal',c:'#008F9B'},{n:'Lime',c:'#A5CA18'},{n:'Pink',c:'#FF698F'},
+  {n:'Sky blue',c:'#5A93DB'},{n:'Lavender',c:'#AC78BA'},{n:'Mint',c:'#73DCA1'},{n:'Gold',c:'#F8BB3D'},{n:'Sand',c:'#E4CD9E'},{n:'White',c:'#F4F4F4'},{n:'Black',c:'#1B2A34'},
+  {n:'Your own mix',get c(){ return PUP_HEX; },mix:true}];
+const PUP_MIX=15;
+// hue 20–340 (no reds) and lightness 25–80, as #RRGGBB
+function pupMixHex(h,l){ h=Math.max(20,Math.min(340,+h||0)); l=Math.max(25,Math.min(80,+l||50)); const c=new THREE.Color(); c.setHSL(h/360,.78,l/100); return '#'+c.getHexString().toUpperCase(); }
+function pupHexOk(x){ if(typeof x!=='string'||!/^#[0-9A-F]{6}$/i.test(x)) return false; const c=new THREE.Color(x), hsl={}; c.getHSL(hsl); const deg=hsl.h*360; return !((deg<18||deg>342)&&hsl.s>.4&&hsl.l>.2&&hsl.l<.75); }
 var PUP_BRICK={"top":"M121.0 177.5 L180.5 161.5 L213.0 183.5 L145.5 203.0Z","front":"M145.5 203.0 L213.0 183.5 L212.0 212.5 L145.0 230.5Z","side":"M121.0 177.5 L145.5 203.0 L145.0 230.5 L121.0 204.0Z","studs":{"1":[{"side":"M150.3 177.2 L150.6 179.6 L151.7 182.0 L153.5 184.4 L156.0 186.6 L159.1 188.4 L162.6 189.9 L166.2 190.9 L170.0 191.4 L173.6 191.3 L176.8 190.7 L179.6 189.6 L181.7 188.0 L183.1 186.0 L183.7 183.8 L183.7 177.8 L183.4 175.4 L182.3 173.0 L180.5 170.6 L178.0 168.4 L174.9 166.6 L171.4 165.1 L167.8 164.1 L164.0 163.6 L160.4 163.7 L157.2 164.3 L154.4 165.4 L152.3 167.0 L150.9 169.0 L150.3 171.2Z","cap":"M180.5 170.6 L178.0 168.4 L174.9 166.6 L171.4 165.1 L167.8 164.1 L164.0 163.6 L160.4 163.7 L157.2 164.3 L154.4 165.4 L152.3 167.0 L150.9 169.0 L150.3 171.2 L150.6 173.6 L151.7 176.0 L153.5 178.4 L156.0 180.6 L159.1 182.4 L162.6 183.9 L166.2 184.9 L170.0 185.4 L173.6 185.3 L176.8 184.7 L179.6 183.6 L181.7 182.0 L183.1 180.0 L183.7 177.8 L183.4 175.4 L182.3 173.0Z","hi":"M168.8 171.1 L167.5 170.0 L166.0 169.1 L164.2 168.5 L162.4 168.2 L160.6 168.1 L159.0 168.4 L157.7 169.0 L156.7 169.8 L156.2 170.8 L156.1 172.0 L156.6 173.2 L157.4 174.3 L158.7 175.4 L160.3 176.3 L162.0 176.9 L163.8 177.2 L165.6 177.3 L167.2 177.0 L168.6 176.4 L169.5 175.6 L170.0 174.6 L170.1 173.4 L169.6 172.2Z"}],"2":[{"side":"M137.6 182.1 L137.9 184.1 L138.8 186.2 L140.3 188.2 L142.5 190.0 L145.1 191.6 L148.0 192.9 L151.2 193.7 L154.3 194.1 L157.4 194.1 L160.1 193.6 L162.5 192.6 L164.3 191.3 L165.5 189.6 L166.0 187.7 L166.0 181.7 L165.8 179.7 L164.9 177.6 L163.3 175.6 L161.1 173.7 L158.5 172.1 L155.6 170.9 L152.5 170.0 L149.3 169.6 L146.2 169.7 L143.5 170.2 L141.1 171.2 L139.3 172.5 L138.1 174.2 L137.6 176.1Z","cap":"M163.3 175.6 L161.1 173.7 L158.5 172.1 L155.6 170.9 L152.5 170.0 L149.3 169.6 L146.2 169.7 L143.5 170.2 L141.1 171.2 L139.3 172.5 L138.1 174.2 L137.6 176.1 L137.9 178.1 L138.8 180.2 L140.3 182.2 L142.5 184.0 L145.1 185.6 L148.0 186.9 L151.2 187.7 L154.3 188.1 L157.4 188.1 L160.1 187.6 L162.5 186.6 L164.3 185.3 L165.5 183.6 L166.0 181.7 L165.8 179.7 L164.9 177.6Z","hi":"M152.7 175.7 L151.7 174.8 L150.3 174.1 L148.9 173.5 L147.3 173.2 L145.8 173.2 L144.4 173.4 L143.3 173.9 L142.5 174.6 L142.0 175.5 L142.0 176.5 L142.4 177.5 L143.1 178.5 L144.2 179.4 L145.5 180.1 L147.0 180.6 L148.5 180.9 L150.1 181.0 L151.4 180.7 L152.5 180.2 L153.4 179.5 L153.8 178.7 L153.8 177.7 L153.5 176.7Z"},{"side":"M168.0 173.3 L168.2 175.3 L169.1 177.4 L170.7 179.4 L172.9 181.3 L175.5 182.9 L178.4 184.1 L181.5 185.0 L184.7 185.4 L187.8 185.3 L190.5 184.8 L192.9 183.8 L194.7 182.5 L195.9 180.8 L196.4 178.9 L196.4 172.9 L196.1 170.9 L195.2 168.8 L193.7 166.8 L191.5 165.0 L188.9 163.4 L186.0 162.1 L182.8 161.3 L179.7 160.9 L176.6 160.9 L173.9 161.4 L171.5 162.4 L169.7 163.7 L168.5 165.4 L168.0 167.3Z","cap":"M193.7 166.8 L191.5 165.0 L188.9 163.4 L186.0 162.1 L182.8 161.3 L179.7 160.9 L176.6 160.9 L173.9 161.4 L171.5 162.4 L169.7 163.7 L168.5 165.4 L168.0 167.3 L168.2 169.3 L169.1 171.4 L170.7 173.4 L172.9 175.3 L175.5 176.9 L178.4 178.1 L181.5 179.0 L184.7 179.4 L187.8 179.3 L190.5 178.8 L192.9 177.8 L194.7 176.5 L195.9 174.8 L196.4 172.9 L196.1 170.9 L195.2 168.8Z","hi":"M183.1 166.9 L182.0 166.0 L180.7 165.3 L179.2 164.7 L177.7 164.5 L176.2 164.4 L174.8 164.7 L173.7 165.1 L172.9 165.8 L172.4 166.7 L172.4 167.7 L172.7 168.7 L173.5 169.7 L174.5 170.6 L175.9 171.3 L177.4 171.9 L178.9 172.2 L180.4 172.2 L181.8 171.9 L182.9 171.5 L183.7 170.8 L184.2 169.9 L184.2 168.9 L183.9 167.9Z"}],"3":[{"side":"M133.4 184.1 L133.6 185.9 L134.4 187.7 L135.8 189.5 L137.7 191.1 L140.0 192.5 L142.6 193.7 L145.3 194.4 L148.1 194.8 L150.8 194.7 L153.3 194.2 L155.3 193.4 L156.9 192.2 L158.0 190.8 L158.4 189.1 L158.4 183.1 L158.2 181.3 L157.4 179.4 L156.0 177.7 L154.1 176.0 L151.8 174.6 L149.2 173.5 L146.5 172.8 L143.7 172.4 L141.0 172.5 L138.6 172.9 L136.5 173.8 L134.9 175.0 L133.8 176.4 L133.4 178.1Z","cap":"M156.0 177.7 L154.1 176.0 L151.8 174.6 L149.2 173.5 L146.5 172.8 L143.7 172.4 L141.0 172.5 L138.6 172.9 L136.5 173.8 L134.9 175.0 L133.8 176.4 L133.4 178.1 L133.6 179.9 L134.4 181.7 L135.8 183.5 L137.7 185.1 L140.0 186.5 L142.6 187.7 L145.3 188.4 L148.1 188.8 L150.8 188.7 L153.3 188.2 L155.3 187.4 L156.9 186.2 L158.0 184.8 L158.4 183.1 L158.2 181.3 L157.4 179.4Z","hi":"M146.3 177.6 L145.3 176.8 L144.2 176.1 L142.8 175.6 L141.5 175.4 L140.1 175.4 L138.9 175.6 L137.9 176.0 L137.2 176.6 L136.8 177.4 L136.8 178.2 L137.1 179.1 L137.8 180.0 L138.7 180.8 L139.9 181.5 L141.2 181.9 L142.6 182.2 L143.9 182.2 L145.1 182.0 L146.1 181.6 L146.8 181.0 L147.2 180.2 L147.2 179.3 L146.9 178.4Z"},{"side":"M154.5 178.0 L154.7 179.8 L155.5 181.6 L156.9 183.4 L158.8 185.1 L161.1 186.5 L163.7 187.6 L166.4 188.3 L169.2 188.7 L171.9 188.6 L174.3 188.2 L176.4 187.3 L178.0 186.1 L179.1 184.7 L179.5 183.0 L179.5 177.0 L179.3 175.2 L178.5 173.4 L177.1 171.6 L175.2 169.9 L172.9 168.5 L170.3 167.4 L167.6 166.7 L164.8 166.3 L162.1 166.4 L159.7 166.8 L157.6 167.7 L156.0 168.9 L154.9 170.3 L154.5 172.0Z","cap":"M177.1 171.6 L175.2 169.9 L172.9 168.5 L170.3 167.4 L167.6 166.7 L164.8 166.3 L162.1 166.4 L159.7 166.8 L157.6 167.7 L156.0 168.9 L154.9 170.3 L154.5 172.0 L154.7 173.8 L155.5 175.6 L156.9 177.4 L158.8 179.1 L161.1 180.5 L163.7 181.6 L166.4 182.3 L169.2 182.7 L171.9 182.6 L174.3 182.2 L176.4 181.3 L178.0 180.1 L179.1 178.7 L179.5 177.0 L179.3 175.2 L178.5 173.4Z","hi":"M167.4 171.5 L166.4 170.7 L165.2 170.0 L163.9 169.6 L162.6 169.3 L161.2 169.3 L160.0 169.5 L159.0 169.9 L158.3 170.5 L157.9 171.3 L157.9 172.1 L158.2 173.0 L158.9 173.9 L159.8 174.7 L161.0 175.4 L162.3 175.8 L163.7 176.1 L165.0 176.1 L166.2 175.9 L167.2 175.5 L167.9 174.9 L168.3 174.1 L168.3 173.2 L168.0 172.3Z"},{"side":"M175.6 171.9 L175.8 173.7 L176.6 175.6 L178.0 177.3 L179.9 179.0 L182.2 180.4 L184.8 181.5 L187.5 182.2 L190.3 182.6 L193.0 182.5 L195.4 182.1 L197.5 181.2 L199.1 180.0 L200.2 178.6 L200.6 176.9 L200.6 170.9 L200.4 169.1 L199.6 167.3 L198.2 165.5 L196.3 163.9 L194.0 162.5 L191.4 161.3 L188.7 160.6 L185.9 160.2 L183.2 160.3 L180.7 160.8 L178.7 161.6 L177.1 162.8 L176.0 164.2 L175.6 165.9Z","cap":"M198.2 165.5 L196.3 163.9 L194.0 162.5 L191.4 161.3 L188.7 160.6 L185.9 160.2 L183.2 160.3 L180.7 160.8 L178.7 161.6 L177.1 162.8 L176.0 164.2 L175.6 165.9 L175.8 167.7 L176.6 169.6 L178.0 171.3 L179.9 173.0 L182.2 174.4 L184.8 175.5 L187.5 176.2 L190.3 176.6 L193.0 176.5 L195.4 176.1 L197.5 175.2 L199.1 174.0 L200.2 172.6 L200.6 170.9 L200.4 169.1 L199.6 167.3Z","hi":"M188.5 165.4 L187.5 164.6 L186.3 163.9 L185.0 163.5 L183.7 163.2 L182.3 163.2 L181.1 163.4 L180.1 163.8 L179.4 164.4 L179.0 165.2 L179.0 166.1 L179.3 167.0 L179.9 167.8 L180.9 168.6 L182.1 169.3 L183.4 169.7 L184.7 170.0 L186.1 170.0 L187.3 169.8 L188.3 169.4 L189.0 168.8 L189.4 168.0 L189.4 167.1 L189.1 166.2Z"}]}};
 function pupShade(hex,k){ const n=parseInt(hex.slice(1),16), f=c=>Math.round(k>0?c+(255-c)*k:c*(1+k)); return `rgb(${f(n>>16)},${f(n>>8&255)},${f(n&255)})`; }
 function pupBrick(n,ci){ const c=(PUP_COLORS[ci]||PUP_COLORS[0]).c, B=PUP_BRICK, ln='stroke="#3B2314" stroke-width="1.4" stroke-linejoin="round"';
   return `<path d="${B.side}" fill="${pupShade(c,-.35)}" ${ln}/><path d="${B.front}" fill="${pupShade(c,-.12)}" ${ln}/><path d="${B.top}" fill="${pupShade(c,.18)}" ${ln}/>`
     +B.studs[Math.min(3,Math.max(1,n))].map(t=>`<path d="${t.side}" fill="${pupShade(c,-.2)}" ${ln}/><path d="${t.cap}" fill="${pupShade(c,.28)}" ${ln}/><path d="${t.hi}" fill="#fff" opacity=".35"/>`).join(''); }
 var PUP_ROUND='-16 -38 272 272';  // a round badge: head and brick both inside the circle
-function pupColorOf(o){ return o&&Number.isInteger(o.pupColor)&&o.pupColor>=0&&o.pupColor<PUP_COLORS.length?o.pupColor:0; }
+function pupColorOf(o){ if(o&&pupHexOk(o.pupHex)) PUP_HEX=o.pupHex.toUpperCase(); return o&&Number.isInteger(o.pupColor)&&o.pupColor>=0&&o.pupColor<PUP_COLORS.length?o.pupColor:0; }
 // The layers alone (for the island, which places them itself), and as a picture. opt: ci colour, n studs, vb crop.
 function pupLayers(ci,n,o){ const a=o?accSVG(o):{under:'',over:''}; return `<image href="/art/pup-body.png?v=2" width="239" height="300"/>${a.under}${pupBrick(n,ci)}<image href="/art/pup-paws.png" width="239" height="300"/>${a.over}`; }
 function pupFig(o,opt){ opt=opt||{};
@@ -6310,7 +6389,7 @@ function worldMerge(a,b){
   // The name (typed or picked) and brick colour: whichever was set last (pupAt); a later 'no name yet' never wipes one
   const later=(b.pupAt||0)>(a.pupAt||0)?b:a, other=later===b?a:b, named=w=>(cleanPupText(w.pupText)||w.pupName>=0)?w:null, nw=named(later)||named(other)||{};
   const pn=typeof nw.pupName==='number'&&nw.pupName>=0?nw.pupName:null, pc=[later.pupColor,other.pupColor].find(v=>Number.isInteger(v)&&v>=0);
-  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},pos:{...(a.pos||{}),...(b.pos||{})},away:awayMerge(a.away,b.away),draw:[...new Map([...(b.draw||[]),...(a.draw||[])].map(d=>[d.id,d])).values()].sort((x,y)=>(y.t||0)-(x.t||0)).slice(0,12),pupName:pn==null?-1:pn,pupText:cleanPupText(nw.pupText),pupAt:Math.max(a.pupAt||0,b.pupAt||0),pupColor:pc==null?-1:pc,isle:(a.isle||b.isle)?1:0,arrived:(a.arrived||b.arrived)?1:0,pick:a.pick||b.pick||undefined,...(((b.wearAt||0)>(a.wearAt||0)?b:a).wear?{wear:((b.wearAt||0)>(a.wearAt||0)?b:a).wear,wearAt:Math.max(a.wearAt||0,b.wearAt||0)}:{}),pupAsked:!!(a.pupAsked||b.pupAsked)};
+  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},pos:{...(a.pos||{}),...(b.pos||{})},away:awayMerge(a.away,b.away),draw:[...new Map([...(b.draw||[]),...(a.draw||[])].map(d=>[d.id,d])).values()].sort((x,y)=>(y.t||0)-(x.t||0)).slice(0,12),pupName:pn==null?-1:pn,pupText:cleanPupText(nw.pupText),pupAt:Math.max(a.pupAt||0,b.pupAt||0),pupColor:pc==null?-1:pc,...(pc===PUP_MIX&&[later.pupHex,other.pupHex].find(pupHexOk)?{pupHex:[later.pupHex,other.pupHex].find(pupHexOk)}:{}),isle:(a.isle||b.isle)?1:0,arrived:(a.arrived||b.arrived)?1:0,pick:a.pick||b.pick||undefined,...(((b.wearAt||0)>(a.wearAt||0)?b:a).wear?{wear:((b.wearAt||0)>(a.wearAt||0)?b:a).wear,wearAt:Math.max(a.wearAt||0,b.wearAt||0)}:{}),pupAsked:!!(a.pupAsked||b.pupAsked)};
 }
 function worldSet(o){ try{ localStorage.setItem(pkey(WORLD_KEY),JSON.stringify(o)); }catch(e){} pupPush(); }
 const worldCount=o=>o.log.length;                                   // distinct models finished
@@ -6444,10 +6523,16 @@ function pupColsRender(){
   const o=worldStore(), prev=pupDraft.out?{...o,wear:{...accWear(o),[ACC.find(a=>a.id===pupDraft.out).slot]:[pupDraft.out,pupDraft.ci]}}:o;
   $('#pupPic').innerHTML=pupFig(prev,{ci:pupDraft.ci,vb:PUP_ROUND,par:'xMidYMid slice',svg:1});
   { const h=$('#pupPic'); h.style.setProperty('--pc',PUP_COLORS[pupDraft.ci].c); cv3(h,{who:'pup',frame:'full',o:prev,ci:pupDraft.ci,wear:prev.wear}); if(h.__ci!==pupDraft.ci){ const first=h.__ci==null; h.__ci=pupDraft.ci; if(!first) setTimeout(()=>cv3Play(h,'happy_hop'),30); } }
-  $('#pupCols').innerHTML=PUP_COLORS.map((c,i)=>`<button type="button" role="radio" aria-checked="${i===pupDraft.ci}" aria-label="${c.n}" title="${c.n}" data-col="${i}" style="--c:${c.c}"></button>`).join('');
+  $('#pupCols').innerHTML=PUP_COLORS.map((c,i)=>`<button type="button" role="radio" aria-checked="${i===pupDraft.ci}" aria-label="${c.n}" title="${c.n}" data-col="${i}" style="--c:${c.c}"${c.mix?' class="mix"':''}></button>`).join('');
+  const mx=$('#pupMix'); mx.hidden=pupDraft.ci!==PUP_MIX; if(!mx.hidden){ const hsl={}; new THREE.Color(PUP_HEX).getHSL(hsl); $('#pupHue').value=Math.round(hsl.h*360); $('#pupShade').value=Math.round(hsl.l*100); mx.style.setProperty('--c',PUP_HEX); }
 }
+// Mix your own: two sliders, saved as you slide (the 3D pup repaints when you let go)
+function pupMixSet(final){ PUP_HEX=pupMixHex($('#pupHue').value,$('#pupShade').value); $('#pupMix').style.setProperty('--c',PUP_HEX); const sw=$('#pupCols .mix'); if(sw) sw.style.setProperty('--c',PUP_HEX);
+  if(final){ const o=worldStore(); o.pupColor=PUP_MIX; o.pupHex=PUP_HEX; o.pupAt=Date.now(); worldSet(o); track('pup_colour_mix'); sfx.chirp(); pupColsRender(); } }
+$('#pupHue').addEventListener('input',()=>pupMixSet(false)); $('#pupShade').addEventListener('input',()=>pupMixSet(false));
+$('#pupHue').addEventListener('change',()=>pupMixSet(true)); $('#pupShade').addEventListener('change',()=>pupMixSet(true));
 $('#pupCols').addEventListener('click',e=>{ const b=e.target.closest('[data-col]'); if(!b) return;
-  pupDraft.ci=+b.dataset.col; const o=worldStore(); o.pupColor=pupDraft.ci; o.pupAt=Date.now(); worldSet(o); track('pup_colour'); sfx.chirp(); pupColsRender();
+  pupDraft.ci=+b.dataset.col; const o=worldStore(); o.pupColor=pupDraft.ci; if(pupDraft.ci===PUP_MIX) o.pupHex=PUP_HEX; o.pupAt=Date.now(); worldSet(o); track('pup_colour'); sfx.chirp(); pupColsRender();
   const f=$(`#pupCols [data-col="${pupDraft.ci}"]`); if(f) f.focus(); });
 // A name (typed, suggested or from the list) is only held until "All done!", so the colour and outfit can still change
 function pupPick(patch,how){ pupDraft.name={patch,how}; const nm=patch.pupText||PUP_NAMES[patch.pupName]||'';
@@ -6459,6 +6544,7 @@ function pupDoneBtn(){ const b=$('#pupLater'), ready=!!pupDraft.name||pupDraft.h
 function pupFinish(){ if(pupDraft.name){ pupSave(pupDraft.name.patch,pupDraft.name.how); return; }
   if(!pupName(worldStore())) track('pup_name_later'); const o=worldStore(); if(ISL3.pupArrival&&pupDraft.out){ pupOutfitSave(o); worldSet(o); } $('#pupDlg').close(); }
 function pupSave(patch,how){ const o=worldStore(); Object.assign(o,patch,{pupAt:Date.now()}); pupOutfitSave(o); worldSet(o); track(how); sfx.chime(); $('#pupDlg').close(); }
+window.bloppitPup=()=>pupOpen();   // for tests
 function pupOutfitSave(o){ if(!ISL3.pupArrival||!pupDraft.out) return; const a=ACC.find(x=>x.id===pupDraft.out); if(a){ o.wear={...accWear(o),[a.slot]:[a.id,pupDraft.ci]}; o.wearAt=Date.now(); track('acc_wear:'+a.id); } }
 $('#pupSuggest').onclick=()=>pupPick({pupName:+$('#pupSuggest').dataset.pup,pupText:''},'pup_named_suggested');
 $('#pupOutfit').addEventListener('click',e=>{ const b=e.target.closest('[data-out]'); if(!b) return; pupDraft.out=b.dataset.out; document.querySelectorAll('#pupOutfit [data-out]').forEach(x=>x.setAttribute('aria-pressed',String(x===b))); sfx.chirp(); pupColsRender(); });
@@ -6537,7 +6623,7 @@ function decorSVG(id,x,y){
   }
   return '';
 }
-// The five islands, in a row across the sea below Bloppitopia (x centres), Otterwood by the jetty
+// The five islands, in a row across the sea below Bloppitopia (x centres), Frog Forest (otterwood) by the jetty
 const NEARBY_AT={sunrise:110,brickworks:300,brainpeak:500,blitzbay:694,otterwood:893};
 function islandsNearby(){
   const P=[];
@@ -6745,7 +6831,7 @@ function islandInfo(id,o){
       return {title:d.name,hint:gift?'A gift for a Weekly Bloppit':`Bought for ★ ${d.cost}`,rows:[...(arg!=='buoy'?[['Move it',ISL3.ok?'Hold it and drag it anywhere on the island':'Drag it anywhere on the sand']]:[]),['How you got it',gift?'A gift for finishing a Weekly Bloppit':`Bought with ${d.cost} Build Stars`],['Decorations',`${decorOut(o).length} of ${DECOR.length} on Bloppitopia`]],actions:[{label:'Put it away',fn:()=>decorPut(arg,false)}]}; }
     case 'dest': { const m={ferry:'sunrise',workshop:'brickworks',brain:'brainpeak',speedway:'blitzbay',harbour:'otterwood'}[arg]; if(m) return islandInfo('isle:'+m,o); break; }
     case 'isle': { const I=ISLES[arg]; if(!I) break; const c=isleCount(arg,o), P=PIECES[arg], total=P[P.length-1].at, built=P.filter(x=>c>=x.at), next=P.find(x=>c<x.at);
-      if(!c&&I.mystery) return {title:'A mystery in the mist',hint:mysteryHint(),rows:[['What’s there','Something glints out there at night. The Longtails keep flying to it…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Build ${MYSTERY_WEEKLIES} Weekly Bloppits (${Math.min(weeklyTotal(),MYSTERY_WEEKLIES)} so far)`]],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'This week’s Bloppit',fn:()=>setTab('daily'),primary:true}]};
+      if(!c&&I.mystery) return {title:'A mystery in the mist',hint:mysteryHint(),rows:[['What’s there','A faint light glows out there at night. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Build ${MYSTERY_WEEKLIES} Weekly Bloppits (${Math.min(weeklyTotal(),MYSTERY_WEEKLIES)} so far)`]],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'This week’s Bloppit',fn:()=>setTab('daily'),primary:true}]};
       if(!c) return {title:'A misty island',hint:`Play ${I.game} to discover it`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Finish your first ${I.unit}`]],actions:[{label:I.play,fn:I.go,primary:true}]};
       return {title:I.name,hint:`${I.game} · ${Math.min(c,total)} of ${total}`,rows:[['Grows with',I.grows],['Built',`${built.length} of ${P.length} pieces`],...(next?[['Next piece',`${next.name}: ${next.at-c} more ${I.unit}${next.at-c===1?'':'s'}`]]:[]),['Milestone',c>=total?`${I.milestone} ✓`:`${I.milestone} at ${total}`]],
         chips:P.map(x=>[x.name,c>=x.at]),bar:{pct:Math.max(4,Math.min(100,Math.round(100*c/total))),label:c>=total?'Complete!':`${total-c} more to ${I.milestone}`},actions:[{label:I.play,fn:I.go,primary:true}]}; }
@@ -6758,9 +6844,13 @@ function islandInfo(id,o){
     case 'bloppit': return {title:'Bloppit',hint:ISL3.ok?(ISL3.dozing?'Having a little nap':{garden:'Tending the garden',fish:'Fishing off the jetty',read:'Reading a good book',fire:'Warm by the campfire, looking at the stars'}[routine3(isl3Hour())]):'Your build buddy',icon:'<img src="/art/head-bloppit.png" alt="" width="256" height="256">',story:STORIES.bloppit.story,rows:[['Who','Your build buddy. '+STORIES.bloppit.who+'.'],['Loves',STORIES.bloppit.loves],['Secret',STORIES.bloppit.secret],['Lives',ISL3.ok?'On Home Island, with your otter':st>=2?'At the workshop door':'On the beach'],['Built together',`${n} build${n===1?'':'s'}`]],
       actions:[{label:'Build something',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
     case 'longtail': { const L=CPU_LEVELS[arg], S=STORIES[arg]; if(!L||!S) break; const wins=Object.values(o.builds).filter(b=>b.k==='blitz').length;
-      return {title:L.name,hint:ISL3.ltNight?'Roosting in a cliff nest for the night':'A Longtail · your Blitz rival',icon:`<img src="${cv3Snap(LT3[arg],null,'bust',192)||`/art/head-${LONGTAIL_ART[arg].id}.png`}" alt="" width="256" height="256">`,story:S.story,
-        rows:[['Who',S.who],['Loves',S.loves],['Secret',S.secret],['Your Blitz wins',String(wins)],['Longtails beaten',(()=>{ const m=longtailBeaten(o); return m<0?'None yet. Start with Scraps!':['Scraps','Scraps and Swoop','All three!'][m]; })()],['Did you know?',LONGTAIL_FACT]],
-        actions:[{label:`Race ${L.name}`,fn:()=>{ try{ bzLevelSet(arg); bzLevelSync(); }catch(e){} homeGo('cpu'); },primary:true}]}; }
+      return {title:'Swoop the Longtail',hint:ISL3.ltNight?'Asleep on Blitz Bay':'Blitz Bay’s racer · “Ready, set, snap!”',icon:`<img src="${cv3Snap(LT3[arg],null,'bust',192)||`/art/head-${LONGTAIL_ART[arg].id}.png`}" alt="" width="256" height="256">`,story:S.story,
+        rows:[['Who',S.who],['Loves',S.loves],['Secret',S.secret],['Your Blitz wins',String(wins)],['Speeds beaten',(()=>{ const m=longtailBeaten(o); return m<0?'None yet. Start at Warm-up!':['Warm-up','Warm-up and Race','All three!'][m]; })()],['Did you know?',LONGTAIL_FACT]],
+        actions:[{label:`Race Swoop · ${L.speed}`,fn:()=>{ try{ bzLevelSet(arg); bzLevelSync(); }catch(e){} homeGo('cpu'); },primary:true}]}; }
+    case 'char': { const C=CAST[arg]; if(!C) break; const I=ISLES[C.isle], c=isleCount(C.isle,o), home=arg==='lufu';
+      return {title:castFull(arg),hint:home?'Lives on Home Island, beside your otter':`${I.name} · “${C.tag}”`,icon:`<img src="/art/head-${arg}.png" alt="" width="256" height="256">`,story:C.story,
+        rows:[['Who',C.who],['Loves',C.loves],['Secret',C.secret],['Brick',`A ${C.brick} two-stud brick`],...(home?[]:[['Lives',c>0?I.name:`${I.name}, still in the mist`],[c>0?'Built so far':'To reach it',c>0?`${Math.min(c,PIECES[C.isle][PIECES[C.isle].length-1].at)} of ${PIECES[C.isle][PIECES[C.isle].length-1].at} ${I.unit}s`:`Finish your first ${I.unit}`]])],
+        actions:home?[]:[{label:I.play,fn:I.go,primary:true}]}; }
     case 'pup': { const nm=pupName(o), ps=pupStage(o), nx=PUP_STAGES[ps+1], c=PUP_COLORS[pupColorOf(o)];
       const lv=otterLevel(o), nl=levelXP(lv+1), nAcc=ACC.find(a=>!a.legend&&!a.finale&&a.lvl>lv);
       return {title:nm||'Your otter',hint:`Level ${lv} ${PUP_STAGES[ps].name} · ${ps+1} stud${ps?'s':''} on its brick`,icon:pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'}),
@@ -6964,7 +7054,7 @@ function isl3Loaded(){ ISL3.pending=Math.max(0,(ISL3.pending||1)-1); if(ISL3.on)
 function sprite3(url,h,aspect){ const tex=tex3(url);
   const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,alphaTest:.15})); s.scale.set(h*aspect,h,1); s.center.set(.5,0); return s; }
 function pupTex3(o){
-  const key=pupColorOf(o)+':'+pupStage(o)+':'+JSON.stringify(accWear(o)); ISL3.pupT=ISL3.pupT||{}; if(ISL3.pupT[key]) return ISL3.pupT[key];
+  const key=pupColorOf(o)+':'+PUP_HEX+':'+pupStage(o)+':'+JSON.stringify(accWear(o)); ISL3.pupT=ISL3.pupT||{}; if(ISL3.pupT[key]) return ISL3.pupT[key];
   const cv=document.createElement('canvas'); cv.width=239; cv.height=346; const x=cv.getContext('2d'), tex=new THREE.CanvasTexture(cv); tex.encoding=THREE.sRGBEncoding;
   const body=new Image(), paws=new Image(); let left=2;
   const draw=()=>{ if(--left) return; x.translate(0,46); x.drawImage(body,0,0); accCanvas(x,o,'under'); const c=(PUP_COLORS[pupColorOf(o)]||PUP_COLORS[0]).c, B=PUP_BRICK, n=pupStage(o)+1;
@@ -7084,7 +7174,7 @@ function isl3ZoomFollow(){ const Z=ISL3.zoomAt, ctl=ISL3.ctl, cam=ISL3.cam; if(!
 function isl3Focus(info,h){ const vi=isl3ViewOf(info); if(vi>=0){ if(ISL3.viewI===vi&&!ISL3.fly) return false; isl3GoView(vi); return true; } let x,z,d;
   if(info.startsWith('isle:')){ const I=ISL3.isles[info.slice(5)]; if(!I) return false; x=I.x; z=I.z; d=I.r*3.4+4; }
   else if(info==='land:beach'||info.startsWith('home:')){ x=0; z=0; d=HOME_R*2.9; }
-  else if(info==='bloppit'||info==='pup'||info.startsWith('longtail:')){ const p=h&&h.obj?h.obj.getWorldPosition(new THREE.Vector3()):null; if(!p) return false; x=p.x; z=p.z; d=12; }
+  else if(info==='bloppit'||info==='pup'||info.startsWith('longtail:')||info.startsWith('char:')){ const p=h&&h.obj?h.obj.getWorldPosition(new THREE.Vector3()):null; if(!p) return false; x=p.x; z=p.z; d=12; }
   else if(info.startsWith('piece:')){ const I=ISL3.isles[info.split(':')[1]]; if(!I) return false; x=I.x; z=I.z; d=I.r*3+3; }
   else return false;
   const cur=ISL3.cam.position.distanceTo(ISL3.ctl.target); if(Math.hypot(ISL3.ctl.target.x-x,ISL3.ctl.target.z-z)<.8&&cur<=d+.5) return false;
@@ -7134,7 +7224,7 @@ function isl3Events(cv){
       if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3){ isl3GoView((ISL3.viewI||0)+(dx<0?1:-1)); sfx.tick&&sfx.tick(); } return; }
     if(e.type==='pointerup'&&!d.moved&&performance.now()-d.t<1000&&d.h){ islandHover(null); const info0=d.h.info;
       // characters: a reaction first; a second tap soon after shows who they are
-      if(info0==='bloppit'||info0==='pup'||info0.startsWith('longtail:')){ const again=ISL3.lastPoke&&ISL3.lastPoke.info===info0&&performance.now()-ISL3.lastPoke.t<8000;
+      if(info0==='bloppit'||info0==='pup'||info0.startsWith('longtail:')||info0.startsWith('char:')){ const again=ISL3.lastPoke&&ISL3.lastPoke.info===info0&&performance.now()-ISL3.lastPoke.t<8000;
         if(!again){ ISL3.lastPoke={info:info0,t:performance.now()}; if(info0==='bloppit'&&ISL3.dozing) isl3Wake(); else charReact(info0); const vi=isl3ViewOf(info0); if(vi>=0&&ISL3.viewI!==vi) isl3GoView(vi); return; }
         ISL3.lastPoke=null; islandTip(info0,anchorAt(e.clientX,e.clientY)); return; }
       const info=d.h.info; if(/^(piece|home):/.test(d.h.info)){ const c=d.h.point; isl3Confetti(c.x,c.y+.6,c.z,24); } if(isl3Focus(info,d.h)){ islandTipHide(); clearTimeout(ISL3.tipT); ISL3.tipT=setTimeout(()=>{ const v=ISL3.ctl.target.clone().setY(TOP3).project(ISL3.cam), r=ISL3.r.domElement.getBoundingClientRect(), sx=r.left+(v.x+1)/2*r.width, sy=r.top+(1-v.y)/2*r.height;
@@ -7150,7 +7240,7 @@ function isl3Point(info){ if(!ISL3.world) return null; let found=null;
   if(/^isle:/.test(info)){ const I=ISL3.isles&&ISL3.isles[info.slice(5)]; if(!I) return null; const v=new THREE.Vector3(I.x-I.r*.45,TOP3,I.z+I.r*.45).project(ISL3.cam), r=ISL3.r.domElement.getBoundingClientRect(); return {x:r.left+(v.x+1)/2*r.width,y:r.top+(1-v.y)/2*r.height}; } ISL3.world.traverse(x=>{ if(!found&&x.userData.info===info) found=x; }); if(!found) return null;
   const b=new THREE.Box3().setFromObject(found), c=b.getCenter(new THREE.Vector3());
   if(/^(model:|place:|decor:|stand:)/.test(info)) c.y=Math.min(c.y,TOP3+(info.startsWith('place:')?.7:.5));   // aim at the body, not smoke or a kite string
-  if(info==='bloppit'||info==='pup'||info.startsWith('longtail:')){ c.copy(found.getWorldPosition(new THREE.Vector3())); c.y=TOP3+(info==='pup'?.6:1.0); }   // sprites stand up from their feet
+  if(info==='bloppit'||info==='pup'||info.startsWith('longtail:')||info.startsWith('char:')){ c.copy(found.getWorldPosition(new THREE.Vector3())); c.y=TOP3+(info==='pup'||info==='char:lufu'||info==='char:tiny'?.6:1.0); }   // sprites stand up from their feet
   if(info==='decor:kite') c.x=found.getWorldPosition(new THREE.Vector3()).x;
   if(info==='decor:kite') c.y=TOP3+5.2;
   c.project(ISL3.cam);
@@ -7179,8 +7269,8 @@ function isl3Snap(o){
 
 // Tap Bloppit: a jump and a grin
 // The Longtail on Bloppitopia is the one you race (the Blitz level picked)
-const LONGTAIL_ART={easy:{id:'scraps',aspect:238/300},medium:{id:'swoop',aspect:207/300},hard:{id:'squint',aspect:197/300}};
-// The Longtail on Bloppitopia: the next one to beat (Scraps, then Swoop, then Squint)
+const LONGTAIL_ART={easy:{id:'swoop',aspect:207/300},medium:{id:'swoop',aspect:207/300},hard:{id:'swoop',aspect:207/300}};
+// The speed to race Swoop at next: Warm-up, then Race, then Full throttle
 function longtailBeaten(o){ o=o||worldStore(); let m=-1; for(const b of Object.values(o.builds||{})) if(b&&b.k==='blitz') m=Math.max(m,Number.isInteger(b.lv)?b.lv:0); return m; }
 function longtailNow(){ return ['easy','medium','hard'][Math.min(2,longtailBeaten()+1)]; }
 function beachPoint(a){ const P=scalePoly(HOMEP,0,0,.93); let r=1; while(r<12&&inPoly(Math.cos(a)*(r+.2),Math.sin(a)*(r+.2),P)) r+=.2; return [Math.cos(a)*r,Math.sin(a)*r]; }
@@ -7188,11 +7278,34 @@ function longtailSquawk(){ ISL3.ltJumpT=performance.now(); try{ sfx.chirp(); }ca
 // Who they are (tap Bloppit or a Longtail). Gentle, and true to the character sheet: Bloppit's brick is red; Longtails never hold red.
 const STORIES={
   bloppit:{who:'An otter who loves building more than anything',story:'Long ago a storm washed Bloppit up on a bare little island with nothing but a red brick in his paws. He snapped it to a rock, then found another brick, and another. That island became Bloppitopia.',loves:'The click when two bricks fit, fishing (he always lets the fish go), and a good book in the hammock',secret:'That red brick is the very first brick of Bloppitopia. He has never once put it down.'},
-  easy:{who:'The youngest Longtail, and the scruffiest',story:'Scraps hatched in a cliff hole on the windy side of the island. One feather on his head has stood straight up since the day he was born, and no amount of smoothing will flatten it.',loves:'Shiny bricks. He grabs them, then drops half of them on the way home',secret:'He doesn’t really want to steal bricks. He just wants someone to ask him to build.'},
-  medium:{who:'The fastest Longtail in the sky',story:'Swoop found her goggles in a lost snorkel kit and has worn them ever since. She races everything: boats, clouds, and even her own shadow.',loves:'Going fast. Her nest is full of half-finished builds, because she always rushes off to the next one',secret:'She practises slow, careful building at night, when nobody is watching.'},
-  hard:{who:'The oldest and cleverest Longtail',story:'Squint found his monocle on the beach after a storm. Now he can spot a wonky brick from the top of the lighthouse, and he keeps a little notebook of every brick on Bloppitopia.',loves:'Neat rows, straight walls, and winning (fairly)',secret:'When nobody is looking, he quietly straightens other people’s crooked bricks.'},
+  easy:{who:'The speediest Longtail in the sky',story:'Swoop found his goggles in a lost snorkel kit and has worn them ever since. He races everything on Blitz Bay: boats, clouds, even his own shadow.',loves:'Going fast, a close finish, and a rematch',secret:'Win or lose, he always asks for a rematch. Racing is more fun with a friend.'},
+  medium:{who:'The speediest Longtail in the sky',story:'Swoop found his goggles in a lost snorkel kit and has worn them ever since. He races everything on Blitz Bay: boats, clouds, even his own shadow.',loves:'Going fast, a close finish, and a rematch',secret:'Win or lose, he always asks for a rematch. Racing is more fun with a friend.'},
+  hard:{who:'The speediest Longtail in the sky',story:'Swoop found his goggles in a lost snorkel kit and has worn them ever since. He races everything on Blitz Bay: boats, clouds, even his own shadow.',loves:'Going fast, a close finish, and a rematch',secret:'Win or lose, he always asks for a rematch. Racing is more fun with a friend.'},
 };
 const LONGTAIL_FACT='Real Longtails are white-tailed tropicbirds. They fly back to Bermuda every spring and nest in holes in the cliffs.';
+// One friend on each adventure island (Character Bible, 24 Oct 2026), each holding a two-stud brick in their island's
+// colour. Drawn art for now (public/art/char-*.png, from the approved sheets in design/characters); 3D models come later.
+// Swoop lives on Blitz Bay as the 3D Longtail above. lufu (always lowercase) stays hidden until the mystery is solved,
+// then lives on Home Island beside your otter.
+const CAST={
+  tiny:{name:'Tiny',kind:'the Tree Frog',isle:'otterwood',brick:'lime',h:1.5,aspect:278/360,tag:'Small frog, big forest!',
+    who:'The smallest friend with the biggest voice',story:'Tiny is a Bermuda tree frog. His whistle leads you up Frog Trail one level at a time, and at night every frog in the forest whistles with him among the fireflies.',
+    loves:'Hopping, whistling, and his lime brick (almost as big as he is)',secret:'He dreams of a palace for every frog in the forest, floating on the big pond.',lines:['Small frog, big forest!','Hop to it!','Ribbit-tastic!','Wheee!']},
+  nora:{name:'Nora',kind:'the Night Heron',isle:'brainpeak',brick:'dark blue',h:2.3,aspect:185/360,tag:'A clever mind shines in the dark.',
+    who:'Brainpeak’s stargazer and puzzle-setter',story:'Nora is a yellow-crowned night heron. She watches the stars from Brainpeak and tucks a math puzzle into the Brain Trail booklets.',
+    loves:'A good “aha”, quiet nights and clear skies',secret:'Her great telescope is broken, and she needs a builder to fix it.',lines:['A clever mind shines in the dark.','Look closer, the answer’s hiding.','Aha! You saw the pattern.']},
+  pippa:{name:'Pippa',kind:'the Penguin',isle:'sunrise',brick:'yellow',h:1.8,aspect:229/360,tag:'A new puzzle just washed ashore!',
+    who:'The visitor who never left',story:'Pippa washed up on Sunrise Shores on holiday, fell in love with the sunshine and stayed. Every Monday she brings a new puzzle on the ferry.',
+    loves:'Surprises, parties, and a swim before breakfast',secret:'She wobbles on land, but she’s the best swimmer in Bloppitopia.',lines:['A new puzzle just washed ashore!','Special delivery!','Ooh, that one’s clean!','See you next Monday!']},
+  lemmie:{name:'Lemmie',kind:'the Lion Cub',isle:'brickworks',brick:'orange',h:1.85,aspect:241/360,tag:'Build it bold!',
+    who:'The maker of Brickworks Island',story:'Lemmie runs the workshop and paints everything in sight. Whatever you make, he puts it on show and roars with pride.',
+    loves:'Big ideas, bright paint, and the crane',secret:'His roar is more of a squeak. He knows, and he roars anyway.',lines:['Build it bold!','If you can dream it, brick it!','ROAR! That’s brilliant!']},
+  lufu:{name:'lufu',kind:'',isle:'moonstone',brick:'moonstone',h:1.2,aspect:237/360,tag:'We have found each other.',
+    who:'A small, shy spirit of light',story:'lufu lived alone on Moonstone Isle for so long that its glow, and the stars above it, almost went out. Then you came, and built the crystal that made it shine again.',
+    loves:'The stars, quiet company, and you',secret:'lufu has spoken only once: “We have found each other.”',lines:['✨','(lufu glows softly)','(a happy little wisp curls up)']},
+};
+const castFull=id=>CAST[id].kind?`${CAST[id].name} ${CAST[id].kind}`:CAST[id].name;
+const lufuHome=o=>isleComplete('moonstone',o||worldStore());
 // Tap a character: something funny happens straight away (a hop, a wiggle, a spin, a squash), with a word and a sound
 /* ---------- The characters in 3D ----------
    Bloppit, your otter at its three ages (Pup, Splash, Legend) and the three Longtails as rigged, animated models: the
@@ -7200,7 +7313,7 @@ const LONGTAIL_FACT='Real Longtails are white-tailed tropicbirds. They fly back 
    12 for each Longtail). They load on first need and the drawn art stays until they arrive, and for good without WebGL.
    ?chars3d=0 keeps the drawings. The controllers below are the playground's, on the game's three.js. */
 const CH3={V:'1',files:{bloppit:'bloppit',pup0:'pup',pup1:'pup-growing',pup2:'pup-older',scraps:'scraps',swoop:'swoop',squint:'squint'},gltf:{},wait:{},size:{},failed:false};
-const LT3={easy:'scraps',medium:'swoop',hard:'squint'};
+const LT3={easy:'swoop',medium:'swoop',hard:'swoop'};
 function ch3GL(){ if(CH3.gl!=null) return CH3.gl; try{ const c=document.createElement('canvas'); CH3.gl=!!(window.WebGLRenderingContext&&(c.getContext('webgl')||c.getContext('experimental-webgl'))); }catch(e){ CH3.gl=false; } return CH3.gl; }
 function ch3On(){ return !CH3.failed&&typeof THREE!=='undefined'&&!!THREE.WebGLRenderer&&!/[?&]chars3d=0/.test(location.search)&&ch3GL(); }
 function ch3Script(src){ return new Promise((ok,no)=>{ const s=document.createElement('script'); s.src=src; s.async=true; s.onload=ok; s.onerror=()=>no(new Error('could not load '+src)); document.head.appendChild(s); }); }
@@ -7331,7 +7444,7 @@ function cv3Loop(t){ CV3.raf=0; if(CV3.t&&t-CV3.t<30){ CV3.raf=requestAnimationF
   r.setScissorTest(false); if(!reduceMotion) CV3.raf=requestAnimationFrame(cv3Loop); }
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden) cv3Kick(); });
 // A still portrait (a data URL) for small icons: the pup in its outfit, a Longtail's head. Null until the model has loaded.
-function cv3Snap(id,o,frame,px,opt){ if(!ch3On()||!ch3Ready(id)) return null; opt=opt||{}; const key=JSON.stringify([id,frame,px,id.startsWith('pup')?[opt.ci!=null?opt.ci:pupColorOf(o),opt.wear||accWear(o||{})]:0]);
+function cv3Snap(id,o,frame,px,opt){ if(!ch3On()||!ch3Ready(id)) return null; opt=opt||{}; const key=JSON.stringify([id,frame,px,id.startsWith('pup')?[opt.ci!=null?opt.ci:pupColorOf(o),opt.wear||accWear(o||{}),PUP_HEX]:0]);
   if(CV3.snaps.has(key)) return CV3.snaps.get(key);
   try{ const r=cv3R(), sc=new THREE.Scene(), cam=new THREE.PerspectiveCamera(24,1,.05,60), i=ch3Make(id); cv3Lights(sc); sc.add(i.root); ch3Dress(i,o,opt); i.ctl.update(.6);
     cv3Aim(cam,[id],frame,1,-.25); r.setScissorTest(false); r.setSize(px,px,false); r.setViewport(0,0,px,px); r.clear(); r.render(sc,cam); const url=r.domElement.toDataURL('image/png'); i.ctl.dispose();
@@ -7374,9 +7487,12 @@ function isl3CharsLoad(o){ if(!ch3On()) return; Promise.all(['bloppit',ch3PupId(
 const REACT_LINES={
   bloppit:['Hee hee! That tickles!','Let’s build something!','Click! Snap! Done!','Whoa, careful!','Wheee!','High five!','Have you seen my red brick? Oh, here it is.'],
   pup:['Wheee!','Hello, friend!','Again! Again!','Let’s build!','Look at me!','Hee hee!'],
-  longtail:['Squawk!','Race you!','Shiny brick… mine!','You can’t catch me!','Squawk squawk!']};
+  longtail:['Ready, set, snap!','Catch me if you can!','Race you!','Whoa, you’re fast! Rematch?','Zoom!']};
 const REACT_POSES=['/art/bud-happy.png','/art/bud-reach.png','/art/bud-offer.png','/art/bud-oops.png','/art/bud-hug.png'];
 function charReact(info){ const now=performance.now(), kinds=['jump','wiggle','spin','squash'], pick=a=>a[Math.floor(Math.random()*a.length)];
+  if(info.startsWith('char:')){ const id=info.slice(5), K=ISL3.cast&&ISL3.cast[id]; if(!K||!CAST[id]) return; const sp=K.sp, grp=K.g; if(!sp.userData.s0) sp.userData.s0=[Math.abs(sp.scale.x),sp.scale.y];
+    ISL3.react={sp,grp,kind:pick(id==='lufu'?['wiggle','squash']:kinds),t0:now}; isl3Say(grp,pick(CAST[id].lines)); try{ (id==='lufu'?sfx.chime:sfx.chirp)(); }catch(e){}
+    if(Math.random()<.35||id==='lufu'){ const p=grp.position; isl3Confetti(p.x,TOP3+1.4,p.z,id==='lufu'?18:12); } track('char_poke:'+id); isl3Kick(); return; }
   const i3=info==='bloppit'?ISL3.b3:info==='pup'?ISL3.p3:ISL3.l3;
   if(i3){ const who=info==='bloppit'?'bloppit':info==='pup'?'pup':'longtail', grp=info==='bloppit'?ISL3.bloppit:info==='pup'?ISL3.pupG:ISL3.longtail;
     i3.ctl.poke(); if(who==='longtail'&&ISL3.ltNight){ longtailSquawk(); return; }
@@ -7417,39 +7533,41 @@ function bloppitCheer(){ if(ISL3.b3){ ISL3.b3.ctl.play('cheer'); try{ sfx.chirp(
 // Moonstone Isle: out in the mist from the start, reachable once 9 Weekly Bloppits are built (?mystery=1 to try).
 // Its eight chapters are hidden library drawings, built at fixed sizes, each bigger than the last.
 const MYSTERY_WEEKLIES=9;
-const MYSTERY=[
-  {name:'Rowboat',size:10,shape:'puffed',thick:.6,colors:5,story:'Row out through the mist. Something glints on the far shore…'},
-  {name:'Old map',size:15,shape:'flat',thick:1,colors:6,story:'A map washed up on the beach. X marks a spot!'},
-  {name:'Tree frog',size:11,shape:'puffed',thick:.6,colors:6,story:'A Bermuda tree frog peeps the way through the trees.'},
-  {name:'Longtail nest',size:12,shape:'puffed',thick:.8,colors:7,story:'The Longtails’ secret nest! So this is where they hide.'},
-  {name:'Brick chest',size:12,shape:'puffed',thick:.7,colors:8,story:'A chest full of stolen bricks. Bloppit’s missing red ones!'},
-  {name:'Stone arch',size:11,shape:'puffed',thick:.6,colors:6,story:'An old moon gate. Walk through it for luck.'},
-  {name:'Moon crystal',size:18,shape:'puffed',thick:.7,colors:7,story:'The moonstone itself, glowing in the dark.'},
-  {name:'Moonstone Lighthouse',size:23,shape:'puffed',thick:1,colors:7,story:'Light it up, and every island in Bloppitopia can see it.'},
+const MYSTERY=[   // one friend per chapter (Character Bible); `was` = the chapter's old build, so saves made before 1.0.1 still count
+  {name:'Rowboat',size:10,shape:'puffed',thick:.6,colors:5,who:'Bloppit',story:'One night on the jetty, you and Bloppit spot a faint light far out over the mist. Bloppit fixes up his old rowboat, and you row out together.'},
+  {name:'Old map',size:15,shape:'flat',thick:1,colors:6,who:'Pippa',story:'The mist sends you round in circles. Then Pippa swims up with a bottle that just washed ashore. Inside: a map of an island nobody has heard of.'},
+  {name:'Lookout tower',size:17,shape:'puffed',thick:.6,colors:6,who:'Swoop',was:['Tree frog'],story:'You land, but the trees are too tall to see over. Build a lookout tower, and Swoop flies to the top: there’s a glow at the island’s heart!'},
+  {name:'Little bridge',size:10,shape:'puffed',thick:.8,colors:7,who:'Tiny',was:['Longtail nest'],story:'A stream blocks the way, with tiny glowing footprints on the far side. Tiny hops across the lily pads to show where the bridge should go.'},
+  {name:'Moon gate',size:11,shape:'puffed',thick:.7,colors:8,who:'Lemmie',was:['Brick chest'],story:'An old moon gate lies in pieces. Lemmie helps you rebuild and paint it. It’s said to open only for friends… and it opens.'},
+  {name:'Jar of stars',size:15,shape:'puffed',thick:.6,colors:6,who:'Nora',was:['Stone arch'],story:'Behind the gate is a jar of fallen stars, almost dark. Nora sees the pattern: someone has been catching falling stars to keep warm. Someone very lonely.'},
+  {name:'Moonstone Lighthouse',size:23,shape:'puffed',thick:1,colors:7,who:'Everyone',story:'All six friends arrive. Each adds a brick in their own colour, and together you light the lighthouse. The stars come back, and a small glow peeks out from behind it. This part is yours.'},
+  {name:'Moon crystal',size:15,shape:'puffed',thick:.7,colors:7,who:'lufu',story:'Just the two of you. The little light is too dim to come close. Build the moon crystal at the lighthouse’s heart, and see what happens.'},
 ];
-const MYSTERY_NAMES=new Set(MYSTERY.map(m=>m.name));
+const MYSTERY_NAMES=new Set(MYSTERY.flatMap(m=>[m.name,...(m.was||[])]));
 const mysteryOpen=()=>weeklyTotal()>=MYSTERY_WEEKLIES||new URLSearchParams(location.search).get('mystery')==='1';
-const mysteryDone=o=>{ o=o||worldStore(); const ks=Object.keys(o.builds||{}); return MYSTERY.filter(m=>ks.some(k=>k.startsWith(`m:${m.name}:`))).length; };
+const mysteryHas=(m,ks)=>[m.name,...(m.was||[])].some(n=>ks.some(k=>k.startsWith(`m:${n}:`)));
+const mysteryDone=o=>{ o=o||worldStore(); const ks=Object.keys(o.builds||{}); return MYSTERY.filter(m=>mysteryHas(m,ks)).length; };
+const mysteryNext=o=>{ o=o||worldStore(); const ks=Object.keys(o.builds||{}); return MYSTERY.findIndex(m=>!mysteryHas(m,ks)); };
 function mysteryStart(i){
   const m=MYSTERY[i]; if(!m) return; const k=SAMPLES.findIndex(x=>x.name===m.name); if(k<0) return;
   if(mp) mpLeave(); if(game) endGame(); setControls({kind:'model',shape:m.shape,thick:m.thick,tol:48,maxColors:m.colors,gray:true,size:m.size,pw:48,pcol:24});
-  loadSample(k); clearTimeout(timer); rebuild(); setTab('build'); setStatus(`Chapter ${i+1} of ${MYSTERY.length}: ${m.story}`);
+  loadSample(k); clearTimeout(timer); rebuild(); setTab('build'); setStatus(`Chapter ${i+1} of ${MYSTERY.length}, with ${m.who}: ${m.story}`);
 }
-function mysteryGo(){ if(!mysteryOpen()){ setTab('daily'); return; } const i=mysteryDone(); if(i<MYSTERY.length) mysteryStart(i); else setTab('island'); }
+function mysteryGo(){ if(!mysteryOpen()){ setTab('daily'); return; } const i=mysteryNext(); if(i>=0) mysteryStart(i); else setTab('island'); }
 const ISLES={
-  otterwood:{name:'Otterwood',game:'Otter Trail',unit:'Otter Trail level',x:-14.6,z:3.2,r:4.5,seed:2.2,ground:['#5DBB46','#3F8F33'],
-    milestone:'The captured pirate ship',grows:'Every Otter Trail level you finish (the last is the boss)',play:'Play Otter Trail',go:()=>homeGo('otter')},
+  otterwood:{name:'Frog Forest',game:'Frog Trail',unit:'Frog Trail level',x:-14.6,z:3.2,r:4.5,seed:2.2,ground:['#5DBB46','#3F8F33'],
+    milestone:'The Lily-pad Palace',grows:'Every Frog Trail level you finish (the last is the boss)',play:'Play Frog Trail',go:()=>homeGo('otter')},
   brainpeak:{name:'Brainpeak',game:'Brain Trail',unit:'Brain Trail level',x:-8.4,z:-12.8,r:4.4,seed:4.1,ground:['#79C25A','#4E9E3A'],
-    milestone:'The sleeping robot',grows:'Every Brain Trail level you finish (the last is the boss)',play:'Play Brain Trail',go:()=>homeGo('brain')},
+    milestone:'The Great Telescope',grows:'Every Brain Trail level you finish (the last is the boss)',play:'Play Brain Trail',go:()=>homeGo('brain')},
   sunrise:{name:'Sunrise Shores',game:'Weekly Bloppit',unit:'Weekly Bloppit',x:5.6,z:-14.8,r:4.3,seed:5.9,ground:['#8AD06A','#5FA94A'],sand:true,
     milestone:'The Festival Clock',grows:'Every Weekly Bloppit you build (no streak needed)',play:'This week’s Bloppit',go:()=>setTab('daily')},
   blitzbay:{name:'Blitz Bay',game:'Blitz',unit:'Blitz win',x:15.2,z:-4.6,r:4.8,seed:5.3,ground:['#6CC24A','#4E9E3A'],sand:true,
-    milestone:'The Grand Prix cup',grows:'Every Blitz race you win against the Longtails, then the Grand Prix',play:'Race a Longtail',go:()=>homeGo('cpu')},
+    milestone:'The Grand Prix cup',grows:'Every Blitz race you win against Swoop, then the Grand Prix',play:'Race Swoop',go:()=>homeGo('cpu')},
   brickworks:{name:'Brickworks Island',game:'Creative builds',unit:'creation',x:12.4,z:9.6,r:4.3,seed:6.6,ground:['#7CC45E','#4E9E3A'],
     milestone:'The Grand Creation Gallery',grows:'Every build from your own photo or drawing, or from the library',play:'Make your own',
     go:()=>{ pickPuzzle('quick','top'); requestAnimationFrame(()=>{ const c=$('#drawCard'); if(c) c.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}); }); }},
   moonstone:{name:'Moonstone Isle',game:'The mystery',unit:'chapter',x:-18,z:-8.5,r:4.0,seed:7.7,ground:['#6FB7A4','#4E8F7E'],sand:true,mystery:true,
-    milestone:'The Moonstone Lighthouse',grows:'Every chapter of the mystery you build',play:'Explore Moonstone Isle',go:()=>mysteryGo()},
+    milestone:'The moon crystal',grows:'Every chapter of the mystery you build',play:'Explore Moonstone Isle',go:()=>mysteryGo()},
 };
 const ISLE_TOTAL=Object.keys(ISLES).length;
 // An island is complete when its last piece is built; each one is worth 5 Build Stars, and the whole world 10 more
@@ -7503,7 +7621,12 @@ const PIECES={
       // lanterns hanging from the crown
       for(let i=0;i<10;i++){ const a=i*Math.PI/5+.15, x=Math.cos(a)*2.15, z=Math.sin(a)*2.15; g.add(cyl3(.01,.01,.45,3,'#3B2314',x,2.72,z)); const l=mesh3(new THREE.SphereGeometry(.12,8,6),glow3(['#FFE27A','#F29A8A','#7FE3F2'][i%3]),x,2.66,z); l.castShadow=false; g.add(l); }
     }},
-    {at:15,name:'The captured pirate ship',make:g=>{ const b=boat3('#6B4229',1.9); b.traverse(x=>{ if(x.isMesh&&x.geometry.type==='ShapeGeometry') x.material=m3('#1B2A34',{side:THREE.DoubleSide}); }); b.position.set(3.4,TOP3-.2,2.6); b.rotation.y=-.6; g.add(b); g.add(flag3('#F4BC22',2.6,TOP3,1.6)); }},
+    {at:15,name:'The Lily-pad Palace',make:g=>{ const P=new THREE.Group();   // Tiny's dream: a palace for every frog in the forest, floating on the big pond
+      P.add(cyl3(1.35,1.35,.04,22,'#36AEBF',0,.01,0)); [[0,0,.85],[-.95,.55,.42],[.9,.65,.38],[.2,-1.0,.4]].forEach(([x,z,r])=>P.add(cyl3(r,r,.05,14,'#4B9F4A',x,.04,z)));
+      P.add(cyl3(.62,.68,.42,14,'#F4F4F4',0,.09,0)); P.add(cyl3(.64,.64,.06,14,'#E4ADC8',0,.5,0)); P.add(box3(.22,.28,.05,'#352100',0,.1,.66));
+      [[-.36,.1,.75,.16],[.36,.1,.75,.16],[0,-.28,1.05,.2]].forEach(([x,z,h,r])=>{ P.add(cyl3(r,r,h,10,'#F4F4F4',x,.5,z)); for(let k=0;k<6;k++){ const a=k*Math.PI/3, pe=mesh3(new THREE.SphereGeometry(r*.85,8,6),m3('#E4ADC8'),x+Math.cos(a)*r*.7,.5+h+.08,z+Math.sin(a)*r*.7); pe.scale.set(1,.55,1); P.add(pe); } P.add(mesh3(new THREE.SphereGeometry(r*.6,8,6),glow3('#FFF03A'),x,.5+h+.16,z)); });
+      P.add(flag3('#A5CA18',0,1.85,-.28)); for(const [a,b,c,d] of [[-.95,.55,-.5,.3],[.9,.65,.5,.35]]) P.add(ropeBridge3([a,.12,b],[c,.12,d]));
+      P.position.set(2.9,TOP3-.02,2.4); g.add(P); }},
   ],
   brainpeak:[
     {at:1,name:'Stone stairs',make:g=>{ for(let i=0;i<7;i++) g.add(box3(.7,.14,.34,'#D9D1C2',1.6-i*.12,TOP3+i*.22,1.9-i*.34)); }},
@@ -7518,7 +7641,7 @@ const PIECES={
     {at:10,name:'Banners',make:g=>[[-2.4,3.4,1.2],[1.0,3.7,-2.8],[2.2,1.6,2.6]].forEach(([x,y,z])=>g.add(flag3('#0055BF',x,y,z)))},
     {at:11,name:'Crystal lamps',make:g=>{ for(let i=0;i<5;i++){ const a=i*1.3; const c=mesh3(new THREE.OctahedronGeometry(.2,0),glow3('#7FE3F2'),Math.cos(a)*3.1,TOP3+.3,Math.sin(a)*3.1); c.scale.set(1,1.8,1); g.add(c); } }},
     {at:12,name:'Observatory base',make:g=>g.add(cyl3(.75,.85,.7,10,'#B9C2CF',0,3.3,-.4))},
-    {at:13,name:'The telescope',make:g=>{ const t=cyl3(.14,.18,1.5,8,'#3E5468',.3,3.9,-.4); t.rotation.z=-.8; g.add(t); }},
+    {at:13,name:'The little telescope',make:g=>{ const t=cyl3(.14,.18,1.5,8,'#3E5468',.3,3.9,-.4); t.rotation.z=-.8; g.add(t); }},
     {at:14,name:'The Great Observatory',make:g=>{
       const d=new THREE.Group(); d.add(cyl3(1.2,1.25,.55,18,'#ECE6DA',0,0,0)); for(let i=0;i<6;i++) d.add(winBox3(.2,.24,Math.cos(i*1.05)*1.22,.16,Math.sin(i*1.05)*1.22).rotateY(-i*1.05+Math.PI/2));
       d.add(mesh3(new THREE.SphereGeometry(1.2,22,12,0,Math.PI*2,0,Math.PI/2),m3('#E8F1F8',{metalness:.35,roughness:.35}),0,.55,0));
@@ -7532,8 +7655,11 @@ const PIECES={
       const sun=mesh3(new THREE.OctahedronGeometry(.42,0),glow3('#FFE27A'),0,0,0); sun.userData.roty=.8; orb.add(sun);
       const beam=new THREE.Mesh(new THREE.CylinderGeometry(.08,1.0,14,10,1,true),new THREE.MeshBasicMaterial({color:0xFFF3B0,transparent:true,opacity:.22,depthWrite:false,side:THREE.DoubleSide}));
       beam.geometry.translate(0,7,0); beam.position.set(0,5.7,-.4); beam.userData.beam=1; g.add(beam); }},
-    {at:15,name:'The sleeping robot',make:g=>{ const r=new THREE.Group(); r.add(box3(1.0,1.0,.7,'#A0A5A9',0,.5,0)); r.add(box3(.8,.6,.6,'#6C6E68',0,1.5,0)); for(const sx of [-.2,.2]) r.add(mesh3(new THREE.SphereGeometry(.09,8,6),glow3('#7FE3F2'),sx,1.85,.31));
-      for(const sx of [-.68,.68]) r.add(box3(.3,.9,.3,'#6C6E68',sx,.3,0)); r.add(cyl3(.03,.03,.4,4,'#352100',0,2.1,0)); r.add(mesh3(new THREE.SphereGeometry(.09,8,6),glow3('#C91A09'),0,2.5,0)); r.position.set(2.6,TOP3,2.4); r.rotation.y=-.5; g.add(r); }},
+    {at:15,name:'The Great Telescope',make:g=>{ const T=new THREE.Group();   // Nora's great telescope, rebuilt: it finds a faint star over the mist
+      for(let k=0;k<3;k++){ const a=k*Math.PI*2/3, l=cyl3(.05,.06,1.5,6,'#6B4229',Math.cos(a)*.42,0,Math.sin(a)*.42); l.rotation.set(Math.sin(a)*.32,0,-Math.cos(a)*.32); T.add(l); }
+      const tube=new THREE.Group(); tube.add(cyl3(.22,.3,2.0,14,'#0055BF',0,-1.0,0)); for(const y of [-.75,0,.75]) tube.add(cyl3(.32,.32,.1,14,'#F4BC22',0,y-.05,0)); tube.add(mesh3(new THREE.CylinderGeometry(.24,.24,.05,14),glow3('#9FC3E9'),0,1.0,0)); tube.add(cyl3(.07,.07,.35,8,'#352100',0,-1.3,0));
+      tube.position.set(0,1.5,0); tube.rotation.set(-.6,0,.35); T.add(tube); T.add(mesh3(new THREE.SphereGeometry(.14,10,8),m3('#F4BC22',{metalness:.5,roughness:.35}),0,1.48,0));
+      T.position.set(2.5,TOP3,2.3); T.rotation.y=-.5; g.add(T); g.add(sparkle3(3.4,4.2,1.4)); }},
   ],
   sunrise:[
     {at:1,name:'Flower bed',make:g=>g.add(flowers3(1.9,1.6,1.0,18,0))},
@@ -7616,13 +7742,14 @@ const PIECES={
   moonstone:[
     {at:1,name:'The rowboat',make:g=>{ const b=boat3('#A95500',.9); b.traverse(x=>{ if(x.isMesh&&(x.geometry.type==='ShapeGeometry'||x.geometry.type==='BoxGeometry')) x.visible=false; }); b.position.set(3.2,TOP3-.25,1.8); b.rotation.y=.8; g.add(b); for(let i=0;i<3;i++) g.add(box3(.5,.08,.4,'#8A5A3B',2.2-i*.45,TOP3,1.2-i*.2)); }},
     {at:2,name:'The map stone',make:g=>{ g.add(box3(1.1,.7,.18,'#E4CD9E',-1.6,TOP3,2.4,{y:.4})); g.add(mesh3(new THREE.SphereGeometry(.08,6,4),m3('#C91A09'),-1.5,TOP3+.45,2.52)); }},
-    {at:3,name:'The frog pond',make:g=>{ g.add(cyl3(.9,.9,.05,14,'#36AEBF',1.8,TOP3+.01,-1.9)); for(const [x,z] of [[1.5,-1.7],[2.2,-2.1]]) g.add(cyl3(.22,.22,.04,8,'#4B9F4A',x,TOP3+.05,z)); g.add(box3(.22,.16,.2,'#A5CA18',1.5,TOP3+.09,-1.7)); }},
-    {at:4,name:'The Longtail nest',make:g=>{ const n=new THREE.Mesh(new THREE.TorusGeometry(.45,.17,6,12),m3('#8A6A43')); n.rotation.x=-Math.PI/2; n.position.set(-2.4,TOP3+.12,-1.4); g.add(n); for(let i=0;i<3;i++) g.add(mesh3(new THREE.SphereGeometry(.13,8,6),m3(i===1?'#E4CD9E':'#FFFFFF'),-2.5+i*.14,TOP3+.16,-1.4+(i%2)*.1)); }},
-    {at:5,name:'The brick chest',make:g=>{ g.add(box3(.9,.55,.6,'#A95500',.2,TOP3,2.6)); g.add(box3(.95,.12,.65,'#F4BC22',.2,TOP3+.55,2.6)); const C=['#C91A09','#0055BF','#F4BC22','#4B9F4A']; for(let i=0;i<6;i++) g.add(box3(.3,.14,.16,C[i%4],-.6+i*.3,TOP3,3.2-(i%2)*.3,{y:i})); }},
-    {at:6,name:'The moon gate',make:g=>{ const a=new THREE.Mesh(new THREE.TorusGeometry(.9,.18,8,24,Math.PI),m3('#F4F4F4')); a.position.set(-.6,TOP3,-2.7); a.rotation.y=.3; a.castShadow=true; g.add(a); for(const sx of [-1,1]) g.add(box3(.36,.12,.36,'#F4F4F4',-.6+sx*.86,TOP3,-2.7+sx*.26)); }},
-    {at:7,name:'The moon crystals',make:g=>{ [['#9FC3E9',0,0,1.1],['#AC78BA',.6,.3,.7],['#AC78BA',-.5,.4,.6],['#9FC3E9',.2,-.6,.5]].forEach(([c,x,z,h])=>{ const k=mesh3(new THREE.OctahedronGeometry(.35,0),glow3(c),x-2.6,TOP3+h*.6,z+.8); k.scale.set(.8,h*1.6,.8); k.castShadow=false; g.add(k); }); }},
-    {at:8,name:'The Moonstone Lighthouse',make:g=>{ const l=lighthouse3(); l.scale.setScalar(1.25); l.position.set(0,TOP3,0); g.add(l);
-      const beam=new THREE.Mesh(new THREE.ConeGeometry(1.1,14,12,1,true),new THREE.MeshBasicMaterial({color:0xFFF3B0,transparent:true,opacity:.18,depthWrite:false,side:THREE.DoubleSide})); beam.rotation.z=Math.PI/2; beam.geometry.translate(0,7,0); beam.position.set(0,3.4,0); beam.userData.beam=1; g.add(beam); g.add(sparkle3(0,4,0)); }},
+    {at:3,name:'The lookout tower',make:g=>{ const t=new THREE.Group(); for(const [a,b] of [[-.3,-.3],[.3,-.3],[-.3,.3],[.3,.3]]) t.add(box3(.08,2.0,.08,'#7A4E2E',a,0,b)); t.add(box3(.9,.08,.9,'#A86E48',0,2.0,0)); t.add(mesh3(new THREE.ConeGeometry(.7,.5,4),m3('#C91A09'),0,2.55,0,{y:Math.PI/4})); t.add(flag3('#0055BF',0,2.8,0)); t.position.set(1.9,TOP3,-1.9); g.add(t); }},
+    {at:4,name:'The little bridge',make:g=>{ g.add(cyl3(.75,.75,.04,14,'#36AEBF',-2.3,TOP3+.01,-1.0)); g.add(ropeBridge3([-3.0,TOP3+.1,-1.3],[-1.6,TOP3+.1,-.7])); for(const [x,z] of [[-2.1,-1.5],[-2.6,-.6]]) g.add(cyl3(.18,.18,.03,8,'#4B9F4A',x,TOP3+.04,z)); }},
+    {at:5,name:'The moon gate',make:g=>{ const a=new THREE.Mesh(new THREE.TorusGeometry(.9,.18,8,24,Math.PI),m3('#F4F4F4')); a.position.set(-.6,TOP3,-2.7); a.rotation.y=.3; a.castShadow=true; g.add(a); for(const sx of [-1,1]) g.add(box3(.36,.12,.36,'#F4F4F4',-.6+sx*.86,TOP3,-2.7+sx*.26)); ['#C91A09','#F2CD37','#0055BF','#4B9F4A','#FE8A18','#AC78BA','#C91A09'].forEach((c,i)=>{ const t=Math.PI*(i+.5)/7, d=mesh3(new THREE.SphereGeometry(.09,6,4),m3(c),0,0,0); d.position.set(-.6+Math.cos(t)*.9*Math.cos(.3),TOP3+Math.sin(t)*.9,-2.7-Math.cos(t)*.9*Math.sin(.3)); g.add(d); }); }},
+    {at:6,name:'The jar of stars',make:g=>{ const j=new THREE.Mesh(new THREE.CylinderGeometry(.42,.42,.95,14,1,true),new THREE.MeshStandardMaterial({color:0xBFE3F5,transparent:true,opacity:.35,roughness:.1,side:THREE.DoubleSide})); j.position.set(.4,TOP3+.48,2.6); g.add(j); g.add(cyl3(.44,.44,.12,14,'#A95500',.4,TOP3+.95,2.6));
+      for(let i=0;i<6;i++){ const st=mesh3(new THREE.OctahedronGeometry(.1,0),glow3(i%3?'#FFF03A':'#E9DFFF'),.4+Math.cos(i*2.1)*.22,TOP3+.2+i*.12,2.6+Math.sin(i*2.1)*.22); st.castShadow=false; st.userData.spin=1; g.add(st); } }},
+    {at:7,name:'The Moonstone Lighthouse',make:g=>{ const l=lighthouse3(); l.scale.setScalar(1.25); l.position.set(0,TOP3,0); g.add(l);
+      const beam=new THREE.Mesh(new THREE.ConeGeometry(1.1,14,12,1,true),new THREE.MeshBasicMaterial({color:0xFFF3B0,transparent:true,opacity:.18,depthWrite:false,side:THREE.DoubleSide})); beam.rotation.z=Math.PI/2; beam.geometry.translate(0,7,0); beam.position.set(0,3.4,0); beam.userData.beam=1; g.add(beam); }},
+    {at:8,name:'The moon crystal',make:g=>{ [['#E9DFFF',0,0,1.3],['#AC78BA',.55,.3,.8],['#AC78BA',-.5,.35,.7],['#9FC3E9',.2,-.55,.6]].forEach(([c,x,z,h])=>{ const k=mesh3(new THREE.OctahedronGeometry(.35,0),glow3(c),x-2.4,TOP3+h*.6,z+.9); k.scale.set(.8,h*1.6,.8); k.castShadow=false; g.add(k); }); g.add(sparkle3(-2.4,2.4,.9)); }},
   ],
 };
 
@@ -7792,19 +7919,22 @@ function isl3Build(o){ ISL3.shadowDirty=true;
     ISL3.labels.push({id:'isle:'+id,name:c>0?I.name:'???',sub:!c&&I.mystery?mysteryHint():c>0?(done?'Complete ★':`${Math.min(c,PIECES[id].length&&PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at}`):'In the mist',x:I.x+ux*I.r*.95,z:I.z+uz*I.r*1.05,y:-1.2}); }
   ISL3.labels.push({id:'land:beach',name:'Home Island',sub:pupName(o)?`${pupName(o)}’s home`:'Your home',x:0,z:HOME_R*.55,y:.9,home:1});
   // sky things: a few clouds, stars for the night
-  // the Longtail you race (the Blitz level picked), on the beach facing Blitz Bay, up to no good
-  { const lv=longtailNow(), art=LONGTAIL_ART[lv], g=new THREE.Group(), l3=ch3Isle(LT3[lv],g,TOP3,0), sp=l3?null:sprite3(`/art/longtail-${art.id}.png`,2.1,art.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } ISL3.l3=l3; { const tb=new THREE.Mesh(new THREE.BoxGeometry(1.1,1.9,1.1),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); tb.visible=false; tb.position.y=TOP3+.95; g.add(tb); }
-    const night=isNight3(); ISL3.ltNight=night; let bx,bz;
-    if(night){   // home to a nest on the cliff edge for the night: an open bit of rim, away from buildings and bridges
-      const obst=isl3Obstacles(W), bridges=Object.values(ISLES).map(I=>Math.atan2(I.z,I.x)), angd=(a,b)=>Math.abs(Math.atan2(Math.sin(a-b),Math.cos(a-b)));
-      const box3=ISL3.box, tl=!!(box3&&box3.clientWidth&&CAM_TALL(box3.clientWidth/(box3.clientHeight||box3.clientWidth))), cd=CAM_DIR3(tl?.5:1.5);   // the side facing the camera, a little off-centre
-      const base=Math.atan2(cd.z,cd.x)-.85; let best=null;
-      for(let i=0;i<48&&!best;i++){ const a=base+(i%2?1:-1)*Math.ceil(i/2)*.13; if(bridges.some(b=>angd(a,b)<.32)) continue; const [x,z]=beachPoint(a); if(obst.every(([cx,cz,hx,hz])=>Math.abs(x-cx)>hx+.9||Math.abs(z-cz)>hz+.9)) best=[x,z]; }
-      [bx,bz]=best||beachPoint(base); const k=1.03; bx*=k; bz*=k;
-      if(sp){ const nest=new THREE.Mesh(new THREE.TorusGeometry(.42,.16,6,12),m3('#8A6A43')); nest.rotation.x=-Math.PI/2; nest.position.y=TOP3+.08; g.add(nest); sp.position.y=TOP3+.06; sp.scale.multiplyScalar(.85); } }   // the 3D Longtail brings its own nest
-    else [bx,bz]=beachPoint(Math.atan2(ISLES.blitzbay.z,ISLES.blitzbay.x)+.35);
+  // the island friends: each stands on the shore of their island facing Home Island (in the mist too, waving you over)
+  const shore=(id,da,k)=>{ const I=ISLES[id], t=Math.atan2(-I.z,-I.x)+da, rr=I.r*(k||.62); return [I.x+Math.cos(t)*rr,I.z+Math.sin(t)*rr]; };
+  const hitBox=(g,h)=>{ const tb=new THREE.Mesh(new THREE.BoxGeometry(.9,h,.9),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); tb.visible=false; tb.position.y=TOP3+h/2; g.add(tb); };
+  // Swoop, Blitz Bay's racer (the one Longtail now), on his island's shore; asleep there at night
+  { const lv=longtailNow(), art=LONGTAIL_ART[lv], g=new THREE.Group(), l3=ch3Isle(LT3[lv],g,TOP3,0), sp=l3?null:sprite3(`/art/longtail-${art.id}.png`,2.1,art.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } ISL3.l3=l3; hitBox(g,1.9);
+    const night=isNight3(); ISL3.ltNight=night; const [bx,bz]=shore('blitzbay',-.75,.7);
     if(l3){ if(night) l3.ctl.setMode(5); else if(!ISL3.ltLanded){ ISL3.ltLanded=1; l3.ctl.play('fly_in_land'); } }
     g.position.set(bx,0,bz); g.userData.longtail=1; ISL3.longtail=g; ISL3.longtailSprite=sp; add(g,'longtail:'+lv); }
+  ISL3.cast={};
+  for(const id of ['tiny','nora','pippa','lemmie']){ const C=CAST[id], g=new THREE.Group(), sp=sprite3(`/art/char-${id}.png`,C.h,C.aspect); sp.position.y=TOP3; g.add(sp); hitBox(g,C.h);
+    const misty=!isleCount(C.isle,o), [x,z]=shore(C.isle,{tiny:.7,nora:.75,pippa:-.7,lemmie:.7}[id],misty?1.02:({nora:.5}[id]||.66));   // in front of the mist until the island is found
+    g.position.set(x,0,z); g.userData.cast=id; g.userData.bob=2; ISL3.cast[id]={g,sp}; add(g,'char:'+id); }
+  // lufu: a light glimpsed over Moonstone Isle until the mystery is solved, then at home beside your otter
+  if(lufuHome(o)){ const C=CAST.lufu, g=new THREE.Group(), sp=sprite3('/art/char-lufu.png',C.h,C.aspect); sp.position.y=TOP3; g.add(sp); hitBox(g,C.h);
+    const P=ISL3.pupG?ISL3.pupG.position:ISL3.bloppit.position, spot=clearSpot3(P.x+.95,P.z+.55,.45,[[P.x,P.z]]); g.position.set(spot[0],0,spot[1]); g.userData.cast='lufu'; ISL3.cast.lufu={g,sp}; add(g,'char:lufu'); }
+  else if(isleCount('moonstone',o)>0||mysteryOpen()){ const I=ISLES.moonstone, lg=new THREE.Group(), gl=mesh3(new THREE.SphereGeometry(.16,10,8),glow3('#E9DFFF'),0,TOP3+2,0); gl.castShadow=false; gl.userData.fly=3; lg.add(gl); lg.position.set(I.x,0,I.z); W.add(lg); }
   const box=ISL3.box, tall=ISL3.tallBuild=!!(box&&box.clientWidth&&CAM_TALL(box.clientWidth/(box.clientHeight||box.clientWidth)));   // clouds sit behind the world, whichever way it's seen
   for(let i=0;i<5;i++){ const c=cloud3(), a=-24+i*12, b=-18+((i*7)%11); if(tall) c.position.set(b-6,10+(i%2)*2,a); else c.position.set(a,10+(i%2)*2,b); c.userData.cloud=i; c.userData.ax=tall?'z':'x'; W.add(c); }
   if(!ISL3.stars){ const g=new THREE.BufferGeometry(), p=[]; for(let i=0;i<260;i++){ const a=Math.random()*Math.PI*2, e=.15+Math.random()*1.2; p.push(Math.cos(a)*90*Math.cos(e),40+Math.sin(e)*60,Math.sin(a)*90*Math.cos(e)-30); }
@@ -7982,6 +8112,7 @@ function isl3IsleFinale(id,next){
   const I=ISL3.isles[id], N=ISLES[id]; if(!I||!N){ next(); return; }
   isl3FlyTo(I.x,1.2,I.z,15,1300); track('world_finale:'+id);
   ISL3.fly.done=()=>{ isl3Banner(`🏆 ${N.name} is complete!`,true); sfx.chime(); setTimeout(()=>sfx.chime(),400); ISL3.jumpT=performance.now();
+    if(id==='moonstone') setTimeout(()=>{ isl3Banner('lufu: “We have found each other.”',true); sfx.chime(); },1500);   // the only words lufu ever says
     for(let k=0;k<6;k++) setTimeout(()=>{ const a=k*1.05; isl3Confetti(I.x+Math.cos(a)*I.r*.6,2.4+(k%3)*.8,I.z+Math.sin(a)*I.r*.6,70,true); },k*450);
     ISL3.revealT=setTimeout(()=>{ isl3FlyTo(I.x,1.0,I.z,11,1600); ISL3.fly.done=()=>{ ISL3.revealT=setTimeout(next,900); }; },2900); };
 }
@@ -8000,16 +8131,16 @@ function finaleCard(id){
   const o=worldStore(), B=Object.entries(o.builds), sum=f=>B.filter(([k,b])=>f(k,b)).reduce((a,[,b])=>a+(b.n||0),0), nf=n=>n.toLocaleString();
   if(id==='final:all'){ const n=worldCount(o), bricks=B.reduce((a,[,b])=>a+(b.n||0),0);
     trialDialog({icon:'🌟',title:'You built a whole world!',quick:true,rows:`<div><span>Builds finished</span><span>${nf(n)}</span></div><div><span>Bricks placed</span><span>${nf(bricks)}</span></div><div><span>Islands complete</span><span>${ISLE_TOTAL} of ${ISLE_TOTAL}</span></div><div><span>Moonstone crown</span><span>👑</span></div><div class="tot"><span>Bonus Build Stars</span><span>+10</span></div>`,
-      note:`Every island in Bloppitopia is finished, and ${pupName(o)||'your otter'} has earned the Moonstone crown! A new Weekly Bloppit still comes every Monday, so keep building.`}); return; }
+      note:`Every island in Bloppitopia is finished, and lufu has given ${pupName(o)||'your otter'} the Moonstone crown! A new Weekly Bloppit still comes every Monday, so keep building.`}); return; }
   const isle=id.split(':')[1], N=ISLES[isle]; if(!N) return;
-  const line={otterwood:()=>`All ${OTTER_LEVELS.length} Otter Trail levels, boss and all: ${nf(sum(k=>k.startsWith('t:otter:')))} bricks`,
+  const line={otterwood:()=>`All ${OTTER_LEVELS.length} Frog Trail levels, boss and all: ${nf(sum(k=>k.startsWith('t:otter:')))} bricks`,
     brainpeak:()=>`All ${BRAIN_LEVELS.length} Brain Trail levels, math pages and all: ${nf(sum(k=>k.startsWith('t:brain:')))} bricks`,
     sunrise:()=>`${weeklyTotal()} Weekly Bloppits built`,
-    blitzbay:()=>`${B.filter(([,b])=>b.k==='blitz').length} Blitz wins, and the Grand Prix against Squint`,
+    blitzbay:()=>`${B.filter(([,b])=>b.k==='blitz').length} Blitz wins, and the Grand Prix against Swoop`,
     brickworks:()=>`${isleCount('brickworks',o)} creations of your own and from the library`,
-    moonstone:()=>`The mystery solved: all ${MYSTERY.length} chapters, the Longtails’ hideout found`}[isle];
-  trialDialog({icon:'🏆',title:`${N.name} is complete!`,quick:true,rows:`<div><span>${escapeHTML(line?line():'')}</span><span></span></div><div><span>${escapeHTML(N.milestone)}</span><span>✓</span></div><div class="tot"><span>Bonus Build Stars</span><span>+5</span></div>`,
-    note:islesComplete(o).length<ISLE_TOTAL?`${islesComplete(o).length} of ${ISLE_TOTAL} islands complete. ${ISLE_TOTAL-islesComplete(o).length===1?'One to go!':'Keep going!'}`:'Every island is complete!'});
+    moonstone:()=>`The mystery solved: all ${MYSTERY.length} chapters, and lufu found`}[isle];
+  trialDialog({icon:isle==='moonstone'?'✨':'🏆',title:isle==='moonstone'?'You found lufu!':`${N.name} is complete!`,quick:true,rows:`<div><span>${escapeHTML(line?line():'')}</span><span></span></div><div><span>${escapeHTML(N.milestone)}</span><span>✓</span></div><div class="tot"><span>Bonus Build Stars</span><span>+5</span></div>`,
+    note:(isle==='moonstone'?`“We have found each other.” lufu sails home with ${pupName(o)||'your otter'} and lives on Home Island now. `:'')+(islesComplete(o).length<ISLE_TOTAL?`${islesComplete(o).length} of ${ISLE_TOTAL} islands complete. ${ISLE_TOTAL-islesComplete(o).length===1?'One to go!':'Keep going!'}`:'Every island is complete!')});
 }
 function revealText(id,o){ const [k,a,b]=id.split(':');
   if(k==='isle') return {t:`🏝️ ${ISLES[a].name} rose from the mist!`,kind:'isle'};
@@ -8394,7 +8525,7 @@ function shareOpen(code,xfer){
   if(week){ const o=weeklyPuzzle(week); smp=SAMPLES[o.i]; title=week===weekOf()?'This week’s Bloppit':'A Weekly Bloppit'; note=week===weekOf()?`${o.name}, ${o.n} bricks. Build it clean and see how many others did too.`:`${o.name}, ${o.n} bricks, from the week of ${new Date(week+'T12:00:00Z').toLocaleDateString(undefined,{day:'numeric',month:'long'})}.`; }
   else if(code.startsWith('m-')){ const li=OTTER_LEVELS.findIndex(L=>slugOf(L.name)===code.slice(2));   // a Trail level of that name first (tuned sizes), then the library
     if(li<0){ smp=SAMPLES.find(x=>released(x)&&slugOf(x.name)===code.slice(2)); if(smp){ title=smp.name; note='A Bloppit build, sent to you. No account, nothing to sign up for.'; } }
-    else { if(li>=0){ const L=OTTER_LEVELS[li]; $('#shPic').src=levelThumb(L); $('#shPic').hidden=false; $('#shTitle').textContent=L.name; $('#shNote').textContent=`Otter Trail level ${li+1}. A Bloppit build, sent to you. No account, nothing to sign up for.`; setTab('home');
+    else { if(li>=0){ const L=OTTER_LEVELS[li]; $('#shPic').src=levelThumb(L); $('#shPic').hidden=false; $('#shTitle').textContent=L.name; $('#shNote').textContent=`Frog Trail level ${li+1}. A Bloppit build, sent to you. No account, nothing to sign up for.`; setTab('home');
       const d=$('#shareDlg'); $('#shGo').onclick=()=>{ d.close(); track('share_build_started'); if(mp) mpLeave(); if(game) endGame(); setTrail('otter'); startLevel(li); }; $('#shLook').onclick=()=>{ d.close(); setTab('home'); }; d.onclose=null; if(!d.open) d.showModal(); return; } } }
   else if(code.startsWith('d-')){ const dd=drawDecode(code.slice(2)); if(dd){ $('#shPic').src=drawThumb(dd,120); $('#shPic').hidden=false; $('#shTitle').textContent='A drawing for you'; $('#shNote').textContent=`Someone drew this, stud by stud, ${dd.w} × ${dd.h}. Build it as a brick picture.`; setTab('home');
       const d=$('#shareDlg'); $('#shGo').onclick=()=>{ d.close(); track('share_build_started'); draw={...draw,w:dd.w,h:dd.h,cells:dd.cells,undo:[],id:null}; $('#drawSize').value=dd.w; drawRender(); drawBuild(draw); }; $('#shLook').onclick=()=>{ d.close(); setTab('home'); }; d.onclose=null; if(!d.open) d.showModal(); return; } }
@@ -8699,7 +8830,7 @@ function relayCredit(c){
 $('#bzRelayGo').onclick=()=>{ try{ relayStart($('#bzModel').value); }catch(e){ mpMsg(e.message,'err'); } };
 
 /* ---------- Play Next: what to build next, with a picture ---------- */
-// The next unfinished Otter Trail level, then Brain Trail, then the first library model not yet built.
+// The next unfinished Frog Trail level, then Brain Trail, then the first library model not yet built.
 // Play next: the islands rise together. It takes turns: a trail level (whichever trail's island is further behind),
 // then a Blitz race, then a library build, then (once it's reachable) the next chapter of the mystery, and round
 // again, skipping whatever is finished. So a child moves between trails, races and their own builds.
@@ -8710,15 +8841,15 @@ const isleFrac=(id,o)=>{ const P=PIECES[id]; return Math.min(1,isleCount(id,o)/P
 function nextCandidates(){
   const g=gameStore(), o=worldStore(), out=[];
   for(const tr of ['otter','brain']){ const LV=levelsOf(tr), B=bestOf(g,tr), i=LV.findIndex((_,k)=>!B[k]);
-    if(i>=0){ const L=LV[i]; out.push({kind:tr,isle:tr==='otter'?'otterwood':'brainpeak',t:`${L.boss?'👑 Boss: ':''}${tr==='otter'?'Otter':'Brain'} Trail level ${i+1}: ${L.name}`,s:'',thumb:levelThumb(L),go:()=>{ setTrail(tr); if(mp) mpLeave(); startLevel(i); }}); } }
+    if(i>=0){ const L=LV[i]; out.push({kind:tr,isle:tr==='otter'?'otterwood':'brainpeak',t:`${L.boss?'👑 Boss: ':''}${tr==='otter'?'Frog':'Brain'} Trail level ${i+1}: ${L.name}`,s:'',thumb:levelThumb(L),go:()=>{ setTrail(tr); if(mp) mpLeave(); startLevel(i); }}); } }
   { const beaten=longtailBeaten(o), gp=grandPrixOpen(o)&&!grandPrixWon(o), wins=Object.values(o.builds).filter(b=>b.k==='blitz').length;
-    if(gp||wins<15){ const lvl=gp?'hard':['easy','medium','hard'][Math.min(2,beaten+1)], who=CPU_LEVELS[lvl].name;
+    if(gp||wins<15){ const lvl=gp?'hard':['easy','medium','hard'][Math.min(2,beaten+1)], who=`Swoop (${CPU_LEVELS[lvl].speed})`;
       const pick=gp?GP_PICK:'p'+(wins%(BLITZ_PICKS.length-1)), L=pickOf(pick);
-      out.push({kind:'blitz',isle:'blitzbay',t:gp?'🏆 The Grand Prix against Squint':`Blitz race against ${who}: ${L.name}`,s:'',thumb:levelThumb(L),go:()=>nextBlitz(pick,lvl)}); } }
+      out.push({kind:'blitz',isle:'blitzbay',t:gp?'🏆 The Grand Prix against Swoop':`Blitz race against ${who}: ${L.name}`,s:'',thumb:levelThumb(L),go:()=>nextBlitz(pick,lvl)}); } }
   { const smp=SAMPLES.find(x=>released(x)&&!Object.keys(o.builds).some(k=>k.startsWith(`m:${x.name}:`)));
     if(smp){ if(!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png'); const i=SAMPLES.indexOf(smp);
       out.push({kind:'library',isle:'brickworks',t:`From the library: ${smp.name}`,s:'',thumb:smp.thumb,go:()=>{ if(mp) mpLeave(); if(game) endGame(); libDefaults(); loadSample(i); clearTimeout(timer); rebuild(); setTab('build'); }}); } }
-  if(mysteryOpen()){ const i=mysteryDone(o); if(i<MYSTERY.length){ const m=MYSTERY[i], smp=SAMPLES.find(x=>x.name===m.name); if(smp&&!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png');
+  if(mysteryOpen()){ const i=mysteryNext(o); if(i>=0){ const m=MYSTERY[i], smp=SAMPLES.find(x=>x.name===m.name); if(smp&&!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png');
     out.push({kind:'mystery',isle:'moonstone',t:`🌙 The mystery, chapter ${i+1}: ${m.name}`,s:'',thumb:smp?smp.thumb:'',go:()=>mysteryStart(i)}); } }
   return out;
 }
@@ -8747,7 +8878,7 @@ function nextButtonHTML(n,cls){ return n?`<img src="${n.thumb}" alt="">${escapeH
    On a first visit (no build started or finished on this device, nothing to resume) the menu's hero card is
    "Start here": one tap opens a six-brick tree on the build stage. Bloppit puts each step's brick straight into
    the player's hand and the hint shows where it goes, so the first snap happens in seconds. The reveal, the
-   pup, then a fork: keep building (Otter Trail), this week's Bloppit, or the library. ?welcome=1 opens the
+   pup, then a fork: keep building (Frog Trail), this week's Bloppit, or the library. ?welcome=1 opens the
    build straight away (playtests); ?welcome=0 hides the card. */
 var WELCOME={sample:'Little house',S:{kind:'model',shape:'flat',thick:1,tol:48,maxColors:6,gray:true,pw:48,pcol:24,size:6}};
 var welcomeVer=-1, welcomeBook=false;  // var: the buddy can update before this line runs
@@ -8825,7 +8956,7 @@ $('#wcPupGo').onclick=()=>{ const d=$('#welcomeDlg'); d.close(); endReveal(true)
 function homeContinue(){
   const bar=(a,b)=>b?Math.round(100*a/b):0;
   if(game&&model&&levelsOf(gameTrail())[game.lvl]) return {t:`Back to ${TRAILS[gameTrail()].name} level ${game.lvl+1}`,s:`${levelsOf(gameTrail())[game.lvl].name}: ${placedN} of ${model.bricks.length} bricks placed`,p:bar(placedN,model.bricks.length),go:()=>setTab('build')};
-  if(mp) return {t:mp.state&&mp.state.calm?'Back to this week’s Bloppit':mp.cpu?'Back to your race':'Back to your room',s:mp.state&&mp.state.solo?`Your ${mp.state.label} is still going`:mp.cpu?`Your Blitz race against ${mp.state&&mp.state.cpuLevel?CPU_LEVELS[mp.state.cpuLevel].name:'the Longtail'} is still going`:mpBlitz()?'Your Bloppit Blitz game is still going':'Your Play together game is still going',p:-1,go:()=>setTab(mp.state&&mp.state.started?'build':mpHomeTab())};
+  if(mp) return {t:mp.state&&mp.state.calm?'Back to this week’s Bloppit':mp.cpu?'Back to your race':'Back to your room',s:mp.state&&mp.state.solo?`Your ${mp.state.label} is still going`:mp.cpu?`Your Blitz race against ${mp.state&&mp.state.cpuLevel?CPU_LEVELS[mp.state.cpuLevel].name:'Swoop'} is still going`:mpBlitz()?'Your Bloppit Blitz game is still going':'Your Play together game is still going',p:-1,go:()=>setTab(mp.state&&mp.state.started?'build':mpHomeTab())};
   if(pendingSave){ const o=pendingSave;
     return {t:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`Continue ${TRAILS[o.game.trail==='brain'?'brain':'otter'].name} level ${o.game.lvl+1}`:'Continue building',
       s:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`${levelsOf(o.game&&o.game.trail)[o.game.lvl].name}: ${o.placedN} of ${o.nBricks} bricks placed`:`Your ${niceName(o.name)}: ${o.placedN} of ${o.nBricks} bricks placed`,
