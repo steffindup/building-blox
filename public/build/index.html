@@ -7249,8 +7249,8 @@ function isl3Init(){
     ISL3.r=r; ISL3.sc=sc; ISL3.cam=camera; ISL3.ok=true; ISL3.sun=sunL; ISL3.hemi=hemi; ISL3.sea=sea;
     r.domElement.className='is3-canvas'; r.domElement.setAttribute('role','img'); r.domElement.setAttribute('aria-label','Bloppitopia: Home Island and the five islands around it. Drag to turn, pinch to zoom, tap anything to see what it is.');
     isl3Events(r.domElement);
-    const ctl=new THREE.OrbitControls(camera,r.domElement); ctl.enableDamping=true; ctl.dampingFactor=.09; ctl.enableRotate=false; ctl.enablePan=false;   // guided: swipe between views, pinch to look closer
-    ctl.minDistance=9; ctl.maxDistance=70; ctl.minPolarAngle=.35; ctl.maxPolarAngle=1.12; ctl.target.set(0,0,-1.5);
+    const ctl=new THREE.OrbitControls(camera,r.domElement); ctl.enableDamping=true; ctl.dampingFactor=.09; ctl.enableRotate=true; ctl.enablePan=false;   // guided: arrows between views, drag to turn, pinch to look closer
+    ctl.minDistance=9; ctl.maxDistance=70; ctl.minPolarAngle=.12; ctl.maxPolarAngle=1.42; ctl.rotateSpeed=.7; ctl.target.set(0,0,-1.5);
     ctl.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN}; ctl.addEventListener('change',()=>{ isl3ZoomFollow(); isl3Kick(); }); ctl.addEventListener('start',()=>{ ISL3.moved=true; }); ISL3.ctl=ctl;
     camera.position.set(0,26,33); ctl.update();
   }catch(e){ ISL3.ok=false; }
@@ -7317,13 +7317,13 @@ function isl3Focus(info,h){ const vi=isl3ViewOf(info); if(vi>=0){ if(ISL3.viewI=
 // In a chosen view (an island, Home Island, Bloppit and your otter) the camera is free: drag to look around and
 // up or down, pinch or scroll to zoom. The whole world stays guided: swipe between views, nothing to get lost in.
 function isl3FreeLook(on){ const c=ISL3.ctl; if(!c) return; c.enableRotate=on; c.minPolarAngle=on?.12:.35; c.maxPolarAngle=on?1.42:1.12; c.rotateSpeed=.7;
-  if(on&&!ISL3.lookTold){ ISL3.lookTold=1; clearTimeout(ISL3.lookT); ISL3.lookT=setTimeout(()=>{ if(!ISL3.revealing&&!ISL3.arrive&&(ISL3.viewI||0)>0){ isl3Banner('Drag to look around · pinch to zoom'); ISL3.lookT=setTimeout(()=>isl3Banner(''),2600); } },1000); } }
+  if(on&&!ISL3.lookTold){ ISL3.lookTold=1; clearTimeout(ISL3.lookT); ISL3.lookT=setTimeout(()=>{ if(!ISL3.revealing&&!ISL3.arrive){ isl3Banner('Drag to look around · pinch to zoom'); ISL3.lookT=setTimeout(()=>isl3Banner(''),2600); } },1000); } }
 // The guided camera: a few set views to swipe between (all of Bloppitopia, Home Island, Bloppit and your otter, each island)
 function isl3Views(){ const v=[{id:'world',name:'Bloppitopia'},{id:'home',name:'Home Island',x:0,z:.4,R:HOME_R*1.08},{id:'friends',name:'Bloppit & '+(pupName(worldStore())||'your otter'),R:3.3}];
   for(const id of Object.keys(ISLES)){ const I=ISL3.isles&&ISL3.isles[id]; if(I){ const h=I.g?Math.min(7.5,Math.max(0,new THREE.Box3().setFromObject(I.g).max.y)):0;   // tall landmarks: look a little higher and stand back so their tops fit
     v.push({id:'isle:'+id,name:isleCount(id,worldStore())>0?ISLES[id].name:ISLES[id].mystery?'Mystery Island':'A misty island',x:I.x,z:I.z,y:h*.32,R:Math.max(I.r*1.2,Math.hypot(I.r,h*.62)*1.08)}); } }
   const cam=ISL3.cam, vf=cam?THREE.MathUtils.degToRad(cam.fov)/2:.5, hf=cam?Math.atan(Math.tan(vf)*cam.aspect):.6; for(const x of v) if(x.R) x.d=Math.max(7,x.R/Math.tan(Math.min(vf,hf))*1.05); return v; }
-function isl3GoView(i,dur){ const V=isl3Views(); if(!V.length||!ISL3.ctl) return; i=((i%V.length)+V.length)%V.length; const v=V[i]; ISL3.viewI=i; islandTipHide(); ISL3.zoomAt=null; isl3FreeLook(v.id!=='world');
+function isl3GoView(i,dur){ const V=isl3Views(); if(!V.length||!ISL3.ctl) return; i=((i%V.length)+V.length)%V.length; const v=V[i]; ISL3.viewI=i; islandTipHide(); ISL3.zoomAt=null; isl3FreeLook(true);   // every view turns and tilts, the whole map too
   if(v.id==='world'){ isl3FlyHome(dur||900); ISL3.fly.done=()=>{ ISL3.moved=false; }; ISL3.ctl.minDistance=Math.max(9,ISL3.fitD*.55); ISL3.ctl.maxDistance=ISL3.fitD+6; }
   else { let x=v.x, z=v.z; if(v.id==='friends'&&ISL3.bloppit){ const p=ISL3.bloppit.position, q=ISL3.pupG?ISL3.pupG.position:p; x=(p.x+q.x)/2; z=(p.z+q.z)/2; }
     isl3FlyTo(x,v.y||0,z,v.d,dur||900); ISL3.moved=true; ISL3.ctl.minDistance=Math.max(4,v.d*.4); ISL3.ctl.maxDistance=v.d*1.8; }
@@ -8351,7 +8351,7 @@ const ease3=k=>k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
 function isl3StopSpin(){ const c=ISL3.ctl; if(!c||!c.enableDamping) return; c.enableDamping=false; c.update(); c.enableDamping=true; }
 function isl3FlyTo(x,y,z,dist,dur){ isl3StopSpin(); const cam=ISL3.cam, ctl=ISL3.ctl, dir=cam.position.clone().sub(ctl.target).normalize();
   ISL3.fly={t0:performance.now(),dur:dur||1100,p0:cam.position.clone(),q0:ctl.target.clone(),q1:new THREE.Vector3(x,y,z),p1:new THREE.Vector3(x,y,z).addScaledVector(dir,dist)}; isl3Kick(); }
-function isl3FlyHome(dur){ ISL3.viewI=0; isl3StopSpin(); isl3FreeLook(false); const cam=ISL3.cam, box=ISL3.box, w=box.clientWidth, h=box.clientHeight, c=cam.clone(); isl3Fit(c,w/h); const d=c.position.distanceTo(CAM_T3);
+function isl3FlyHome(dur){ ISL3.viewI=0; isl3StopSpin(); isl3FreeLook(true); const cam=ISL3.cam, box=ISL3.box, w=box.clientWidth, h=box.clientHeight, c=cam.clone(); isl3Fit(c,w/h); const d=c.position.distanceTo(CAM_T3);
   ISL3.fly={t0:performance.now(),dur:dur||1000,p0:cam.position.clone(),q0:ISL3.ctl.target.clone(),q1:CAM_T3.clone(),p1:c.position.clone()}; isl3Kick(); }
 function isl3FlyStep(now){ const F=ISL3.fly, k=Math.min(1,(now-F.t0)/F.dur), e=ease3(k); ISL3.cam.position.lerpVectors(F.p0,F.p1,e); ISL3.ctl.target.lerpVectors(F.q0,F.q1,e); ISL3.cam.lookAt(ISL3.ctl.target); if(k>=1){ ISL3.fly=null; ISL3.ctl.update(); if(F.done) F.done(); } }
 // Pops (a new piece springs up), islands rising from the mist, confetti
