@@ -8155,14 +8155,32 @@ function isl3Build(o){ ISL3.shadowDirty=true;
   // the island friends: each stands on the shore of their island facing Home Island (in the mist too, waving you over)
   const shore=(id,da,k)=>{ const I=ISLES[id], t=Math.atan2(-I.z,-I.x)+da, rr=I.r*(k||.62); return [I.x+Math.cos(t)*rr,I.z+Math.sin(t)*rr]; };
   const hitBox=(g,h)=>{ const tb=new THREE.Mesh(new THREE.BoxGeometry(.9,h,.9),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); tb.visible=false; tb.position.y=TOP3+h/2; g.add(tb); };
+  // On a found island, a friend needs a prominent spot: in clear view from where the camera looks (wide and tall screens),
+  // with room around it, on the grass (not in the pond or on a landmark), and toward Home Island where that's possible.
+  // Worked out from the island as it's built now, and remembered until the island grows again.
+  const spot=(id,h,da,k)=>{ try{ return spot0(id,h,da,k); }catch(e){ console.warn('friend spot',e); return shore(id,da,k); } };
+  const spot0=(id,h,da,k)=>{ const I=ISLES[id], G=ISL3.isles[id]&&ISL3.isles[id].g, c=isleCount(id,o); if(!G||G.userData.misty||!c) return shore(id,da,k);
+    const key=id+':'+c+':'+(da||0); ISL3.spots=ISL3.spots||{}; if(ISL3.spots[key]) return ISL3.spots[key];
+    G.updateMatrixWorld(true); const solid=[], body=new Set(); G.children[0].traverse(m=>{ if(m.isMesh) body.add(m); });
+    (ISL3.world||G).traverse(m=>{ if(m.isMesh&&m.visible&&m.material&&!Array.isArray(m.material)&&!m.material.transparent&&!m.isInstancedMesh) solid.push(m); });   // anything in the world can be in the way
+    const rc=new THREE.Raycaster(), V=(x,y,z)=>new THREE.Vector3(x,y,z), dirs=[CAM_DIR3(1.5),CAM_DIR3(.6)], toward=Math.atan2(-I.z,-I.x)+(da||0), front=Math.atan2(dirs[0].z,dirs[0].x);
+    const hits=(p,d,far)=>{ rc.set(p,d); rc.far=far; return rc.intersectObjects(solid,false).filter(x=>!body.has(x.object)).length>0; };
+    let best=null;
+    for(const rk of [.6,.5,.7,.4,.78]) for(let a=0;a<20;a++){ const t=toward+(a%2?1:-1)*Math.ceil(a/2)*Math.PI/10, x=I.x+Math.cos(t)*I.r*rk, z=I.z+Math.sin(t)*I.r*rk; let bad=0;
+      dirs.forEach((d,j)=>{ const side=V(-d.z,0,d.x).normalize().multiplyScalar(h*.09); for(const f of [.2,.55,.9]) for(const q of [-3,-2,-1,0,1,2,3]) if(hits(V(x+side.x*q,TOP3+h*f,z+side.z*q),d,40)) bad+=j?1:2; });   // hidden from the camera (a post in front counts too)
+      for(let q=0;q<8;q++){ const d=V(Math.cos(q*Math.PI/4),0,Math.sin(q*Math.PI/4)); for(const f of [.25,.75]) if(hits(V(x,TOP3+h*f,z),d,.55)) bad+=1; }   // something right beside it
+      rc.set(V(x,TOP3+3,z),V(0,-1,0)); rc.far=6; const g0=rc.intersectObjects(solid,false)[0]; if(!g0||g0.point.y>TOP3+.15) bad+=4;   // standing on the ground (grass, sand or a path), not on a piece
+      const da2=Math.abs(Math.atan2(Math.sin(t-toward),Math.cos(t-toward))), df=Math.abs(Math.atan2(Math.sin(t-front),Math.cos(t-front)));
+      const sc=bad*10+da2*.6+df*.5+Math.abs(rk-.6)*2; if(!best||sc<best.s) best={s:sc,p:[x,z]}; }
+    return ISL3.spots[key]=best.p; };
   // Swoop, Blitz Bay's racer (the one Longtail now), on his island's shore; asleep there at night
   { const lv=longtailNow(), art=LONGTAIL_ART[lv], g=new THREE.Group(), l3=ch3Isle(LT3[lv],g,TOP3,0), sp=l3?null:sprite3(`/art/longtail-${art.id}.png`,2.1,art.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } ISL3.l3=l3; hitBox(g,1.9);
-    const night=isNight3(); ISL3.ltNight=night; const [bx,bz]=shore('blitzbay',-.75,.7);
+    const night=isNight3(); ISL3.ltNight=night; const [bx,bz]=spot('blitzbay',1.9,-.75,.7);
     if(l3){ if(night) l3.ctl.setMode(5); else if(!ISL3.ltLanded){ ISL3.ltLanded=1; l3.ctl.play('fly_in_land'); } }
     g.position.set(bx,0,bz); g.userData.longtail=1; ISL3.longtail=g; ISL3.longtailSprite=sp; add(g,'longtail:'+lv); }
   ISL3.cast={};
   for(const id of ['tiny','nora','pippa','lemmie']){ const C=CAST[id], g=new THREE.Group(), i3=ch3Isle(id,g,TOP3,0), sp=i3?null:sprite3(`/art/char-${id}.png`,C.h,C.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } hitBox(g,C.h);
-    const misty=!isleCount(C.isle,o), [x,z]=shore(C.isle,{tiny:.7,nora:.75,pippa:-.7,lemmie:.7}[id],misty?1.02:({nora:.5}[id]||.66));   // in front of the mist until the island is found
+    const misty=!isleCount(C.isle,o), [x,z]=misty?shore(C.isle,{tiny:.7,nora:.75,pippa:-.7,lemmie:.7}[id],1.02):spot(C.isle,C.h,0,.6);   // in front of the mist until the island is found
     g.position.set(x,0,z); g.userData.cast=id; if(sp) g.userData.bob=2; ISL3.cast[id]={g,sp,i3}; add(g,'char:'+id); }
   // lufu: a light glimpsed over Moonstone Isle until the mystery is solved, then at home beside your otter
   if(lufuHome(o)){ const C=CAST.lufu, g=new THREE.Group(), i3=ch3Isle('lufu',g,TOP3,0), sp=i3?null:sprite3('/art/char-lufu.png',C.h,C.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } hitBox(g,C.h);
