@@ -7275,9 +7275,15 @@ function islandModels3(o){
 function isl3Labels(){ const box=ISL3.box; if(!box) return; let L=box.querySelector('.is3-labels'); if(!L){ L=document.createElement('div'); L.className='is3-labels'; box.appendChild(L); }
   L.innerHTML=ISL3.labels.map((l,i)=>`<span class="is3-label${l.home?' is3-hl':''}${l.myst?' is3-myst':''}" data-i="${i}"><b>${escapeHTML(l.name)}</b><small>${escapeHTML(l.sub)}</small>${l.bar!=null?`<i class="is3-bar" role="progressbar" aria-label="Progress to the mystery" aria-valuenow="${Math.round(l.bar*100)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${Math.max(3,Math.round(l.bar*100))}%"></i></i>`:''}</span>`).join(''); }
 function isl3PlaceLabels(){ const box=ISL3.box; if(!box) return; const w=box.clientWidth, h=box.clientHeight, v=new THREE.Vector3();
-  box.querySelectorAll('.is3-label').forEach(el=>{ const l=ISL3.labels[+el.dataset.i]; v.set(l.x,l.y,l.z).project(ISL3.cam); const vis=v.z<1&&Math.abs(v.x)<1.1&&Math.abs(v.y)<1.1;
+  // labels never cover each other: Home Island and found islands first; a later one that would overlap moves above its island
+  const els=[...box.querySelectorAll('.is3-label')], rank=el=>{ const l=ISL3.labels[+el.dataset.i]; return l.home?0:l.myst?2:1; }, placed=[];
+  els.sort((a,b)=>rank(a)-rank(b)).forEach(el=>{ const l=ISL3.labels[+el.dataset.i]; v.set(l.x,l.y,l.z).project(ISL3.cam); const vis=v.z<1&&Math.abs(v.x)<1.1&&Math.abs(v.y)<1.1;
     el.style.display=vis?'':'none'; if(!vis) return;
-    const half=el.offsetWidth/2+4, px=Math.max(half,Math.min(w-half,(v.x+1)/2*w)), py=Math.max(4,Math.min(h-el.offsetHeight-4,(1-v.y)/2*h-el.offsetHeight*.3));
+    const ew=el.offsetWidth, eh=el.offsetHeight, half=ew/2+4, px=Math.max(half,Math.min(w-half,(v.x+1)/2*w)); let py=Math.max(4,Math.min(h-eh-4,(1-v.y)/2*h-eh*.3));
+    const hit=y=>placed.some(r=>px-ew/2<r[2]&&px+ew/2>r[0]&&y<r[3]+3&&y+eh+3>r[1]);
+    if(hit(py)){ const up=v.clone(); if(l.x2!=null) up.set(l.x2,l.y2,l.z2).project(ISL3.cam); const pu=Math.max(4,(1-up.y)/2*h-eh-6);   // above the island
+      if(!hit(pu)) py=pu; else { for(let k=1;k<6&&hit(py);k++) py=Math.min(h-eh-4,py+eh*.6); } }
+    placed.push([px-ew/2,py,px+ew/2,py+eh]);
     el.style.transform=`translate(${px.toFixed(1)}px,${py.toFixed(1)}px) translate(-50%,0)`; }); }
 // Size, loop
 // Tall screens (phones held upright) look at the world from the side, so its long east-west line runs top to bottom
@@ -8160,7 +8166,7 @@ function isl3Build(o){ ISL3.shadowDirty=true;
     else { g.traverse(x=>{ if(x.isMesh) x.material=m3('#C9D3DC'); }); g.add(mist3(I.r)); g.userData.misty=1; }
     W.add(g);
     const L=Math.hypot(I.x,I.z), ux=I.x/L, uz=I.z/L, done=c>=PIECES[id][PIECES[id].length-1].at;
-    ISL3.labels.push({id:'isle:'+id,...(!c&&I.mystery?{myst:1,bar:mysteryOpen()?1:mysteryProgress(o)}:{}),name:c>0?I.name:I.mystery?'Mystery Island':'???',sub:!c&&I.mystery?(mysteryOpen()?'Ready: build the rowboat':`${Math.round(mysteryProgress(o)*100)}% · ${fiveDone(o)} of ${FIVE_ISLES.length} islands complete`):c>0?(done?'Complete ★':`${Math.min(c,PIECES[id].length&&PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at}`):'In the mist',...(!c&&I.mystery?(()=>{ const d=CAM_DIR3(); return {x:I.x+d.x/Math.hypot(d.x,d.z)*I.r*1.25,z:I.z+d.z/Math.hypot(d.x,d.z)*I.r*1.25,y:-1.6}; })():{x:I.x+ux*I.r*.95,z:I.z+uz*I.r*1.05,y:-1.2})}); }
+    ISL3.labels.push({id:'isle:'+id,...(!c&&I.mystery?{myst:1,bar:mysteryOpen()?1:mysteryProgress(o)}:{}),name:c>0?I.name:I.mystery?'Mystery Island':'???',sub:!c&&I.mystery?(mysteryOpen()?'Ready: build the rowboat':`${Math.round(mysteryProgress(o)*100)}% · ${fiveDone(o)} of ${FIVE_ISLES.length} islands complete`):c>0?(done?'Complete ★':`${Math.min(c,PIECES[id].length&&PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at}`):'In the mist',...(!c&&I.mystery?(()=>{ const d=CAM_DIR3(); return {x:I.x+d.x/Math.hypot(d.x,d.z)*I.r*1.25,z:I.z+d.z/Math.hypot(d.x,d.z)*I.r*1.25,y:-1.6}; })():{x:I.x+ux*I.r*.95,z:I.z+uz*I.r*1.05,y:-1.2}),x2:I.x,y2:I.mystery&&!c?7.4:4.2,z2:I.z}); }
   ISL3.labels.push({id:'land:beach',name:'Home Island',sub:pupName(o)?`${pupName(o)}’s home`:'Your home',x:0,z:HOME_R*.55,y:.9,home:1});
   // sky things: a few clouds, stars for the night
   // the island friends: each stands on the shore of their island facing Home Island (in the mist too, waving you over)
