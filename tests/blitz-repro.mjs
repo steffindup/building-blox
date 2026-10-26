@@ -1,10 +1,10 @@
 // Play Blitz against a Longtail the way a player would (one brick at a time on the right spot, then Done) and
 // report whether the Longtail ever gets stuck on his turn.
-//   PLAYWRIGHT_CHROMIUM=/path/to/chrome node tests/blitz-repro.mjs [model=Heart] [races=3] [level=bzEasy]
+//   PLAYWRIGHT_CHROMIUM=/path/to/chrome node tests/blitz-repro.mjs [model=Trophy] [races=3] [level=bzEasy]
 import { chromium } from 'playwright';
 import { start } from './devserver.mjs';
 
-const [modelName = 'Heart', races = '3', level = 'bzEasy'] = process.argv.slice(2);
+const [modelName = 'Trophy', races = '3', level = 'bzEasy'] = process.argv.slice(2);
 const PORT = 8797, server = await start(PORT);
 const browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM || undefined, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 const results = [];

@@ -218,6 +218,17 @@ test('the Brain Trail Ghost keeps its face', { skip: skip() }, async () => {
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('every island has its own puzzles: no build repeats across the trails, Pippa, Blitz and the mystery', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0');
+  const r = await t.page.evaluate(() => { const L = window.bloppitLevels, seen = new Map(), dup = [];
+    for (const [isle, list] of [['Frog Trail', L.otter], ['Brain Trail', L.brain], ['Pippa', L.sea], ['Blitz', L.blitz], ['mystery', L.mystery()]])
+      for (const x of list) { const k = x.sample || x.art || x.name; if (seen.has(k)) dup.push(`${k} (${seen.get(k)} and ${isle})`); else seen.set(k, isle); }
+    return { dup, blitz: L.blitz.filter((x) => !x.boss).map((x) => L.count({ ...x })) }; });
+  assert.deepEqual(r.dup, []);
+  assert.ok(r.blitz.every((n) => n > 0 && n <= 30), `Blitz races stay at 30 bricks or fewer, got ${r.blitz}`);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('How to play: the menu opens the video, and the build page offers it for the first builds only', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0');
   assert.equal(await t.page.evaluate(() => !!document.querySelector('#howVid source[src="/video/how-to-play.mp4"]')), true);
