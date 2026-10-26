@@ -6956,7 +6956,7 @@ function islandInfo(id,o){
         rows:[['Level',`${st} of 3: ${ISLAND_STAGES[st].name}`],['Builds finished',String(n)],['Models standing',`${shown.list.length} of ${shown.cap} stands`],['Decorations',`${decorOut(o).length} of ${DECOR.length}`],['Next',nx?`The ${nx.name.toLowerCase()} at ${nx.at} builds`:'Everything is built']],
         bar:nx?bar(ISLAND_STAGES[st].at,nx.at):null, actions:n?[{label:'✨ Decorate',fn:()=>$('#isDecor').click()}]:[]};
       if(arg==='meadow') return {...place(3,'The meadow','Where the village grows'),title:'The meadow',hint:n>=10?'The village stands here':'The village grows here at 10 builds'};
-      if(arg==='sea') return {title:'The sea',hint:'Six islands around Home Island: tap one',rows:destinations().map(d=>[d.n?d.name:ISLES[d.id].mystery?'???':d.name,d.n?(d.st===3?`${d.milestone} ✓`:`${Math.min(d.n,d.total)} of ${d.total}${d.next?` · next: ${d.next}`:''}`):ISLES[d.id].mystery?mysteryHint():`In the mist · play ${ISLES[d.id].game} to find it`])};
+      if(arg==='sea') return {title:'The sea',hint:'Six islands around Home Island: tap one',rows:destinations().map(d=>[d.n?d.name:ISLES[d.id].mystery?'Mystery Island':d.name,d.n?(d.st===3?`${d.milestone} ✓`:`${Math.min(d.n,d.total)} of ${d.total}${d.next?` · next: ${d.next}`:''}`):ISLES[d.id].mystery?mysteryHint():`In the mist · play ${ISLES[d.id].game} to find it`])};
       if(arg==='rocks') return {title:'The rocks',hint:'Crabs like it here',rows:[['Good for','Crabs and rock pools (in the decorations)']],actions:n?[{label:'✨ Decorate',fn:()=>$('#isDecor').click()}]:[]};
       if(arg==='lighthouse') return {title:'The lighthouse',hint:'It lights the way home',rows:[['Stands on','A rock off Bloppitopia'],['Job','Lighting the way home for every boat']]};
       if(arg==='sky') return {title:'The sky',hint:(o.decor||[]).includes('kite')?'Your kite is flying':'Kites fly here',rows:[['Up here',(o.decor||[]).includes('kite')?'Your kite':'A kite, one day (5 Build Stars)']]};
@@ -6965,7 +6965,7 @@ function islandInfo(id,o){
       return {title:d.name,hint:gift?'A gift for a Weekly Bloppit':`Bought for ★ ${d.cost}`,rows:[...(arg!=='buoy'?[['Move it',ISL3.ok?'Hold it and drag it anywhere on the island':'Drag it anywhere on the sand']]:[]),['How you got it',gift?'A gift for finishing a Weekly Bloppit':`Bought with ${d.cost} Build Stars`],['Decorations',`${decorOut(o).length} of ${DECOR.length} on Bloppitopia`]],actions:[{label:'Put it away',fn:()=>decorPut(arg,false)}]}; }
     case 'dest': { const m={ferry:'sunrise',workshop:'brickworks',brain:'brainpeak',speedway:'blitzbay',harbour:'otterwood'}[arg]; if(m) return islandInfo('isle:'+m,o); break; }
     case 'isle': { const I=ISLES[arg]; if(!I) break; const c=isleCount(arg,o), P=PIECES[arg], total=P[P.length-1].at, built=P.filter(x=>c>=x.at), next=P.find(x=>c<x.at);
-      if(!c&&I.mystery) return {title:'A mystery in the mist',hint:mysteryHint(),bar:{pct:mysteryOpen()?100:Math.max(4,Math.round(100*mysteryProgress(o))),label:mysteryOpen()?'Ready to sail!':`${Math.round(100*mysteryProgress(o))}% of the way there`},rows:[['What’s there','Far out at sea, where it’s always night, a faint light glows in a swirl of mist. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Complete the other five islands (${fiveDone(o)} of ${FIVE_ISLES.length} so far)`]],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'▶ Play next',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
+      if(!c&&I.mystery) return {title:'Mystery Island',hint:mysteryHint(),bar:{pct:mysteryOpen()?100:Math.max(4,Math.round(100*mysteryProgress(o))),label:mysteryOpen()?'Ready to sail!':`${Math.round(100*mysteryProgress(o))}% of the way there`},rows:[['What’s there','Far out at sea, where it’s always night, a faint light glows in a swirl of mist. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Complete all five islands, every piece built (${fiveDone(o)} of ${FIVE_ISLES.length} so far)`],...(mysteryOpen()?[]:[['Still to finish',FIVE_ISLES.filter(id=>!isleComplete(id,o)).map(id=>isleCount(id,o)?`${ISLES[id].name} (${Math.min(isleCount(id,o),PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at})`:'an island still in the mist').join(', ')]])],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'▶ Play next',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
       if(!c&&arg==='sunrise'&&!seaWashed(0,o)) return {title:'A misty island',hint:`Pippa’s first puzzle washes ashore at ${seaPct(0)}%`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Get ${seaPct(0)}% of the way through Bloppitopia (you’re at ${progressPct(o)}%), then build Pippa’s first puzzle`]],actions:[{label:'▶ Play next',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
       if(!c) return {title:'A misty island',hint:`Play ${I.game} to discover it`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Finish your first ${I.unit}`]],actions:[{label:I.play,fn:I.go,primary:true}]};
       return {title:I.name,hint:`${I.game} · ${Math.min(c,total)} of ${total}`,rows:[['Grows with',I.grows],['Built',`${built.length} of ${P.length} pieces`],...(next?[['Next piece',`${next.name}: ${next.at-c} more ${I.unit}${next.at-c===1?'':'s'}`]]:[]),['Milestone',c>=total?`${I.milestone} ✓`:`${I.milestone} at ${total}`]],
@@ -7321,7 +7321,7 @@ function isl3FreeLook(on){ const c=ISL3.ctl; if(!c) return; c.enableRotate=on; c
 // The guided camera: a few set views to swipe between (all of Bloppitopia, Home Island, Bloppit and your otter, each island)
 function isl3Views(){ const v=[{id:'world',name:'Bloppitopia'},{id:'home',name:'Home Island',x:0,z:.4,R:HOME_R*1.08},{id:'friends',name:'Bloppit & '+(pupName(worldStore())||'your otter'),R:3.3}];
   for(const id of Object.keys(ISLES)){ const I=ISL3.isles&&ISL3.isles[id]; if(I){ const h=I.g?Math.min(7.5,Math.max(0,new THREE.Box3().setFromObject(I.g).max.y)):0;   // tall landmarks: look a little higher and stand back so their tops fit
-    v.push({id:'isle:'+id,name:isleCount(id,worldStore())>0?ISLES[id].name:'A misty island',x:I.x,z:I.z,y:h*.32,R:Math.max(I.r*1.2,Math.hypot(I.r,h*.62)*1.08)}); } }
+    v.push({id:'isle:'+id,name:isleCount(id,worldStore())>0?ISLES[id].name:ISLES[id].mystery?'Mystery Island':'A misty island',x:I.x,z:I.z,y:h*.32,R:Math.max(I.r*1.2,Math.hypot(I.r,h*.62)*1.08)}); } }
   const cam=ISL3.cam, vf=cam?THREE.MathUtils.degToRad(cam.fov)/2:.5, hf=cam?Math.atan(Math.tan(vf)*cam.aspect):.6; for(const x of v) if(x.R) x.d=Math.max(7,x.R/Math.tan(Math.min(vf,hf))*1.05); return v; }
 function isl3GoView(i,dur){ const V=isl3Views(); if(!V.length||!ISL3.ctl) return; i=((i%V.length)+V.length)%V.length; const v=V[i]; ISL3.viewI=i; islandTipHide(); ISL3.zoomAt=null; isl3FreeLook(v.id!=='world');
   if(v.id==='world'){ isl3FlyHome(dur||900); ISL3.fly.done=()=>{ ISL3.moved=false; }; ISL3.ctl.minDistance=Math.max(9,ISL3.fitD*.55); ISL3.ctl.maxDistance=ISL3.fitD+6; }
@@ -7564,7 +7564,7 @@ class Puppet3{
     const NX=16, NY=24; this.geo=new THREE.PlaneGeometry(1,1,NX,NY); const pos=this.geo.attributes.position, uv=this.geo.attributes.uv; this.uv=[];
     for(let i=0;i<pos.count;i++) this.uv.push([uv.getX(i),uv.getY(i)]);
     this.mat=new THREE.MeshBasicMaterial({transparent:true,alphaTest:.3,side:THREE.DoubleSide});
-    this.mesh=new THREE.Mesh(this.geo,this.mat); this.mesh.castShadow=true; this.mesh.frustumCulled=false;
+    this.mesh=new THREE.Mesh(this.geo,this.mat); this.mesh.castShadow=true; this.mesh.frustumCulled=false; this.mesh.renderOrder=3;   // drawn after mist and clouds, so a friend waiting in the mist is never swallowed by it
     this.mesh.customDepthMaterial=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,alphaTest:.5,side:THREE.DoubleSide});
     this.body=new THREE.Group(); this.body.add(this.mesh); this.root=new THREE.Group(); this.root.add(this.body); this.root.userData.puppet=1;
     // a soft pool of shadow under the feet
@@ -7813,7 +7813,7 @@ const islesComplete=o=>Object.keys(ISLES).filter(id=>isleComplete(id,o));
 const worldComplete=o=>islesComplete(o).length===ISLE_TOTAL;
 // How close the mystery is: each of the five islands counts for a fifth, by how much of it is built (0…1)
 const mysteryProgress=o=>{ o=o||worldStore(); return FIVE_ISLES.reduce((s,id)=>{ const P=PIECES[id]; return s+Math.min(1,isleCount(id,o)/P[P.length-1].at); },0)/FIVE_ISLES.length; };
-function mysteryHint(){ const n=FIVE_ISLES.length-fiveDone(); return mysteryOpen()?'Ready to explore: build the rowboat':`Complete ${n===1?'one more island':`${n} more islands`} to reach it`; }
+function mysteryHint(){ return mysteryOpen()?'Ready to explore: build the rowboat':`Opens when all five islands are complete (${fiveDone()} of ${FIVE_ISLES.length} so far)`; }
 // How far each island has grown
 function isleCount(id,o){
   o=o||worldStore(); const B=Object.entries(o.builds);
@@ -8111,7 +8111,7 @@ function islePieces(id,n){ return PIECES[id].filter(p=>n>=p.at); }
 function worldNextGoal(o){ const n=worldCount(o), out=[];
   const hp=HOME_PIECES.find(p=>!p.hide&&p.id!=='pick'&&p.at>n); if(hp){ const prev=Math.max(0,...HOME_PIECES.filter(p=>!p.hide&&p.at<=n).map(p=>p.at)); out.push({left:hp.at-n,text:`${hp.at-n} more build${hp.at-n===1?'':'s'} and Home Island gets ${/^(the|your) /i.test(hp.name)?'its '+hp.name.replace(/^(the|your) /i,''):hp.name}`,frac:(n-prev)/Math.max(1,hp.at-prev)}); }
   for(const id of Object.keys(ISLES)){ const I=ISLES[id], c=isleCount(id,o), p=PIECES[id].find(q=>q.at>c); if(!p) continue; const prev=Math.max(0,...PIECES[id].filter(q=>q.at<=c).map(q=>q.at)), k=p.at-c;
-    if(I.mystery&&!c){ if(mysteryOpen()) out.push({left:.5,text:'The mystery in the mist is ready: build the rowboat',frac:0}); continue; }
+    if(I.mystery&&!c){ if(mysteryOpen()) out.push({left:.5,text:'Mystery Island is ready: build the rowboat',frac:0}); continue; }
     out.push({left:k+(c?0:.5),text:c?`${k} more ${I.unit}${k===1?'':'s'}: ${p.name} on ${I.name}`:`Your first ${I.unit} finds ${I.name} in the mist`,frac:(c-prev)/Math.max(1,p.at-prev)}); }
   out.sort((a,b)=>a.left-b.left); return out[0]||null; }
 const islandsOpen=o=>Object.keys(ISLES).filter(id=>isleCount(id,o)>0);
@@ -8157,7 +8157,7 @@ function isl3Build(o){ ISL3.shadowDirty=true;
     else { g.traverse(x=>{ if(x.isMesh) x.material=m3('#C9D3DC'); }); g.add(mist3(I.r)); g.userData.misty=1; }
     W.add(g);
     const L=Math.hypot(I.x,I.z), ux=I.x/L, uz=I.z/L, done=c>=PIECES[id][PIECES[id].length-1].at;
-    ISL3.labels.push({id:'isle:'+id,...(!c&&I.mystery?{myst:1,bar:mysteryOpen()?1:mysteryProgress(o)}:{}),name:c>0?I.name:'???',sub:!c&&I.mystery?(mysteryOpen()?'Ready: build the rowboat':`${Math.round(mysteryProgress(o)*100)}% · finish ${FIVE_ISLES.length-fiveDone(o)===1?'one more island':`${FIVE_ISLES.length-fiveDone(o)} more islands`}`):c>0?(done?'Complete ★':`${Math.min(c,PIECES[id].length&&PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at}`):'In the mist',...(!c&&I.mystery?(()=>{ const d=CAM_DIR3(); return {x:I.x+d.x/Math.hypot(d.x,d.z)*I.r*1.25,z:I.z+d.z/Math.hypot(d.x,d.z)*I.r*1.25,y:-1.6}; })():{x:I.x+ux*I.r*.95,z:I.z+uz*I.r*1.05,y:-1.2})}); }
+    ISL3.labels.push({id:'isle:'+id,...(!c&&I.mystery?{myst:1,bar:mysteryOpen()?1:mysteryProgress(o)}:{}),name:c>0?I.name:I.mystery?'Mystery Island':'???',sub:!c&&I.mystery?(mysteryOpen()?'Ready: build the rowboat':`${Math.round(mysteryProgress(o)*100)}% · ${fiveDone(o)} of ${FIVE_ISLES.length} islands complete`):c>0?(done?'Complete ★':`${Math.min(c,PIECES[id].length&&PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at}`):'In the mist',...(!c&&I.mystery?(()=>{ const d=CAM_DIR3(); return {x:I.x+d.x/Math.hypot(d.x,d.z)*I.r*1.25,z:I.z+d.z/Math.hypot(d.x,d.z)*I.r*1.25,y:-1.6}; })():{x:I.x+ux*I.r*.95,z:I.z+uz*I.r*1.05,y:-1.2})}); }
   ISL3.labels.push({id:'land:beach',name:'Home Island',sub:pupName(o)?`${pupName(o)}’s home`:'Your home',x:0,z:HOME_R*.55,y:.9,home:1});
   // sky things: a few clouds, stars for the night
   // the island friends: each stands on the shore of their island facing Home Island (in the mist too, waving you over)
@@ -8204,7 +8204,7 @@ function isl3Build(o){ ISL3.shadowDirty=true;
   ISL3.anim=[]; ISL3.sc.traverse(x=>{ const u=x.userData; if(AK.some(k=>u[k]!=null&&u[k]!==false)) ISL3.anim.push(x); });
   isl3Labels(); isl3Tod(true); isl3Kick();
 }
-function mist3(r){ const g=new THREE.Group(); for(let i=0;i<9;i++){ const a=i*.7, c=mesh3(new THREE.IcosahedronGeometry(1.1+(i%3)*.4,1),new THREE.MeshStandardMaterial({color:0xF4F7FA,transparent:true,opacity:.82,roughness:1,flatShading:true}),Math.cos(a)*r*.6,.8+(i%4)*.5,Math.sin(a)*r*.6); c.castShadow=false; c.userData.mist=i; g.add(c); } return g; }
+function mist3(r){ const g=new THREE.Group(); for(let i=0;i<9;i++){ const a=i*.7, c=mesh3(new THREE.IcosahedronGeometry(1.1+(i%3)*.4,1),new THREE.MeshStandardMaterial({color:0xF4F7FA,transparent:true,opacity:.82,roughness:1,flatShading:true,depthWrite:false}),Math.cos(a)*r*.6,.8+(i%4)*.5,Math.sin(a)*r*.6); c.castShadow=false; c.userData.mist=i; g.add(c); } return g; }
 // Moonstone Isle before you reach it: far out at sea, where it's always night. Dark water, a slow swirl of lavender mist,
 // tall dark trees and a lighthouse showing through, and at its top a faint lavender light that pulses (lufu's, though
 // nobody knows that yet). Once the five islands are done the mist thins and the light grows brighter.
