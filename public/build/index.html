@@ -8186,7 +8186,7 @@ function isl3Build(o){ ISL3.shadowDirty=true;
     return ISL3.spots[key]=best.p; };
   // Swoop, Blitz Bay's racer (the one Longtail now), on his island's shore; asleep there at night
   { const lv=longtailNow(), art=LONGTAIL_ART[lv], g=new THREE.Group(), l3=ch3Isle(LT3[lv],g,TOP3,0), sp=l3?null:sprite3(`/art/longtail-${art.id}.png`,2.1,art.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } ISL3.l3=l3; hitBox(g,1.9);
-    const night=isNight3(); ISL3.ltNight=night; const [bx,bz]=isleCount('blitzbay',o)?spot('blitzbay',1.9,-.75,.7):shore('blitzbay',-.75,1.02);   // in front of the mist (like the friends) until the island is found
+    const night=isNight3(); ISL3.ltNight=night; const [bx,bz]=isleCount('blitzbay',o)?spot('blitzbay',1.9,-.75,.7):shore('blitzbay',-1.5,1.02);   // in front of the mist (like the friends) until the island is found
     if(l3){ if(night) l3.ctl.setMode(5); else if(!ISL3.ltLanded){ ISL3.ltLanded=1; l3.ctl.play('fly_in_land'); } }
     g.position.set(bx,0,bz); g.userData.longtail=1; ISL3.longtail=g; ISL3.longtailSprite=sp; add(g,'longtail:'+lv); }
   ISL3.cast={};
