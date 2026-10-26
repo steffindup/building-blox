@@ -7528,7 +7528,7 @@ const ch3PupId=o=>'pup'+(o&&o.log?pupStage(o):0);
 const sm3=(a,b,v)=>{ const t=Math.min(1,Math.max(0,(v-a)/(b-a))); return t*t*(3-2*t); };
 const hop3=(k,a,b,h)=>{ const u=(k-a)/(b-a); return u>0&&u<1?h*4*u*(1-u):0; };
 const CLIP3={
-  happy_hop:{d:.8,f:k=>({sq:-.14*sm3(0,.12,k)*(1-sm3(.12,.18,k))+(k>.18&&k<.72?.1:0)-.18*Math.exp(-Math.max(0,k-.72)*30)*(k>.72),hop:hop3(k,.18,.72,.32),bob:k>.18&&k<.72?5:0})},
+  happy_hop:{d:.8,f:k=>({sq:-.14*sm3(0,.12,k)*(1-sm3(.12,.18,k))+(k>.18&&k<.72?.1:0)-.18*Math.exp(-Math.max(0,k-.72)*30)*(k>.72),hop:hop3(k,.18,.72,.22),bob:k>.18&&k<.72?5:0})},
   giggle_wiggle:{d:.8,art:1,f:k=>{ const e=Math.sin(k*Math.PI); return {lean:.09*e*Math.sin(k*Math.PI*6),tilt:-.14*e*Math.sin(k*Math.PI*6),sq:.03*e*Math.sin(k*Math.PI*12)}; }},
   surprised_jump:{d:.8,art:1,f:k=>({hop:hop3(k,.05,.5,.22),sq:(k<.05?-.08:k<.5?.14:-.12*Math.exp(-(k-.5)*12)),tilt:.06*Math.sin(k*Math.PI)})},
   wave:{d:1,art:1,f:k=>{ const e=Math.sin(k*Math.PI); return {lean:.07*e*Math.sin(k*Math.PI*4),tilt:.1*e,hop:hop3(k,.1,.4,.05),bob:3*e}; }},
@@ -9275,6 +9275,10 @@ document.querySelectorAll('#view-home [data-go]').forEach(b=>b.addEventListener(
 window.bloppitHome=()=>setTab('home');
 setTimeout(()=>{ try{ ch3Warm(); }catch(e){} },1200);
 new MutationObserver(()=>buddy3()).observe($('#buddy'),{attributes:true,attributeFilter:['class','hidden']});
+// for tests and review: a character as a picture, in a chosen clip and moment (who, frame 'full'|'bust', px, {ci, wear, clip, t})
+window.bloppitCharShot=async(id,frame,px,opt)=>{ opt=opt||{}; await ch3Get(id); const r=cv3R(), sc=new THREE.Scene(), cam=new THREE.PerspectiveCamera(24,1,.05,60), i=ch3Make(id); sc.add(i.root);
+  ch3Dress(i,{log:[]},{ci:opt.ci!=null?opt.ci:0,wear:opt.wear||{}}); i.ctl.update(.6); if(opt.clip){ i.ctl.play(opt.clip); i.ctl.update(0); i.ctl.update(opt.t||0); }
+  cv3Aim(cam,[id],frame||'full',1,-.25); r.setScissorTest(false); r.setSize(px||420,px||420,false); r.setViewport(0,0,px||420,px||420); r.clear(); r.render(sc,cam); const u=r.domElement.toDataURL('image/png'); i.ctl.dispose(); return u; };
 window.bloppitChars3d=()=>({on:ch3On(),loaded:Object.keys(CH3.gltf),island:{bloppit:!!ISL3.b3,pup:!!ISL3.p3,longtail:!!ISL3.l3,clips:[ISL3.b3,ISL3.p3,ISL3.l3].map(i=>i&&(i.ctl.current||i.ctl.activeBase)?(i.ctl.current||i.ctl.activeBase).getClip().name:null)},views:CV3.views.filter(v=>v.host.classList.contains('c3on')&&v.host.offsetParent).map(v=>v.host.id||v.host.className.split(' ')[0])});
 // On the website the logo opens the menu; on the menu itself it goes to bloppit.com's front page. (The app handles its own links above.)
 $('#brandLink').addEventListener('click',e=>{ if(APP||tab==='home') return; e.preventDefault(); setTab('home'); });
