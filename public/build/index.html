@@ -7446,7 +7446,7 @@ const lufuHome=o=>isleComplete('moonstone',o||worldStore());
    to his other drawings for reactions (cheering with his brick up, offering it, a giggly hug, an oops). They take the same
    calls the 3D models did (play('wave'), poke(), setMode()…), so the island, the build buddy, the cards and dialogs, the
    finish screens, the wardrobe and the arrival film all use them unchanged. ?chars3d=0 keeps the still drawings. */
-const CH3={V:'2',gltf:{},wait:{},size:{},tex:{},failed:false};
+const CH3={V:'2',gltf:{},wait:{},size:{},tex:{},bad:{},failed:false};
 const LT3={easy:'swoop',medium:'swoop',hard:'swoop'};
 function ch3GL(){ if(CH3.gl!=null) return CH3.gl; try{ const c=document.createElement('canvas'); CH3.gl=!!(window.WebGLRenderingContext&&(c.getContext('webgl')||c.getContext('experimental-webgl'))); }catch(e){ CH3.gl=false; } return CH3.gl; }
 function ch3On(){ return !CH3.failed&&typeof THREE!=='undefined'&&!!THREE.WebGLRenderer&&!/[?&]chars3d=0/.test(location.search)&&ch3GL(); }
@@ -7476,7 +7476,7 @@ function ch3Sheet(draw,w,h,lid,rig,k){ const S=512/h, W=pot(Math.ceil(w*S)), H=p
   const ox=(W-w*S)/2, oy=H-h*S; x.save(); x.translate(ox,oy); x.scale(S,S); draw(x); if(lid&&rig.eyes) ch3Lids(x,rig,lid,k||1); x.restore();
   return {cv,W,H,S,ox,oy}; }
 function ch3Measure(sh){ const {cv,W,H}=sh, d=cv.getContext('2d').getImageData(0,0,W,H).data; let top=H,bot=0,x0=W,x1=0; const red=(i)=>d[i]>150&&d[i+1]<80&&d[i+2]<80;
-  for(let y=0;y<H;y+=2) for(let x=0;x<W;x+=2){ const i=(y*W+x)*4; if(d[i+3]>140&&!red(i)){ if(y<top) top=y; if(y>bot) bot=y; } }
+  for(let y=0;y<H;y+=2) for(let x=0;x<W;x+=3){ const i=(y*W+x)*4; if(d[i+3]>140&&!red(i)){ if(y<top) top=y; if(y>bot) bot=y; } }
   const band=top+(bot-top)*.3; for(let y=top;y<band;y+=2) for(let x=0;x<W;x+=2){ const i=(y*W+x)*4; if(d[i+3]>140&&!red(i)){ if(x<x0) x0=x; if(x>x1) x1=x; } }
   return {top,bot,cx:(x0+x1)/2}; }
 // Eyelids: the upper lid comes down and the lower one up; shut, they meet just below the middle in a curved lash line
@@ -7494,8 +7494,16 @@ function ch3Art(key,draw,w,h,rig,k){ if(CH3.tex[key]) return CH3.tex[key];
   const sh=ch3Sheet(draw,w,h,0,rig,k), m=ch3Measure(sh), tex=new THREE.CanvasTexture(sh.cv); tex.encoding=THREE.sRGBEncoding; tex.anisotropy=4;
   const art={key,sh,m,tex,lids:{},draw,w,h,rig,k}; if(Object.keys(CH3.tex).length>60){ const old=Object.keys(CH3.tex)[0]; const a=CH3.tex[old]; a.tex.dispose(); for(const t of Object.values(a.lids)) t.dispose(); delete CH3.tex[old]; }
   return CH3.tex[key]=art; }
+// Half-shut and shut eyes: the finished drawing copied (fast), with lids painted over it
 function ch3LidTex(art,lid){ if(!art.rig.eyes) return art.tex; const q=lid>.75?1:.5; if(art.lids[q]) return art.lids[q];
-  const sh=ch3Sheet(art.draw,art.w,art.h,q,art.rig,art.k), t=new THREE.CanvasTexture(sh.cv); t.encoding=THREE.sRGBEncoding; t.anisotropy=4; return art.lids[q]=t; }
+  const {cv:src,W,H,S,ox,oy}=art.sh, cv=document.createElement('canvas'); cv.width=W; cv.height=H; const x=cv.getContext('2d'); x.drawImage(src,0,0);
+  x.save(); x.translate(ox,oy); x.scale(S,S); ch3Lids(x,art.rig,q,art.k); x.restore();
+  const t=new THREE.CanvasTexture(cv); t.encoding=THREE.sRGBEncoding; t.anisotropy=4; return art.lids[q]=t; }
+// Getting drawings ready ahead of time, a little at a time when the page is idle (so a first wave or blink never stalls a tap)
+function ch3Idle(fn){ (CH3.idleQ=CH3.idleQ||[]).push(fn); if(CH3.idleOn) return; CH3.idleOn=1;
+  const step=()=>{ const f=CH3.idleQ.shift(); if(!f){ CH3.idleOn=0; return; } try{ f(); }catch(e){} (window.requestIdleCallback?requestIdleCallback(step,{timeout:1500}):setTimeout(step,120)); };
+  (window.requestIdleCallback?requestIdleCallback(step,{timeout:1500}):setTimeout(step,120)); }
+const ch3PoseArt=(id,clip,P)=>ch3Art(id+':'+clip,x=>x.drawImage(P,0,0,P.naturalWidth,P.naturalHeight),P.naturalWidth,P.naturalHeight,{},1);
 // The pup's drawing: body, neck pieces, its brick (1, 2 or 3 studs by age) in its colour, paws, and the rest of its outfit
 function ch3PupDraw(ci,st,wear){ const B=CH3.pupArt; return x=>{ x.translate(PUP_CV.dx,PUP_CV.dy); x.drawImage(B.body,0,0); const o={wear};
   accCanvas(x,o,'under',st); const c=(PUP_COLORS[ci]||PUP_COLORS[0]).c, P=PUP_BRICK, n=st+1;
@@ -7511,13 +7519,14 @@ function ch3Get(id){ if(CH3.gltf[id]) return Promise.resolve(CH3.gltf[id]); cons
     if(R.kind==='pup'){ if(!CH3.pupArt){ const [body,paws]=await Promise.all([ch3Img('/art/pup-body.png?v=2'),ch3Img('/art/pup-paws.png')]); CH3.pupArt={body,paws}; }
       base={w:PUP_CV.w,h:PUP_CV.h,rig:PUP_RIG}; }
     else { const im=await ch3Img(R.art); const w=im.naturalWidth||im.width, h=im.naturalHeight||im.height; base={w,h,rig:R,im};
-      if(R.poses) base.poses={}; for(const [clip,src] of Object.entries(R.poses||{})) ch3Img(src).then(p=>{ base.poses[clip]=p; },()=>{}); }
+      if(R.poses) base.poses={}; for(const [clip,src] of Object.entries(R.poses||{})) ch3Img(src).then(p=>{ base.poses[clip]=p; ch3Idle(()=>ch3PoseArt(id,clip,p)); },()=>{}); }
     const ref=R.kind==='pup'?ch3Art(ch3PupKey(id,0,{}),ch3PupDraw(0,R.stage,{}),base.w,base.h,PUP_RIG,1):ch3Art(id,x=>x.drawImage(base.im,0,0,base.w,base.h),base.w,base.h,R,1);
     // body height on screen: the pup by its body alone (a hat never makes it taller); the others by the drawing
     const m=ref.m, bodyPx=R.kind==='pup'?300*ref.sh.S:(m.bot-m.top), aspect=(R.kind==='pup'?239*ref.sh.S:ref.sh.W)/bodyPx;
     const head=1-(R.kind==='pup'?PUP_RIG.neck:R.neck||.45)*.6;
     CH3.size[id]={h:R.h,w:Math.min(R.h*aspect,R.h*1.1),head:R.h*head};
-    return CH3.gltf[id]={id,R,base}; })().catch(e=>{ delete CH3.wait[id]; console.warn('character',id,e); throw e; })); }
+    ch3Idle(()=>ch3LidTex(ref,.5)); ch3Idle(()=>ch3LidTex(ref,1));
+    return CH3.gltf[id]={id,R,base}; })().catch(e=>{ delete CH3.wait[id]; CH3.bad[id]=1; console.warn('character',id,e); throw e; })); }
 const ch3PupKey=(id,ci,wear)=>`${id}|${ci}|${PUP_HEX}|${JSON.stringify(wear||{})}`;
 const ch3Ready=(...ids)=>ids.every(id=>!!CH3.gltf[id]);
 const ch3PupId=o=>'pup'+(o&&o.log?pupStage(o):0);
@@ -7569,7 +7578,7 @@ class Puppet3{
   artFor(clip){ const G=this.G, R=this.R;
     if(this.kind==='pup'){ const key=ch3PupKey(this.id,this.ci,this.wear); return ch3Art(key,ch3PupDraw(this.ci,R.stage,this.wear),G.base.w,G.base.h,PUP_RIG,1); }
     const P=clip&&G.base.poses&&G.base.poses[clip];
-    if(P) return ch3Art(this.id+':'+clip,x=>x.drawImage(P,0,0,P.naturalWidth,P.naturalHeight),P.naturalWidth,P.naturalHeight,{},1);
+    if(P) return ch3PoseArt(this.id,clip,P);
     return ch3Art(this.id,x=>x.drawImage(G.base.im,0,0,G.base.w,G.base.h),G.base.w,G.base.h,R,1); }
   setArt(clip){ const a=this.artFor(clip); if(a===this.art) return; this.art=a; this.useTex(a.tex); this.lidQ=0;
     // the pup is measured by its own body (300 of the drawing's 346 rows), so a hat never shrinks it
@@ -7670,7 +7679,7 @@ function cv3Snap(id,o,frame,px,opt){ if(!ch3On()||!ch3Ready(id)) return null; op
     if(CV3.snaps.size>40) CV3.snaps.delete(CV3.snaps.keys().next().value); CV3.snaps.set(key,url); return url; }catch(e){ return null; } }
 // Load the characters in the background soon after the page opens (most visits meet Bloppit and the pup)
 function ch3Warm(){ if(!ch3On()) return; const o=worldStore(), lv=typeof longtailNow==='function'?longtailNow():'easy';
-  ch3Get('bloppit').then(()=>{ ui3Mount(); return ch3Get(ch3PupId(o)); }).then(()=>{ ch3Refresh(); return ch3Get(LT3[lv]||'swoop'); }).then(()=>ch3Refresh(),()=>{}); }
+  ch3Get('bloppit').then(()=>{ ui3Mount(); return ch3Get(ch3PupId(o)); }).then(()=>{ ch3Refresh(); return Promise.all([LT3[lv]||'swoop','tiny','nora','pippa','lemmie',...(lufuHome(o)?['lufu']:[])].map(id=>ch3Get(id).catch(()=>null))); }).then(()=>ch3Refresh(),()=>{}); }
 // A picture (an <img>) that becomes a 3D character: the picture moves into a holder that the 3D view draws over
 function cv3Img(img,opts){ if(!img||!ch3On()) return null; let host=img.parentNode;
   if(!host.classList.contains('c3-wrap')){ host=document.createElement('span'); host.className=img.className+' c3-wrap'; img.className=''; img.parentNode.insertBefore(host,img); host.appendChild(img); }
@@ -7702,6 +7711,8 @@ function ch3Isle(id,g,y,hh){ if(!ch3On()||!ch3Ready(id)) return null; const i=ch
 function isl3CharsLive(){ if(!ISL3.on||!ISL3.world) return; if(ISL3.revealing||ISL3.arrive||ISL3.fly||ISL3.dragging){ clearTimeout(ISL3.c3T); ISL3.c3T=setTimeout(isl3CharsLive,1200); return; }
   const o=worldStore(), lt=LT3[longtailNow()], want=(have,id)=>!have&&ch3Ready(id);
   const fr=Object.entries(ISL3.cast||{}).some(([id,K])=>!K.i3&&ch3Ready(id));
+  // the whole cast at once (one rebuild, not one per character as each drawing arrives)
+  const ids=['bloppit',...(ISL3.pupG?[ch3PupId(o)]:[]),lt,...Object.keys(ISL3.cast||{})]; if(!ids.every(id=>ch3Ready(id)||CH3.bad[id])) return;
   if(want(ISL3.b3,'bloppit')||(ISL3.pupG&&want(ISL3.p3,ch3PupId(o)))||want(ISL3.l3,lt)||fr){ isl3Build(o); isl3Kick(); } }
 function isl3CharsLoad(o){ if(!ch3On()) return; Promise.all(['bloppit',ch3PupId(o),LT3[longtailNow()],'tiny','nora','pippa','lemmie',...(lufuHome(o)?['lufu']:[])].map(id=>ch3Get(id).catch(()=>null))).then(()=>isl3CharsLive()); }
 const REACT_LINES={
