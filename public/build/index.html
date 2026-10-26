@@ -7468,9 +7468,9 @@ const RIG={
   bloppit:{kind:'otter',h:2.36,art:'/art/bloppit-front.svg',neck:.43,belly:.72,brick:.6,eyes:[[264,310,41,46],[462,314,42,49]],lid:['#B07B4A','#93603A'],lash:'#3B2314',
     poses:{cheer:'/art/happy-snap.svg',wave:'/art/happy-snap.svg',show_brick:'/art/offering.svg',giggle_wiggle:'/art/hugging.svg',surprised_jump:'/art/oops.svg',look_at_you:'/art/bloppit-3q.svg'}},
   pup0:{kind:'pup',h:1.08,stage:0},pup1:{kind:'pup',h:1.32,stage:1},pup2:{kind:'pup',h:1.56,stage:2},
-  swoop:{kind:'bird',h:1.84,art:'/art/swoop.svg',neck:.4,belly:.7,brick:.62,eyes:[[252,284,33,30],[363,300,27,32]],lid:['#FFFFFF','#E3E6EA'],lash:'#2A2E33'},
-  scraps:{kind:'bird',h:1.5,art:'/art/scraps.svg',neck:.4,belly:.7,brick:.45},
-  squint:{kind:'bird',h:1.98,art:'/art/squint.svg',neck:.4,belly:.7,brick:.5},
+  swoop:{kind:'bird',h:1.84,fill:'#F3F4F2',art:'/art/swoop.svg',neck:.4,belly:.7,brick:.62,eyes:[[252,284,33,30],[363,300,27,32]],lid:['#FFFFFF','#E3E6EA'],lash:'#2A2E33'},
+  scraps:{kind:'bird',h:1.5,fill:'#F3F4F2',art:'/art/scraps.svg',neck:.4,belly:.7,brick:.45},
+  squint:{kind:'bird',h:1.98,fill:'#F3F4F2',art:'/art/squint.svg',neck:.4,belly:.7,brick:.5},
   tiny:{kind:'friend',h:1.5/.85,art:'/art/char-tiny.png',neck:.45,belly:.72,brick:.58,eyes:[[68,54,38,39],[217,54,38,39]],lid:['#B7CC55','#86B240'],lash:'#2A1D06'},
   nora:{kind:'friend',h:2.3/.85,art:'/art/char-nora.png',neck:.33,belly:.72,brick:.6,eyes:[[37,69,19,20],[116,72,18,20]],lid:['#F2EEE6','#D9D4CB'],lash:'#2A2420'},
   pippa:{kind:'friend',h:1.8/.85,art:'/art/char-pippa.png',neck:.5,belly:.78,brick:.62,eyes:[[65,113,19,23],[164,111,19,23]],lid:['#FBF6EC','#ECE4D4'],lash:'#2A2420'},
@@ -7484,8 +7484,25 @@ const pot=n=>{ let p=64; while(p<n) p*=2; return p; };
 // and the middle of the head (so a raised brick or a tail never pulls the character off-centre)
 function ch3Sheet(draw,w,h,lid,rig,k){ const S=512/h, W=pot(Math.ceil(w*S)), H=pot(Math.ceil(h*S));
   const cv=document.createElement('canvas'); cv.width=W; cv.height=H; const x=cv.getContext('2d'); x.imageSmoothingQuality='high';
-  const ox=(W-w*S)/2, oy=H-h*S; x.save(); x.translate(ox,oy); x.scale(S,S); draw(x); if(lid&&rig.eyes) ch3Lids(x,rig,lid,k||1); x.restore();
+  const ox=(W-w*S)/2, oy=H-h*S; x.save(); x.translate(ox,oy); x.scale(S,S); draw(x); x.restore(); if(rig.fill) ch3FillHoles(x,W,H,rig.fill,Math.max(3,Math.round(7*H/512)));
+  x.save(); x.translate(ox,oy); x.scale(S,S); if(lid&&rig.eyes) ch3Lids(x,rig,lid,k||1); x.restore();
   return {cv,W,H,S,ox,oy}; }
+// Some drawings (the Longtails) leave their white feathers as holes: fill every hole inside the outline with feather-white,
+// leaving the outside clear. Gaps in the outline up to n px are bridged (the outline is grown, the outside found from the
+// edges, then shrunk back), so a hole that just touches the edge still counts as inside.
+function ch3FillHoles(x,W,H,col,n){ const img=x.getImageData(0,0,W,H), d=img.data, N=W*H, m=new Uint8Array(N);
+  for(let i=0;i<N;i++) m[i]=d[i*4+3]>90?1:0;
+  const grow=(src,r)=>{ const a=new Uint8Array(N), b=new Uint8Array(N);   // square dilation by r: rows, then columns
+    for(let y=0;y<H;y++){ const o=y*W; let last=-1e9; for(let xx=0;xx<W;xx++){ if(src[o+xx]) last=xx; if(xx-last<=r) a[o+xx]=1; } last=1e9; for(let xx=W-1;xx>=0;xx--){ if(src[o+xx]) last=xx; if(last-xx<=r) a[o+xx]=1; } }
+    for(let xx=0;xx<W;xx++){ let last=-1e9; for(let y=0;y<H;y++){ if(a[y*W+xx]) last=y; if(y-last<=r) b[y*W+xx]=1; } last=1e9; for(let y=H-1;y>=0;y--){ if(a[y*W+xx]) last=y; if(last-y<=r) b[y*W+xx]=1; } }
+    return b; };
+  const solid=grow(m,n), out=new Uint8Array(N), q=new Int32Array(N); let h=0,t=0;
+  const push=i=>{ if(!out[i]&&!solid[i]){ out[i]=1; q[t++]=i; } };
+  for(let xx=0;xx<W;xx++){ push(xx); push((H-1)*W+xx); } for(let y=0;y<H;y++){ push(y*W); push(y*W+W-1); }
+  while(h<t){ const i=q[h++], xx=i%W; if(xx>0) push(i-1); if(xx<W-1) push(i+1); if(i>=W) push(i-W); if(i<N-W) push(i+W); }
+  const outside=grow(out,n+1), c=new THREE.Color(col), R=c.r*255, G=c.g*255, B=c.b*255;
+  for(let i=0;i<N;i++){ if(outside[i]) continue; const k=i*4, a=d[k+3]/255; if(a>=1) continue; d[k]=d[k]*a+R*(1-a); d[k+1]=d[k+1]*a+G*(1-a); d[k+2]=d[k+2]*a+B*(1-a); d[k+3]=255; }
+  x.putImageData(img,0,0); }
 function ch3Measure(sh){ const {cv,W,H}=sh, d=cv.getContext('2d').getImageData(0,0,W,H).data; let top=H,bot=0,x0=W,x1=0; const red=(i)=>d[i]>150&&d[i+1]<80&&d[i+2]<80;
   for(let y=0;y<H;y+=2) for(let x=0;x<W;x+=3){ const i=(y*W+x)*4; if(d[i+3]>140&&!red(i)){ if(y<top) top=y; if(y>bot) bot=y; } }
   const band=top+(bot-top)*.3; for(let y=top;y<band;y+=2) for(let x=0;x<W;x+=2){ const i=(y*W+x)*4; if(d[i+3]>140&&!red(i)){ if(x<x0) x0=x; if(x>x1) x1=x; } }
