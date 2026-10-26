@@ -906,7 +906,9 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 .is3-label{position:absolute;left:0;top:0;display:grid;justify-items:center;padding:2px 9px 3px;border-radius:12px;background:rgba(20,32,44,.82);color:#fff;white-space:nowrap;line-height:1.1;will-change:transform}
 .is3-label b{font-family:var(--f-display);font-weight:400;font-size:12px}.is3-label small{font-size:9.5px;font-weight:700;opacity:.85}
 @media (min-width:700px){.is3-label b{font-size:15px}.is3-label small{font-size:11px}}
-.is3-label.is3-hl{background:#008F9B}.is3-label.is3-hl b{font-size:18px}
+.is3-label.is3-hl{background:#008F9B}
+.is3-label.is3-myst{background:rgba(44,30,86,.9);box-shadow:0 0 14px rgba(172,120,186,.55)}.is3-label.is3-myst b{letter-spacing:.12em}
+.is3-bar{display:block;width:100%;min-width:118px;height:6px;margin:4px 0 2px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden}.is3-bar>i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#AC78BA,#E9DFFF)}.is3-label.is3-hl b{font-size:18px}
 .is3-help{position:absolute;right:10px;bottom:10px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.85);font-size:12px;font-weight:800;color:#14202C;pointer-events:none}
 .is-a11y{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .is-a11y:focus-within{position:static;width:auto;height:auto;clip:auto;white-space:normal;display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px}
@@ -6963,7 +6965,7 @@ function islandInfo(id,o){
       return {title:d.name,hint:gift?'A gift for a Weekly Bloppit':`Bought for ★ ${d.cost}`,rows:[...(arg!=='buoy'?[['Move it',ISL3.ok?'Hold it and drag it anywhere on the island':'Drag it anywhere on the sand']]:[]),['How you got it',gift?'A gift for finishing a Weekly Bloppit':`Bought with ${d.cost} Build Stars`],['Decorations',`${decorOut(o).length} of ${DECOR.length} on Bloppitopia`]],actions:[{label:'Put it away',fn:()=>decorPut(arg,false)}]}; }
     case 'dest': { const m={ferry:'sunrise',workshop:'brickworks',brain:'brainpeak',speedway:'blitzbay',harbour:'otterwood'}[arg]; if(m) return islandInfo('isle:'+m,o); break; }
     case 'isle': { const I=ISLES[arg]; if(!I) break; const c=isleCount(arg,o), P=PIECES[arg], total=P[P.length-1].at, built=P.filter(x=>c>=x.at), next=P.find(x=>c<x.at);
-      if(!c&&I.mystery) return {title:'A mystery in the mist',hint:mysteryHint(),rows:[['What’s there','A faint light glows out there at night. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Complete the other five islands (${fiveDone(o)} of ${FIVE_ISLES.length} so far)`]],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'▶ Play next',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
+      if(!c&&I.mystery) return {title:'A mystery in the mist',hint:mysteryHint(),bar:{pct:mysteryOpen()?100:Math.max(4,Math.round(100*mysteryProgress(o))),label:mysteryOpen()?'Ready to sail!':`${Math.round(100*mysteryProgress(o))}% of the way there`},rows:[['What’s there','Far out at sea, where it’s always night, a faint light glows in a swirl of mist. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Complete the other five islands (${fiveDone(o)} of ${FIVE_ISLES.length} so far)`]],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'▶ Play next',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
       if(!c&&arg==='sunrise'&&!seaWashed(0,o)) return {title:'A misty island',hint:`Pippa’s first puzzle washes ashore at ${seaPct(0)}%`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Get ${seaPct(0)}% of the way through Bloppitopia (you’re at ${progressPct(o)}%), then build Pippa’s first puzzle`]],actions:[{label:'▶ Play next',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
       if(!c) return {title:'A misty island',hint:`Play ${I.game} to discover it`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Finish your first ${I.unit}`]],actions:[{label:I.play,fn:I.go,primary:true}]};
       return {title:I.name,hint:`${I.game} · ${Math.min(c,total)} of ${total}`,rows:[['Grows with',I.grows],['Built',`${built.length} of ${P.length} pieces`],...(next?[['Next piece',`${next.name}: ${next.at-c} more ${I.unit}${next.at-c===1?'':'s'}`]]:[]),['Milestone',c>=total?`${I.milestone} ✓`:`${I.milestone} at ${total}`]],
@@ -6974,7 +6976,7 @@ function islandInfo(id,o){
         garden:['The garden','More flowers bloom with every build'],shop:['Bloppit’s workshop','Opened at 5 builds'],museum:['The museum','Your three best builds are on show'],pick:[o.pick==='lighthouse'?'Your lighthouse':'Your treehouse','You chose it at 10 builds'],harbour:['The harbour',friendCount(o)?`${friendCount(o)} build${friendCount(o)===1?'':'s'} with friends: a boat for every few`:'Build with a friend and a boat ties up here']}[arg]||[arg,''];
       const nx=HOME_PIECES.find(x=>x.at>n&&!x.hide); return {title:H[0],hint:'Home Island',rows:[['Story',H[1]],...(nx?[['Next on Home Island',`${nx.name} at ${nx.at} builds (${nx.at-n} more)`]]:[])],actions:arg==='harbour'?[{label:'Build with a friend',fn:()=>setTab('mp','hub')}]:arg==='home0'?[{label:'🔨 Build our first home',fn:()=>welcomeStart(),primary:true}]:[]}; }
     case 'stand': return {title:'An empty stand',hint:'Your next build stands here',rows:[['Fills with','Your next finished build'],['Stands',`${shown.list.length} of ${shown.cap} in use`],['Tip','Drag any model here, or anywhere on the sand']]};
-    case 'bloppit': return {title:'Bloppit',hint:ISL3.ok?(ISL3.dozing?'Having a little nap':{garden:'Tending the garden',fish:'Fishing off the jetty',read:'Reading a good book',fire:'Warm by the campfire, looking at the stars'}[routine3(isl3Hour())]):'Your build buddy',icon:'<img src="/art/head-bloppit.png" alt="" width="256" height="256">',story:STORIES.bloppit.story,rows:[['Who','Your build buddy. '+STORIES.bloppit.who+'.'],['Loves',STORIES.bloppit.loves],['Secret',STORIES.bloppit.secret],['Lives',ISL3.ok?'On Home Island, with your otter':st>=2?'At the workshop door':'On the beach'],['Built together',`${n} build${n===1?'':'s'}`]],
+    case 'bloppit': return {title:'Bloppit',hint:ISL3.ok&&ISL3.dozing?'Having a little nap':'Your build buddy',icon:'<img src="/art/head-bloppit.png" alt="" width="256" height="256">',story:STORIES.bloppit.story,rows:[['Who','Your build buddy. '+STORIES.bloppit.who+'.'],['Loves',STORIES.bloppit.loves],['Secret',STORIES.bloppit.secret],['Lives',ISL3.ok?'On Home Island, with your otter':st>=2?'At the workshop door':'On the beach'],['Built together',`${n} build${n===1?'':'s'}`]],
       actions:[{label:'Build something',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
     case 'longtail': { const L=CPU_LEVELS[arg], S=STORIES[arg]; if(!L||!S) break; const wins=Object.values(o.builds).filter(b=>b.k==='blitz').length;
       return {title:'Swoop the Longtail',hint:ISL3.ltNight?'Asleep on Blitz Bay':'Blitz Bay’s racer · “Ready, set, snap!”',icon:`<img src="${cv3Snap(LT3[arg],null,'bust',192)||`/art/head-${LONGTAIL_ART[arg].id}.png`}" alt="" width="256" height="256">`,story:S.story,
@@ -7268,7 +7270,7 @@ function islandModels3(o){
 }
 // Labels over the islands (HTML, so they stay sharp), placed every frame
 function isl3Labels(){ const box=ISL3.box; if(!box) return; let L=box.querySelector('.is3-labels'); if(!L){ L=document.createElement('div'); L.className='is3-labels'; box.appendChild(L); }
-  L.innerHTML=ISL3.labels.map((l,i)=>`<span class="is3-label${l.home?' is3-hl':''}" data-i="${i}"><b>${escapeHTML(l.name)}</b><small>${escapeHTML(l.sub)}</small></span>`).join(''); }
+  L.innerHTML=ISL3.labels.map((l,i)=>`<span class="is3-label${l.home?' is3-hl':''}${l.myst?' is3-myst':''}" data-i="${i}"><b>${escapeHTML(l.name)}</b><small>${escapeHTML(l.sub)}</small>${l.bar!=null?`<i class="is3-bar" role="progressbar" aria-label="Progress to the mystery" aria-valuenow="${Math.round(l.bar*100)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${Math.max(3,Math.round(l.bar*100))}%"></i></i>`:''}</span>`).join(''); }
 function isl3PlaceLabels(){ const box=ISL3.box; if(!box) return; const w=box.clientWidth, h=box.clientHeight, v=new THREE.Vector3();
   box.querySelectorAll('.is3-label').forEach(el=>{ const l=ISL3.labels[+el.dataset.i]; v.set(l.x,l.y,l.z).project(ISL3.cam); const vis=v.z<1&&Math.abs(v.x)<1.1&&Math.abs(v.y)<1.1;
     el.style.display=vis?'':'none'; if(!vis) return;
@@ -7300,7 +7302,7 @@ function isl3ZoomFollow(){ const Z=ISL3.zoomAt, ctl=ISL3.ctl, cam=ISL3.cam; if(!
       else sh.copy(CAM_T3).sub(ctl.target).setY(0).multiplyScalar(Math.min(1,(d1-Z.d)/Math.max(.01,ctl.maxDistance-Z.d)));
       ctl.target.add(sh); cam.position.add(sh); Z.d=d1; } }
   // never wander off the edge of the world
-  const t=ctl.target, R=21, r=Math.hypot(t.x,t.z); if(r>R){ const k=R/r, dx=t.x*k-t.x, dz=t.z*k-t.z; t.x+=dx; t.z+=dz; cam.position.x+=dx; cam.position.z+=dz; }
+  const t=ctl.target, R=Math.max(21,Math.hypot(ISLES.moonstone.x,ISLES.moonstone.z)+1), r=Math.hypot(t.x,t.z);   // out to the mystery, far at sea if(r>R){ const k=R/r, dx=t.x*k-t.x, dz=t.z*k-t.z; t.x+=dx; t.z+=dz; cam.position.x+=dx; cam.position.z+=dz; }
   if(t.y!==0){ cam.position.y-=t.y; t.y=0; }
   isl3WholeBtn(); }
 // Fly to a thing that was tapped: an island, the home, Bloppit or the otter
@@ -7787,6 +7789,7 @@ function mysteryStart(i){
   loadSample(k); clearTimeout(timer); rebuild(); setTab('build'); setStatus(`Chapter ${i+1} of ${MYSTERY.length}, with ${m.who}: ${m.story}`);
 }
 function mysteryGo(){ if(!mysteryOpen()){ setTab('daily'); return; } const i=mysteryNext(); if(i>=0) mysteryStart(i); else setTab('island'); }
+const isl3TallNow=()=>{ const b=typeof ISL3!=='undefined'&&ISL3.box; return !!(b&&b.clientWidth&&CAM_TALL(b.clientWidth/(b.clientHeight||b.clientWidth))); };
 const ISLES={
   otterwood:{name:'Frog Forest',game:'Frog Trail',unit:'Frog Trail level',x:-14.6,z:3.2,r:4.5,seed:2.2,ground:['#5DBB46','#3F8F33'],
     milestone:'The Lily-pad Palace',grows:'Every Frog Trail level you finish (the last is the boss)',play:'Play Frog Trail',go:()=>homeGo('otter')},
@@ -7799,7 +7802,8 @@ const ISLES={
   brickworks:{name:'Brickworks Island',game:'Creative builds',unit:'creation',x:12.4,z:9.6,r:4.3,seed:6.6,ground:['#7CC45E','#4E9E3A'],
     milestone:'The Grand Creation Gallery',grows:'Every build from your own photo or drawing, from the library, and every Weekly Bloppit',play:'Make your own',
     go:()=>{ pickPuzzle('quick','top'); requestAnimationFrame(()=>{ const c=$('#drawCard'); if(c) c.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}); }); }},
-  moonstone:{name:'Moonstone Isle',game:'The mystery',unit:'chapter',x:-18,z:-8.5,r:4.0,seed:7.7,ground:['#6FB7A4','#4E8F7E'],sand:true,mystery:true,
+  moonstone:{name:'Moonstone Isle',game:'The mystery',unit:'chapter',get x(){ return isl3TallNow()?-20:22.5; },get z(){ return isl3TallNow()?-10.5:-23; },r:4.0,   // far out at sea, in the top corner of the view (upright phones see the world from the side)
+   seed:7.7,ground:['#6FB7A4','#4E8F7E'],sand:true,mystery:true,
     milestone:'The moon crystal',grows:'Every chapter of the mystery you build',play:'Explore Moonstone Isle',go:()=>mysteryGo()},
 };
 const ISLE_TOTAL=Object.keys(ISLES).length;
@@ -7807,6 +7811,8 @@ const ISLE_TOTAL=Object.keys(ISLES).length;
 const isleComplete=(id,o)=>{ const P=PIECES[id]; return isleCount(id,o)>=P[P.length-1].at; };
 const islesComplete=o=>Object.keys(ISLES).filter(id=>isleComplete(id,o));
 const worldComplete=o=>islesComplete(o).length===ISLE_TOTAL;
+// How close the mystery is: each of the five islands counts for a fifth, by how much of it is built (0…1)
+const mysteryProgress=o=>{ o=o||worldStore(); return FIVE_ISLES.reduce((s,id)=>{ const P=PIECES[id]; return s+Math.min(1,isleCount(id,o)/P[P.length-1].at); },0)/FIVE_ISLES.length; };
 function mysteryHint(){ const n=FIVE_ISLES.length-fiveDone(); return mysteryOpen()?'Ready to explore: build the rowboat':`Complete ${n===1?'one more island':`${n} more islands`} to reach it`; }
 // How far each island has grown
 function isleCount(id,o){
@@ -8144,12 +8150,14 @@ function isl3Build(o){ ISL3.shadowDirty=true;
     g.add(islandBody3(P,0,0,I.seed,!!I.sand)); g.position.set(I.x,0,I.z); tag3(g,'isle:'+id); ISL3.isles[id]={x:I.x,z:I.z,r:I.r,g};
     if(c>0){ isleBase(id,g,c); const ctx={creations:Object.entries(o.builds).filter(([k])=>k.startsWith('p:')).sort((a,b)=>(b[1].t||0)-(a[1].t||0)).map(([k])=>k)};
       PIECES[id].forEach((p,i)=>{ if(c<p.at) return; const pg=new THREE.Group(); p.make(pg,c,ctx); tag3(pg,'piece:'+id+':'+i); pg.userData.piece=id+':'+i; g.add(pg); ISL3.pieces[id+':'+i]=pg; });
-      const a=edge3(HOMEP,0,0,I.x,I.z), b=edge3(blob3(I.x,I.z,I.r,I.seed,26),I.x,I.z,0,0); W.add(tag3(bridge3(a,b,id==='brainpeak'),'isle:'+id));
+      if(I.mystery){ const b=boat3('#8B5A2B',.9), t=Math.atan2(-I.z,-I.x); b.position.set(Math.cos(t)*I.r*1.12,0,Math.sin(t)*I.r*1.12); b.rotation.y=-t; b.userData.bob=1; g.add(b); }   // reached by rowboat, not a bridge
+      else { const a=edge3(HOMEP,0,0,I.x,I.z), b=edge3(blob3(I.x,I.z,I.r,I.seed,26),I.x,I.z,0,0); W.add(tag3(bridge3(a,b,id==='brainpeak'),'isle:'+id)); }
       const next=PIECES[id].find(p=>c<p.at); if(next&&next.at-c<=1) g.add(sparkle3(0,2.6,0)); if(!next) g.add(sparkle3(0,6.2,0));
-    } else { g.traverse(x=>{ if(x.isMesh) x.material=m3('#C9D3DC'); }); g.add(mist3(I.r)); g.userData.misty=1; }
+    } else if(I.mystery){ g.traverse(x=>{ if(x.isMesh) x.material=m3('#3B4466'); }); g.add(mysteryVeil3(I.r,mysteryOpen())); g.userData.misty=1; }
+    else { g.traverse(x=>{ if(x.isMesh) x.material=m3('#C9D3DC'); }); g.add(mist3(I.r)); g.userData.misty=1; }
     W.add(g);
     const L=Math.hypot(I.x,I.z), ux=I.x/L, uz=I.z/L, done=c>=PIECES[id][PIECES[id].length-1].at;
-    ISL3.labels.push({id:'isle:'+id,name:c>0?I.name:'???',sub:!c&&I.mystery?mysteryHint():c>0?(done?'Complete ★':`${Math.min(c,PIECES[id].length&&PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at}`):'In the mist',x:I.x+ux*I.r*.95,z:I.z+uz*I.r*1.05,y:-1.2}); }
+    ISL3.labels.push({id:'isle:'+id,...(!c&&I.mystery?{myst:1,bar:mysteryOpen()?1:mysteryProgress(o)}:{}),name:c>0?I.name:'???',sub:!c&&I.mystery?(mysteryOpen()?'Ready: build the rowboat':`${Math.round(mysteryProgress(o)*100)}% · finish ${FIVE_ISLES.length-fiveDone(o)===1?'one more island':`${FIVE_ISLES.length-fiveDone(o)} more islands`}`):c>0?(done?'Complete ★':`${Math.min(c,PIECES[id].length&&PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at}`):'In the mist',...(!c&&I.mystery?(()=>{ const d=CAM_DIR3(); return {x:I.x+d.x/Math.hypot(d.x,d.z)*I.r*1.25,z:I.z+d.z/Math.hypot(d.x,d.z)*I.r*1.25,y:-1.6}; })():{x:I.x+ux*I.r*.95,z:I.z+uz*I.r*1.05,y:-1.2})}); }
   ISL3.labels.push({id:'land:beach',name:'Home Island',sub:pupName(o)?`${pupName(o)}’s home`:'Your home',x:0,z:HOME_R*.55,y:.9,home:1});
   // sky things: a few clouds, stars for the night
   // the island friends: each stands on the shore of their island facing Home Island (in the mist too, waving you over)
@@ -8174,11 +8182,30 @@ function isl3Build(o){ ISL3.shadowDirty=true;
     g.setAttribute('position',new THREE.Float32BufferAttribute(p,3)); ISL3.stars=new THREE.Points(g,new THREE.PointsMaterial({color:0xffffff,size:.6,transparent:true,opacity:0,fog:false})); ISL3.sc.add(ISL3.stars); }
   ISL3.sc.add(W);
   W.traverse(x=>{ if(x.isMesh||x.isSprite||x.isInstancedMesh) ISL3.hits.push(x); });
-  const AK=['face3','flame','firepool','beam','belt','bloppit','bob','burst','cheer','cloud','crane','flap','fly','fount','hand','kite','longtail','mist','race','roty','smoke','spin','swing','twinkle','upright','waddle','wheel','zzz'];
+  const AK=['face3','flame','firepool','beam','pulse','belt','bloppit','bob','burst','cheer','cloud','crane','flap','fly','fount','hand','kite','longtail','mist','race','roty','smoke','spin','swing','twinkle','upright','waddle','wheel','zzz'];
   ISL3.anim=[]; ISL3.sc.traverse(x=>{ const u=x.userData; if(AK.some(k=>u[k]!=null&&u[k]!==false)) ISL3.anim.push(x); });
   isl3Labels(); isl3Tod(true); isl3Kick();
 }
 function mist3(r){ const g=new THREE.Group(); for(let i=0;i<9;i++){ const a=i*.7, c=mesh3(new THREE.IcosahedronGeometry(1.1+(i%3)*.4,1),new THREE.MeshStandardMaterial({color:0xF4F7FA,transparent:true,opacity:.82,roughness:1,flatShading:true}),Math.cos(a)*r*.6,.8+(i%4)*.5,Math.sin(a)*r*.6); c.castShadow=false; c.userData.mist=i; g.add(c); } return g; }
+// Moonstone Isle before you reach it: far out at sea, where it's always night. Dark water, a slow swirl of lavender mist,
+// tall dark trees and a lighthouse showing through, and at its top a faint lavender light that pulses (lufu's, though
+// nobody knows that yet). Once the five islands are done the mist thins and the light grows brighter.
+function mysteryVeil3(r,open){ const g=new THREE.Group();
+  const nt=ISL3.nightTex||(ISL3.nightTex=(()=>{ const c=document.createElement('canvas'); c.width=c.height=128; const x=c.getContext('2d'), gr=x.createRadialGradient(64,64,10,64,64,64); gr.addColorStop(0,'rgba(18,22,60,.78)'); gr.addColorStop(.55,'rgba(26,28,78,.5)'); gr.addColorStop(1,'rgba(30,30,90,0)'); x.fillStyle=gr; x.fillRect(0,0,128,128); return new THREE.CanvasTexture(c); })());
+  const nw=new THREE.Mesh(new THREE.PlaneGeometry(r*5.2,r*5.2),new THREE.MeshBasicMaterial({map:nt,transparent:true,depthWrite:false})); nw.rotation.x=-Math.PI/2; nw.position.y=.04; nw.renderOrder=-1; g.add(nw);   // the sea darkens around it: always night there
+  const dark=new THREE.MeshStandardMaterial({color:0x252C48,roughness:1,flatShading:true});
+  for(let i=0;i<8;i++){ const a=i*.8+.4, d=r*(.3+(i%3)*.16), h=2.4+(i%3)*1.0, t=new THREE.Mesh(new THREE.ConeGeometry(.5,h,6),dark); t.position.set(Math.cos(a)*d,TOP3+h/2,Math.sin(a)*d); t.castShadow=false; g.add(t); }
+  const lh=new THREE.Mesh(new THREE.CylinderGeometry(.3,.5,4.6,8),dark); lh.position.set(.3,TOP3+2.3,-.4); lh.castShadow=false; g.add(lh);
+  const top=new THREE.Vector3(.3,TOP3+4.95,-.4);
+  const light=new THREE.Mesh(new THREE.SphereGeometry(.26,14,10),new THREE.MeshBasicMaterial({color:0xF1EAFF})); light.position.copy(top); g.add(light);
+  const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:ISL3.haloTex||(ISL3.haloTex=sparkTex3()),color:0xC9B6F2,transparent:true,opacity:.6,depthWrite:false,blending:THREE.AdditiveBlending}));
+  halo.position.copy(top); halo.userData.pulse=open?1.5:1; g.add(halo);
+  const mg=new THREE.Group(); mg.userData.roty=.07;
+  const mm=[0x8E84CC,0x6E64AE,0xB2A6E4].map(c=>new THREE.MeshLambertMaterial({color:c,emissive:0x2A1F5C,transparent:true,opacity:open?.38:.72,flatShading:true,depthWrite:false}));
+  for(let i=0;i<22;i++){ const a=i/22*Math.PI*2, k=i%3, rr=r*(.92+.12*((i*5)%3)/2);   // a ring of low mist round the shore: the trees and the light rise out of it
+    const m=new THREE.Mesh(new THREE.IcosahedronGeometry(.75+k*.22,1),mm[k]); m.position.set(Math.cos(a)*rr,.25+((i*7)%4)*.28,Math.sin(a)*rr); m.scale.set(1.25,.6,1.25); m.castShadow=false; mg.add(m); }
+  g.add(mg); g.add(sparkle3(0,6.4,0)); g.add(sparkle3(-1.6,5.6,1.2));
+  return g; }
 function cloud3(){ const g=new THREE.Group(); for(let i=0;i<4;i++){ const c=new THREE.Mesh(new THREE.IcosahedronGeometry(1.2+(i%2)*.5,1),new THREE.MeshStandardMaterial({color:0xffffff,flatShading:true,roughness:1,transparent:true,opacity:.95})); c.position.set(i*1.4-2,(i%2)*.4,(i%3)*.5); c.scale.set(1,.7,1); g.add(c); } return g; }
 function sparkle3(x,y,z){ const g=new THREE.Group(); for(let i=0;i<6;i++){ const s=new THREE.Sprite(ISL3.sparkMat||(ISL3.sparkMat=new THREE.SpriteMaterial({map:sparkTex3(),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending})));
   s.scale.setScalar(.6); s.position.set(Math.cos(i)*1.2,y+(i%3)*.5,Math.sin(i)*1.2); s.userData.twinkle=i; g.add(s); } g.position.set(x,0,z); return g; }
@@ -8290,9 +8317,10 @@ function isl3Animate(x,t){ const u=x.userData;
   if(u.fount) x.scale.setScalar(.9+Math.sin(t*5)*.1);
   if(u.hand){ const d=new Date(), h=(d.getHours()%12)+d.getMinutes()/60, m=d.getMinutes()+d.getSeconds()/60; x.rotation.z=-(u.hand===1?h/12:m/60)*Math.PI*2; }
   if(u.beam){ x.material.opacity=.16+Math.sin(t*1.5)*.06; }
+  if(u.pulse){ const k=.5+.5*Math.sin(t*1.6); x.scale.setScalar((1.6+k*1.1)*u.pulse); x.material.opacity=.3+.5*k; }
   if(u.twinkle!=null){ const k=(Math.sin(t*3+u.twinkle*1.7)+1)/2; x.scale.setScalar(.25+k*.55); x.material.opacity=.4+k*.6; }
   if(u.mist!=null) x.position.x+=Math.sin(t*.3+u.mist)*.002;
-  if(u.cloud!=null){ const k=u.ax||'x'; x.position[k]+=.01; if(x.position[k]>40) x.position[k]=-40; }
+  if(u.cloud!=null){ const k=u.ax||'x'; x.position[k]+=.01; if(x.position[k]>40) x.position[k]=-40; const M=ISLES.moonstone; x.visible=Math.hypot(x.position.x-M.x,x.position.z-M.z)>17; }   // daytime clouds keep away from the mystery's night
   if(u.flame){ const k=1+Math.sin(t*9.1)*.08+Math.sin(t*13.7)*.06; x.scale.set(1+Math.sin(t*7.3)*.06,k,1+Math.cos(t*8.1)*.06); x.rotation.y=t*.8; }
   if(u.firepool) x.material.opacity=(ISL3.night||0)*(.26+Math.sin(t*9.3)*.04);
   if(u.zzz){ const k=(t*.4)%1; x.position.y=TOP3+2.0+k*.8; x.material.opacity=1-k; }
