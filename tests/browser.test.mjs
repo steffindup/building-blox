@@ -532,16 +532,18 @@ test('island: a new build always shows, even when older models were dragged into
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('3D characters: on the island (dressed pup, tap for a reaction), the wardrobe, the build buddy as Swoop on his turn, and the drawings with ?chars3d=0', { skip: skip() }, async () => {
+test('living characters: on the island (dressed pup, the friends, tap for a reaction), the wardrobe, the build buddy as Swoop on his turn, and still drawings with ?chars3d=0', { skip: skip() }, async () => {
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; for (let i = 0; i < 3; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1 }; log.push(k); }
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, wear: { head: ['beanie', 2] } })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); } };
   let t = await open('?nosplash=1&hour=11#island', { init: seed });
   await t.page.waitForFunction(() => { const c = window.bloppitChars3d().island; return c.bloppit && c.pup && c.longtail; }, null, { timeout: 90000, polling: 500 });
-  const d = await t.page.evaluate(() => { const I = window.bloppitIsland3(), v = []; I.p3.root.traverse((n) => { const u = n.userData; if (u.outfit && n.visible) v.push(u.outfit); if (u.brickVariant && n.visible) v.push('studs' + u.brickVariant); }); return { v: [...new Set(v)].sort(), clips: window.bloppitChars3d().island.clips, sprite: !!I.bloppitSprite }; });
-  assert.deepEqual(d.v, ['beanie', 'studs1']); assert.equal(d.clips[0], 'fish'); assert.equal(d.sprite, false);   // his rod comes with the model
+  const d = await t.page.evaluate(() => { const I = window.bloppitIsland3(), P = I.p3.P; return { wear: P.wear, ci: P.ci, studs: P.R.stage + 1, mode: I.b3.ctl.mode, clips: window.bloppitChars3d().island.clips, sprite: !!I.bloppitSprite }; });
+  assert.deepEqual(d.wear, { head: ['beanie', 2] }); assert.equal(d.studs, 1); assert.equal(d.clips[0], 'idle'); assert.equal(d.mode, 2); assert.equal(d.sprite, false);   // the living drawing, at rest
+  // the friends on their islands are living drawings too
+  assert.equal(await t.page.evaluate(() => Object.values(window.bloppitIsland3().cast).filter((K) => K.i3).length), 4);
   // tap Bloppit: a reaction and a word
   { const p = await t.page.evaluate(() => window.bloppitIslandPoint('bloppit')); await t.page.mouse.click(p.x, p.y); await t.page.waitForTimeout(500); }
-  assert.notEqual(await t.page.evaluate(() => window.bloppitChars3d().island.clips[0]), 'fish');
+  assert.notEqual(await t.page.evaluate(() => window.bloppitChars3d().island.clips[0]), 'idle');
   assert.equal(await t.page.evaluate(() => document.querySelector('#isWorld .is3-say').hidden), false);
   // the pup's card → the wardrobe: a 3D preview, outfits named for its age, shoes and its toy
   await t.page.waitForTimeout(2500);
@@ -549,7 +551,7 @@ test('3D characters: on the island (dressed pup, tap for a reaction), the wardro
     const p = await t.page.evaluate(() => window.bloppitIslandPoint('pup')); await t.page.mouse.click(p.x, p.y); await t.page.waitForTimeout(1500); }
   await t.page.evaluate(() => [...document.querySelectorAll('#isTip [data-a]')].find((b) => /Wardrobe/.test(b.textContent)).click());
   await t.page.waitForFunction(() => document.getElementById('accDlg').open && document.getElementById('accPic').classList.contains('c3on'), null, { timeout: 20000, polling: 250 });
-  const list = await t.text('#accList'); assert.match(list, /Pom-pom hat/); assert.match(list, /Soft shoes/); assert.match(list, /Toy boat/);
+  const list = await t.text('#accList'); assert.match(list, /Beanie/); assert.match(list, /Shoes/); assert.match(list, /Toy boat/);
   assert.deepEqual(t.errors, []); await t.ctx.close();
   // a race against Swoop (full throttle): the buddy is Bloppit, and Swoop himself when it's his turn
   t = await open('?nosplash=1&welcome=0', { init: seed });
