@@ -113,6 +113,9 @@
 
 *{box-sizing:border-box}
 html,body{min-height:100%}
+/* the page never slides sideways (iPhone web views let a slightly crooked vertical swipe drift the page left and right).
+   clip, not hidden, so the sticky header keeps working; scrollers inside the page (tabs, chips) still scroll */
+html,body{overflow-x:clip;overscroll-behavior-x:none}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:env(safe-area-inset-top,0px) 32px}
 h1,h2,h3{font-family:var(--f-display);font-weight:400;letter-spacing:.01em;text-wrap:balance;margin:0}
 button,select,input{font:inherit;color:inherit}
