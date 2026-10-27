@@ -53,6 +53,8 @@ test('My films: hidden until the arrival film is unlocked, then plays it again f
   const shot = (n) => process.env.SHOTS ? u.page.screenshot({ path: `${process.env.SHOTS}/films-${n}.png` }) : null;
   assert.equal(await u.page.evaluate(() => document.getElementById('hmFilms').hidden), false);
   assert.match(await u.text('#hmFilmsS'), /1 film to watch again/); await shot(1);
+  // arrived but nothing built yet: the menu still leads back to the island
+  assert.equal(await u.page.evaluate(() => document.getElementById('hmWorld').hidden), false);
   await u.page.evaluate(() => document.getElementById('hmFilms').click()); await u.page.waitForTimeout(400);
   assert.equal(await u.page.evaluate(() => document.getElementById('filmsDlg').open), true);
   assert.match(await u.text('#filmNow'), /01 · Arrival/);

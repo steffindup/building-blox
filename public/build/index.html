@@ -750,7 +750,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .hm-world .wt .bar{height:8px;border-radius:4px;background:var(--bg);overflow:hidden}.hm-world .wt .bar i{display:block;height:100%;background:#008F9B;border-radius:4px}
 .hm-world .wn{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .hm-world .wn div{display:grid;justify-items:center;padding:6px;border-radius:12px;background:var(--bg)}
-.hm-world .wn b{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.1;color:#14202C}.hm-world .wn b.st{color:#E9A800}
+.hm-world .wn b{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.1;color:var(--ink)}.hm-world .wn b.st{color:#E9A800}
 .hm-world .wn span{font-size:11px;font-weight:700;color:var(--muted)}
 .hm-world .wname{font-family:var(--f-display);font-size:22px;color:inherit;cursor:pointer;border-bottom:2px dashed var(--line);width:max-content}
 .wc-btns{flex-direction:column;align-items:stretch}.wc-btns button{width:100%}
@@ -6799,7 +6799,8 @@ $('#iiWeekly').onclick=()=>{ islandIntroDone('weekly'); setTab('daily'); };
 $('#iiLook').onclick=()=>{ islandIntroDone('look'); try{ $('#isWorld').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'}); }catch(e){} };
 function renderHomeWorld(){
   const el=$('#hmWorld'), o=worldStore(), n=worldCount(o);
-  if(!n){ el.hidden=true; return; }
+  // From the moment the otter has arrived (before any build), the menu leads back to the island: it's the only way there
+  if(!n&&!o.arrived){ el.hidden=true; return; }
   const ps=pupStage(o), is=islandStage(o), next=PUP_STAGES[ps+1], inext=ISLAND_STAGES[is+1], nm=pupName(o);
   const pct=pupPct(o,ps);
   const pic=isl3Init()?isl3Still(o,900,620):'', isle=pic?`<img src="${pic}" alt="">`:islandSVG(o,{uid:'hm'});
