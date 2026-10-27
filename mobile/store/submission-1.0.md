@@ -10,7 +10,7 @@ then 1.1 with the island) is dropped. Everything to paste is in `listing.md`.
 - [x] Played on an iPhone and an iPad from TestFlight (18 Oct).
 - [ ] Offline check on the iPad (aeroplane mode): the first session, a library build and a Longtail race work; the Weekly says it can't be counted and still saves.
 - [x] Screenshots in `screenshots/` (seven per device, in the order in `listing.md`).
-- [x] App previews in `previews/` (optional): the arrival film at 886 × 1920 and 1200 × 1600.
+- [x] App previews in `previews/` (optional): the arrival film at 886 × 1920 and 1200 × 1600 (replaced 27 Oct by the new 30 s arrival film, which the app plays from 1.1).
 
 ## App Store Connect
 

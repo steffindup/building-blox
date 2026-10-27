@@ -23,9 +23,11 @@ for (const [tag, vp, dsf] of [['iphone',{width:440,height:956},3],['ipad',{width
     { waitUntil: 'load' }); await page.waitForTimeout(3500);
   // first visit: a little boat brings the otter to Home Island; pick a name (Pebble, blue brick)
   await page.evaluate(() => document.getElementById('hmCont').click());
-  // the arrival film: jump to the boat on its way in (caption showing), take the frame, then Skip
+  // the arrival film: hold a frame of Bloppit on the jetty, take it, then Skip
   await page.waitForFunction(() => window.bloppitIsland3 && window.bloppitIsland3().cine, null, { timeout: 30000, polling: 50 });
-  await page.evaluate(() => { const A = window.bloppitIsland3().cine; Object.defineProperty(A, 't0', { get: () => performance.now() - 7000, set() {}, configurable: true }); }); await page.waitForTimeout(2600);   // held at 7 s
+  await page.waitForFunction(() => { const A = window.bloppitIsland3().cine; return !A.film || A.film.classList.contains('on'); }, null, { timeout: 30000 });
+  await page.evaluate(() => { const A = window.bloppitIsland3().cine; if (A.film) { A.film.pause(); A.film.currentTime = 9; }   // the film: Bloppit waiting on the jetty
+    else Object.defineProperty(A, 't0', { get: () => performance.now() - 7000, set() {}, configurable: true }); }); await page.waitForTimeout(2600);   // held at 7 s
   await page.screenshot({ path: `${OUT}${tag}-arrival.png` });
   await page.evaluate(() => document.querySelector('.is3-cine .cn-skip').click());
   await page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 20000 }); await page.waitForTimeout(600);

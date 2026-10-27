@@ -830,6 +830,20 @@ body.on-home .tabs{visibility:hidden}
 .howdlg .win-btns{margin-top:12px}
 .howdlg .how-x{position:absolute;top:20px;right:20px;z-index:2;width:40px;height:40px;border-radius:50%;border:0;background:rgba(20,32,44,.72);color:#fff;font-size:26px;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .howdlg .how-x:hover{background:rgba(20,32,44,.9)}.howdlg .how-x:focus-visible{outline:3px solid var(--hi)}
+/* My films: the story films a player has unlocked, to watch again */
+.hm-films .pl{background:#0b4f6c;font-size:20px}
+.filmsdlg h2{margin:2px 56px 10px 4px;font-family:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;font-weight:400;font-size:26px;line-height:1.1}
+.filmsdlg .how-x{top:12px;right:12px}
+.filmsdlg video{max-height:calc(100vh - 360px);max-height:calc(100dvh - 360px);min-height:160px}
+.filmsdlg .film-now{margin:8px 4px 0;font-weight:800;font-size:15px}.filmsdlg .film-now small{color:var(--muted);font-weight:700}
+.film-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:14px 0 0}
+.film-list button{font:inherit;display:grid;gap:4px;padding:6px 6px 8px;border-radius:14px;border:2px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer;text-align:left}
+.film-list button[aria-pressed="true"]{border-color:var(--ink);background:#E8F1F8}
+.film-list img,.film-list .lock{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:9px;background:#14202C}
+.film-list .lock{display:grid;place-items:center;font-size:24px;background:#DCE6EE}
+.film-list b{font-size:14px;line-height:1.15}.film-list small{color:var(--muted);font-size:12px;font-weight:700}
+.film-list button:disabled{cursor:default;opacity:.75}
+.filmsdlg .film-more{margin:12px 4px 0;color:var(--muted);font-size:13px;font-weight:700}
 .hm-hello img{width:66px;height:66px;flex:none;border-radius:50%}
 .hm-bubble{position:relative;background:var(--page);border:1px solid var(--line);border-radius:16px;padding:10px 16px 12px;box-shadow:0 2px 0 var(--shadow)}
 .hm-bubble::before{content:"";position:absolute;left:-8px;top:50%;width:14px;height:14px;background:var(--page);border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:translateY(-50%) rotate(45deg)}
@@ -1053,6 +1067,9 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 @keyframes cn-shine{from{background-position:120% 0}to{background-position:-30% 0}}
 .is3-cine .cn-skip{position:absolute;right:12px;top:calc(min(11%,96px) + 10px);pointer-events:auto;font:inherit;font-weight:800;font-size:14px;padding:7px 14px;border-radius:999px;border:0;background:rgba(5,16,26,.55);color:#fff;cursor:pointer;opacity:0;transition:opacity .6s;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 .is3-cine .cn-skip.on{opacity:1}
+/* the arrival film itself (public/video/arrival.mp4): fills the screen; upright screens follow Bloppit across the frame */
+.is3-cine .cn-film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;background:#05101a;opacity:0;transition:opacity .7s ease}
+.is3-cine .cn-film.on{opacity:1}.is3-cine.film .cn-bar{display:none}
 @media (prefers-reduced-motion:reduce){.is3-cine .cn-bar,.is3-cine .cn-cap,.is3-cine .cn-title{transition:opacity .3s}.is3-cine .cn-title b{animation:none}}
 .pup-suggest{width:100%;margin:0 0 8px}
 .pup-outfit{display:grid;gap:6px;margin:0 0 10px;text-align:left}.pup-outfit span{font-weight:800;font-size:14px}.pup-outfit>div{display:flex;gap:6px;flex-wrap:wrap}
@@ -1208,6 +1225,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
     <div class="hm-bubble"><h2 id="hmHi">Hi there!</h2><p>What shall we build today?</p></div>
   </div>
   <button class="hm-how" id="hmHow" type="button"><span class="pl" aria-hidden="true">▶</span><span><b>How to play</b><small>A one-minute video</small></span></button>
+  <button class="hm-how hm-films" id="hmFilms" type="button" hidden><span class="pl" aria-hidden="true">🎬</span><span><b>My films</b><small id="hmFilmsS">Watch your films again</small></span></button>
   <button class="hm-world" id="hmWorld" data-go="island" type="button" hidden></button>
   <button class="hm-cont" id="hmCont" type="button" hidden><img class="hc-pic" src="/art/bud-offer.png" alt="" width="300" height="398"><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span><span class="go" aria-hidden="true">▶</span></button>
   <button class="hm-daily" data-go="daily" type="button"><img id="hmDailyImg" alt=""><span class="hd-txt"><span class="tag">📅 Weekly Bloppit</span><b id="hmDailyT">This week’s puzzle</b><span id="hmDailyS">One puzzle, the same for everyone</span></span><span class="go" aria-hidden="true">▶</span></button>
@@ -1758,6 +1776,15 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
   <button class="how-x" id="howX" type="button" aria-label="Close">×</button>
   <video id="howVid" controls playsinline preload="none" poster="/video/how-to-play.jpg"><source src="/video/how-to-play.mp4" type="video/mp4"></video>
   <div class="win-btns"><button class="primary sm" id="howClose" type="button">Let’s build!</button></div>
+</dialog>
+<dialog class="windlg howdlg filmsdlg" id="filmsDlg" aria-labelledby="filmsT">
+  <button class="how-x" id="filmsX" type="button" aria-label="Close">×</button>
+  <h2 id="filmsT">My films</h2>
+  <video id="filmVid" controls playsinline preload="none"></video>
+  <p class="film-now" id="filmNow"></p>
+  <div class="film-list" id="filmList"></div>
+  <p class="film-more" id="filmMore">More films unlock as your world grows.</p>
+  <div class="win-btns"><button class="primary sm" id="filmsClose" type="button">Done</button></div>
 </dialog>
 <dialog class="windlg" id="welcomeDlg" aria-labelledby="wcTitle">
   <img class="wc-pic" src="/art/bud-hug.png" alt="" width="300" height="398">
@@ -2994,6 +3021,32 @@ $('#howDlg').addEventListener('click',e=>{ if(e.target===e.currentTarget) howClo
 $('#howClose').onclick=howClose;
 $('#howVid').addEventListener('ended',()=>track('howto_watched'));
 $('#hmHow').onclick=()=>howOpen('menu');
+/* My films: the Bloppitopia story films (series bible: 01 Arrival, then an arrival and a completion film for each
+   island, the Moonstone chapters and the ending). Each one unlocks when the game reaches its moment, and stays in
+   My films to watch again. Add a film here when it's made: file = public/video/<file>.mp4 with a <file>.jpg poster.
+   Locked films show only their hint, never their name, so nothing is spoiled. */
+const VID_BASE=APP?'video/':'/video/';
+const FILMS=[
+  {id:'arrival',no:'01',name:'Arrival',place:'Home Island',file:'arrival',open:o=>!!o.arrived||worldCount(o)>0},
+];
+const filmsOpen=o=>FILMS.filter(f=>{ try{ return f.open(o); }catch(e){ return false; } });
+function renderFilmsTile(){ const n=filmsOpen(worldStore()).length, el=$('#hmFilms'); el.hidden=!n; if(n) $('#hmFilmsS').textContent=n===1?'1 film to watch again':`${n} films to watch again`; }
+let filmCur=null;
+function filmShow(f,play){ const v=$('#filmVid'); filmCur=f.id; v.setAttribute('poster',VID_BASE+f.file+'.jpg'); v.src=VID_BASE+f.file+'.mp4';
+  $('#filmNow').innerHTML=`${f.no} · ${escapeHTML(f.name)} <small>· ${escapeHTML(f.place)}</small>`;
+  $('#filmList').querySelectorAll('button[data-film]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.film===f.id?'true':'false'));
+  if(play){ try{ v.muted=!sfx.on; const p=v.play(); if(p&&p.catch) p.catch(()=>{}); }catch(e){} track('film_play:'+f.id); } }
+function filmsShow(){ const d=$('#filmsDlg'); if(d.open) return; const o=worldStore(), open=filmsOpen(o); if(!open.length) return;
+  const locked=FILMS.filter(f=>!open.includes(f));
+  $('#filmList').innerHTML=open.map(f=>`<button type="button" data-film="${f.id}" aria-pressed="false"><img src="${VID_BASE+f.file}.jpg" alt="" loading="lazy"><b>${f.no} · ${escapeHTML(f.name)}</b><small>${escapeHTML(f.place)}</small></button>`).join('')
+    +locked.slice(0,1).map(f=>`<button type="button" disabled><span class="lock" aria-hidden="true">🔒</span><b>${f.no} · ???</b><small>${escapeHTML(f.hint||'Keep building to unlock')}</small></button>`).join('');
+  $('#filmList').querySelectorAll('button[data-film]').forEach(b=>b.onclick=()=>filmShow(FILMS.find(f=>f.id===b.dataset.film),true));
+  $('#filmMore').hidden=false; filmShow(open[open.length-1],false); d.showModal(); track('films_open'); }
+function filmsClose(){ const d=$('#filmsDlg'); try{ $('#filmVid').pause(); }catch(e){} if(d.open) d.close(); }
+$('#hmFilms').onclick=()=>filmsShow();
+$('#filmsX').onclick=$('#filmsClose').onclick=()=>filmsClose();
+$('#filmsDlg').addEventListener('close',()=>{ try{ $('#filmVid').pause(); }catch(e){} });
+$('#filmsDlg').addEventListener('click',e=>{ if(e.target===e.currentTarget) filmsClose(); });
 $('#howBtn').onclick=()=>howOpen('build');
 function howSync(){ let n=0; try{ n=worldCount(worldStore()); }catch(e){} $('#howBtn').hidden=n>=HOW_UNTIL||!!mp; }
 function updateBuildUI(){
@@ -8326,7 +8379,7 @@ function isl3Frame(now){
   // than it can draw it, and touches start to lag); 30 while touched, flying or animating, 15 when the world is still
   const touching=ISL3.dragging||ISL3.fly||ISL3.down||now-(ISL3.input||0)<2500, anim=ISL3.react||ISL3.say||(ISL3.chars3&&ISL3.chars3.length&&!reduceMotion&&!ISL3.lite)||(ISL3.pops&&ISL3.pops.length)||(ISL3.parts&&ISL3.parts.length), busy=touching||anim||!!ISL3.cine;
   if(ISL3.hidden){ return; }   // scrolled off screen: the observer starts it again
-  const gap=ISL3.cine?(ISL3.coarse??(ISL3.coarse=matchMedia('(pointer: coarse)').matches)?24:16):busy?33:66;   // the arrival film runs smoother
+  const gap=ISL3.cine?ISL3.cine.film?200:(ISL3.coarse??(ISL3.coarse=matchMedia('(pointer: coarse)').matches)?24:16):busy?33:66;   // the arrival film runs smoother
   if(now-(ISL3.last||0)<gap-6){ ISL3.raf=requestAnimationFrame(isl3Frame); return; } ISL3.last=now;
   const t=now/1000; ISL3.dt=Math.min(.1,ISL3.lastT?(now-ISL3.lastT)/1000:0); ISL3.lastT=now; isl3Tod(false);
   if(ISL3.cine) isl3CineStep(now); else if(ISL3.fly) isl3FlyStep(now); else if(ISL3.ctl) ISL3.ctl.update();
@@ -8620,7 +8673,9 @@ function isl3Show(box,o){ isl3Immersive(); isl3WakeCheck(); isl3CharsLoad(o);
       setTimeout(()=>{ if(!ISL3.revealing&&!ISL3.down){ isl3FlyHome(1100); ISL3.fly.done=()=>{ ISL3.moved=false; isl3WholeBtn(); isl3AfterReveal(o); }; } },2700); },500); },300); }
   else { clearTimeout(ISL3.afterT); ISL3.afterT=setTimeout(()=>isl3AfterReveal(o),500); }
 }
-/* The first visit, told like the opening of a film (about 20 s; Skip at any time). Out of the clouds high over the whole
+/* The first visit opens with the arrival film (public/video/arrival.mp4, 30 s, its own sound; Skip at any time); the
+   version below, made in the game, plays with reduced motion or when the film can't play.
+   The first visit, told like the opening of a film (about 20 s; Skip at any time). Out of the clouds high over the whole
    world as the mist clears, the island's name, then down to the sea behind a little boat carrying the young otter, wake
    and sparkles trailing; through the pup's own eyes from the bow as the island grows ahead; Bloppit waits at the end of the jetty and waves, the boat bumps alongside, the pup leaps ashore,
    and we meet it. Its own music. With reduced motion it starts at the jetty, with no flying and no music. */
@@ -8666,19 +8721,43 @@ function isl3Arrive(o){
   ISL3.world.add(boat); ISL3.moved=true; isl3StopSpin(); ISL3.fly=null;
   // the film's frame: letterbox bars, a misty veil that lifts, captions, the title and Skip
   const v=$('#view-island'); v.classList.add('cine'); const ov=document.createElement('div'); ov.className='is3-cine';
-  ov.innerHTML='<div class="cn-veil"></div><div class="cn-bar t"></div><div class="cn-bar b"></div><div class="cn-title" aria-hidden="true"><b>Bloppitopia</b><span>an island waiting to grow</span></div><div class="cn-cap" aria-live="polite"></div><button class="cn-skip" type="button">Skip ›</button>';
+  const rm=!!reduceMotion, film=!rm&&!/[?&]film=0\b/.test(location.search);   // ?film=0 = the arrival made in the game
+  ov.innerHTML='<div class="cn-veil"></div>'+(film?'<video class="cn-film" playsinline webkit-playsinline preload="auto" aria-label="A little otter arrives at Bloppitopia"></video>':'')+'<div class="cn-bar t"></div><div class="cn-bar b"></div><div class="cn-title" aria-hidden="true"><b>Bloppitopia</b><span>an island waiting to grow</span></div><div class="cn-cap" aria-live="polite"></div><button class="cn-skip" type="button">Skip ›</button>';
   ISL3.box.appendChild(ov); ov.querySelector('.cn-skip').onclick=()=>{ track('arrival_skipped'); arr3Finish(true); };
-  const rm=!!reduceMotion, from=rm?13.6:0, F=ISL3.sc.fog;
-  const A=ISL3.cine={t:from,t0:performance.now()-from*1000,boat,p3,pup,ov,bits:[],clouds:[],fog:[F.near,F.far],did:{},spawn:0,spark:0,music:rm?{stop(){}}:sfx.voyage(),o,fov:ISL3.cam.fov};
+  const from=rm?13.6:0, F=ISL3.sc.fog;
+  const A=ISL3.cine={t:from,t0:performance.now()-from*1000,boat,p3,pup,ov,bits:[],clouds:[],fog:[F.near,F.far],did:{},spawn:0,spark:0,music:{stop(){}},o,fov:ISL3.cam.fov,film:film?ov.querySelector('.cn-film'):null};
   ISL3.arrive={cine:1};
-  // clouds to fall through on the way down
-  if(!rm) for(const [tt,dx,dy,sc] of [[.35,-3,1,3.6],[.7,4,-1,3],[1.05,-1,0,4],[1.45,3,1.5,3.2],[1.9,-4,-1,2.8],[2.4,2,-2,2.6]]){ const [p]=arr3Cam(tt,0,40), c=cloud3(); c.scale.setScalar(sc); c.position.set(p.x+dx,p.y-3+dy,p.z+dx*.6); c.traverse(m=>{ if(m.material) m.material.fog=false; }); ISL3.sc.add(c); A.clouds.push(c); }
-  requestAnimationFrame(()=>{ ov.classList.add('on'); setTimeout(()=>ov.querySelector('.cn-veil').classList.add('off'),rm?0:250); });
-  track('arrival_started'); isl3CineStep(performance.now()); isl3Kick();
+  requestAnimationFrame(()=>ov.classList.add('on'));
+  if(A.film) arr3Film(A); else arr3Begin(A);
+  track('arrival_started'); isl3Kick();
 }
+// The arrival made in the game: with reduced motion (from the jetty, no music), or if the film can't play
+function arr3Begin(A){ const rm=!!reduceMotion; A.t0=performance.now()-A.t*1000;
+  if(!rm){ A.music=sfx.voyage();
+    // clouds to fall through on the way down
+    for(const [tt,dx,dy,sc] of [[.35,-3,1,3.6],[.7,4,-1,3],[1.05,-1,0,4],[1.45,3,1.5,3.2],[1.9,-4,-1,2.8],[2.4,2,-2,2.6]]){ const [p]=arr3Cam(tt,0,40), c=cloud3(); c.scale.setScalar(sc); c.position.set(p.x+dx,p.y-3+dy,p.z+dx*.6); c.traverse(m=>{ if(m.material) m.material.fog=false; }); ISL3.sc.add(c); A.clouds.push(c); } }
+  setTimeout(()=>A.ov.querySelector('.cn-veil').classList.add('off'),rm?0:250); isl3CineStep(performance.now()); isl3Kick(); }
+// The arrival film (01, Home Island): plays over the island with its own sound, then we meet the otter on the jetty.
+// If it can't start (no video support, or still not ready after 9 s) the arrival made in the game plays instead.
+const ARR_FILM=(APP?'video/':'/video/')+'arrival.mp4';
+function arr3FilmFrame(v,t){ const W=v.clientWidth, H=v.clientHeight; if(!W||!H) return; const cw=Math.min(1,(W/H)/((v.videoWidth||16)/(v.videoHeight||9)));
+  let pos='50% 50%'; if(cw<.999){ const k=(a,b)=>Math.min(1,Math.max(0,(t-a)/(b-a))), c=.54+.14*k(21,24)+.12*k(24,27)+.03*k(27,30), L=Math.min(1-cw,Math.max(0,c-cw/2)); pos=(L/(1-cw)*100).toFixed(1)+'% 50%'; }   // Bloppit walks right near the end
+  if(v.style.objectPosition!==pos) v.style.objectPosition=pos; }
+function arr3Film(A){ const v=A.film; A.ov.classList.add('film'); let started=false;
+  const live=()=>ISL3.cine===A&&A.film===v;
+  const fail=()=>{ if(!live()||started) return; A.film=null; try{ v.pause(); v.removeAttribute('src'); v.load(); }catch(e){} v.remove(); A.ov.classList.remove('film'); track('arrival_film_fallback'); arr3Begin(A); };
+  const tick=()=>{ if(!live()) return; const t=A.t=v.currentTime||0; arr3FilmFrame(v,t); if(t>=1.2&&!A.did.skip){ A.did.skip=1; A.ov.querySelector('.cn-skip').classList.add('on'); } requestAnimationFrame(tick); };
+  A.music={stop(){ try{ v.pause(); }catch(e){} }};
+  v.addEventListener('playing',()=>{ if(!live()) return; started=true; v.classList.add('on'); },{once:true});
+  v.addEventListener('ended',()=>{ if(live()) arr3Finish(true); });
+  v.addEventListener('error',()=>{ if(!live()) return; if(started) arr3Finish(true); else fail(); });
+  setTimeout(fail,9000);
+  v.muted=!sfx.on; v.src=ARR_FILM; arr3FilmFrame(v,0); requestAnimationFrame(tick);
+  const go=()=>{ let p; try{ p=v.play(); }catch(e){ return fail(); } if(p&&p.catch) p.catch(e=>{ if(!live()) return; if(e&&e.name==='NotAllowedError'&&!v.muted){ v.muted=true; go(); } else if(!(e&&e.name==='AbortError')) fail(); }); };
+  go(); }
 function arr3Cap(A,txt){ const c=A.ov.querySelector('.cn-cap'); if(!txt){ c.classList.remove('on'); return; } c.textContent=txt; c.classList.add('on'); }
 // One frame of the film
-function isl3CineStep(now){ const A=ISL3.cine; if(!A) return; const t=A.t=(now-A.t0)/1000, D=A.did, once=k=>D[k]?false:(D[k]=1,true), [jx,jz]=HOME_AT.jetty;
+function isl3CineStep(now){ const A=ISL3.cine; if(!A||A.film) return; const t=A.t=(now-A.t0)/1000, D=A.did, once=k=>D[k]?false:(D[k]=1,true), [jx,jz]=HOME_AT.jetty;
   // the boat: along the voyage, turning with it, rocking on the swell, settling when it docks
   const u=arr3U(t), [bx,bz]=arr3Boat(u), boat=A.boat;
   if(u<.999){ const [nx,nz]=arr3Boat(Math.min(1,u+.003)); boat.rotation.y=Math.atan2(-(nz-bz),nx-bx); }
@@ -8726,7 +8805,7 @@ function arr3Finish(skipped){ const A=ISL3.cine; if(!A) return; ISL3.cine=null; 
     const [p,q]=arr3Cam(end,bx,bz), cam=ISL3.cam; ISL3.fly={t0:performance.now(),dur:900,p0:cam.position.clone(),q0:ISL3.ctl.target.clone(),q1:q,p1:p}; }
   for(const b of A.bits){ ISL3.sc.remove(b.sp); b.sp.material.dispose(); } A.bits=[]; for(const c of A.clouds) ISL3.sc.remove(c);
   const F=ISL3.sc.fog; F.near=A.fog[0]; F.far=A.fog[1]; if(ISL3.cam.fov!==A.fov){ ISL3.cam.fov=A.fov; ISL3.cam.updateProjectionMatrix(); }
-  A.ov.classList.remove('on'); A.ov.querySelector('.cn-veil').classList.add('off'); A.ov.querySelectorAll('.cn-cap,.cn-title,.cn-skip').forEach(e=>e.classList.remove('on')); setTimeout(()=>A.ov.remove(),1300);
+  A.ov.classList.remove('on'); A.ov.querySelector('.cn-veil').classList.add('off'); A.ov.querySelectorAll('.cn-cap,.cn-title,.cn-skip,.cn-film').forEach(e=>e.classList.remove('on')); setTimeout(()=>A.ov.remove(),1300);
   $('#view-island').classList.remove('cine'); ISL3.arrive=null; ISL3.ctl.update(); isl3Kick();
   if(skipped) setTimeout(()=>{ if(!A.did.land) try{ sfx.hatch(); }catch(e){} isl3Banner('A little otter has arrived!',true); },300);
   setTimeout(()=>{ isl3Banner(''); pupOpen(()=>{ const w=worldStore(); w.arrived=1; worldSet(w); ISL3.arrival='home'; renderIsland(); },{arrival:true}); },skipped?1700:1500);
@@ -9329,7 +9408,7 @@ function renderHome(){
   const p=curPlayer(), named=p.name&&!/^Player \d+$/.test(p.name.trim());
   $('#hmHi').innerHTML=named?`Hi <button class="hm-who" id="hmWho" type="button">${escapeHTML(p.name.trim())}</button>!`:'Hi there!';
   const w=$('#hmWho'); if(w) w.onclick=()=>$('#whoBtn').click();
-  homeCont=homeContinue(); $('#hmCont').hidden=!homeCont; renderHomeWorld();
+  homeCont=homeContinue(); $('#hmCont').hidden=!homeCont; renderHomeWorld(); renderFilmsTile();
   if(tab==='home') pupMaybe();  // the first finish anywhere (a Trail level, a race) meets the pup on the way back to the menu
   if(homeCont){ $('#hmContT').textContent=homeCont.t; $('#hmContS').textContent=homeCont.s;
     $('#hmContBar').hidden=homeCont.p<0; $('#hmContBar i').style.width=Math.max(4,homeCont.p)+'%'; $('#hmCont').classList.toggle('first',!!homeCont.first); }

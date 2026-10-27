@@ -91,7 +91,7 @@ In `screenshots/`: seven per device, captioned, ready to upload in this order. `
 | # | File | Caption | Screen |
 |---|---|---|---|
 | 1 | `*-1-island` | Every build you finish grows Bloppitopia. | Bloppitopia: Home Island with the otter, Bloppit and the islands found so far |
-| 2 | `*-2-arrival` | A little otter is coming home. | The arrival film: the boat with the pup, Bloppit waiting on the jetty |
+| 2 | `*-2-arrival` | A little otter is coming home. | The arrival: the boat with the pup, Bloppit waiting on the jetty (1.1: a frame of the arrival film) |
 | 3 | `*-3-build` | Snap bricks into place, page by page. | A build in progress with Bloppit |
 | 4 | `*-4-finish` | Finish clean. Earn three stars. | The finish card: stars, See Bloppitopia, Play next |
 | 5 | `*-5-weekly` | A new puzzle every week. See how many built it clean. | The Weekly page |
@@ -103,9 +103,10 @@ scale, then captions composed with Lilita One); retake them after any visual cha
 
 ## App previews (optional, up to 3 per device)
 
-`previews/iphone-arrival.mp4` (886 × 1920) and `previews/ipad-arrival.mp4` (1200 × 1600): the first-arrival film, 21.6 s,
-30 fps, H.264 with stereo AAC. Apple's limits: 15–30 s, at most 30 fps, footage from the app. Set the poster frame to
-the moment the title appears (about 4 s in).
+`previews/iphone-arrival.mp4` (886 × 1920) and `previews/ipad-arrival.mp4` (1200 × 1600): the arrival film (01, Home
+Island; `public/video/arrival.mp4`, 27 Oct 2026), 29.9 s, 30 fps, H.264 with stereo AAC, cropped upright to follow
+Bloppit. Apple's limits: 15–30 s, at most 30 fps, footage from the app. The app plays this film from 1.1 (1.0 has the
+arrival made in the game), so upload these with 1.1. Set the poster frame to Bloppit waving on the jetty (about 9 s in).
 
 ## What's New
 
