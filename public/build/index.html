@@ -8727,7 +8727,7 @@ function isl3Show(box,o){ isl3Immersive(); isl3WakeCheck(); isl3CharsLoad(o);
       setTimeout(()=>{ if(!ISL3.revealing&&!ISL3.down){ isl3FlyHome(1100); ISL3.fly.done=()=>{ ISL3.moved=false; isl3WholeBtn(); isl3AfterReveal(o); }; } },2700); },500); },300); }
   else { clearTimeout(ISL3.afterT); ISL3.afterT=setTimeout(()=>isl3AfterReveal(o),500); }
 }
-/* The first visit opens with the arrival film (public/video/arrival.mp4, 30 s, its own sound; Skip at any time); the
+/* The first visit opens with the arrival film (public/video/arrival.mp4, 26 s, its own sound; Skip at any time); the
    version below, made in the game, plays with reduced motion or when the film can't play.
    The first visit, told like the opening of a film (about 20 s; Skip at any time). Out of the clouds high over the whole
    world as the mist clears, the island's name, then down to the sea behind a little boat carrying the young otter, wake
@@ -8800,7 +8800,7 @@ function arr3FilmFrame(v,t,mid){ const W=v.clientWidth, H=v.clientHeight; if(!W|
   const a=W/H, tall=H>W, fit=a<1.45||a>2.05; if(v.classList.contains('fit')!==fit) v.classList.toggle('fit',fit);
   const tn=v.parentNode&&v.parentNode.querySelector('.cn-turn'), hint=tall&&t>.6&&t<7; if(tn&&tn.classList.contains('on')!==hint) tn.classList.toggle('on',hint);
   const cw=fit?1:Math.min(1,a/((v.videoWidth||16)/(v.videoHeight||9)));
-  let pos='50% 50%'; if(cw<.999&&!mid){ const k=(a,b)=>Math.min(1,Math.max(0,(t-a)/(b-a))), c=.54+.14*k(21,24)+.12*k(24,27)+.03*k(27,30), L=Math.min(1-cw,Math.max(0,c-cw/2)); pos=(L/(1-cw)*100).toFixed(1)+'% 50%'; }   // a little narrower than the film (iPad, square windows): fill and follow Bloppit
+  let pos='50% 50%'; if(cw<.999&&!mid){ const k=(a,b)=>Math.min(1,Math.max(0,(t-a)/(b-a))), c=.52+.06*k(9,12)-.06*k(14,16)+.15*k(19,21)+.07*k(21,24), L=Math.min(1-cw,Math.max(0,c-cw/2)); pos=(L/(1-cw)*100).toFixed(1)+'% 50%'; }   // a little narrower than the film (iPad, square windows): fill and follow Bloppit
   if(v.style.objectPosition!==pos) v.style.objectPosition=pos; }
 function arr3Film(A){ const v=A.film; A.ov.classList.add('film'); let started=false;
   const live=()=>ISL3.cine===A&&A.film===v;

@@ -104,9 +104,10 @@ scale, then captions composed with Lilita One); retake them after any visual cha
 ## App previews (optional, up to 3 per device)
 
 `previews/iphone-arrival.mp4` (886 × 1920) and `previews/ipad-arrival.mp4` (1200 × 1600): the arrival film (01, Home
-Island; `public/video/arrival.mp4`, 27 Oct 2026), 29.9 s, 30 fps, H.264 with stereo AAC, cropped upright to follow
-Bloppit. Apple's limits: 15–30 s, at most 30 fps, footage from the app. The app plays this film from 1.1 (1.0 has the
-arrival made in the game), so upload these with 1.1. Set the poster frame to Bloppit waving on the jetty (about 9 s in).
+Island; `public/video/arrival.mp4`, the new cut of 27 Oct 2026), 26 s, 30 fps, H.264 with stereo AAC, cropped upright to
+follow Bloppit. Apple's limits: 15–30 s, at most 30 fps, footage from the app. The app plays this film from 1.1 (1.0 has
+the arrival made in the game), so upload these with 1.1. Set the poster frame to Bloppit holding his red brick on the
+jetty (about 7 s in).
 
 ## What's New
 
