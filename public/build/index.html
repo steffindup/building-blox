@@ -910,8 +910,8 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 .is3-label b{font-family:var(--f-display);font-weight:400;font-size:12px}.is3-label small{font-size:9.5px;font-weight:700;opacity:.85}
 @media (min-width:700px){.is3-label b{font-size:15px}.is3-label small{font-size:11px}}
 .is3-label.is3-hl{background:#008F9B}
-.is3-label.is3-myst{background:rgba(44,30,86,.9);box-shadow:0 0 14px rgba(172,120,186,.55)}.is3-label.is3-myst b{letter-spacing:.12em}
-.is3-bar{display:block;width:100%;min-width:118px;height:6px;margin:4px 0 2px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden}.is3-bar>i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#AC78BA,#E9DFFF)}.is3-label.is3-hl b{font-size:18px}
+.is3-label.is3-myst{background:rgba(40,32,78,.8)}.is3-label.is3-myst b{letter-spacing:.04em}.is3-label.is3-myst b,.is3-label.is3-myst small{font-size:inherit}.is3-label.is3-myst{font-size:10.5px}@media (min-width:700px){.is3-label.is3-myst{font-size:12px}}
+.is3-bar{display:block;width:100%;min-width:70px;height:4px;margin:3px 0 1px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden}.is3-bar>i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#AC78BA,#E9DFFF)}.is3-label.is3-hl b{font-size:18px}
 .is3-help{position:absolute;right:10px;bottom:10px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.85);font-size:12px;font-weight:800;color:#14202C;pointer-events:none}
 .is-a11y{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .is-a11y:focus-within{position:static;width:auto;height:auto;clip:auto;white-space:normal;display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px}
@@ -7815,6 +7815,7 @@ function mysteryStart(i){
   loadSample(k); clearTimeout(timer); rebuild(); setTab('build'); setStatus(`Chapter ${i+1} of ${MYSTERY.length}, with ${m.who}: ${m.story}`);
 }
 function mysteryGo(){ if(!mysteryOpen()){ setTab('daily'); return; } const i=mysteryNext(); if(i>=0) mysteryStart(i); else setTab('island'); }
+const MYST_S=.66;   // how big Mystery Island looks until it's reached
 const isl3TallNow=()=>{ const b=typeof ISL3!=='undefined'&&ISL3.box; return !!(b&&b.clientWidth&&CAM_TALL(b.clientWidth/(b.clientHeight||b.clientWidth))); };
 const ISLES={
   otterwood:{name:'Frog Forest',game:'Frog Trail',unit:'Frog Trail level',x:-14.6,z:3.2,r:4.5,seed:2.2,ground:['#5DBB46','#3F8F33'],
@@ -7828,7 +7829,7 @@ const ISLES={
   brickworks:{name:'Brickworks Island',game:'Creative builds',unit:'creation',x:12.4,z:9.6,r:4.3,seed:6.6,ground:['#7CC45E','#4E9E3A'],
     milestone:'The Grand Creation Gallery',grows:'Every build from your own photo or drawing, from the library, and every Weekly Bloppit',play:'Make your own',
     go:()=>{ pickPuzzle('quick','top'); requestAnimationFrame(()=>{ const c=$('#drawCard'); if(c) c.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}); }); }},
-  moonstone:{name:'Moonstone Isle',game:'The mystery',unit:'chapter',get x(){ return isl3TallNow()?-20:22.5; },get z(){ return isl3TallNow()?-10.5:-23; },r:4.0,   // far out at sea, in the top corner of the view (upright phones see the world from the side)
+  moonstone:{name:'Moonstone Isle',game:'The mystery',unit:'chapter',get x(){ return isl3TallNow()?-22.5:23.5; },get z(){ return isl3TallNow()?-11.5:-23.5; },r:4.0,   // far out at sea, in the top corner of the view (upright phones see the world from the side)
    seed:7.7,ground:['#6FB7A4','#4E8F7E'],sand:true,mystery:true,
     milestone:'The moon crystal',grows:'Every chapter of the mystery you build',play:'Explore Moonstone Isle',go:()=>mysteryGo()},
 };
@@ -8179,11 +8180,11 @@ function isl3Build(o){ ISL3.shadowDirty=true;
       if(I.mystery){ const b=boat3('#8B5A2B',.9), t=Math.atan2(-I.z,-I.x); b.position.set(Math.cos(t)*I.r*1.12,0,Math.sin(t)*I.r*1.12); b.rotation.y=-t; b.userData.bob=1; g.add(b); }   // reached by rowboat, not a bridge
       else { const a=edge3(HOMEP,0,0,I.x,I.z), b=edge3(blob3(I.x,I.z,I.r,I.seed,26),I.x,I.z,0,0); W.add(tag3(bridge3(a,b,id==='brainpeak'),'isle:'+id)); }
       const next=PIECES[id].find(p=>c<p.at); if(next&&next.at-c<=1) g.add(sparkle3(0,2.6,0)); if(!next) g.add(sparkle3(0,6.2,0));
-    } else if(I.mystery){ g.traverse(x=>{ if(x.isMesh) x.material=m3('#3B4466'); }); g.add(mysteryVeil3(I.r,mysteryOpen())); g.userData.misty=1; }
+    } else if(I.mystery){ g.traverse(x=>{ if(x.isMesh) x.material=m3('#3B4466'); }); g.add(mysteryVeil3(I.r,mysteryOpen())); g.scale.setScalar(MYST_S); g.userData.misty=1; }   // small and far: a hint on the horizon
     else { g.traverse(x=>{ if(x.isMesh) x.material=m3('#C9D3DC'); }); g.add(mist3(I.r)); g.userData.misty=1; }
     W.add(g);
     const L=Math.hypot(I.x,I.z), ux=I.x/L, uz=I.z/L, done=c>=PIECES[id][PIECES[id].length-1].at;
-    ISL3.labels.push({id:'isle:'+id,...(!c&&I.mystery?{myst:1,bar:mysteryOpen()?1:mysteryProgress(o)}:{}),name:c>0?I.name:I.mystery?'Mystery Island':'???',sub:!c&&I.mystery?(mysteryOpen()?'Ready: build the rowboat':`${Math.round(mysteryProgress(o)*100)}% · ${fiveDone(o)} of ${FIVE_ISLES.length} islands complete`):c>0?(done?'Complete ★':`${Math.min(c,PIECES[id].length&&PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at}`):'In the mist',...(!c&&I.mystery?(()=>{ const d=CAM_DIR3(); return {x:I.x+d.x/Math.hypot(d.x,d.z)*I.r*1.25,z:I.z+d.z/Math.hypot(d.x,d.z)*I.r*1.25,y:-1.6}; })():{x:I.x+ux*I.r*.95,z:I.z+uz*I.r*1.05,y:-1.2}),x2:I.x,y2:I.mystery&&!c?7.4:4.2,z2:I.z}); }
+    ISL3.labels.push({id:'isle:'+id,...(!c&&I.mystery?{myst:1,bar:mysteryOpen()?1:mysteryProgress(o)}:{}),name:c>0?I.name:I.mystery?'Mystery Island':'???',sub:!c&&I.mystery?(mysteryOpen()?'Ready: build the rowboat':`${fiveDone(o)} of ${FIVE_ISLES.length} islands`):c>0?(done?'Complete ★':`${Math.min(c,PIECES[id].length&&PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at}`):'In the mist',...(!c&&I.mystery?(()=>{ const d=CAM_DIR3(); return {x:I.x+d.x/Math.hypot(d.x,d.z)*I.r*MYST_S*1.2,z:I.z+d.z/Math.hypot(d.x,d.z)*I.r*MYST_S*1.2,y:-1.2}; })():{x:I.x+ux*I.r*.95,z:I.z+uz*I.r*1.05,y:-1.2}),x2:I.x,y2:I.mystery&&!c?5:4.2,z2:I.z}); }
   ISL3.labels.push({id:'land:beach',name:'Home Island',sub:pupName(o)?`${pupName(o)}’s home`:'Your home',x:0,z:HOME_R*.55,y:.9,home:1});
   // sky things: a few clouds, stars for the night
   // the island friends: each stands on the shore of their island facing Home Island (in the mist too, waving you over)
@@ -8223,7 +8224,7 @@ function isl3Build(o){ ISL3.shadowDirty=true;
   const box=ISL3.box, tall=ISL3.tallBuild=!!(box&&box.clientWidth&&CAM_TALL(box.clientWidth/(box.clientHeight||box.clientWidth)));   // clouds sit behind the world, whichever way it's seen
   for(let i=0;i<5;i++){ const c=cloud3(), a=-24+i*12, b=-18+((i*7)%11); if(tall) c.position.set(b-6,10+(i%2)*2,a); else c.position.set(a,10+(i%2)*2,b); c.userData.cloud=i; c.userData.ax=tall?'z':'x'; W.add(c); }
   if(!ISL3.stars){ const g=new THREE.BufferGeometry(), p=[]; for(let i=0;i<260;i++){ const a=Math.random()*Math.PI*2, e=.15+Math.random()*1.2; p.push(Math.cos(a)*90*Math.cos(e),40+Math.sin(e)*60,Math.sin(a)*90*Math.cos(e)-30); }
-    g.setAttribute('position',new THREE.Float32BufferAttribute(p,3)); ISL3.stars=new THREE.Points(g,new THREE.PointsMaterial({color:0xffffff,size:.6,transparent:true,opacity:0,fog:false})); ISL3.sc.add(ISL3.stars); }
+    g.setAttribute('position',new THREE.Float32BufferAttribute(p,3)); ISL3.stars=new THREE.Points(g,new THREE.PointsMaterial({color:0xffffff,size:.9,map:ISL3.haloTex||(ISL3.haloTex=sparkTex3()),transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending,fog:false})); ISL3.sc.add(ISL3.stars); }   // round, soft twinkles (plain points draw as squares)
   ISL3.sc.add(W);
   W.traverse(x=>{ if(x.isMesh||x.isSprite||x.isInstancedMesh) ISL3.hits.push(x); });
   const AK=['face3','flame','firepool','beam','pulse','belt','bloppit','bob','burst','cheer','cloud','crane','flap','fly','fount','hand','kite','longtail','mist','race','roty','smoke','spin','swing','twinkle','upright','waddle','wheel','zzz'];
@@ -8236,19 +8237,19 @@ function mist3(r){ const g=new THREE.Group(); for(let i=0;i<9;i++){ const a=i*.7
 // nobody knows that yet). Once the five islands are done the mist thins and the light grows brighter.
 function mysteryVeil3(r,open){ const g=new THREE.Group();
   const nt=ISL3.nightTex||(ISL3.nightTex=(()=>{ const c=document.createElement('canvas'); c.width=c.height=128; const x=c.getContext('2d'), gr=x.createRadialGradient(64,64,10,64,64,64); gr.addColorStop(0,'rgba(18,22,60,.78)'); gr.addColorStop(.55,'rgba(26,28,78,.5)'); gr.addColorStop(1,'rgba(30,30,90,0)'); x.fillStyle=gr; x.fillRect(0,0,128,128); return new THREE.CanvasTexture(c); })());
-  const nw=new THREE.Mesh(new THREE.PlaneGeometry(r*5.2,r*5.2),new THREE.MeshBasicMaterial({map:nt,transparent:true,depthWrite:false})); nw.rotation.x=-Math.PI/2; nw.position.y=.04; nw.renderOrder=-1; g.add(nw);   // the sea darkens around it: always night there
+  const nw=new THREE.Mesh(new THREE.PlaneGeometry(r*3.6,r*3.6),new THREE.MeshBasicMaterial({map:nt,transparent:true,depthWrite:false})); nw.rotation.x=-Math.PI/2; nw.position.y=.04; nw.renderOrder=-1; g.add(nw);   // the sea darkens around it: always night there
   const dark=new THREE.MeshStandardMaterial({color:0x252C48,roughness:1,flatShading:true});
   for(let i=0;i<8;i++){ const a=i*.8+.4, d=r*(.3+(i%3)*.16), h=2.4+(i%3)*1.0, t=new THREE.Mesh(new THREE.ConeGeometry(.5,h,6),dark); t.position.set(Math.cos(a)*d,TOP3+h/2,Math.sin(a)*d); t.castShadow=false; g.add(t); }
   const lh=new THREE.Mesh(new THREE.CylinderGeometry(.3,.5,4.6,8),dark); lh.position.set(.3,TOP3+2.3,-.4); lh.castShadow=false; g.add(lh);
   const top=new THREE.Vector3(.3,TOP3+4.95,-.4);
   const light=new THREE.Mesh(new THREE.SphereGeometry(.26,14,10),new THREE.MeshBasicMaterial({color:0xF1EAFF})); light.position.copy(top); g.add(light);
   const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:ISL3.haloTex||(ISL3.haloTex=sparkTex3()),color:0xC9B6F2,transparent:true,opacity:.6,depthWrite:false,blending:THREE.AdditiveBlending}));
-  halo.position.copy(top); halo.userData.pulse=open?1.5:1; g.add(halo);
+  halo.position.copy(top); halo.userData.pulse=open?1.1:.7; g.add(halo);
   const mg=new THREE.Group(); mg.userData.roty=.07;
   const mm=[0x8E84CC,0x6E64AE,0xB2A6E4].map(c=>new THREE.MeshLambertMaterial({color:c,emissive:0x2A1F5C,transparent:true,opacity:open?.38:.72,flatShading:true,depthWrite:false}));
   for(let i=0;i<22;i++){ const a=i/22*Math.PI*2, k=i%3, rr=r*(.92+.12*((i*5)%3)/2);   // a ring of low mist round the shore: the trees and the light rise out of it
     const m=new THREE.Mesh(new THREE.IcosahedronGeometry(.75+k*.22,1),mm[k]); m.position.set(Math.cos(a)*rr,.25+((i*7)%4)*.28,Math.sin(a)*rr); m.scale.set(1.25,.6,1.25); m.castShadow=false; mg.add(m); }
-  g.add(mg); g.add(sparkle3(0,6.4,0)); g.add(sparkle3(-1.6,5.6,1.2));
+  g.add(mg); g.add(sparkle3(0,6.4,0));
   return g; }
 function cloud3(){ const g=new THREE.Group(); for(let i=0;i<4;i++){ const c=new THREE.Mesh(new THREE.IcosahedronGeometry(1.2+(i%2)*.5,1),new THREE.MeshStandardMaterial({color:0xffffff,flatShading:true,roughness:1,transparent:true,opacity:.95})); c.position.set(i*1.4-2,(i%2)*.4,(i%3)*.5); c.scale.set(1,.7,1); g.add(c); } return g; }
 function sparkle3(x,y,z){ const g=new THREE.Group(); for(let i=0;i<6;i++){ const s=new THREE.Sprite(ISL3.sparkMat||(ISL3.sparkMat=new THREE.SpriteMaterial({map:sparkTex3(),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending})));
