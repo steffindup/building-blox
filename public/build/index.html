@@ -6735,7 +6735,7 @@ function pupOpen(then,opt){
   $('#pupNames').innerHTML=PUP_NAMES.map((n,i)=>`<button type="button" data-pup="${i}" aria-pressed="${o.pupName===i&&!o.pupText}">${n}</button>`).join('');
   pupDoneBtn(); if(arr) $('#pupLead').textContent='Your very own little otter, with its own brick. Pick its colour (it colours the outfit too):';
   pupColsRender();
-  d.onclose=()=>{ d.onclose=null; renderHome(); if(then) then(); else if(first&&worldCount(worldStore())) islandIntro(); };
+  d.onclose=()=>{ d.onclose=null; isl3PupRedress(); renderHome(); if(then) then(); else if(first&&worldCount(worldStore())) islandIntro(); };
   if(!d.open){ d.showModal(); if(!has) sfx.hatch(); }
 }
 function pupColsRender(){
@@ -6747,11 +6747,11 @@ function pupColsRender(){
 }
 // Mix your own: two sliders, saved as you slide (the 3D pup repaints when you let go)
 function pupMixSet(final){ PUP_HEX=pupMixHex($('#pupHue').value,$('#pupShade').value); $('#pupMix').style.setProperty('--c',PUP_HEX); const sw=$('#pupCols .mix'); if(sw) sw.style.setProperty('--c',PUP_HEX);
-  if(final){ const o=worldStore(); o.pupColor=PUP_MIX; o.pupHex=PUP_HEX; o.pupAt=Date.now(); worldSet(o); track('pup_colour_mix'); sfx.chirp(); pupColsRender(); } }
+  if(final){ const o=worldStore(); o.pupColor=PUP_MIX; o.pupHex=PUP_HEX; o.pupAt=Date.now(); worldSet(o); track('pup_colour_mix'); sfx.chirp(); pupColsRender(); isl3PupRedress(); } }
 $('#pupHue').addEventListener('input',()=>pupMixSet(false)); $('#pupShade').addEventListener('input',()=>pupMixSet(false));
 $('#pupHue').addEventListener('change',()=>pupMixSet(true)); $('#pupShade').addEventListener('change',()=>pupMixSet(true));
 $('#pupCols').addEventListener('click',e=>{ const b=e.target.closest('[data-col]'); if(!b) return;
-  pupDraft.ci=+b.dataset.col; const o=worldStore(); o.pupColor=pupDraft.ci; if(pupDraft.ci===PUP_MIX) o.pupHex=PUP_HEX; o.pupAt=Date.now(); worldSet(o); track('pup_colour'); sfx.chirp(); pupColsRender();
+  pupDraft.ci=+b.dataset.col; const o=worldStore(); o.pupColor=pupDraft.ci; if(pupDraft.ci===PUP_MIX) o.pupHex=PUP_HEX; o.pupAt=Date.now(); worldSet(o); track('pup_colour'); sfx.chirp(); pupColsRender(); isl3PupRedress();
   const f=$(`#pupCols [data-col="${pupDraft.ci}"]`); if(f) f.focus(); });
 // A name (typed, suggested or from the list) is only held until "All done!", so the colour and outfit can still change
 function pupPick(patch,how){ pupDraft.name={patch,how}; const nm=patch.pupText||PUP_NAMES[patch.pupName]||'';
@@ -7476,7 +7476,7 @@ window.bloppitView=i=>isl3GoView(i); window.bloppitIslandPoint=isl3Point; window
 // Everything on the island as a list of buttons, for keyboards and screen readers (shown when tabbed into)
 function isl3A11y(o){ let L=$('#isA11y'); if(!L) return; const ids=[]; ISL3.world.traverse(x=>{ const i=x.userData.info; if(i&&!ids.includes(i)&&i!=='land:sea') ids.push(i); });
   L.innerHTML=`<b>On Bloppitopia</b>`+ids.map(i=>`<button type="button" data-info="${escapeHTML(i)}">${escapeHTML(islandInfo(i,o).title)}</button>`).join(''); }
-function isl3Sig(o){ return JSON.stringify([routine3(isl3Hour()),longtailNow(),o.log,o.decor,o.pos,o.away,o.pupColor,pupStage(o),Object.keys(ISLES).map(id=>isleCount(id,o)),Object.keys(worldShapes()).length,accWear(o),o.pick,friendCount(o),routine3(isl3Hour())]); }
+function isl3Sig(o){ return JSON.stringify([routine3(isl3Hour()),longtailNow(),o.log,o.decor,o.pos,o.away,o.pupColor,o.pupHex,pupStage(o),Object.keys(ISLES).map(id=>isleCount(id,o)),Object.keys(worldShapes()).length,accWear(o),o.pick,friendCount(o),routine3(isl3Hour())]); }
 function isl3Still(o,w,h){
   if(!isl3Init()) return '';
   const sig=isl3Sig(o)+w; if(ISL3.on) return ISL3.still||''; if(ISL3.stillSig===sig&&ISL3.still) return ISL3.still;
@@ -7697,7 +7697,7 @@ class Puppet3{
     this.fit={W:a.sh.W,H:a.sh.H,top,bot,cx:this.kind==='pup'?a.sh.ox+(PUP_CV.dx+125)*S:m.cx,u:this.R.h/body};
     this.blob.scale.set(this.R.h*(this.kind==='bird'?.55:.75),this.R.h*.3,1); }
   useTex(t){ if(this.mat.map===t) return; this.mat.map=t; this.mesh.customDepthMaterial.map=t; this.mat.needsUpdate=true; this.mesh.customDepthMaterial.needsUpdate=true; }
-  dress(ci,wear){ if(this.kind!=='pup') return; const w=JSON.stringify(wear||{}); if(ci===this.ci&&w===JSON.stringify(this.wear)) return; this.ci=ci; this.wear=wear||{}; this.art=null; this.setArt(this.clipArt); }
+  dress(ci,wear){ if(this.kind!=='pup') return; const k=JSON.stringify([ci,ci===PUP_MIX?PUP_HEX:0,wear||{}]); if(k===this.dk) return; this.dk=k; this.ci=ci; this.wear=wear||{}; this.art=null; this.setArt(this.clipArt); }
   // bend the drawing into a pose
   pose(p){ const f=this.fit, R=this.R, pos=this.geo.attributes.position, H=f.bot-f.top, u=f.u;
     const NECK=f.top+H*(this.kind==='pup'?PUP_RIG.neck:R.neck||.45), BELLY=f.top+H*(this.kind==='pup'?PUP_RIG.belly:R.belly||.72), BRICK=f.top+H*(this.kind==='pup'?PUP_RIG.brick:R.brick||.6);
@@ -7746,6 +7746,10 @@ class Ch3Ctl{
 }
 function ch3Make(id){ if(!CH3.gltf[id]) return null; const P=new Puppet3(id); return {id,root:P.root,P,ctl:new Ch3Ctl(P)}; }
 // Dressing your otter: its brick colour and what it's wearing (drawn onto it)
+// The otter already standing on the island takes a new brick colour or outfit straight away
+// (it used to keep the old one until the island was next opened)
+function isl3PupRedress(){ const o=worldStore(); if(!ISL3.on||!ISL3.pupG) return; if(ISL3.p3) ch3Dress(ISL3.p3,o);
+  else ISL3.pupG.traverse(x=>{ if(x.isSprite){ x.material.map=pupTex3(o); x.material.needsUpdate=true; } }); isl3Kick(); }
 function ch3Dress(inst,o,opt){ opt=opt||{}; if(!inst||!inst.id.startsWith('pup')) return; inst.P.dress(opt.ci!=null?opt.ci:pupColorOf(o),opt.wear||accWear(o||{})); }
 const accName=(a,o)=>a.id==='prop'?['Toy boat','Skateboard','Laptop bag'][pupStage(o||worldStore())]:a.name;
 
@@ -8658,7 +8662,7 @@ function accRender(all){ const o=worldStore(), D=ISL3.accDraft, prev={...o,wear:
   $('#accList').innerHTML=ACC.filter(a=>!a.d3||ch3On()).map(a=>{ const own=accOwned(a,o), on=accOn(a,accWear(o)); return `<button type="button" data-acc="${a.id}" aria-pressed="${a.id===D.id}" ${own?'':'disabled'}>${escapeHTML(accName(a,o))}<small>${own?(on?'Wearing':'Yours'):a.finale?'Finish Bloppitopia':a.legend?'At Legend':'Level '+a.lvl}</small></button>`; }).join('');
   $('#accCols').innerHTML=PUP_COLORS.map((c,i)=>`<button type="button" role="radio" aria-checked="${i===D.ci}" aria-label="${c.n}" title="${c.n}" data-col="${i}" style="--c:${c.c}"></button>`).join('');
   $('#accOff').hidden=!accOn(ACC.find(a=>a.id===D.id)||{slot:D.slot},accWear(o)); }
-function accSave(on){ const o=worldStore(), D=ISL3.accDraft, w=accWear(o); if(on) w[D.slot]=[D.id,D.ci]; else delete w[D.slot]; o.wear=w; o.wearAt=Date.now(); worldSet(o); track(on?'acc_wear:'+D.id:'acc_off'); sfx.chirp(); }
+function accSave(on){ const o=worldStore(), D=ISL3.accDraft, w=accWear(o); if(on) w[D.slot]=[D.id,D.ci]; else delete w[D.slot]; o.wear=w; o.wearAt=Date.now(); worldSet(o); track(on?'acc_wear:'+D.id:'acc_off'); sfx.chirp(); isl3PupRedress(); }
 // Ten builds: a choice that makes two children's worlds a little different
 function pickOpen(){ const d=$('#pickDlg'); if(!d.open){ d.showModal(); track('pick_offered'); } }
 

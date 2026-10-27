@@ -576,6 +576,12 @@ test('living characters: on the island (dressed pup, the friends, tap for a reac
   await t.page.waitForFunction(() => { const c = window.bloppitChars3d().island; return c.bloppit && c.pup && c.longtail; }, null, { timeout: 90000, polling: 500 });
   const d = await t.page.evaluate(() => { const I = window.bloppitIsland3(), P = I.p3.P; return { wear: P.wear, ci: P.ci, studs: P.R.stage + 1, mode: I.b3.ctl.mode, clips: window.bloppitChars3d().island.clips, sprite: !!I.bloppitSprite }; });
   assert.deepEqual(d.wear, { head: ['beanie', 2] }); assert.equal(d.studs, 1); assert.equal(d.clips[0], 'idle'); assert.equal(d.mode, 2); assert.equal(d.sprite, false);   // the living drawing, at rest
+  // a new brick colour shows on the otter standing on the island straight away, and stays after the card closes
+  await t.page.evaluate(() => window.bloppitPup()); await t.page.waitForTimeout(300);
+  await t.page.evaluate(() => document.querySelector('#pupCols [data-col="10"]').click()); await t.page.waitForTimeout(300);
+  assert.equal(await t.page.evaluate(() => window.bloppitIsland3().p3.P.ci), 10);
+  await t.page.evaluate(() => document.getElementById('pupLater').click()); await t.page.waitForTimeout(300);
+  assert.equal(await t.page.evaluate(() => window.bloppitIsland3().p3.P.ci), 10);
   // the friends on their islands are living drawings too
   assert.equal(await t.page.evaluate(() => Object.values(window.bloppitIsland3().cast).filter((K) => K.i3).length), 4);
   // tap Bloppit: a reaction and a word
