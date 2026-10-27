@@ -134,8 +134,12 @@ test('a finger on the brick in hand slides the brick, and the view stays still',
   const cdp = await t.ctx.newCDPSession(t.page);
   const touch = (type, x, y) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y, radiusX: 12, radiusY: 12 }] });
   const slide = async (x0, y0, dx, dy) => { await touch('touchStart', x0, y0); for (let i = 1; i <= 10; i++) { await touch('touchMove', x0 + dx * i, y0 + dy * i); await t.page.waitForTimeout(50); } await touch('touchEnd'); await t.page.waitForTimeout(700); };
-  // press a little off the brick's middle (a fingertip) and slide
-  await slide(g.x + 18, g.y + 12, 9, 4);
+  // the brick in hand starts beside the build, not on top of it
+  const pl = await t.page.evaluate(() => window.bloppitPlacedBoxes());
+  assert.ok(pl.length && !pl.some((b) => g.ax < b.x + b.sx && g.ax + g.sx > b.x && g.az < b.z + b.sz && g.az + g.sz > b.z), 'the brick in hand is clear of the build');
+  // press a little off the brick's middle (a fingertip) and slide it in towards the middle of the stage
+  const mid = await t.page.evaluate(() => { const r = document.querySelector('#view-build canvas').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+  await slide(g.x + 18, g.y + 12, Math.sign(mid.x - g.x) * 9, Math.sign(mid.y - g.y) * 4);
   const g2 = await t.page.evaluate(() => window.bloppitGhost());
   assert.ok(g2.ax !== g.ax || g2.az !== g.az, 'the brick moved'); assert.deepEqual(g2.cam, g.cam, 'the view did not turn');
   // sliding away from the brick still turns the view
