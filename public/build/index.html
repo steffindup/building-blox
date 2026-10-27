@@ -1067,9 +1067,15 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 @keyframes cn-shine{from{background-position:120% 0}to{background-position:-30% 0}}
 .is3-cine .cn-skip{position:absolute;right:12px;top:calc(min(11%,96px) + 10px);pointer-events:auto;font:inherit;font-weight:800;font-size:14px;padding:7px 14px;border-radius:999px;border:0;background:rgba(5,16,26,.55);color:#fff;cursor:pointer;opacity:0;transition:opacity .6s;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 .is3-cine .cn-skip.on{opacity:1}
-/* the arrival film itself (public/video/arrival.mp4): fills the screen; upright screens follow Bloppit across the frame */
+/* the arrival film itself (public/video/arrival.mp4): fills wide screens (following Bloppit when a little narrower); upright screens show the whole film */
 .is3-cine .cn-film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;background:#05101a;opacity:0;transition:opacity .7s ease}
 .is3-cine .cn-film.on{opacity:1}.is3-cine.film .cn-bar{display:none}
+.is3-cine .cn-film.fit{object-fit:contain}   /* upright phones: the whole film, smaller, with dark bars */
+.is3-cine .cn-turn{position:absolute;left:50%;bottom:max(18px,calc(50% - 50vw * 9 / 16 - 64px));transform:translate(-50%,6px);display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.14);color:#fff;font-weight:800;font-size:14px;white-space:nowrap;opacity:0;transition:opacity .6s,transform .6s;pointer-events:none}
+.is3-cine .cn-turn.on{opacity:1;transform:translate(-50%,0)}
+.is3-cine .cn-turn i{font-style:normal;font-size:20px;display:inline-block;animation:cn-turn 2.4s ease-in-out infinite}
+@keyframes cn-turn{0%,30%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
+@media (prefers-reduced-motion:reduce){.is3-cine .cn-turn i{animation:none}}
 @media (prefers-reduced-motion:reduce){.is3-cine .cn-bar,.is3-cine .cn-cap,.is3-cine .cn-title{transition:opacity .3s}.is3-cine .cn-title b{animation:none}}
 .pup-suggest{width:100%;margin:0 0 8px}
 .pup-outfit{display:grid;gap:6px;margin:0 0 10px;text-align:left}.pup-outfit span{font-weight:800;font-size:14px}.pup-outfit>div{display:flex;gap:6px;flex-wrap:wrap}
@@ -8722,7 +8728,7 @@ function isl3Arrive(o){
   // the film's frame: letterbox bars, a misty veil that lifts, captions, the title and Skip
   const v=$('#view-island'); v.classList.add('cine'); const ov=document.createElement('div'); ov.className='is3-cine';
   const rm=!!reduceMotion, film=!rm&&!/[?&]film=0\b/.test(location.search);   // ?film=0 = the arrival made in the game
-  ov.innerHTML='<div class="cn-veil"></div>'+(film?'<video class="cn-film" playsinline webkit-playsinline preload="auto" aria-label="A little otter arrives at Bloppitopia"></video>':'')+'<div class="cn-bar t"></div><div class="cn-bar b"></div><div class="cn-title" aria-hidden="true"><b>Bloppitopia</b><span>an island waiting to grow</span></div><div class="cn-cap" aria-live="polite"></div><button class="cn-skip" type="button">Skip ›</button>';
+  ov.innerHTML='<div class="cn-veil"></div>'+(film?'<video class="cn-film" playsinline webkit-playsinline preload="auto" aria-label="A little otter arrives at Bloppitopia"></video><div class="cn-turn" aria-hidden="true"><i>📱</i>Turn sideways for the big screen</div>':'')+'<div class="cn-bar t"></div><div class="cn-bar b"></div><div class="cn-title" aria-hidden="true"><b>Bloppitopia</b><span>an island waiting to grow</span></div><div class="cn-cap" aria-live="polite"></div><button class="cn-skip" type="button">Skip ›</button>';
   ISL3.box.appendChild(ov); ov.querySelector('.cn-skip').onclick=()=>{ track('arrival_skipped'); arr3Finish(true); };
   const from=rm?13.6:0, F=ISL3.sc.fog;
   const A=ISL3.cine={t:from,t0:performance.now()-from*1000,boat,p3,pup,ov,bits:[],clouds:[],fog:[F.near,F.far],did:{},spawn:0,spark:0,music:{stop(){}},o,fov:ISL3.cam.fov,film:film?ov.querySelector('.cn-film'):null};
@@ -8740,8 +8746,13 @@ function arr3Begin(A){ const rm=!!reduceMotion; A.t0=performance.now()-A.t*1000;
 // The arrival film (01, Home Island): plays over the island with its own sound, then we meet the otter on the jetty.
 // If it can't start (no video support, or still not ready after 9 s) the arrival made in the game plays instead.
 const ARR_FILM=(APP?'video/':'/video/')+'arrival.mp4';
-function arr3FilmFrame(v,t){ const W=v.clientWidth, H=v.clientHeight; if(!W||!H) return; const cw=Math.min(1,(W/H)/((v.videoWidth||16)/(v.videoHeight||9)));
-  let pos='50% 50%'; if(cw<.999){ const k=(a,b)=>Math.min(1,Math.max(0,(t-a)/(b-a))), c=.54+.14*k(21,24)+.12*k(24,27)+.03*k(27,30), L=Math.min(1-cw,Math.max(0,c-cw/2)); pos=(L/(1-cw)*100).toFixed(1)+'% 50%'; }   // Bloppit walks right near the end
+function arr3FilmFrame(v,t){ const W=v.clientWidth, H=v.clientHeight; if(!W||!H) return;
+  // the screen fills only when its shape is close to the film's (computers, iPads held sideways); otherwise the whole
+  // film shows with dark bars: above and below when held upright (with a hint to turn sideways), at the sides on a phone held sideways
+  const a=W/H, tall=H>W, fit=a<1.45||a>2.05; if(v.classList.contains('fit')!==fit) v.classList.toggle('fit',fit);
+  const tn=v.parentNode&&v.parentNode.querySelector('.cn-turn'), hint=tall&&t>.6&&t<7; if(tn&&tn.classList.contains('on')!==hint) tn.classList.toggle('on',hint);
+  const cw=fit?1:Math.min(1,a/((v.videoWidth||16)/(v.videoHeight||9)));
+  let pos='50% 50%'; if(cw<.999){ const k=(a,b)=>Math.min(1,Math.max(0,(t-a)/(b-a))), c=.54+.14*k(21,24)+.12*k(24,27)+.03*k(27,30), L=Math.min(1-cw,Math.max(0,c-cw/2)); pos=(L/(1-cw)*100).toFixed(1)+'% 50%'; }   // a little narrower than the film (iPad, square windows): fill and follow Bloppit
   if(v.style.objectPosition!==pos) v.style.objectPosition=pos; }
 function arr3Film(A){ const v=A.film; A.ov.classList.add('film'); let started=false;
   const live=()=>ISL3.cine===A&&A.film===v;
@@ -8805,7 +8816,7 @@ function arr3Finish(skipped){ const A=ISL3.cine; if(!A) return; ISL3.cine=null; 
     const [p,q]=arr3Cam(end,bx,bz), cam=ISL3.cam; ISL3.fly={t0:performance.now(),dur:900,p0:cam.position.clone(),q0:ISL3.ctl.target.clone(),q1:q,p1:p}; }
   for(const b of A.bits){ ISL3.sc.remove(b.sp); b.sp.material.dispose(); } A.bits=[]; for(const c of A.clouds) ISL3.sc.remove(c);
   const F=ISL3.sc.fog; F.near=A.fog[0]; F.far=A.fog[1]; if(ISL3.cam.fov!==A.fov){ ISL3.cam.fov=A.fov; ISL3.cam.updateProjectionMatrix(); }
-  A.ov.classList.remove('on'); A.ov.querySelector('.cn-veil').classList.add('off'); A.ov.querySelectorAll('.cn-cap,.cn-title,.cn-skip,.cn-film').forEach(e=>e.classList.remove('on')); setTimeout(()=>A.ov.remove(),1300);
+  A.ov.classList.remove('on'); A.ov.querySelector('.cn-veil').classList.add('off'); A.ov.querySelectorAll('.cn-cap,.cn-title,.cn-skip,.cn-film,.cn-turn').forEach(e=>e.classList.remove('on')); setTimeout(()=>A.ov.remove(),1300);
   $('#view-island').classList.remove('cine'); ISL3.arrive=null; ISL3.ctl.update(); isl3Kick();
   if(skipped) setTimeout(()=>{ if(!A.did.land) try{ sfx.hatch(); }catch(e){} isl3Banner('A little otter has arrived!',true); },300);
   setTimeout(()=>{ isl3Banner(''); pupOpen(()=>{ const w=worldStore(); w.arrived=1; worldSet(w); ISL3.arrival='home'; renderIsland(); },{arrival:true}); },skipped?1700:1500);
