@@ -2490,7 +2490,7 @@ function loop(now){
   if(tab==='build'&&onStage){
     revealTick(now);
     drops=drops.filter(d=>{const t=clamp((now-d.t0)/260,0,1); d.m.position.y=d.ty+(1-t*t)*2.2*(d.dir||1); return t<1;});
-    { const g=ghostGroup.children[0]; if(g&&ghostGroup.visible&&g.material!==errMat) g.material.opacity=reduceMotion?.6:.5+Math.sin(now/240)*.15; }
+    { const g=ghostGroup.children[0]; if(g&&ghostGroup.visible&&g.material!==errMat) g.material.opacity=reduceMotion?.7:.62+Math.sin(now/240)*.16;  /* stronger than the faint hint bricks */ }
     if(camAnim){ const t=clamp((now-camAnim.t0)/650,0,1), e=1-Math.pow(1-t,3);
       playControls.target.lerpVectors(camAnim.t1,camAnim.t2,e); playCam.position.lerpVectors(camAnim.p1,camAnim.p2,e);
       if(t>=1) camAnim=null; }
@@ -2900,7 +2900,7 @@ const ghostMats=new Map(), hintMats=new Map();
 const ghostMat=c=>{if(!ghostMats.has(c)) ghostMats.set(c,xrayFix(tMat(PALETTE[c][1],.6))); return ghostMats.get(c);};
 const hintMat=c=>{if(!hintMats.has(c)) hintMats.set(c,xrayFix(tMat(PALETTE[c][1],.42))); return hintMats.get(c);};
 const errMat=tMat('#E03A2F',.7);
-const ghostEdge=new THREE.LineBasicMaterial({color:0x14202c,transparent:true,opacity:.5});
+const ghostEdge=new THREE.LineBasicMaterial({color:0x14202c,transparent:true,opacity:.85});
 // On a step whose bricks clip on underneath, the ghost and hints show through the bricks above them
 let xrayOn=false;
 const xrayFix=m=>{ m.depthTest=!xrayOn; return m; };
@@ -3288,10 +3288,27 @@ function setGhost(){
   padSync();
 }
 const ghostLift=()=>0;
-// Where a newly picked-up brick first appears: the middle of what's built so far (or the middle of the table)
+// Where a newly picked-up brick first appears: the middle of the table for the first brick; after that,
+// just beside what's built (one stud clear), never inside it. Of the four sides, the one that shows nearest the
+// middle of the screen (easy to see, with room to drag it any way), then the side facing you.
 function ghostHome(){
-  if(placedBoxes.length){ let x=0,z=0; for(const b of placedBoxes){ x+=b.x+b.sx/2; z+=b.z+b.sz/2; } return {px:x/placedBoxes.length,pz:z/placedBoxes.length}; }
-  return {px:model.W/2,pz:model.D/2};
+  if(!placedBoxes.length) return {px:model.W/2,pz:model.D/2};
+  let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;
+  for(const b of placedBoxes){ x0=Math.min(x0,b.x); x1=Math.max(x1,b.x+b.sx); z0=Math.min(z0,b.z); z1=Math.max(z1,b.z+b.sz); }
+  const sx=sel?sel.sx:2, sz=sel?sel.sz:2, mx=(x0+x1)/2, mz=(z0+z1)/2;
+  const cx=Math.round(model.W/2), cz=Math.round(model.D/2), y=(model.steps[cur]?model.steps[cur].layer:0)*1.2+.6;
+  const t=new THREE.Vector3().subVectors(playCam.position,playControls.target); t.y=0; if(t.lengthSq()<1e-6) t.set(0,0,1); t.normalize();
+  let best=null;
+  for(const s of [{n:[0,1],px:mx,pz:z1+1+sz/2},{n:[0,-1],px:mx,pz:z0-1-sz/2},{n:[1,0],px:x1+1+sx/2,pz:mz},{n:[-1,0],px:x0-1-sx/2,pz:mz}]){
+    const ax=Math.round(s.px-sx/2), az=Math.round(s.pz-sz/2);
+    if(ax<cx-REACH||ax>cx+REACH-sx||az<cz-REACH||az>cz+REACH-sz) continue;
+    if(placedBoxes.some(b=>ax<b.x+b.sx&&ax+sx>b.x&&az<b.z+b.sz&&az+sz>b.z)) continue;
+    const P=(x,z)=>new THREE.Vector3(x+playGroup.position.x,y,z+playGroup.position.z).project(playCam), v=P(s.px,s.pz);
+    let out=0; for(const [x,z] of [[ax,az],[ax+sx,az],[ax,az+sz],[ax+sx,az+sz]]){ const c=P(x,z); out=Math.max(out,Math.abs(c.x)-.82,Math.abs(c.y)-.8); }   // near or past the screen's edge
+    const score=Math.max(0,out)*8+Math.hypot(v.x,v.y)-(s.n[0]*t.x+s.n[1]*t.z)*.6;   // the side facing you, unless it runs off the screen
+    if(!best||score<best.score) best={score,px:s.px,pz:s.pz};
+  }
+  return best?{px:best.px,pz:best.pz}:{px:mx,pz:mz};
 }
 // Nudge the brick one stud. "Up" means away from you, whichever way the view is turned.
 function nudgeGhost(dir){
@@ -3408,7 +3425,10 @@ function placeBrick(t,ax,az){
   // Take the brick out of the box (from your hand if you were holding one like it).
   const a=Math.min(t.sx,t.sz), l=Math.max(t.sx,t.sz), match=p=>p.a===a&&p.l===l&&p.c===t.c;
   const used=held&&match(held)?held:(hand.find(match)||pieces.find(p=>match(p)&&!p.hand)||pieces.find(match));
+  // The next brick in hand starts beside the build (ghostHome), not where this one just landed
+  if(!autoBusy) lastAnchor=null;
   if(used){ pieces.splice(pieces.indexOf(used),1); if(hand.includes(used)) dropFromHand(used); }
+  if(!autoBusy&&sel&&!lastAnchor) setGhost();
   const s=model.steps[cur];
   const done=off?s.bricks.every(b=>placed.has(b)):cands[0].used.size>=s.bricks.length;
   const first=placedN===1; if(first){ buildStarted(game?'trail':mp?(mp.state&&mp.state.calm?'weekly':mp.cpu?'blitz':'room'):'quick'); if(run.memory===null) run.memory=$('.build-grid').classList.contains('no-book')&&!welcomeOn(); }
@@ -3464,8 +3484,9 @@ function onGhost(e){
   return null;
 }
 window.bloppitPlay=()=>({cam:playCam.position.toArray().map(v=>+v.toFixed(3)),tgt:playControls.target.toArray().map(v=>+v.toFixed(3)),anchor:lastAnchor?[lastAnchor.ax,lastAnchor.az]:null,sel:!!sel,ghost:ghostGroup.visible,placed:placedN,total:model?model.bricks.length:0,hand:hand.length,ctl:playControls.enabled,min:playControls.minDistance,max:playControls.maxDistance});   // for tests
+window.bloppitPlacedBoxes=()=>placedBoxes.map(b=>({x:b.x,z:b.z,sx:b.sx,sz:b.sz}));   // for tests
 window.bloppitGhost=()=>{ if(!sel||!lastAnchor||!ghostGroup.visible) return null; const r=renderer.domElement.getBoundingClientRect(), b=new THREE.Box3().setFromObject(ghostGroup), c=b.getCenter(new THREE.Vector3()).project(playCam);   // for tests
-  return {x:r.left+(c.x+1)/2*r.width,y:r.top+(1-c.y)/2*r.height,ax:lastAnchor.ax,az:lastAnchor.az,cam:playCam.position.toArray().map(v=>+v.toFixed(3))}; };
+  return {x:r.left+(c.x+1)/2*r.width,y:r.top+(1-c.y)/2*r.height,ax:lastAnchor.ax,az:lastAnchor.az,sx:sel.sx,sz:sel.sz,cam:playCam.position.toArray().map(v=>+v.toFixed(3))}; };
 // While a finger drags the brick, the view must not turn: these controls listen to touch events, not just pointer ones
 function viewHold(on){ if(on){ viewHold.was=[controls.enabled,playControls.enabled]; controls.enabled=false; playControls.enabled=false; }
   else if(viewHold.was){ [controls.enabled,playControls.enabled]=viewHold.was; viewHold.was=null; } }
@@ -3485,7 +3506,9 @@ cvs.addEventListener('pointermove',e=>{ if(tab!=='build'||!sel||!model||cur>=mod
     return; }
   if(e.pointerType==='mouse'&&!e.buttons){const p=pointToPlate(e); if(p) placeGhost(p.px,p.pz);} });
 cvs.addEventListener('pointerup',e=>{
-  if(ghostDrag&&e.pointerId===ghostDrag.id){ const g=ghostDrag; ghostDrag=null; viewHold(false);
+  // (the view is let go only after the finger's touchend has passed, or the controls would take that touchend as the
+  // end of a turn and swing a brick you just dragged near the edge back to the build)
+  if(ghostDrag&&e.pointerId===ghostDrag.id){ const g=ghostDrag; ghostDrag=null; setTimeout(()=>viewHold(false),0);
     if(!g.moved) tryPlace();  // a tap on the brick puts it down
     else setStatus(e.pointerType==='mouse'?'Happy with it? Click it or press ✓ Place.':'Happy with it? Tap it or press ✓ Place.');
     return; }
@@ -7051,7 +7074,7 @@ function islandInfo(id,o){
     case 'pup': { const nm=pupName(o), ps=pupStage(o), nx=PUP_STAGES[ps+1], c=PUP_COLORS[pupColorOf(o)];
       const lv=otterLevel(o), nl=levelXP(lv+1), nAcc=ACC.find(a=>!a.legend&&!a.finale&&a.lvl>lv);
       return {title:nm||'Your otter',hint:`Level ${lv} ${PUP_STAGES[ps].name} · ${ps+1} stud${ps?'s':''} on its brick`,icon:pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'}),
-        rows:[['Otter level',`${lv} (${worldXP(o)} XP, next at ${nl})`],...(nAcc?[['Next outfit',`${nAcc.name} at level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at ${nx.at} builds: another stud`:'A Legend. That’s the top']],
+        rows:[['Otter level',`${lv} · ${nl-worldXP(o)} XP to Level ${lv+1}`],...(nAcc?[['Next outfit',`${nAcc.name} at level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at ${nx.at} builds: another stud`:'A Legend. That’s the top']],
         bar:nx?{pct:Math.max(4,pupPct(o,ps)),label:`${nx.at-n} more build${nx.at-n===1?'':'s'} to ${nx.name}`}:null,
         actions:[{label:'👕 Wardrobe',fn:()=>wardrobeOpen(),primary:true},{label:nm?'Name or colour':'Name your otter',fn:()=>pupOpen()}]}; }
     case 'model': { const f=modelFacts(arg,o), b=f.b, flagW=arg.startsWith('w:')&&!ISL3.ok, onIsle=shown.list.some(m=>m.key===arg)||flagW;
