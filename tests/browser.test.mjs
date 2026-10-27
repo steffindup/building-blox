@@ -45,6 +45,24 @@ test('first visit: the arrival film can be skipped straight to meeting the otter
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('My films: hidden until the arrival film is unlocked, then plays it again from the menu', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1');
+  assert.equal(await t.page.evaluate(() => document.getElementById('hmFilms').hidden), true);
+  await t.ctx.close();
+  const u = await open('?nosplash=1', { init: { fn: () => { if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); } } });
+  const shot = (n) => process.env.SHOTS ? u.page.screenshot({ path: `${process.env.SHOTS}/films-${n}.png` }) : null;
+  assert.equal(await u.page.evaluate(() => document.getElementById('hmFilms').hidden), false);
+  assert.match(await u.text('#hmFilmsS'), /1 film to watch again/); await shot(1);
+  await u.page.evaluate(() => document.getElementById('hmFilms').click()); await u.page.waitForTimeout(400);
+  assert.equal(await u.page.evaluate(() => document.getElementById('filmsDlg').open), true);
+  assert.match(await u.text('#filmNow'), /01 · Arrival/);
+  await u.page.evaluate(() => document.querySelector('#filmList [data-film="arrival"]').click());
+  await u.page.waitForFunction(() => { const v = document.getElementById('filmVid'); return /\/video\/arrival\.mp4$/.test(v.src) && v.currentTime > 0.3; }, null, { timeout: 10000 }); await shot(2);
+  await u.page.evaluate(() => document.getElementById('filmsClose').click()); await u.page.waitForTimeout(300);
+  assert.equal(await u.page.evaluate(() => !document.getElementById('filmsDlg').open && document.getElementById('filmVid').paused), true);
+  assert.deepEqual(u.errors, []); await u.ctx.close();
+});
+
 test('first visit: with ?film=0 the arrival made in the game plays instead of the film', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&film=0');
   await t.page.evaluate(() => document.getElementById('hmCont').click());

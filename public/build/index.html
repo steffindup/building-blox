@@ -830,6 +830,20 @@ body.on-home .tabs{visibility:hidden}
 .howdlg .win-btns{margin-top:12px}
 .howdlg .how-x{position:absolute;top:20px;right:20px;z-index:2;width:40px;height:40px;border-radius:50%;border:0;background:rgba(20,32,44,.72);color:#fff;font-size:26px;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .howdlg .how-x:hover{background:rgba(20,32,44,.9)}.howdlg .how-x:focus-visible{outline:3px solid var(--hi)}
+/* My films: the story films a player has unlocked, to watch again */
+.hm-films .pl{background:#0b4f6c;font-size:20px}
+.filmsdlg h2{margin:2px 56px 10px 4px;font-family:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;font-weight:400;font-size:26px;line-height:1.1}
+.filmsdlg .how-x{top:12px;right:12px}
+.filmsdlg video{max-height:calc(100vh - 360px);max-height:calc(100dvh - 360px);min-height:160px}
+.filmsdlg .film-now{margin:8px 4px 0;font-weight:800;font-size:15px}.filmsdlg .film-now small{color:var(--muted);font-weight:700}
+.film-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:14px 0 0}
+.film-list button{font:inherit;display:grid;gap:4px;padding:6px 6px 8px;border-radius:14px;border:2px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer;text-align:left}
+.film-list button[aria-pressed="true"]{border-color:var(--ink);background:#E8F1F8}
+.film-list img,.film-list .lock{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:9px;background:#14202C}
+.film-list .lock{display:grid;place-items:center;font-size:24px;background:#DCE6EE}
+.film-list b{font-size:14px;line-height:1.15}.film-list small{color:var(--muted);font-size:12px;font-weight:700}
+.film-list button:disabled{cursor:default;opacity:.75}
+.filmsdlg .film-more{margin:12px 4px 0;color:var(--muted);font-size:13px;font-weight:700}
 .hm-hello img{width:66px;height:66px;flex:none;border-radius:50%}
 .hm-bubble{position:relative;background:var(--page);border:1px solid var(--line);border-radius:16px;padding:10px 16px 12px;box-shadow:0 2px 0 var(--shadow)}
 .hm-bubble::before{content:"";position:absolute;left:-8px;top:50%;width:14px;height:14px;background:var(--page);border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:translateY(-50%) rotate(45deg)}
@@ -1211,6 +1225,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
     <div class="hm-bubble"><h2 id="hmHi">Hi there!</h2><p>What shall we build today?</p></div>
   </div>
   <button class="hm-how" id="hmHow" type="button"><span class="pl" aria-hidden="true">▶</span><span><b>How to play</b><small>A one-minute video</small></span></button>
+  <button class="hm-how hm-films" id="hmFilms" type="button" hidden><span class="pl" aria-hidden="true">🎬</span><span><b>My films</b><small id="hmFilmsS">Watch your films again</small></span></button>
   <button class="hm-world" id="hmWorld" data-go="island" type="button" hidden></button>
   <button class="hm-cont" id="hmCont" type="button" hidden><img class="hc-pic" src="/art/bud-offer.png" alt="" width="300" height="398"><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span><span class="go" aria-hidden="true">▶</span></button>
   <button class="hm-daily" data-go="daily" type="button"><img id="hmDailyImg" alt=""><span class="hd-txt"><span class="tag">📅 Weekly Bloppit</span><b id="hmDailyT">This week’s puzzle</b><span id="hmDailyS">One puzzle, the same for everyone</span></span><span class="go" aria-hidden="true">▶</span></button>
@@ -1761,6 +1776,15 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
   <button class="how-x" id="howX" type="button" aria-label="Close">×</button>
   <video id="howVid" controls playsinline preload="none" poster="/video/how-to-play.jpg"><source src="/video/how-to-play.mp4" type="video/mp4"></video>
   <div class="win-btns"><button class="primary sm" id="howClose" type="button">Let’s build!</button></div>
+</dialog>
+<dialog class="windlg howdlg filmsdlg" id="filmsDlg" aria-labelledby="filmsT">
+  <button class="how-x" id="filmsX" type="button" aria-label="Close">×</button>
+  <h2 id="filmsT">My films</h2>
+  <video id="filmVid" controls playsinline preload="none"></video>
+  <p class="film-now" id="filmNow"></p>
+  <div class="film-list" id="filmList"></div>
+  <p class="film-more" id="filmMore">More films unlock as your world grows.</p>
+  <div class="win-btns"><button class="primary sm" id="filmsClose" type="button">Done</button></div>
 </dialog>
 <dialog class="windlg" id="welcomeDlg" aria-labelledby="wcTitle">
   <img class="wc-pic" src="/art/bud-hug.png" alt="" width="300" height="398">
@@ -2997,6 +3021,32 @@ $('#howDlg').addEventListener('click',e=>{ if(e.target===e.currentTarget) howClo
 $('#howClose').onclick=howClose;
 $('#howVid').addEventListener('ended',()=>track('howto_watched'));
 $('#hmHow').onclick=()=>howOpen('menu');
+/* My films: the Bloppitopia story films (series bible: 01 Arrival, then an arrival and a completion film for each
+   island, the Moonstone chapters and the ending). Each one unlocks when the game reaches its moment, and stays in
+   My films to watch again. Add a film here when it's made: file = public/video/<file>.mp4 with a <file>.jpg poster.
+   Locked films show only their hint, never their name, so nothing is spoiled. */
+const VID_BASE=APP?'video/':'/video/';
+const FILMS=[
+  {id:'arrival',no:'01',name:'Arrival',place:'Home Island',file:'arrival',open:o=>!!o.arrived||worldCount(o)>0},
+];
+const filmsOpen=o=>FILMS.filter(f=>{ try{ return f.open(o); }catch(e){ return false; } });
+function renderFilmsTile(){ const n=filmsOpen(worldStore()).length, el=$('#hmFilms'); el.hidden=!n; if(n) $('#hmFilmsS').textContent=n===1?'1 film to watch again':`${n} films to watch again`; }
+let filmCur=null;
+function filmShow(f,play){ const v=$('#filmVid'); filmCur=f.id; v.setAttribute('poster',VID_BASE+f.file+'.jpg'); v.src=VID_BASE+f.file+'.mp4';
+  $('#filmNow').innerHTML=`${f.no} · ${escapeHTML(f.name)} <small>· ${escapeHTML(f.place)}</small>`;
+  $('#filmList').querySelectorAll('button[data-film]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.film===f.id?'true':'false'));
+  if(play){ try{ v.muted=!sfx.on; const p=v.play(); if(p&&p.catch) p.catch(()=>{}); }catch(e){} track('film_play:'+f.id); } }
+function filmsShow(){ const d=$('#filmsDlg'); if(d.open) return; const o=worldStore(), open=filmsOpen(o); if(!open.length) return;
+  const locked=FILMS.filter(f=>!open.includes(f));
+  $('#filmList').innerHTML=open.map(f=>`<button type="button" data-film="${f.id}" aria-pressed="false"><img src="${VID_BASE+f.file}.jpg" alt="" loading="lazy"><b>${f.no} · ${escapeHTML(f.name)}</b><small>${escapeHTML(f.place)}</small></button>`).join('')
+    +locked.slice(0,1).map(f=>`<button type="button" disabled><span class="lock" aria-hidden="true">🔒</span><b>${f.no} · ???</b><small>${escapeHTML(f.hint||'Keep building to unlock')}</small></button>`).join('');
+  $('#filmList').querySelectorAll('button[data-film]').forEach(b=>b.onclick=()=>filmShow(FILMS.find(f=>f.id===b.dataset.film),true));
+  $('#filmMore').hidden=false; filmShow(open[open.length-1],false); d.showModal(); track('films_open'); }
+function filmsClose(){ const d=$('#filmsDlg'); try{ $('#filmVid').pause(); }catch(e){} if(d.open) d.close(); }
+$('#hmFilms').onclick=()=>filmsShow();
+$('#filmsX').onclick=$('#filmsClose').onclick=()=>filmsClose();
+$('#filmsDlg').addEventListener('close',()=>{ try{ $('#filmVid').pause(); }catch(e){} });
+$('#filmsDlg').addEventListener('click',e=>{ if(e.target===e.currentTarget) filmsClose(); });
 $('#howBtn').onclick=()=>howOpen('build');
 function howSync(){ let n=0; try{ n=worldCount(worldStore()); }catch(e){} $('#howBtn').hidden=n>=HOW_UNTIL||!!mp; }
 function updateBuildUI(){
@@ -9358,7 +9408,7 @@ function renderHome(){
   const p=curPlayer(), named=p.name&&!/^Player \d+$/.test(p.name.trim());
   $('#hmHi').innerHTML=named?`Hi <button class="hm-who" id="hmWho" type="button">${escapeHTML(p.name.trim())}</button>!`:'Hi there!';
   const w=$('#hmWho'); if(w) w.onclick=()=>$('#whoBtn').click();
-  homeCont=homeContinue(); $('#hmCont').hidden=!homeCont; renderHomeWorld();
+  homeCont=homeContinue(); $('#hmCont').hidden=!homeCont; renderHomeWorld(); renderFilmsTile();
   if(tab==='home') pupMaybe();  // the first finish anywhere (a Trail level, a race) meets the pup on the way back to the menu
   if(homeCont){ $('#hmContT').textContent=homeCont.t; $('#hmContS').textContent=homeCont.s;
     $('#hmContBar').hidden=homeCont.p<0; $('#hmContBar i').style.width=Math.max(4,homeCont.p)+'%'; $('#hmCont').classList.toggle('first',!!homeCont.first); }
