@@ -569,6 +569,31 @@ test('island: a new build always shows, even when older models were dragged into
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('Frog Forest films: its arrival film plays when it rises from the mist, its completion film when it is complete, then both are in My films', { skip: skip() }, async () => {
+  // every Frog Trail level done, and the island not yet revealed: both moments are new
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; for (let i = 0; i < 3; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1 }; log.push(k); }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 }));
+    const best = {}; for (let i = 0; i < 15; i++) best[i] = 3; localStorage.setItem('building-blox-game-v1', JSON.stringify({ best }));
+    localStorage.setItem('bloppit-seen3-v1', JSON.stringify(['home:home1'])); } };
+  const t = await open('?nosplash=1&hour=11#island', { init: seed });
+  await t.page.waitForFunction(() => window.bloppitFilmOn() === 'frog-arrival', null, { timeout: 30000, polling: 200 });
+  assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), /\/video\/frog-forest-arrival\.mp4$/);
+  await t.page.waitForFunction(() => document.querySelector('.is3-film video').currentTime > .3, null, { timeout: 15000 });
+  await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click());
+  // then the island rises as before, and later the completion film plays before the fireworks
+  await t.page.waitForFunction(() => window.bloppitFilmOn() === 'frog-complete', null, { timeout: 90000, polling: 200 });
+  assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), /\/video\/frog-forest-complete\.mp4$/);
+  await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click());
+  await t.page.waitForFunction(() => /Frog Forest is complete/.test(document.querySelector('#isWorld .is3-banner')?.textContent || ''), null, { timeout: 20000 });
+  assert.equal(await t.page.evaluate(() => !document.querySelector('.is3-film') && window.bloppitFilmOn() === null), true);
+  await t.ctx.close();
+  // My films lists all three, in order
+  const u = await open('?nosplash=1', { init: seed });
+  await u.page.evaluate(() => document.getElementById('hmFilms').click()); await u.page.waitForTimeout(400);
+  assert.deepEqual(await u.page.evaluate(() => [...document.querySelectorAll('#filmList [data-film]')].map((b) => b.dataset.film)), ['arrival', 'frog-arrival', 'frog-complete']);
+  assert.deepEqual(u.errors, []); await u.ctx.close();
+});
+
 test('living characters: on the island (dressed pup, the friends, tap for a reaction), the wardrobe, the build buddy as Swoop on his turn, and still drawings with ?chars3d=0', { skip: skip() }, async () => {
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; for (let i = 0; i < 3; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1 }; log.push(k); }
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, wear: { head: ['beanie', 2] } })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); } };
