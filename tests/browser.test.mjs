@@ -594,6 +594,29 @@ test('Frog Forest films: its arrival film plays when it rises from the mist, its
   assert.deepEqual(u.errors, []); await u.ctx.close();
 });
 
+test('Frog Forest arrival film: Play next to Frog Trail level 1 plays it first, then the puzzle; it never plays twice', { skip: skip() }, async () => {
+  // the first home is built, Frog Forest not found yet
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const k = 'm:Cottage:12';
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 10, bonus: 0, builds: { [k]: { n: 12, s: 2, t: 1e12, c: 1 } }, log: [k], decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1 }));
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); } };
+  const t = await open('?nosplash=1&hour=11#island', { init: seed });
+  await t.page.waitForFunction(() => /Frog Trail level 1/.test(document.querySelector('#isWorld .is3-play')?.textContent || ''), null, { timeout: 30000 });
+  await t.page.evaluate(() => document.querySelector('#isWorld .is3-play').click());
+  await t.page.waitForFunction(() => window.bloppitFilmOn() === 'frog-arrival', null, { timeout: 15000, polling: 200 });
+  assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), /\/video\/frog-forest-arrival\.mp4$/);
+  await t.page.waitForFunction(() => document.querySelector('.is3-film video').currentTime > .3, null, { timeout: 15000 });
+  await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click());
+  // then the puzzle: Frog Trail level 1
+  await t.page.waitForFunction(() => [...document.querySelectorAll('section.view')].find((v) => !v.hidden)?.id === 'view-build' && /Level 1/.test(document.getElementById('status').textContent), null, { timeout: 15000 });
+  assert.deepEqual(await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1')).films), ['frog-arrival']);
+  // finishing level 1 raises Frog Forest from the mist, without the film again
+  await t.page.evaluate(() => { const g = { best: { 0: 3 } }; localStorage.setItem('building-blox-game-v1', JSON.stringify(g)); location.hash = ''; });
+  await t.page.goto(t.page.url().replace(/#.*$/, '') + '#island', { waitUntil: 'load' });
+  await t.page.waitForFunction(() => /Frog Forest/.test(document.querySelector('#isWorld .is3-banner')?.textContent || ''), null, { timeout: 30000 });
+  assert.equal(await t.page.evaluate(() => window.bloppitFilmOn()), null);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('living characters: on the island (dressed pup, the friends, tap for a reaction), the wardrobe, the build buddy as Swoop on his turn, and still drawings with ?chars3d=0', { skip: skip() }, async () => {
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; for (let i = 0; i < 3; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1 }; log.push(k); }
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, wear: { head: ['beanie', 2] } })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); } };
