@@ -26,7 +26,7 @@ async function open(url, { viewport = { width: 1000, height: 800 }, init, at, to
   const page = await ctx.newPage(); const errors = []; page.on('pageerror', (e) => errors.push(e.message));
   if (init) await page.addInitScript(init.fn, init.arg);
   if (at) await page.clock.setFixedTime(new Date(at));
-  const u = url.replace(/^([^#]*)/, (m) => m + (m.includes('?') ? '&' : '?') + 'lite3d=1');   // a light 3D world: the test machine has no GPU
+  const u = url.replace(/^([^#]*)/, (m) => m + (m.includes('?') ? '&' : '?') + 'lite3d=1' + (/films=/.test(m) ? '' : '&films=0'));   // a light 3D world: the test machine has no GPU; the island films only in the tests about them
   await page.goto(BASE + u, { waitUntil: 'load' }); await page.waitForTimeout(2500);
   return { page, ctx, errors, view: () => page.evaluate(() => [...document.querySelectorAll('section.view')].find((v) => !v.hidden)?.id), text: (sel) => page.evaluate((s) => document.querySelector(s)?.textContent.replace(/\s+/g, ' ').trim(), sel) };
 }
@@ -572,10 +572,10 @@ test('island: a new build always shows, even when older models were dragged into
 test('Frog Forest films: its arrival film plays when it rises from the mist, its completion film when it is complete, then both are in My films', { skip: skip() }, async () => {
   // every Frog Trail level done, and the island not yet revealed: both moments are new
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; for (let i = 0; i < 3; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1 }; log.push(k); }
-    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 }));
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, films: ['brickworks-arrival'] })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 }));
     const best = {}; for (let i = 0; i < 15; i++) best[i] = 3; localStorage.setItem('building-blox-game-v1', JSON.stringify({ best }));
     localStorage.setItem('bloppit-seen3-v1', JSON.stringify(['home:home1'])); } };
-  const t = await open('?nosplash=1&hour=11#island', { init: seed });
+  const t = await open('?nosplash=1&hour=11&films=1#island', { init: seed });
   await t.page.waitForFunction(() => window.bloppitFilmOn() === 'frog-arrival', null, { timeout: 30000, polling: 200 });
   assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), /\/video\/frog-forest-arrival\.mp4$/);
   await t.page.waitForFunction(() => document.querySelector('.is3-film video').currentTime > .3, null, { timeout: 15000 });
@@ -590,7 +590,7 @@ test('Frog Forest films: its arrival film plays when it rises from the mist, its
   // My films lists all three, in order
   const u = await open('?nosplash=1', { init: seed });
   await u.page.evaluate(() => document.getElementById('hmFilms').click()); await u.page.waitForTimeout(400);
-  assert.deepEqual(await u.page.evaluate(() => [...document.querySelectorAll('#filmList [data-film]')].map((b) => b.dataset.film)), ['arrival', 'frog-arrival', 'frog-complete']);
+  assert.deepEqual(await u.page.evaluate(() => [...document.querySelectorAll('#filmList [data-film]')].map((b) => b.dataset.film)), ['arrival', 'frog-arrival', 'frog-complete', 'brickworks-arrival']);   // (its three quick builds found Brickworks Island too)
   assert.deepEqual(u.errors, []); await u.ctx.close();
 });
 
@@ -599,7 +599,7 @@ test('Frog Forest arrival film: Play next to Frog Trail level 1 plays it first, 
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const k = 'm:Cottage:12';
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 10, bonus: 0, builds: { [k]: { n: 12, s: 2, t: 1e12, c: 1 } }, log: [k], decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1 }));
     localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); } };
-  const t = await open('?nosplash=1&hour=11#island', { init: seed });
+  const t = await open('?nosplash=1&hour=11&films=1#island', { init: seed });
   await t.page.waitForFunction(() => /Frog Trail level 1/.test(document.querySelector('#isWorld .is3-play')?.textContent || ''), null, { timeout: 30000 });
   await t.page.evaluate(() => document.querySelector('#isWorld .is3-play').click());
   await t.page.waitForFunction(() => window.bloppitFilmOn() === 'frog-arrival', null, { timeout: 15000, polling: 200 });
@@ -614,6 +614,30 @@ test('Frog Forest arrival film: Play next to Frog Trail level 1 plays it first, 
   await t.page.goto(t.page.url().replace(/#.*$/, '') + '#island', { waitUntil: 'load' });
   await t.page.waitForFunction(() => /Frog Forest/.test(document.querySelector('#isWorld .is3-banner')?.textContent || ''), null, { timeout: 30000 });
   assert.equal(await t.page.evaluate(() => window.bloppitFilmOn()), null);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('island arrival films from the menu: vs Swoop plays Blitz Bay’s first, Quick Build plays Brickworks Island’s, each once', { skip: skip() }, async () => {
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const k = 'm:Cottage:12';
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 10, bonus: 0, builds: { [k]: { n: 12, s: 2, t: 1e12, c: 1, k: 'welcome' } }, log: [k], decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1 }));
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); } };
+  const t = await open('?nosplash=1&films=1', { init: seed });
+  const film = async (id, file) => {
+    await t.page.waitForFunction((id) => window.bloppitFilmOn() === id, id, { timeout: 15000, polling: 200 });
+    assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), new RegExp(`/video/${file}\\.mp4$`));
+    await t.page.waitForFunction(() => document.querySelector('.is3-film video').currentTime > .3, null, { timeout: 15000 });
+    await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click()); await t.page.waitForTimeout(1200); };
+  await t.page.evaluate(() => document.querySelector('#view-home [data-go="cpu"]').click());
+  await film('blitzbay-arrival', 'blitz-bay-arrival');
+  assert.equal(await t.view(), 'view-blitz');
+  await t.page.evaluate(() => window.bloppitHome()); await t.page.waitForTimeout(500);
+  await t.page.evaluate(() => document.querySelector('#view-home [data-go="quick"]').click());
+  await film('brickworks-arrival', 'brickworks-arrival');
+  // seen: not again
+  await t.page.evaluate(() => window.bloppitHome()); await t.page.waitForTimeout(500);
+  await t.page.evaluate(() => document.querySelector('#view-home [data-go="cpu"]').click()); await t.page.waitForTimeout(1500);
+  assert.equal(await t.page.evaluate(() => window.bloppitFilmOn()), null); assert.equal(await t.view(), 'view-blitz');
+  assert.deepEqual(await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1')).films), ['blitzbay-arrival', 'brickworks-arrival']);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 

@@ -3039,13 +3039,21 @@ const FILMS=[
   // at: the island moment that plays it (see isl3Reveal): an island rising from the mist, or an island complete
   {id:'frog-arrival',no:'02',name:'Arrival',place:'Frog Forest',file:'frog-forest-arrival',at:'isle:otterwood',open:o=>filmSeen('frog-arrival',o)||isleCount('otterwood',o)>0,hint:'Set off for Frog Forest'},
   {id:'frog-complete',no:'03',name:'Complete',place:'Frog Forest',file:'frog-forest-complete',at:'done:otterwood',open:o=>isleComplete('otterwood',o),hint:'Finish every Frog Trail level'},
+  ...[['04','05','brainpeak','Brainpeak','brainpeak','Set off for Brainpeak','Finish every Brain Trail level'],
+      ['06','07','sunrise','Sunrise Shores','sunrise-shores','Set off for Sunrise Shores','Build all of Pippa’s puzzles'],
+      ['08','09','blitzbay','Blitz Bay','blitz-bay','Race Swoop','Win the Grand Prix'],
+      ['10','11','brickworks','Brickworks Island','brickworks','Set off for Brickworks Island','Fill Brickworks Island with your own builds']]
+    .flatMap(([a,c,isle,place,file,ha,hc])=>[
+      {id:isle+'-arrival',no:a,name:'Arrival',place,file:file+'-arrival',at:'isle:'+isle,open:o=>filmSeen(isle+'-arrival',o)||isleCount(isle,o)>0,hint:ha},
+      {id:isle+'-complete',no:c,name:'Complete',place,file:file+'-complete',at:'done:'+isle,open:o=>isleComplete(isle,o),hint:hc}]),
 ];
 const filmSeen=(id,o)=>((o||worldStore()).films||[]).includes(id);
 function filmSeenAdd(id){ const o=worldStore(); if(filmSeen(id,o)) return; o.films=[...(o.films||[]),id]; worldSet(o); }
 // Setting off for an island you haven't found yet (Play next, or its trail's level map): its arrival film plays first
 const TRAIL_ISLE={otter:'otterwood',brain:'brainpeak',sea:'sunrise'};
-function startLevelFilm(tr,i){ const isle=TRAIL_ISLE[tr], f=isle&&FILMS.find(f=>f.at==='isle:'+isle);
-  if(f&&!filmSeen(f.id)&&isleCount(isle)===0) isl3Film(f,()=>startLevel(i)); else startLevel(i); }
+function islandSetOff(isle,go){ const f=isle&&FILMS.find(f=>f.at==='isle:'+isle);
+  if(f&&!filmSeen(f.id)&&isleCount(isle)===0) isl3Film(f,go); else go(); }
+function startLevelFilm(tr,i){ islandSetOff(TRAIL_ISLE[tr],()=>startLevel(i)); }
 const filmsOpen=o=>FILMS.filter(f=>{ try{ return f.open(o); }catch(e){ return false; } });
 function renderFilmsTile(){ const n=filmsOpen(worldStore()).length, el=$('#hmFilms'); el.hidden=!n; if(n) $('#hmFilmsS').textContent=n===1?'1 film to watch again':`${n} films to watch again`; }
 let filmCur=null;
@@ -6619,7 +6627,7 @@ function worldMerge(a,b){
   // The name (typed or picked) and brick colour: whichever was set last (pupAt); a later 'no name yet' never wipes one
   const later=(b.pupAt||0)>(a.pupAt||0)?b:a, other=later===b?a:b, named=w=>(cleanPupText(w.pupText)||w.pupName>=0)?w:null, nw=named(later)||named(other)||{};
   const pn=typeof nw.pupName==='number'&&nw.pupName>=0?nw.pupName:null, pc=[later.pupColor,other.pupColor].find(v=>Number.isInteger(v)&&v>=0);
-  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},pos:{...(a.pos||{}),...(b.pos||{})},away:awayMerge(a.away,b.away),draw:[...new Map([...(b.draw||[]),...(a.draw||[])].map(d=>[d.id,d])).values()].sort((x,y)=>(y.t||0)-(x.t||0)).slice(0,12),pupName:pn==null?-1:pn,pupText:cleanPupText(nw.pupText),pupAt:Math.max(a.pupAt||0,b.pupAt||0),pupColor:pc==null?-1:pc,...(pc===PUP_MIX&&[later.pupHex,other.pupHex].find(pupHexOk)?{pupHex:[later.pupHex,other.pupHex].find(pupHexOk)}:{}),isle:(a.isle||b.isle)?1:0,arrived:(a.arrived||b.arrived)?1:0,pick:a.pick||b.pick||undefined,...(((b.wearAt||0)>(a.wearAt||0)?b:a).wear?{wear:((b.wearAt||0)>(a.wearAt||0)?b:a).wear,wearAt:Math.max(a.wearAt||0,b.wearAt||0)}:{}),pupAsked:!!(a.pupAsked||b.pupAsked)};
+  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,films:[...new Set([...(a.films||[]),...(b.films||[])])],decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},pos:{...(a.pos||{}),...(b.pos||{})},away:awayMerge(a.away,b.away),draw:[...new Map([...(b.draw||[]),...(a.draw||[])].map(d=>[d.id,d])).values()].sort((x,y)=>(y.t||0)-(x.t||0)).slice(0,12),pupName:pn==null?-1:pn,pupText:cleanPupText(nw.pupText),pupAt:Math.max(a.pupAt||0,b.pupAt||0),pupColor:pc==null?-1:pc,...(pc===PUP_MIX&&[later.pupHex,other.pupHex].find(pupHexOk)?{pupHex:[later.pupHex,other.pupHex].find(pupHexOk)}:{}),isle:(a.isle||b.isle)?1:0,arrived:(a.arrived||b.arrived)?1:0,pick:a.pick||b.pick||undefined,...(((b.wearAt||0)>(a.wearAt||0)?b:a).wear?{wear:((b.wearAt||0)>(a.wearAt||0)?b:a).wear,wearAt:Math.max(a.wearAt||0,b.wearAt||0)}:{}),pupAsked:!!(a.pupAsked||b.pupAsked)};
 }
 function worldSet(o){ try{ localStorage.setItem(pkey(WORLD_KEY),JSON.stringify(o)); }catch(e){} pupPush(); }
 const worldCount=o=>o.log.length;                                   // distinct models finished
@@ -8812,7 +8820,7 @@ function isl3Film(f,then){
   let done=false; const end=why=>{ if(done) return; done=true; clearTimeout(T); try{ v&&v.pause(); }catch(e){}
     if(ov){ ov.classList.remove('on'); ov.querySelectorAll('.cn-skip,.cn-film,.cn-turn').forEach(e=>e.classList.remove('on')); setTimeout(()=>ov.remove(),800); }
     $('#view-island').classList.remove('cine'); document.body.classList.remove('film-on'); ISL3.filmOn=null; if(why) track('film_'+why+':'+f.id); setTimeout(then,ov?700:0); };
-  if(reduceMotion||/[?&]film=0\b/.test(location.search)){ then(); return; }
+  if(reduceMotion||/[?&]films?=0\b/.test(location.search)){ then(); return; }
   const onIsle=!!(ISL3.on&&ISL3.box&&tab==='island'), ov=document.createElement('div'); ov.className='is3-cine film is3-film'+(onIsle?'':' page');
   ov.innerHTML=`<div class="cn-veil off"></div><video class="cn-film" playsinline webkit-playsinline preload="auto" aria-label="${escapeHTML(f.place+': '+f.name)}"></video><div class="cn-turn" aria-hidden="true"><i>📱</i>Turn sideways for the big screen</div><button class="cn-skip" type="button">Skip ▸</button>`;
   if(onIsle){ ISL3.box.appendChild(ov); $('#view-island').classList.add('cine'); } else { document.body.appendChild(ov); document.body.classList.add('film-on'); }
@@ -9353,7 +9361,7 @@ const isleFrac=(id,o)=>{ const P=PIECES[id]; return Math.min(1,isleCount(id,o)/P
 function nextCandidates(){
   const g=gameStore(), o=worldStore(), out=[];
   for(const tr of ['otter','brain','sea']){ const LV=levelsOf(tr), B=bestOf(g,tr), i=LV.findIndex((_,k)=>!B[k]);
-    if(i>=0&&(tr!=='sea'||seaWashed(i,o))){ const L=LV[i]; out.push({kind:tr,isle:{otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr],t:tr==='sea'?`🐧 Pippa’s puzzle ${i+1}: ${L.name}`:`${L.boss?'👑 Boss: ':''}${tr==='otter'?'Frog':'Brain'} Trail level ${i+1}: ${L.name}`,s:'',thumb:levelThumb(L),go:()=>{ setTrail(tr); if(mp) mpLeave(); startLevelFilm(tr,i); }}); } }
+    if(i>=0&&(tr!=='sea'||seaWashed(i,o))){ const L=LV[i]; out.push({kind:tr,isle:{otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr],t:tr==='sea'?`🐧 Pippa’s puzzle ${i+1}: ${L.name}`:`${L.boss?'👑 Boss: ':''}${tr==='otter'?'Frog':'Brain'} Trail level ${i+1}: ${L.name}`,s:'',thumb:levelThumb(L),go:()=>{ setTrail(tr); if(mp) mpLeave(); startLevel(i); }}); } }
   { const beaten=longtailBeaten(o), gp=grandPrixOpen(o)&&!grandPrixWon(o), wins=Object.values(o.builds).filter(b=>b.k==='blitz').length;
     if(gp||wins<15){ const lvl=gp?'hard':['easy','medium','hard'][Math.min(2,beaten+1)], who=`Swoop (${CPU_LEVELS[lvl].speed})`;
       const pick=gp?GP_PICK:'p'+(wins%(BLITZ_PICKS.length-1)), L=pickOf(pick);
@@ -9363,6 +9371,7 @@ function nextCandidates(){
       out.push({kind:'library',isle:'brickworks',t:`From the library: ${smp.name}`,s:'',thumb:smp.thumb,go:()=>{ if(mp) mpLeave(); if(game) endGame(); libDefaults(); loadSample(i); clearTimeout(timer); rebuild(); setTab('build'); }}); } }
   if(mysteryOpen()){ const i=mysteryNext(o); if(i>=0){ const m=MYSTERY[i], smp=SAMPLES.find(x=>x.name===m.name); if(smp&&!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png');
     out.push({kind:'mystery',isle:'moonstone',t:`🌙 The mystery, chapter ${i+1}: ${m.name}`,s:'',thumb:smp?smp.thumb:'',go:()=>mysteryStart(i)}); } }
+  for(const c of out){ const go=c.go; c.go=()=>islandSetOff(c.isle,go); }   // an island not found yet: its arrival film first
   return out;
 }
 const NEXT_RING=['trail','blitz','library','mystery'];
@@ -9498,15 +9507,16 @@ function renderHome(){
 $('#hmCont').onclick=()=>{ if(homeCont) homeCont.go(); };
 function homeGo(where){
   if(where==='otter'||where==='brain'||where==='sea'||where==='game'){ if(mp){ setTab(mpHomeTab()); mpMsg(`Leave ${mpWhat()} first to play the Trails on your own.`); return; } setTab('game',where==='game'?'hub':where); return; }
-  if(where==='quick'){ pickPuzzle('quick','top'); return; }  // the puzzle page has both: add a photo at the top, the library below
+  if(where==='quick'){ islandSetOff('brickworks',()=>pickPuzzle('quick','top')); return; }  // the puzzle page has both: add a photo at the top, the library below
   if(where==='daily'){ setTab('daily'); return; }
   if(where==='island'){ setTab('island'); return; }
   if(where==='blitz'){ setTab('blitz',mp?undefined:'hub'); return; }
   if(where==='mp'){ setTab('mp',mp?undefined:'start'); return; }
   if(where==='code'){ setTab('mp',mp?undefined:'join'); if(!mp) requestAnimationFrame(()=>{ const i=$('#mpCodeIn'); if(i) i.focus(); }); return; }
+  if(where==='cpu'&&!mp){ islandSetOff('blitzbay',()=>{ setTab('blitz','cpu'); scrollTo(0,0); }); return; }
   if(where==='cpu'||where==='friend'){ setTab('blitz',mp?undefined:where); if(!mp) scrollTo(0,0); return; }
   // Photo or library: start something new, so leave a level or room first
-  pickPuzzle('quick',where==='photo'?'photo':'library');
+  islandSetOff('brickworks',()=>pickPuzzle('quick',where==='photo'?'photo':'library'));
 }
 document.querySelectorAll('#view-home [data-go]').forEach(b=>b.addEventListener('click',()=>homeGo(b.dataset.go)));
 window.bloppitHome=()=>setTab('home');
