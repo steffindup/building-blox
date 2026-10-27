@@ -1052,6 +1052,8 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 /* The first arrival, told like the opening of a film */
 #view-island.cine .is-foot,#view-island.cine .is-btns,#view-island.cine #isBuildsGo,#view-island.cine .is3-labels,#view-island.cine .is3-views,#view-island.cine .is3-say,#view-island.cine .is3-play{opacity:0!important;pointer-events:none!important;transition:opacity .6s}
 .is3-cine{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:3}
+.is3-cine.page{position:fixed;z-index:60;background:#05101a}   /* a film over the whole page: setting off for an island */
+body.film-on{overflow:hidden}
 .is3-cine .cn-bar{position:absolute;left:0;right:0;height:11%;max-height:96px;background:#05101a;transition:transform 1.1s cubic-bezier(.65,0,.35,1)}
 .is3-cine .cn-bar.t{top:0;transform:translateY(-100%)}.is3-cine .cn-bar.b{bottom:0;transform:translateY(100%)}
 .is3-cine.on .cn-bar{transform:none}
@@ -3035,9 +3037,15 @@ const VID_BASE=APP?'video/':'/video/';
 const FILMS=[
   {id:'arrival',no:'01',name:'Arrival',place:'Home Island',file:'arrival',open:o=>!!o.arrived||worldCount(o)>0},
   // at: the island moment that plays it (see isl3Reveal): an island rising from the mist, or an island complete
-  {id:'frog-arrival',no:'02',name:'Arrival',place:'Frog Forest',file:'frog-forest-arrival',at:'isle:otterwood',open:o=>isleCount('otterwood',o)>0,hint:'Finish your first Frog Trail level'},
+  {id:'frog-arrival',no:'02',name:'Arrival',place:'Frog Forest',file:'frog-forest-arrival',at:'isle:otterwood',open:o=>filmSeen('frog-arrival',o)||isleCount('otterwood',o)>0,hint:'Set off for Frog Forest'},
   {id:'frog-complete',no:'03',name:'Complete',place:'Frog Forest',file:'frog-forest-complete',at:'done:otterwood',open:o=>isleComplete('otterwood',o),hint:'Finish every Frog Trail level'},
 ];
+const filmSeen=(id,o)=>((o||worldStore()).films||[]).includes(id);
+function filmSeenAdd(id){ const o=worldStore(); if(filmSeen(id,o)) return; o.films=[...(o.films||[]),id]; worldSet(o); }
+// Setting off for an island you haven't found yet (Play next, or its trail's level map): its arrival film plays first
+const TRAIL_ISLE={otter:'otterwood',brain:'brainpeak',sea:'sunrise'};
+function startLevelFilm(tr,i){ const isle=TRAIL_ISLE[tr], f=isle&&FILMS.find(f=>f.at==='isle:'+isle);
+  if(f&&!filmSeen(f.id)&&isleCount(isle)===0) isl3Film(f,()=>startLevel(i)); else startLevel(i); }
 const filmsOpen=o=>FILMS.filter(f=>{ try{ return f.open(o); }catch(e){ return false; } });
 function renderFilmsTile(){ const n=filmsOpen(worldStore()).length, el=$('#hmFilms'); el.hidden=!n; if(n) $('#hmFilmsS').textContent=n===1?'1 film to watch again':`${n} films to watch again`; }
 let filmCur=null;
@@ -5177,7 +5185,7 @@ function renderGameMap(){
   let k=0; (function next(){ if(tab!=='game'||k>=levelsOf(trail).length) return; const L=levelsOf(trail)[k], el=document.querySelector(`[data-c="${k}"]`); if(el&&!L.count){ levelCount(L); el.textContent=`${L.count} bricks`; } k++; setTimeout(next,0); })();
 }
 $('#gmLevels').addEventListener('click',e=>{ const b=e.target.closest('.lvl'); if(!b||b.disabled) return; const i=+b.dataset.i;
-  if(game&&game.lvl===i&&gameTrail()===trail&&model&&cur<model.steps.length){ setTab('build'); return; } startLevel(i); });
+  if(game&&game.lvl===i&&gameTrail()===trail&&model&&cur<model.steps.length){ setTab('build'); return; } startLevelFilm(trail,i); });
 document.querySelector('.trail-pick').addEventListener('click',e=>{ const b=e.target.closest('[data-trail]'); if(!b) return; setTrail(b.dataset.trail); renderGameMap(); });
 $('#gmSwitch').onclick=openWho;
 $('#gmReset').onclick=()=>{ const b=$('#gmReset'); if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent=`Tap again to wipe your ${TRAILS[trail].name} scores`; setTimeout(()=>{delete b.dataset.confirm; b.textContent='Reset game progress';},3000); return; }
@@ -8491,7 +8499,7 @@ function isl3Reveal(ids,o){
   ISL3.revealing=true; isl3Chrome(); if(ISL3.ctl) ISL3.ctl.enabled=false;
   const step=(i)=>{ if(i>=items.length||!ISL3.on){ ISL3.revealing=false; if(ISL3.ctl) ISL3.ctl.enabled=true; isl3Banner(''); isl3FlyHome(); isl3Chrome(); setTimeout(()=>isl3AfterReveal(o),900); return; }
     const id=items[i], [kind,isle]=id.split(':');
-    { const f=FILMS.find(f=>f.at===id); if(f&&!ISL3.filmDone[id]){ ISL3.filmDone[id]=1; isl3Film(f,()=>step(i)); return; } }
+    { const f=FILMS.find(f=>f.at===id); if(f&&!ISL3.filmDone[id]&&!filmSeen(f.id,o)){ ISL3.filmDone[id]=1; isl3Film(f,()=>step(i)); return; } }
     if(kind==='done'){ isl3IsleFinale(isle,()=>step(i+1)); return; }
     if(kind==='final'){ isl3WorldFinale(()=>step(i+1)); return; }
     const I=(kind==='isle'?ISL3.isles[isle]:kind==='home'?ISL3.isles.home:ISL3.isles[kind])||ISL3.isles.home;
@@ -8803,12 +8811,14 @@ function arr3Film(A){ const v=A.film; A.ov.classList.add('film'); let started=fa
 function isl3Film(f,then){
   let done=false; const end=why=>{ if(done) return; done=true; clearTimeout(T); try{ v&&v.pause(); }catch(e){}
     if(ov){ ov.classList.remove('on'); ov.querySelectorAll('.cn-skip,.cn-film,.cn-turn').forEach(e=>e.classList.remove('on')); setTimeout(()=>ov.remove(),800); }
-    $('#view-island').classList.remove('cine'); ISL3.filmOn=null; if(why) track('film_'+why+':'+f.id); setTimeout(then,ov?700:0); };
-  if(!ISL3.on||!ISL3.box||reduceMotion||/[?&]film=0\b/.test(location.search)){ then(); return; }
-  const ov=document.createElement('div'); ov.className='is3-cine film is3-film';
+    $('#view-island').classList.remove('cine'); document.body.classList.remove('film-on'); ISL3.filmOn=null; if(why) track('film_'+why+':'+f.id); setTimeout(then,ov?700:0); };
+  if(reduceMotion||/[?&]film=0\b/.test(location.search)){ then(); return; }
+  const onIsle=!!(ISL3.on&&ISL3.box&&tab==='island'), ov=document.createElement('div'); ov.className='is3-cine film is3-film'+(onIsle?'':' page');
   ov.innerHTML=`<div class="cn-veil off"></div><video class="cn-film" playsinline webkit-playsinline preload="auto" aria-label="${escapeHTML(f.place+': '+f.name)}"></video><div class="cn-turn" aria-hidden="true"><i>📱</i>Turn sideways for the big screen</div><button class="cn-skip" type="button">Skip ▸</button>`;
-  ISL3.box.appendChild(ov); $('#view-island').classList.add('cine'); requestAnimationFrame(()=>ov.classList.add('on'));
+  if(onIsle){ ISL3.box.appendChild(ov); $('#view-island').classList.add('cine'); } else { document.body.appendChild(ov); document.body.classList.add('film-on'); }
+  requestAnimationFrame(()=>ov.classList.add('on'));
   const v=ov.querySelector('.cn-film'); let started=false; ISL3.filmOn=f.id;
+  v.addEventListener('playing',()=>filmSeenAdd(f.id),{once:true});
   ov.querySelector('.cn-skip').onclick=()=>end('skipped');
   const tick=()=>{ if(done) return; const t=v.currentTime||0; arr3FilmFrame(v,t,true); if(t>=1.2) ov.querySelector('.cn-skip').classList.add('on'); requestAnimationFrame(tick); };
   v.addEventListener('playing',()=>{ started=true; v.classList.add('on'); },{once:true});
@@ -9343,7 +9353,7 @@ const isleFrac=(id,o)=>{ const P=PIECES[id]; return Math.min(1,isleCount(id,o)/P
 function nextCandidates(){
   const g=gameStore(), o=worldStore(), out=[];
   for(const tr of ['otter','brain','sea']){ const LV=levelsOf(tr), B=bestOf(g,tr), i=LV.findIndex((_,k)=>!B[k]);
-    if(i>=0&&(tr!=='sea'||seaWashed(i,o))){ const L=LV[i]; out.push({kind:tr,isle:{otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr],t:tr==='sea'?`🐧 Pippa’s puzzle ${i+1}: ${L.name}`:`${L.boss?'👑 Boss: ':''}${tr==='otter'?'Frog':'Brain'} Trail level ${i+1}: ${L.name}`,s:'',thumb:levelThumb(L),go:()=>{ setTrail(tr); if(mp) mpLeave(); startLevel(i); }}); } }
+    if(i>=0&&(tr!=='sea'||seaWashed(i,o))){ const L=LV[i]; out.push({kind:tr,isle:{otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr],t:tr==='sea'?`🐧 Pippa’s puzzle ${i+1}: ${L.name}`:`${L.boss?'👑 Boss: ':''}${tr==='otter'?'Frog':'Brain'} Trail level ${i+1}: ${L.name}`,s:'',thumb:levelThumb(L),go:()=>{ setTrail(tr); if(mp) mpLeave(); startLevelFilm(tr,i); }}); } }
   { const beaten=longtailBeaten(o), gp=grandPrixOpen(o)&&!grandPrixWon(o), wins=Object.values(o.builds).filter(b=>b.k==='blitz').length;
     if(gp||wins<15){ const lvl=gp?'hard':['easy','medium','hard'][Math.min(2,beaten+1)], who=`Swoop (${CPU_LEVELS[lvl].speed})`;
       const pick=gp?GP_PICK:'p'+(wins%(BLITZ_PICKS.length-1)), L=pickOf(pick);
