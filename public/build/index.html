@@ -988,6 +988,15 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 .ip-bar{position:relative;height:10px;border-radius:5px;background:var(--bg);overflow:visible}.ip-bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#7DBE2E,#2FB8DC)}
 .ip-bar em{position:absolute;top:-2px;width:3px;height:14px;margin-left:-1.5px;border-radius:2px;background:rgba(127,140,155,.55)}.ip-bar em.on{background:#F2C230}
 #view-island.immersive .is-prog{color:rgba(255,255,255,.85);font-size:12px;gap:4px;margin-top:4px;min-width:220px}#view-island.immersive .is-prog b{color:#fff}
+.ip-short{display:none}
+/* Phones: a slim corner card (name, one line of what's next, the progress bar) so the island stays in view */
+@media (max-width:699px){
+  #view-island.immersive .is-foot{top:8px;left:8px;padding:6px 10px 7px;border-radius:12px;max-width:calc(100% - 140px);gap:1px}
+  #view-island.immersive .is-stage{font-size:14px}
+  #view-island.immersive .is-next{font-size:11px;gap:6px;min-width:0}#view-island.immersive .is-next>span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}#view-island.immersive .is-next .bar{display:none}
+  #view-island.immersive .is-prog{min-width:0;font-size:11px;gap:3px;margin-top:2px}.ip-long{display:none}.ip-short{display:inline}
+  #view-island.immersive .ip-bar{height:5px}#view-island.immersive .ip-bar em{width:2px;height:8px;top:-1.5px;margin-left:-1px}
+  #view-island.immersive .is-btns{top:8px;right:8px;gap:5px}#view-island.immersive .is-btns button{font-size:12px;padding:5px 10px}}
 #view-island.immersive .ip-bar{height:8px;background:rgba(255,255,255,.22)}#view-island.immersive .ip-bar em{height:12px;background:rgba(255,255,255,.45)}#view-island.immersive .ip-bar em.on{background:#F2C230}
 .board{display:grid;gap:4px;max-height:420px;overflow:auto}
 .board div{display:grid;grid-template-columns:40px 1fr auto auto;gap:10px;align-items:center;padding:6px 10px;border-radius:10px;background:var(--bg);font-weight:700;font-size:14px}
@@ -9300,7 +9309,7 @@ let islandShown=-1;
 function isProgRender(o){ const el=$('#isProg'); if(!el) return; const pct=progressPct(o), P=gameProgress(o);
   const nx=SEA_LEVELS.findIndex((_,i)=>!seaWashed(i,o)), nb=nx>=0?seaBuildsTo(nx,o):0, note=pct>=100?'every piece built':nx>=0?`Pippa’s next puzzle at ${seaPct(nx)}% (${nb} more build${nb===1?'':'s'})`:'';
   el.hidden=false; el.setAttribute('role','progressbar'); el.setAttribute('aria-label','Bloppitopia built'); el.setAttribute('aria-valuenow',pct); el.setAttribute('aria-valuemin',0); el.setAttribute('aria-valuemax',100);
-  el.innerHTML=`<span class="ip-t"><b>Bloppitopia ${pct}%</b>${note?` · ${note}`:''}</span><span class="ip-bar"><i style="width:${Math.max(2,P*100).toFixed(1)}%"></i>${SEA_LEVELS.map((_,i)=>`<em class="${seaWashed(i,o)?'on':''}" style="left:${((i+1)*100/SEA_LEVELS.length).toFixed(2)}%"></em>`).join('')}</span>`; }
+  el.innerHTML=`<span class="ip-t"><b>Bloppitopia ${pct}%</b>${note?`<span class="ip-long"> · ${note}</span>`:''}${nx>=0&&pct<100?`<span class="ip-short"> · 🐧 next at ${seaPct(nx)}%</span>`:''}</span><span class="ip-bar"><i style="width:${Math.max(2,P*100).toFixed(1)}%"></i>${SEA_LEVELS.map((_,i)=>`<em class="${seaWashed(i,o)?'on':''}" style="left:${((i+1)*100/SEA_LEVELS.length).toFixed(2)}%"></em>`).join('')}</span>`; }
 function renderIsland(){
   const o=worldStore(), stage=islandStage(o), n=worldCount(o), next=ISLAND_STAGES[stage+1];
   const pop=islandShown>=0&&islandShown<n; islandShown=n;
