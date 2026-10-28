@@ -5398,9 +5398,9 @@ function winLevel(){
   setTrail(tr); winLvl=i;
   $('#winStars').innerHTML=starHTML(st); worldSound();
   { const pic=reveal&&reveal.url; $('#winPic').hidden=!pic; if(pic){ $('#winPic').src=pic; $('#winPic').alt=`The real ${L.name}`; } }
-  { const o=worldStore(), el=$('#winChars'), tiny=tr==='otter'&&ch3Ready('tiny'), tc=L.boss?'cheer':'whistle';   // Frog Trail: Tiny whistles you up the trail (and cheers for his Lily-pad Palace)
+  { const o=worldStore(), el=$('#winChars'), fid={otter:'tiny',brain:'nora'}[tr], tiny=!!fid&&ch3Ready(fid), tc=L.boss?'cheer':fid==='nora'?'aha':'whistle';   // the trail's friend joins in: Tiny whistles you up Frog Trail, Nora has an "aha!" on Brain Trail (both cheer for their boss build)
     el.classList.toggle('three',tiny&&hasPup(o));
-    if(reveal&&reveal.url) el.hidden=true; else if(hasPup(o)) cheer3(el,tiny?['bloppit','pup','tiny']:['bloppit','pup'],tiny?['cheer','happy_hop',tc]:['cheer','happy_hop']); else cheer3(el,tiny?['bloppit','tiny']:'bloppit',tiny?['cheer',tc]:'cheer'); }
+    if(reveal&&reveal.url) el.hidden=true; else if(hasPup(o)) cheer3(el,tiny?['bloppit','pup',fid]:['bloppit','pup'],tiny?['cheer','happy_hop',tc]:['cheer','happy_hop']); else cheer3(el,tiny?['bloppit',fid]:'bloppit',tiny?['cheer',tc]:'cheer'); }
   $('#winTitle').textContent=`${TRAILS[tr].icon} Level ${i+1} complete!`;
   const rows=[[`Built the ${L.name}`,L.pts,'']];
   if(p.hint) rows.push([`Hints (${p.hint})`,-p.hint*5,'neg']);
@@ -8033,12 +8033,20 @@ class Ch3Ctl{
    calls as the drawings (play('wave'), poke(), …), mapped to his own clips below. At night he whistles (the Character Bible:
    every frog in the forest whistles with him among the fireflies). Release (he lets the brick fall) is not used yet: nothing
    in the game catches the brick, so it would snap back into his hands. */
-RIG.tiny.glb='/3d/tiny.glb';
-const M3={V:'16',wait:{}};
+// Each friend with an approved 3D model: its file and version, how the drawings' moves map onto its own clips, its
+// looping clips, what a tap cycles through, and its resting clip at night
+const MODEL3={
+  tiny:{glb:'/3d/tiny.glb',v:'16',loops:['idle','focused','whistle'],night:'whistle',reactions:['hop','whistle','cheer','offer','oops'],
+    map:{happy_hop:'hop',giggle_wiggle:'hop',spin:'hop',wake:'hop',grumpy_wake:'hop',wave:'whistle',cheeky_taunt:'cheer',surprised_jump:'oops',show_brick:'offer',look_at_you:'focused'}},
+  // Nora (v1, 28 Oct 2026): a night heron, so by night she stands thinking under the stars
+  nora:{glb:'/3d/nora.glb',v:'1',loops:['idle','focused','thinking'],night:'thinking',reactions:['hop','aha','cheer','offer','thinking'],
+    map:{happy_hop:'hop',giggle_wiggle:'aha',spin:'hop',wake:'hop',grumpy_wake:'hop',wave:'aha',cheeky_taunt:'cheer',surprised_jump:'hint',show_brick:'offer',look_at_you:'focused'}}};
+for(const [id,m] of Object.entries(MODEL3)) RIG[id].glb=m.glb;
+const M3={wait:{}};
 function ch3Script(src){ return M3.wait[src]||(M3.wait[src]=new Promise((ok,no)=>{ const s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=()=>{ delete M3.wait[src]; no(new Error('could not load '+src)); }; document.head.appendChild(s); })); }
 function ch3Model(id){ const R=RIG[id], G=CH3.gltf[id]; if(!R||!R.glb||!G) return Promise.reject(new Error('no model for '+id)); if(G.model) return Promise.resolve(G.model);
   return M3.wait[id]||(M3.wait[id]=(async()=>{ if(!THREE.GLTFLoader) await ch3Script('/3d/GLTFLoader.js');
-    const gltf=await new Promise((ok,no)=>new THREE.GLTFLoader().load(R.glb+'?v='+M3.V,ok,undefined,no)), sc=gltf.scene;
+    const gltf=await new Promise((ok,no)=>new THREE.GLTFLoader().load(R.glb+'?v='+MODEL3[id].v,ok,undefined,no)), sc=gltf.scene;
     sc.traverse(m=>{ if(m.isMesh){ m.castShadow=m.receiveShadow=false; m.frustumCulled=false; [].concat(m.material).forEach(ch3Filmic); } });   // the island's shadows are baked once; a soft pool under the feet instead
     sc.updateMatrixWorld(true); const box=new THREE.Box3(), v=new THREE.Vector3(), clips={};   // his size at rest (three's own box would include every pose's morphs)
     sc.traverse(m=>{ if(!m.isMesh) return; const P=m.geometry.attributes.position; for(let i=0;i<P.count;i+=3) box.expandByPoint(v.fromBufferAttribute(P,i).applyMatrix4(m.matrixWorld)); }); for(const c of gltf.animations) clips[c.name]=c;
@@ -8066,14 +8074,13 @@ class Model3{
   dispose(){ this.mixer.stopAllAction(); this.mixer.uncacheRoot(this.obj); this.blob.geometry.dispose(); this.blob.material.dispose(); }
 }
 // The drawings' moves, in Tiny's own clips
-const MODEL3_CLIP={happy_hop:'hop',giggle_wiggle:'hop',spin:'hop',wake:'hop',grumpy_wake:'hop',wave:'whistle',cheeky_taunt:'cheer',surprised_jump:'oops',show_brick:'offer',look_at_you:'focused'};
-const MODEL3_LOOP=new Set(['idle','focused','whistle']);
+
 class Model3Ctl{
-  constructor(P){ this.P=P; this.rest='idle'; this.cur=null; this.left=0; this.queued=null; this.a=null; this.react=Math.floor(Math.random()*5); this.reactions=['hop','whistle','cheer','offer','oops'];
+  constructor(P){ this.P=P; this.rest='idle'; this.cur=null; this.left=0; this.queued=null; this.a=null; const C=MODEL3[P.id]; this.C=C; this.loops=new Set(C.loops); this.react=Math.floor(Math.random()*C.reactions.length); this.reactions=C.reactions;
     this.to('idle',false,0); P.mixer.update(Math.random()*2.4); }
   get current(){ const n=this.cur; return n?{getClip:()=>({name:n})}:null; }
   get activeBase(){ return this.cur?null:{getClip:()=>({name:this.rest})}; }
-  clip(n){ n=MODEL3_CLIP[n]||n; return this.P.acts[n]?n:null; }
+  clip(n){ n=this.C.map[n]||n; return this.P.acts[n]?n:null; }
   has(n){ return !!this.clip(n)||n==='blink'; }
   to(n,once,fade){ const A=this.P.acts[n], old=this.a; if(A===old&&!once) return;
     A.reset(); A.setLoop(once?THREE.LoopOnce:THREE.LoopRepeat,once?1:Infinity); A.clampWhenFinished=!!once; A.enabled=true; A.setEffectiveTimeScale(1); A.setEffectiveWeight(1); A.play();
@@ -8081,7 +8088,7 @@ class Model3Ctl{
   base(){ this.cur=null; this.queued=null; this.to(this.rest,false,.25); }
   setRest(n){ if(n===this.rest||!this.P.acts[n]) return; this.rest=n; if(!this.cur) this.to(n,false,.5); }
   play(name){ if(name==='blink') return false; if(name==='idle'){ this.base(); return true; }
-    const n=this.clip(name); if(!n) return false; this.queued=null; this.cur=n; this.left=this.P.acts[n].getClip().duration; this.to(n,!MODEL3_LOOP.has(n),.2); return true; }
+    const n=this.clip(name); if(!n) return false; this.queued=null; this.cur=n; this.left=this.P.acts[n].getClip().duration; this.to(n,!this.loops.has(n),.2); return true; }
   then(name,next){ if(this.play(name)) this.queued=next; }
   setMode(){}
   poke(){ this.react=(this.react+1)%this.reactions.length; this.play(this.reactions[this.react]); }
@@ -8782,7 +8789,7 @@ function isl3Animate(x,t){ const u=x.userData;
   if(u.race!=null){ const a=t*1.1+u.race; x.position.set(Math.cos(a)*1.95*1.2,TOP3+.04,Math.sin(a)*1.95); x.rotation.y=-a-Math.PI/2; }
   if(u.swing) x.rotation.x=Math.sin(t*1.6)*.35;
   if(u.spin) x.rotation.z=t*.5;
-  if(u.face3){ const dt=ISL3.dt||0; if(u.face3.ctl.setRest) u.face3.ctl.setRest((ISL3.night||0)>.5?'whistle':'idle'); u.face3.ctl.update(dt); const c=ISL3.cam.position, p=x.position, want=Math.atan2(c.x-p.x,c.z-p.z), d=Math.atan2(Math.sin(want-x.rotation.y),Math.cos(want-x.rotation.y)); x.rotation.y+=d*Math.min(1,dt*5); }
+  if(u.face3){ const dt=ISL3.dt||0; if(u.face3.ctl.setRest) u.face3.ctl.setRest((ISL3.night||0)>.5?u.face3.ctl.C.night:'idle'); u.face3.ctl.update(dt); const c=ISL3.cam.position, p=x.position, want=Math.atan2(c.x-p.x,c.z-p.z), d=Math.atan2(Math.sin(want-x.rotation.y),Math.cos(want-x.rotation.y)); x.rotation.y+=d*Math.min(1,dt*5); }
   if(u.roty) x.rotation.y=(u.r0??(u.r0=x.rotation.y))+t*u.roty;
   if(u.wheel) x.rotation.z=t*u.wheel;
   if(u.upright&&x.parent) x.rotation.z=-x.parent.rotation.z;
@@ -9869,7 +9876,7 @@ new MutationObserver(()=>buddy3()).observe($('#buddy'),{attributes:true,attribut
 window.bloppitCharShot=async(id,frame,px,opt)=>{ opt=opt||{}; await ch3Get(id); if(opt.model) await ch3Model(id); if(opt.exp) M3.exp.value=opt.exp; const r=cv3R(), sc=new THREE.Scene(), cam=new THREE.PerspectiveCamera(24,1,.05,60), i=ch3Make(id); sc.add(i.root); cv3Lights(sc);
   ch3Dress(i,{log:[]},{ci:opt.ci!=null?opt.ci:0,wear:opt.wear||{}}); i.ctl.update(.6); if(opt.clip){ i.ctl.play(opt.clip); i.ctl.update(0); i.ctl.update(opt.t||0); }
   cv3Aim(cam,[id],frame||'full',1,-.25); r.setScissorTest(false); r.setSize(px||420,px||420,false); r.setViewport(0,0,px||420,px||420); r.clear(); r.render(sc,cam); const u=r.domElement.toDataURL('image/png'); i.ctl.dispose(); return u; };
-window.bloppitChars3d=()=>({on:ch3On(),loaded:Object.keys(CH3.gltf),tiny:{model:ch3Has3d('tiny'),clips:ch3Has3d('tiny')?Object.keys(CH3.gltf.tiny.model.clips).sort():[]},island:{bloppit:!!ISL3.b3,pup:!!ISL3.p3,longtail:!!ISL3.l3,clips:[ISL3.b3,ISL3.p3,ISL3.l3].map(i=>i&&(i.ctl.current||i.ctl.activeBase)?(i.ctl.current||i.ctl.activeBase).getClip().name:null)},views:CV3.views.filter(v=>v.host.classList.contains('c3on')&&v.host.offsetParent).map(v=>v.host.id||v.host.className.split(' ')[0])});
+window.bloppitChars3d=()=>({on:ch3On(),loaded:Object.keys(CH3.gltf),tiny:{model:ch3Has3d('tiny'),clips:ch3Has3d('tiny')?Object.keys(CH3.gltf.tiny.model.clips).sort():[]},nora:{model:ch3Has3d('nora'),clips:ch3Has3d('nora')?Object.keys(CH3.gltf.nora.model.clips).sort():[]},island:{bloppit:!!ISL3.b3,pup:!!ISL3.p3,longtail:!!ISL3.l3,clips:[ISL3.b3,ISL3.p3,ISL3.l3].map(i=>i&&(i.ctl.current||i.ctl.activeBase)?(i.ctl.current||i.ctl.activeBase).getClip().name:null)},views:CV3.views.filter(v=>v.host.classList.contains('c3on')&&v.host.offsetParent).map(v=>v.host.id||v.host.className.split(' ')[0])});
 // On the website the logo opens the menu; on the menu itself it goes to bloppit.com's front page. (The app handles its own links above.)
 $('#brandLink').addEventListener('click',e=>{ if(APP||tab==='home') return; e.preventDefault(); setTab('home'); });
 // Links straight to a page: /build/#photos, #library, #trails, #otter, #brain, #together, #blitz, #daily (anything else opens the menu).
