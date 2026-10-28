@@ -333,7 +333,9 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .tool:hover{border-color:var(--ink)}
 .tool[aria-pressed="true"]{background:var(--hi);border-color:var(--hi);color:#14202C}
 .tool.snd{padding:6px 10px;display:inline-flex;align-items:center;gap:4px}
-.snd-top{margin-left:auto;margin-right:8px;width:40px;height:40px;flex:none;border-radius:50%;display:grid;place-items:center;padding:0;border:1px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer}.snd-top:hover{border-color:var(--ink)}.snd-top+.who{margin-left:0}
+.snd-top{margin-left:auto;margin-right:8px;width:40px;height:40px;flex:none;border-radius:50%;display:grid;place-items:center;padding:0;border:1px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer}.snd-top:hover{border-color:var(--ink)}.snd-top+.who{margin-left:0}.mus-top+.snd-top{margin-left:0}.mus-top{margin-right:6px}
+.mus-ic{width:18px;height:18px;display:inline-block;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat;--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 18V5l11-2v13' stroke='black' stroke-width='2.2' fill='none' stroke-linejoin='round'/%3E%3Ccircle cx='6' cy='18' r='3' fill='black'/%3E%3Ccircle cx='17' cy='16' r='3' fill='black'/%3E%3C/svg%3E")}
+.snd-top.mus-top[aria-pressed="false"]{background:var(--page);color:var(--muted,#7a8590);border-color:var(--line)}.mus-top[aria-pressed="false"] .mus-ic{opacity:.45}.mus-top[aria-pressed="false"]{position:relative}.mus-top[aria-pressed="false"]::after{content:"";position:absolute;left:9px;right:9px;top:50%;height:2px;background:currentColor;transform:rotate(-40deg)}
 .snd-top[aria-pressed="false"]{background:#F6D7D3;color:#8f1f18;border-color:#D8342C}   /* muted: easy to spot, on every page */
 .snd-ic{width:18px;height:16px;display:inline-block;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat;--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M2 7h4l5-4v14l-5-4H2z' fill='black'/%3E%3Cpath d='M15 6.5a5 5 0 0 1 0 7M18 4a8.5 8.5 0 0 1 0 12' stroke='black' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")}
 .tool.snd[aria-pressed="false"] .snd-ic,.snd-top[aria-pressed="false"] .snd-ic{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M2 7h4l5-4v14l-5-4H2z' fill='black'/%3E%3Cpath d='M15 7l6 6M21 7l-6 6' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")}
@@ -806,7 +808,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
   .tab{flex:none;white-space:nowrap;padding:4px 10px 4px 5px;gap:6px;font-size:13px}
   .tab .n{width:20px;height:20px;font-size:12px}
   .who{flex:none;padding:2px;margin-left:0;box-shadow:none}
-  .snd-top{width:34px;height:34px;margin-right:6px}
+  .snd-top{width:34px;height:34px;margin-right:6px}.mus-top{margin-right:4px}
   .who .av{width:30px;height:30px;font-size:16px}
   .who-txt{display:none}
   main{padding-block:10px 0}
@@ -1204,6 +1206,18 @@ body.film-on{overflow:hidden}
 .daily-stats span{background:var(--bg);border-radius:999px;padding:6px 12px;font-weight:700;font-size:14px}
 .daily-stats b{font-family:var(--f-display);font-weight:400;font-size:17px}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+/* The top bar (Oct 2026): quiet tabs, each game with its character's face (Island has the Bloppitopia world map);
+   the open one gets a bar underneath in its own colour */
+.tabs{gap:2px}
+.tabs .tab,.tabs .tab[class*="play"]{background:none;border:0;border-radius:10px;color:inherit;opacity:.74;padding:8px 10px 12px;position:relative;font-weight:800;gap:7px;box-shadow:none}
+.tabs .tab:hover{opacity:1;background:color-mix(in srgb,currentColor 7%,transparent)}
+.tabs .tab .n,.tabs .tab[class*="play"] .n{width:28px;height:28px;border-radius:0;background:none;padding:0;overflow:visible;color:inherit}
+.tabs .tab .n img,.tabs .tab .n svg{width:100%;height:100%;object-fit:contain;display:block}
+.tabs .tab[aria-selected="true"],.tabs .tab[class*="play"][aria-selected="true"]{opacity:1;background:none;color:inherit;border:0}
+.tabs .tab[aria-selected="true"] .n{background:none}
+.tabs .tab[aria-selected="true"]::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:4px;border-radius:4px;background:var(--tc)}
+#tab-island{--tc:#2FB8DC}#tab-daily{--tc:#14A3A0}#tab-create{--tc:#E9772A}#tab-game{--tc:#7DBE2E}#tab-blitz{--tc:#2F7FD0}#tab-mp{--tc:#8B5CF6}
+@media (max-width:640px){.tabs .tab,.tabs .tab[class*="play"]{padding:6px 8px 10px;gap:5px}.tabs .tab .n{width:24px;height:24px}}
 </style>
 
 <header class="top">
@@ -1211,13 +1225,14 @@ body.film-on{overflow:hidden}
     <img class="brand-otter" src="/art/bloppit-avatar.png" alt="" width="256" height="256">
     <span>Bloppit</span></a></h1>
   <nav class="tabs" role="tablist" aria-label="Games">
-    <button class="tab play5" role="tab" id="tab-island" data-tab="island" aria-selected="false"><span class="n"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span>Island</button>
-    <button class="tab play4" role="tab" id="tab-daily" data-tab="daily" aria-selected="false"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-cal"/></svg></span>Weekly</button>
-    <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-brick"/></svg></span>Quick Build</button>
-    <button class="tab play" role="tab" id="tab-game" data-tab="game" aria-selected="false"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-river"/></svg></span>Trails</button>
-    <button class="tab play3" role="tab" id="tab-blitz" data-tab="blitz" aria-selected="false"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-watch"/></svg></span>Blitz</button>
-    <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-stack"/></svg></span>Together</button>
+    <button class="tab play5" role="tab" id="tab-island" data-tab="island" aria-selected="false"><span class="n"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="50" fill="#2FB8DC"/><circle cx="50" cy="52" r="15" fill="#6CC04A" stroke="#F2D594" stroke-width="4"/><g transform="translate(50 52) scale(.5)" stroke="#9E2019" stroke-width="2" fill="#D8342C"><rect x="-20" y="-6" width="40" height="18" rx="2.5"/><rect x="-15" y="-13" width="10" height="8" rx="2"/><rect x="5" y="-13" width="10" height="8" rx="2"/></g><circle cx="50.0" cy="19.0" r="8" fill="#9BD32C" stroke="#F2D594" stroke-width="3"/><circle cx="81.4" cy="41.8" r="8" fill="#24407A" stroke="#F2D594" stroke-width="3"/><circle cx="69.4" cy="78.7" r="8" fill="#F2C230" stroke="#F2D594" stroke-width="3"/><circle cx="30.6" cy="78.7" r="8" fill="#2F7FD0" stroke="#F2D594" stroke-width="3"/><circle cx="18.6" cy="41.8" r="8" fill="#E9772A" stroke="#F2D594" stroke-width="3"/></svg></span>Island</button>
+    <button class="tab play4" role="tab" id="tab-daily" data-tab="daily" aria-selected="false"><span class="n"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span>Weekly</button>
+    <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span>Quick Build</button>
+    <button class="tab play" role="tab" id="tab-game" data-tab="game" aria-selected="false"><span class="n"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span>Trails</button>
+    <button class="tab play3" role="tab" id="tab-blitz" data-tab="blitz" aria-selected="false"><span class="n"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span>Blitz</button>
+    <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n"><img src="/art/pup.png" alt="" width="239" height="300"></span>Together</button>
   </nav>
+  <button class="snd-top mus-top" id="musTop" type="button" aria-pressed="true" aria-label="Music" title="Music on or off"><span class="mus-ic" aria-hidden="true"></span></button>
   <button class="snd-top" id="sndTop" type="button" aria-pressed="true" aria-label="Sound" title="Sound on or off (M)"><span class="snd-ic" aria-hidden="true"></span></button>
   <button class="who" id="whoBtn" type="button" title="Who’s playing? Tap to switch player"><span class="av" id="whoAv"></span><span class="who-txt"><span class="tag">Playing</span><b id="whoName"></b></span></button>
 </header>
@@ -2477,6 +2492,7 @@ function showStep(k,animate){
   for(const im of instanced) im.count=below(im.userData.steps,k);
   while(current.children.length) current.remove(current.children[0]);
   anim=null;
+  bookGrid(k);
   if(!model||k>=model.steps.length) return;
   const hang=!!model.steps[k].hang;
   model.steps[k].bricks.forEach((b,i)=>{
@@ -2487,6 +2503,18 @@ function showStep(k,animate){
   });
   if(animate&&!reduceMotion){anim={t0:performance.now(),dir:hang?-1:1}; current.children.forEach(ms=>ms.position.y=ms.userData.ty+5*anim.dir);}
 }
+// The booklet's page shows a grid of stud squares at the layer being built, so you can count the spaces between bricks
+const bookGridG=new THREE.Group(); modelGroup.add(bookGridG);
+function bookGrid(k){ for(const m of bookGridG.children){ m.geometry.dispose(); } bookGridG.clear();
+  if(!model||k>=model.steps.length||!model.bricks.length) return;
+  let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9; for(const b of model.bricks){ x0=Math.min(x0,b.x); z0=Math.min(z0,b.z); x1=Math.max(x1,b.x+b.sx); z1=Math.max(z1,b.z+b.sz); }
+  x0-=1; z0-=1; x1+=1; z1+=1; const y=(model.steps[k].layer||0)*1.2+.005, P=[];
+  for(let x=x0;x<=x1;x++) P.push(x,y,z0,x,y,z1); for(let z=z0;z<=z1;z++) P.push(x0,y,z,x1,y,z);
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));
+  bookGridG.add(new THREE.LineSegments(g,BOOK_GRID_MAT));
+  const pl=new THREE.Mesh(new THREE.PlaneGeometry(x1-x0,z1-z0),BOOK_PLATE_MAT); pl.rotation.x=-Math.PI/2; pl.position.set((x0+x1)/2,y-.003,(z0+z1)/2); bookGridG.add(pl); }
+const BOOK_GRID_MAT=new THREE.LineBasicMaterial({color:0x6E8496,transparent:true,opacity:.75,depthWrite:false});
+const BOOK_PLATE_MAT=new THREE.MeshBasicMaterial({color:0x8FA3B5,transparent:true,opacity:.16,depthWrite:false,side:THREE.DoubleSide});
 function stepAnim(now){
   if(!anim) return; let done=true;
   for(const ms of current.children){const t=clamp((now-anim.t0-ms.userData.i*70)/380,0,1),e=1-Math.pow(1-t,3);
@@ -3162,65 +3190,156 @@ function showPage(k){
 }
 /* ---------- Sound ---------- */
 // Every sound is made here with Web Audio (no sound files), and each one varies a little so repeats don't grate.
+// Two buses into one master: sound effects, and the light background music (its own on/off, quieter, and it steps
+// aside whenever a film or video plays). Instruments: a marimba, a glockenspiel, a ukulele-ish pluck and a soft brass.
 const sfx=(()=>{
-  let ac=null, out=null, on=true, last={};
-  try{ on=localStorage.getItem('bloppit-sound')!=='off'; }catch(e){}
-  const ctx=()=>{ if(!ac){ const C=window.AudioContext||window.webkitAudioContext; if(!C) return null; ac=new C(); out=ac.createGain(); out.gain.value=.55; out.connect(ac.destination); } if(ac.state==='suspended') ac.resume(); return ac; };
+  let ac=null, master=null, out=null, mbus=null, on=true, musicOn=true, last={};
+  try{ on=localStorage.getItem('bloppit-sound')!=='off'; musicOn=localStorage.getItem('bloppit-music')!=='off'; }catch(e){}
+  const ctx=()=>{ if(!ac){ const C=window.AudioContext||window.webkitAudioContext; if(!C) return null; ac=new C();
+      master=ac.createGain(); master.gain.value=.6; master.connect(ac.destination);
+      const comp=ac.createDynamicsCompressor(); comp.threshold.value=-14; comp.ratio.value=3; comp.attack.value=.004; comp.release.value=.2; comp.connect(master);
+      out=ac.createGain(); out.gain.value=.95; out.connect(comp);
+      mbus=ac.createGain(); mbus.gain.value=0; mbus.connect(comp); }
+    if(ac.state==='suspended') ac.resume(); return ac; };
   const ok=(k,gap)=>{ if(!on||document.hidden) return null; const c=ctx(); if(!c) return null; const n=c.currentTime; if(last[k]&&n-last[k]<gap) return null; last[k]=n; return c; };
   const jit=(v,f)=>v*(1+(Math.random()*2-1)*f);
-  function tone(c,t,f,d,{type='sine',vol=.3,to=null,att=.004}={}){
-    const o=c.createOscillator(), g=c.createGain(); o.type=type; o.frequency.setValueAtTime(f,t); if(to) o.frequency.exponentialRampToValueAtTime(to,t+d);
+  const hz=m=>440*Math.pow(2,(m-69)/12);
+  // A plain voice: one oscillator with an attack and a fall; d is how long it rings
+  function tone(c,t,f,d,{type='sine',vol=.3,to=null,att=.004,dst=null,bend=null}={}){
+    const o=c.createOscillator(), g=c.createGain(); o.type=type; o.frequency.setValueAtTime(f,t);
+    if(bend) bend(o.frequency,t); else if(to) o.frequency.exponentialRampToValueAtTime(to,t+d);
     g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+att); g.gain.exponentialRampToValueAtTime(.0001,t+d);
-    o.connect(g); g.connect(out); o.start(t); o.stop(t+d+.02);
+    o.connect(g); g.connect(dst||out); o.start(t); o.stop(t+d+.03);
   }
-  function noise(c,t,d,{vol=.3,freq=3000,q=1,type='bandpass'}={}){
-    const len=Math.ceil(c.sampleRate*d), b=c.createBuffer(1,len,c.sampleRate), x=b.getChannelData(0);
-    for(let i=0;i<len;i++) x[i]=(Math.random()*2-1)*Math.pow(1-i/len,3);
+  function noise(c,t,d,{vol=.3,freq=3000,q=1,type='bandpass',dst=null,att=0}={}){
+    const len=Math.max(1,Math.ceil(c.sampleRate*d)), b=c.createBuffer(1,len,c.sampleRate), x=b.getChannelData(0), a=Math.ceil(c.sampleRate*att);
+    for(let i=0;i<len;i++) x[i]=(Math.random()*2-1)*(i<a?i/a:Math.pow(1-(i-a)/(len-a||1),3));
     const s=c.createBufferSource(), f=c.createBiquadFilter(), g=c.createGain(); s.buffer=b; f.type=type; f.frequency.value=freq; f.Q.value=q; g.gain.value=vol;
-    s.connect(f); f.connect(g); g.connect(out); s.start(t);
+    s.connect(f); f.connect(g); g.connect(dst||out); s.start(t);
   }
+  // Instruments
+  const marimba=(c,t,f,vol=.2,dst)=>{ tone(c,t,f,.55,{vol,dst,att:.003}); tone(c,t,f*3.98,.09,{vol:vol*.3,dst,att:.002}); tone(c,t,f*9.2,.03,{vol:vol*.08,dst,att:.001}); };
+  const glock=(c,t,f,vol=.12,dst,len=1.2)=>{ tone(c,t,f,len,{vol,dst,att:.002}); tone(c,t,f*2.76,len*.3,{vol:vol*.28,dst,att:.002}); tone(c,t,f*5.4,len*.1,{vol:vol*.1,dst,att:.001}); };
+  function pluck(c,t,f,vol=.08,dst,len=.7){ const o=c.createOscillator(), o2=c.createOscillator(), lp=c.createBiquadFilter(), g=c.createGain();
+    o.type='sawtooth'; o2.type='triangle'; o.frequency.value=f; o2.frequency.value=f*2.003; lp.type='lowpass'; lp.Q.value=1.5;
+    lp.frequency.setValueAtTime(Math.min(9000,f*9),t); lp.frequency.exponentialRampToValueAtTime(Math.max(300,f*1.4),t+len*.5);
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.004); g.gain.exponentialRampToValueAtTime(.0001,t+len);
+    o.connect(lp); o2.connect(lp); lp.connect(g); g.connect(dst||out); o.start(t); o2.start(t); o.stop(t+len+.03); o2.stop(t+len+.03); }
+  function brass(c,t,f,len,vol=.08,dst){ const g=c.createGain(), lp=c.createBiquadFilter(); lp.type='lowpass'; lp.Q.value=2;
+    lp.frequency.setValueAtTime(f*1.5,t); lp.frequency.linearRampToValueAtTime(f*5,t+.06); lp.frequency.exponentialRampToValueAtTime(f*2.5,t+len);
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.03); g.gain.setValueAtTime(vol*.8,t+Math.max(.05,len-.08)); g.gain.exponentialRampToValueAtTime(.0001,t+len+.12);
+    for(const dt of [-6,6]){ const o=c.createOscillator(); o.type='sawtooth'; o.frequency.value=f; o.detune.value=dt; o.connect(lp); o.start(t); o.stop(t+len+.15); }
+    lp.connect(g); g.connect(dst||out); }
+  // A little cartoon slide (up for happy, down for oops), with wobble
+  function slide(c,t,f0,f1,d,vol=.12,wob=0,type='sine'){ const o=c.createOscillator(), g=c.createGain(); o.type=type;
+    o.frequency.setValueAtTime(f0,t); o.frequency.exponentialRampToValueAtTime(f1,t+d);
+    if(wob){ const l=c.createOscillator(), lg=c.createGain(); l.frequency.value=wob; lg.gain.value=f1*.06; l.connect(lg); lg.connect(o.frequency); l.start(t); l.stop(t+d+.03); }
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.01); g.gain.setValueAtTime(vol,t+d*.7); g.gain.exponentialRampToValueAtTime(.0001,t+d);
+    o.connect(g); g.connect(out); o.start(t); o.stop(t+d+.03); }
+  const sparkle=(c,t,n=5,base=91,vol=.05)=>{ for(let i=0;i<n;i++) glock(c,t+i*.045+Math.random()*.015,hz(base+[0,4,7,12,16,19,24][i%7]),vol,null,.4); };
+  // Snaps climb a happy scale while you keep building (back to the bottom after a pause), so a build plays a little tune
+  const SNAP_SCALE=[72,74,76,79,81,84,86,88]; let snapI=0, snapT=0;
+
+  // ---------- The background music: dreamy and a little magical, like fireflies at dusk ----------
+  // A twinkling sixteenth-note arpeggio (a glassy music box, with echoes), a soft synth pad, a warm low bass, a gentle
+  // heartbeat drum, and now and then a few bell notes of tune or a firefly sparkle. All of it through a soft reverb.
+  // Ab major: Ab, Fm, Db, Eb (and a wistful Bbm, Cm in the middle). Every chord is [bass, its notes].
+  const BPM=92, S16=60/BPM/4;
+  const CH={Ab:[44,[68,72,75,80]],Fm:[41,[65,68,72,77]],Db:[49,[65,68,73,77]],Eb:[51,[67,70,75,79]],Cm:[48,[67,70,72,79]],Bbm:[46,[65,70,73,77]],Esus:[51,[68,70,75,80]]};
+  const FORM=['Ab','Fm','Db','Eb','Ab','Fm','Db','Esus','Fm','Cm','Db','Ab','Bbm','Fm','Db','Eb'];
+  const ARP=[0,1,2,3,2,1,2,3,0,1,2,3,3,2,1,2];
+  const SCALE=[68,70,72,75,77,80,82,84,87,89];   // Ab major pentatonic, for the bell tune and the fireflies
+  const TUNES=[[[0,4],[4,3],[6,2],[8,3],[12,1]],[[0,2],[2,3],[4,4],[8,5],[10,4]],[[0,5],[4,4],[8,2],[10,3],[12,2]],[[2,1],[4,2],[6,4],[10,3]]];
+  const M={timer:0,next:0,i:0,playing:false,tune:null};
+  let rev=null, echo=null;
+  // a soft room (a made-up decaying hiss as the impulse) and a dotted-eighth echo that feeds it
+  function fx(c){ if(rev) return; rev=c.createConvolver(); const n=Math.ceil(c.sampleRate*2.8), b=c.createBuffer(2,n,c.sampleRate);
+    for(let ch=0;ch<2;ch++){ const x=b.getChannelData(ch); for(let i=0;i<n;i++) x[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.6); } rev.buffer=b;
+    const rg=c.createGain(); rg.gain.value=.55; rev.connect(rg); rg.connect(mbus);
+    echo=c.createDelay(2); echo.delayTime.value=S16*3; const fb=c.createGain(), lp=c.createBiquadFilter(); fb.gain.value=.38; lp.type='lowpass'; lp.frequency.value=3200;
+    echo.connect(lp); lp.connect(fb); fb.connect(echo); lp.connect(rev); const eg=c.createGain(); eg.gain.value=.45; lp.connect(eg); eg.connect(mbus); }
+  // one voice routed dry, to the echo and to the room in chosen amounts
+  function send(c,node,dry,ech,room){ const d=c.createGain(); d.gain.value=dry; node.connect(d); d.connect(mbus);
+    if(ech){ const e=c.createGain(); e.gain.value=ech; node.connect(e); e.connect(echo); } if(room){ const r=c.createGain(); r.gain.value=room; node.connect(r); r.connect(rev); } }
+  function glass(c,t,f,vol,len=.5){ const g=c.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.004); g.gain.exponentialRampToValueAtTime(.0001,t+len);
+    const a=c.createOscillator(), b=c.createOscillator(); a.type='sine'; b.type='triangle'; a.frequency.value=f; b.frequency.value=f*2; const bg=c.createGain(); bg.gain.value=.18;
+    a.connect(g); b.connect(bg); bg.connect(g); a.start(t); b.start(t); a.stop(t+len+.05); b.stop(t+len+.05); send(c,g,.8,.5,.5); }
+  function pad(c,t,ns,len){ const g=c.createGain(), lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.setValueAtTime(700,t); lp.frequency.linearRampToValueAtTime(1500,t+len*.5); lp.frequency.linearRampToValueAtTime(800,t+len);
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.035,t+len*.35); g.gain.setValueAtTime(.035,t+len*.75); g.gain.linearRampToValueAtTime(0,t+len+.4);
+    for(const m of ns) for(const dt of [-9,9]){ const o=c.createOscillator(); o.type='sawtooth'; o.frequency.value=hz(m-12); o.detune.value=dt; o.connect(lp); o.start(t); o.stop(t+len+.5); }
+    lp.connect(g); send(c,g,.7,0,.8); }
+  function bass(c,t,m,len){ const o=c.createOscillator(), g=c.createGain(); o.type='sine'; o.frequency.value=hz(m-12);
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.2,t+.03); g.gain.setValueAtTime(.18,t+len*.7); g.gain.exponentialRampToValueAtTime(.0001,t+len);
+    o.connect(g); g.connect(mbus); o.start(t); o.stop(t+len+.05); }
+  function beat(c,t,vol){ const o=c.createOscillator(), g=c.createGain(); o.frequency.setValueAtTime(110,t); o.frequency.exponentialRampToValueAtTime(42,t+.18);
+    g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.0001,t+.3); o.connect(g); g.connect(mbus); o.start(t); o.stop(t+.32); }
+  function musicNote(c,t,i){ fx(c); const bar=Math.floor(i/16)%FORM.length, s=i%16, [root,tones]=CH[FORM[bar]], loop=Math.floor(i/16/FORM.length);
+    if(s===0){ pad(c,t,tones,S16*16); M.tune=(bar%2===1&&loop%2===0)||(bar>=8&&bar%2===0)?TUNES[(bar+loop)%TUNES.length]:null; }
+    if(s===0||s===8) bass(c,t,root,S16*7.5);
+    if(s===0||s===8) beat(c,t,s===0?.13:.08);
+    if(s===10&&Math.random()<.3) beat(c,t,.05);
+    glass(c,t,hz(tones[ARP[s]]+12),s%4===0?.05:.032,.45);   // the twinkling arpeggio
+    if(M.tune) for(const [at,k] of M.tune) if(at===s) glass(c,t,hz(SCALE[k]+12),.07,1.3);
+    if(Math.random()<.035) glass(c,t+S16*.5,hz(SCALE[5+Math.floor(Math.random()*5)]+24),.02,.6);   // a firefly
+  }
+  function musicTick(){ const c=ac; if(!c||!M.playing) return; while(M.next<c.currentTime+.3){ musicNote(c,M.next,M.i); M.i++; M.next+=S16; } }
+  const videoOn=()=>[...document.querySelectorAll('video')].some(v=>!v.paused&&!v.ended&&!v.muted);
+  function musicLevel(){ if(!ac||!mbus) return; const want=on&&musicOn&&!document.hidden&&!M.duck&&!videoOn()?.22:0, n=ac.currentTime;
+    mbus.gain.cancelScheduledValues(n); mbus.gain.setValueAtTime(mbus.gain.value,n); mbus.gain.linearRampToValueAtTime(want,n+(want?1.2:.35));
+    if(want&&!M.playing){ M.playing=true; M.next=n+.1; M.timer=setInterval(musicTick,60); }
+    else if(!want&&M.playing){ clearTimeout(M.stopT); M.stopT=setTimeout(()=>{ if(mbus.gain.value<.01){ M.playing=false; clearInterval(M.timer); } },500); } }
+  // starts with the first tap (browsers only allow sound after one), steps aside for films and when the page is hidden
+  const kick=()=>{ if(!on||!musicOn) return; if(ctx()) musicLevel(); };
+  ['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,kick,{capture:true,passive:true}));
+  document.addEventListener('visibilitychange',()=>musicLevel());
+  ['play','playing','pause','ended','volumechange'].forEach(ev=>document.addEventListener(ev,()=>setTimeout(musicLevel,30),true));
+
   return {
     get on(){ return on; },
-    set(v){ on=!!v; try{ localStorage.setItem('bloppit-sound',on?'on':'off'); }catch(e){} if(on) ctx(); },
-    // A brick snapping in: a hard plastic tick, then a hollow little knock
+    get musicOn(){ return musicOn; },
+    set(v){ on=!!v; try{ localStorage.setItem('bloppit-sound',on?'on':'off'); }catch(e){} if(on) ctx(); musicLevel(); },
+    music(v){ musicOn=!!v; try{ localStorage.setItem('bloppit-music',musicOn?'on':'off'); }catch(e){} if(musicOn&&on) ctx(); musicLevel(); },
+    duck(v){ M.duck=!!v; musicLevel(); },   // quiet the music for a moment that has its own (the in-game arrival)
+    // A brick snapping in: a crisp plastic click, then a marimba note a step higher than the last one
     snap(delay=0){ haptic('light',delay); const c=ok('snap',.04); if(!c) return; const t=c.currentTime+delay;
-      noise(c,t,.025,{vol:.5,freq:jit(4200,.15),q:2.5});
-      tone(c,t+.006,jit(1150,.08),.06,{type:'triangle',vol:.22,to:700});
-      tone(c,t+.012,jit(340,.06),.05,{vol:.18,to:220}); },
-    // Wrong spot: a soft, friendly bonk
+      if(c.currentTime-snapT>2.5) snapI=0; snapT=c.currentTime;
+      noise(c,t,.018,{vol:.5,freq:jit(4300,.12),q:3}); tone(c,t+.004,jit(1700,.06),.035,{type:'triangle',vol:.12,to:900});
+      marimba(c,t+.012,hz(SNAP_SCALE[snapI%SNAP_SCALE.length]),.16); snapI++; },
+    // Wrong spot: a friendly cartoon "bwoing" that droops, never harsh
     bonk(){ haptic('warn'); const c=ok('bonk',.25); if(!c) return; const t=c.currentTime;
-      tone(c,t,210,.18,{vol:.28,to:120,att:.01}); tone(c,t+.07,160,.16,{vol:.18,to:95,att:.01}); },
-    // Picking bricks up out of the parts box: a little rattle
+      slide(c,t,jit(330,.04),190,.32,.16,11,'triangle'); tone(c,t,140,.12,{vol:.12,to:90,att:.005}); },
+    // Picking bricks up out of the parts box: a bright clatter of plastic
     rattle(n=1){ const c=ok('rattle',.12); if(!c) return; const t=c.currentTime, k=Math.min(2+n,6);
-      for(let i=0;i<k;i++) noise(c,t+i*.028+Math.random()*.012,.02,{vol:.28,freq:jit(3600,.3),q:3}); },
-    // A step done: three rising notes
-    chime(){ haptic('medium'); const c=ok('chime',.3); if(!c) return; const t=c.currentTime+.05, base=[0,2,4,5][Math.floor(Math.random()*4)];
-      [0,4,7].forEach((st,i)=>{ const f=523.25*Math.pow(2,(st+base)/12); tone(c,t+i*.09,f,.35,{type:'triangle',vol:.2}); tone(c,t+i*.09,f*2,.2,{vol:.05}); }); },
-    // Bloppit's otter chirp
-    chirp(){ const c=ok('chirp',.3); if(!c) return; const t=c.currentTime+.32;
-      [0,.11].forEach((d,i)=>{ const o=c.createOscillator(), g=c.createGain(), lfo=c.createOscillator(), lg=c.createGain();
-        o.type='sine'; o.frequency.setValueAtTime(jit(1500,.05)+i*180,t+d); o.frequency.exponentialRampToValueAtTime(jit(2500,.05)+i*240,t+d+.05); o.frequency.exponentialRampToValueAtTime(1700,t+d+.09);
-        lfo.frequency.value=38; lg.gain.value=90; lfo.connect(lg); lg.connect(o.frequency);
-        g.gain.setValueAtTime(0,t+d); g.gain.linearRampToValueAtTime(.13,t+d+.012); g.gain.exponentialRampToValueAtTime(.0001,t+d+.1);
-        o.connect(g); g.connect(out); o.start(t+d); lfo.start(t+d); o.stop(t+d+.12); lfo.stop(t+d+.12); }); },
-    // The whole model finished: a short fanfare
+      for(let i=0;i<k;i++){ const d=t+i*.03+Math.random()*.015; noise(c,d,.02,{vol:.3,freq:jit(3800,.3),q:4}); tone(c,d,jit(2200,.25),.03,{type:'triangle',vol:.05}); } },
+    // A step done: a quick marimba run up and a sparkle on top
+    chime(){ haptic('medium'); const c=ok('chime',.3); if(!c) return; const t=c.currentTime+.04, k=[0,2,4,5][Math.floor(Math.random()*4)];
+      [0,4,7,12].forEach((st,i)=>marimba(c,t+i*.065,hz(72+k+st),.16)); glock(c,t+.26,hz(96+k),.06,null,.6); },
+    // Bloppit's otter chirp: three quick, happy chirrups that rise
+    chirp(){ const c=ok('chirp',.3); if(!c) return; const t=c.currentTime+.3;
+      [[0,1500],[.09,1750],[.18,2100]].forEach(([d,f],i)=>{ const o=c.createOscillator(), g=c.createGain(), lfo=c.createOscillator(), lg=c.createGain(), ff=jit(f,.04);
+        o.type='sine'; o.frequency.setValueAtTime(ff*.85,t+d); o.frequency.exponentialRampToValueAtTime(ff*1.35,t+d+.04); o.frequency.exponentialRampToValueAtTime(ff,t+d+.075);
+        lfo.frequency.value=42; lg.gain.value=70; lfo.connect(lg); lg.connect(o.frequency);
+        g.gain.setValueAtTime(0,t+d); g.gain.linearRampToValueAtTime(i===2?.15:.11,t+d+.01); g.gain.exponentialRampToValueAtTime(.0001,t+d+.08);
+        o.connect(g); g.connect(out); o.start(t+d); lfo.start(t+d); o.stop(t+d+.1); lfo.stop(t+d+.1); }); },
+    // The whole model finished: a bright little "ta-da-da-DAAA!" with a cymbal shimmer and sparkles
     fanfare(){ haptic('win'); const c=ok('fan',1); if(!c) return; const t=c.currentTime+.05;
-      [[0,523.25,.14],[.14,659.25,.14],[.28,783.99,.14],[.42,1046.5,.5]].forEach(([d,f,len])=>{ tone(c,t+d,f,len+.1,{type:'square',vol:.07}); tone(c,t+d,f,len+.2,{type:'triangle',vol:.18}); });
-      [523.25,659.25,783.99].forEach(f=>tone(c,t+.42,f/2,.7,{type:'triangle',vol:.08})); },
-    // A star landing: one bright ping per star, each a note higher
-    star(n=1){ haptic('light'); const c=ok('star'+n,.3); if(!c) return; const t=c.currentTime+.02, f=[880,1108.7,1318.5][Math.min(2,Math.max(0,n-1))];
-      tone(c,t,f,.22,{type:'sine',vol:.22,to:f*1.01}); tone(c,t+.02,f*2,.12,{type:'triangle',vol:.07}); },
-    // The island growing: a warm two-chord swell
+      [[0,72,.11],[.13,76,.11],[.26,79,.11],[.4,84,.65]].forEach(([d,m,len])=>{ brass(c,t+d,hz(m),len,.07); marimba(c,t+d,hz(m),.1); });
+      [[.4,60],[.4,64],[.4,67]].forEach(([d,m])=>brass(c,t+d,hz(m),.7,.04));
+      noise(c,t+.4,1.1,{vol:.07,freq:8000,q:.5,type:'highpass',att:.01}); sparkle(c,t+.5,6,84,.05); },
+    // A star landing: a glockenspiel ping, each star a note higher, with a twinkle
+    star(n=1){ haptic('light'); const c=ok('star'+n,.3); if(!c) return; const t=c.currentTime+.02, m=[84,88,91][Math.min(2,Math.max(0,n-1))];
+      glock(c,t,hz(m),.16,null,.9); glock(c,t+.05,hz(m+12),.05,null,.4); if(n>=3) sparkle(c,t+.12,5,91,.035); },
+    // The island growing: a warm swell and a harp-like run up
     stage(){ haptic('win'); const c=ok('stage',1.2); if(!c) return; const t=c.currentTime+.05;
-      [[0,392,.5],[0,493.88,.5],[0,587.33,.5],[.45,523.25,.9],[.45,659.25,.9],[.45,783.99,.9]].forEach(([d,f,len])=>tone(c,t+d,f,len,{type:'triangle',vol:.12,att:.04}));
-      tone(c,t+.45,1046.5,.6,{type:'sine',vol:.1,att:.05}); },
-    // The pup hatching: a little squeak and a trill
+      [[0,55],[0,59],[0,62],[.5,60],[.5,64],[.5,67],[.5,72]].forEach(([d,m])=>brass(c,t+d,hz(m),d?1:.45,.035));
+      [60,64,67,72,76,79,84,88].forEach((m,i)=>pluck(c,t+.5+i*.045,hz(m),.06,null,.8)); glock(c,t+.9,hz(96),.06,null,1); },
+    // The pup hatching: a pop, a squeak and a happy trill
     hatch(){ haptic('light'); const c=ok('hatch',.8); if(!c) return; const t=c.currentTime+.02;
-      tone(c,t,660,.09,{type:'sine',vol:.18,to:990}); tone(c,t+.12,990,.08,{type:'sine',vol:.16,to:1320});
-      [0,.07,.14,.21].forEach((d,i)=>tone(c,t+.3+d,1046.5*(i%2?1.125:1),.07,{type:'triangle',vol:.1})); },
+      tone(c,t,300,.06,{vol:.2,to:900,att:.002}); slide(c,t+.08,900,1500,.1,.13); slide(c,t+.2,1100,1700,.1,.12);
+      [0,.06,.12,.18,.24].forEach((d,i)=>marimba(c,t+.36+d,hz([79,83,86,83,91][i]),.1)); },
     // The first arrival: the sea, a soft pad and a little wondering tune that comes home as the boat docks (~20 s).
     // Returns stop() for Skip. Everything is scheduled at once on its own bus, so stopping is one fade.
-    voyage(){ const c=ok('voyage',5); if(!c) return {stop(){}}; const t0=c.currentTime+.05, bus=c.createGain(), main=out; bus.gain.value=1; bus.connect(main); out=bus;
+    voyage(){ const c=ok('voyage',5); if(!c) return {stop(){}}; M.duck=true; musicLevel(); clearTimeout(M.duckT); M.duckT=setTimeout(()=>{ M.duck=false; musicLevel(); },20500); const t0=c.currentTime+.05, bus=c.createGain(), main=out; bus.gain.value=1; bus.connect(main); out=bus;
       const hz=m=>440*Math.pow(2,(m-69)/12);
       try{
         // the sea: slow brown noise through a low filter, breathing in and out
@@ -3239,53 +3358,73 @@ const sfx=(()=>{
         [[4.3,81],[4.85,79],[5.5,76],[6.15,74],[6.55,76],[6.95,79],[7.7,81],[8.2,79],[8.7,86]].forEach(([d,m])=>bell(d,m));
         [[9.0,81,.07],[9.6,84,.07],[10.2,86,.07],[10.8,88,.07],[11.6,86,.06],[12.2,84,.06],[13.2,79],[13.7,81],[14.2,84],[14.7,86],[15.2,84,.1],[15.33,88,.09],[15.46,91,.09],[15.62,96,.07],[16.3,88,.06],[16.75,91,.06],[17.3,84,.05],[18.2,79,.045]].forEach(([d,m,vol])=>bell(d,m,vol));
       } finally { out=main; }
-      return {stop(){ try{ const n=c.currentTime; bus.gain.cancelScheduledValues(n); bus.gain.setValueAtTime(bus.gain.value,n); bus.gain.linearRampToValueAtTime(0,n+.35); setTimeout(()=>{ try{ bus.disconnect(); }catch(e){} },500); }catch(e){} }}; },
-    // Each character's own voice when you tap them (Oct 2026). Bloppit keeps his otter chirp.
+      return {stop(){ clearTimeout(M.duckT); M.duck=false; setTimeout(musicLevel,400); try{ const n=c.currentTime; bus.gain.cancelScheduledValues(n); bus.gain.setValueAtTime(bus.gain.value,n); bus.gain.linearRampToValueAtTime(0,n+.35); setTimeout(()=>{ try{ bus.disconnect(); }catch(e){} },500); }catch(e){} }}; },
+    // Each character's own voice when you tap them
     voice(who){ const f=({tiny:'ribbit',pup:'squeak',longtail:'kee',swoop:'kee',nora:'quok',pippa:'honk',bibi:'roar',lufu:'twinkle'})[who]; (f&&this[f]?this[f]:this.chirp).call(this); },
-    // Tiny: a cartoon "rib-bit": two quick, buzzy croaks, the second a little higher
-    ribbit(){ const c=ok('ribbit',.35); if(!c) return; const t0=c.currentTime+.02;
-      [[0,.11,jit(330,.05),.85],[.15,.14,jit(400,.05),1.15]].forEach(([d,len,f,k])=>{ const t=t0+d;
-        const o=c.createOscillator(), am=c.createOscillator(), amg=c.createGain(), v=c.createGain(), bp=c.createBiquadFilter(), g=c.createGain();
-        o.type='sawtooth'; o.frequency.setValueAtTime(f*.92,t); o.frequency.linearRampToValueAtTime(f*k,t+len*.6); o.frequency.linearRampToValueAtTime(f*.9,t+len);
-        am.type='square'; am.frequency.value=jit(34,.08); amg.gain.value=.5; v.gain.value=.5; am.connect(amg); amg.connect(v.gain);   // the throaty pulse
-        bp.type='bandpass'; bp.frequency.value=950; bp.Q.value=2.2;
-        g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.55,t+.012); g.gain.setValueAtTime(.55,t+len*.7); g.gain.exponentialRampToValueAtTime(.0001,t+len);
-        o.connect(v); v.connect(bp); bp.connect(g); g.connect(out); o.start(t); am.start(t); o.stop(t+len+.02); am.stop(t+len+.02); }); },
-    // Your pup: a short, high, happy squeak (higher than Bloppit's chirp)
+    // Tiny: a real-sounding frog croak ("crrroak"). Frogs croak in quick little knocks of sound from their throat
+    // pouch, so this is a run of uneven knocks, each one a tiny ringing note, swelling and fading like one breath
+    ribbit(){ const c=ok('ribbit',.35); if(!c) return; const t=c.currentTime+.02, d=jit(.42,.08), sr=c.sampleRate, n=Math.ceil(sr*d), b=c.createBuffer(1,n,sr), x=b.getChannelData(0);
+      const tone0=jit(430,.06); let at=Math.floor(sr*.004);
+      while(at<n){ const u=at/n, rate=52-22*u+(Math.random()*2-1)*6;                       // the knocks slow down as the croak ends
+        const f=tone0*(1.08-.18*u)*(1+(Math.random()*2-1)*.04), amp=Math.sin(Math.PI*Math.min(1,u*1.15))**.6*(.7+Math.random()*.3);
+        const len=Math.min(n-at,Math.floor(sr*.018)); for(let q=0;q<len;q++){ const tt=q/sr; x[at+q]+=amp*Math.sin(2*Math.PI*f*tt)*Math.exp(-tt/.0045)+amp*.25*Math.sin(2*Math.PI*f*2.3*tt)*Math.exp(-tt/.002); }
+        at+=Math.max(1,Math.floor(sr/rate)); }
+      for(let q=0;q<n;q++) x[q]+=(Math.random()*2-1)*.03*Math.sin(Math.PI*q/n);   // a little breath under it
+      const src=c.createBufferSource(); src.buffer=b; const bp=c.createBiquadFilter(), lp=c.createBiquadFilter(), g=c.createGain();
+      bp.type='peaking'; bp.frequency.value=900; bp.gain.value=5; bp.Q.value=1.2; lp.type='lowpass'; lp.frequency.value=3200;
+      g.gain.setValueAtTime(.9,t); src.connect(bp); bp.connect(lp); lp.connect(g); g.connect(out); src.start(t); },
+    // Your pup: an excited "eep-eep!", higher and quicker than Bloppit
     squeak(){ const c=ok('squeak',.3); if(!c) return; const t=c.currentTime+.02;
-      tone(c,t,jit(1900,.06),.07,{vol:.14,to:2900}); tone(c,t+.09,jit(2300,.06),.1,{vol:.12,to:3300}); },
-    // Swoop the Longtail: a shrill seabird "kee-ree"
+      [[0,1800,2900],[.11,2100,3400]].forEach(([d,a,b])=>{ slide(c,t+d,jit(a,.05),jit(b,.05),.08,.13,30); }); },
+    // Swoop the Longtail: a shrill, excited seabird "kik-kik-keeer"
     kee(){ const c=ok('kee',.35); if(!c) return; const t=c.currentTime+.02;
-      tone(c,t,jit(3100,.04),.12,{type:'triangle',vol:.12,to:3500,att:.008}); tone(c,t,jit(3100,.04)*1.5,.1,{vol:.03});
-      tone(c,t+.15,jit(3400,.04),.2,{type:'triangle',vol:.12,to:2300,att:.008}); noise(c,t+.15,.12,{vol:.05,freq:3200,q:4}); },
-    // Nora the Night Heron: a soft, hoarse "quok"
-    quok(){ const c=ok('quok',.4); if(!c) return; const t=c.currentTime+.02, f=jit(420,.05);
-      tone(c,t,f,.16,{type:'sawtooth',vol:.07,to:f*.7,att:.01}); tone(c,t,f*2,.1,{type:'triangle',vol:.06,to:f*1.3}); noise(c,t,.12,{vol:.12,freq:900,q:2}); },
-    // Pippa the Penguin: two cheerful honks
+      [0,.08].forEach(d=>{ tone(c,t+d,jit(3300,.04),.05,{type:'triangle',vol:.1,to:3700,att:.004}); noise(c,t+d,.04,{vol:.04,freq:3500,q:5}); });
+      slide(c,t+.17,jit(3600,.04),2400,.26,.11,18,'triangle'); },
+    // Nora the Night Heron: one soft, wise "hoooo"
+    quok(){ const c=ok('quok',.4); if(!c) return; const t=c.currentTime+.02, d=.55, f=jit(hz(66),.03);
+      const o=c.createOscillator(), o2=c.createOscillator(), vib=c.createOscillator(), vg=c.createGain(), g=c.createGain(), h2=c.createGain();
+      o.type='sine'; o2.type='sine'; o.frequency.setValueAtTime(f*1.04,t); o.frequency.linearRampToValueAtTime(f,t+.12); o.frequency.linearRampToValueAtTime(f*.94,t+d);
+      o2.frequency.value=f*2; h2.gain.value=.12; vib.frequency.value=5.5; vg.gain.value=f*.012; vib.connect(vg); vg.connect(o.frequency);
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.22,t+.09); g.gain.setValueAtTime(.2,t+d*.6); g.gain.exponentialRampToValueAtTime(.0001,t+d);
+      o.connect(g); o2.connect(h2); h2.connect(g); g.connect(out); o.start(t); o2.start(t); vib.start(t); o.stop(t+d+.03); o2.stop(t+d+.03); vib.stop(t+d+.03);
+      noise(c,t,.2,{vol:.05,freq:900,q:.8,type:'lowpass',att:.06}); },   // a little breath at the start
+    // Pippa the Penguin: two cheerful honks that go up, like a laugh
     honk(){ const c=ok('honk',.4); if(!c) return; const t=c.currentTime+.02;
-      [0,.17].forEach((d,i)=>{ const f=jit(560,.04)*(i?1.12:1); tone(c,t+d,f,.13,{type:'square',vol:.05,to:f*.92,att:.012}); tone(c,t+d,f,.13,{type:'triangle',vol:.12,to:f*.92,att:.012}); }); },
-    // Bibi the Lion Cub: a little growl that turns into a squeak (his roar is more of a squeak)
-    roar(){ const c=ok('roar',.5); if(!c) return; const t=c.currentTime+.02;
-      tone(c,t,jit(150,.05),.24,{type:'sawtooth',vol:.08,to:260,att:.03}); noise(c,t,.24,{vol:.14,freq:520,q:1.5});
-      tone(c,t+.2,jit(900,.05),.16,{vol:.15,to:1500,att:.01}); },
+      [0,.14,.28].forEach((d,i)=>{ const f=jit(520,.03)*[1,1.12,1.26][i]; tone(c,t+d,f,.11,{type:'square',vol:.04,to:f*.9,att:.01}); tone(c,t+d,f,.11,{type:'triangle',vol:.12,to:f*.9,att:.01}); }); },
+    // Bibi the Lion Cub: a brave little growl ("grrrr"). Built like a real throat: uneven little pulses of breath (never
+    // a steady buzz), shaped by the mouth, rising and falling once, so no two growls are the same
+    roar(){ const c=ok('roar',.5); if(!c) return; const t=c.currentTime+.02, d=jit(.55,.1), sr=c.sampleRate, n=Math.ceil(sr*d), b=c.createBuffer(1,n,sr), x=b.getChannelData(0);
+      let at=0, k=0, roll=0; while(at<n){ const u=at/n, f0=95+55*Math.sin(Math.PI*Math.min(1,u*1.3))+(Math.random()*2-1)*12;   // the pitch wanders, up then down
+        roll+=.35+Math.random()*.3; const amp=(.55+.45*Math.abs(Math.sin(roll)))*(.75+Math.random()*.25);                      // the "rrr" rolls unevenly
+        const len=Math.min(n-at,Math.floor(sr*.006)); for(let q=0;q<len;q++) x[at+q]+=amp*(Math.random()*2-1)*Math.exp(-q/(sr*.0016));
+        at+=Math.max(1,Math.floor(sr/f0*(1+(Math.random()*2-1)*.18))); k++; }
+      for(let q=0;q<n;q++) x[q]+=(Math.random()*2-1)*.05;   // breath
+      const src=c.createBufferSource(); src.buffer=b; const f1=c.createBiquadFilter(), f2=c.createBiquadFilter(), lp=c.createBiquadFilter(), g=c.createGain(), m=c.createGain();
+      f1.type='bandpass'; f1.frequency.setValueAtTime(480,t); f1.frequency.linearRampToValueAtTime(650,t+d*.4); f1.frequency.linearRampToValueAtTime(520,t+d); f1.Q.value=2.5;
+      f2.type='bandpass'; f2.frequency.value=1150; f2.Q.value=3.5; lp.type='lowpass'; lp.frequency.value=2600; m.gain.value=.7;
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(1.4,t+.07); g.gain.setValueAtTime(1.3,t+d*.65); g.gain.linearRampToValueAtTime(0,t+d);
+      src.connect(f1); src.connect(f2); f1.connect(m); f2.connect(m); m.connect(lp); lp.connect(g); g.connect(out); src.start(t); },
     // lufu: a soft sparkle of glassy bells
-    twinkle(){ const c=ok('twinkle',.5); if(!c) return; const t=c.currentTime+.02, ns=[88,91,95,100,96];
-      ns.forEach((m,i)=>{ const f=440*Math.pow(2,(m-69)/12); tone(c,t+i*.07+Math.random()*.02,f,.5,{vol:.07}); tone(c,t+i*.07,f*2.01,.25,{vol:.015}); }); },
-    // Moving between the islands: a soft swoosh of air
-    swoosh(){ const c=ok('swoosh',.18); if(!c) return; const t=c.currentTime+.01, d=.34;
-      const len=Math.ceil(c.sampleRate*d), b=c.createBuffer(1,len,c.sampleRate), x=b.getChannelData(0); for(let i=0;i<len;i++) x[i]=Math.random()*2-1;
-      const s=c.createBufferSource(), f=c.createBiquadFilter(), g=c.createGain(); s.buffer=b; f.type='bandpass'; f.Q.value=1.1;
-      f.frequency.setValueAtTime(jit(500,.1),t); f.frequency.exponentialRampToValueAtTime(jit(2600,.1),t+d*.55); f.frequency.exponentialRampToValueAtTime(900,t+d);
-      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.32,t+d*.45); g.gain.exponentialRampToValueAtTime(.0001,t+d);
-      s.connect(f); f.connect(g); g.connect(out); s.start(t); s.stop(t+d+.02); },
+    twinkle(){ const c=ok('twinkle',.5); if(!c) return; sparkle(c,c.currentTime+.02,6,84,.06); },
+    // Moving between the islands: a breath of sea breeze that sweeps across from one side to the other
+    swoosh(dir){ const c=ok('swoosh',.18); if(!c) return; const t=c.currentTime+.01, d=.55;
+      const len=Math.ceil(c.sampleRate*d), b=c.createBuffer(1,len,c.sampleRate), x=b.getChannelData(0); let v=0; for(let i=0;i<len;i++){ v=v*.6+(Math.random()*2-1)*.4; x[i]=v; }   // soft, breathy noise
+      const s=c.createBufferSource(), lp=c.createBiquadFilter(), g=c.createGain(); s.buffer=b; lp.type='lowpass'; lp.Q.value=.7;
+      lp.frequency.setValueAtTime(jit(450,.1),t); lp.frequency.exponentialRampToValueAtTime(jit(2200,.1),t+d*.45); lp.frequency.exponentialRampToValueAtTime(500,t+d);
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.42,t+d*.42); g.gain.linearRampToValueAtTime(0,t+d);
+      let tail=g; if(c.createStereoPanner){ const pn=c.createStereoPanner(), sgn=dir<0?-1:1; pn.pan.setValueAtTime(-.8*sgn,t); pn.pan.linearRampToValueAtTime(.8*sgn,t+d); g.connect(pn); tail=pn; }
+      s.connect(lp); lp.connect(g); tail.connect(out); s.start(t); s.stop(t+d+.02); },
     // A boat bumping the jetty: a soft wooden knock
     dock(){ haptic('medium'); const c=ok('dock',.5); if(!c) return; const t=c.currentTime+.01;
-      noise(c,t,.09,{vol:.35,freq:380,q:1.2,type:'lowpass'}); tone(c,t,150,.22,{vol:.26,to:95,att:.006}); tone(c,t+.05,230,.12,{type:'triangle',vol:.08,to:160}); }
+      noise(c,t,.09,{vol:.35,freq:380,q:1.2,type:'lowpass'}); tone(c,t,150,.22,{vol:.26,to:95,att:.006}); marimba(c,t+.03,hz(55),.12); }
   };
 })();
-function syncSoundBtn(){ for(const b of [$('#sndBtn'),$('#sndTop')]){ if(!b) continue; b.setAttribute('aria-pressed',sfx.on); b.title=(sfx.on?'Sound is on':'Sound is off')+' (M)'; } }
+function syncSoundBtn(){ for(const b of [$('#sndBtn'),$('#sndTop')]){ if(!b) continue; b.setAttribute('aria-pressed',sfx.on); b.title=(sfx.on?'Sound is on':'Sound is off')+' (M)'; }
+  const m=$('#musTop'), mo=sfx.on&&sfx.musicOn; if(m){ m.setAttribute('aria-pressed',mo); m.title=mo?'Music is on':'Music is off'; } }
+// The music button: on its own it turns just the music on or off (turning it on with all sound off turns sound back on too)
+function toggleMusic(){ if(!sfx.on){ sfx.set(true); sfx.music(true); } else sfx.music(!sfx.musicOn); syncSoundBtn(); }
 function toggleSound(){ sfx.set(!sfx.on); syncSoundBtn(); if(sfx.on) sfx.snap(); }
-$('#sndBtn').onclick=toggleSound; $('#sndTop').onclick=toggleSound; syncSoundBtn();
+$('#sndBtn').onclick=toggleSound; $('#sndTop').onclick=toggleSound; $('#musTop').onclick=toggleMusic; syncSoundBtn();
 // M switches sound on or off on any page (it used to work only while building)
 document.addEventListener('keydown',e=>{ if((e.key==='m'||e.key==='M')&&tab!=='build'&&!/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)&&!e.metaKey&&!e.ctrlKey&&!e.altKey){ toggleSound(); e.preventDefault(); } });
 
@@ -7188,7 +7327,7 @@ function islandInfo(id,o){
     case 'dest': { const m={ferry:'sunrise',workshop:'brickworks',brain:'brainpeak',speedway:'blitzbay',harbour:'otterwood'}[arg]; if(m) return islandInfo('isle:'+m,o); break; }
     case 'isle': { const I=ISLES[arg]; if(!I) break; const c=isleCount(arg,o), P=PIECES[arg], total=P[P.length-1].at, built=P.filter(x=>c>=x.at), next=P.find(x=>c<x.at);
       if(!c&&I.mystery) return {title:'Mystery Island',hint:mysteryHint(),bar:{pct:mysteryOpen()?100:Math.max(4,Math.round(100*mysteryProgress(o))),label:mysteryOpen()?'Ready to sail!':`${Math.round(100*mysteryProgress(o))}% of the way there`},rows:[['What’s there','Far out at sea, where it’s always night, a faint light glows in a swirl of mist. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Complete all five islands, every piece built (${fiveDone(o)} of ${FIVE_ISLES.length} so far)`],...(mysteryOpen()?[]:[['Still to finish',FIVE_ISLES.filter(id=>!isleComplete(id,o)).map(id=>isleCount(id,o)?`${ISLES[id].name} (${Math.min(isleCount(id,o),PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at})`:`${ISLES[id].name} (still in the mist)`).join(', ')]])],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'▶ Play next',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
-      if(!c&&arg==='sunrise'&&!seaWashed(0,o)) return {title:'A misty island',hint:`Pippa’s first puzzle washes ashore at ${seaPct(0)}%`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Get ${seaPct(0)}% of the way through Bloppitopia (you’re at ${progressPct(o)}%), then build Pippa’s first puzzle`]],actions:[{label:'▶ Play next',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
+      if(!c&&arg==='sunrise'&&!seaWashed(0,o)) return {title:'A misty island',hint:`Pippa’s first puzzle washes ashore at ${seaPct(0)}%`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Get ${seaPct(0)}% of the way through Bloppitopia (you’re at ${progressPct(o)}%), then build Pippa’s first puzzle`]],actions:[{label:'🏝️ Back to Bloppitopia',fn:()=>{ islandTipHide(true); isl3GoView(0); try{ sfx.swoosh(-1); }catch(e){} },primary:true}]};   // nothing to play here yet, so no surprise trip elsewhere
       if(!c) return {title:'A misty island',hint:`Play ${I.game} to discover it`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Finish your first ${I.unit}`]],actions:[{label:I.play,fn:I.go,primary:true}]};
       return {title:I.name,hint:`${I.game} · ${Math.min(c,total)} of ${total}`,rows:[['Grows with',I.grows],['Built',`${built.length} of ${P.length} pieces`],...(next?[['Next piece',`${next.name}: ${next.at-c} more ${I.unit}${next.at-c===1?'':'s'}`]]:[]),['Milestone',c>=total?`${I.milestone} ✓`:`${I.milestone} at ${total}`]],
         chips:P.map(x=>[x.name,c>=x.at]),bar:{pct:Math.max(4,Math.min(100,Math.round(100*c/total))),label:c>=total?'Complete!':`${total-c} more to ${I.milestone}`},actions:[...(arg==='moonstone'&&worldComplete(o)?[{label:'🌙 Watch the ending',fn:()=>{ theEnd(); },primary:true}]:[]),{label:I.play,fn:I.go,primary:!(arg==='moonstone'&&worldComplete(o))}]}; }
@@ -7584,7 +7723,7 @@ function isl3Events(cv){
     if(d.drag&&d.moved){ ISL3.dragging=false; let x=d.drag.position.x, z=d.drag.position.z; const fits=d.drag.userData.decor?((a,b)=>inPoly(a,b,scalePoly(HOMEP,0,0,.9))):onGrass; for(let i=0;i<30&&!fits(x,z);i++){ x*=.92; z*=.92; }
       const o=worldStore(); o.pos={...(o.pos||{}),[d.drag.userData.key]:[W2P(x),W2P(z)]}; worldSet(o); track('island_arranged'); sfx.snap(); islandShown=worldCount(o); renderIsland(); return; }
     if(e.type==='pointerup'&&d.moved&&!d.drag&&!d.multi){ const dx=e.clientX-d.x, dy=e.clientY-d.y; if(ISL3.ctl.enableRotate) return;   // looking around, not swiping
-      if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3){ isl3GoView((ISL3.viewI||0)+(dx<0?1:-1)); sfx.swoosh(); } return; }
+      if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3){ isl3GoView((ISL3.viewI||0)+(dx<0?1:-1)); sfx.swoosh(dx<0?1:-1); } return; }
     if(e.type==='pointerup'&&!d.moved&&performance.now()-d.t<1000&&d.h){ islandHover(null); const info0=d.h.info;
       // characters: a reaction first; a second tap soon after shows who they are
       if(info0==='bloppit'||info0==='pup'||info0.startsWith('longtail:')||info0.startsWith('char:')){ const again=ISL3.lastPoke&&ISL3.lastPoke.info===info0&&performance.now()-ISL3.lastPoke.t<8000;
@@ -8792,7 +8931,7 @@ function isl3Banner(t,big){ const b=ISL3.box&&ISL3.box.querySelector('.is3-banne
 // The buttons over the world: Play Next (one obvious next step), and the arrival's Build Our First Home
 function isl3Chrome(){ const box=ISL3.box; if(!box) return; let c=box.querySelector('.is3-chrome');
   if(!c){ c=document.createElement('div'); c.className='is3-chrome'; c.innerHTML='<div class="is3-banner" hidden></div><button class="primary is3-play" type="button"></button><div class="is3-views" hidden><button class="v-world" type="button" aria-label="Back to all of Bloppitopia" title="Bloppitopia" hidden><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="50" fill="#2FB8DC"/><circle cx="50" cy="52" r="15" fill="#6CC04A" stroke="#F2D594" stroke-width="4"/><g transform="translate(50 52) scale(.5)" stroke="#9E2019" stroke-width="2" fill="#D8342C"><rect x="-20" y="-6" width="40" height="18" rx="2.5"/><rect x="-15" y="-13" width="10" height="8" rx="2"/><rect x="5" y="-13" width="10" height="8" rx="2"/></g><circle cx="50.0" cy="19.0" r="8" fill="#9BD32C" stroke="#F2D594" stroke-width="3"/><circle cx="81.4" cy="41.8" r="8" fill="#24407A" stroke="#F2D594" stroke-width="3"/><circle cx="69.4" cy="78.7" r="8" fill="#F2C230" stroke="#F2D594" stroke-width="3"/><circle cx="30.6" cy="78.7" r="8" fill="#2F7FD0" stroke="#F2D594" stroke-width="3"/><circle cx="18.6" cy="41.8" r="8" fill="#E9772A" stroke="#F2D594" stroke-width="3"/></svg></button><button class="v-prev" type="button" aria-label="Previous view">‹</button><span class="v-mid"><span class="v-name"></span><span class="v-dots" aria-hidden="true"></span></span><button class="v-next" type="button" aria-label="Next view">›</button></div><div class="is3-say" hidden></div>'; box.appendChild(c);
-    c.querySelector('.v-world').onclick=()=>{ isl3GoView(0); sfx.swoosh(); }; c.querySelector('.v-mid').onclick=()=>{ if(ISL3.viewI){ isl3GoView(0); sfx.swoosh(); } }; c.querySelector('.v-prev').onclick=()=>{ isl3GoView((ISL3.viewI||0)-1); sfx.swoosh(); }; c.querySelector('.v-next').onclick=()=>{ isl3GoView((ISL3.viewI||0)+1); sfx.swoosh(); };
+    c.querySelector('.v-world').onclick=()=>{ isl3GoView(0); sfx.swoosh(); }; c.querySelector('.v-mid').onclick=()=>{ if(ISL3.viewI){ isl3GoView(0); sfx.swoosh(); } }; c.querySelector('.v-prev').onclick=()=>{ isl3GoView((ISL3.viewI||0)-1); sfx.swoosh(-1); }; c.querySelector('.v-next').onclick=()=>{ isl3GoView((ISL3.viewI||0)+1); sfx.swoosh(1); };
     c.querySelector('.is3-play').onclick=()=>{ const a=c.querySelector('.is3-play').dataset.act; if(a==='home'){ track('first_home_start'); welcomeStart(); return; } const n=nextBuild(); track('play_next:island'); if(n) n.go(); else homeGo('quick'); }; }
   const b=c.querySelector('.is3-play'), o=worldStore();
   if(ISL3.arrival==='home'){ b.dataset.act='home'; b.innerHTML='🔨 Build Our First Home'; b.hidden=false; }
