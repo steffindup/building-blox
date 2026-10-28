@@ -1109,7 +1109,7 @@ body.film-on{overflow:hidden}
 .builds-grid img{width:96px;height:72px;object-fit:contain}
 .builds-grid .ws-stars{font-size:16px;letter-spacing:2px;color:#E9A800}.builds-grid .ws-stars i{font-style:normal;color:var(--line)}
 .builds-grid small{font-weight:700;color:var(--muted)}
-.mastery{display:inline-flex;gap:10px;margin-left:8px;font-size:13px;font-weight:700;color:var(--muted)}.mastery b{color:#14202C}
+.mastery{display:inline-flex;gap:10px;margin-left:8px;font-size:13px;font-weight:700;color:var(--muted)}.mastery b{color:var(--ink)}
 .tab.play4{background:#008F9B;color:#fff;border-color:#008F9B}
 .tab.play4 .n{background:rgba(255,255,255,.22);color:#fff}
 .tab.play4[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
@@ -3092,6 +3092,10 @@ const TRAIL_ISLE={otter:'otterwood',brain:'brainpeak',sea:'sunrise'};
 function islandSetOff(isle,go){ const f=isle&&FILMS.find(f=>f.at==='isle:'+isle);
   if(f&&!filmSeen(f.id)&&isleCount(isle)===0) isl3Film(f,go); else go(); }
 function startLevelFilm(tr,i){ islandSetOff(TRAIL_ISLE[tr],()=>startLevel(i)); }
+// From an island's card: an island still in the mist sets off straight away (its arrival film, then the trail's first
+// level, like Play next); one already found opens its trail's level map
+function trailGo(tr){ const isle=TRAIL_ISLE[tr]; if(mp||isleCount(isle)>0){ homeGo(tr); return; }
+  const B=bestOf(gameStore(),tr), i=Math.min(levelsOf(tr).length-1,Object.keys(B).length); setTrail(tr); startLevelFilm(tr,i); }
 const filmsOpen=o=>FILMS.filter(f=>{ try{ return f.open(o); }catch(e){ return false; } });
 function renderFilmsTile(){ const n=filmsOpen(worldStore()).length, el=$('#hmFilms'); el.hidden=!n; if(n) $('#hmFilmsS').textContent=n===1?'1 film to watch again':`${n} films to watch again`; }
 let filmCur=null;
@@ -8104,9 +8108,9 @@ const MYST_S=.66;   // how big Mystery Island looks until it's reached
 const isl3TallNow=()=>{ const b=typeof ISL3!=='undefined'&&ISL3.box; return !!(b&&b.clientWidth&&CAM_TALL(b.clientWidth/(b.clientHeight||b.clientWidth))); };
 const ISLES={
   otterwood:{name:'Frog Forest',game:'Frog Trail',unit:'Frog Trail level',x:-14.6,z:3.2,r:4.5,seed:2.2,ground:['#5DBB46','#3F8F33'],
-    milestone:'The Lily-pad Palace',grows:'Every Frog Trail level you finish (the last is the boss)',play:'Play Frog Trail',go:()=>homeGo('otter')},
+    milestone:'The Lily-pad Palace',grows:'Every Frog Trail level you finish (the last is the boss)',play:'Play Frog Trail',go:()=>trailGo('otter')},
   brainpeak:{name:'Brainpeak',game:'Brain Trail',unit:'Brain Trail level',x:-8.4,z:-12.8,r:4.4,seed:4.1,ground:['#79C25A','#4E9E3A'],
-    milestone:'The Great Telescope',grows:'Every Brain Trail level you finish (the last is the boss)',play:'Play Brain Trail',go:()=>homeGo('brain')},
+    milestone:'The Great Telescope',grows:'Every Brain Trail level you finish (the last is the boss)',play:'Play Brain Trail',go:()=>trailGo('brain')},
   sunrise:{name:'Sunrise Shores',game:'Pippa’s Puzzles',unit:'Pippa puzzle',x:5.6,z:-14.8,r:4.3,seed:5.9,ground:['#8AD06A','#5FA94A'],sand:true,
     milestone:'The Festival Clock',grows:'Every one of Pippa’s seaside puzzles you build. A new one washes ashore about every 8% of the way through Bloppitopia',play:'Play Pippa’s puzzle',go:()=>homeGo('sea')},
   blitzbay:{name:'Blitz Bay',game:'Blitz',unit:'Blitz win',x:15.2,z:-4.6,r:4.8,seed:5.3,ground:['#6CC24A','#4E9E3A'],sand:true,
