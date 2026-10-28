@@ -3240,28 +3240,49 @@ const sfx=(()=>{
   // Snaps climb a happy scale while you keep building (back to the bottom after a pause), so a build plays a little tune
   const SNAP_SCALE=[72,74,76,79,81,84,86,88]; let snapI=0, snapT=0;
 
-  // ---------- The background music: a light, bouncy loop (ukulele strums, marimba tune, soft bass and shaker) ----------
-  const BPM=100, E=60/BPM/2;   // an eighth note
-  const CH={C:[48,[60,64,67,72]],Am:[45,[57,60,64,69]],F:[41,[57,60,65,69]],G:[43,[55,59,62,67]],Em:[40,[55,59,64,67]],Dm:[38,[57,62,65,69]]};
-  const FORM=['C','Am','F','G','C','Am','Dm','G','F','G','Em','Am','F','G','C','C'];
-  const STRUM=[1,0,1,1,0,1,1,1];   // down, -, down, up, -, up, down, up
-  const MOTIFS=[[[0,0],[2,1],[4,2],[6,1]],[[0,2],[3,1],[4,0]],[[0,0],[1,1],[2,2],[4,3],[6,2]],[[2,0],[4,1],[6,2],[7,3]],[[0,3],[2,2],[4,1],[6,0]],[[0,1],[4,2]]];
-  const PENTA=[60,62,64,67,69,72,74,76,79,81];
-  const M={timer:0,next:0,i:0,motif:null,playing:false};
-  function musicNote(c,t,i){ const bar=Math.floor(i/8)%FORM.length, e=i%8, [root,tones]=CH[FORM[bar]], d=mbus;
-    if(e===0) M.motif=(bar%4===3&&Math.random()<.5)?null:MOTIFS[Math.floor(Math.random()*MOTIFS.length)];
-    // bass: root on 1, fifth on 3, a pickup on the last eighth now and then
-    if(e===0) pluck(c,t,hz(root),.16,d,.9); if(e===4) pluck(c,t,hz(root+7),.12,d,.7); if(e===7&&Math.random()<.35) pluck(c,t,hz(root+12),.08,d,.3);
-    // ukulele strum: the chord, rolled quickly (down strums low to high, up strums high to low)
-    if(STRUM[e]){ const up=e%2===1, ns=up?[...tones].reverse():tones; ns.forEach((m,k)=>pluck(c,t+k*.012,hz(m),up?.022:.03,d,.45)); }
-    // shaker: soft eighths, a touch louder off the beat
-    noise(c,t,.05,{vol:e%2?.035:.018,freq:7000,q:.8,type:'highpass',dst:d,att:.01});
-    // the tune: marimba notes from the scale, near the chord
-    if(M.motif) for(const [at,step] of M.motif) if(at===e){ const near=PENTA.filter(p=>tones.some(x=>Math.abs(((x-p)%12+12)%12)<1)).filter(p=>p>=67), pool=near.length?near:PENTA;
-      marimba(c,t,hz(pool[Math.min(pool.length-1,step+(bar%8>3?1:0))]),.08,d); }
-    if(bar===FORM.length-1&&e===6) sparkle(c,t,4,84,.025);   // a twinkle as the loop comes round
+  // ---------- The background music: dreamy and a little magical, like fireflies at dusk ----------
+  // A twinkling sixteenth-note arpeggio (a glassy music box, with echoes), a soft synth pad, a warm low bass, a gentle
+  // heartbeat drum, and now and then a few bell notes of tune or a firefly sparkle. All of it through a soft reverb.
+  // Ab major: Ab, Fm, Db, Eb (and a wistful Bbm, Cm in the middle). Every chord is [bass, its notes].
+  const BPM=92, S16=60/BPM/4;
+  const CH={Ab:[44,[68,72,75,80]],Fm:[41,[65,68,72,77]],Db:[49,[65,68,73,77]],Eb:[51,[67,70,75,79]],Cm:[48,[67,70,72,79]],Bbm:[46,[65,70,73,77]],Esus:[51,[68,70,75,80]]};
+  const FORM=['Ab','Fm','Db','Eb','Ab','Fm','Db','Esus','Fm','Cm','Db','Ab','Bbm','Fm','Db','Eb'];
+  const ARP=[0,1,2,3,2,1,2,3,0,1,2,3,3,2,1,2];
+  const SCALE=[68,70,72,75,77,80,82,84,87,89];   // Ab major pentatonic, for the bell tune and the fireflies
+  const TUNES=[[[0,4],[4,3],[6,2],[8,3],[12,1]],[[0,2],[2,3],[4,4],[8,5],[10,4]],[[0,5],[4,4],[8,2],[10,3],[12,2]],[[2,1],[4,2],[6,4],[10,3]]];
+  const M={timer:0,next:0,i:0,playing:false,tune:null};
+  let rev=null, echo=null;
+  // a soft room (a made-up decaying hiss as the impulse) and a dotted-eighth echo that feeds it
+  function fx(c){ if(rev) return; rev=c.createConvolver(); const n=Math.ceil(c.sampleRate*2.8), b=c.createBuffer(2,n,c.sampleRate);
+    for(let ch=0;ch<2;ch++){ const x=b.getChannelData(ch); for(let i=0;i<n;i++) x[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.6); } rev.buffer=b;
+    const rg=c.createGain(); rg.gain.value=.55; rev.connect(rg); rg.connect(mbus);
+    echo=c.createDelay(2); echo.delayTime.value=S16*3; const fb=c.createGain(), lp=c.createBiquadFilter(); fb.gain.value=.38; lp.type='lowpass'; lp.frequency.value=3200;
+    echo.connect(lp); lp.connect(fb); fb.connect(echo); lp.connect(rev); const eg=c.createGain(); eg.gain.value=.45; lp.connect(eg); eg.connect(mbus); }
+  // one voice routed dry, to the echo and to the room in chosen amounts
+  function send(c,node,dry,ech,room){ const d=c.createGain(); d.gain.value=dry; node.connect(d); d.connect(mbus);
+    if(ech){ const e=c.createGain(); e.gain.value=ech; node.connect(e); e.connect(echo); } if(room){ const r=c.createGain(); r.gain.value=room; node.connect(r); r.connect(rev); } }
+  function glass(c,t,f,vol,len=.5){ const g=c.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.004); g.gain.exponentialRampToValueAtTime(.0001,t+len);
+    const a=c.createOscillator(), b=c.createOscillator(); a.type='sine'; b.type='triangle'; a.frequency.value=f; b.frequency.value=f*2; const bg=c.createGain(); bg.gain.value=.18;
+    a.connect(g); b.connect(bg); bg.connect(g); a.start(t); b.start(t); a.stop(t+len+.05); b.stop(t+len+.05); send(c,g,.8,.5,.5); }
+  function pad(c,t,ns,len){ const g=c.createGain(), lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.setValueAtTime(700,t); lp.frequency.linearRampToValueAtTime(1500,t+len*.5); lp.frequency.linearRampToValueAtTime(800,t+len);
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.035,t+len*.35); g.gain.setValueAtTime(.035,t+len*.75); g.gain.linearRampToValueAtTime(0,t+len+.4);
+    for(const m of ns) for(const dt of [-9,9]){ const o=c.createOscillator(); o.type='sawtooth'; o.frequency.value=hz(m-12); o.detune.value=dt; o.connect(lp); o.start(t); o.stop(t+len+.5); }
+    lp.connect(g); send(c,g,.7,0,.8); }
+  function bass(c,t,m,len){ const o=c.createOscillator(), g=c.createGain(); o.type='sine'; o.frequency.value=hz(m-12);
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.2,t+.03); g.gain.setValueAtTime(.18,t+len*.7); g.gain.exponentialRampToValueAtTime(.0001,t+len);
+    o.connect(g); g.connect(mbus); o.start(t); o.stop(t+len+.05); }
+  function beat(c,t,vol){ const o=c.createOscillator(), g=c.createGain(); o.frequency.setValueAtTime(110,t); o.frequency.exponentialRampToValueAtTime(42,t+.18);
+    g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.0001,t+.3); o.connect(g); g.connect(mbus); o.start(t); o.stop(t+.32); }
+  function musicNote(c,t,i){ fx(c); const bar=Math.floor(i/16)%FORM.length, s=i%16, [root,tones]=CH[FORM[bar]], loop=Math.floor(i/16/FORM.length);
+    if(s===0){ pad(c,t,tones,S16*16); M.tune=(bar%2===1&&loop%2===0)||(bar>=8&&bar%2===0)?TUNES[(bar+loop)%TUNES.length]:null; }
+    if(s===0||s===8) bass(c,t,root,S16*7.5);
+    if(s===0||s===8) beat(c,t,s===0?.13:.08);
+    if(s===10&&Math.random()<.3) beat(c,t,.05);
+    glass(c,t,hz(tones[ARP[s]]+12),s%4===0?.05:.032,.45);   // the twinkling arpeggio
+    if(M.tune) for(const [at,k] of M.tune) if(at===s) glass(c,t,hz(SCALE[k]+12),.07,1.3);
+    if(Math.random()<.035) glass(c,t+S16*.5,hz(SCALE[5+Math.floor(Math.random()*5)]+24),.02,.6);   // a firefly
   }
-  function musicTick(){ const c=ac; if(!c||!M.playing) return; while(M.next<c.currentTime+.3){ musicNote(c,M.next,M.i); M.i++; M.next+=E*(M.i%2?1.08:.92); } }   // a light swing
+  function musicTick(){ const c=ac; if(!c||!M.playing) return; while(M.next<c.currentTime+.3){ musicNote(c,M.next,M.i); M.i++; M.next+=S16; } }
   const videoOn=()=>[...document.querySelectorAll('video')].some(v=>!v.paused&&!v.ended&&!v.muted);
   function musicLevel(){ if(!ac||!mbus) return; const want=on&&musicOn&&!document.hidden&&!M.duck&&!videoOn()?.22:0, n=ac.currentTime;
     mbus.gain.cancelScheduledValues(n); mbus.gain.setValueAtTime(mbus.gain.value,n); mbus.gain.linearRampToValueAtTime(want,n+(want?1.2:.35));
@@ -3338,9 +3359,8 @@ const sfx=(()=>{
         [[9.0,81,.07],[9.6,84,.07],[10.2,86,.07],[10.8,88,.07],[11.6,86,.06],[12.2,84,.06],[13.2,79],[13.7,81],[14.2,84],[14.7,86],[15.2,84,.1],[15.33,88,.09],[15.46,91,.09],[15.62,96,.07],[16.3,88,.06],[16.75,91,.06],[17.3,84,.05],[18.2,79,.045]].forEach(([d,m,vol])=>bell(d,m,vol));
       } finally { out=main; }
       return {stop(){ clearTimeout(M.duckT); M.duck=false; setTimeout(musicLevel,400); try{ const n=c.currentTime; bus.gain.cancelScheduledValues(n); bus.gain.setValueAtTime(bus.gain.value,n); bus.gain.linearRampToValueAtTime(0,n+.35); setTimeout(()=>{ try{ bus.disconnect(); }catch(e){} },500); }catch(e){} }}; },
-    // Each character's own voice when you tap them, with a little boing as they jump
-    voice(who){ const f=({tiny:'ribbit',pup:'squeak',longtail:'kee',swoop:'kee',nora:'quok',pippa:'honk',bibi:'roar',lufu:'twinkle'})[who]; (f&&this[f]?this[f]:this.chirp).call(this);
-      const c=ok('boing',.3); if(c&&who!=='lufu') slide(c,c.currentTime+.01,jit(260,.05),jit(520,.05),.16,.05,0,'triangle'); },
+    // Each character's own voice when you tap them
+    voice(who){ const f=({tiny:'ribbit',pup:'squeak',longtail:'kee',swoop:'kee',nora:'quok',pippa:'honk',bibi:'roar',lufu:'twinkle'})[who]; (f&&this[f]?this[f]:this.chirp).call(this); },
     // Tiny: a cartoon "rib-bit": two quick, buzzy croaks, the second a little higher
     ribbit(){ const c=ok('ribbit',.35); if(!c) return; const t0=c.currentTime+.02;
       [[0,.11,jit(330,.05),.85],[.15,.14,jit(400,.05),1.15]].forEach(([d,len,f,k])=>{ const t=t0+d;
@@ -3370,13 +3390,14 @@ const sfx=(()=>{
       slide(c,t+.2,jit(900,.05),1600,.18,.14,24); },
     // lufu: a soft sparkle of glassy bells
     twinkle(){ const c=ok('twinkle',.5); if(!c) return; sparkle(c,c.currentTime+.02,6,84,.06); },
-    // Moving between the islands: a soft swoosh of air with a breezy little whistle
-    swoosh(){ const c=ok('swoosh',.18); if(!c) return; const t=c.currentTime+.01, d=.34;
-      const len=Math.ceil(c.sampleRate*d), b=c.createBuffer(1,len,c.sampleRate), x=b.getChannelData(0); for(let i=0;i<len;i++) x[i]=Math.random()*2-1;
-      const s=c.createBufferSource(), f=c.createBiquadFilter(), g=c.createGain(); s.buffer=b; f.type='bandpass'; f.Q.value=1.1;
-      f.frequency.setValueAtTime(jit(500,.1),t); f.frequency.exponentialRampToValueAtTime(jit(2600,.1),t+d*.55); f.frequency.exponentialRampToValueAtTime(900,t+d);
-      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.3,t+d*.45); g.gain.exponentialRampToValueAtTime(.0001,t+d);
-      s.connect(f); f.connect(g); g.connect(out); s.start(t); s.stop(t+d+.02); slide(c,t+.04,jit(700,.05),1300,.25,.025); },
+    // Moving between the islands: a breath of sea breeze that sweeps across from one side to the other
+    swoosh(dir){ const c=ok('swoosh',.18); if(!c) return; const t=c.currentTime+.01, d=.55;
+      const len=Math.ceil(c.sampleRate*d), b=c.createBuffer(1,len,c.sampleRate), x=b.getChannelData(0); let v=0; for(let i=0;i<len;i++){ v=v*.6+(Math.random()*2-1)*.4; x[i]=v; }   // soft, breathy noise
+      const s=c.createBufferSource(), lp=c.createBiquadFilter(), g=c.createGain(); s.buffer=b; lp.type='lowpass'; lp.Q.value=.7;
+      lp.frequency.setValueAtTime(jit(450,.1),t); lp.frequency.exponentialRampToValueAtTime(jit(2200,.1),t+d*.45); lp.frequency.exponentialRampToValueAtTime(500,t+d);
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.42,t+d*.42); g.gain.linearRampToValueAtTime(0,t+d);
+      let tail=g; if(c.createStereoPanner){ const pn=c.createStereoPanner(), sgn=dir<0?-1:1; pn.pan.setValueAtTime(-.8*sgn,t); pn.pan.linearRampToValueAtTime(.8*sgn,t+d); g.connect(pn); tail=pn; }
+      s.connect(lp); lp.connect(g); tail.connect(out); s.start(t); s.stop(t+d+.02); },
     // A boat bumping the jetty: a soft wooden knock
     dock(){ haptic('medium'); const c=ok('dock',.5); if(!c) return; const t=c.currentTime+.01;
       noise(c,t,.09,{vol:.35,freq:380,q:1.2,type:'lowpass'}); tone(c,t,150,.22,{vol:.26,to:95,att:.006}); marimba(c,t+.03,hz(55),.12); }
@@ -7686,7 +7707,7 @@ function isl3Events(cv){
     if(d.drag&&d.moved){ ISL3.dragging=false; let x=d.drag.position.x, z=d.drag.position.z; const fits=d.drag.userData.decor?((a,b)=>inPoly(a,b,scalePoly(HOMEP,0,0,.9))):onGrass; for(let i=0;i<30&&!fits(x,z);i++){ x*=.92; z*=.92; }
       const o=worldStore(); o.pos={...(o.pos||{}),[d.drag.userData.key]:[W2P(x),W2P(z)]}; worldSet(o); track('island_arranged'); sfx.snap(); islandShown=worldCount(o); renderIsland(); return; }
     if(e.type==='pointerup'&&d.moved&&!d.drag&&!d.multi){ const dx=e.clientX-d.x, dy=e.clientY-d.y; if(ISL3.ctl.enableRotate) return;   // looking around, not swiping
-      if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3){ isl3GoView((ISL3.viewI||0)+(dx<0?1:-1)); sfx.swoosh(); } return; }
+      if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3){ isl3GoView((ISL3.viewI||0)+(dx<0?1:-1)); sfx.swoosh(dx<0?1:-1); } return; }
     if(e.type==='pointerup'&&!d.moved&&performance.now()-d.t<1000&&d.h){ islandHover(null); const info0=d.h.info;
       // characters: a reaction first; a second tap soon after shows who they are
       if(info0==='bloppit'||info0==='pup'||info0.startsWith('longtail:')||info0.startsWith('char:')){ const again=ISL3.lastPoke&&ISL3.lastPoke.info===info0&&performance.now()-ISL3.lastPoke.t<8000;
@@ -8894,7 +8915,7 @@ function isl3Banner(t,big){ const b=ISL3.box&&ISL3.box.querySelector('.is3-banne
 // The buttons over the world: Play Next (one obvious next step), and the arrival's Build Our First Home
 function isl3Chrome(){ const box=ISL3.box; if(!box) return; let c=box.querySelector('.is3-chrome');
   if(!c){ c=document.createElement('div'); c.className='is3-chrome'; c.innerHTML='<div class="is3-banner" hidden></div><button class="primary is3-play" type="button"></button><div class="is3-views" hidden><button class="v-world" type="button" aria-label="Back to all of Bloppitopia" title="Bloppitopia" hidden><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="50" fill="#2FB8DC"/><circle cx="50" cy="52" r="15" fill="#6CC04A" stroke="#F2D594" stroke-width="4"/><g transform="translate(50 52) scale(.5)" stroke="#9E2019" stroke-width="2" fill="#D8342C"><rect x="-20" y="-6" width="40" height="18" rx="2.5"/><rect x="-15" y="-13" width="10" height="8" rx="2"/><rect x="5" y="-13" width="10" height="8" rx="2"/></g><circle cx="50.0" cy="19.0" r="8" fill="#9BD32C" stroke="#F2D594" stroke-width="3"/><circle cx="81.4" cy="41.8" r="8" fill="#24407A" stroke="#F2D594" stroke-width="3"/><circle cx="69.4" cy="78.7" r="8" fill="#F2C230" stroke="#F2D594" stroke-width="3"/><circle cx="30.6" cy="78.7" r="8" fill="#2F7FD0" stroke="#F2D594" stroke-width="3"/><circle cx="18.6" cy="41.8" r="8" fill="#E9772A" stroke="#F2D594" stroke-width="3"/></svg></button><button class="v-prev" type="button" aria-label="Previous view">‹</button><span class="v-mid"><span class="v-name"></span><span class="v-dots" aria-hidden="true"></span></span><button class="v-next" type="button" aria-label="Next view">›</button></div><div class="is3-say" hidden></div>'; box.appendChild(c);
-    c.querySelector('.v-world').onclick=()=>{ isl3GoView(0); sfx.swoosh(); }; c.querySelector('.v-mid').onclick=()=>{ if(ISL3.viewI){ isl3GoView(0); sfx.swoosh(); } }; c.querySelector('.v-prev').onclick=()=>{ isl3GoView((ISL3.viewI||0)-1); sfx.swoosh(); }; c.querySelector('.v-next').onclick=()=>{ isl3GoView((ISL3.viewI||0)+1); sfx.swoosh(); };
+    c.querySelector('.v-world').onclick=()=>{ isl3GoView(0); sfx.swoosh(); }; c.querySelector('.v-mid').onclick=()=>{ if(ISL3.viewI){ isl3GoView(0); sfx.swoosh(); } }; c.querySelector('.v-prev').onclick=()=>{ isl3GoView((ISL3.viewI||0)-1); sfx.swoosh(-1); }; c.querySelector('.v-next').onclick=()=>{ isl3GoView((ISL3.viewI||0)+1); sfx.swoosh(1); };
     c.querySelector('.is3-play').onclick=()=>{ const a=c.querySelector('.is3-play').dataset.act; if(a==='home'){ track('first_home_start'); welcomeStart(); return; } const n=nextBuild(); track('play_next:island'); if(n) n.go(); else homeGo('quick'); }; }
   const b=c.querySelector('.is3-play'), o=worldStore();
   if(ISL3.arrival==='home'){ b.dataset.act='home'; b.innerHTML='🔨 Build Our First Home'; b.hidden=false; }
