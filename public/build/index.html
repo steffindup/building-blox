@@ -3044,7 +3044,7 @@ $('#hmHow').onclick=()=>howOpen('menu');
    Locked films show only their hint, never their name, so nothing is spoiled. */
 const VID_BASE=APP?'video/':'/video/';
 const FILMS=[
-  // say: what a character says over the film, at t seconds ({name} = the player's otter; left out while it has no name yet)
+  // say: what a character says over the film, at t seconds ({name} = the player's otter, or "pup" while it has no name)
   {id:'arrival',no:'01',name:'Arrival',place:'Home Island',file:'arrival',open:o=>!!o.arrived||worldCount(o)>0,
     say:[{t:6,who:'bloppit',text:'Welcome to Home Island, {name}!'}]},
   // at: the island moment that plays it (see isl3Reveal): an island rising from the mist, or an island complete
@@ -3064,8 +3064,9 @@ const FILMS=[
         say:[{t:tc,who,text:'We did it, {name}!'}]}]),
 ];
 // What the characters say over a film: a speech bubble with the speaker's face and name, shown for 5.5 s from its time
+// ({name} is the otter's name, or "pup" while it has none)
 const FILM_WHO={bloppit:['Bloppit','#D8342C'],tiny:['Tiny','#7DBE2E'],nora:['Nora','#24407A'],pippa:['Pippa','#C9920A'],swoop:['Swoop','#2F7FD0'],bibi:['Bibi','#E9772A']};
-function filmLine(s,o){ const nm=pupName(o||worldStore()); return s.text.replace(', {name}',nm?', '+nm:'').replace('{name}',nm||''); }
+function filmLine(s,o){ return s.text.replace(/\{name\}/g,pupName(o||worldStore())||'pup'); }
 function filmSay(box,f,t){ if(!box||!f) return; let b=box.querySelector(':scope>.film-say');
   const s=(f.say||[]).find(s=>t>=s.t&&t<s.t+(s.d||5.5)), key=s?f.id+'@'+s.t:'';
   if(b&&b.dataset.k===key) return;
@@ -3075,6 +3076,7 @@ function filmSay(box,f,t){ if(!box||!f) return; let b=box.querySelector(':scope>
   b.style.setProperty('--who',col);
   b.innerHTML=`<img src="/art/head-${s.who}.png" alt="" width="256" height="256"><span><b>${escapeHTML(who)}</b>${escapeHTML(filmLine(s))}</span>`;
   b.classList.remove('on'); void b.offsetWidth; b.classList.add('on'); }
+window.bloppitFilmLine=t=>filmLine({text:t});   // for tests
 window.bloppitFilmSay=()=>{ const b=[...document.querySelectorAll('.film-say.on')].pop(); return b?b.textContent:null; };   // for tests
 const filmSeen=(id,o)=>((o||worldStore()).films||[]).includes(id);
 function filmSeenAdd(id){ const o=worldStore(); if(filmSeen(id,o)) return; o.films=[...(o.films||[]),id]; worldSet(o); }

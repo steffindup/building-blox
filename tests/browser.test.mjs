@@ -86,6 +86,8 @@ test('first visit: with ?film=0 the arrival made in the game plays instead of th
   await t.page.evaluate(() => document.querySelector('#isWorld .is3-cine .cn-skip').click());
   await t.page.waitForFunction(() => /Build Our First Home/.test(document.querySelector('#isWorld .is3-play')?.textContent || ''), null, { timeout: 8000 });
   assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), false);
+  // with no name yet the films call it "pup"
+  assert.equal(await t.page.evaluate(() => window.bloppitFilmLine('We did it, {name}!')), 'We did it, pup!');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
