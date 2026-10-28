@@ -580,6 +580,7 @@ test('family key: make, attach a player, bring the player to another device', { 
 
 test('draw your own: paint, build as a picture, save with the pup, send as a link', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0#photos');
+  await t.page.evaluate(() => document.querySelector('[data-qb-go="draw"]').click()); await t.page.waitForTimeout(300);   // Quick Build: the Draw your own tile opens its screen
   const cv = await t.page.$('#drawCv'); await cv.scrollIntoViewIfNeeded(); await t.page.waitForTimeout(300); const r = await cv.boundingBox();
   const cell = (cx, cy) => ({ x: r.x + (cx + .5) * r.width / 24, y: r.y + (cy + .5) * r.height / 24 });
   // a red square outline with a yellow middle: paint strokes, then fill
