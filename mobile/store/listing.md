@@ -42,7 +42,7 @@ A new puzzle every week, a library to explore, and Blitz races against Swoop the
 YOUR WORLD: BLOPPITOPIA
 • Home Island grows with every build: a cottage, a garden, a workshop, a museum of your best models, then a lively village
 • Five islands rise from the mist as you play: Frog Forest (Frog Trail), Brainpeak (Brain Trail), Sunrise Shores (Pippa’s Puzzles), Blitz Bay (Blitz) and Brickworks Island (your own creations and the Weekly Bloppit)
-• A friend on every island: Tiny the tree frog, Nora the night heron, Pippa the penguin, Swoop the Longtail and Lemmie the lion cub
+• A friend on every island: Tiny the tree frog, Nora the night heron, Pippa the penguin, Swoop the Longtail and Bibi the lion cub
 • A story with an ending: finish all five islands and the mystery opens, eight chapters, one friend each, and someone small waiting to be found
 • Your otter grows with you, Pup, Splash, Legend, and earns outfits; you pick the colours
 • Build Stars buy decorations. Nothing is ever for sale, and nothing is ever lost

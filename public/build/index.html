@@ -1245,7 +1245,7 @@ body.film-on{overflow:hidden}
 <div class="hm-main">
   <h3 class="hm-sec">Solo</h3>
   <div class="hm-grid four">
-    <button class="hm-tile t-quick" data-go="quick" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-lemmie.png" alt="" width="256" height="256"></span><b>Quick Build</b><span>Any puzzle, at your own pace</span></button>
+    <button class="hm-tile t-quick" data-go="quick" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span><b>Quick Build</b><span>Any puzzle, at your own pace</span></button>
     <button class="hm-tile t-game" data-go="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Frog Trail</b><span id="hmOtterSub">Levels from tiny to tricky</span></button>
     <button class="hm-tile t-brain" data-go="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Brain Trail</b><span id="hmBrainSub">Levels with math puzzles</span></button>
     <button class="hm-tile t-sea" data-go="sea" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span><b>Pippa’s Puzzles</b><span id="hmSeaSub">Seaside puzzles that wash ashore</span></button>
@@ -7543,8 +7543,8 @@ const CAST={
   pippa:{name:'Pippa',kind:'the Penguin',isle:'sunrise',brick:'yellow',h:1.8,aspect:229/360,tag:'A new puzzle just washed ashore!',
     who:'The visitor who never left',story:'Pippa washed up on Sunrise Shores on holiday, fell in love with the sunshine and stayed. Every Monday she brings the Weekly Bloppit on the ferry, and her own seaside puzzles wash ashore as Bloppitopia grows.',
     loves:'Surprises, parties, and a swim before breakfast',secret:'She wobbles on land, but she’s the best swimmer in Bloppitopia.',lines:['A new puzzle just washed ashore!','Special delivery!','Ooh, that one’s clean!','See you next Monday!']},
-  lemmie:{name:'Lemmie',kind:'the Lion Cub',isle:'brickworks',brick:'orange',h:1.85,aspect:241/360,tag:'Build it bold!',
-    who:'The maker of Brickworks Island',story:'Lemmie runs the workshop and paints everything in sight. Whatever you make, he puts it on show and roars with pride.',
+  bibi:{name:'Bibi',kind:'the Lion Cub',isle:'brickworks',brick:'orange',h:1.85,aspect:241/360,tag:'Build it bold!',
+    who:'The maker of Brickworks Island',story:'Bibi runs the workshop and paints everything in sight. Whatever you make, he puts it on show and roars with pride.',
     loves:'Big ideas, bright paint, and the crane',secret:'His roar is more of a squeak. He knows, and he roars anyway.',lines:['Build it bold!','If you can dream it, brick it!','ROAR! That’s brilliant!']},
   lufu:{name:'lufu',kind:'',isle:'moonstone',brick:'moonstone',h:1.2,aspect:237/360,tag:'We have found each other.',
     who:'A small, shy spirit of light',story:'lufu lived alone on Moonstone Isle for so long that its glow, and the stars above it, almost went out. Then you came, and built the crystal that made it shine again.',
@@ -7576,9 +7576,9 @@ const RIG={
   tiny:{kind:'friend',h:1.5/.85,art:'/art/char-tiny.png',neck:.45,belly:.72,brick:.58,eyes:[[68,54,38,39],[217,54,38,39]],lid:['#B7CC55','#86B240'],lash:'#2A1D06'},
   nora:{kind:'friend',h:2.3/.85,art:'/art/char-nora.png',neck:.33,belly:.72,brick:.6,eyes:[[37,69,19,20],[116,72,18,20]],lid:['#F2EEE6','#D9D4CB'],lash:'#2A2420'},
   pippa:{kind:'friend',h:1.8/.85,art:'/art/char-pippa.png',neck:.5,belly:.78,brick:.62,eyes:[[65,113,19,23],[164,111,19,23]],lid:['#FBF6EC','#ECE4D4'],lash:'#2A2420'},
-  lemmie:{kind:'friend',h:1.9/.85,art:'/art/char-lemmie.png',neck:.54,belly:.8,brick:.66,eyes:[[70,116,21,24],[164,118,21,23]],lid:['#F8BE45','#E9A22E'],lash:'#3A2210'},
+  bibi:{kind:'friend',h:1.9/.85,art:'/art/char-bibi.png',neck:.54,belly:.8,brick:.66,eyes:[[70,116,21,24],[164,118,21,23]],lid:['#F8BE45','#E9A22E'],lash:'#3A2210'},
   lufu:{kind:'spirit',h:1.3/.85,art:'/art/char-lufu.png',neck:.49,belly:.75,brick:.7,eyes:[[86,145,17,19],[158,147,17,18]],lid:['#F4CF9C','#E8B87E'],lash:'#3A2A1C'}};
-for(const id of ['tiny','nora','pippa','lemmie','lufu']) if(typeof CAST!=='undefined'&&CAST[id]) RIG[id].h=CAST[id].h/.85;
+for(const id of ['tiny','nora','pippa','bibi','lufu']) if(typeof CAST!=='undefined'&&CAST[id]) RIG[id].h=CAST[id].h/.85;
 const PUP_CV={w:300,h:346,dx:30,dy:46};   // the pup's drawing (239×300) with room for a hat above and a toy beside it
 function ch3Img(src){ return CH3.wait['img:'+src]||(CH3.wait['img:'+src]=new Promise((ok,no)=>{ const im=new Image(); im.decoding='async'; im.onload=()=>ok(im); im.onerror=()=>no(new Error('could not load '+src)); im.src=src+(src.includes('?')?'':'?v='+CH3.V); })); }
 const pot=n=>{ let p=64; while(p<n) p*=2; return p; };
@@ -7813,7 +7813,7 @@ function cv3Snap(id,o,frame,px,opt){ if(!ch3On()||!ch3Ready(id)) return null; op
     if(CV3.snaps.size>40) CV3.snaps.delete(CV3.snaps.keys().next().value); CV3.snaps.set(key,url); return url; }catch(e){ return null; } }
 // Load the characters in the background soon after the page opens (most visits meet Bloppit and the pup)
 function ch3Warm(){ if(!ch3On()) return; const o=worldStore(), lv=typeof longtailNow==='function'?longtailNow():'easy';
-  ch3Get('bloppit').then(()=>{ ui3Mount(); return ch3Get(ch3PupId(o)); }).then(()=>{ ch3Refresh(); return Promise.all([LT3[lv]||'swoop','tiny','nora','pippa','lemmie',...(lufuHome(o)?['lufu']:[])].map(id=>ch3Get(id).catch(()=>null))); }).then(()=>ch3Refresh(),()=>{}); }
+  ch3Get('bloppit').then(()=>{ ui3Mount(); return ch3Get(ch3PupId(o)); }).then(()=>{ ch3Refresh(); return Promise.all([LT3[lv]||'swoop','tiny','nora','pippa','bibi',...(lufuHome(o)?['lufu']:[])].map(id=>ch3Get(id).catch(()=>null))); }).then(()=>ch3Refresh(),()=>{}); }
 // A picture (an <img>) that becomes a 3D character: the picture moves into a holder that the 3D view draws over
 function cv3Img(img,opts){ if(!img||!ch3On()) return null; let host=img.parentNode;
   if(!host.classList.contains('c3-wrap')){ host=document.createElement('span'); host.className=img.className+' c3-wrap'; img.className=''; img.parentNode.insertBefore(host,img); host.appendChild(img); }
@@ -7848,7 +7848,7 @@ function isl3CharsLive(){ if(!ISL3.on||!ISL3.world) return; if(ISL3.revealing||I
   // the whole cast at once (one rebuild, not one per character as each drawing arrives)
   const ids=['bloppit',...(ISL3.pupG?[ch3PupId(o)]:[]),lt,...Object.keys(ISL3.cast||{})]; if(!ids.every(id=>ch3Ready(id)||CH3.bad[id])) return;
   if(want(ISL3.b3,'bloppit')||(ISL3.pupG&&want(ISL3.p3,ch3PupId(o)))||want(ISL3.l3,lt)||fr){ isl3Build(o); isl3Kick(); } }
-function isl3CharsLoad(o){ if(!ch3On()) return; Promise.all(['bloppit',ch3PupId(o),LT3[longtailNow()],'tiny','nora','pippa','lemmie',...(lufuHome(o)?['lufu']:[])].map(id=>ch3Get(id).catch(()=>null))).then(()=>isl3CharsLive()); }
+function isl3CharsLoad(o){ if(!ch3On()) return; Promise.all(['bloppit',ch3PupId(o),LT3[longtailNow()],'tiny','nora','pippa','bibi',...(lufuHome(o)?['lufu']:[])].map(id=>ch3Get(id).catch(()=>null))).then(()=>isl3CharsLive()); }
 const REACT_LINES={
   bloppit:['Hee hee! That tickles!','Let’s build something!','Click! Snap! Done!','Whoa, careful!','Wheee!','High five!','Have you seen my red brick? Oh, here it is.'],
   pup:['Wheee!','Hello, friend!','Again! Again!','Let’s build!','Look at me!','Hee hee!'],
@@ -7902,7 +7902,7 @@ const MYSTERY=[   // one friend per chapter (Character Bible); `was` = the chapt
   {name:'Old map',size:15,shape:'flat',thick:1,colors:6,who:'Pippa',story:'The mist sends you round in circles. Then Pippa swims up with a bottle that just washed ashore. Inside: a map of an island nobody has heard of.'},
   {name:'Lookout tower',size:17,shape:'puffed',thick:.6,colors:6,who:'Swoop',was:['Tree frog'],story:'You land, but the trees are too tall to see over. Build a lookout tower, and Swoop flies to the top: there’s a glow at the island’s heart!'},
   {name:'Little bridge',size:10,shape:'puffed',thick:.8,colors:7,who:'Tiny',was:['Longtail nest'],story:'A stream blocks the way, with tiny glowing footprints on the far side. Tiny hops across the lily pads to show where the bridge should go.'},
-  {name:'Moon gate',size:11,shape:'puffed',thick:.7,colors:8,who:'Lemmie',was:['Brick chest'],story:'An old moon gate lies in pieces. Lemmie helps you rebuild and paint it. It’s said to open only for friends… and it opens.'},
+  {name:'Moon gate',size:11,shape:'puffed',thick:.7,colors:8,who:'Bibi',was:['Brick chest'],story:'An old moon gate lies in pieces. Bibi helps you rebuild and paint it. It’s said to open only for friends… and it opens.'},
   {name:'Jar of stars',size:15,shape:'puffed',thick:.6,colors:6,who:'Nora',was:['Stone arch'],story:'Behind the gate is a jar of fallen stars, almost dark. Nora sees the pattern: someone has been catching falling stars to keep warm. Someone very lonely.'},
   {name:'Moonstone Lighthouse',size:23,shape:'puffed',thick:1,colors:7,who:'Everyone',story:'All six friends arrive. Each adds a brick in their own colour, and together you light the lighthouse. The stars come back, and a small glow peeks out from behind it. This part is yours.'},
   {name:'Moon crystal',size:15,shape:'puffed',thick:.7,colors:7,who:'lufu',story:'Just the two of you. The little light is too dim to come close. Build the moon crystal at the lighthouse’s heart, and see what happens.'},
@@ -8320,8 +8320,8 @@ function isl3Build(o){ ISL3.shadowDirty=true;
     if(l3){ if(night) l3.ctl.setMode(5); else if(!ISL3.ltLanded){ ISL3.ltLanded=1; l3.ctl.play('fly_in_land'); } }
     g.position.set(bx,0,bz); g.userData.longtail=1; ISL3.longtail=g; ISL3.longtailSprite=sp; add(g,'longtail:'+lv); }
   ISL3.cast={};
-  for(const id of ['tiny','nora','pippa','lemmie']){ const C=CAST[id], g=new THREE.Group(), i3=ch3Isle(id,g,TOP3,0), sp=i3?null:sprite3(`/art/char-${id}.png`,C.h,C.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } hitBox(g,C.h);
-    const misty=!isleCount(C.isle,o), [x,z]=misty?shore(C.isle,{tiny:.7,nora:.75,pippa:-.7,lemmie:.7}[id],1.02):spot(C.isle,C.h,0,.6);   // in front of the mist until the island is found
+  for(const id of ['tiny','nora','pippa','bibi']){ const C=CAST[id], g=new THREE.Group(), i3=ch3Isle(id,g,TOP3,0), sp=i3?null:sprite3(`/art/char-${id}.png`,C.h,C.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } hitBox(g,C.h);
+    const misty=!isleCount(C.isle,o), [x,z]=misty?shore(C.isle,{tiny:.7,nora:.75,pippa:-.7,bibi:.7}[id],1.02):spot(C.isle,C.h,0,.6);   // in front of the mist until the island is found
     g.position.set(x,0,z); g.userData.cast=id; if(sp) g.userData.bob=2; ISL3.cast[id]={g,sp,i3}; add(g,'char:'+id); }
   // lufu: a light glimpsed over Moonstone Isle until the mystery is solved, then at home beside your otter
   if(lufuHome(o)){ const C=CAST.lufu, g=new THREE.Group(), i3=ch3Isle('lufu',g,TOP3,0), sp=i3?null:sprite3('/art/char-lufu.png',C.h,C.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } hitBox(g,C.h);
@@ -8551,7 +8551,7 @@ function theEnd(then){
     {at:'brainpeak',img:'nora',name:'Nora',say:'You fixed my telescope. Look how many stars there are now.',got:`${BRAIN_LEVELS.length} Brain Trail levels, math pages and all`},
     {at:'sunrise',img:'pippa',name:'Pippa',say:'Every puzzle that washed ashore, you built. Best festival ever!',got:`${SEA_LEVELS.length} of Pippa’s puzzles · ${nf(sum(k=>k.startsWith('t:sea:')))} bricks`},
     {at:'blitzbay',img:'swoop',name:'Swoop',say:'You beat me at full throttle. Rematch one day?',got:`${wins} Blitz win${wins===1?'':'s'} and the Grand Prix cup`},
-    {at:'brickworks',img:'lemmie',name:'Lemmie',say:'Your creations fill my whole gallery. ROAR!',got:`${isleCount('brickworks',o)} creations of your own`},
+    {at:'brickworks',img:'bibi',name:'Bibi',say:'Your creations fill my whole gallery. ROAR!',got:`${isleCount('brickworks',o)} creations of your own`},
     {at:'home',img:'bloppit',name:'Bloppit',say:'And you built the home it all started from.',got:`${nf(worldCount(o))} builds in all`},
     {roll:true},{nums:true},{fin:true}];
   const el=document.createElement('div'); el.className='the-end'; ISL3.box.appendChild(el);
@@ -8564,7 +8564,7 @@ function theEnd(then){
       el.insertAdjacentHTML('beforeend',`<div class="te-card"><img src="/art/head-${S.img}.png" alt=""><span><b>${S.name}</b><q>${escapeHTML(S.say)}</q><small>${escapeHTML(S.got)}</small></span></div>`);
       sfx.chime&&sfx.chime(); timer=setTimeout(()=>go(i+1),6000); return; }
     if(S.roll){ isl3FlyHome(2200); const keys=[...new Set(o.log)].filter(k=>worldThumb(k)).slice(-48), dur=reduceMotion?7:Math.max(9,Math.min(22,6+keys.length*.45));
-      el.insertAdjacentHTML('beforeend',`<div class="te-roll"><div class="te-col" style="--d:${dur}s"><h3>Built by ${escapeHTML(who)}</h3><div class="te-pics">${keys.map(k=>`<img src="${worldThumb(k)}" alt="">`).join('')}</div><h3>with Bloppit, Tiny, Nora, Pippa, Swoop, Lemmie and lufu</h3></div></div>`);
+      el.insertAdjacentHTML('beforeend',`<div class="te-roll"><div class="te-col" style="--d:${dur}s"><h3>Built by ${escapeHTML(who)}</h3><div class="te-pics">${keys.map(k=>`<img src="${worldThumb(k)}" alt="">`).join('')}</div><h3>with Bloppit, Tiny, Nora, Pippa, Swoop, Bibi and lufu</h3></div></div>`);
       timer=setTimeout(()=>go(i+1),dur*1000+400); return; }
     if(S.nums){ const ts=B.map(([,b])=>b.t).filter(t=>t>0), days=new Set(ts.map(t=>new Date(t).toDateString())).size, since=ts.length?new Date(Math.min(...ts)):null;
       el.insertAdjacentHTML('beforeend',`<div class="te-nums"><h3>${escapeHTML(who)}’s Bloppitopia</h3><div><span>Bricks placed</span><b>${nf(B.reduce((a,[,b])=>a+(b.n||0),0))}</b></div><div><span>Builds finished</span><b>${nf(worldCount(o))}</b></div><div><span>Days of building</span><b>${nf(days)}</b></div>${since?`<div><span>Started</span><b>${since.toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'})}</b></div>`:''}<div><span>Islands complete</span><b>${ISLE_TOTAL} of ${ISLE_TOTAL}</b></div><div><span>Friends made</span><b>7</b></div></div>`);
