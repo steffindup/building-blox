@@ -541,6 +541,8 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .gamebar{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;background:var(--page);border:2px solid var(--hi);border-radius:14px;padding:10px 14px;margin-bottom:14px}
 .gb-lvl{display:flex;gap:10px;align-items:center}
+.gb-where{display:flex;gap:10px;align-items:center;padding-right:20px;border-right:2px solid var(--line,rgba(127,127,127,.25))}.gb-where img{width:40px;height:40px;border-radius:50%;background:#fff;object-fit:cover}
+.gb-where strong{display:block;font-family:var(--f-display);font-weight:400;font-size:20px;line-height:1.1}.gb-where small{display:block;font-weight:700;font-size:13px;opacity:.8}
 .gb-lvl strong{font-family:var(--f-display);font-weight:400;font-size:20px}
 .gb-badge{width:40px;height:40px;border-radius:10px;background:var(--hi);color:#14202C;display:grid;place-items:center;font-family:var(--f-display);font-size:22px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.15)}
 .gb-score{position:relative;display:grid;grid-template-columns:auto auto;align-items:baseline;column-gap:6px}
@@ -1218,6 +1220,7 @@ body.film-on{overflow:hidden}
 
 <main>
 <div class="gamebar" id="gameBar" hidden>
+  <div class="gb-where" id="gbWhere"></div>
   <div class="gb-lvl"><span class="gb-badge" id="gbBadge">1</span><div><div class="tag">Level <span id="gbNum"></span></div><strong id="gbName"></strong></div></div>
   <div class="gb-score"><div class="tag">Points for this level</div><b id="gbPts">100</b><span class="gb-of" id="gbOf"></span><span class="gb-flash" id="gbFlash"></span></div>
   <div class="gb-costs" id="gbCosts"></div>
@@ -1443,14 +1446,13 @@ body.film-on{overflow:hidden}
     <div id="boxBook"></div>
     <div class="box-main">
       <div class="pick-bar">
-        <button class="tool" id="multiBtn" type="button" aria-pressed="false" title="Pick several bricks, then take them all at once (S)">Pick several <kbd>S</kbd></button>
-        <span class="note" id="pickNote">Tap a brick to pick it up.</span>
+        <span class="note" id="pickNote">Tap bricks to pick them up, as many as this page needs.</span>
         <button class="ghost" id="pickClear" type="button" hidden>Clear</button>
         <button class="primary sm" id="takeBtn" type="button" title="Take the picked bricks to the build (Enter)" hidden>Take 0 to build</button>
         <button class="ghost" id="boxBack" type="button">Back to build</button>
       </div>
       <div class="board-wrap" id="boardWrap"><div class="board" id="board"></div><div class="piece-tip" id="pieceTip" role="status" aria-live="polite" hidden></div></div>
-      <p class="note">Drag bricks into segments to sort them. Drag a segment by its name bar to move it with its bricks, and by the corner to resize. To pick several: turn on Pick several (or press S), Shift-click, drag a box around them with the mouse, or use All on a segment. Press Enter to take them to the build.</p>
+      <p class="note">Drag bricks into segments to sort them. Drag a segment by its name bar to move it with its bricks, and by the corner to resize. Tap bricks to pick them up: each tap adds one, up to as many as the booklet’s current page needs (tap a picked one to put it back). You can also drag a box around them with the mouse, or use All on a segment. Press Enter, or tap Take, to take them to the build.</p>
     </div>
   </div>
 </section>
@@ -1786,7 +1788,7 @@ body.film-on{overflow:hidden}
   <div class="win-rows" id="winRows"></div>
   <div class="world-strip" data-ws></div>
   <p class="win-best" id="winBest"></p>
-  <div class="win-btns"><button class="ghost" id="winReplay" type="button">Play again</button><button class="ghost" id="winMap" type="button">Level map</button><button class="primary sm" id="winNext" type="button">Next level</button></div>
+  <div class="win-btns"><button class="primary sm" id="winIsland" type="button" autofocus>🏝️ Back to Bloppitopia</button><button class="ghost" id="winNext" type="button">Next level</button><button class="ghost" id="winReplay" type="button">Play again</button><button class="ghost" id="winMap" type="button">Level map</button></div>
 </dialog>
 
 <dialog class="windlg howdlg" id="howDlg" aria-label="How to play Bloppit">
@@ -2502,6 +2504,7 @@ function loop(now){
     revealTick(now);
     drops=drops.filter(d=>{const t=clamp((now-d.t0)/260,0,1); d.m.position.y=d.ty+(1-t*t)*2.2*(d.dir||1); return t<1;});
     { const g=ghostGroup.children[0]; if(g&&ghostGroup.visible&&g.material!==errMat) g.material.opacity=reduceMotion?.7:.62+Math.sin(now/240)*.16;  /* stronger than the faint hint bricks */ }
+    firstSpotTick(now);
     if(camAnim){ const t=clamp((now-camAnim.t0)/650,0,1), e=1-Math.pow(1-t,3);
       playControls.target.lerpVectors(camAnim.t1,camAnim.t2,e); playCam.position.lerpVectors(camAnim.p1,camAnim.p2,e);
       if(t>=1) camAnim=null; }
@@ -3229,6 +3232,42 @@ const sfx=(()=>{
         [[9.0,81,.07],[9.6,84,.07],[10.2,86,.07],[10.8,88,.07],[11.6,86,.06],[12.2,84,.06],[13.2,79],[13.7,81],[14.2,84],[14.7,86],[15.2,84,.1],[15.33,88,.09],[15.46,91,.09],[15.62,96,.07],[16.3,88,.06],[16.75,91,.06],[17.3,84,.05],[18.2,79,.045]].forEach(([d,m,vol])=>bell(d,m,vol));
       } finally { out=main; }
       return {stop(){ try{ const n=c.currentTime; bus.gain.cancelScheduledValues(n); bus.gain.setValueAtTime(bus.gain.value,n); bus.gain.linearRampToValueAtTime(0,n+.35); setTimeout(()=>{ try{ bus.disconnect(); }catch(e){} },500); }catch(e){} }}; },
+    // Each character's own voice when you tap them (Oct 2026). Bloppit keeps his otter chirp.
+    voice(who){ const f=({tiny:'whistle',pup:'squeak',longtail:'kee',swoop:'kee',nora:'quok',pippa:'honk',bibi:'roar',lufu:'twinkle'})[who]; (f&&this[f]?this[f]:this.chirp).call(this); },
+    // Tiny: a Bermuda tree frog's two-note "ko-KEE" whistle
+    whistle(){ const c=ok('whistle',.35); if(!c) return; const t=c.currentTime+.02, a=jit(2050,.04), b=jit(2900,.04);
+      tone(c,t,a,.09,{vol:.16,to:a*1.04,att:.01});
+      const o=c.createOscillator(), g=c.createGain(), lfo=c.createOscillator(), lg=c.createGain(); o.type='sine';
+      o.frequency.setValueAtTime(b,t+.15); o.frequency.exponentialRampToValueAtTime(b*1.28,t+.32); lfo.frequency.value=22; lg.gain.value=40; lfo.connect(lg); lg.connect(o.frequency);
+      g.gain.setValueAtTime(0,t+.15); g.gain.linearRampToValueAtTime(.17,t+.17); g.gain.setValueAtTime(.17,t+.27); g.gain.exponentialRampToValueAtTime(.0001,t+.36);
+      o.connect(g); g.connect(out); o.start(t+.15); lfo.start(t+.15); o.stop(t+.38); lfo.stop(t+.38); },
+    // Your pup: a short, high, happy squeak (higher than Bloppit's chirp)
+    squeak(){ const c=ok('squeak',.3); if(!c) return; const t=c.currentTime+.02;
+      tone(c,t,jit(1900,.06),.07,{vol:.14,to:2900}); tone(c,t+.09,jit(2300,.06),.1,{vol:.12,to:3300}); },
+    // Swoop the Longtail: a shrill seabird "kee-ree"
+    kee(){ const c=ok('kee',.35); if(!c) return; const t=c.currentTime+.02;
+      tone(c,t,jit(3100,.04),.12,{type:'triangle',vol:.12,to:3500,att:.008}); tone(c,t,jit(3100,.04)*1.5,.1,{vol:.03});
+      tone(c,t+.15,jit(3400,.04),.2,{type:'triangle',vol:.12,to:2300,att:.008}); noise(c,t+.15,.12,{vol:.05,freq:3200,q:4}); },
+    // Nora the Night Heron: a soft, hoarse "quok"
+    quok(){ const c=ok('quok',.4); if(!c) return; const t=c.currentTime+.02, f=jit(420,.05);
+      tone(c,t,f,.16,{type:'sawtooth',vol:.07,to:f*.7,att:.01}); tone(c,t,f*2,.1,{type:'triangle',vol:.06,to:f*1.3}); noise(c,t,.12,{vol:.12,freq:900,q:2}); },
+    // Pippa the Penguin: two cheerful honks
+    honk(){ const c=ok('honk',.4); if(!c) return; const t=c.currentTime+.02;
+      [0,.17].forEach((d,i)=>{ const f=jit(560,.04)*(i?1.12:1); tone(c,t+d,f,.13,{type:'square',vol:.05,to:f*.92,att:.012}); tone(c,t+d,f,.13,{type:'triangle',vol:.12,to:f*.92,att:.012}); }); },
+    // Bibi the Lion Cub: a little growl that turns into a squeak (his roar is more of a squeak)
+    roar(){ const c=ok('roar',.5); if(!c) return; const t=c.currentTime+.02;
+      tone(c,t,jit(150,.05),.24,{type:'sawtooth',vol:.08,to:260,att:.03}); noise(c,t,.24,{vol:.14,freq:520,q:1.5});
+      tone(c,t+.2,jit(900,.05),.16,{vol:.15,to:1500,att:.01}); },
+    // lufu: a soft sparkle of glassy bells
+    twinkle(){ const c=ok('twinkle',.5); if(!c) return; const t=c.currentTime+.02, ns=[88,91,95,100,96];
+      ns.forEach((m,i)=>{ const f=440*Math.pow(2,(m-69)/12); tone(c,t+i*.07+Math.random()*.02,f,.5,{vol:.07}); tone(c,t+i*.07,f*2.01,.25,{vol:.015}); }); },
+    // Moving between the islands: a soft swoosh of air
+    swoosh(){ const c=ok('swoosh',.18); if(!c) return; const t=c.currentTime+.01, d=.34;
+      const len=Math.ceil(c.sampleRate*d), b=c.createBuffer(1,len,c.sampleRate), x=b.getChannelData(0); for(let i=0;i<len;i++) x[i]=Math.random()*2-1;
+      const s=c.createBufferSource(), f=c.createBiquadFilter(), g=c.createGain(); s.buffer=b; f.type='bandpass'; f.Q.value=1.1;
+      f.frequency.setValueAtTime(jit(500,.1),t); f.frequency.exponentialRampToValueAtTime(jit(2600,.1),t+d*.55); f.frequency.exponentialRampToValueAtTime(900,t+d);
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.32,t+d*.45); g.gain.exponentialRampToValueAtTime(.0001,t+d);
+      s.connect(f); f.connect(g); g.connect(out); s.start(t); s.stop(t+d+.02); },
     // A boat bumping the jetty: a soft wooden knock
     dock(){ haptic('medium'); const c=ok('dock',.5); if(!c) return; const t=c.currentTime+.01;
       noise(c,t,.09,{vol:.35,freq:380,q:1.2,type:'lowpass'}); tone(c,t,150,.22,{vol:.26,to:95,att:.006}); tone(c,t+.05,230,.12,{type:'triangle',vol:.08,to:160}); }
@@ -3382,6 +3421,18 @@ function rotateSel(){ if(!sel||sel.sx===sel.sz) return; [sel.sx,sel.sz]=[sel.sz,
   // Turn around the same middle point, so the brick doesn't jump
   if(lastAnchor){ const cx=lastAnchor.ax+sel.sz/2, cz=lastAnchor.az+sel.sx/2; lastAnchor={...lastAnchor,px:cx,pz:cz}; }
   setGhost(); }
+// The first brick can go anywhere (the build grows from wherever it lands), but a glowing square on the plate suggests a
+// good spot: where that brick sits in the booklet's model, in the middle of the plate. It goes once the first brick is down.
+const firstSpot={g:new THREE.Group(),key:''}; playGroup.add(firstSpot.g);
+function firstSpotBrick(){ if(!model||off||placedN>0||cands.length||cur>=model.steps.length) return null; const bs=model.steps[cur].bricks;
+  return (sel&&bs.find(b=>b.c===sel.c&&((b.sx===sel.sx&&b.sz===sel.sz)||(b.sx===sel.sz&&b.sz===sel.sx))))||bs[0]||null; }
+function firstSpotTick(now){ const b=firstSpotBrick(), key=b?[b.x,b.z,b.sx,b.sz,b.y].join(','):'';
+  if(key!==firstSpot.key){ firstSpot.key=key; const g=firstSpot.g; for(const m of g.children){ m.geometry.dispose(); m.material.dispose(); } g.clear(); buildDirty=true;
+    if(b){ const y=b.y*1.2+.03, m=.3, sq=new THREE.Mesh(new THREE.PlaneGeometry(b.sx+2*m,b.sz+2*m),new THREE.MeshBasicMaterial({color:0xF4BC22,transparent:true,opacity:.4,depthWrite:false}));
+      sq.rotation.x=-Math.PI/2; sq.position.set(b.x+b.sx/2,y,b.z+b.sz/2); sq.renderOrder=1;   // a little bigger than the brick, so it still shows around the brick in hand
+      const P=[[-m,-m],[b.sx+m,-m],[b.sx+m,b.sz+m],[-m,b.sz+m]].map(([x,z])=>new THREE.Vector3(b.x+x,y+.01,b.z+z)), ln=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(P),new THREE.LineBasicMaterial({color:0xFFB000,transparent:true}));
+      g.add(sq,ln); } }
+  if(b&&!reduceMotion){ const k=.5+.5*Math.sin(now/300); firstSpot.g.children[0].material.opacity=.35+.35*k; firstSpot.g.children[1].material.opacity=.55+.45*k; } }
 function renderHints(){
   hintGroup.clear(); $('#hintBtn').setAttribute('aria-pressed',hintOn);
   if(!hintOn||!model||cur>=model.steps.length) return;
@@ -3615,7 +3666,6 @@ document.addEventListener('keydown',e=>{ if(/INPUT|SELECT|TEXTAREA/.test(e.targe
   if(tab==='box'){
     if(e.key==='Escape'){ if(chosen.size){chosen.clear(); updatePick();} else setTab('build'); e.preventDefault(); }
     else if(/^(INPUT|TEXTAREA)$/.test(e.target.tagName)||e.metaKey||e.ctrlKey||e.altKey) return;
-    else if(e.key==='s'||e.key==='S'){ multi=!multi; updatePick(); e.preventDefault(); }          // S: pick several on/off
     else if(e.key==='Enter'&&chosen.size&&!/BUTTON|A/.test(e.target.tagName)){ takeChosen(); e.preventDefault(); }  // Enter: take them
     else if(e.key==='p'||e.key==='P'){ setTab('build'); e.preventDefault(); }                   // P again: back to the build
     return; }
@@ -3631,7 +3681,7 @@ document.addEventListener('keydown',e=>{ if(/INPUT|SELECT|TEXTAREA/.test(e.targe
   if(e.key==='Escape') putBack(); });
 
 /* ---------- Parts box (scrapbook) ---------- */
-let pieces=[], bins=[], held=null, hand=[], chosen=new Set(), multi=false, laidOut=false, zTop=10000, zBin=1, pieceN=0, binN=0, drag=null, noClickUntil=0;
+let pieces=[], bins=[], held=null, hand=[], chosen=new Set(), laidOut=false, zTop=10000, zBin=1, pieceN=0, binN=0, drag=null, noClickUntil=0;
 const TINTS=['#F4BC22','#5A93DB','#4B9F4A','#D2352B','#AC78BA','#FE8A18','#36AEBF'];
 const PK=1.25;
 const boardWrap=$('#boardWrap'), board=$('#board');
@@ -3732,12 +3782,21 @@ function showBox(){
 function updatePick(){
   for(const p of pieces){ const el=board.querySelector(`[data-p="${p.id}"]`); if(el) el.classList.toggle('picked',chosen.has(p)); }
   const n=chosen.size;
-  $('#multiBtn').setAttribute('aria-pressed',multi);
   $('#takeBtn').hidden=!n; $('#takeBtn').textContent=`Take ${n} to build`;
   $('#pickClear').hidden=!n;
   $('#boxBack').hidden=!!n;
-  $('#pickNote').textContent=n?`${n===1?'Picked':`${n} picked`}: ${pickedSummary()}.${multi?' Tap more, or tap a picked one to drop it.':''}`:multi?`Tap ${PIECE()}s to pick them.`:`Tap a ${PIECE()} to pick it up.`;
+  const cap=pickCap(), lim=cap===Infinity?'':` of ${cap}`;
+  $('#pickNote').textContent=n?`${n}${lim} picked: ${pickedSummary()}.${n<cap?' Tap more, or tap a picked one to put it back.':' That’s all this page needs. Tap a picked one to put it back.'}`
+    :cap===Infinity?`Tap ${PIECE()}s to pick them up. Each tap adds one to your hand.`:cap===1?`Tap a ${PIECE()} to pick it up. This page of the booklet needs just 1.`:`Tap ${PIECE()}s to pick them up. Each tap adds one, up to the ${cap} this page of the booklet needs.`;
 }
+// Picking from the parts box: every tap adds a brick, up to what the booklet's current page still needs (less what's
+// already in your hand; in a Blitz turn, no more than the turn allows). A tap past that bonks and says why.
+function pickCap(){ if(!model||cur>=model.steps.length) return Infinity;
+  let n=stepLeft(cur).length-hand.filter(p=>!chosen.has(p)&&pieces.includes(p)).length;
+  if(mp&&mp.state&&mp.state.started&&!mp.state.finished&&mp.state.perTurn) n=Math.min(n,mpLeft(mp.state));
+  return Math.max(1,n); }
+function pickAdd(p){ if(chosen.has(p)) return true; if(chosen.size>=pickCap()) return false; chosen.add(p); return true; }
+function pickFull(){ const n=pickCap(); sfx.bonk(); $('#pickNote').textContent=`Page ${cur+1} only needs ${n} ${PIECE()}${n===1?'':'s'}. Take ${n===1?'it':'them'} to the build, or tap a picked one to put it back.`; }
 // Name and colour of a part, shown above it when you hover over it, press it, drag it or tab to it
 const partLabel=p=>`${PALETTE[p.c][0]} ${p.a}×${p.l} ${PIECE()}`;
 function pickedSummary(){
@@ -3765,13 +3824,13 @@ board.addEventListener('focusout',()=>{ if(!tipHover&&!drag) tipHide(); });
 boardWrap.addEventListener('scroll',()=>{ if(!drag&&!tipHover) tipHide(); },{passive:true});
 function takeChosen(){
   const list=[...chosen].filter(p=>pieces.includes(p)); if(!list.length) return;
-  chosen.clear(); multi=false;
+  chosen.clear();
   takeToHand(list);
   setTab('build');
   if(mpBlitz()) setStatus(list.length>1?`${list.length} bricks in hand. Check the booklet for where they go.`:`${pieceName(list[0])} in hand. Check the booklet for where it goes.`);
-  else { const tapW=matchMedia('(hover: none) and (pointer: coarse)').matches?'Drag it where it goes, then tap ✓ Place.':'Click where it goes.';
+  else { const tapW=matchMedia('(hover: none) and (pointer: coarse)').matches?'Drag it where it goes, then tap ✓ Place.':'Click where it goes.', spot=firstSpotBrick()?' The glowing square is a good spot, but anywhere works.':'';
   setStatus(list.length>1?`${list.length} bricks in hand. ${held&&stepNeeds(held)?(tapW==='Click where it goes.'?'Click where the first one goes.':'Drag the first one where it goes, then tap ✓ Place.'):'Check the booklet for where they go.'}`:
-    stepNeeds(list[0])?`${pieceName(list[0])} in hand. ${tapW}`:`${pieceName(list[0])} in hand, but step ${cur+1} doesn’t use it.`, held&&stepNeeds(held)?'':'err'); }
+    stepNeeds(list[0])?`${pieceName(list[0])} in hand. ${tapW}${spot}`:`${pieceName(list[0])} in hand, but step ${cur+1} doesn’t use it.`, held&&stepNeeds(held)?'':'err'); }
   lookAlikeWarn();
   updateBuildUI();
 }
@@ -3793,7 +3852,7 @@ board.addEventListener('pointerdown',e=>{
     drag={kind:'bin',b,el,sx:e.clientX,sy:e.clientY,x0:b.x,y0:b.y,members:pieces.filter(p=>p.bin===b.id).map(p=>[p,p.x,p.y,board.querySelector(`[data-p="${p.id}"]`)]),moved:false}; }
   else if(e.pointerType!=='touch'){
     // Drag a box around bricks to pick them (mouse and pen; on touch this area scrolls instead)
-    drag={kind:'lasso',sx:e.clientX,sy:e.clientY,x0:e.clientX-br.left,y0:e.clientY-br.top,add:e.shiftKey||e.metaKey||e.ctrlKey||multi,el:null,moved:false};
+    drag={kind:'lasso',sx:e.clientX,sy:e.clientY,x0:e.clientX-br.left,y0:e.clientY-br.top,add:true,el:null,moved:false};
   }
   else return;
   e.preventDefault();
@@ -3842,9 +3901,9 @@ function endDrag(){
   if(d.kind==='lasso'){
     if(d.el) d.el.remove();
     if(!d.add) chosen.clear();
-    if(d.moved&&d.r){ const [x,y,w,h]=d.r;
-      for(const p of pieces){ const cx=p.x+p.w/2, cy=p.y+p.h/2; if(cx>=x&&cx<=x+w&&cy>=y&&cy<=y+h) chosen.add(p); } }
-    updatePick(); return;
+    let full=false; if(d.moved&&d.r){ const [x,y,w,h]=d.r;
+      for(const p of pieces){ const cx=p.x+p.w/2, cy=p.y+p.h/2; if(cx>=x&&cx<=x+w&&cy>=y&&cy<=y+h&&!pickAdd(p)){ full=true; break; } } }
+    updatePick(); if(full) pickFull(); return;
   }
   if(!d.moved) return;
   noClickUntil=performance.now()+300;
@@ -3862,11 +3921,11 @@ board.addEventListener('click',e=>{
   if(x){ const id=+x.dataset.bx; bins=bins.filter(b=>b.id!==id); pieces.forEach(p=>{if(p.bin===id) p.bin=null;}); renderBox(); updatePick(); return; }
   const all=e.target.closest('.bin-all');
   if(all){ const id=+all.dataset.ba, list=pieces.filter(p=>p.bin===id), every=list.length&&list.every(p=>chosen.has(p));
-    list.forEach(p=>every?chosen.delete(p):chosen.add(p)); updatePick(); return; }
+    let full=false; for(const p of list){ if(every) chosen.delete(p); else if(!pickAdd(p)){ full=true; break; } } updatePick(); if(full) pickFull(); return; }
   const pe=e.target.closest('.piece'); if(!pe||performance.now()<noClickUntil) return;
   const p=pieceById(+pe.dataset.p); if(!p) return;
-  if(multi||e.shiftKey||e.metaKey||e.ctrlKey||chosen.size){ chosen.has(p)?chosen.delete(p):chosen.add(p); updatePick(); if(chosen.has(p)) tipShow(p); else if(tipHover!==p) tipHide(); return; }
-  chosen.add(p); takeChosen();
+  if(chosen.has(p)) chosen.delete(p); else if(!pickAdd(p)){ updatePick(); pickFull(); return; } else sfx.rattle(1);
+  updatePick(); if(chosen.has(p)) tipShow(p); else if(tipHover!==p) tipHide();
 });
 board.addEventListener('input',e=>{ const id=e.target.dataset&&e.target.dataset.bn; if(id){ const b=binById(+id); if(b) b.name=e.target.value; saveSoon(); } });
 board.addEventListener('keydown',e=>{ if(e.target.matches('input[data-bn]')&&e.key==='Enter'){ e.target.blur(); e.preventDefault(); } });
@@ -3878,7 +3937,6 @@ $('#tipOut').onclick=()=>{ const t=$('#tipOut');
   t.dataset.confirm='1'; t.textContent='Tap again to clear your segments';
   setTimeout(()=>{delete t.dataset.confirm; t.textContent='Tip everything out';},3000); };
 $('#boxBack').onclick=()=>setTab('build');
-$('#multiBtn').onclick=()=>{ multi=!multi; updatePick(); };
 $('#pickClear').onclick=()=>{ chosen.clear(); updatePick(); };
 $('#takeBtn').onclick=takeChosen;
 
@@ -5062,6 +5120,10 @@ function updateGameBar(){
   $('#autoBtn').textContent=(on||mp)?'Place one for me (−10)':'Place one for me';
   if(!on) return;
   const LV=levelsOf(gameTrail()), L=LV[game.lvl], p=game.pen;
+  // Where you are: the trail (with its friend) and the island it grows
+  { const tr=gameTrail(), T=TRAILS[tr]||{name:'Trail'}, isle={otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr], who={otter:'tiny',brain:'nora',sea:'pippa'}[tr];
+    let iname=''; try{ iname=ISLES[isle].name; }catch(e){}
+    $('#gbWhere').innerHTML=`${who?`<img src="/art/head-${who}.png" alt="">`:''}<div><strong>${escapeHTML(T.name)}</strong>${iname?`<small>🏝️ ${escapeHTML(iname)}</small>`:''}</div>`; }
   $('#gbBadge').textContent=game.lvl+1; $('#gbNum').textContent=`${game.lvl+1} of ${LV.length}`; $('#gbName').textContent=L.name;
   $('#gbPts').textContent=levelScore(); $('#gbOf').textContent=`of ${L.pts}`;
   const bits=[]; if(p.hint) bits.push(`Hints ${p.hint}× −${p.hint*5}`); if(p.auto) bits.push(`Placed for you ${p.auto}× −${p.auto*10}`);
@@ -5195,13 +5257,15 @@ function winLevel(){
   $('#winBest').textContent=(sc>prev&&prev?`New best! (was ${prev}) · `:'')+`${TRAILS[tr].name}: ${total.toLocaleString()} points`;
   const last=i>=LV.length-1, wait=!last&&tr==='sea'&&!seaWashed(i+1);
   $('#winNext').innerHTML=last?'All levels done!':wait?`<img class="nb-pic" src="${levelThumb(LV[i+1])}" alt=""><span>Next puzzle<small>Washes ashore at ${seaPct(i+1)}% of Bloppitopia</small></span>`:`<img class="nb-pic" src="${levelThumb(LV[i+1])}" alt=""><span>Next<small>Level ${i+2}: ${escapeHTML(LV[i+1].name)}</small></span>`; $('#winNext').disabled=last||wait;
+  { const isle={otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr]; $('#winIsland').textContent=`🏝️ Back to Bloppitopia`; $('#winIsland').title=isle&&ISLES[isle]?`See ${ISLES[isle].name} grow`:''; }
   game=null; updateGameBar(); storeClear();
-  $('#winDlg').showModal();
+  $('#winDlg').showModal(); $('#winIsland').focus();
 }
 $('#winNext').onclick=()=>{ $('#winDlg').close(); startLevel(winLvl+1); };
 $('#winDlg').addEventListener('close',()=>endReveal());
 $('#winReplay').onclick=()=>{ $('#winDlg').close(); startLevel(winLvl); };
 $('#winMap').onclick=()=>{ $('#winDlg').close(); setTab('game'); };
+$('#winIsland').onclick=()=>{ track('finish_next:island'); $('#winDlg').close(); setTab('island'); };   // the recommended way on: see the island grow
 $('#gbMap').onclick=()=>{ if(game) setTrail(gameTrail()); setTab('game'); };
 function renderGameMap(){
   const g=gameStore(), B=bestOf(g,trail), done=Object.keys(B).map(Number), unlocked=done.length?Math.max(...done)+1:0;
@@ -6057,7 +6121,7 @@ function turnBanner(s){
   if(s.solo){ el.innerHTML=`<span class="tb-av"><i style="background:${escapeHTML(p.color)}"></i></span><span class="tb-txt">Go go go!<small>${p.n||0} of ${s.quota} placed</small></span><b class="clk" data-clk="0">${fmtTime(mpTime(s,0))}</b>`; bannerKey=key; return; }
   el.innerHTML=bot?`<span class="tb-av">${GULL_HEAD(s.cpuLevel)}</span><span class="tb-txt">${escapeHTML(p.name)}’s turn<small>${s.turnPlaced?`${s.turnPlaced} placed. Get your next bricks ready!`:'He’s choosing. Get your next bricks ready!'}</small></span><b class="clk" data-clk="1">${fmtTime(mpTime(s,1))}</b>`
     :`<span class="tb-av"><i style="background:${escapeHTML(p.color)}"></i></span><span class="tb-txt">Your turn!<small>${s.turnPlaced?(left>0?`${s.turnPlaced} placed. Place ${left===1?'1 more':`up to ${left} more`}, or tap Done`:'That’s all for this turn'):left<3?`Place up to ${left} (your last ${left===1?'one':'ones'})`:'Place 1, 2 or 3 bricks, then tap Done'}</small></span><b class="clk" data-clk="0">${fmtTime(mpTime(s,0))}</b>${s.turnPlaced>0&&left>0?'<button class="tb-done" id="tbDone" type="button" title="Give the turn to Bloppit">Done ✓</button>':''}`;
-  if(bannerKey.split('|')[0]!==String(bot)&&!reduceMotion){ el.classList.add('pop'); if(bannerKey&&bot) sfx.chirp(); }
+  if(bannerKey.split('|')[0]!==String(bot)&&!reduceMotion){ el.classList.add('pop'); if(bannerKey&&bot) sfx.voice('longtail'); }
   bannerKey=key;
 }
 function cpuStopClock(){ const s=cpu.s, p=s.players[s.turn]; if(s.started&&p) p.ms+=Math.max(0,Date.now()-s.turnStart); }
@@ -7508,7 +7572,7 @@ function isl3Events(cv){
     if(d.drag&&d.moved){ ISL3.dragging=false; let x=d.drag.position.x, z=d.drag.position.z; const fits=d.drag.userData.decor?((a,b)=>inPoly(a,b,scalePoly(HOMEP,0,0,.9))):onGrass; for(let i=0;i<30&&!fits(x,z);i++){ x*=.92; z*=.92; }
       const o=worldStore(); o.pos={...(o.pos||{}),[d.drag.userData.key]:[W2P(x),W2P(z)]}; worldSet(o); track('island_arranged'); sfx.snap(); islandShown=worldCount(o); renderIsland(); return; }
     if(e.type==='pointerup'&&d.moved&&!d.drag&&!d.multi){ const dx=e.clientX-d.x, dy=e.clientY-d.y; if(ISL3.ctl.enableRotate) return;   // looking around, not swiping
-      if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3){ isl3GoView((ISL3.viewI||0)+(dx<0?1:-1)); sfx.tick&&sfx.tick(); } return; }
+      if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3){ isl3GoView((ISL3.viewI||0)+(dx<0?1:-1)); sfx.swoosh(); } return; }
     if(e.type==='pointerup'&&!d.moved&&performance.now()-d.t<1000&&d.h){ islandHover(null); const info0=d.h.info;
       // characters: a reaction first; a second tap soon after shows who they are
       if(info0==='bloppit'||info0==='pup'||info0.startsWith('longtail:')||info0.startsWith('char:')){ const again=ISL3.lastPoke&&ISL3.lastPoke.info===info0&&performance.now()-ISL3.lastPoke.t<8000;
@@ -7561,7 +7625,7 @@ const LONGTAIL_ART={easy:{id:'swoop',aspect:207/300},medium:{id:'swoop',aspect:2
 function longtailBeaten(o){ o=o||worldStore(); let m=-1; for(const b of Object.values(o.builds||{})) if(b&&b.k==='blitz') m=Math.max(m,Number.isInteger(b.lv)?b.lv:0); return m; }
 function longtailNow(){ return ['easy','medium','hard'][Math.min(2,longtailBeaten()+1)]; }
 function beachPoint(a){ const P=scalePoly(HOMEP,0,0,.93); let r=1; while(r<12&&inPoly(Math.cos(a)*(r+.2),Math.sin(a)*(r+.2),P)) r+=.2; return [Math.cos(a)*r,Math.sin(a)*r]; }
-function longtailSquawk(){ ISL3.ltJumpT=performance.now(); try{ sfx.chirp(); }catch(e){} if(ISL3.ltNight){ const L=CPU_LEVELS[longtailNow()]; isl3Banner(`${L.name}: “Wha? It’s the middle of the night! …Fine, one race.”`); clearTimeout(ISL3.ltT); ISL3.ltT=setTimeout(()=>isl3Banner(''),3500); } isl3Kick(); }
+function longtailSquawk(){ ISL3.ltJumpT=performance.now(); try{ sfx.voice('longtail'); }catch(e){} if(ISL3.ltNight){ const L=CPU_LEVELS[longtailNow()]; isl3Banner(`${L.name}: “Wha? It’s the middle of the night! …Fine, one race.”`); clearTimeout(ISL3.ltT); ISL3.ltT=setTimeout(()=>isl3Banner(''),3500); } isl3Kick(); }
 // Who they are (tap Bloppit or a Longtail). Gentle, and true to the character sheet: Bloppit's brick is red; Longtails never hold red.
 const STORIES={
   bloppit:{who:'An otter who loves building more than anything',story:'Long ago a storm washed Bloppit up on a bare little island with nothing but a red brick in his paws. He snapped it to a rock, then found another brick, and another. That island became Bloppitopia.',loves:'The click when two bricks fit, fishing (he always lets the fish go), and a good book in the hammock',secret:'That red brick is the very first brick of Bloppitopia. He has never once put it down.'},
@@ -7963,13 +8027,13 @@ const REACT_LINES={
 const REACT_POSES=['/art/bud-happy.png','/art/bud-reach.png','/art/bud-offer.png','/art/bud-oops.png','/art/bud-hug.png'];
 function charReact(info){ const now=performance.now(), kinds=['jump','wiggle','spin','squash'], pick=a=>a[Math.floor(Math.random()*a.length)];
   if(info.startsWith('char:')){ const id=info.slice(5), K=ISL3.cast&&ISL3.cast[id]; if(!K||!CAST[id]) return; const sp=K.sp, grp=K.g;
-    if(K.i3) K.i3.ctl.poke(); else { if(!sp.userData.s0) sp.userData.s0=[Math.abs(sp.scale.x),sp.scale.y]; ISL3.react={sp,grp,kind:pick(id==='lufu'?['wiggle','squash']:kinds),t0:now}; } isl3Say(grp,pick(CAST[id].lines)); try{ (id==='lufu'?sfx.chime:sfx.chirp)(); }catch(e){}
+    if(K.i3) K.i3.ctl.poke(); else { if(!sp.userData.s0) sp.userData.s0=[Math.abs(sp.scale.x),sp.scale.y]; ISL3.react={sp,grp,kind:pick(id==='lufu'?['wiggle','squash']:kinds),t0:now}; } isl3Say(grp,pick(CAST[id].lines)); try{ sfx.voice(id); }catch(e){}
     if(Math.random()<.35||id==='lufu'){ const p=grp.position; isl3Confetti(p.x,TOP3+1.4,p.z,id==='lufu'?18:12); } track('char_poke:'+id); isl3Kick(); return; }
   const i3=info==='bloppit'?ISL3.b3:info==='pup'?ISL3.p3:ISL3.l3;
   if(i3){ const who=info==='bloppit'?'bloppit':info==='pup'?'pup':'longtail', grp=info==='bloppit'?ISL3.bloppit:info==='pup'?ISL3.pupG:ISL3.longtail;
     i3.ctl.poke(); if(who==='longtail'&&ISL3.ltNight){ longtailSquawk(); return; }
     isl3Say(grp,who==='pup'&&Math.random()<.4&&pupName(worldStore())?`I’m ${pupName(worldStore())}!`:pick(REACT_LINES[who]));
-    try{ (who==='longtail'?sfx.bonk:who==='pup'?sfx.chime:sfx.chirp)(); }catch(e){}
+    try{ sfx.voice(who); }catch(e){}
     if(Math.random()<.35){ const p=grp.position; isl3Confetti(p.x,TOP3+1.6,p.z,12); } track('char_poke:'+who); isl3Kick(); return; }
   let sp=null, grp=null, who='bloppit';
   if(info==='bloppit'){ sp=ISL3.bloppitSprite; grp=ISL3.bloppit; const was=ISL3.bloppitPose, pose=pick(REACT_POSES); if(sp){ sp.material.map=tex3(pose); sp.material.needsUpdate=true; clearTimeout(ISL3.cheerT); ISL3.cheerT=setTimeout(()=>{ if(ISL3.bloppitSprite===sp){ sp.material.map=tex3(was); sp.material.needsUpdate=true; isl3Kick(); } },1700); } }
@@ -7978,7 +8042,7 @@ function charReact(info){ const now=performance.now(), kinds=['jump','wiggle','s
   if(!sp||!grp) return; if(!sp.userData.s0) sp.userData.s0=[Math.abs(sp.scale.x),sp.scale.y];
   ISL3.react={sp,grp,kind:pick(kinds),t0:now}; const line=pick(REACT_LINES[who]);
   isl3Say(grp,who==='pup'&&Math.random()<.4&&pupName(worldStore())?`I’m ${pupName(worldStore())}!`:line);
-  try{ (who==='longtail'?sfx.bonk:who==='pup'?sfx.chime:sfx.chirp)(); }catch(e){}
+  try{ sfx.voice(who); }catch(e){}
   if(Math.random()<.35){ const p=grp.position; isl3Confetti(p.x,TOP3+1.6,p.z,12); }
   track('char_poke:'+who); isl3Kick(); }
 function isl3ReactStep(now){ const R=ISL3.react; if(!R) return false; const k=(now-R.t0)/900, sp=R.sp, [sx,sy]=sp.userData.s0, flip=Math.sign(sp.scale.x)||1;
@@ -8716,7 +8780,7 @@ function isl3Banner(t,big){ const b=ISL3.box&&ISL3.box.querySelector('.is3-banne
 // The buttons over the world: Play Next (one obvious next step), and the arrival's Build Our First Home
 function isl3Chrome(){ const box=ISL3.box; if(!box) return; let c=box.querySelector('.is3-chrome');
   if(!c){ c=document.createElement('div'); c.className='is3-chrome'; c.innerHTML='<div class="is3-banner" hidden></div><button class="primary is3-play" type="button"></button><div class="is3-views" hidden><button class="v-world" type="button" aria-label="Back to all of Bloppitopia" title="Bloppitopia" hidden><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="50" fill="#2FB8DC"/><circle cx="50" cy="52" r="15" fill="#6CC04A" stroke="#F2D594" stroke-width="4"/><g transform="translate(50 52) scale(.5)" stroke="#9E2019" stroke-width="2" fill="#D8342C"><rect x="-20" y="-6" width="40" height="18" rx="2.5"/><rect x="-15" y="-13" width="10" height="8" rx="2"/><rect x="5" y="-13" width="10" height="8" rx="2"/></g><circle cx="50.0" cy="19.0" r="8" fill="#9BD32C" stroke="#F2D594" stroke-width="3"/><circle cx="81.4" cy="41.8" r="8" fill="#24407A" stroke="#F2D594" stroke-width="3"/><circle cx="69.4" cy="78.7" r="8" fill="#F2C230" stroke="#F2D594" stroke-width="3"/><circle cx="30.6" cy="78.7" r="8" fill="#2F7FD0" stroke="#F2D594" stroke-width="3"/><circle cx="18.6" cy="41.8" r="8" fill="#E9772A" stroke="#F2D594" stroke-width="3"/></svg></button><button class="v-prev" type="button" aria-label="Previous view">‹</button><span class="v-mid"><span class="v-name"></span><span class="v-dots" aria-hidden="true"></span></span><button class="v-next" type="button" aria-label="Next view">›</button></div><div class="is3-say" hidden></div>'; box.appendChild(c);
-    c.querySelector('.v-world').onclick=()=>isl3GoView(0); c.querySelector('.v-mid').onclick=()=>{ if(ISL3.viewI) isl3GoView(0); }; c.querySelector('.v-prev').onclick=()=>isl3GoView((ISL3.viewI||0)-1); c.querySelector('.v-next').onclick=()=>isl3GoView((ISL3.viewI||0)+1);
+    c.querySelector('.v-world').onclick=()=>{ isl3GoView(0); sfx.swoosh(); }; c.querySelector('.v-mid').onclick=()=>{ if(ISL3.viewI){ isl3GoView(0); sfx.swoosh(); } }; c.querySelector('.v-prev').onclick=()=>{ isl3GoView((ISL3.viewI||0)-1); sfx.swoosh(); }; c.querySelector('.v-next').onclick=()=>{ isl3GoView((ISL3.viewI||0)+1); sfx.swoosh(); };
     c.querySelector('.is3-play').onclick=()=>{ const a=c.querySelector('.is3-play').dataset.act; if(a==='home'){ track('first_home_start'); welcomeStart(); return; } const n=nextBuild(); track('play_next:island'); if(n) n.go(); else homeGo('quick'); }; }
   const b=c.querySelector('.is3-play'), o=worldStore();
   if(ISL3.arrival==='home'){ b.dataset.act='home'; b.innerHTML='🔨 Build Our First Home'; b.hidden=false; }
