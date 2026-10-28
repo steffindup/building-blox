@@ -3361,15 +3361,18 @@ const sfx=(()=>{
       return {stop(){ clearTimeout(M.duckT); M.duck=false; setTimeout(musicLevel,400); try{ const n=c.currentTime; bus.gain.cancelScheduledValues(n); bus.gain.setValueAtTime(bus.gain.value,n); bus.gain.linearRampToValueAtTime(0,n+.35); setTimeout(()=>{ try{ bus.disconnect(); }catch(e){} },500); }catch(e){} }}; },
     // Each character's own voice when you tap them
     voice(who){ const f=({tiny:'ribbit',pup:'squeak',longtail:'kee',swoop:'kee',nora:'quok',pippa:'honk',bibi:'roar',lufu:'twinkle'})[who]; (f&&this[f]?this[f]:this.chirp).call(this); },
-    // Tiny: one deep, rattly frog croak ("crrroak"), bigger than he is
-    ribbit(){ const c=ok('ribbit',.35); if(!c) return; const t=c.currentTime+.02, d=.38, f=jit(150,.05);
-      const o=c.createOscillator(), am=c.createOscillator(), amg=c.createGain(), v=c.createGain(), b1=c.createBiquadFilter(), b2=c.createBiquadFilter(), g=c.createGain();
-      o.type='sawtooth'; o.frequency.setValueAtTime(f*.9,t); o.frequency.linearRampToValueAtTime(f*1.12,t+d*.3); o.frequency.exponentialRampToValueAtTime(f*.78,t+d);
-      am.type='sawtooth'; am.frequency.setValueAtTime(jit(26,.1),t); am.frequency.linearRampToValueAtTime(18,t+d); amg.gain.value=.55; v.gain.value=.45; am.connect(amg); amg.connect(v.gain);   // the rattle in the throat
-      b1.type='bandpass'; b1.frequency.value=520; b1.Q.value=3; b2.type='bandpass'; b2.frequency.value=1300; b2.Q.value=4;
-      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.9,t+.03); g.gain.setValueAtTime(.8,t+d*.65); g.gain.exponentialRampToValueAtTime(.0001,t+d);
-      o.connect(v); v.connect(b1); v.connect(b2); const mix=c.createGain(); mix.gain.value=.6; b1.connect(mix); b2.connect(mix); mix.connect(g); g.connect(out);
-      o.start(t); am.start(t); o.stop(t+d+.03); am.stop(t+d+.03); },
+    // Tiny: a real-sounding frog croak ("crrroak"). Frogs croak in quick little knocks of sound from their throat
+    // pouch, so this is a run of uneven knocks, each one a tiny ringing note, swelling and fading like one breath
+    ribbit(){ const c=ok('ribbit',.35); if(!c) return; const t=c.currentTime+.02, d=jit(.42,.08), sr=c.sampleRate, n=Math.ceil(sr*d), b=c.createBuffer(1,n,sr), x=b.getChannelData(0);
+      const tone0=jit(430,.06); let at=Math.floor(sr*.004);
+      while(at<n){ const u=at/n, rate=52-22*u+(Math.random()*2-1)*6;                       // the knocks slow down as the croak ends
+        const f=tone0*(1.08-.18*u)*(1+(Math.random()*2-1)*.04), amp=Math.sin(Math.PI*Math.min(1,u*1.15))**.6*(.7+Math.random()*.3);
+        const len=Math.min(n-at,Math.floor(sr*.018)); for(let q=0;q<len;q++){ const tt=q/sr; x[at+q]+=amp*Math.sin(2*Math.PI*f*tt)*Math.exp(-tt/.0045)+amp*.25*Math.sin(2*Math.PI*f*2.3*tt)*Math.exp(-tt/.002); }
+        at+=Math.max(1,Math.floor(sr/rate)); }
+      for(let q=0;q<n;q++) x[q]+=(Math.random()*2-1)*.03*Math.sin(Math.PI*q/n);   // a little breath under it
+      const src=c.createBufferSource(); src.buffer=b; const bp=c.createBiquadFilter(), lp=c.createBiquadFilter(), g=c.createGain();
+      bp.type='peaking'; bp.frequency.value=900; bp.gain.value=5; bp.Q.value=1.2; lp.type='lowpass'; lp.frequency.value=3200;
+      g.gain.setValueAtTime(.9,t); src.connect(bp); bp.connect(lp); lp.connect(g); g.connect(out); src.start(t); },
     // Your pup: an excited "eep-eep!", higher and quicker than Bloppit
     squeak(){ const c=ok('squeak',.3); if(!c) return; const t=c.currentTime+.02;
       [[0,1800,2900],[.11,2100,3400]].forEach(([d,a,b])=>{ slide(c,t+d,jit(a,.05),jit(b,.05),.08,.13,30); }); },
