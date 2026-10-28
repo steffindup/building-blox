@@ -541,6 +541,8 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .gamebar{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;background:var(--page);border:2px solid var(--hi);border-radius:14px;padding:10px 14px;margin-bottom:14px}
 .gb-lvl{display:flex;gap:10px;align-items:center}
+.gb-where{display:flex;gap:10px;align-items:center;padding-right:20px;border-right:2px solid var(--line,rgba(127,127,127,.25))}.gb-where img{width:40px;height:40px;border-radius:50%;background:#fff;object-fit:cover}
+.gb-where strong{display:block;font-family:var(--f-display);font-weight:400;font-size:20px;line-height:1.1}.gb-where small{display:block;font-weight:700;font-size:13px;opacity:.8}
 .gb-lvl strong{font-family:var(--f-display);font-weight:400;font-size:20px}
 .gb-badge{width:40px;height:40px;border-radius:10px;background:var(--hi);color:#14202C;display:grid;place-items:center;font-family:var(--f-display);font-size:22px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.15)}
 .gb-score{position:relative;display:grid;grid-template-columns:auto auto;align-items:baseline;column-gap:6px}
@@ -1218,6 +1220,7 @@ body.film-on{overflow:hidden}
 
 <main>
 <div class="gamebar" id="gameBar" hidden>
+  <div class="gb-where" id="gbWhere"></div>
   <div class="gb-lvl"><span class="gb-badge" id="gbBadge">1</span><div><div class="tag">Level <span id="gbNum"></span></div><strong id="gbName"></strong></div></div>
   <div class="gb-score"><div class="tag">Points for this level</div><b id="gbPts">100</b><span class="gb-of" id="gbOf"></span><span class="gb-flash" id="gbFlash"></span></div>
   <div class="gb-costs" id="gbCosts"></div>
@@ -1785,7 +1788,7 @@ body.film-on{overflow:hidden}
   <div class="win-rows" id="winRows"></div>
   <div class="world-strip" data-ws></div>
   <p class="win-best" id="winBest"></p>
-  <div class="win-btns"><button class="ghost" id="winReplay" type="button">Play again</button><button class="ghost" id="winMap" type="button">Level map</button><button class="primary sm" id="winNext" type="button">Next level</button></div>
+  <div class="win-btns"><button class="primary sm" id="winIsland" type="button" autofocus>🏝️ Back to Bloppitopia</button><button class="ghost" id="winNext" type="button">Next level</button><button class="ghost" id="winReplay" type="button">Play again</button><button class="ghost" id="winMap" type="button">Level map</button></div>
 </dialog>
 
 <dialog class="windlg howdlg" id="howDlg" aria-label="How to play Bloppit">
@@ -5117,6 +5120,10 @@ function updateGameBar(){
   $('#autoBtn').textContent=(on||mp)?'Place one for me (−10)':'Place one for me';
   if(!on) return;
   const LV=levelsOf(gameTrail()), L=LV[game.lvl], p=game.pen;
+  // Where you are: the trail (with its friend) and the island it grows
+  { const tr=gameTrail(), T=TRAILS[tr]||{name:'Trail'}, isle={otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr], who={otter:'tiny',brain:'nora',sea:'pippa'}[tr];
+    let iname=''; try{ iname=ISLES[isle].name; }catch(e){}
+    $('#gbWhere').innerHTML=`${who?`<img src="/art/head-${who}.png" alt="">`:''}<div><strong>${escapeHTML(T.name)}</strong>${iname?`<small>🏝️ ${escapeHTML(iname)}</small>`:''}</div>`; }
   $('#gbBadge').textContent=game.lvl+1; $('#gbNum').textContent=`${game.lvl+1} of ${LV.length}`; $('#gbName').textContent=L.name;
   $('#gbPts').textContent=levelScore(); $('#gbOf').textContent=`of ${L.pts}`;
   const bits=[]; if(p.hint) bits.push(`Hints ${p.hint}× −${p.hint*5}`); if(p.auto) bits.push(`Placed for you ${p.auto}× −${p.auto*10}`);
@@ -5250,13 +5257,15 @@ function winLevel(){
   $('#winBest').textContent=(sc>prev&&prev?`New best! (was ${prev}) · `:'')+`${TRAILS[tr].name}: ${total.toLocaleString()} points`;
   const last=i>=LV.length-1, wait=!last&&tr==='sea'&&!seaWashed(i+1);
   $('#winNext').innerHTML=last?'All levels done!':wait?`<img class="nb-pic" src="${levelThumb(LV[i+1])}" alt=""><span>Next puzzle<small>Washes ashore at ${seaPct(i+1)}% of Bloppitopia</small></span>`:`<img class="nb-pic" src="${levelThumb(LV[i+1])}" alt=""><span>Next<small>Level ${i+2}: ${escapeHTML(LV[i+1].name)}</small></span>`; $('#winNext').disabled=last||wait;
+  { const isle={otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr]; $('#winIsland').textContent=`🏝️ Back to Bloppitopia`; $('#winIsland').title=isle&&ISLES[isle]?`See ${ISLES[isle].name} grow`:''; }
   game=null; updateGameBar(); storeClear();
-  $('#winDlg').showModal();
+  $('#winDlg').showModal(); $('#winIsland').focus();
 }
 $('#winNext').onclick=()=>{ $('#winDlg').close(); startLevel(winLvl+1); };
 $('#winDlg').addEventListener('close',()=>endReveal());
 $('#winReplay').onclick=()=>{ $('#winDlg').close(); startLevel(winLvl); };
 $('#winMap').onclick=()=>{ $('#winDlg').close(); setTab('game'); };
+$('#winIsland').onclick=()=>{ track('finish_next:island'); $('#winDlg').close(); setTab('island'); };   // the recommended way on: see the island grow
 $('#gbMap').onclick=()=>{ if(game) setTrail(gameTrail()); setTab('game'); };
 function renderGameMap(){
   const g=gameStore(), B=bestOf(g,trail), done=Object.keys(B).map(Number), unlocked=done.length?Math.max(...done)+1:0;
