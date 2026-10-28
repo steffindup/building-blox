@@ -32,15 +32,25 @@ async function open(url, { viewport = { width: 1000, height: 800 }, init, at, to
 }
 const autoPlace = async (page, n) => { for (let i = 0; i < n; i++) { await page.evaluate(() => document.getElementById('autoBtn')?.click()); await page.waitForTimeout(1100); } };
 
-test('first visit: the arrival film can be skipped straight to meeting the otter', { skip: skip() }, async () => {
+test('first visit: name the otter first, then the arrival film, which can be skipped straight to the home', { skip: skip() }, async () => {
   const t = await open('?nosplash=1');
   await t.page.evaluate(() => document.getElementById('hmCont').click());
+  // the otter gets its colour and name before it sails: no film yet
+  await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 10000 });
+  assert.match(await t.text('#pupTitle'), /Meet your otter/); assert.match(await t.text('#pupLead'), /about to sail to Home Island/);
+  assert.equal(await t.page.evaluate(() => !document.querySelector('.is3-cine')), true);
+  await t.page.evaluate(() => document.getElementById('pupSuggest').click()); await t.page.waitForTimeout(200);
+  assert.match(await t.text('#pupLater'), /Set sail/);
+  const nm = await t.page.evaluate(() => document.getElementById('pupSuggest').textContent.replace('Call it ', ''));
+  await t.page.evaluate(() => document.getElementById('pupLater').click());
   await t.page.waitForFunction(() => !!document.querySelector('#isWorld .is3-cine .cn-skip'), null, { timeout: 10000 }); await t.page.waitForTimeout(800);
   // the arrival is the film (public/video/arrival.mp4), playing
   assert.equal(await t.page.evaluate(() => { const v = document.querySelector('#isWorld .is3-cine video.cn-film'); return !!v && /\/video\/arrival\.mp4$/.test(v.src) && !!window.bloppitIsland3().cine.film; }), true);
   const t0 = Date.now(); await t.page.evaluate(() => document.querySelector('#isWorld .is3-cine .cn-skip').click());
-  await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 8000 });
-  assert.ok(Date.now() - t0 < 6000); assert.match(await t.text('#pupTitle'), /Meet your otter/);
+  await t.page.waitForFunction((nm) => (document.querySelector('#isWorld .is3-banner')?.textContent || '').includes(`${nm} has arrived`), nm, { timeout: 6000 });
+  // then straight to the home: no card after the trip
+  await t.page.waitForFunction(() => /Build Our First Home/.test(document.querySelector('#isWorld .is3-play')?.textContent || ''), null, { timeout: 8000 });
+  assert.ok(Date.now() - t0 < 8000); assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), false);
   assert.equal(await t.page.evaluate(() => document.getElementById('view-island').classList.contains('cine')), false);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
@@ -68,21 +78,26 @@ test('My films: hidden until the arrival film is unlocked, then plays it again f
 test('first visit: with ?film=0 the arrival made in the game plays instead of the film', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&film=0');
   await t.page.evaluate(() => document.getElementById('hmCont').click());
+  // "Pick later" sets sail too, and the card doesn't come back after the trip
+  await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 10000 });
+  await t.page.evaluate(() => document.getElementById('pupLater').click());
   await t.page.waitForFunction(() => window.bloppitIsland3 && window.bloppitIsland3().cine, null, { timeout: 10000 }); await t.page.waitForTimeout(1500);
   assert.equal(await t.page.evaluate(() => !document.querySelector('.is3-cine video') && window.bloppitIsland3().cine.t > 0.5), true);
   await t.page.evaluate(() => document.querySelector('#isWorld .is3-cine .cn-skip').click());
-  await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 8000 });
+  await t.page.waitForFunction(() => /Build Our First Home/.test(document.querySelector('#isWorld .is3-play')?.textContent || ''), null, { timeout: 8000 });
+  assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), false);
+  // with no name yet the films call it "pup"
+  assert.equal(await t.page.evaluate(() => window.bloppitFilmLine('We did it, {name}!')), 'We did it, pup!');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('first visit: Start here → a boat brings the otter → name it → Build Our First Home → the home appears', { skip: skip() }, async () => {
+test('first visit: Start here → name the otter → a boat brings it → Build Our First Home → the home appears', { skip: skip() }, async () => {
   const t = await open('?nosplash=1'); const shot = (n) => process.env.SHOTS ? t.page.screenshot({ path: `${process.env.SHOTS}/first-${n}.png` }) : null;
   assert.equal(await t.view(), 'view-home'); assert.match(await t.text('#hmContT'), /Start here: meet your otter/);
-  await t.page.evaluate(() => document.getElementById('hmCont').click()); await t.page.waitForTimeout(2200); await shot(1);
+  await t.page.evaluate(() => document.getElementById('hmCont').click());
+  // first the otter's look and name, on the island, before it sails
+  await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 10000 }); await t.page.waitForTimeout(500); await shot(1);
   assert.equal(await t.view(), 'view-island');
-  // the arrival plays like a film: letterbox, title, a Skip button, and the boat at sea
-  assert.equal(await t.page.evaluate(() => !!document.querySelector('#isWorld .is3-cine .cn-skip') && document.getElementById('view-island').classList.contains('cine')), true);
-  await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 45000 }); await t.page.waitForTimeout(500); await shot(2);
   assert.equal(await t.page.evaluate(() => !!document.querySelector('.is3-cine') || document.getElementById('view-island').classList.contains('cine')), false);
   assert.match(await t.text('#pupTitle'), /Meet your otter/); assert.equal(await t.page.evaluate(() => document.getElementById('pupSuggest').hidden), false);
   // the otter's brick: one stud, never red; the colour follows the pick
@@ -96,9 +111,13 @@ test('first visit: Start here → a boat brings the otter → name it → Build 
   await t.page.fill('#pupIn', 'Captain Fizz!7'); await t.page.press('#pupIn', 'Enter'); await t.page.waitForTimeout(300);
   // a name doesn't close the card: the look can still change, and "All done!" finishes
   assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), true);
-  assert.match(await t.text('#pupTitle'), /Meet Captain Fizz!/); assert.match(await t.text('#pupLater'), /All done/);
-  await t.page.evaluate(() => document.getElementById('pupLater').click()); await t.page.waitForTimeout(2000); await shot(3);
+  assert.match(await t.text('#pupTitle'), /Meet Captain Fizz!/); assert.match(await t.text('#pupLater'), /Set sail/);
+  await t.page.evaluate(() => document.getElementById('pupLater').click()); await t.page.waitForTimeout(2200); await shot(2);
   assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), false);
+  // then the arrival plays like a film: a Skip button, over the island
+  assert.equal(await t.page.evaluate(() => !!document.querySelector('#isWorld .is3-cine .cn-skip') && document.getElementById('view-island').classList.contains('cine')), true);
+  await t.page.waitForFunction(() => /Build Our First Home/.test(document.querySelector('#isWorld .is3-play')?.textContent || ''), null, { timeout: 45000 }); await t.page.waitForTimeout(500); await shot(3);
+  assert.equal(await t.page.evaluate(() => !!document.querySelector('.is3-cine') || document.getElementById('view-island').classList.contains('cine') || document.getElementById('pupDlg').open), false);
   // Bloppit shows the unfinished home, and there is one button
   assert.match(await t.text('#isWorld .is3-play'), /Build Our First Home/);
   assert.ok(await t.page.evaluate(() => window.bloppitIslandPoint('pup')));
@@ -579,6 +598,10 @@ test('Frog Forest films: its arrival film plays when it rises from the mist, its
   await t.page.waitForFunction(() => window.bloppitFilmOn() === 'frog-arrival', null, { timeout: 30000, polling: 200 });
   assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), /\/video\/frog-forest-arrival\.mp4$/);
   await t.page.waitForFunction(() => document.querySelector('.is3-film video').currentTime > .3, null, { timeout: 15000 });
+  // Tiny welcomes the otter by name when he's on screen (and says nothing before)
+  assert.equal(await t.page.evaluate(() => window.bloppitFilmSay()), null);
+  await t.page.evaluate(() => { document.querySelector('.is3-film video').playbackRate = 4; });   // (the test server can't seek)
+  await t.page.waitForFunction(() => /^TinyWelcome to Frog Forest, \S+!$/.test(window.bloppitFilmSay() || ''), null, { timeout: 20000 });
   await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click());
   // then the island rises as before, and later the completion film plays before the fireworks
   await t.page.waitForFunction(() => window.bloppitFilmOn() === 'frog-complete', null, { timeout: 90000, polling: 200 });
@@ -591,6 +614,11 @@ test('Frog Forest films: its arrival film plays when it rises from the mist, its
   const u = await open('?nosplash=1', { init: seed });
   await u.page.evaluate(() => document.getElementById('hmFilms').click()); await u.page.waitForTimeout(400);
   assert.deepEqual(await u.page.evaluate(() => [...document.querySelectorAll('#filmList [data-film]')].map((b) => b.dataset.film)), ['arrival', 'frog-arrival', 'frog-complete', 'brickworks-arrival']);   // (its three quick builds found Brickworks Island too)
+  // and the lines play in My films too: Tiny's "We did it" in the completion film
+  await u.page.evaluate(() => document.querySelector('#filmList [data-film="frog-complete"]').click());
+  await u.page.waitForFunction(() => document.getElementById('filmVid').readyState >= 1, null, { timeout: 15000 });
+  await u.page.evaluate(() => { const v = document.getElementById('filmVid'); v.muted = true; v.playbackRate = 4; v.play(); });
+  await u.page.waitForFunction(() => /^TinyWe did it, \S+!$/.test(window.bloppitFilmSay() || ''), null, { timeout: 20000 });
   assert.deepEqual(u.errors, []); await u.ctx.close();
 });
 
