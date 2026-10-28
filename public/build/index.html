@@ -1206,6 +1206,18 @@ body.film-on{overflow:hidden}
 .daily-stats span{background:var(--bg);border-radius:999px;padding:6px 12px;font-weight:700;font-size:14px}
 .daily-stats b{font-family:var(--f-display);font-weight:400;font-size:17px}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+/* The top bar (Oct 2026): quiet tabs, each game with its character's face (Island has the Bloppitopia world map);
+   the open one gets a bar underneath in its own colour */
+.tabs{gap:2px}
+.tabs .tab,.tabs .tab[class*="play"]{background:none;border:0;border-radius:10px;color:inherit;opacity:.74;padding:8px 10px 12px;position:relative;font-weight:800;gap:7px;box-shadow:none}
+.tabs .tab:hover{opacity:1;background:color-mix(in srgb,currentColor 7%,transparent)}
+.tabs .tab .n,.tabs .tab[class*="play"] .n{width:28px;height:28px;border-radius:0;background:none;padding:0;overflow:visible;color:inherit}
+.tabs .tab .n img,.tabs .tab .n svg{width:100%;height:100%;object-fit:contain;display:block}
+.tabs .tab[aria-selected="true"],.tabs .tab[class*="play"][aria-selected="true"]{opacity:1;background:none;color:inherit;border:0}
+.tabs .tab[aria-selected="true"] .n{background:none}
+.tabs .tab[aria-selected="true"]::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:4px;border-radius:4px;background:var(--tc)}
+#tab-island{--tc:#2FB8DC}#tab-daily{--tc:#14A3A0}#tab-create{--tc:#E9772A}#tab-game{--tc:#7DBE2E}#tab-blitz{--tc:#2F7FD0}#tab-mp{--tc:#8B5CF6}
+@media (max-width:640px){.tabs .tab,.tabs .tab[class*="play"]{padding:6px 8px 10px;gap:5px}.tabs .tab .n{width:24px;height:24px}}
 </style>
 
 <header class="top">
@@ -1213,12 +1225,12 @@ body.film-on{overflow:hidden}
     <img class="brand-otter" src="/art/bloppit-avatar.png" alt="" width="256" height="256">
     <span>Bloppit</span></a></h1>
   <nav class="tabs" role="tablist" aria-label="Games">
-    <button class="tab play5" role="tab" id="tab-island" data-tab="island" aria-selected="false"><span class="n"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span>Island</button>
-    <button class="tab play4" role="tab" id="tab-daily" data-tab="daily" aria-selected="false"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-cal"/></svg></span>Weekly</button>
-    <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-brick"/></svg></span>Quick Build</button>
-    <button class="tab play" role="tab" id="tab-game" data-tab="game" aria-selected="false"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-river"/></svg></span>Trails</button>
-    <button class="tab play3" role="tab" id="tab-blitz" data-tab="blitz" aria-selected="false"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-watch"/></svg></span>Blitz</button>
-    <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-stack"/></svg></span>Together</button>
+    <button class="tab play5" role="tab" id="tab-island" data-tab="island" aria-selected="false"><span class="n"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="50" fill="#2FB8DC"/><circle cx="50" cy="52" r="15" fill="#6CC04A" stroke="#F2D594" stroke-width="4"/><g transform="translate(50 52) scale(.5)" stroke="#9E2019" stroke-width="2" fill="#D8342C"><rect x="-20" y="-6" width="40" height="18" rx="2.5"/><rect x="-15" y="-13" width="10" height="8" rx="2"/><rect x="5" y="-13" width="10" height="8" rx="2"/></g><circle cx="50.0" cy="19.0" r="8" fill="#9BD32C" stroke="#F2D594" stroke-width="3"/><circle cx="81.4" cy="41.8" r="8" fill="#24407A" stroke="#F2D594" stroke-width="3"/><circle cx="69.4" cy="78.7" r="8" fill="#F2C230" stroke="#F2D594" stroke-width="3"/><circle cx="30.6" cy="78.7" r="8" fill="#2F7FD0" stroke="#F2D594" stroke-width="3"/><circle cx="18.6" cy="41.8" r="8" fill="#E9772A" stroke="#F2D594" stroke-width="3"/></svg></span>Island</button>
+    <button class="tab play4" role="tab" id="tab-daily" data-tab="daily" aria-selected="false"><span class="n"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span>Weekly</button>
+    <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span>Quick Build</button>
+    <button class="tab play" role="tab" id="tab-game" data-tab="game" aria-selected="false"><span class="n"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span>Trails</button>
+    <button class="tab play3" role="tab" id="tab-blitz" data-tab="blitz" aria-selected="false"><span class="n"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span>Blitz</button>
+    <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n"><img src="/art/pup.png" alt="" width="239" height="300"></span>Together</button>
   </nav>
   <button class="snd-top mus-top" id="musTop" type="button" aria-pressed="true" aria-label="Music" title="Music on or off"><span class="mus-ic" aria-hidden="true"></span></button>
   <button class="snd-top" id="sndTop" type="button" aria-pressed="true" aria-label="Sound" title="Sound on or off (M)"><span class="snd-ic" aria-hidden="true"></span></button>
