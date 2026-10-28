@@ -2480,6 +2480,7 @@ function showStep(k,animate){
   for(const im of instanced) im.count=below(im.userData.steps,k);
   while(current.children.length) current.remove(current.children[0]);
   anim=null;
+  bookGrid(k);
   if(!model||k>=model.steps.length) return;
   const hang=!!model.steps[k].hang;
   model.steps[k].bricks.forEach((b,i)=>{
@@ -2490,6 +2491,18 @@ function showStep(k,animate){
   });
   if(animate&&!reduceMotion){anim={t0:performance.now(),dir:hang?-1:1}; current.children.forEach(ms=>ms.position.y=ms.userData.ty+5*anim.dir);}
 }
+// The booklet's page shows a grid of stud squares at the layer being built, so you can count the spaces between bricks
+const bookGridG=new THREE.Group(); modelGroup.add(bookGridG);
+function bookGrid(k){ for(const m of bookGridG.children){ m.geometry.dispose(); } bookGridG.clear();
+  if(!model||k>=model.steps.length||!model.bricks.length) return;
+  let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9; for(const b of model.bricks){ x0=Math.min(x0,b.x); z0=Math.min(z0,b.z); x1=Math.max(x1,b.x+b.sx); z1=Math.max(z1,b.z+b.sz); }
+  x0-=1; z0-=1; x1+=1; z1+=1; const y=(model.steps[k].layer||0)*1.2+.005, P=[];
+  for(let x=x0;x<=x1;x++) P.push(x,y,z0,x,y,z1); for(let z=z0;z<=z1;z++) P.push(x0,y,z,x1,y,z);
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));
+  bookGridG.add(new THREE.LineSegments(g,BOOK_GRID_MAT));
+  const pl=new THREE.Mesh(new THREE.PlaneGeometry(x1-x0,z1-z0),BOOK_PLATE_MAT); pl.rotation.x=-Math.PI/2; pl.position.set((x0+x1)/2,y-.003,(z0+z1)/2); bookGridG.add(pl); }
+const BOOK_GRID_MAT=new THREE.LineBasicMaterial({color:0x6E8496,transparent:true,opacity:.75,depthWrite:false});
+const BOOK_PLATE_MAT=new THREE.MeshBasicMaterial({color:0x8FA3B5,transparent:true,opacity:.16,depthWrite:false,side:THREE.DoubleSide});
 function stepAnim(now){
   if(!anim) return; let done=true;
   for(const ms of current.children){const t=clamp((now-anim.t0-ms.userData.i*70)/380,0,1),e=1-Math.pow(1-t,3);
