@@ -5410,7 +5410,7 @@ function winLevel(){
   setTrail(tr); winLvl=i;
   $('#winStars').innerHTML=starHTML(st); worldSound();
   { const pic=reveal&&reveal.url; $('#winPic').hidden=!pic; if(pic){ $('#winPic').src=pic; $('#winPic').alt=`The real ${L.name}`; } }
-  { const o=worldStore(), el=$('#winChars'), fid={otter:'tiny',brain:'nora'}[tr], tiny=!!fid&&ch3Ready(fid), tc=L.boss?'cheer':fid==='nora'?'aha':'whistle';   // the trail's friend joins in: Tiny whistles you up Frog Trail, Nora has an "aha!" on Brain Trail (both cheer for their boss build)
+  { const o=worldStore(), el=$('#winChars'), fid={otter:'tiny',brain:'nora',sea:'pippa'}[tr], tiny=!!fid&&ch3Ready(fid), tc=L.boss?'cheer':fid==='nora'?'aha':fid==='pippa'?'excited':'whistle';   // the trail's friend joins in: Tiny whistles you up Frog Trail, Nora has an "aha!" on Brain Trail (both cheer for their boss build)
     el.classList.toggle('three',tiny&&hasPup(o));
     if(reveal&&reveal.url) el.hidden=true; else if(hasPup(o)) cheer3(el,tiny?['bloppit','pup',fid]:['bloppit','pup'],tiny?['cheer','happy_hop',tc]:['cheer','happy_hop']); else cheer3(el,tiny?['bloppit',fid]:'bloppit',tiny?['cheer',tc]:'cheer'); }
   $('#winTitle').textContent=`${TRAILS[tr].icon} Level ${i+1} complete!`;
@@ -8066,7 +8066,10 @@ const MODEL3={
     map:{happy_hop:'hop',giggle_wiggle:'hop',spin:'hop',wake:'hop',grumpy_wake:'hop',wave:'whistle',cheeky_taunt:'cheer',surprised_jump:'oops',show_brick:'offer',look_at_you:'focused'}},
   // Nora (v1, 28 Oct 2026): a night heron, so by night she stands thinking under the stars
   nora:{glb:'/3d/nora.glb',v:'1',loops:['idle','focused','thinking'],night:'thinking',reactions:['hop','aha','cheer','offer','thinking'],
-    map:{happy_hop:'hop',giggle_wiggle:'aha',spin:'hop',wake:'hop',grumpy_wake:'hop',wave:'aha',cheeky_taunt:'cheer',surprised_jump:'hint',show_brick:'offer',look_at_you:'focused'}}};
+    map:{happy_hop:'hop',giggle_wiggle:'aha',spin:'hop',wake:'hop',grumpy_wake:'hop',wave:'aha',cheeky_taunt:'cheer',surprised_jump:'hint',show_brick:'offer',look_at_you:'focused'}},
+  // Pippa (approved v2, 28 Oct 2026): sunglasses on her head, a wave hello, a wink and a wobble on land
+  pippa:{glb:'/3d/pippa.glb',v:'2',loops:['idle'],night:'idle',reactions:['greeting','wink','excited','wobble','hop'],
+    map:{happy_hop:'hop',giggle_wiggle:'wink',spin:'wobble',wake:'hop',grumpy_wake:'hop',wave:'greeting',cheeky_taunt:'wink',surprised_jump:'wobble',show_brick:'offer',look_at_you:'wink'}}};
 for(const [id,m] of Object.entries(MODEL3)) RIG[id].glb=m.glb;
 const M3={wait:{}};
 function ch3Script(src){ return M3.wait[src]||(M3.wait[src]=new Promise((ok,no)=>{ const s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=()=>{ delete M3.wait[src]; no(new Error('could not load '+src)); }; document.head.appendChild(s); })); }
@@ -9902,7 +9905,7 @@ new MutationObserver(()=>buddy3()).observe($('#buddy'),{attributes:true,attribut
 window.bloppitCharShot=async(id,frame,px,opt)=>{ opt=opt||{}; await ch3Get(id); if(opt.model) await ch3Model(id); if(opt.exp) M3.exp.value=opt.exp; const r=cv3R(), sc=new THREE.Scene(), cam=new THREE.PerspectiveCamera(24,1,.05,60), i=ch3Make(id); sc.add(i.root); cv3Lights(sc);
   ch3Dress(i,{log:[]},{ci:opt.ci!=null?opt.ci:0,wear:opt.wear||{}}); i.ctl.update(.6); if(opt.clip){ i.ctl.play(opt.clip); i.ctl.update(0); i.ctl.update(opt.t||0); }
   cv3Aim(cam,[id],frame||'full',1,-.25); r.setScissorTest(false); r.setSize(px||420,px||420,false); r.setViewport(0,0,px||420,px||420); r.clear(); r.render(sc,cam); const u=r.domElement.toDataURL('image/png'); i.ctl.dispose(); return u; };
-window.bloppitChars3d=()=>({on:ch3On(),loaded:Object.keys(CH3.gltf),tiny:{model:ch3Has3d('tiny'),clips:ch3Has3d('tiny')?Object.keys(CH3.gltf.tiny.model.clips).sort():[]},nora:{model:ch3Has3d('nora'),clips:ch3Has3d('nora')?Object.keys(CH3.gltf.nora.model.clips).sort():[]},island:{bloppit:!!ISL3.b3,pup:!!ISL3.p3,longtail:!!ISL3.l3,clips:[ISL3.b3,ISL3.p3,ISL3.l3].map(i=>i&&(i.ctl.current||i.ctl.activeBase)?(i.ctl.current||i.ctl.activeBase).getClip().name:null)},views:CV3.views.filter(v=>v.host.classList.contains('c3on')&&v.host.offsetParent).map(v=>v.host.id||v.host.className.split(' ')[0])});
+window.bloppitChars3d=()=>({on:ch3On(),loaded:Object.keys(CH3.gltf),tiny:{model:ch3Has3d('tiny'),clips:ch3Has3d('tiny')?Object.keys(CH3.gltf.tiny.model.clips).sort():[]},nora:{model:ch3Has3d('nora'),clips:ch3Has3d('nora')?Object.keys(CH3.gltf.nora.model.clips).sort():[]},pippa:{model:ch3Has3d('pippa'),clips:ch3Has3d('pippa')?Object.keys(CH3.gltf.pippa.model.clips).sort():[]},island:{bloppit:!!ISL3.b3,pup:!!ISL3.p3,longtail:!!ISL3.l3,clips:[ISL3.b3,ISL3.p3,ISL3.l3].map(i=>i&&(i.ctl.current||i.ctl.activeBase)?(i.ctl.current||i.ctl.activeBase).getClip().name:null)},views:CV3.views.filter(v=>v.host.classList.contains('c3on')&&v.host.offsetParent).map(v=>v.host.id||v.host.className.split(' ')[0])});
 // On the website the logo opens the menu; on the menu itself it goes to bloppit.com's front page. (The app handles its own links above.)
 $('#brandLink').addEventListener('click',e=>{ if(APP||tab==='home') return; e.preventDefault(); setTab('home'); });
 // Links straight to a page: /build/#photos, #library, #trails, #otter, #brain, #together, #blitz, #daily (anything else opens the menu).
