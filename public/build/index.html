@@ -839,8 +839,9 @@ body.on-home .tabs{visibility:hidden}
 .film-say.on{opacity:1;transform:translate(-50%,0) scale(1)}
 .film-say img{flex:none;width:52px;height:52px;border-radius:50%;background:color-mix(in srgb,var(--who) 18%,#fff);border:3px solid var(--who);object-fit:contain}
 .film-say span{font-family:var(--f-display);font-size:clamp(17px,2.6vw,24px);line-height:1.15}
-.film-say b{display:block;font-family:Nunito,system-ui,sans-serif;font-weight:900;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--who)}
-.film-box .film-say{top:10px;bottom:auto;gap:8px;padding:5px 14px 5px 5px}.film-box .film-say img{width:34px;height:34px;border-width:2px}.film-box .film-say span{font-size:clamp(14px,2.2vw,19px)}.film-box .film-say b{font-size:10px}
+.film-say span{display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+.film-say b{display:inline-block;padding:2px 11px 3px;border-radius:999px;background:var(--who);color:#fff;font-family:var(--f-display);font-weight:400;font-size:clamp(15px,2.1vw,20px);line-height:1.1;letter-spacing:.02em}
+.film-box .film-say{top:10px;bottom:auto;gap:8px;padding:5px 14px 5px 5px}.film-box .film-say img{width:34px;height:34px;border-width:2px}.film-box .film-say span{font-size:clamp(14px,2.2vw,19px)}.film-box .film-say b{font-size:13px;padding:1px 9px 2px}
 @media (max-aspect-ratio:1/1){.is3-cine .film-say{bottom:max(18px,calc(50% - 50vw * 9 / 16 - 150px))}}   /* upright: just under the film, below the turn-sideways hint */
 .filmsdlg video{max-height:calc(100vh - 360px);max-height:calc(100dvh - 360px);min-height:160px}
 .filmsdlg .film-now{margin:8px 4px 0;font-weight:800;font-size:15px}.filmsdlg .film-now small{color:var(--muted);font-weight:700}
@@ -6781,7 +6782,8 @@ function pupOpen(then,opt){
   $('#pupIn').value=cleanPupText(o.pupText); $('#pupErr').hidden=true;
   $('#pupNames').hidden=true; $('#pupPickT').setAttribute('aria-expanded','false');
   $('#pupNames').innerHTML=PUP_NAMES.map((n,i)=>`<button type="button" data-pup="${i}" aria-pressed="${o.pupName===i&&!o.pupText}">${n}</button>`).join('');
-  pupDoneBtn(); if(arr) $('#pupLead').textContent='Your very own little otter, with its own brick. Pick its colour (it colours the outfit too):';
+  pupDraft.sail=!!(opt&&opt.sail);
+  pupDoneBtn(); if(arr) $('#pupLead').textContent=pupDraft.sail?'Your very own little otter is about to sail to Home Island. Pick its brick colour (it colours the outfit too) and give it a name:':'Your very own little otter, with its own brick. Pick its colour (it colours the outfit too):';
   pupColsRender();
   d.onclose=()=>{ d.onclose=null; isl3PupRedress(); renderHome(); if(then) then(); else if(first&&worldCount(worldStore())) islandIntro(); };
   if(!d.open){ d.showModal(); if(!has) sfx.hatch(); }
@@ -6807,7 +6809,7 @@ function pupPick(patch,how){ pupDraft.name={patch,how}; const nm=patch.pupText||
   $('#pupSuggest').setAttribute('aria-pressed',String(how==='pup_named_suggested'));
   document.querySelectorAll('#pupNames [data-pup]').forEach(b=>b.setAttribute('aria-pressed',String(how==='pup_named'&&+b.dataset.pup===patch.pupName)));
   if(how!=='pup_named_own') $('#pupIn').value=''; sfx.chirp(); pupDoneBtn(); try{ cv3Play($('#pupPic'),'happy_hop'); }catch(e){} }
-function pupDoneBtn(){ const b=$('#pupLater'), ready=!!pupDraft.name||pupDraft.has; b.textContent=ready?'All done!':'Pick later'; b.classList.toggle('primary',!!pupDraft.name); }
+function pupDoneBtn(){ const b=$('#pupLater'), ready=!!pupDraft.name||pupDraft.has; b.textContent=ready?(pupDraft.sail?'Set sail! ⛵':'All done!'):'Pick later'; b.classList.toggle('primary',!!pupDraft.name); }
 function pupFinish(){ if(pupDraft.name){ pupSave(pupDraft.name.patch,pupDraft.name.how); return; }
   if(!pupName(worldStore())) track('pup_name_later'); const o=worldStore(); if(ISL3.pupArrival&&pupDraft.out){ pupOutfitSave(o); worldSet(o); } $('#pupDlg').close(); }
 function pupSave(patch,how){ const o=worldStore(); Object.assign(o,patch,{pupAt:Date.now()}); pupOutfitSave(o); worldSet(o); track(how); sfx.chime(); $('#pupDlg').close(); }
@@ -8749,7 +8751,7 @@ function isl3Show(box,o){ isl3Immersive(); isl3WakeCheck(); isl3CharsLoad(o);
   else { const nw=un.filter(i=>!seen.includes(i));
     if(nw.length){ seenSet([...seen,...nw]); const rank=i=>i.startsWith('home:')?0:i.startsWith('isle:')?1:2; nw.sort((a,b)=>rank(a)-rank(b));
       isl3Wake(true); clearTimeout(ISL3.revealT); ISL3.revealT=setTimeout(()=>isl3Reveal(nw,o),600); return; } }
-  if(ISL3.arrival==='boat') isl3Arrive(o);
+  if(ISL3.arrival==='boat') isl3Sail(o);
   else if(ISL3.arrival==='home') isl3ShowHome();
   else if(ISL3.dozing){ clearTimeout(ISL3.afterT); const bp=ISL3.bloppit.position;
     setTimeout(()=>{ if(!ISL3.dozing) return; isl3FlyTo(bp.x,.8,bp.z,11,1100); ISL3.moved=true; ISL3.fly.done=()=>setTimeout(()=>{ isl3Wake();
@@ -8788,6 +8790,11 @@ function arr3Tex(){ if(ISL3.foamTex) return ISL3.foamTex; const c=document.creat
 // A puff of foam or a spark: rises (or spreads) and fades
 function arr3Bit(A,spark,x,y,z,v,life,s0,s1){ const m=new THREE.SpriteMaterial({map:spark?(ISL3.sparkTex||(ISL3.sparkTex=ISL3.sparkMat?ISL3.sparkMat.map:sparkTex3())):arr3Tex(),transparent:true,depthWrite:false,blending:spark?THREE.AdditiveBlending:THREE.NormalBlending,fog:!spark});
   const sp=new THREE.Sprite(m); sp.position.set(x,y,z); sp.scale.setScalar(s0); ISL3.sc.add(sp); A.bits.push({sp,v,life,s0,s1,t0:A.t,op:spark?1:.7}); }
+// The first trip: the player picks the otter's colour and name first, then it sails to Home Island (the film)
+function isl3Sail(o){ if(ISL3.cine||ISL3.arrive) return;
+  if(ISL3.preNamed||pupName(o)){ isl3Arrive(o); return; }
+  if($('#pupDlg').open) return;
+  pupOpen(()=>{ ISL3.preNamed=true; if(ISL3.on&&ISL3.arrival==='boat'&&tab==='island') isl3Arrive(worldStore()); else renderIsland(); },{arrival:true,sail:true}); }
 function isl3Arrive(o){
   // the 3D otter rides the boat: wait a moment for it if it's still loading (then the drawing comes instead)
   if(ch3On()&&!ch3Ready('pup0')&&!ISL3.arriveWaited){ ISL3.arriveWaited=1; ISL3.arrive={wait:1};
@@ -8884,7 +8891,7 @@ function isl3CineStep(now){ const A=ISL3.cine; if(!A||A.film) return; const t=A.
     if(A.p3){ const want=Math.atan2(cam.x-pup.position.x,cam.z-pup.position.z); pup.rotation.y+=Math.atan2(Math.sin(want-pup.rotation.y),Math.cos(want-pup.rotation.y))*.15; }
     if(k>=1&&once('land')){ try{ sfx.hatch(); }catch(e){} if(A.p3) A.p3.ctl.play('happy_hop'); ISL3.jumpT=performance.now();
       for(let i=0;i<22;i++){ const a=i/22*Math.PI*2; arr3Bit(A,1,A.l1.x,A.l1.y+.5,A.l1.z,[Math.cos(a)*1.6,1.2+Math.random()*1.6,Math.sin(a)*1.6],1.1,.5,.15); }
-      setTimeout(()=>{ if(ISL3.cine===A) isl3Banner('A little otter has arrived!',true); },350); } }
+      setTimeout(()=>{ if(ISL3.cine===A) isl3Banner(arr3Landed(),true); },350); } }
   // Bloppit at the end of the jetty: waves as the boat comes in
   if((t>=11&&once('wave'))||(t>=13.9&&once('wave2'))){ if(ISL3.b3) ISL3.b3.ctl.play('wave'); else ISL3.jumpT=performance.now(); }
   // wake and sparkles behind the boat while it sails
@@ -8918,9 +8925,12 @@ function arr3Finish(skipped){ const A=ISL3.cine; if(!A) return; ISL3.cine=null; 
   const F=ISL3.sc.fog; F.near=A.fog[0]; F.far=A.fog[1]; if(ISL3.cam.fov!==A.fov){ ISL3.cam.fov=A.fov; ISL3.cam.updateProjectionMatrix(); }
   A.ov.classList.remove('on'); A.ov.querySelector('.cn-veil').classList.add('off'); A.ov.querySelectorAll('.cn-cap,.cn-title,.cn-skip,.cn-film,.cn-turn').forEach(e=>e.classList.remove('on')); setTimeout(()=>A.ov.remove(),1300);
   $('#view-island').classList.remove('cine'); ISL3.arrive=null; ISL3.ctl.update(); isl3Kick();
-  if(skipped) setTimeout(()=>{ if(!A.did.land) try{ sfx.hatch(); }catch(e){} isl3Banner('A little otter has arrived!',true); },300);
-  setTimeout(()=>{ isl3Banner(''); pupOpen(()=>{ const w=worldStore(); w.arrived=1; worldSet(w); ISL3.arrival='home'; renderIsland(); },{arrival:true}); },skipped?1700:1500);
+  if(skipped) setTimeout(()=>{ if(!A.did.land) try{ sfx.hatch(); }catch(e){} isl3Banner(arr3Landed(),true); },300);
+  // named before the trip (isl3Sail): straight on to the home; the card only comes now for a world that skipped it
+  const home=()=>{ const w=worldStore(); w.arrived=1; worldSet(w); ISL3.arrival='home'; renderIsland(); };
+  setTimeout(()=>{ isl3Banner(''); if(ISL3.preNamed||pupName(worldStore())) home(); else pupOpen(home,{arrival:true}); },skipped?1700:1500);
 }
+function arr3Landed(){ const nm=pupName(worldStore()); return nm?`${nm} has arrived!`:'A little otter has arrived!'; }
 // Bloppit shows the unfinished home; one button: Build Our First Home
 function isl3ShowHome(){ const [x,z]=HOME_AT.home; isl3FlyTo(x,.8,z,12,1200); isl3Banner('This is your home. Let’s finish it together!'); isl3Chrome(); ISL3.jumpT=performance.now(); }
 
