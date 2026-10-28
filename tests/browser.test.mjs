@@ -487,7 +487,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   assert.match(await tapChar('char:pippa'), /Pippa the Penguin.*Sunrise Shores.*Secret.*A yellow two-stud brick.*still in the mist.*Play Pippa’s puzzle/);
   assert.match(await tapChar('pup'), /Bubbles.*Level \d+ Pup.*1 stud.*Otter level.*Wardrobe.*Name or colour/);
   assert.match(await tap('decor:flag'), /Flag/);
-  assert.match(await tap('isle:sunrise'), /A misty island.*Pippa’s first puzzle washes ashore at 8%.*Back to Bloppitopia/);
+  assert.match(await tap('isle:sunrise'), /A misty island.*Pippa’s first puzzle washes ashore at 9%.*Back to Bloppitopia/);
   assert.match(await tap('isle:blitzbay'), /A misty island.*Race Swoop/);
   { await still(); const c = await pt('isle:sunrise'); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(600); await still();
     assert.equal(await t.page.evaluate(() => { const I = window.bloppitIsland3(), s = I.isles.sunrise; return Math.hypot(I.ctl.target.x - s.x, I.ctl.target.z - s.z) < 1; }), true);   // flew there
@@ -580,6 +580,7 @@ test('family key: make, attach a player, bring the player to another device', { 
 
 test('draw your own: paint, build as a picture, save with the pup, send as a link', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0#photos');
+  await t.page.evaluate(() => document.querySelector('[data-qb-go="draw"]').click()); await t.page.waitForTimeout(300);   // Quick Build: the Draw your own tile opens its screen
   const cv = await t.page.$('#drawCv'); await cv.scrollIntoViewIfNeeded(); await t.page.waitForTimeout(300); const r = await cv.boundingBox();
   const cell = (cx, cy) => ({ x: r.x + (cx + .5) * r.width / 24, y: r.y + (cy + .5) * r.height / 24 });
   // a red square outline with a yellow middle: paint strokes, then fill

@@ -140,7 +140,14 @@ main{max-width:1640px;margin:0 auto;padding-block:20px 0}
 /* Create view */
 #view-create{grid-template-columns:minmax(0,370px) minmax(0,1fr);align-items:start}
 @media (max-width:860px){#view-create{grid-template-columns:minmax(0,1fr)}}
-.panel{display:grid;gap:16px;min-width:0}
+.panel{display:grid;gap:16px;min-width:0;align-content:start}
+/* Quick Build: three ways in as tiles, each with its own screen; the current selection and model settings stay on the first one */
+.qb-tiles{display:grid;gap:10px}
+.qb-tile{display:grid;grid-template-columns:44px minmax(0,1fr);grid-template-rows:auto auto;column-gap:12px;align-items:center;text-align:left;border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--page);color:var(--ink);cursor:pointer;font:inherit;transition:border-color .15s,transform .1s}
+.qb-tile:hover{border-color:var(--accent)}.qb-tile:active{transform:translateY(1px)}
+.qb-tile .qb-ic{grid-row:1/3;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:22px;background:var(--callout)}
+.qb-tile b{font-family:var(--f-display);font-weight:400;font-size:19px}.qb-tile small{color:var(--muted);font-size:13px;font-weight:700}
+.qb-head{display:flex;align-items:center;gap:10px}#library .samples{max-height:min(72vh,900px)}.qb-head h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:22px}
 .card{background:var(--page);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:12px;min-width:0}
 .card h2{font-size:19px}
 .drop{border:2px dashed var(--line);border-radius:12px;padding:20px 16px;text-align:center;background:var(--page);cursor:pointer;display:grid;gap:4px;transition:border-color .15s,background .15s}
@@ -1314,13 +1321,19 @@ body.film-on{overflow:hidden}
   <div class="usebar" id="useBar" hidden><img id="ubImg" alt=""><span class="ub-txt"><b id="ubName"></b><span id="ubInfo"></span></span><button class="primary sm" id="ubGo" type="button">Use this puzzle ▶</button></div>
   <div class="panel">
     <div class="pick-banner" id="pickBanner" hidden><span id="pickTxt"></span><button class="ghost" id="pickCancel" type="button">Back</button></div>
-    <label class="drop" id="drop">
+    <div class="qb-tiles" data-qb="home" role="group" aria-label="Choose what to build">
+      <button class="qb-tile" type="button" data-qb-go="photo"><span class="qb-ic" aria-hidden="true">📷</span><b>Add a photo</b><small>Turn a picture into bricks</small></button>
+      <button class="qb-tile" type="button" data-qb-go="draw"><span class="qb-ic" aria-hidden="true">✏️</span><b>Draw your own</b><small>Paint it stud by stud</small></button>
+      <button class="qb-tile" type="button" data-qb-go="library"><span class="qb-ic" aria-hidden="true">📚</span><b>Pick from the library</b><small id="qbLibN">Ready-made builds</small></button>
+    </div>
+    <div class="qb-head" id="qbHead" hidden><button class="ghost" id="qbBack" type="button">‹ Back</button><h2 id="qbTitle"></h2></div>
+    <label class="drop" id="drop" data-qb="photo">
       <input type="file" id="file" accept="image/*" multiple>
       <strong>Add photos</strong>
       <span>Drop, paste or tap to choose. A plain background works best.</span>
     </label>
-    <div class="card draw-card" id="drawCard">
-      <div class="lib-head"><h2>Or draw your own</h2><span class="tag">Stud by stud</span></div>
+    <div class="card draw-card" id="drawCard" data-qb="draw">
+      <div class="lib-head"><h2>Draw your own</h2><span class="tag">Stud by stud</span></div>
       <p class="note" style="margin:0 0 8px">Paint a picture on the studs, then build it as a brick picture. Drawings are saved with your otter and can be sent as a link.</p>
       <div class="draw-tools">
         <div class="draw-pal" id="drawPal" role="radiogroup" aria-label="Colour"></div>
@@ -1333,17 +1346,17 @@ body.film-on{overflow:hidden}
       <div class="win-btns" style="justify-content:flex-start;margin-top:10px"><button class="primary sm" id="drawBuild" type="button">Build it ▶</button><button class="ghost" id="drawSave" type="button">Save drawing</button><button class="ghost" id="drawShare" type="button">Send as a link</button></div>
       <div class="draw-saved" id="drawSaved"></div>
     </div>
-    <div class="card" id="library">
-      <div class="lib-head"><h2>Or pick from the library</h2><span class="tag" id="libCount"></span></div>
+    <div class="card" id="library" data-qb="library">
+      <div class="lib-head"><h2>The library</h2><span class="tag" id="libCount"></span></div>
       <div class="lib-themes" id="libThemes" role="tablist" aria-label="Library themes"></div>
       <div class="samples" id="samples"></div>
     </div>
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><h2>Your photos</h2><span class="tag" id="photoCount"></span></div>
+    <div class="card" data-qb="home">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><h2>Current selection</h2><span class="tag" id="photoCount"></span></div>
       <div class="photos" id="photos"></div>
       <p class="note" id="viewHint"></p>
     </div>
-    <div class="card" id="settings">
+    <div class="card" id="settings" data-qb="home">
       <h2>Model settings</h2>
       <div class="field">
         <span class="lbl">Make</span>
@@ -2704,12 +2717,12 @@ function addFiles(files){
     img.src=url;
   });
 }
-$('#file').addEventListener('change',e=>{addFiles(e.target.files); e.target.value='';});
+$('#file').addEventListener('change',e=>{ if(e.target.files&&e.target.files.length){ addFiles(e.target.files); qbShow('home'); } e.target.value=''; });
 const drop=$('#drop');
 ['dragenter','dragover'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add('over');}));
 ['dragleave','drop'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove('over');}));
-drop.addEventListener('drop',e=>addFiles(e.dataTransfer.files));
-document.addEventListener('paste',e=>{const f=[...(e.clipboardData?.files||[])]; if(f.length) addFiles(f);});
+drop.addEventListener('drop',e=>{ addFiles(e.dataTransfer.files); qbShow('home'); });
+document.addEventListener('paste',e=>{const f=[...(e.clipboardData?.files||[])]; if(f.length){ addFiles(f); qbShow('home'); }});
 
 /* ---------- UI: settings ---------- */
 function bindRange(id,key,fmt){const el=$('#'+id),out=$('#'+id+'Out');const upd=()=>{S[key]=+el.value; out.textContent=fmt(S[key]);};upd();
@@ -2896,13 +2909,25 @@ $('#ubGo').onclick=()=>$('#startBuild').click();
 if('IntersectionObserver' in window) new IntersectionObserver(es=>{ startSeen=es[0].isIntersecting; syncUseBar(); }).observe($('#startBuild'));
 { const top=$('.top'), setH=()=>document.documentElement.style.setProperty('--topH',top.offsetHeight+'px'); setH();
   if('ResizeObserver' in window) new ResizeObserver(setH).observe(top); }
+// Quick Build's screens: 'home' (the three tiles, the current selection and model settings), 'photo', 'draw' or 'library'
+const QB_T={photo:'Add a photo',draw:'Draw your own',library:'Pick from the library'};
+function qbShow(screen){ screen=QB_T[screen]?screen:'home';
+  document.querySelectorAll('#view-create .panel [data-qb]').forEach(el=>{ el.hidden=el.dataset.qb!==screen; });
+  $('#qbHead').hidden=screen==='home'; $('#qbTitle').textContent=QB_T[screen]||'';
+  const n=$('#qbLibN'), c=$('#libCount'); if(n&&c&&c.textContent) n.textContent=c.textContent;
+  try{ if(tab==='create') scrollTo({top:0,behavior:'auto'}); }catch(e){} }
+document.querySelectorAll('[data-qb-go]').forEach(b=>b.addEventListener('click',()=>{ qbShow(b.dataset.qbGo); if(b.dataset.qbGo==='photo') $('#file').click(); }));
+$('#qbBack').onclick=()=>qbShow('home');
+$('#tab-create').addEventListener('click',()=>qbShow('home'));
+qbShow('home');
 function pickPuzzle(forWhat,src){
   if(game) endGame();
   if(mp) mpLeave();
   pickFor=forWhat; setTab('create');
-  if(src==='photo'){ scrollTo(0,0); $('#file').click(); }
-  else if(src==='top') scrollTo(0,0);
-  else requestAnimationFrame(()=>$('#library').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}));
+  if(src==='photo'){ qbShow('photo'); $('#file').click(); }
+  else if(src==='top') qbShow('home');
+  else if(src==='draw') qbShow('draw');
+  else qbShow('library');
 }
 $('#pickCancel').onclick=()=>{ const f=pickFor; pickFor=null; if(f==='together') setTab('mp','start'); else setTab('blitz'); };
 $('#startBuild').onclick=()=>{
@@ -5128,7 +5153,7 @@ var libTuned=false;
 ['size','thick','tol','colors'].forEach(id=>$('#'+id).addEventListener('input',e=>{ if(e.isTrusted) libTuned=true; }));
 document.querySelectorAll('input[name=shape]').forEach(r=>r.addEventListener('change',e=>{ if(e.isTrusted) libTuned=true; }));
 function libDefaults(){ if(!libTuned) setControls(LIB_S); }
-$('#samples').addEventListener('click',e=>{ const b=e.target.closest('.smp'); if(b){ libDefaults(); loadSample(+b.dataset.i); usePicked=true; } });
+$('#samples').addEventListener('click',e=>{ const b=e.target.closest('.smp'); if(b){ libDefaults(); loadSample(+b.dataset.i); usePicked=true; qbShow('home'); } });   // picked: back to the selection, with its bricks in the preview
 
 /* ---------- Play the Game ---------- */
 function levelArt(kind){
@@ -5211,7 +5236,9 @@ const SEA_LEVELS=[
 const PROGRESS_ISLES=['otterwood','brainpeak','blitzbay','brickworks'];
 // How far through Bloppitopia the child is, 0 to 1: the pieces built on the four islands, out of all of them
 function gameProgress(o){ let a=0,t=0; for(const id of PROGRESS_ISLES){ const P=PIECES[id], n=P[P.length-1].at; a+=Math.min(isleCount(id,o),n); t+=n; } return t?a/t:0; }
-const seaPct=i=>Math.round((i+1)*100/SEA_LEVELS.length);
+const seaPct=i=>Math.ceil((i+1)*100/SEA_LEVELS.length-1e-9);   // rounded up, so "at 9%" is never shown while you're already at 8% and still short
+// How many more pieces on the four islands until Pippa's puzzle i washes ashore
+function seaBuildsTo(i,o){ let a=0,t=0; for(const id of PROGRESS_ISLES){ const P=PIECES[id], n=P[P.length-1].at; a+=Math.min(isleCount(id,o),n); t+=n; } return Math.max(0,Math.ceil(t*(i+1)/SEA_LEVELS.length-1e-9)-a); }
 const seaWashed=(i,o)=>gameProgress(o)+1e-9>=(i+1)/SEA_LEVELS.length;      // has puzzle i washed ashore yet?
 const progressPct=o=>Math.floor(gameProgress(o)*100);
 const levelsOf=tr=>tr==='brain'?BRAIN_LEVELS:tr==='sea'?SEA_LEVELS:OTTER_LEVELS;
@@ -7358,7 +7385,7 @@ function islandInfo(id,o){
     case 'dest': { const m={ferry:'sunrise',workshop:'brickworks',brain:'brainpeak',speedway:'blitzbay',harbour:'otterwood'}[arg]; if(m) return islandInfo('isle:'+m,o); break; }
     case 'isle': { const I=ISLES[arg]; if(!I) break; const c=isleCount(arg,o), P=PIECES[arg], total=P[P.length-1].at, built=P.filter(x=>c>=x.at), next=P.find(x=>c<x.at);
       if(!c&&I.mystery) return {title:'Mystery Island',hint:mysteryHint(),bar:{pct:mysteryOpen()?100:Math.max(4,Math.round(100*mysteryProgress(o))),label:mysteryOpen()?'Ready to sail!':`${Math.round(100*mysteryProgress(o))}% of the way there`},rows:[['What’s there','Far out at sea, where it’s always night, a faint light glows in a swirl of mist. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Complete all five islands, every piece built (${fiveDone(o)} of ${FIVE_ISLES.length} so far)`],...(mysteryOpen()?[]:[['Still to finish',FIVE_ISLES.filter(id=>!isleComplete(id,o)).map(id=>isleCount(id,o)?`${ISLES[id].name} (${Math.min(isleCount(id,o),PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at})`:`${ISLES[id].name} (still in the mist)`).join(', ')]])],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'🏝️ Back to Bloppitopia',fn:()=>{ islandTipHide(true); isl3GoView(0); try{ sfx.swoosh(-1); }catch(e){} },primary:true}]};   // not open yet: back to the map, no surprise trip elsewhere
-      if(!c&&arg==='sunrise'&&!seaWashed(0,o)) return {title:'A misty island',hint:`Pippa’s first puzzle washes ashore at ${seaPct(0)}%`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Get ${seaPct(0)}% of the way through Bloppitopia (you’re at ${progressPct(o)}%), then build Pippa’s first puzzle`]],actions:[{label:'🏝️ Back to Bloppitopia',fn:()=>{ islandTipHide(true); isl3GoView(0); try{ sfx.swoosh(-1); }catch(e){} },primary:true}]};   // nothing to play here yet, so no surprise trip elsewhere
+      if(!c&&arg==='sunrise'&&!seaWashed(0,o)) return {title:'A misty island',hint:`Pippa’s first puzzle washes ashore at ${seaPct(0)}%`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',(()=>{ const nb=seaBuildsTo(0,o); return `Reach ${seaPct(0)}% of Bloppitopia (you’re at ${progressPct(o)}%): ${nb} more build${nb===1?'':'s'} on Frog Forest, Brainpeak, Blitz Bay or Brickworks Island, then build Pippa’s first puzzle`; })()]],actions:[{label:'🏝️ Back to Bloppitopia',fn:()=>{ islandTipHide(true); isl3GoView(0); try{ sfx.swoosh(-1); }catch(e){} },primary:true}]};   // nothing to play here yet, so no surprise trip elsewhere
       if(!c) return {title:'A misty island',hint:`Play ${I.game} to discover it`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Finish your first ${I.unit}`]],actions:[{label:I.play,fn:I.go,primary:true}]};
       return {title:I.name,hint:`${I.game} · ${Math.min(c,total)} of ${total}`,rows:[['Grows with',I.grows],['Built',`${built.length} of ${P.length} pieces`],...(next?[['Next piece',`${next.name}: ${next.at-c} more ${I.unit}${next.at-c===1?'':'s'}`]]:[]),['Milestone',c>=total?`${I.milestone} ✓`:`${I.milestone} at ${total}`]],
         chips:P.map(x=>[x.name,c>=x.at]),bar:{pct:Math.max(4,Math.min(100,Math.round(100*c/total))),label:c>=total?'Complete!':`${total-c} more to ${I.milestone}`},actions:[...(arg==='moonstone'&&worldComplete(o)?[{label:'🌙 Watch the ending',fn:()=>{ theEnd(); },primary:true}]:[]),{label:I.play,fn:I.go,primary:!(arg==='moonstone'&&worldComplete(o))}]}; }
@@ -8297,7 +8324,7 @@ const ISLES={
     milestone:'The Grand Prix cup',grows:'Every Blitz race you win against Swoop, then the Grand Prix',play:'Race Swoop',go:()=>homeGo('cpu')},
   brickworks:{name:'Brickworks Island',game:'Creative builds',unit:'creation',x:12.4,z:9.6,r:4.3,seed:6.6,ground:['#7CC45E','#4E9E3A'],
     milestone:'The Grand Creation Gallery',grows:'Every build from your own photo or drawing, from the library, and every Weekly Bloppit',play:'Make your own',
-    go:()=>{ pickPuzzle('quick','top'); requestAnimationFrame(()=>{ const c=$('#drawCard'); if(c) c.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}); }); }},
+    go:()=>{ pickPuzzle('quick','draw'); }},
   moonstone:{name:'Moonstone Isle',game:'The mystery',unit:'chapter',get x(){ return isl3TallNow()?-22.5:23.5; },get z(){ return isl3TallNow()?-11.5:-23.5; },r:4.0,   // far out at sea, in the top corner of the view (upright phones see the world from the side)
    seed:7.7,ground:['#6FB7A4','#4E8F7E'],sand:true,mystery:true,
     milestone:'The moon crystal',grows:'Every chapter of the mystery you build',play:'Explore Moonstone Isle',go:()=>mysteryGo()},
@@ -9271,9 +9298,9 @@ let islandShown=-1;
 // How far through Bloppitopia you are (every piece built on Frog Forest, Brainpeak, Blitz Bay and Brickworks Island),
 // with a tick wherever one of Pippa's puzzles washes ashore, so "the next puzzle at 8%" has something to point at
 function isProgRender(o){ const el=$('#isProg'); if(!el) return; const pct=progressPct(o), P=gameProgress(o);
-  const nx=SEA_LEVELS.findIndex((_,i)=>!seaWashed(i,o)), note=pct>=100?'every piece built':nx>=0?`Pippa’s next puzzle at ${seaPct(nx)}%`:'';
+  const nx=SEA_LEVELS.findIndex((_,i)=>!seaWashed(i,o)), nb=nx>=0?seaBuildsTo(nx,o):0, note=pct>=100?'every piece built':nx>=0?`Pippa’s next puzzle at ${seaPct(nx)}% (${nb} more build${nb===1?'':'s'})`:'';
   el.hidden=false; el.setAttribute('role','progressbar'); el.setAttribute('aria-label','Bloppitopia built'); el.setAttribute('aria-valuenow',pct); el.setAttribute('aria-valuemin',0); el.setAttribute('aria-valuemax',100);
-  el.innerHTML=`<span class="ip-t"><b>Bloppitopia ${pct}%</b>${note?` · ${note}`:''}</span><span class="ip-bar"><i style="width:${Math.max(2,P*100).toFixed(1)}%"></i>${SEA_LEVELS.map((_,i)=>`<em class="${seaWashed(i,o)?'on':''}" style="left:${seaPct(i)}%"></em>`).join('')}</span>`; }
+  el.innerHTML=`<span class="ip-t"><b>Bloppitopia ${pct}%</b>${note?` · ${note}`:''}</span><span class="ip-bar"><i style="width:${Math.max(2,P*100).toFixed(1)}%"></i>${SEA_LEVELS.map((_,i)=>`<em class="${seaWashed(i,o)?'on':''}" style="left:${((i+1)*100/SEA_LEVELS.length).toFixed(2)}%"></em>`).join('')}</span>`; }
 function renderIsland(){
   const o=worldStore(), stage=islandStage(o), n=worldCount(o), next=ISLAND_STAGES[stage+1];
   const pop=islandShown>=0&&islandShown<n; islandShown=n;
