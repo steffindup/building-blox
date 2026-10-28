@@ -503,6 +503,17 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .mp-turn small{display:block;font-family:var(--f-body);font-size:13px;font-weight:700;color:var(--muted)}
 .mp-turn.mine{color:var(--accent)}
 .mp-players{display:flex;flex-wrap:wrap;gap:6px}
+.race-meter{display:grid;gap:4px;min-width:min(100%,420px);flex:1 1 420px}.rm-head{font-size:12px;font-weight:700;opacity:.85}.rm-head b{font-family:var(--f-display);font-weight:400;font-size:14px;letter-spacing:.02em}
+.rm-lane{display:grid;grid-template-columns:minmax(64px,max-content) minmax(120px,1fr) auto auto auto;gap:8px;align-items:center;font-size:13px;font-weight:800;padding:2px 6px;border-radius:10px}
+.rm-lane.now{background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 2px rgba(255,255,255,.45)}.rm-who{white-space:nowrap}
+.rm-track{position:relative;height:10px;border-radius:5px;background:rgba(0,0,0,.28);margin:0 12px 0 10px}
+.rm-fill{position:absolute;left:0;top:0;bottom:0;border-radius:5px;opacity:.9;transition:width .5s ease}
+.rm-run{position:absolute;top:50%;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;background:#fff;display:grid;place-items:center;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,.3);transition:left .5s ease}
+.rm-run img{width:100%;height:100%;object-fit:cover}.rm-run i{width:16px;height:16px;border-radius:50%}
+.rm-flag{position:absolute;right:-12px;top:-5px;width:10px;height:20px;background:conic-gradient(#14202C 25%,#fff 0 50%,#14202C 0 75%,#fff 0) 0 0/5px 5px;border-radius:2px}
+.rm-lane.done .rm-n{color:#7DDE5A}.rm-n{white-space:nowrap}.rm-pen{font-size:11px;color:#FFB4A8;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.rm-fill,.rm-run{transition:none}}
+@media (max-width:560px){.rm-lane{grid-template-columns:minmax(52px,max-content) minmax(80px,1fr) auto auto;font-size:12px}.rm-pen{display:none}}
 .mp-pl{display:flex;align-items:center;gap:6px;border:2px solid var(--line);border-radius:999px;padding:3px 10px 3px 4px;font-size:13px;font-weight:800;background:var(--bg)}
 .mp-pl i{width:18px;height:18px;border-radius:50%;display:inline-block;box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
 .mp-pl.now{border-color:var(--ink);background:var(--page)}
@@ -1704,7 +1715,7 @@ body.film-on{overflow:hidden}
   <div class="win-rows" id="mpEndRows"></div>
   <div class="world-strip" data-ws></div>
   <p class="win-best" id="mpEndNote"></p>
-  <div class="win-btns"><button class="ghost" id="mpEndClose" type="button">Look at the model</button><button class="primary sm" id="mpEndNew" type="button">New game</button></div>
+  <div class="win-btns"><button class="primary sm" id="mpEndIsland" type="button" autofocus>🏝️ Back to Bloppitopia</button><button class="ghost" id="mpEndNew" type="button">New game</button><button class="ghost" id="mpEndClose" type="button">Look at the model</button></div>
 </dialog>
 
 <dialog class="windlg whodlg" id="whoDlg" aria-labelledby="whoTitle">
@@ -5883,6 +5894,16 @@ function mpFlash(t){ const f=$('#mpFlash'); f.textContent=t; f.classList.remove(
 function mpTick(){ const s=mp&&mp.state; if(!s||s.mode!=='blitz') return; document.querySelectorAll('[data-clk]').forEach(el=>{ el.textContent=fmtTime(mpTime(s,+el.dataset.clk)); }); }
 const mpMyTurn=()=>!!(mp&&mp.state&&mp.state.started&&!mp.state.finished&&mp.state.turn===mp.me);
 function mpTurnText(){ const s=mp&&mp.state; if(!s||!s.started) return 'Waiting for the game to start.'; if(s.finished) return 'The model is finished!'; return `It’s ${s.players[s.turn].name}’s turn. Get your bricks ready in the parts box.`; }
+// The race-o-meter (Blitz with two or more players): a lane each, the runner moving along as their bricks go in, the
+// chequered flag at the end, and their clock (only running on their own turns) with misses and hints already added in.
+// The rule stays in view: everyone places the same number of bricks; the shortest time wins.
+function raceMeter(s){ const sc=mpScores(s), best=sc.every(p=>p.done)?Math.min(...sc.map(p=>p.ms)):null;
+  const lanes=sc.map(p=>{ const pct=Math.min(100,100*p.n/s.quota), bot=mp.cpu&&p.i!==mp.me, now=p.i===s.turn&&!s.finished;
+    const face=bot?GULL_HEAD(s.cpuLevel):`<i style="background:${escapeHTML(p.color)}"></i>`;
+    return `<div class="rm-lane${now?' now':''}${p.done?' done':''}" data-pl="${p.i}"><span class="rm-who">${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span>
+      <span class="rm-track"><span class="rm-fill" style="width:${pct}%;background:${bot?'#2F7FD0':escapeHTML(p.color)}"></span><span class="rm-run" style="left:${pct}%">${face}</span><span class="rm-flag" aria-hidden="true"></span></span>
+      <span class="rm-n">${p.done?'✓ done':`${p.n}/${s.quota}`}</span><b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${p.miss||p.hint?`<span class="rm-pen" title="Already in the time">+${p.miss+p.hint*5}s</span>`:''}</div>`; }).join('');
+  return `<div class="race-meter" role="group" aria-label="Race-o-meter"><div class="rm-head"><b>Race-o-meter</b> · ${s.quota} bricks each · shortest time wins · miss +1s · hint +5s</div>${lanes}</div>`; }
 function mpScores(s){
   return s.players.map((p,i)=>{ const own=s.moves.filter(m=>m.p===i&&!m.a).length, auto=s.moves.filter(m=>m.p===i&&m.a).length, pen=p.pen||{};
     if(s.mode==='blitz') return {i,name:p.name,color:p.color,own,miss:p.miss||0,hint:p.hint||0,stale:p.stale,ms:mpTime(s,i),n:p.n||0,done:!!s.quota&&(p.n||0)>=s.quota};
@@ -5981,9 +6002,10 @@ function updateMpBar(){
   el.classList.toggle('mine',mine&&!s.finished&&s.started);
   if(bz&&s.solo&&s.calm) el.innerHTML=s.finished?'Finished!<small>Let’s see how clean it was</small>':`Build it clean<small>${(s.players[0].n||0)} of ${s.quota} placed</small>`;
   else if(bz&&s.solo) el.innerHTML=s.finished?'Finished!<small>Let’s see your time</small>':`Go go go!<small>${(s.players[0].n||0)} of ${s.quota} placed</small>`;
-  else if(bz) el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Quickest time wins</small>':mine?`Your turn! Go!<small>${s.turnPlaced?`${s.turnPlaced} placed · up to ${left} more, or tap Done`:left<3?`Place up to ${left} brick${left===1?'':'s'} (${left===1?'your last one':'your last ones'})`:'Place 1, 2 or 3 bricks, then tap Done'}</small>`:mp.cpu?`Bloppit’s turn<small>${s.turnPlaced?`${s.turnPlaced} placed · `:'Thinking… '}Bloppit’s clock is running</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} placed · their clock is running${cp.stale?' · hasn’t been seen for a while':''}</small>`;
+  else if(bz) el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Quickest time wins</small>':mine?`Your turn! Go!<small>${s.turnPlaced?`${s.turnPlaced} placed · up to ${left} more, or tap Done`:left<3?`Place up to ${left} brick${left===1?'':'s'} (${left===1?'your last one':'your last ones'})`:'Place 1, 2 or 3 bricks, then tap Done'}</small>`:mp.cpu?`${CPU_LEVELS[s.cpuLevel].name}’s turn<small>${s.turnPlaced?`${s.turnPlaced} placed · `:'Thinking… '}${(s.players[mp.me]||{}).n>=s.quota?'You’re done! Now he finishes his bricks':'his clock is running'}</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} placed · their clock is running${cp.stale?' · hasn’t been seen for a while':''}</small>`;
   else el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Built together</small>':mine?`Your turn!<small>Place ${left} more brick${left===1?'':'s'}</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} of ${s.perTurn} placed${cp.stale?' · hasn’t been seen for a while':''}</small>`;
-  $('#mpPlayers').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.i===s.turn&&s.started&&!s.finished?' now':''}${p.stale?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''} ${bz?`<b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${s.quota?`<span class="mi" style="color:var(--muted)" title="Bricks placed">${p.done?'✓':`${p.n}/${s.quota}`}</span>`:''}${p.miss?`<span class="mi" title="Misses">✕${p.miss}</span>`:''}${p.hint?`<span class="mi" title="Hints" style="color:var(--muted)">💡${p.hint}</span>`:''}`:`<b>${p.score}</b>`}</span>`).join('');
+  if(bz&&!s.solo&&s.quota&&s.started) $('#mpPlayers').innerHTML=raceMeter(s);
+  else $('#mpPlayers').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.i===s.turn&&s.started&&!s.finished?' now':''}${p.stale?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''} ${bz?`<b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${s.quota?`<span class="mi" style="color:var(--muted)" title="Bricks placed">${p.done?'✓':`${p.n}/${s.quota}`}</span>`:''}${p.miss?`<span class="mi" title="Misses">✕${p.miss}</span>`:''}${p.hint?`<span class="mi" title="Hints" style="color:var(--muted)">💡${p.hint}</span>`:''}`:`<b>${p.score}</b>`}</span>`).join('');
   updateVoiceUI();
   turnBanner(s);
   $('#mpEndTurn').textContent=bz?'Done':'End my turn';
@@ -6155,10 +6177,11 @@ function mpShowBlitzEnd(){
   $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and Swoop put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, every miss added 1 second and every hint 5 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Swoop at full throttle. Amazing!':' Ready to race Swoop at a faster speed?'):' Practice makes perfect. Try again?'):''}`;
   { const o=worldStore(), won=w.i===mp.me; if(mp.cpu) cheer3($('#mpEndChars'),hasPup(o)?['pup',LT3[s.cpuLevel]||'swoop']:['bloppit',LT3[s.cpuLevel]||'swoop'],won?['cheer','surprised_jump']:['look_at_you','cheer']);
     else cheer3($('#mpEndChars'),'bloppit','cheer'); }
-  $('#mpEndDlg').showModal();
+  $('#mpEndDlg').showModal(); $('#mpEndIsland').focus();
 }
 $('#mpEndClose').onclick=()=>{ $('#mpEndDlg').close(); setTab('build'); };
 $('#mpEndNew').onclick=()=>{ $('#mpEndDlg').close(); const to=mpHomeTab(); mpLeave(); setTab(to); };
+$('#mpEndIsland').onclick=()=>{ track('finish_next:island'); $('#mpEndDlg').close(); mpLeave(); setTab('island'); };   // the recommended way on, win or lose
 // Load what to build: a level, or whatever is on Photos & model now
 function mpUseModel(choice){
   if(choice!=='cur'){ const L=pickOf(choice); mpEndSolo(); photos=levelPhotos(L); setControls(levelSettings(L)); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild(); }
@@ -6275,13 +6298,15 @@ function turnBanner(s){
   const bot=s.turn===1, p=s.players[s.turn], left=mpLeft(s), key=bot+'|'+s.turnPlaced;
   el.hidden=false; el.className='turn-banner '+(bot?'cpu':'you');
   if(s.solo){ el.innerHTML=`<span class="tb-av"><i style="background:${escapeHTML(p.color)}"></i></span><span class="tb-txt">Go go go!<small>${p.n||0} of ${s.quota} placed</small></span><b class="clk" data-clk="0">${fmtTime(mpTime(s,0))}</b>`; bannerKey=key; return; }
-  el.innerHTML=bot?`<span class="tb-av">${GULL_HEAD(s.cpuLevel)}</span><span class="tb-txt">${escapeHTML(p.name)}’s turn<small>${s.turnPlaced?`${s.turnPlaced} placed. Get your next bricks ready!`:'He’s choosing. Get your next bricks ready!'}</small></span><b class="clk" data-clk="1">${fmtTime(mpTime(s,1))}</b>`
+  el.innerHTML=bot?`<span class="tb-av">${GULL_HEAD(s.cpuLevel)}</span><span class="tb-txt">${escapeHTML(p.name)}’s turn<small>${(s.players[mp.me]||{}).n>=s.quota?'You’re done! Now he finishes his bricks. Fastest time wins.':s.turnPlaced?`${s.turnPlaced} placed. Get your next bricks ready!`:'He’s choosing. Get your next bricks ready!'}</small></span><b class="clk" data-clk="1">${fmtTime(mpTime(s,1))}</b>`
     :`<span class="tb-av"><i style="background:${escapeHTML(p.color)}"></i></span><span class="tb-txt">Your turn!<small>${s.turnPlaced?(left>0?`${s.turnPlaced} placed. Place ${left===1?'1 more':`up to ${left} more`}, or tap Done`:'That’s all for this turn'):left<3?`Place up to ${left} (your last ${left===1?'one':'ones'})`:'Place 1, 2 or 3 bricks, then tap Done'}</small></span><b class="clk" data-clk="0">${fmtTime(mpTime(s,0))}</b>${s.turnPlaced>0&&left>0?'<button class="tb-done" id="tbDone" type="button" title="Give the turn to Bloppit">Done ✓</button>':''}`;
   if(bannerKey.split('|')[0]!==String(bot)&&!reduceMotion){ el.classList.add('pop'); if(bannerKey&&bot) sfx.voice('longtail'); }
   bannerKey=key;
 }
 function cpuStopClock(){ const s=cpu.s, p=s.players[s.turn]; if(s.started&&p) p.ms+=Math.max(0,Date.now()-s.turnStart); }
 const cpuShareDone=i=>(cpu.s.players[i].n||0)>=cpu.s.quota;
+// What Swoop says as his turn ends: "your turn" only when it really is yours (once you've placed all yours, he carries on)
+function cpuHandOver(){ const s=cpu.s; if(s.finished) return; cpuSay('point',s.turn===mp.me?'Your turn. Go go go!':'You’re done! My turn again. Zoom!'); }
 function cpuNextTurn(){ const s=cpu.s; cpuStopClock();
   for(let k=0;k<s.players.length;k++){ s.turn=(s.turn+1)%s.players.length; if(!cpuShareDone(s.turn)) break; }
   s.turnPlaced=0; s.turnStart=Date.now(); }
@@ -6353,7 +6378,7 @@ function cpuWatch(){
   if(!cpu.timer){ cpu.lastAct=Date.now(); cpuKick(); return; }
   if(since<30000) return;
   clearTimeout(cpu.timer); cpu.timer=null;
-  if(s.turnPlaced>0){ cpu.lastAct=Date.now(); cpuSay('point','Your turn. Go go go!'); cpuNextTurn(); if(s.turn===1&&!s.finished) cpuFinishNow(); cpuSend(); }
+  if(s.turnPlaced>0){ cpu.lastAct=Date.now(); cpuNextTurn(); cpuHandOver(); if(s.turn===1&&!s.finished) cpuFinishNow(); cpuSend(); }
   else { cpu.lastAct=Date.now(); cpuKick(); }
 }
 function cpuKick(){
@@ -6389,7 +6414,7 @@ function cpuStep(extra=0,retry=false){
     cpuSend();
     if(s.finished||s.turn!==1) return;     // the Longtail placed 3, or his last one
     if(cpu.left>0){ cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(!s.finished&&s.turn===1) cpuStep(); },700); return; }
-    cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(s.finished||s.turn!==1) return; cpuSay('point','Your turn. Go go go!'); cpuNextTurn(); cpuSend(); },rndIn(500,900));
+    cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(s.finished||s.turn!==1) return; cpuNextTurn(); cpuHandOver(); cpuSend(); },rndIn(500,900));
   },wait);
 }
 function cpuCountdown(){
