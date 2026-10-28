@@ -11,7 +11,7 @@ so they are not published on bloppit.com before the update ships.
 | nora-sheet.jpg | Nora the Night Heron | Brainpeak | dark blue |
 | pippa-sheet.jpg | Pippa the Penguin | Sunrise Shores | yellow |
 | swoop-sheet.jpg | Swoop the Longtail | Blitz Bay | blue |
-| lemmie-sheet.jpg | Lemmie the Lion Cub | Brickworks Island | orange |
+| bibi-sheet.jpg | Bibi the Lion Cub | Brickworks Island | orange |
 | lufu-sheet.jpg | lufu (always lowercase) | Moonstone Isle | moonstone (white, lavender glow) |
 
 lufu is drawn from the four I am lufu master references (curiosity, awe, reverence, sorrow); the wisp and pendant always match the eye colour.
