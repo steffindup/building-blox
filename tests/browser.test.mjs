@@ -473,7 +473,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   assert.match(await tapChar('char:pippa'), /Pippa the Penguin.*Sunrise Shores.*Secret.*A yellow two-stud brick.*still in the mist.*Play Pippa’s puzzle/);
   assert.match(await tapChar('pup'), /Bubbles.*Level \d+ Pup.*1 stud.*Otter level.*Wardrobe.*Name or colour/);
   assert.match(await tap('decor:flag'), /Flag/);
-  assert.match(await tap('isle:sunrise'), /A misty island.*Pippa’s first puzzle washes ashore at 8%.*Play next/);
+  assert.match(await tap('isle:sunrise'), /A misty island.*Pippa’s first puzzle washes ashore at 8%.*Back to Bloppitopia/);
   assert.match(await tap('isle:blitzbay'), /A misty island.*Race Swoop/);
   { await still(); const c = await pt('isle:sunrise'); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(600); await still();
     assert.equal(await t.page.evaluate(() => { const I = window.bloppitIsland3(), s = I.isles.sunrise; return Math.hypot(I.ctl.target.x - s.x, I.ctl.target.z - s.z) < 1; }), true);   // flew there

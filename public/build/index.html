@@ -966,6 +966,11 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 .is-stage{font-family:var(--f-display);font-size:22px}.is-stage small{display:block;font-family:var(--f-body);font-size:13px;font-weight:700;color:var(--muted)}
 .is-next{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--muted)}
 .is-next .bar{width:140px;height:8px;border-radius:4px;background:var(--bg);overflow:hidden}.is-next .bar i{display:block;height:100%;background:#008F9B}
+.is-prog{display:grid;gap:5px;width:100%;font-size:13px;font-weight:700;color:var(--muted)}.is-prog b{color:var(--ink)}
+.ip-bar{position:relative;height:10px;border-radius:5px;background:var(--bg);overflow:visible}.ip-bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#7DBE2E,#2FB8DC)}
+.ip-bar em{position:absolute;top:-2px;width:3px;height:14px;margin-left:-1.5px;border-radius:2px;background:rgba(127,140,155,.55)}.ip-bar em.on{background:#F2C230}
+#view-island.immersive .is-prog{color:rgba(255,255,255,.85);font-size:12px;gap:4px;margin-top:4px;min-width:220px}#view-island.immersive .is-prog b{color:#fff}
+#view-island.immersive .ip-bar{height:8px;background:rgba(255,255,255,.22)}#view-island.immersive .ip-bar em{height:12px;background:rgba(255,255,255,.45)}#view-island.immersive .ip-bar em.on{background:#F2C230}
 .board{display:grid;gap:4px;max-height:420px;overflow:auto}
 .board div{display:grid;grid-template-columns:40px 1fr auto auto;gap:10px;align-items:center;padding:6px 10px;border-radius:10px;background:var(--bg);font-weight:700;font-size:14px}
 .board div.me{background:#14202C;color:#fff}.board .rk{font-family:var(--f-display);font-size:18px}.board .ws-stars{font-size:16px;letter-spacing:2px;color:#E9A800}.board div.me .ws-stars i{color:rgba(255,255,255,.3)}
@@ -1658,7 +1663,7 @@ body.film-on{overflow:hidden}
     <div class="ii-btns"><button class="primary sm" id="iiNext" type="button">Keep building</button><button class="ghost" id="iiWeekly" type="button">📅 This week’s Bloppit</button><button class="ghost" id="iiLook" type="button">Look around</button></div>
   </div>
   <div class="card is-card"><div class="island" id="isWorld"></div><div class="is-a11y" id="isA11y"></div>
-    <div class="is-foot"><div class="is-stage" id="isStage"></div><div class="is-next" id="isNext"></div></div></div>
+    <div class="is-foot"><div class="is-stage" id="isStage"></div><div class="is-next" id="isNext"></div><div class="is-prog" id="isProg" hidden></div></div></div>
   <div class="card is-shop" id="isShop" hidden>
     <div class="gm-head sub-head"><div><h2>✨ Decorate your island</h2><p class="note">Build Stars buy decorations. Nothing here is ever sold for money. <b id="isStars"></b></p></div><button class="ghost" id="isShopClose" type="button">Done</button></div>
     <div class="decor-grid" id="decorGrid"></div>
@@ -7326,7 +7331,7 @@ function islandInfo(id,o){
       return {title:d.name,hint:gift?'A gift for a Weekly Bloppit':`Bought for ★ ${d.cost}`,rows:[...(arg!=='buoy'?[['Move it',ISL3.ok?'Hold it and drag it anywhere on the island':'Drag it anywhere on the sand']]:[]),['How you got it',gift?'A gift for finishing a Weekly Bloppit':`Bought with ${d.cost} Build Stars`],['Decorations',`${decorOut(o).length} of ${DECOR.length} on Bloppitopia`]],actions:[{label:'Put it away',fn:()=>decorPut(arg,false)}]}; }
     case 'dest': { const m={ferry:'sunrise',workshop:'brickworks',brain:'brainpeak',speedway:'blitzbay',harbour:'otterwood'}[arg]; if(m) return islandInfo('isle:'+m,o); break; }
     case 'isle': { const I=ISLES[arg]; if(!I) break; const c=isleCount(arg,o), P=PIECES[arg], total=P[P.length-1].at, built=P.filter(x=>c>=x.at), next=P.find(x=>c<x.at);
-      if(!c&&I.mystery) return {title:'Mystery Island',hint:mysteryHint(),bar:{pct:mysteryOpen()?100:Math.max(4,Math.round(100*mysteryProgress(o))),label:mysteryOpen()?'Ready to sail!':`${Math.round(100*mysteryProgress(o))}% of the way there`},rows:[['What’s there','Far out at sea, where it’s always night, a faint light glows in a swirl of mist. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Complete all five islands, every piece built (${fiveDone(o)} of ${FIVE_ISLES.length} so far)`],...(mysteryOpen()?[]:[['Still to finish',FIVE_ISLES.filter(id=>!isleComplete(id,o)).map(id=>isleCount(id,o)?`${ISLES[id].name} (${Math.min(isleCount(id,o),PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at})`:`${ISLES[id].name} (still in the mist)`).join(', ')]])],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'▶ Play next',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
+      if(!c&&I.mystery) return {title:'Mystery Island',hint:mysteryHint(),bar:{pct:mysteryOpen()?100:Math.max(4,Math.round(100*mysteryProgress(o))),label:mysteryOpen()?'Ready to sail!':`${Math.round(100*mysteryProgress(o))}% of the way there`},rows:[['What’s there','Far out at sea, where it’s always night, a faint light glows in a swirl of mist. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Complete all five islands, every piece built (${fiveDone(o)} of ${FIVE_ISLES.length} so far)`],...(mysteryOpen()?[]:[['Still to finish',FIVE_ISLES.filter(id=>!isleComplete(id,o)).map(id=>isleCount(id,o)?`${ISLES[id].name} (${Math.min(isleCount(id,o),PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at})`:`${ISLES[id].name} (still in the mist)`).join(', ')]])],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'🏝️ Back to Bloppitopia',fn:()=>{ islandTipHide(true); isl3GoView(0); try{ sfx.swoosh(-1); }catch(e){} },primary:true}]};   // not open yet: back to the map, no surprise trip elsewhere
       if(!c&&arg==='sunrise'&&!seaWashed(0,o)) return {title:'A misty island',hint:`Pippa’s first puzzle washes ashore at ${seaPct(0)}%`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Get ${seaPct(0)}% of the way through Bloppitopia (you’re at ${progressPct(o)}%), then build Pippa’s first puzzle`]],actions:[{label:'🏝️ Back to Bloppitopia',fn:()=>{ islandTipHide(true); isl3GoView(0); try{ sfx.swoosh(-1); }catch(e){} },primary:true}]};   // nothing to play here yet, so no surprise trip elsewhere
       if(!c) return {title:'A misty island',hint:`Play ${I.game} to discover it`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Finish your first ${I.unit}`]],actions:[{label:I.play,fn:I.go,primary:true}]};
       return {title:I.name,hint:`${I.game} · ${Math.min(c,total)} of ${total}`,rows:[['Grows with',I.grows],['Built',`${built.length} of ${P.length} pieces`],...(next?[['Next piece',`${next.name}: ${next.at-c} more ${I.unit}${next.at-c===1?'':'s'}`]]:[]),['Milestone',c>=total?`${I.milestone} ✓`:`${I.milestone} at ${total}`]],
@@ -9227,6 +9232,12 @@ function arr3Landed(){ const nm=pupName(worldStore()); return nm?`${nm} has arri
 function isl3ShowHome(){ const [x,z]=HOME_AT.home; isl3FlyTo(x,.8,z,12,1200); isl3Banner('This is your home. Let’s finish it together!'); isl3Chrome(); ISL3.jumpT=performance.now(); }
 
 let islandShown=-1;
+// How far through Bloppitopia you are (every piece built on Frog Forest, Brainpeak, Blitz Bay and Brickworks Island),
+// with a tick wherever one of Pippa's puzzles washes ashore, so "the next puzzle at 8%" has something to point at
+function isProgRender(o){ const el=$('#isProg'); if(!el) return; const pct=progressPct(o), P=gameProgress(o);
+  const nx=SEA_LEVELS.findIndex((_,i)=>!seaWashed(i,o)), note=pct>=100?'every piece built':nx>=0?`Pippa’s next puzzle at ${seaPct(nx)}%`:'';
+  el.hidden=false; el.setAttribute('role','progressbar'); el.setAttribute('aria-label','Bloppitopia built'); el.setAttribute('aria-valuenow',pct); el.setAttribute('aria-valuemin',0); el.setAttribute('aria-valuemax',100);
+  el.innerHTML=`<span class="ip-t"><b>Bloppitopia ${pct}%</b>${note?` · ${note}`:''}</span><span class="ip-bar"><i style="width:${Math.max(2,P*100).toFixed(1)}%"></i>${SEA_LEVELS.map((_,i)=>`<em class="${seaWashed(i,o)?'on':''}" style="left:${seaPct(i)}%"></em>`).join('')}</span>`; }
 function renderIsland(){
   const o=worldStore(), stage=islandStage(o), n=worldCount(o), next=ISLAND_STAGES[stage+1];
   const pop=islandShown>=0&&islandShown<n; islandShown=n;
@@ -9234,6 +9245,7 @@ function renderIsland(){
   renderIslandIntro(o);
   if(ISL3.ok){ const g=worldNextGoal(o), lv=otterLevel(o);
     $('#isStage').innerHTML=`${escapeHTML(pupName(o)||'Your otter')} · Level ${lv} ${PUP_STAGES[pupStage(o)].name}<small>${n} build${n===1?'':'s'} finished · ${islandsOpen(o).length} of ${ISLE_TOTAL} islands · ${worldStars(o)} Build Star${worldStars(o)===1?'':'s'} to spend</small>`;
+    isProgRender(o);
     $('#isNext').innerHTML=g?`<span>${escapeHTML(g.text)}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*g.frac))}%"></i></span>`:'<span>Every island is complete. What a world!</span>'; }
   else $('#isStage').innerHTML=`${ISLAND_STAGES[stage].name}<small>${n} build${n===1?'':'s'} finished · ${worldStars(o)} Build Star${worldStars(o)===1?'':'s'} to spend</small>`;
   if(!ISL3.ok) $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>Your village is built. Now grow the five islands around it.</span>';
