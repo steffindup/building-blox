@@ -179,6 +179,14 @@ test('a Trail level finish shows the stars strip and counts a build', { skip: sk
   await t.page.waitForTimeout(4000);
   assert.equal(await t.page.evaluate(() => document.getElementById('winDlg').open), true);
   assert.match(await t.text('#winDlg [data-ws]'), /\+10 XP/);
+  assert.ok(await t.page.evaluate(() => { const e = document.getElementById('winChars'); return e.hidden || (e.__cv3?.insts || []).some((i) => i.id === 'tiny'); }), 'Tiny joins a Frog Trail finish (unless the real picture is shown)');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('Tiny is a real 3D model (approved v16) with his eight clips', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0');
+  const r = await t.page.evaluate(async () => { const pic = await window.bloppitCharShot('tiny', 'full', 200, { model: true, clip: 'cheer', t: 1 }); return { pic: pic.length > 2000, ...window.bloppitChars3d().tiny }; });
+  assert.deepEqual(r, { pic: true, model: true, clips: ['cheer', 'focused', 'hop', 'idle', 'offer', 'oops', 'release', 'whistle'] });
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 

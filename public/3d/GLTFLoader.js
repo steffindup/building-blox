@@ -2132,10 +2132,11 @@
 
 			if ( accessorDef.bufferView === undefined && accessorDef.sparse === undefined ) {
 
-				// Ignore empty accessors, which may be used to declare runtime
-				// information about attributes coming from another source (e.g. Draco
-				// compression extension).
-				return Promise.resolve( null );
+				// An accessor with no data is all zeros (glTF 2.0 spec; later three.js does the same).
+				// Tiny's morph targets use these for parts a pose doesn't move. (Bloppit, Oct 2026)
+				const itemSize = WEBGL_TYPE_SIZES[ accessorDef.type ];
+				const TypedArray = WEBGL_COMPONENT_TYPES[ accessorDef.componentType ];
+				return Promise.resolve( new THREE.BufferAttribute( new TypedArray( accessorDef.count * itemSize ), itemSize, accessorDef.normalized === true ) );
 
 			}
 
