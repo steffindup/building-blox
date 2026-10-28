@@ -3361,15 +3361,15 @@ const sfx=(()=>{
       return {stop(){ clearTimeout(M.duckT); M.duck=false; setTimeout(musicLevel,400); try{ const n=c.currentTime; bus.gain.cancelScheduledValues(n); bus.gain.setValueAtTime(bus.gain.value,n); bus.gain.linearRampToValueAtTime(0,n+.35); setTimeout(()=>{ try{ bus.disconnect(); }catch(e){} },500); }catch(e){} }}; },
     // Each character's own voice when you tap them
     voice(who){ const f=({tiny:'ribbit',pup:'squeak',longtail:'kee',swoop:'kee',nora:'quok',pippa:'honk',bibi:'roar',lufu:'twinkle'})[who]; (f&&this[f]?this[f]:this.chirp).call(this); },
-    // Tiny: a cartoon "rib-bit": two quick, buzzy croaks, the second a little higher
-    ribbit(){ const c=ok('ribbit',.35); if(!c) return; const t0=c.currentTime+.02;
-      [[0,.11,jit(330,.05),.85],[.15,.14,jit(400,.05),1.15]].forEach(([d,len,f,k])=>{ const t=t0+d;
-        const o=c.createOscillator(), am=c.createOscillator(), amg=c.createGain(), v=c.createGain(), bp=c.createBiquadFilter(), g=c.createGain();
-        o.type='sawtooth'; o.frequency.setValueAtTime(f*.92,t); o.frequency.linearRampToValueAtTime(f*k,t+len*.6); o.frequency.linearRampToValueAtTime(f*.9,t+len);
-        am.type='square'; am.frequency.value=jit(34,.08); amg.gain.value=.5; v.gain.value=.5; am.connect(amg); amg.connect(v.gain);   // the throaty pulse
-        bp.type='bandpass'; bp.frequency.value=950; bp.Q.value=2.2;
-        g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.55,t+.012); g.gain.setValueAtTime(.55,t+len*.7); g.gain.exponentialRampToValueAtTime(.0001,t+len);
-        o.connect(v); v.connect(bp); bp.connect(g); g.connect(out); o.start(t); am.start(t); o.stop(t+len+.02); am.stop(t+len+.02); }); },
+    // Tiny: one deep, rattly frog croak ("crrroak"), bigger than he is
+    ribbit(){ const c=ok('ribbit',.35); if(!c) return; const t=c.currentTime+.02, d=.38, f=jit(150,.05);
+      const o=c.createOscillator(), am=c.createOscillator(), amg=c.createGain(), v=c.createGain(), b1=c.createBiquadFilter(), b2=c.createBiquadFilter(), g=c.createGain();
+      o.type='sawtooth'; o.frequency.setValueAtTime(f*.9,t); o.frequency.linearRampToValueAtTime(f*1.12,t+d*.3); o.frequency.exponentialRampToValueAtTime(f*.78,t+d);
+      am.type='sawtooth'; am.frequency.setValueAtTime(jit(26,.1),t); am.frequency.linearRampToValueAtTime(18,t+d); amg.gain.value=.55; v.gain.value=.45; am.connect(amg); amg.connect(v.gain);   // the rattle in the throat
+      b1.type='bandpass'; b1.frequency.value=520; b1.Q.value=3; b2.type='bandpass'; b2.frequency.value=1300; b2.Q.value=4;
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.9,t+.03); g.gain.setValueAtTime(.8,t+d*.65); g.gain.exponentialRampToValueAtTime(.0001,t+d);
+      o.connect(v); v.connect(b1); v.connect(b2); const mix=c.createGain(); mix.gain.value=.6; b1.connect(mix); b2.connect(mix); mix.connect(g); g.connect(out);
+      o.start(t); am.start(t); o.stop(t+d+.03); am.stop(t+d+.03); },
     // Your pup: an excited "eep-eep!", higher and quicker than Bloppit
     squeak(){ const c=ok('squeak',.3); if(!c) return; const t=c.currentTime+.02;
       [[0,1800,2900],[.11,2100,3400]].forEach(([d,a,b])=>{ slide(c,t+d,jit(a,.05),jit(b,.05),.08,.13,30); }); },
@@ -3377,17 +3377,26 @@ const sfx=(()=>{
     kee(){ const c=ok('kee',.35); if(!c) return; const t=c.currentTime+.02;
       [0,.08].forEach(d=>{ tone(c,t+d,jit(3300,.04),.05,{type:'triangle',vol:.1,to:3700,att:.004}); noise(c,t+d,.04,{vol:.04,freq:3500,q:5}); });
       slide(c,t+.17,jit(3600,.04),2400,.26,.11,18,'triangle'); },
-    // Nora the Night Heron: a soft, hoarse "quok" with a wise little hoot after it
-    quok(){ const c=ok('quok',.4); if(!c) return; const t=c.currentTime+.02, f=jit(420,.05);
-      tone(c,t,f,.16,{type:'sawtooth',vol:.06,to:f*.7,att:.01}); tone(c,t,f*2,.1,{type:'triangle',vol:.06,to:f*1.3}); noise(c,t,.12,{vol:.1,freq:900,q:2});
-      slide(c,t+.22,hz(67),hz(64),.28,.08); },
+    // Nora the Night Heron: one soft, wise "hoooo"
+    quok(){ const c=ok('quok',.4); if(!c) return; const t=c.currentTime+.02, d=.55, f=jit(hz(66),.03);
+      const o=c.createOscillator(), o2=c.createOscillator(), vib=c.createOscillator(), vg=c.createGain(), g=c.createGain(), h2=c.createGain();
+      o.type='sine'; o2.type='sine'; o.frequency.setValueAtTime(f*1.04,t); o.frequency.linearRampToValueAtTime(f,t+.12); o.frequency.linearRampToValueAtTime(f*.94,t+d);
+      o2.frequency.value=f*2; h2.gain.value=.12; vib.frequency.value=5.5; vg.gain.value=f*.012; vib.connect(vg); vg.connect(o.frequency);
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.22,t+.09); g.gain.setValueAtTime(.2,t+d*.6); g.gain.exponentialRampToValueAtTime(.0001,t+d);
+      o.connect(g); o2.connect(h2); h2.connect(g); g.connect(out); o.start(t); o2.start(t); vib.start(t); o.stop(t+d+.03); o2.stop(t+d+.03); vib.stop(t+d+.03);
+      noise(c,t,.2,{vol:.05,freq:900,q:.8,type:'lowpass',att:.06}); },   // a little breath at the start
     // Pippa the Penguin: two cheerful honks that go up, like a laugh
     honk(){ const c=ok('honk',.4); if(!c) return; const t=c.currentTime+.02;
       [0,.14,.28].forEach((d,i)=>{ const f=jit(520,.03)*[1,1.12,1.26][i]; tone(c,t+d,f,.11,{type:'square',vol:.04,to:f*.9,att:.01}); tone(c,t+d,f,.11,{type:'triangle',vol:.12,to:f*.9,att:.01}); }); },
-    // Bibi the Lion Cub: a brave little growl that turns into a squeak (his roar is more of a squeak)
-    roar(){ const c=ok('roar',.5); if(!c) return; const t=c.currentTime+.02;
-      tone(c,t,jit(150,.05),.24,{type:'sawtooth',vol:.07,to:260,att:.03}); noise(c,t,.24,{vol:.12,freq:520,q:1.5});
-      slide(c,t+.2,jit(900,.05),1600,.18,.14,24); },
+    // Bibi the Lion Cub: a brave little growl ("grrrr"), more cute than scary
+    roar(){ const c=ok('roar',.5); if(!c) return; const t=c.currentTime+.02, d=.5, f=jit(120,.05);
+      const o=c.createOscillator(), am=c.createOscillator(), amg=c.createGain(), v=c.createGain(), lp=c.createBiquadFilter(), g=c.createGain();
+      o.type='sawtooth'; o.frequency.setValueAtTime(f,t); o.frequency.linearRampToValueAtTime(f*1.35,t+d*.4); o.frequency.linearRampToValueAtTime(f*1.1,t+d);
+      am.type='triangle'; am.frequency.value=jit(32,.1); amg.gain.value=.6; v.gain.value=.4; am.connect(amg); amg.connect(v.gain);   // the rolling "rrrr"
+      lp.type='lowpass'; lp.frequency.setValueAtTime(700,t); lp.frequency.linearRampToValueAtTime(1300,t+d*.4); lp.frequency.linearRampToValueAtTime(800,t+d); lp.Q.value=2;
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.5,t+.08); g.gain.setValueAtTime(.45,t+d*.7); g.gain.exponentialRampToValueAtTime(.0001,t+d);
+      o.connect(v); v.connect(lp); lp.connect(g); g.connect(out); o.start(t); am.start(t); o.stop(t+d+.03); am.stop(t+d+.03);
+      noise(c,t,d,{vol:.06,freq:400,q:1,type:'lowpass',att:.08}); },
     // lufu: a soft sparkle of glassy bells
     twinkle(){ const c=ok('twinkle',.5); if(!c) return; sparkle(c,c.currentTime+.02,6,84,.06); },
     // Moving between the islands: a breath of sea breeze that sweeps across from one side to the other
