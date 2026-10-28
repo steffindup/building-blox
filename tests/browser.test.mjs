@@ -190,6 +190,13 @@ test('Tiny is a real 3D model (approved v16) with his eight clips', { skip: skip
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('Nora is a real 3D model (v1) with her nine clips', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0');
+  const r = await t.page.evaluate(async () => { const pic = await window.bloppitCharShot('nora', 'full', 200, { model: true, clip: 'aha', t: .8 }); return { pic: pic.length > 2000, ...window.bloppitChars3d().nora }; });
+  assert.deepEqual(r, { pic: true, model: true, clips: ['aha', 'cheer', 'focused', 'hint', 'hop', 'idle', 'offer', 'release', 'thinking'] });
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('a race against Swoop starts and shows him in the banner on his turn', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0');
   await t.page.evaluate(() => document.querySelector('[data-go="cpu"]').click()); await t.page.waitForTimeout(400);
