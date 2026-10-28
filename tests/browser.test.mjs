@@ -37,7 +37,7 @@ test('first visit: name the otter first, then the arrival film, which can be ski
   await t.page.evaluate(() => document.getElementById('hmCont').click());
   // the otter gets its colour and name before it sails: no film yet
   await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 10000 });
-  assert.match(await t.text('#pupTitle'), /Meet your otter/); assert.match(await t.text('#pupLead'), /about to sail to Home Island/);
+  assert.match(await t.text('#pupTitle'), /Meet your otter/); assert.match(await t.text('#pupLead'), /about to sail to Bloppitopia and meet Bloppit/);
   assert.equal(await t.page.evaluate(() => !document.querySelector('.is3-cine')), true);
   await t.page.evaluate(() => document.getElementById('pupSuggest').click()); await t.page.waitForTimeout(200);
   assert.match(await t.text('#pupLater'), /Set sail/);
@@ -105,12 +105,12 @@ test('first visit: Start here → name the otter → a boat brings it → Build 
   await t.page.evaluate(() => document.querySelector('#pupCols [data-col="2"]').click()); await t.page.waitForTimeout(200);
   assert.match(await t.page.evaluate(() => document.querySelector('#pupPic .pupfig path:nth-of-type(2)').getAttribute('fill')), /^rgb\(31,/);
   await t.page.evaluate(() => document.querySelector('#pupOutfit [data-out="scarf"]').click());
-  // naming it yourself is the main way: an empty name is refused, digits and symbols are dropped
-  await t.page.evaluate(() => document.querySelector('#pupOwn button[type=submit]').click()); await t.page.waitForTimeout(200);
-  assert.equal(await t.page.evaluate(() => document.getElementById('pupErr').hidden), false);
-  await t.page.fill('#pupIn', 'Captain Fizz!7'); await t.page.press('#pupIn', 'Enter'); await t.page.waitForTimeout(300);
-  // a name doesn't close the card: the look can still change, and "All done!" finishes
-  assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), true);
+  // naming it yourself is the main way, taken as you type: no letters is refused, digits and symbols are dropped
+  await t.page.fill('#pupIn', '7!'); await t.page.waitForTimeout(200);
+  assert.equal(await t.page.evaluate(() => document.getElementById('pupErr').hidden), false); assert.match(await t.text('#pupLater'), /Pick later/);
+  await t.page.fill('#pupIn', 'Captain Fizz!7'); await t.page.waitForTimeout(300);
+  // the card stays open while typing: the look can still change, and "Set sail!" finishes
+  assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open && document.getElementById('pupErr').hidden && !document.querySelector('#pupOwn button')), true);
   assert.match(await t.text('#pupTitle'), /Meet Captain Fizz!/); assert.match(await t.text('#pupLater'), /Set sail/);
   await t.page.evaluate(() => document.getElementById('pupLater').click()); await t.page.waitForTimeout(2200); await shot(2);
   assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), false);
@@ -708,5 +708,20 @@ test('living characters: on the island (dressed pup, the friends, tap for a reac
   // drawings only
   t = await open('?nosplash=1&chars3d=0&hour=11#island', { init: seed }); await t.page.waitForTimeout(4000);
   assert.deepEqual(await t.page.evaluate(() => { const c = window.bloppitChars3d(); return [c.on, c.island.bloppit, !!window.bloppitIsland3().bloppitSprite]; }), [false, false, true]);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('Mystery Island label: "N islands to go!" and a bar that counts every piece built on the five islands', { skip: skip() }, async () => {
+  // Frog Forest complete (15 of 15) and 6 Brain Trail levels: 1 island done, 21 of 73 pieces
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const k = 'm:Cottage:12';
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 200, bonus: 0, builds: { [k]: { n: 12, s: 2, t: 1e12, c: 1, k: 'welcome' } }, log: [k], decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, films: ['frog-arrival', 'frog-complete', 'brainpeak-arrival', 'brainpeak-complete'] }));
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 }));
+    const best = {}, bbest = {}; for (let i = 0; i < 15; i++) best[i] = 3; for (let i = 0; i < 6; i++) bbest[i] = 2; best[40] = 3;   // (an old level that no longer exists doesn't count)
+    localStorage.setItem('building-blox-game-v1', JSON.stringify({ best, bbest }));
+    localStorage.setItem('bloppit-seen3-v1', JSON.stringify(['home:home1', 'isle:otterwood', 'isle:brainpeak', 'done:otterwood', ...Array.from({ length: 15 }, (_, i) => 'otterwood:' + i), ...Array.from({ length: 6 }, (_, i) => 'brainpeak:' + i)])); } };
+  const t = await open('?nosplash=1&hour=11#island', { init: seed });
+  await t.page.waitForFunction(() => !!document.querySelector('.is3-myst'), null, { timeout: 30000 });
+  const m = await t.page.evaluate(() => { const l = document.querySelector('.is3-myst'); return { sub: l.querySelector('small').textContent, now: +l.querySelector('[role=progressbar]').getAttribute('aria-valuenow') }; });
+  assert.equal(m.sub, '4 islands to go!'); assert.equal(m.now, Math.round(100 * 21 / 73));
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
