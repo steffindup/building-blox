@@ -716,7 +716,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .is-intro .ii-steps b{font-family:var(--f-display);font-weight:400;font-size:22px;color:var(--ink)}.is-intro .ii-steps li.done{background:#D9F2EF;color:#00616A}.is-intro .ii-steps li.done b{color:#008F9B}
 .is-intro .ii-btns{display:flex;flex-wrap:wrap;gap:8px}
 .pup-names{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 14px}
-.wc-pup{margin:10px 0 4px;padding:10px 12px 4px;border-radius:14px;background:#E8F1F8;text-align:left}
+.wc-pup{margin:10px 0 4px;padding:10px 12px 4px;border-radius:14px;background:var(--callout);text-align:left}
 .wc-pup-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .wc-pup-head img{width:54px;height:54px;border-radius:50%;object-fit:cover;object-position:center 20%;background:#fff;border:3px solid #fff;flex:none}
 .wc-pup-head div{display:grid;gap:2px}.wc-pup-head b{font-size:16px}.wc-pup-head span{font-size:13px;font-weight:700;color:var(--muted)}
@@ -847,7 +847,7 @@ body.on-home .tabs{visibility:hidden}
 .filmsdlg .film-now{margin:8px 4px 0;font-weight:800;font-size:15px}.filmsdlg .film-now small{color:var(--muted);font-weight:700}
 .film-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:14px 0 0}
 .film-list button{font:inherit;display:grid;gap:4px;padding:6px 6px 8px;border-radius:14px;border:2px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer;text-align:left}
-.film-list button[aria-pressed="true"]{border-color:var(--ink);background:#E8F1F8}
+.film-list button[aria-pressed="true"]{border-color:var(--ink);background:var(--callout);color:var(--ink)}
 .film-list img,.film-list .lock{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:9px;background:#14202C}
 .film-list .lock{display:grid;place-items:center;font-size:24px;background:#DCE6EE}
 .film-list b{font-size:14px;line-height:1.15}.film-list small{color:var(--muted);font-size:12px;font-weight:700}
@@ -977,7 +977,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 .crew-members{display:flex;flex-wrap:wrap;gap:6px}.crew-members span{padding:5px 10px;border-radius:999px;background:var(--bg);font-size:13px;font-weight:700}.crew-members span.me{background:#14202C;color:#fff}.crew-members span.muted{opacity:.5}
 .crew-feed{display:grid;gap:6px;max-height:280px;overflow:auto;padding:4px}
 .crew-post{display:flex;justify-content:flex-start;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:var(--page);border:1px solid var(--line);text-align:left}.crew-post .who{flex:none}.crew-post .what{flex:1}
-.crew-post.me{background:#E8F1F8}.crew-post .who{font-size:12px;font-weight:800;color:var(--muted)}.crew-post .what{font-weight:800}.crew-post .what.st{font-size:26px;line-height:1}
+.crew-post.me{background:var(--callout)}.crew-post .who{font-size:12px;font-weight:800;color:var(--muted)}.crew-post .what{font-weight:800}.crew-post .what.st{font-size:26px;line-height:1}
 .crew-post .rep{margin-left:auto;background:none;border:0;color:var(--muted);cursor:pointer;font-size:12px;font-weight:700}.crew-post .rep:hover{color:var(--accent)}
 .crew-say{display:flex;flex-wrap:wrap;gap:6px}.crew-say button{font:inherit;font-weight:800;font-size:13px;padding:7px 11px;border-radius:999px;border:2px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer}.crew-say button.st{font-size:20px;padding:3px 9px}
 .crew-pending{display:grid;gap:6px}.crew-pending div{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;background:#FFF6D6}
@@ -1090,10 +1090,10 @@ body.film-on{overflow:hidden}
 @media (prefers-reduced-motion:reduce){.is3-cine .cn-bar,.is3-cine .cn-cap,.is3-cine .cn-title{transition:opacity .3s}.is3-cine .cn-title b{animation:none}}
 .pup-suggest{width:100%;margin:0 0 8px}
 .pup-outfit{display:grid;gap:6px;margin:0 0 10px;text-align:left}.pup-outfit span{font-weight:800;font-size:14px}.pup-outfit>div{display:flex;gap:6px;flex-wrap:wrap}
-.pup-outfit button{font:inherit;font-weight:800;font-size:14px;padding:8px 12px;border-radius:12px;border:2px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer}.pup-outfit button[aria-pressed="true"]{border-color:var(--ink);background:#E8F1F8}
+.pup-outfit button{font:inherit;font-weight:800;font-size:14px;padding:8px 12px;border-radius:12px;border:2px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer}.pup-outfit button[aria-pressed="true"]{border-color:var(--ink);background:var(--callout);color:var(--ink)}
 .acc-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;margin:6px 0 12px}
 .acc-list button{font:inherit;font-weight:800;font-size:14px;padding:8px 6px;border-radius:12px;border:2px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer;display:grid;gap:2px}
-.acc-list button small{font-size:11px;font-weight:700;color:var(--muted)}.acc-list button[aria-pressed="true"]{border-color:var(--ink);background:#E8F1F8}.acc-list button:disabled{opacity:.5;cursor:default}
+.acc-list button small{font-size:11px;font-weight:700;color:var(--muted)}.acc-list button[aria-pressed="true"]{border-color:var(--ink);background:var(--callout);color:var(--ink)}.acc-list button:disabled{opacity:.5;cursor:default}
 .pick-two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 .pick-two button{font:inherit;display:grid;justify-items:center;gap:4px;padding:16px 10px;border-radius:16px;border:2px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer}
 .pick-two button span{font-size:42px}.pick-two button b{font-family:var(--f-display);font-weight:400;font-size:20px}.pick-two button small{font-size:12px;color:var(--muted);font-weight:700}
@@ -1819,7 +1819,7 @@ body.film-on{overflow:hidden}
   <div class="pup-outfit" id="pupOutfit" hidden><span>Add a scarf or a hat?</span><div role="group" aria-label="Outfit"><button type="button" data-out="" aria-pressed="true">Not now</button><button type="button" data-out="scarf" aria-pressed="false">🧣 Scarf</button><button type="button" data-out="beanie" aria-pressed="false">🧢 Beanie</button></div></div>
   <form class="pup-own" id="pupOwn" autocomplete="off">
     <label for="pupIn">Name it yourself</label>
-    <div><input id="pupIn" type="text" maxlength="14" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done" placeholder="Type a name"><button class="primary sm" type="submit">That’s it!</button></div>
+    <div><input id="pupIn" type="text" maxlength="14" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="done" placeholder="Type a name"></div>
     <p class="pup-err" id="pupErr" hidden>Use letters for its name.</p>
   </form>
   <button class="ghost pup-suggest" id="pupSuggest" type="button" aria-pressed="false" hidden></button>
@@ -6785,7 +6785,7 @@ function pupOpen(then,opt){
   $('#pupNames').hidden=true; $('#pupPickT').setAttribute('aria-expanded','false');
   $('#pupNames').innerHTML=PUP_NAMES.map((n,i)=>`<button type="button" data-pup="${i}" aria-pressed="${o.pupName===i&&!o.pupText}">${n}</button>`).join('');
   pupDraft.sail=!!(opt&&opt.sail);
-  pupDoneBtn(); if(arr) $('#pupLead').textContent=pupDraft.sail?'Your very own little otter is about to sail to Home Island. Pick its brick colour (it colours the outfit too) and give it a name:':'Your very own little otter, with its own brick. Pick its colour (it colours the outfit too):';
+  pupDoneBtn(); if(arr) $('#pupLead').textContent=pupDraft.sail?'Your very own little otter is about to sail to Bloppitopia and meet Bloppit. Pick its brick colour (it colours the outfit too) and give it a name:':'Your very own little otter, with its own brick. Pick its colour (it colours the outfit too):';
   pupColsRender();
   d.onclose=()=>{ d.onclose=null; isl3PupRedress(); renderHome(); if(then) then(); else if(first&&worldCount(worldStore())) islandIntro(); };
   if(!d.open){ d.showModal(); if(!has) sfx.hatch(); }
@@ -6827,9 +6827,15 @@ $('#accOff').onclick=()=>{ accSave(false); $('#accDlg').close(); };
 $('#accDlg').addEventListener('cancel',e=>{ e.preventDefault(); $('#accDlg').close(); });
 document.querySelectorAll('#pickDlg [data-pick]').forEach(b=>b.onclick=()=>{ const o=worldStore(); o.pick=b.dataset.pick; worldSet(o); track('pick:'+o.pick); sfx.chime(); $('#pickDlg').close(); renderIsland(); });
 $('#pickDlg').addEventListener('cancel',e=>{ e.preventDefault(); });
-$('#pupOwn').addEventListener('submit',e=>{ e.preventDefault(); const v=cleanPupText($('#pupIn').value);
-  if(!v){ $('#pupErr').hidden=false; $('#pupIn').focus(); return; } $('#pupIn').blur(); pupPick({pupText:v,pupName:-1},'pup_named_own'); });
-$('#pupIn').addEventListener('input',()=>{ $('#pupErr').hidden=true; });
+// Naming it yourself: the name is taken as you type (the title and the button follow); Set sail / All done (or Enter) saves it
+function pupTyped(){ const raw=$('#pupIn').value.trim(), v=cleanPupText(raw), own=pupDraft.name&&pupDraft.name.how==='pup_named_own';
+  $('#pupErr').hidden=!(raw&&!v);
+  if(v){ pupDraft.name={patch:{pupText:v,pupName:-1},how:'pup_named_own'}; $('#pupTitle').textContent=`Meet ${v}!`;
+    $('#pupSuggest').setAttribute('aria-pressed','false'); document.querySelectorAll('#pupNames [data-pup]').forEach(b=>b.setAttribute('aria-pressed','false')); }
+  else if(own){ pupDraft.name=null; const has=pupName(worldStore()); $('#pupTitle').textContent=has&&!ISL3.pupArrival?has:'Meet your otter!'; }
+  pupDoneBtn(); }
+$('#pupIn').addEventListener('input',pupTyped);
+$('#pupOwn').addEventListener('submit',e=>{ e.preventDefault(); pupTyped(); if(!$('#pupErr').hidden){ $('#pupIn').focus(); return; } $('#pupIn').blur(); pupFinish(); });
 $('#pupPickT').onclick=()=>{ const open=$('#pupNames').hidden; $('#pupNames').hidden=!open; $('#pupPickT').setAttribute('aria-expanded',String(open)); };
 $('#pupNames').addEventListener('click',e=>{ const b=e.target.closest('[data-pup]'); if(!b) return; pupPick({pupName:+b.dataset.pup,pupText:''},'pup_named'); });
 $('#pupLater').onclick=pupFinish;
@@ -7408,7 +7414,7 @@ function islandModels3(o){
 }
 // Labels over the islands (HTML, so they stay sharp), placed every frame
 function isl3Labels(){ const box=ISL3.box; if(!box) return; let L=box.querySelector('.is3-labels'); if(!L){ L=document.createElement('div'); L.className='is3-labels'; box.appendChild(L); }
-  L.innerHTML=ISL3.labels.map((l,i)=>`<span class="is3-label${l.home?' is3-hl':''}${l.myst?' is3-myst':''}" data-i="${i}"><b>${escapeHTML(l.name)}</b><small>${escapeHTML(l.sub)}</small>${l.bar!=null?`<i class="is3-bar" role="progressbar" aria-label="Progress to the mystery" aria-valuenow="${Math.round(l.bar*100)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${Math.max(3,Math.round(l.bar*100))}%"></i></i>`:''}</span>`).join(''); }
+  L.innerHTML=ISL3.labels.map((l,i)=>`<span class="is3-label${l.home?' is3-hl':''}${l.myst?' is3-myst':''}" data-i="${i}"><b>${escapeHTML(l.name)}</b><small>${escapeHTML(l.sub)}</small>${l.bar!=null?`<i class="is3-bar" role="progressbar" aria-label="Progress to the mystery" aria-valuenow="${Math.round(l.bar*100)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${l.bar>0?Math.max(3,Math.round(l.bar*100)):0}%"></i></i>`:''}</span>`).join(''); }
 function isl3PlaceLabels(){ const box=ISL3.box; if(!box) return; const w=box.clientWidth, h=box.clientHeight, v=new THREE.Vector3();
   // labels never cover each other: Home Island and found islands first; a later one that would overlap moves above its island
   const els=[...box.querySelectorAll('.is3-label')], rank=el=>{ const l=ISL3.labels[+el.dataset.i]; return l.home?0:l.myst?2:1; }, placed=[];
@@ -7977,15 +7983,16 @@ const ISLE_TOTAL=Object.keys(ISLES).length;
 const isleComplete=(id,o)=>{ const P=PIECES[id]; return isleCount(id,o)>=P[P.length-1].at; };
 const islesComplete=o=>Object.keys(ISLES).filter(id=>isleComplete(id,o));
 const worldComplete=o=>islesComplete(o).length===ISLE_TOTAL;
-// How close the mystery is: each of the five islands counts for a fifth, by how much of it is built (0…1)
-const mysteryProgress=o=>{ o=o||worldStore(); return FIVE_ISLES.reduce((s,id)=>{ const P=PIECES[id]; return s+Math.min(1,isleCount(id,o)/P[P.length-1].at); },0)/FIVE_ISLES.length; };
+// How close the mystery is: every piece built on the five islands, out of all their pieces (0…1)
+const isleEnd=id=>PIECES[id][PIECES[id].length-1].at;
+const mysteryProgress=o=>{ o=o||worldStore(); let got=0, all=0; for(const id of FIVE_ISLES){ const n=isleEnd(id); all+=n; got+=isleComplete(id,o)?n:Math.min(n,isleCount(id,o)); } return all?got/all:0; };
+const islesToGo=o=>{ const n=FIVE_ISLES.length-fiveDone(o); return n===1?'1 island to go!':`${n} islands to go!`; };
 function mysteryHint(){ return mysteryOpen()?'Ready to explore: build the rowboat':`Opens when all five islands are complete (${fiveDone()} of ${FIVE_ISLES.length} so far)`; }
 // How far each island has grown
 function isleCount(id,o){
   o=o||worldStore(); const B=Object.entries(o.builds);
-  if(id==='otterwood') return Object.keys(bestOf(gameStore(),'otter')).length;
-  if(id==='brainpeak') return Object.keys(bestOf(gameStore(),'brain')).length;
-  if(id==='sunrise') return Object.keys(bestOf(gameStore(),'sea')).length;
+  { const tr={otterwood:'otter',brainpeak:'brain',sunrise:'sea'}[id];   // levels finished (that still exist)
+    if(tr){ const b=bestOf(gameStore(),tr), L=levelsOf(tr).length; return Object.keys(b).filter(k=>/^\d+$/.test(k)&&+k<L&&b[k]>0).length; } }
   if(id==='blitzbay'){ const w=B.filter(([,b])=>b.k==='blitz'); return Math.min(15,w.length)+(w.some(([,b])=>b.boss)?1:0); }   // 15 wins, then the Grand Prix
   if(id==='brickworks') return (o.draw||[]).length+B.filter(([k,b])=>k.startsWith('p:')||k.startsWith('w:')||(k.startsWith('m:')&&(b.k==='quick'||!b.k)&&!MYSTERY_NAMES.has(k.split(':')[1]))).length;
   if(id==='moonstone') return mysteryDone(o);
@@ -8323,7 +8330,7 @@ function isl3Build(o){ ISL3.shadowDirty=true;
     else { g.traverse(x=>{ if(x.isMesh) x.material=m3('#C9D3DC'); }); g.add(mist3(I.r)); g.userData.misty=1; }
     W.add(g);
     const L=Math.hypot(I.x,I.z), ux=I.x/L, uz=I.z/L, done=c>=PIECES[id][PIECES[id].length-1].at;
-    ISL3.labels.push({id:'isle:'+id,...(!c&&I.mystery?{myst:1,bar:mysteryOpen()?1:mysteryProgress(o)}:{}),name:c>0?I.name:I.mystery?'Mystery Island':'???',sub:!c&&I.mystery?(mysteryOpen()?'Ready: build the rowboat':`${fiveDone(o)} of ${FIVE_ISLES.length} islands`):c>0?(done?'Complete ★':`${Math.min(c,PIECES[id].length&&PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at}`):'In the mist',...(!c&&I.mystery?(()=>{ const d=CAM_DIR3(); return {x:I.x+d.x/Math.hypot(d.x,d.z)*I.r*MYST_S*1.2,z:I.z+d.z/Math.hypot(d.x,d.z)*I.r*MYST_S*1.2,y:-1.2}; })():{x:I.x+ux*I.r*.95,z:I.z+uz*I.r*1.05,y:-1.2}),x2:I.x,y2:I.mystery&&!c?5:4.2,z2:I.z}); }
+    ISL3.labels.push({id:'isle:'+id,...(!c&&I.mystery?{myst:1,bar:mysteryOpen()?1:mysteryProgress(o)}:{}),name:c>0?I.name:I.mystery?'Mystery Island':'???',sub:!c&&I.mystery?(mysteryOpen()?'Ready: build the rowboat':islesToGo(o)):c>0?(done?'Complete ★':`${Math.min(c,PIECES[id].length&&PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at}`):'In the mist',...(!c&&I.mystery?(()=>{ const d=CAM_DIR3(); return {x:I.x+d.x/Math.hypot(d.x,d.z)*I.r*MYST_S*1.2,z:I.z+d.z/Math.hypot(d.x,d.z)*I.r*MYST_S*1.2,y:-1.2}; })():{x:I.x+ux*I.r*.95,z:I.z+uz*I.r*1.05,y:-1.2}),x2:I.x,y2:I.mystery&&!c?5:4.2,z2:I.z}); }
   ISL3.labels.push({id:'land:beach',name:'Home Island',sub:pupName(o)?`${pupName(o)}’s home`:'Your home',x:0,z:HOME_R*.55,y:.9,home:1});
   // sky things: a few clouds, stars for the night
   // the island friends: each stands on the shore of their island facing Home Island (in the mist too, waving you over)
