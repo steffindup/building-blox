@@ -3233,14 +3233,16 @@ const sfx=(()=>{
       } finally { out=main; }
       return {stop(){ try{ const n=c.currentTime; bus.gain.cancelScheduledValues(n); bus.gain.setValueAtTime(bus.gain.value,n); bus.gain.linearRampToValueAtTime(0,n+.35); setTimeout(()=>{ try{ bus.disconnect(); }catch(e){} },500); }catch(e){} }}; },
     // Each character's own voice when you tap them (Oct 2026). Bloppit keeps his otter chirp.
-    voice(who){ const f=({tiny:'whistle',pup:'squeak',longtail:'kee',swoop:'kee',nora:'quok',pippa:'honk',bibi:'roar',lufu:'twinkle'})[who]; (f&&this[f]?this[f]:this.chirp).call(this); },
-    // Tiny: a Bermuda tree frog's two-note "ko-KEE" whistle
-    whistle(){ const c=ok('whistle',.35); if(!c) return; const t=c.currentTime+.02, a=jit(2050,.04), b=jit(2900,.04);
-      tone(c,t,a,.09,{vol:.16,to:a*1.04,att:.01});
-      const o=c.createOscillator(), g=c.createGain(), lfo=c.createOscillator(), lg=c.createGain(); o.type='sine';
-      o.frequency.setValueAtTime(b,t+.15); o.frequency.exponentialRampToValueAtTime(b*1.28,t+.32); lfo.frequency.value=22; lg.gain.value=40; lfo.connect(lg); lg.connect(o.frequency);
-      g.gain.setValueAtTime(0,t+.15); g.gain.linearRampToValueAtTime(.17,t+.17); g.gain.setValueAtTime(.17,t+.27); g.gain.exponentialRampToValueAtTime(.0001,t+.36);
-      o.connect(g); g.connect(out); o.start(t+.15); lfo.start(t+.15); o.stop(t+.38); lfo.stop(t+.38); },
+    voice(who){ const f=({tiny:'ribbit',pup:'squeak',longtail:'kee',swoop:'kee',nora:'quok',pippa:'honk',bibi:'roar',lufu:'twinkle'})[who]; (f&&this[f]?this[f]:this.chirp).call(this); },
+    // Tiny: a cartoon "rib-bit": two quick, buzzy croaks, the second a little higher
+    ribbit(){ const c=ok('ribbit',.35); if(!c) return; const t0=c.currentTime+.02;
+      [[0,.11,jit(330,.05),.85],[.15,.14,jit(400,.05),1.15]].forEach(([d,len,f,k])=>{ const t=t0+d;
+        const o=c.createOscillator(), am=c.createOscillator(), amg=c.createGain(), v=c.createGain(), bp=c.createBiquadFilter(), g=c.createGain();
+        o.type='sawtooth'; o.frequency.setValueAtTime(f*.92,t); o.frequency.linearRampToValueAtTime(f*k,t+len*.6); o.frequency.linearRampToValueAtTime(f*.9,t+len);
+        am.type='square'; am.frequency.value=jit(34,.08); amg.gain.value=.5; v.gain.value=.5; am.connect(amg); amg.connect(v.gain);   // the throaty pulse
+        bp.type='bandpass'; bp.frequency.value=950; bp.Q.value=2.2;
+        g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.55,t+.012); g.gain.setValueAtTime(.55,t+len*.7); g.gain.exponentialRampToValueAtTime(.0001,t+len);
+        o.connect(v); v.connect(bp); bp.connect(g); g.connect(out); o.start(t); am.start(t); o.stop(t+len+.02); am.stop(t+len+.02); }); },
     // Your pup: a short, high, happy squeak (higher than Bloppit's chirp)
     squeak(){ const c=ok('squeak',.3); if(!c) return; const t=c.currentTime+.02;
       tone(c,t,jit(1900,.06),.07,{vol:.14,to:2900}); tone(c,t+.09,jit(2300,.06),.1,{vol:.12,to:3300}); },
