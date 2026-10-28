@@ -258,7 +258,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .c3-host{position:relative}.c3-host>.c3-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;pointer-events:none;transition:opacity .3s}.c3-host.c3on>.c3-canvas{opacity:1}
 .c3-host.c3on>img,.c3-host.c3on>svg{visibility:hidden}.buddy .bud-art.c3on{animation:none!important}.c3-wrap{display:block}.c3-wrap>img{display:block;width:100%;height:100%;object-fit:contain}
 .hm-cont.first .hc-pic.c3-wrap{width:64px}.windlg .wc-pic.c3-wrap{width:106px}.pupfig3d{width:100%;height:100%;object-fit:cover;display:block}
-.win-chars{display:block;width:210px;height:150px;margin:-4px auto 0}.win-chars[hidden]{display:none}
+.win-chars{display:block;width:210px;height:150px;margin:-4px auto 0}.win-chars.three{width:270px}.win-chars[hidden]{display:none}
 .buddy.cheer .bud-art .st-rest,.buddy.think .bud-art .st-rest,.buddy.oops .bud-art .st-rest,.buddy.offer .bud-art .st-rest,.buddy.hug .bud-art .st-rest,.buddy.reach .bud-art .st-rest{display:none}
 .buddy.cheer .bud-art .st-cheer,.buddy.think .bud-art .st-think,.buddy.oops .bud-art .st-oops,.buddy.offer .bud-art .st-offer,.buddy.hug .bud-art .st-hug,.buddy.reach .bud-art .st-reach{display:block}
 .buddy.offer .bud-art{animation:bud-nudge 1.6s ease-in-out infinite;transform-origin:50% 100%}
@@ -5180,7 +5180,9 @@ function winLevel(){
   setTrail(tr); winLvl=i;
   $('#winStars').innerHTML=starHTML(st); worldSound();
   { const pic=reveal&&reveal.url; $('#winPic').hidden=!pic; if(pic){ $('#winPic').src=pic; $('#winPic').alt=`The real ${L.name}`; } }
-  { const o=worldStore(); if(reveal&&reveal.url) $('#winChars').hidden=true; else if(hasPup(o)) cheer3($('#winChars'),['bloppit','pup'],['cheer','happy_hop']); else cheer3($('#winChars'),'bloppit','cheer'); }
+  { const o=worldStore(), el=$('#winChars'), tiny=tr==='otter'&&ch3Ready('tiny'), tc=L.boss?'cheer':'whistle';   // Frog Trail: Tiny whistles you up the trail (and cheers for his Lily-pad Palace)
+    el.classList.toggle('three',tiny&&hasPup(o));
+    if(reveal&&reveal.url) el.hidden=true; else if(hasPup(o)) cheer3(el,tiny?['bloppit','pup','tiny']:['bloppit','pup'],tiny?['cheer','happy_hop',tc]:['cheer','happy_hop']); else cheer3(el,tiny?['bloppit','tiny']:'bloppit',tiny?['cheer',tc]:'cheer'); }
   $('#winTitle').textContent=`${TRAILS[tr].icon} Level ${i+1} complete!`;
   const rows=[[`Built the ${L.name}`,L.pts,'']];
   if(p.hint) rows.push([`Hints (${p.hint})`,-p.hint*5,'neg']);
@@ -7109,7 +7111,7 @@ function islandInfo(id,o){
       return {title:d.name,hint:gift?'A gift for a Weekly Bloppit':`Bought for ★ ${d.cost}`,rows:[...(arg!=='buoy'?[['Move it',ISL3.ok?'Hold it and drag it anywhere on the island':'Drag it anywhere on the sand']]:[]),['How you got it',gift?'A gift for finishing a Weekly Bloppit':`Bought with ${d.cost} Build Stars`],['Decorations',`${decorOut(o).length} of ${DECOR.length} on Bloppitopia`]],actions:[{label:'Put it away',fn:()=>decorPut(arg,false)}]}; }
     case 'dest': { const m={ferry:'sunrise',workshop:'brickworks',brain:'brainpeak',speedway:'blitzbay',harbour:'otterwood'}[arg]; if(m) return islandInfo('isle:'+m,o); break; }
     case 'isle': { const I=ISLES[arg]; if(!I) break; const c=isleCount(arg,o), P=PIECES[arg], total=P[P.length-1].at, built=P.filter(x=>c>=x.at), next=P.find(x=>c<x.at);
-      if(!c&&I.mystery) return {title:'Mystery Island',hint:mysteryHint(),bar:{pct:mysteryOpen()?100:Math.max(4,Math.round(100*mysteryProgress(o))),label:mysteryOpen()?'Ready to sail!':`${Math.round(100*mysteryProgress(o))}% of the way there`},rows:[['What’s there','Far out at sea, where it’s always night, a faint light glows in a swirl of mist. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Complete all five islands, every piece built (${fiveDone(o)} of ${FIVE_ISLES.length} so far)`],...(mysteryOpen()?[]:[['Still to finish',FIVE_ISLES.filter(id=>!isleComplete(id,o)).map(id=>isleCount(id,o)?`${ISLES[id].name} (${Math.min(isleCount(id,o),PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at})`:'an island still in the mist').join(', ')]])],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'▶ Play next',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
+      if(!c&&I.mystery) return {title:'Mystery Island',hint:mysteryHint(),bar:{pct:mysteryOpen()?100:Math.max(4,Math.round(100*mysteryProgress(o))),label:mysteryOpen()?'Ready to sail!':`${Math.round(100*mysteryProgress(o))}% of the way there`},rows:[['What’s there','Far out at sea, where it’s always night, a faint light glows in a swirl of mist. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Complete all five islands, every piece built (${fiveDone(o)} of ${FIVE_ISLES.length} so far)`],...(mysteryOpen()?[]:[['Still to finish',FIVE_ISLES.filter(id=>!isleComplete(id,o)).map(id=>isleCount(id,o)?`${ISLES[id].name} (${Math.min(isleCount(id,o),PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at})`:`${ISLES[id].name} (still in the mist)`).join(', ')]])],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'▶ Play next',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
       if(!c&&arg==='sunrise'&&!seaWashed(0,o)) return {title:'A misty island',hint:`Pippa’s first puzzle washes ashore at ${seaPct(0)}%`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Get ${seaPct(0)}% of the way through Bloppitopia (you’re at ${progressPct(o)}%), then build Pippa’s first puzzle`]],actions:[{label:'▶ Play next',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
       if(!c) return {title:'A misty island',hint:`Play ${I.game} to discover it`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Finish your first ${I.unit}`]],actions:[{label:I.play,fn:I.go,primary:true}]};
       return {title:I.name,hint:`${I.game} · ${Math.min(c,total)} of ${total}`,rows:[['Grows with',I.grows],['Built',`${built.length} of ${P.length} pieces`],...(next?[['Next piece',`${next.name}: ${next.at-c} more ${I.unit}${next.at-c===1?'':'s'}`]]:[]),['Milestone',c>=total?`${I.milestone} ✓`:`${I.milestone} at ${total}`]],
@@ -7569,7 +7571,8 @@ const STORIES={
 };
 const LONGTAIL_FACT='Real Longtails are white-tailed tropicbirds. They fly back to Bermuda every spring and nest in holes in the cliffs.';
 // One friend on each adventure island (Character Bible, 24 Oct 2026), each holding a two-stud brick in their island's
-// colour. Drawn art for now (public/art/char-*.png, from the approved sheets in design/characters); 3D models come later.
+// colour. Drawn art (public/art/char-*.png, from the approved sheets in design/characters); Tiny also has his approved 3D model
+// (public/3d/tiny.glb, see "Tiny in 3D" below), and the others' models come later.
 // Swoop lives on Blitz Bay as the 3D Longtail above. lufu (always lowercase) stays hidden until the mystery is solved,
 // then lives on Home Island beside your otter.
 const CAST={
@@ -7695,7 +7698,8 @@ function ch3Get(id){ if(CH3.gltf[id]) return Promise.resolve(CH3.gltf[id]); cons
     const head=1-(R.kind==='pup'?PUP_RIG.neck:R.neck||.45)*.6;
     CH3.size[id]={h:R.h,w:Math.min(R.h*aspect,R.h*1.1),head:R.h*head};
     ch3Idle(()=>ch3LidTex(ref,.5)); ch3Idle(()=>ch3LidTex(ref,1));
-    return CH3.gltf[id]={id,R,base}; })().catch(e=>{ delete CH3.wait[id]; CH3.bad[id]=1; console.warn('character',id,e); throw e; })); }
+    const G=CH3.gltf[id]={id,R,base}; if(R.glb) setTimeout(()=>ch3Model(id).catch(()=>{}),3000);   // a real 3D model follows (the drawing stands in meanwhile)
+    return G; })().catch(e=>{ delete CH3.wait[id]; CH3.bad[id]=1; console.warn('character',id,e); throw e; })); }
 const ch3PupKey=(id,ci,wear)=>`${id}|${ci}|${PUP_HEX}|${JSON.stringify(wear||{})}`;
 const ch3Ready=(...ids)=>ids.every(id=>!!CH3.gltf[id]);
 const ch3PupId=o=>'pup'+(o&&o.log?pupStage(o):0);
@@ -7802,7 +7806,71 @@ class Ch3Ctl{
     this.P.pose(p); }
   dispose(){ this.P.dispose(); }
 }
-function ch3Make(id){ if(!CH3.gltf[id]) return null; const P=new Puppet3(id); return {id,root:P.root,P,ctl:new Ch3Ctl(P)}; }
+/* ---------- Tiny in 3D (approved v16, 28 Oct 2026) ----------
+   Tiny is the first friend with a real 3D model: public/3d/tiny.glb is the approved master, unchanged (67,896 triangles,
+   moved by morph targets, not bones). Eight clips: idle, focused and whistle loop; hop, cheer, offer, oops and release play
+   once. His drawing stands in while the model downloads, and if it can't load he simply stays a drawing. He takes the same
+   calls as the drawings (play('wave'), poke(), …), mapped to his own clips below. At night he whistles (the Character Bible:
+   every frog in the forest whistles with him among the fireflies). Release (he lets the brick fall) is not used yet: nothing
+   in the game catches the brick, so it would snap back into his hands. */
+RIG.tiny.glb='/3d/tiny.glb';
+const M3={V:'16',wait:{}};
+function ch3Script(src){ return M3.wait[src]||(M3.wait[src]=new Promise((ok,no)=>{ const s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=()=>{ delete M3.wait[src]; no(new Error('could not load '+src)); }; document.head.appendChild(s); })); }
+function ch3Model(id){ const R=RIG[id], G=CH3.gltf[id]; if(!R||!R.glb||!G) return Promise.reject(new Error('no model for '+id)); if(G.model) return Promise.resolve(G.model);
+  return M3.wait[id]||(M3.wait[id]=(async()=>{ if(!THREE.GLTFLoader) await ch3Script('/3d/GLTFLoader.js');
+    const gltf=await new Promise((ok,no)=>new THREE.GLTFLoader().load(R.glb+'?v='+M3.V,ok,undefined,no)), sc=gltf.scene;
+    sc.traverse(m=>{ if(m.isMesh){ m.castShadow=m.receiveShadow=false; m.frustumCulled=false; [].concat(m.material).forEach(ch3Filmic); } });   // the island's shadows are baked once; a soft pool under the feet instead
+    sc.updateMatrixWorld(true); const box=new THREE.Box3(), v=new THREE.Vector3(), clips={};   // his size at rest (three's own box would include every pose's morphs)
+    sc.traverse(m=>{ if(!m.isMesh) return; const P=m.geometry.attributes.position; for(let i=0;i<P.count;i+=3) box.expandByPoint(v.fromBufferAttribute(P,i).applyMatrix4(m.matrixWorld)); }); for(const c of gltf.animations) clips[c.name]=c;
+    const M=G.model={scene:sc,clips,h0:box.max.y-box.min.y,y0:box.min.y,w0:box.max.x-box.min.x};
+    CH3.size[id]={h:R.h*1.05,w:Math.min(R.h*1.1,R.h*M.w0/M.h0),head:R.h*.72}; ch3Refresh(); return M; })().catch(e=>{ delete M3.wait[id]; console.warn('model',id,e); throw e; })); }
+// The approved look was signed off under filmic tone mapping (ACES, exposure 1.25, newer three.js): the game's renderers have
+// none, so Tiny's own materials apply it, keeping his soft creams and greens instead of a harsher, more saturated frog
+function ch3Filmic(mt){ mt.onBeforeCompile=sh=>{ sh.uniforms.m3Exp=M3.exp; sh.fragmentShader=M3.aces+sh.fragmentShader.replace('#include <tonemapping_fragment>','gl_FragColor.rgb=m3Aces(gl_FragColor.rgb*m3Exp);'); }; mt.needsUpdate=true; }
+M3.exp={value:1.25};
+M3.aces=`uniform float m3Exp;
+vec3 m3RRT(vec3 v){ vec3 a=v*(v+0.0245786)-0.000090537; vec3 b=v*(0.983729*v+0.4329510)+0.238081; return a/b; }
+vec3 m3Aces(vec3 c){ const mat3 I=mat3(vec3(0.59719,0.07600,0.02840),vec3(0.35458,0.90834,0.13383),vec3(0.04823,0.01566,0.83777));
+  const mat3 O=mat3(vec3(1.60475,-0.10208,-0.00327),vec3(-0.53108,1.10813,-0.07276),vec3(-0.07367,-0.00605,1.07602));
+  c/=0.6; c=I*c; c=m3RRT(c); c=O*c; return clamp(c,0.0,1.0); }
+`;
+const ch3Has3d=id=>!!(CH3.gltf[id]&&CH3.gltf[id].model);
+function ch3Pool(){ return CH3.pool||(CH3.pool=(()=>{ const c=document.createElement('canvas'); c.width=c.height=64; const x=c.getContext('2d'), g=x.createRadialGradient(32,32,0,32,32,32); g.addColorStop(0,'rgba(30,36,24,.42)'); g.addColorStop(1,'rgba(30,36,24,0)'); x.fillStyle=g; x.fillRect(0,0,64,64); return new THREE.CanvasTexture(c); })()); }
+class Model3{
+  constructor(id){ const G=CH3.gltf[id], M=G.model; this.id=id; this.G=G; this.R=G.R; this.kind='model'; this.M=M;
+    this.obj=M.scene.clone(true); const s=this.R.h/M.h0; this.obj.scale.setScalar(s); this.obj.position.y=-M.y0*s;   // feet on the ground, as tall as his drawing was
+    this.body=new THREE.Group(); this.body.add(this.obj); this.root=new THREE.Group(); this.root.add(this.body); this.root.userData.puppet=1;
+    this.blob=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:ch3Pool(),transparent:true,depthWrite:false})); this.blob.rotation.x=-Math.PI/2; this.blob.position.y=.01; this.blob.renderOrder=-1;
+    this.blob.scale.set(this.R.h*.8,this.R.h*.45,1); this.root.add(this.blob);
+    this.mixer=new THREE.AnimationMixer(this.obj); this.acts={}; for(const [n,c] of Object.entries(M.clips)) this.acts[n]=this.mixer.clipAction(c); }
+  dispose(){ this.mixer.stopAllAction(); this.mixer.uncacheRoot(this.obj); this.blob.geometry.dispose(); this.blob.material.dispose(); }
+}
+// The drawings' moves, in Tiny's own clips
+const MODEL3_CLIP={happy_hop:'hop',giggle_wiggle:'hop',spin:'hop',wake:'hop',grumpy_wake:'hop',wave:'whistle',cheeky_taunt:'cheer',surprised_jump:'oops',show_brick:'offer',look_at_you:'focused'};
+const MODEL3_LOOP=new Set(['idle','focused','whistle']);
+class Model3Ctl{
+  constructor(P){ this.P=P; this.rest='idle'; this.cur=null; this.left=0; this.queued=null; this.a=null; this.react=Math.floor(Math.random()*5); this.reactions=['hop','whistle','cheer','offer','oops'];
+    this.to('idle',false,0); P.mixer.update(Math.random()*2.4); }
+  get current(){ const n=this.cur; return n?{getClip:()=>({name:n})}:null; }
+  get activeBase(){ return this.cur?null:{getClip:()=>({name:this.rest})}; }
+  clip(n){ n=MODEL3_CLIP[n]||n; return this.P.acts[n]?n:null; }
+  has(n){ return !!this.clip(n)||n==='blink'; }
+  to(n,once,fade){ const A=this.P.acts[n], old=this.a; if(A===old&&!once) return;
+    A.reset(); A.setLoop(once?THREE.LoopOnce:THREE.LoopRepeat,once?1:Infinity); A.clampWhenFinished=!!once; A.enabled=true; A.setEffectiveTimeScale(1); A.setEffectiveWeight(1); A.play();
+    if(old&&old!==A){ if(fade) A.crossFadeFrom(old,fade,false); else old.stop(); } this.a=A; }
+  base(){ this.cur=null; this.queued=null; this.to(this.rest,false,.25); }
+  setRest(n){ if(n===this.rest||!this.P.acts[n]) return; this.rest=n; if(!this.cur) this.to(n,false,.5); }
+  play(name){ if(name==='blink') return false; if(name==='idle'){ this.base(); return true; }
+    const n=this.clip(name); if(!n) return false; this.queued=null; this.cur=n; this.left=this.P.acts[n].getClip().duration; this.to(n,!MODEL3_LOOP.has(n),.2); return true; }
+  then(name,next){ if(this.play(name)) this.queued=next; }
+  setMode(){}
+  poke(){ this.react=(this.react+1)%this.reactions.length; this.play(this.reactions[this.react]); }
+  wake(){ this.play('hop'); }
+  update(dt){ if(this.cur){ this.left-=dt; if(this.left<=.2){ const q=this.queued; this.queued=null; this.cur=null; if(!(q&&this.play(q))) this.to(this.rest,false,.25); } }
+    this.P.mixer.update(dt); }
+  dispose(){ this.P.dispose(); }
+}
+function ch3Make(id){ if(!CH3.gltf[id]) return null; if(ch3Has3d(id)){ const P=new Model3(id); return {id,root:P.root,P,ctl:new Model3Ctl(P)}; } const P=new Puppet3(id); return {id,root:P.root,P,ctl:new Ch3Ctl(P)}; }
 // Dressing your otter: its brick colour and what it's wearing (drawn onto it)
 // The otter already standing on the island takes a new brick colour or outfit straight away
 // (it used to keep the old one until the island was next opened)
@@ -7883,11 +7951,11 @@ function ch3Isle(id,g,y,hh){ if(!ch3On()||!ch3Ready(id)) return null; const i=ch
 // Models that arrive after the island was built: rebuild it once with them (never in the middle of a reveal or a flight)
 function isl3CharsLive(){ if(!ISL3.on||!ISL3.world) return; if(ISL3.revealing||ISL3.arrive||ISL3.fly||ISL3.dragging){ clearTimeout(ISL3.c3T); ISL3.c3T=setTimeout(isl3CharsLive,1200); return; }
   const o=worldStore(), lt=LT3[longtailNow()], want=(have,id)=>!have&&ch3Ready(id);
-  const fr=Object.entries(ISL3.cast||{}).some(([id,K])=>!K.i3&&ch3Ready(id));
+  const fr=Object.entries(ISL3.cast||{}).some(([id,K])=>(!K.i3&&ch3Ready(id))||(K.i3&&K.i3.P instanceof Puppet3&&ch3Has3d(id)));   // a drawing whose 3D model has now arrived
   // the whole cast at once (one rebuild, not one per character as each drawing arrives)
   const ids=['bloppit',...(ISL3.pupG?[ch3PupId(o)]:[]),lt,...Object.keys(ISL3.cast||{})]; if(!ids.every(id=>ch3Ready(id)||CH3.bad[id])) return;
   if(want(ISL3.b3,'bloppit')||(ISL3.pupG&&want(ISL3.p3,ch3PupId(o)))||want(ISL3.l3,lt)||fr){ isl3Build(o); isl3Kick(); } }
-function isl3CharsLoad(o){ if(!ch3On()) return; Promise.all(['bloppit',ch3PupId(o),LT3[longtailNow()],'tiny','nora','pippa','bibi',...(lufuHome(o)?['lufu']:[])].map(id=>ch3Get(id).catch(()=>null))).then(()=>isl3CharsLive()); }
+function isl3CharsLoad(o){ if(!ch3On()) return; Promise.all(['bloppit',ch3PupId(o),LT3[longtailNow()],'tiny','nora','pippa','bibi',...(lufuHome(o)?['lufu']:[])].map(id=>ch3Get(id).catch(()=>null))).then(()=>{ isl3CharsLive(); for(const id of Object.keys(RIG)) if(RIG[id].glb) ch3Model(id).catch(()=>{}); }); }
 const REACT_LINES={
   bloppit:['Hee hee! That tickles!','Let’s build something!','Click! Snap! Done!','Whoa, careful!','Wheee!','High five!','Have you seen my red brick? Oh, here it is.'],
   pup:['Wheee!','Hello, friend!','Again! Again!','Let’s build!','Look at me!','Hee hee!'],
@@ -8494,7 +8562,7 @@ function isl3Animate(x,t){ const u=x.userData;
   if(u.race!=null){ const a=t*1.1+u.race; x.position.set(Math.cos(a)*1.95*1.2,TOP3+.04,Math.sin(a)*1.95); x.rotation.y=-a-Math.PI/2; }
   if(u.swing) x.rotation.x=Math.sin(t*1.6)*.35;
   if(u.spin) x.rotation.z=t*.5;
-  if(u.face3){ const dt=ISL3.dt||0; u.face3.ctl.update(dt); const c=ISL3.cam.position, p=x.position, want=Math.atan2(c.x-p.x,c.z-p.z), d=Math.atan2(Math.sin(want-x.rotation.y),Math.cos(want-x.rotation.y)); x.rotation.y+=d*Math.min(1,dt*5); }
+  if(u.face3){ const dt=ISL3.dt||0; if(u.face3.ctl.setRest) u.face3.ctl.setRest((ISL3.night||0)>.5?'whistle':'idle'); u.face3.ctl.update(dt); const c=ISL3.cam.position, p=x.position, want=Math.atan2(c.x-p.x,c.z-p.z), d=Math.atan2(Math.sin(want-x.rotation.y),Math.cos(want-x.rotation.y)); x.rotation.y+=d*Math.min(1,dt*5); }
   if(u.roty) x.rotation.y=(u.r0??(u.r0=x.rotation.y))+t*u.roty;
   if(u.wheel) x.rotation.z=t*u.wheel;
   if(u.upright&&x.parent) x.rotation.z=-x.parent.rotation.z;
@@ -9571,10 +9639,10 @@ window.bloppitHome=()=>setTab('home');
 setTimeout(()=>{ try{ ch3Warm(); }catch(e){} },1200);
 new MutationObserver(()=>buddy3()).observe($('#buddy'),{attributes:true,attributeFilter:['class','hidden']});
 // for tests and review: a character as a picture, in a chosen clip and moment (who, frame 'full'|'bust', px, {ci, wear, clip, t})
-window.bloppitCharShot=async(id,frame,px,opt)=>{ opt=opt||{}; await ch3Get(id); const r=cv3R(), sc=new THREE.Scene(), cam=new THREE.PerspectiveCamera(24,1,.05,60), i=ch3Make(id); sc.add(i.root);
+window.bloppitCharShot=async(id,frame,px,opt)=>{ opt=opt||{}; await ch3Get(id); if(opt.model) await ch3Model(id); if(opt.exp) M3.exp.value=opt.exp; const r=cv3R(), sc=new THREE.Scene(), cam=new THREE.PerspectiveCamera(24,1,.05,60), i=ch3Make(id); sc.add(i.root); cv3Lights(sc);
   ch3Dress(i,{log:[]},{ci:opt.ci!=null?opt.ci:0,wear:opt.wear||{}}); i.ctl.update(.6); if(opt.clip){ i.ctl.play(opt.clip); i.ctl.update(0); i.ctl.update(opt.t||0); }
   cv3Aim(cam,[id],frame||'full',1,-.25); r.setScissorTest(false); r.setSize(px||420,px||420,false); r.setViewport(0,0,px||420,px||420); r.clear(); r.render(sc,cam); const u=r.domElement.toDataURL('image/png'); i.ctl.dispose(); return u; };
-window.bloppitChars3d=()=>({on:ch3On(),loaded:Object.keys(CH3.gltf),island:{bloppit:!!ISL3.b3,pup:!!ISL3.p3,longtail:!!ISL3.l3,clips:[ISL3.b3,ISL3.p3,ISL3.l3].map(i=>i&&(i.ctl.current||i.ctl.activeBase)?(i.ctl.current||i.ctl.activeBase).getClip().name:null)},views:CV3.views.filter(v=>v.host.classList.contains('c3on')&&v.host.offsetParent).map(v=>v.host.id||v.host.className.split(' ')[0])});
+window.bloppitChars3d=()=>({on:ch3On(),loaded:Object.keys(CH3.gltf),tiny:{model:ch3Has3d('tiny'),clips:ch3Has3d('tiny')?Object.keys(CH3.gltf.tiny.model.clips).sort():[]},island:{bloppit:!!ISL3.b3,pup:!!ISL3.p3,longtail:!!ISL3.l3,clips:[ISL3.b3,ISL3.p3,ISL3.l3].map(i=>i&&(i.ctl.current||i.ctl.activeBase)?(i.ctl.current||i.ctl.activeBase).getClip().name:null)},views:CV3.views.filter(v=>v.host.classList.contains('c3on')&&v.host.offsetParent).map(v=>v.host.id||v.host.className.split(' ')[0])});
 // On the website the logo opens the menu; on the menu itself it goes to bloppit.com's front page. (The app handles its own links above.)
 $('#brandLink').addEventListener('click',e=>{ if(APP||tab==='home') return; e.preventDefault(); setTab('home'); });
 // Links straight to a page: /build/#photos, #library, #trails, #otter, #brain, #together, #blitz, #daily (anything else opens the menu).
