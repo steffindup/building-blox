@@ -834,6 +834,14 @@ body.on-home .tabs{visibility:hidden}
 .hm-films .pl{background:#0b4f6c;font-size:20px}
 .filmsdlg h2{margin:2px 56px 10px 4px;font-family:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;font-weight:400;font-size:26px;line-height:1.1}
 .filmsdlg .how-x{top:12px;right:12px}
+.film-box{position:relative}.film-box video{display:block;width:100%}
+.film-say{position:absolute;left:50%;bottom:calc(min(11%,96px) + 18px);z-index:3;display:flex;align-items:center;gap:10px;width:max-content;max-width:min(calc(100% - 24px),560px);box-sizing:border-box;padding:8px 18px 8px 8px;border-radius:999px;background:rgba(255,255,255,.94);color:#1d2430;box-shadow:0 6px 22px rgba(0,20,40,.35);pointer-events:none;opacity:0;transform:translate(-50%,10px) scale(.96);transition:opacity .5s ease,transform .5s ease}
+.film-say.on{opacity:1;transform:translate(-50%,0) scale(1)}
+.film-say img{flex:none;width:52px;height:52px;border-radius:50%;background:color-mix(in srgb,var(--who) 18%,#fff);border:3px solid var(--who);object-fit:contain}
+.film-say span{font-family:var(--f-display);font-size:clamp(17px,2.6vw,24px);line-height:1.15}
+.film-say b{display:block;font-family:Nunito,system-ui,sans-serif;font-weight:900;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--who)}
+.film-box .film-say{top:10px;bottom:auto;gap:8px;padding:5px 14px 5px 5px}.film-box .film-say img{width:34px;height:34px;border-width:2px}.film-box .film-say span{font-size:clamp(14px,2.2vw,19px)}.film-box .film-say b{font-size:10px}
+@media (max-aspect-ratio:1/1){.is3-cine .film-say{bottom:max(18px,calc(50% - 50vw * 9 / 16 - 150px))}}   /* upright: just under the film, below the turn-sideways hint */
 .filmsdlg video{max-height:calc(100vh - 360px);max-height:calc(100dvh - 360px);min-height:160px}
 .filmsdlg .film-now{margin:8px 4px 0;font-weight:800;font-size:15px}.filmsdlg .film-now small{color:var(--muted);font-weight:700}
 .film-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:14px 0 0}
@@ -1788,7 +1796,7 @@ body.film-on{overflow:hidden}
 <dialog class="windlg howdlg filmsdlg" id="filmsDlg" aria-labelledby="filmsT">
   <button class="how-x" id="filmsX" type="button" aria-label="Close">×</button>
   <h2 id="filmsT">My films</h2>
-  <video id="filmVid" controls playsinline preload="none"></video>
+  <div class="film-box" id="filmBox"><video id="filmVid" controls playsinline preload="none"></video></div>
   <p class="film-now" id="filmNow"></p>
   <div class="film-list" id="filmList"></div>
   <p class="film-more" id="filmMore">More films unlock as your world grows.</p>
@@ -3035,18 +3043,38 @@ $('#hmHow').onclick=()=>howOpen('menu');
    Locked films show only their hint, never their name, so nothing is spoiled. */
 const VID_BASE=APP?'video/':'/video/';
 const FILMS=[
-  {id:'arrival',no:'01',name:'Arrival',place:'Home Island',file:'arrival',open:o=>!!o.arrived||worldCount(o)>0},
+  // say: what a character says over the film, at t seconds ({name} = the player's otter; left out while it has no name yet)
+  {id:'arrival',no:'01',name:'Arrival',place:'Home Island',file:'arrival',open:o=>!!o.arrived||worldCount(o)>0,
+    say:[{t:6,who:'bloppit',text:'Welcome to Home Island, {name}!'}]},
   // at: the island moment that plays it (see isl3Reveal): an island rising from the mist, or an island complete
-  {id:'frog-arrival',no:'02',name:'Arrival',place:'Frog Forest',file:'frog-forest-arrival',at:'isle:otterwood',open:o=>filmSeen('frog-arrival',o)||isleCount('otterwood',o)>0,hint:'Set off for Frog Forest'},
-  {id:'frog-complete',no:'03',name:'Complete',place:'Frog Forest',file:'frog-forest-complete',at:'done:otterwood',open:o=>isleComplete('otterwood',o),hint:'Finish every Frog Trail level'},
-  ...[['04','05','brainpeak','Brainpeak','brainpeak','Set off for Brainpeak','Finish every Brain Trail level'],
-      ['06','07','sunrise','Sunrise Shores','sunrise-shores','Set off for Sunrise Shores','Build all of Pippa’s puzzles'],
-      ['08','09','blitzbay','Blitz Bay','blitz-bay','Race Swoop','Win the Grand Prix'],
-      ['10','11','brickworks','Brickworks Island','brickworks','Set off for Brickworks Island','Fill Brickworks Island with your own builds']]
-    .flatMap(([a,c,isle,place,file,ha,hc])=>[
-      {id:isle+'-arrival',no:a,name:'Arrival',place,file:file+'-arrival',at:'isle:'+isle,open:o=>filmSeen(isle+'-arrival',o)||isleCount(isle,o)>0,hint:ha},
-      {id:isle+'-complete',no:c,name:'Complete',place,file:file+'-complete',at:'done:'+isle,open:o=>isleComplete(isle,o),hint:hc}]),
+  {id:'frog-arrival',no:'02',name:'Arrival',place:'Frog Forest',file:'frog-forest-arrival',at:'isle:otterwood',open:o=>filmSeen('frog-arrival',o)||isleCount('otterwood',o)>0,hint:'Set off for Frog Forest',
+    say:[{t:12,who:'tiny',text:'Welcome to Frog Forest, {name}!'}]},
+  {id:'frog-complete',no:'03',name:'Complete',place:'Frog Forest',file:'frog-forest-complete',at:'done:otterwood',open:o=>isleComplete('otterwood',o),hint:'Finish every Frog Trail level',
+    say:[{t:11,who:'tiny',text:'We did it, {name}!'}]},
+  // [arrival no, complete no, island id, place, file, hints, who speaks, when in the arrival film, when in the completion film]
+  ...[['04','05','brainpeak','Brainpeak','brainpeak','Set off for Brainpeak','Finish every Brain Trail level','nora',12,24.5],
+      ['06','07','sunrise','Sunrise Shores','sunrise-shores','Set off for Sunrise Shores','Build all of Pippa’s puzzles','pippa',15,17],
+      ['08','09','blitzbay','Blitz Bay','blitz-bay','Race Swoop','Win the Grand Prix','swoop',19,20],
+      ['10','11','brickworks','Brickworks Island','brickworks','Set off for Brickworks Island','Fill Brickworks Island with your own builds','bibi',2,20]]
+    .flatMap(([a,c,isle,place,file,ha,hc,who,ta,tc])=>[
+      {id:isle+'-arrival',no:a,name:'Arrival',place,file:file+'-arrival',at:'isle:'+isle,open:o=>filmSeen(isle+'-arrival',o)||isleCount(isle,o)>0,hint:ha,
+        say:[{t:ta,who,text:`Welcome to ${place}, {name}!`}]},
+      {id:isle+'-complete',no:c,name:'Complete',place,file:file+'-complete',at:'done:'+isle,open:o=>isleComplete(isle,o),hint:hc,
+        say:[{t:tc,who,text:'We did it, {name}!'}]}]),
 ];
+// What the characters say over a film: a speech bubble with the speaker's face and name, shown for 5.5 s from its time
+const FILM_WHO={bloppit:['Bloppit','#D8342C'],tiny:['Tiny','#7DBE2E'],nora:['Nora','#24407A'],pippa:['Pippa','#C9920A'],swoop:['Swoop','#2F7FD0'],bibi:['Bibi','#E9772A']};
+function filmLine(s,o){ const nm=pupName(o||worldStore()); return s.text.replace(', {name}',nm?', '+nm:'').replace('{name}',nm||''); }
+function filmSay(box,f,t){ if(!box||!f) return; let b=box.querySelector(':scope>.film-say');
+  const s=(f.say||[]).find(s=>t>=s.t&&t<s.t+(s.d||5.5)), key=s?f.id+'@'+s.t:'';
+  if(b&&b.dataset.k===key) return;
+  if(!b){ b=document.createElement('div'); b.className='film-say'; b.setAttribute('aria-live','polite'); box.appendChild(b); }
+  b.dataset.k=key; if(!s){ b.classList.remove('on'); return; }
+  const [who,col]=FILM_WHO[s.who]||[s.who,'#555'];
+  b.style.setProperty('--who',col);
+  b.innerHTML=`<img src="/art/head-${s.who}.png" alt="" width="256" height="256"><span><b>${escapeHTML(who)}</b>${escapeHTML(filmLine(s))}</span>`;
+  b.classList.remove('on'); void b.offsetWidth; b.classList.add('on'); }
+window.bloppitFilmSay=()=>{ const b=[...document.querySelectorAll('.film-say.on')].pop(); return b?b.textContent:null; };   // for tests
 const filmSeen=(id,o)=>((o||worldStore()).films||[]).includes(id);
 function filmSeenAdd(id){ const o=worldStore(); if(filmSeen(id,o)) return; o.films=[...(o.films||[]),id]; worldSet(o); }
 // Setting off for an island you haven't found yet (Play next, or its trail's level map): its arrival film plays first
@@ -3057,7 +3085,7 @@ function startLevelFilm(tr,i){ islandSetOff(TRAIL_ISLE[tr],()=>startLevel(i)); }
 const filmsOpen=o=>FILMS.filter(f=>{ try{ return f.open(o); }catch(e){ return false; } });
 function renderFilmsTile(){ const n=filmsOpen(worldStore()).length, el=$('#hmFilms'); el.hidden=!n; if(n) $('#hmFilmsS').textContent=n===1?'1 film to watch again':`${n} films to watch again`; }
 let filmCur=null;
-function filmShow(f,play){ const v=$('#filmVid'); filmCur=f.id; v.setAttribute('poster',VID_BASE+f.file+'.jpg'); v.src=VID_BASE+f.file+'.mp4';
+function filmShow(f,play){ const v=$('#filmVid'); filmCur=f.id; filmSay($('#filmBox'),f,-1); v.setAttribute('poster',VID_BASE+f.file+'.jpg'); v.src=VID_BASE+f.file+'.mp4';
   $('#filmNow').innerHTML=`${f.no} · ${escapeHTML(f.name)} <small>· ${escapeHTML(f.place)}</small>`;
   $('#filmList').querySelectorAll('button[data-film]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.film===f.id?'true':'false'));
   if(play){ try{ v.muted=!sfx.on; const p=v.play(); if(p&&p.catch) p.catch(()=>{}); }catch(e){} track('film_play:'+f.id); } }
@@ -3070,6 +3098,7 @@ function filmsShow(){ const d=$('#filmsDlg'); if(d.open) return; const o=worldSt
 function filmsClose(){ const d=$('#filmsDlg'); try{ $('#filmVid').pause(); }catch(e){} if(d.open) d.close(); }
 $('#hmFilms').onclick=()=>filmsShow();
 $('#filmsX').onclick=$('#filmsClose').onclick=()=>filmsClose();
+$('#filmVid').addEventListener('timeupdate',()=>{ const f=FILMS.find(f=>f.id===filmCur); filmSay($('#filmBox'),f,$('#filmVid').currentTime||0); });
 $('#filmsDlg').addEventListener('close',()=>{ try{ $('#filmVid').pause(); }catch(e){} });
 $('#filmsDlg').addEventListener('click',e=>{ if(e.target===e.currentTarget) filmsClose(); });
 $('#howBtn').onclick=()=>howOpen('build');
@@ -8805,7 +8834,7 @@ function arr3FilmFrame(v,t,mid){ const W=v.clientWidth, H=v.clientHeight; if(!W|
 function arr3Film(A){ const v=A.film; A.ov.classList.add('film'); let started=false;
   const live=()=>ISL3.cine===A&&A.film===v;
   const fail=()=>{ if(!live()||started) return; A.film=null; try{ v.pause(); v.removeAttribute('src'); v.load(); }catch(e){} v.remove(); A.ov.classList.remove('film'); track('arrival_film_fallback'); arr3Begin(A); };
-  const tick=()=>{ if(!live()) return; const t=A.t=v.currentTime||0; arr3FilmFrame(v,t); if(t>=1.2&&!A.did.skip){ A.did.skip=1; A.ov.querySelector('.cn-skip').classList.add('on'); } requestAnimationFrame(tick); };
+  const tick=()=>{ if(!live()) return; const t=A.t=v.currentTime||0; arr3FilmFrame(v,t); filmSay(A.ov,FILMS[0],t); if(t>=1.2&&!A.did.skip){ A.did.skip=1; A.ov.querySelector('.cn-skip').classList.add('on'); } requestAnimationFrame(tick); };
   A.music={stop(){ try{ v.pause(); }catch(e){} }};
   v.addEventListener('playing',()=>{ if(!live()) return; started=true; v.classList.add('on'); },{once:true});
   v.addEventListener('ended',()=>{ if(live()) arr3Finish(true); });
@@ -8828,7 +8857,7 @@ function isl3Film(f,then){
   const v=ov.querySelector('.cn-film'); let started=false; ISL3.filmOn=f.id;
   v.addEventListener('playing',()=>filmSeenAdd(f.id),{once:true});
   ov.querySelector('.cn-skip').onclick=()=>end('skipped');
-  const tick=()=>{ if(done) return; const t=v.currentTime||0; arr3FilmFrame(v,t,true); if(t>=1.2) ov.querySelector('.cn-skip').classList.add('on'); requestAnimationFrame(tick); };
+  const tick=()=>{ if(done) return; const t=v.currentTime||0; arr3FilmFrame(v,t,true); filmSay(ov,f,t); if(t>=1.2) ov.querySelector('.cn-skip').classList.add('on'); requestAnimationFrame(tick); };
   v.addEventListener('playing',()=>{ started=true; v.classList.add('on'); },{once:true});
   v.addEventListener('ended',()=>end('ended'));
   v.addEventListener('error',()=>end(started?'error':'fallback'));

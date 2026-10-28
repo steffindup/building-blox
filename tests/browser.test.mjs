@@ -579,6 +579,10 @@ test('Frog Forest films: its arrival film plays when it rises from the mist, its
   await t.page.waitForFunction(() => window.bloppitFilmOn() === 'frog-arrival', null, { timeout: 30000, polling: 200 });
   assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), /\/video\/frog-forest-arrival\.mp4$/);
   await t.page.waitForFunction(() => document.querySelector('.is3-film video').currentTime > .3, null, { timeout: 15000 });
+  // Tiny welcomes the otter by name when he's on screen (and says nothing before)
+  assert.equal(await t.page.evaluate(() => window.bloppitFilmSay()), null);
+  await t.page.evaluate(() => { document.querySelector('.is3-film video').playbackRate = 4; });   // (the test server can't seek)
+  await t.page.waitForFunction(() => /^TinyWelcome to Frog Forest, \S+!$/.test(window.bloppitFilmSay() || ''), null, { timeout: 20000 });
   await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click());
   // then the island rises as before, and later the completion film plays before the fireworks
   await t.page.waitForFunction(() => window.bloppitFilmOn() === 'frog-complete', null, { timeout: 90000, polling: 200 });
@@ -591,6 +595,11 @@ test('Frog Forest films: its arrival film plays when it rises from the mist, its
   const u = await open('?nosplash=1', { init: seed });
   await u.page.evaluate(() => document.getElementById('hmFilms').click()); await u.page.waitForTimeout(400);
   assert.deepEqual(await u.page.evaluate(() => [...document.querySelectorAll('#filmList [data-film]')].map((b) => b.dataset.film)), ['arrival', 'frog-arrival', 'frog-complete', 'brickworks-arrival']);   // (its three quick builds found Brickworks Island too)
+  // and the lines play in My films too: Tiny's "We did it" in the completion film
+  await u.page.evaluate(() => document.querySelector('#filmList [data-film="frog-complete"]').click());
+  await u.page.waitForFunction(() => document.getElementById('filmVid').readyState >= 1, null, { timeout: 15000 });
+  await u.page.evaluate(() => { const v = document.getElementById('filmVid'); v.muted = true; v.playbackRate = 4; v.play(); });
+  await u.page.waitForFunction(() => /^TinyWe did it, \S+!$/.test(window.bloppitFilmSay() || ''), null, { timeout: 20000 });
   assert.deepEqual(u.errors, []); await u.ctx.close();
 });
 
