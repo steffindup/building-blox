@@ -333,8 +333,10 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .tool:hover{border-color:var(--ink)}
 .tool[aria-pressed="true"]{background:var(--hi);border-color:var(--hi);color:#14202C}
 .tool.snd{padding:6px 10px;display:inline-flex;align-items:center;gap:4px}
+.snd-top{margin-left:auto;margin-right:8px;width:40px;height:40px;flex:none;border-radius:50%;display:grid;place-items:center;padding:0;border:1px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer}.snd-top:hover{border-color:var(--ink)}.snd-top+.who{margin-left:0}
+.snd-top[aria-pressed="false"]{background:#F6D7D3;color:#8f1f18;border-color:#D8342C}   /* muted: easy to spot, on every page */
 .snd-ic{width:18px;height:16px;display:inline-block;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat;--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M2 7h4l5-4v14l-5-4H2z' fill='black'/%3E%3Cpath d='M15 6.5a5 5 0 0 1 0 7M18 4a8.5 8.5 0 0 1 0 12' stroke='black' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")}
-.tool.snd[aria-pressed="false"] .snd-ic{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M2 7h4l5-4v14l-5-4H2z' fill='black'/%3E%3Cpath d='M15 7l6 6M21 7l-6 6' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")}
+.tool.snd[aria-pressed="false"] .snd-ic,.snd-top[aria-pressed="false"] .snd-ic{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M2 7h4l5-4v14l-5-4H2z' fill='black'/%3E%3Cpath d='M15 7l6 6M21 7l-6 6' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")}
 .tool.snd[aria-pressed="true"]{background:var(--page);border-color:var(--line);color:var(--ink)}
 .tool.snd[aria-pressed="true"]:hover{border-color:var(--ink)}
 .tool kbd{font-family:var(--f-mono);font-size:11px;border:1px solid currentColor;border-radius:4px;padding:0 4px;opacity:.6;margin-left:2px}
@@ -804,6 +806,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
   .tab{flex:none;white-space:nowrap;padding:4px 10px 4px 5px;gap:6px;font-size:13px}
   .tab .n{width:20px;height:20px;font-size:12px}
   .who{flex:none;padding:2px;margin-left:0;box-shadow:none}
+  .snd-top{width:34px;height:34px;margin-right:6px}
   .who .av{width:30px;height:30px;font-size:16px}
   .who-txt{display:none}
   main{padding-block:10px 0}
@@ -1215,6 +1218,7 @@ body.film-on{overflow:hidden}
     <button class="tab play3" role="tab" id="tab-blitz" data-tab="blitz" aria-selected="false"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-watch"/></svg></span>Blitz</button>
     <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#ic-stack"/></svg></span>Together</button>
   </nav>
+  <button class="snd-top" id="sndTop" type="button" aria-pressed="true" aria-label="Sound" title="Sound on or off (M)"><span class="snd-ic" aria-hidden="true"></span></button>
   <button class="who" id="whoBtn" type="button" title="Who’s playing? Tap to switch player"><span class="av" id="whoAv"></span><span class="who-txt"><span class="tag">Playing</span><b id="whoName"></b></span></button>
 </header>
 
@@ -3275,9 +3279,11 @@ const sfx=(()=>{
       noise(c,t,.09,{vol:.35,freq:380,q:1.2,type:'lowpass'}); tone(c,t,150,.22,{vol:.26,to:95,att:.006}); tone(c,t+.05,230,.12,{type:'triangle',vol:.08,to:160}); }
   };
 })();
-function syncSoundBtn(){ const b=$('#sndBtn'); b.setAttribute('aria-pressed',sfx.on); b.title=(sfx.on?'Sound is on':'Sound is off')+' (M)'; }
+function syncSoundBtn(){ for(const b of [$('#sndBtn'),$('#sndTop')]){ if(!b) continue; b.setAttribute('aria-pressed',sfx.on); b.title=(sfx.on?'Sound is on':'Sound is off')+' (M)'; } }
 function toggleSound(){ sfx.set(!sfx.on); syncSoundBtn(); if(sfx.on) sfx.snap(); }
-$('#sndBtn').onclick=toggleSound; syncSoundBtn();
+$('#sndBtn').onclick=toggleSound; $('#sndTop').onclick=toggleSound; syncSoundBtn();
+// M switches sound on or off on any page (it used to work only while building)
+document.addEventListener('keydown',e=>{ if((e.key==='m'||e.key==='M')&&tab!=='build'&&!/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)&&!e.metaKey&&!e.ctrlKey&&!e.altKey){ toggleSound(); e.preventDefault(); } });
 
 /* ---------- Bloppit, the building buddy ---------- */
 // Points at the step you're on, holds up the bricks it still needs, and cheers each time a step is finished.
