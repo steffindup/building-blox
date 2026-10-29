@@ -90,9 +90,6 @@
   if(!show||/[?&](room|ch|code)=/.test(location.search)||(location.hash&&location.hash!=='#home')){ s.remove(); return; }
   window.BLOPPIT_SPLASH=Date.now();
   s.onclick=function(){ s.classList.add('out'); setTimeout(function(){ s.remove(); },320); };
-  // Bloppit's signature sound plays with the launch screen (sfx.logo, below). Browsers only allow sound after a tap, so
-  // if it can't play straight away, the first tap while the launch screen is up plays it instead.
-  window.BLOPPIT_LOGO_SOUND=1;
 })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -3414,14 +3411,6 @@ const sfx=(()=>{
     music(v){ musicOn=!!v; try{ localStorage.setItem('bloppit-music',musicOn?'on':'off'); }catch(e){} if(musicOn&&on) ctx(); musicLevel(); },
     duck(v){ M.duck=!!v; musicLevel(); },
     place(){ musicLevel(); },   // the page changed: music in Bloppitopia, quiet everywhere else
-    // Bloppit's signature sound, timed to the launch screen: a bright lift as the name appears, then "Brick." "Build." "Bloppit!"
-    // (two plastic clicks on marimba notes, then a bubbly "blop" and a sparkling "pit"). at = when each of the four lands.
-    logo(at){ const c=ok('logo',2); if(!c) return false; const t=c.currentTime+.03, [a,b1,b2,b3]=at||[.15,.4,.6,.8];
-      slide(c,t+a-.1,hz(60),hz(72),.22,.05,0,'triangle'); glock(c,t+a+.1,hz(84),.04,null,.5);
-      [[b1,72],[b2,76]].forEach(([d,m])=>{ noise(c,t+d,.016,{vol:.45,freq:4200,q:3}); marimba(c,t+d+.008,hz(m),.18); marimba(c,t+d+.008,hz(m-12),.07); });
-      tone(c,t+b3,260,.12,{vol:.22,to:780,att:.003}); tone(c,t+b3+.05,520,.08,{type:'triangle',vol:.06,to:1100});   // "blop"
-      [79,84,88].forEach((m,k)=>marimba(c,t+b3+.13+k*.012,hz(m),.13)); glock(c,t+b3+.14,hz(96),.07,null,.8);   // "pit!"
-      sparkle(c,t+b3+.3,5,91,.03); return true; },   // quiet the music for a moment that has its own (the in-game arrival)
     // A brick snapping in: a crisp plastic click, then a marimba note a step higher than the last one
     snap(delay=0){ haptic('light',delay); const c=ok('snap',.04); if(!c) return; const t=c.currentTime+delay;
       if(c.currentTime-snapT>2.5) snapI=0; snapT=c.currentTime;
@@ -3541,13 +3530,6 @@ const sfx=(()=>{
       noise(c,t,.09,{vol:.35,freq:380,q:1.2,type:'lowpass'}); tone(c,t,150,.22,{vol:.26,to:95,att:.006}); marimba(c,t+.03,hz(55),.12); }
   };
 })();
-// The launch screen's signature sound (see the launch screen script): now if sound is allowed, else on the first tap
-(function(){ if(!window.BLOPPIT_LOGO_SOUND) return; const sp=document.getElementById('splash'); if(!sp||!sfx.on) return;
-  const el=(Date.now()-(window.BLOPPIT_SPLASH||Date.now()))/1000, at=[.15,.4,.6,.8].map(x=>Math.max(0,x-el));
-  let played=false; const play=(late)=>{ if(played) return; try{ const C=window.AudioContext||window.webkitAudioContext; if(!C) return; played=sfx.logo(late?[0,.12,.27,.42]:at); }catch(e){} };
-  play(false);
-  const tap=()=>{ document.removeEventListener('pointerdown',tap,true); if(!played) play(true); };
-  if(!played) document.addEventListener('pointerdown',tap,true); setTimeout(()=>document.removeEventListener('pointerdown',tap,true),4000); })();
 function syncSoundBtn(){ for(const b of [$('#sndBtn'),$('#sndTop')]){ if(!b) continue; b.setAttribute('aria-pressed',sfx.on); b.title=(sfx.on?'Sound is on':'Sound is off')+' (M)'; }
   const m=$('#musTop'), mo=sfx.on&&sfx.musicOn; if(m){ m.setAttribute('aria-pressed',mo); m.title=mo?'Music is on':'Music is off'; } }
 // The music button: on its own it turns just the music on or off (turning it on with all sound off turns sound back on too)
