@@ -5410,6 +5410,7 @@ function updateGameBar(){
   $('#gbPts').textContent=levelScore(); $('#gbOf').textContent=`of ${L.pts}`;
   const bits=[]; if(p.hint) bits.push(`Hints ${p.hint}× −${p.hint*5}`); if(p.auto) bits.push(`Placed for you ${p.auto}× −${p.auto*10}`);
   if(game.math) bits.push(`Math ${game.math.solved.length} of ${game.math.locks.length} pages${game.math.pts?` +${game.math.pts}`:''}`);
+  if(L.pts-p.hint*5-p.auto*10<Math.round(L.pts*.1)) bits.push(`Minimum for finishing: ${Math.round(L.pts*.1)}`);   // the floor: finishing always earns a tenth of the level
   $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>';
 }
 window.bloppitLevels={otter:OTTER_LEVELS,brain:BRAIN_LEVELS,sea:SEA_LEVELS,blitz:BLITZ_PICKS,mystery:()=>MYSTERY,progress:()=>gameProgress(worldStore()),lib:()=>SAMPLES.filter(released).map(s=>s.name),weekly:w=>weeklyPuzzle(w),count:L=>{ delete L.count; return levelCount(L); },pic:n=>{ const S=SAMPLES.find(x=>x.name===n); return S?S.make()[0][1].toDataURL():null; },thumb:L=>levelThumb(L)};   // for tests and tuning
@@ -7806,8 +7807,11 @@ function isl3Size(){ const box=ISL3.box, r=ISL3.r; if(!box) return; if(ISL3.worl
 function isl3Kick(){ ISL3.dirty=true; if(!ISL3.raf&&ISL3.on) ISL3.raf=requestAnimationFrame(isl3Frame); }
 // Tap, hover and drag
 function isl3Pick(e){ const r=ISL3.r.domElement.getBoundingClientRect(), v=new THREE.Vector2(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
-  const rc=new THREE.Raycaster(); rc.setFromCamera(v,ISL3.cam); const hits=rc.intersectObjects([...ISL3.hits,ISL3.sc.children.find(x=>x.userData.info==='land:sea')],false);
-  for(const h of hits){ let o=h.object; while(o&&!o.userData.info) o=o.parent; if(o) return {obj:o,info:o.userData.info,point:h.point}; } return null; }
+  const rc=new THREE.Raycaster(); rc.setFromCamera(v,ISL3.cam); let hits=[];
+  for(const x of [...ISL3.hits,ISL3.sc.children.find(x=>x.userData.info==='land:sea')]){ if(!x) continue; try{ rc.intersectObject(x,false,hits); }catch(e){} }   // one odd mesh never stops every tap
+  hits.sort((a,b)=>a.distance-b.distance); const tag=h=>{ let o=h.object; while(o&&!o.userData.info) o=o.parent; return o; };
+  const ch=hits.find(h=>{ const o=tag(h); return o&&/^(char:|longtail:|bloppit$|pup$)/.test(o.userData.info); });
+  for(const h of ch?[ch,...hits]:hits){ const o=tag(h); if(o) return {obj:o,info:o.userData.info,point:h.point}; } return null; }
 function isl3Ground(e){ const r=ISL3.r.domElement.getBoundingClientRect(), v=new THREE.Vector2(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
   const rc=new THREE.Raycaster(); rc.setFromCamera(v,ISL3.cam); const p=new THREE.Vector3(); return rc.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),-TOP3),p)?p:null; }
 const anchorAt=(x,y)=>({getBoundingClientRect:()=>({left:x-1,right:x+1,top:y-1,bottom:y+1,width:2,height:2}),isConnected:true,focus:()=>{ try{ ISL3.r.domElement.focus({preventScroll:true}); }catch(e){} }});
@@ -8722,7 +8726,7 @@ const COTTAGE_V=[[...POL3(125,4.7),'#F4BC22'],[...POL3(58,4.7),'#008F9B']];   //
 function isleBase(id,g,n){
   if(id==='otterwood'){ const h=1.7+Math.min(14,n)*.12; g.add(cyl3(.42,.62,h,7,'#7A4E2E',0,TOP3,0)); for(let i=0;i<3;i++){ const c=mesh3(new THREE.IcosahedronGeometry(1.2-i*.25,0),m3(['#3E9E36','#4FB33A','#5CC046'][i]),Math.sin(i*2)*.3,TOP3+h+i*.55-.1,Math.cos(i*2)*.3); c.scale.set(1,.8,1); g.add(c); }
     [[2.8,-2.0],[-3.0,-1.0],[-1.0,-3.2],[3.2,1.0],[-3.2,2.6],[1.4,3.0],[2.4,-3.0]].forEach(([x,z],i)=>g.add(tree3(x,z,.9+(i%3)*.15,i))); }
-  if(id==='brainpeak'){ const m=mesh3(new THREE.ConeGeometry(2.4,3.3,7),[m3('#B9C2CF'),m3('#9AA3AD')],0,TOP3+1.65,-.4); g.add(m); const s=mesh3(new THREE.ConeGeometry(.9,1.1,7),m3('#FFFFFF'),0,TOP3+2.85,-.4); g.add(s);
+  if(id==='brainpeak'){ const m=mesh3(new THREE.ConeGeometry(2.4,3.3,7),[m3('#B9C2CF'),m3('#9AA3AD'),m3('#9AA3AD')],0,TOP3+1.65,-.4); g.add(m); const s=mesh3(new THREE.ConeGeometry(.9,1.1,7),m3('#FFFFFF'),0,TOP3+2.85,-.4); g.add(s);
     [[3.0,1.6],[-3.0,-1.2],[-.4,3.4]].forEach(([x,z],i)=>g.add(tree3(x,z,.85,i+2))); }
   if(id==='sunrise'){ const t=new THREE.Group(); t.add(box3(1.0,2.6,1.0,'#FFF8EA',0,0,0)); t.add(box3(1.15,.18,1.15,'#E3C99A',0,2.6,0)); t.add(box3(.4,.7,.05,'#8A5A3B',0,0,.51)); g.add(t); t.position.y=TOP3;
     [[-3.0,1.4],[3.0,1.2],[-2.6,-2.6]].forEach(([x,z],i)=>g.add(tree3(x,z,.85,i+5))); }
@@ -8786,7 +8790,7 @@ function isl3Build(o){ ISL3.shadowDirty=true;
   // sky things: a few clouds, stars for the night
   // the island friends: each stands on the shore of their island facing Home Island (in the mist too, waving you over)
   const shore=(id,da,k)=>{ const I=ISLES[id], t=Math.atan2(-I.z,-I.x)+da, rr=I.r*(k||.62); return [I.x+Math.cos(t)*rr,I.z+Math.sin(t)*rr]; };
-  const hitBox=(g,h)=>{ const tb=new THREE.Mesh(new THREE.BoxGeometry(.9,h,.9),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); tb.visible=false; tb.position.y=TOP3+h/2; g.add(tb); };
+  const hitBox=(g,h)=>{ const w=Math.max(1.1,h*.6), tb=new THREE.Mesh(new THREE.BoxGeometry(w,h*1.05,w),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); tb.visible=false; tb.position.y=TOP3+h/2; g.add(tb); };
   // On a found island, a friend needs a prominent spot: in clear view from where the camera looks (wide and tall screens),
   // with room around it, on the grass (not in the pond or on a landmark), and toward Home Island where that's possible.
   // Worked out from the island as it's built now, and remembered until the island grows again.

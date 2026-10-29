@@ -395,6 +395,22 @@ test('island Play: Bloppitopia keeps the recommended next play; an island plays 
   }
 });
 
+test('Nora can be tapped on Brainpeak at every stage (the mountain never breaks a tap; a friend wins over the land behind)', { skip: skip() }, async () => {
+  const seed = (n) => { const builds = {}, log = [], g = { best: {}, bbest: {}, sbest: {} }; for (let i = 0; i < n; i++) { const k = `t:brain:${i}`; builds[k] = { n: 40, s: 3, t: 1e12 + i, c: 1 }; log.push(k); g.bbest[i] = 3; }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 50, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, pick: 'treehouse', isle: 1, arrived: 1 }));
+    localStorage.setItem('building-blox-game-v1', JSON.stringify(g)); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 5, finished: 5, welcome: 1 })); };
+  for (const n of [0, 3, 15]) {
+    const t = await open('?nosplash=1&films=0#island', { init: { fn: seed, arg: n } });
+    await t.page.waitForFunction(() => window.bloppitIsland3().ctl, null, { timeout: 90000 });
+    await t.page.evaluate(() => window.bloppitView(4)); await t.page.waitForTimeout(1500);
+    const r = await t.page.evaluate(() => { const I = window.bloppitIsland3(), g = I.cast.nora.g, cv = I.r.domElement.getBoundingClientRect(), out = [];
+      for (const [dx, fy] of [[0, .3], [0, .6], [-.35, .5], [.35, .5], [0, .9]]) { const v = g.localToWorld(new THREE.Vector3(dx, .2 + 2.3 * fy, 0)).project(I.cam);
+        out.push(window.bloppitPick(cv.left + (v.x + 1) / 2 * cv.width, cv.top + (1 - v.y) / 2 * cv.height)); } return out; });
+    assert.deepEqual(r, Array(5).fill('char:nora'), `${n} levels: ${r}`);
+    assert.deepEqual(t.errors, []); await t.ctx.close();
+  }
+});
+
 test('Bloppitopia renders every stage in 3D (models, buildings, the islands nearby), and as a drawing without WebGL', { skip: skip() }, async () => {
   const seed = (n) => { const builds = {}, log = []; for (let i = 0; i < n; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1 }; log.push(k); }
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: n * 10, bonus: 0, builds, log, decor: n >= 3 ? ['flag'] : [], pupName: 3, pupAsked: true, isle: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: n, finished: n, welcome: 1 })); };
