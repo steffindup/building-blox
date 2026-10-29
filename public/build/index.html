@@ -8205,7 +8205,10 @@ const MODEL3={
     map:{happy_hop:'hop',giggle_wiggle:'aha',spin:'hop',wake:'hop',grumpy_wake:'hop',wave:'aha',cheeky_taunt:'cheer',surprised_jump:'hint',show_brick:'offer',look_at_you:'focused'}},
   // Pippa (approved v2, 28 Oct 2026): sunglasses on her head, a wave hello, a wink and a wobble on land
   pippa:{glb:'/3d/pippa.glb',v:'2',loops:['idle'],night:'idle',reactions:['greeting','wink','excited','wobble','hop'],
-    map:{happy_hop:'hop',giggle_wiggle:'wink',spin:'wobble',wake:'hop',grumpy_wake:'hop',wave:'greeting',cheeky_taunt:'wink',surprised_jump:'wobble',show_brick:'offer',look_at_you:'wink'}}};
+    map:{happy_hop:'hop',giggle_wiggle:'wink',spin:'wobble',wake:'hop',grumpy_wake:'hop',wave:'greeting',cheeky_taunt:'wink',surprised_jump:'wobble',show_brick:'offer',look_at_you:'wink'}},
+  // Bibi (approved v4, 29 Oct 2026; formerly Lemmie): a lion cub in a beret holding his orange brick, with a tiny roar
+  bibi:{glb:'/3d/bibi.glb',v:'4',loops:['idle'],night:'idle',reactions:['greeting','roar','idea','cheer','proud','hop'],
+    map:{happy_hop:'hop',giggle_wiggle:'proud',spin:'cheer',wake:'hop',grumpy_wake:'roar',wave:'greeting',cheeky_taunt:'roar',surprised_jump:'hop',show_brick:'offer',look_at_you:'idea'}}};
 for(const [id,m] of Object.entries(MODEL3)) RIG[id].glb=m.glb;
 const M3={wait:{}};
 function ch3Script(src){ return M3.wait[src]||(M3.wait[src]=new Promise((ok,no)=>{ const s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=()=>{ delete M3.wait[src]; no(new Error('could not load '+src)); }; document.head.appendChild(s); })); }
@@ -8229,9 +8232,13 @@ vec3 m3Aces(vec3 c){ const mat3 I=mat3(vec3(0.59719,0.07600,0.02840),vec3(0.3545
 `;
 const ch3Has3d=id=>!!(CH3.gltf[id]&&CH3.gltf[id].model);
 function ch3Pool(){ return CH3.pool||(CH3.pool=(()=>{ const c=document.createElement('canvas'); c.width=c.height=64; const x=c.getContext('2d'), g=x.createRadialGradient(32,32,0,32,32,32); g.addColorStop(0,'rgba(30,36,24,.42)'); g.addColorStop(1,'rgba(30,36,24,0)'); x.fillStyle=g; x.fillRect(0,0,64,64); return new THREE.CanvasTexture(c); })()); }
+// A copy of a model that can move on its own. A skinned mesh (Bibi's) has to be bound to the copy's own bones,
+// or the copy keeps following the original skeleton and only its face morphs play
+function m3Clone(src){ const c=src.clone(true), A=[], B=[]; src.traverse(o=>A.push(o)); c.traverse(o=>B.push(o)); const map=new Map(A.map((o,i)=>[o,B[i]]));
+  B.forEach((o,i)=>{ if(!o.isSkinnedMesh) return; const S=A[i].skeleton; o.bind(new THREE.Skeleton(S.bones.map(b=>map.get(b)),S.boneInverses),A[i].bindMatrix); }); return c; }
 class Model3{
   constructor(id){ const G=CH3.gltf[id], M=G.model; this.id=id; this.G=G; this.R=G.R; this.kind='model'; this.M=M;
-    this.obj=M.scene.clone(true); const s=this.R.h/M.h0; this.obj.scale.setScalar(s); this.obj.position.y=-M.y0*s;   // feet on the ground, as tall as his drawing was
+    this.obj=m3Clone(M.scene); const s=this.R.h/M.h0; this.obj.scale.setScalar(s); this.obj.position.y=-M.y0*s;   // feet on the ground, as tall as his drawing was
     this.body=new THREE.Group(); this.body.add(this.obj); this.root=new THREE.Group(); this.root.add(this.body); this.root.userData.puppet=1;
     this.blob=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:ch3Pool(),transparent:true,depthWrite:false})); this.blob.rotation.x=-Math.PI/2; this.blob.position.y=.01; this.blob.renderOrder=-1;
     this.blob.scale.set(this.R.h*.8,this.R.h*.45,1); this.root.add(this.blob);
@@ -10056,7 +10063,7 @@ new MutationObserver(()=>buddy3()).observe($('#buddy'),{attributes:true,attribut
 window.bloppitCharShot=async(id,frame,px,opt)=>{ opt=opt||{}; await ch3Get(id); if(opt.model) await ch3Model(id); if(opt.exp) M3.exp.value=opt.exp; const r=cv3R(), sc=new THREE.Scene(), cam=new THREE.PerspectiveCamera(24,1,.05,60), i=ch3Make(id); sc.add(i.root); cv3Lights(sc);
   ch3Dress(i,{log:[]},{ci:opt.ci!=null?opt.ci:0,wear:opt.wear||{}}); i.ctl.update(.6); if(opt.clip){ i.ctl.play(opt.clip); i.ctl.update(0); i.ctl.update(opt.t||0); }
   cv3Aim(cam,[id],frame||'full',1,-.25); r.setScissorTest(false); r.setSize(px||420,px||420,false); r.setViewport(0,0,px||420,px||420); r.clear(); r.render(sc,cam); const u=r.domElement.toDataURL('image/png'); i.ctl.dispose(); return u; };
-window.bloppitChars3d=()=>({on:ch3On(),loaded:Object.keys(CH3.gltf),tiny:{model:ch3Has3d('tiny'),clips:ch3Has3d('tiny')?Object.keys(CH3.gltf.tiny.model.clips).sort():[]},nora:{model:ch3Has3d('nora'),clips:ch3Has3d('nora')?Object.keys(CH3.gltf.nora.model.clips).sort():[]},pippa:{model:ch3Has3d('pippa'),clips:ch3Has3d('pippa')?Object.keys(CH3.gltf.pippa.model.clips).sort():[]},island:{bloppit:!!ISL3.b3,pup:!!ISL3.p3,longtail:!!ISL3.l3,clips:[ISL3.b3,ISL3.p3,ISL3.l3].map(i=>i&&(i.ctl.current||i.ctl.activeBase)?(i.ctl.current||i.ctl.activeBase).getClip().name:null)},views:CV3.views.filter(v=>v.host.classList.contains('c3on')&&v.host.offsetParent).map(v=>v.host.id||v.host.className.split(' ')[0])});
+window.bloppitChars3d=()=>({on:ch3On(),loaded:Object.keys(CH3.gltf),tiny:{model:ch3Has3d('tiny'),clips:ch3Has3d('tiny')?Object.keys(CH3.gltf.tiny.model.clips).sort():[]},nora:{model:ch3Has3d('nora'),clips:ch3Has3d('nora')?Object.keys(CH3.gltf.nora.model.clips).sort():[]},pippa:{model:ch3Has3d('pippa'),clips:ch3Has3d('pippa')?Object.keys(CH3.gltf.pippa.model.clips).sort():[]},bibi:{model:ch3Has3d('bibi'),clips:ch3Has3d('bibi')?Object.keys(CH3.gltf.bibi.model.clips).sort():[]},island:{bloppit:!!ISL3.b3,pup:!!ISL3.p3,longtail:!!ISL3.l3,clips:[ISL3.b3,ISL3.p3,ISL3.l3].map(i=>i&&(i.ctl.current||i.ctl.activeBase)?(i.ctl.current||i.ctl.activeBase).getClip().name:null)},views:CV3.views.filter(v=>v.host.classList.contains('c3on')&&v.host.offsetParent).map(v=>v.host.id||v.host.className.split(' ')[0])});
 // On the website the logo opens the menu; on the menu itself it goes to bloppit.com's front page. (The app handles its own links above.)
 $('#brandLink').addEventListener('click',e=>{ if(APP||tab==='home') return; e.preventDefault(); setTab('home'); });
 // Links straight to a page: /build/#photos, #library, #trails, #otter, #brain, #together, #blitz, #daily (anything else opens the menu).
