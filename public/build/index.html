@@ -65,6 +65,27 @@
 <title>Bloppit: Build it. Grow your world.</title>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <linearGradient id="gbTop" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C5CFF"/><stop offset=".55" stop-color="#4B2DBF"/><stop offset="1" stop-color="#2A1A7A"/></linearGradient>
+  <radialGradient id="gbNebTop" cx=".38" cy=".42" r=".55"><stop offset="0" stop-color="#FF7AD9" stop-opacity=".85"/><stop offset=".5" stop-color="#C04DE0" stop-opacity=".35"/><stop offset="1" stop-color="#C04DE0" stop-opacity="0"/></radialGradient>
+  <linearGradient id="gbLeft" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3A2496"/><stop offset="1" stop-color="#1C1158"/></linearGradient>
+  <radialGradient id="gbNebLeft" cx=".7" cy=".4" r=".7"><stop offset="0" stop-color="#3FD2FF" stop-opacity=".55"/><stop offset="1" stop-color="#3FD2FF" stop-opacity="0"/></radialGradient>
+  <linearGradient id="gbRight" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#25166E"/><stop offset="1" stop-color="#110A3A"/></linearGradient>
+  <radialGradient id="gbNebRight" cx=".35" cy=".5" r=".7"><stop offset="0" stop-color="#FF7AD9" stop-opacity=".4"/><stop offset="1" stop-color="#FF7AD9" stop-opacity="0"/></radialGradient>
+  <linearGradient id="gbCap" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9C86FF"/><stop offset="1" stop-color="#5A3BD6"/></linearGradient>
+  <clipPath id="gbcTop"><path d="M14 40 L66 14 L106 34 L54 60 Z"/></clipPath><clipPath id="gbcLeft"><path d="M14 40 L54 60 L54 84 L14 64 Z"/></clipPath><clipPath id="gbcRight"><path d="M54 60 L106 34 L106 58 L54 84 Z"/></clipPath>
+  <g id="gbBlock">
+    <path d="M14 40 L54 60 L54 84 L14 64 Z" fill="url(#gbLeft)"/><path d="M14 40 L54 60 L54 84 L14 64 Z" fill="url(#gbNebLeft)"/>
+    <g clip-path="url(#gbcLeft)" fill="#fff"><circle cx="24" cy="54" r="1" opacity=".8"/><circle cx="38" cy="66" r=".8" opacity=".6"/><circle cx="46" cy="72" r="1.2" opacity=".9"/><circle cx="30" cy="62" r=".6" opacity=".5"/></g>
+    <path d="M54 60 L106 34 L106 58 L54 84 Z" fill="url(#gbRight)"/><path d="M54 60 L106 34 L106 58 L54 84 Z" fill="url(#gbNebRight)"/>
+    <g clip-path="url(#gbcRight)" fill="#fff"><circle cx="66" cy="66" r=".9" opacity=".7"/><circle cx="80" cy="56" r="1.2" opacity=".9"/><circle cx="94" cy="52" r=".7" opacity=".6"/><circle cx="72" cy="72" r=".6" opacity=".5"/><circle cx="99" cy="44" r=".8" opacity=".7"/></g>
+    <path d="M14 40 L66 14 L106 34 L54 60 Z" fill="url(#gbTop)"/><path d="M14 40 L66 14 L106 34 L54 60 Z" fill="url(#gbNebTop)"/>
+    <g clip-path="url(#gbcTop)" fill="#fff"><circle cx="30" cy="40" r=".9" opacity=".8"/><circle cx="88" cy="34" r=".8" opacity=".7"/><circle cx="62" cy="48" r=".7" opacity=".6"/><circle cx="50" cy="24" r=".7" opacity=".6"/></g>
+    <path d="M14 40 L66 14 L106 34 L106 58 L54 84 L14 64 Z M14 40 L54 60 L106 34 M54 60 L54 84" fill="none" stroke="#120A33" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M63 30 v-6 a10 5 0 0 0 20 0 v6 a10 5 0 0 1 -20 0 Z" fill="#2E1C86" stroke="#120A33" stroke-width="1.6" stroke-linejoin="round"/><ellipse cx="73" cy="24" rx="10" ry="5" fill="url(#gbCap)" stroke="#120A33" stroke-width="1.6"/><ellipse cx="70" cy="22.5" rx="4" ry="1.6" fill="#fff" opacity=".45"/>
+    <path d="M37 43 v-6 a10 5 0 0 0 20 0 v6 a10 5 0 0 1 -20 0 Z" fill="#2E1C86" stroke="#120A33" stroke-width="1.6" stroke-linejoin="round"/><ellipse cx="47" cy="37" rx="10" ry="5" fill="url(#gbCap)" stroke="#120A33" stroke-width="1.6"/><ellipse cx="44" cy="35.5" rx="4" ry="1.6" fill="#fff" opacity=".45"/>
+    <path d="M94 40 l1.6 4.4 4.4 1.6 -4.4 1.6 -1.6 4.4 -1.6 -4.4 -4.4 -1.6 4.4 -1.6 Z" fill="#FFF6C8"/>
+  </g></defs></svg>
 <svg class="sr" width="0" height="0" aria-hidden="true" focusable="false"><defs>
 <symbol id="bh" viewBox="0 0 200 175"><image href="/art/head-bloppit.png" x="0" y="-12" width="200" height="200" preserveAspectRatio="xMidYMid meet"/></symbol>
 <symbol id="bh2" viewBox="0 0 200 175"><circle cx="42" cy="38" r="16" fill="#C08A5E"/><circle cx="42" cy="38" r="7" fill="#9C6A42"/><circle cx="158" cy="38" r="16" fill="#C08A5E"/><circle cx="158" cy="38" r="7" fill="#9C6A42"/><ellipse cx="100" cy="94" rx="88" ry="74" fill="#C08A5E"/><ellipse cx="100" cy="116" rx="56" ry="40" fill="#FBEBD3"/><ellipse cx="64" cy="88" rx="17" ry="20" fill="#1B1410"/><ellipse cx="136" cy="88" rx="17" ry="20" fill="#1B1410"/><circle cx="70" cy="80" r="6" fill="#fff"/><circle cx="142" cy="80" r="6" fill="#fff"/><path d="M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z" fill="#3A2418"/><path d="M86 124 q14 12 28 0" stroke="#3A2418" stroke-width="4" stroke-linecap="round" fill="none"/></symbol>
@@ -112,6 +133,10 @@
   --callout:#1B2F46; --accent:#EF5348; --accent-ink:#FFFFFF; --hi:#F4BC22; --shadow:rgba(0,0,0,.35); --paper:#19222C; --dot:#2C3946; color-scheme:dark }
 
 *{box-sizing:border-box}
+/* a Galaxy Block, the size of the text around it */
+.gb-ic{display:inline-block;width:1.35em;height:1.13em;vertical-align:-.22em;flex:none}
+.decor-grid .cost .gb-ic,.win-rows .gb-ic{width:1.35em!important;height:1.13em!important;margin:0!important;display:inline-block!important}
+.gb-stars{color:#F4BC22;letter-spacing:1px}.gb-stars i{font-style:normal;color:var(--line)}
 html,body{min-height:100%}
 /* the page never slides sideways (iPhone web views let a slightly crooked vertical swipe drift the page left and right).
    clip, not hidden, so the sticky header keeps working; scrollers inside the page (tabs, chips) still scroll */
@@ -1440,7 +1465,7 @@ body.film-on{overflow:hidden}
 <div class="gamebar" id="gameBar" hidden>
   <div class="gb-where" id="gbWhere"></div>
   <div class="gb-lvl"><span class="gb-badge" id="gbBadge">1</span><div><div class="tag">Level <span id="gbNum"></span></div><strong id="gbName"></strong></div></div>
-  <div class="gb-score"><div class="tag">Points for this level</div><b id="gbPts">100</b><span class="gb-of" id="gbOf"></span><span class="gb-flash" id="gbFlash"></span></div>
+  <div class="gb-score"><div class="tag">Stars for this build</div><b id="gbPts" class="gb-stars">★★★</b><span class="gb-of" id="gbOf"></span><span class="gb-flash" id="gbFlash"></span></div>
   <div class="gb-costs" id="gbCosts"></div>
   <div class="gb-btns"><button class="ghost" id="gbMap" type="button">Level map</button></div>
 </div>
@@ -1704,18 +1729,18 @@ body.film-on{overflow:hidden}
     <button class="primary sm" id="btOpen" type="button">Open it</button>
   </div>
   <div class="gm-head">
-    <div><h2 id="gmTitle">Frog Trail</h2><p class="note" id="gmIntro">Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, so they’re worth more points.</p></div>
-    <div class="gm-total"><span class="tag" id="gmWho">Your points</span><b id="gmTotal">0</b><span class="note" id="gmDone"></span><button class="ghost sm-link" id="gmSwitch" type="button">Switch player</button></div>
+    <div><h2 id="gmTitle">Frog Trail</h2><p class="note" id="gmIntro">Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, and Tiny cheers you all the way.</p></div>
+    <div class="gm-total"><span class="tag" id="gmWho">Your stars</span><b id="gmTotal">0</b><span class="note" id="gmDone"></span><button class="ghost sm-link" id="gmSwitch" type="button">Switch player</button></div>
   </div>
   <div class="gm-rules">
-    <span><b>Finish a level</b> to earn its points</span>
-    <span><b>Hint</b> costs 5 points (it lasts for one step)</span>
-    <span><b>Place one for me</b> costs 10</span>
-    <span>★★★ for keeping 90% or more</span>
+    <span>★ <b>Finish</b> the build</span>
+    <span>★ <b>No hints</b> or placed-for-you</span>
+    <span>★ <b>Perfect</b>: no help and no wrong bricks</span>
+    <span>Every ★ earns a Galaxy Block</span>
   </div>
   <div class="gm-math" id="gmMath">
     <b class="gm-mt">🧠 Math puzzles</b>
-    <p class="note">Some booklet pages are locked with a math puzzle from Bloppit. Solve it to open the page and earn <b>+10 points</b>. Puzzles get harder as the levels go up, and higher levels lock more pages.</p>
+    <p class="note">Some booklet pages are locked with a math puzzle from Bloppit. Solve it to open the page. Puzzles get harder as the levels go up, and higher levels lock more pages.</p>
     <div class="gm-age"><label for="mathAge">Player’s age</label>
       <select class="inp" id="mathAge"></select><span class="note" style="margin:0">for <b id="mathAgeFor"></b></span>
       <span class="tag" id="mathTier"></span></div>
@@ -1867,14 +1892,14 @@ body.film-on{overflow:hidden}
     <div class="is-btns"><button class="ghost" id="isDecor" type="button">✨ Decorate</button><button class="ghost" id="isCard" type="button" hidden>📮 Postcard</button><button class="ghost" id="isBuildsGo" type="button" hidden>📦 Your builds</button></div></div>
   <div class="card is-intro" id="isIntro" hidden>
     <div class="ii-head"><span class="ii-pup" id="iiPup"></span><div><h2 id="iiTitle">Welcome to Bloppitopia</h2><p id="iiTxt">Your otter lives here with Bloppit.</p></div></div>
-    <p style="margin:0">Every build you finish grows the island, and your models stand on it. Build Stars buy decorations.</p>
+    <p style="margin:0">Every build you finish grows the island, and your models stand on it. Builds earn Galaxy Blocks, and Bibi’s shop sells decorations for them.</p>
     <ol class="ii-steps" id="iiSteps"></ol>
     <div class="ii-btns"><button class="primary sm" id="iiNext" type="button">Keep building</button><button class="ghost" id="iiWeekly" type="button">📅 This week’s Bloppit</button><button class="ghost" id="iiLook" type="button">Look around</button></div>
   </div>
   <div class="card is-card"><div class="island" id="isWorld"></div><div class="is-a11y" id="isA11y"></div>
     <div class="is-foot"><div class="is-stage" id="isStage"></div><div class="is-next" id="isNext"></div><div class="is-prog" id="isProg" hidden></div></div></div>
   <div class="card is-shop" id="isShop" hidden>
-    <div class="gm-head sub-head"><div><h2>✨ Decorate your island</h2><p class="note">Build Stars buy decorations. Nothing here is ever sold for money. <b id="isStars"></b></p></div><button class="ghost" id="isShopClose" type="button">Done</button></div>
+    <div class="gm-head sub-head"><div><h2>✨ Bibi’s shop</h2><p class="note">Spend your Galaxy Blocks on decorations for your island. Nothing here is ever sold for money. <b id="isStars"></b></p></div><button class="ghost" id="isShopClose" type="button">Done</button></div>
     <div class="decor-grid" id="decorGrid"></div>
   </div>
   <div class="card is-builds"><div class="gm-head sub-head"><div><h2>📦 Your builds</h2><p class="note" id="isBuildsNote"></p></div></div><div class="builds-grid" id="buildsGrid"></div></div>
@@ -3948,7 +3973,7 @@ function tryPlace(){
   const o=curOff(), u=usedSet();
   const turned=sel.sx!==sel.sz&&s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o||Math.abs(b.x+o.x-ax)<=2&&Math.abs(b.z+o.z-az)<=2));
   const wrong=wrongBrickMsg();
-  if(!autoBusy) run.miss++;
+  if(!autoBusy){ run.miss++; if(game&&!mp) updateGameBar(); }
   setStatus(wrong||(turned?turnTip():'Not quite. Compare with the picture in the booklet.'),'err');
   sfx.bonk();
   const g=ghostGroup.children[0]; if(g){g.material=errMat; setTimeout(()=>{if(g.parent) g.material=ghostMat(sel?sel.c:0);},380);}
@@ -5565,18 +5590,24 @@ function levelCount(L){
   return L.count=m&&m.bricks?m.bricks.length:0;
 }
 const levelScore=()=>{ const L=levelsOf(gameTrail())[game.lvl], p=game.pen; return Math.max(Math.round(L.pts*.1), L.pts-p.hint*5-p.auto*10)+(game.math?game.math.pts:0); };
-const starsFor=(sc,L)=>sc>=L.pts*.9?3:sc>=L.pts*.6?2:1;
+const starsFor=(sc,L)=>sc>=L.pts*.9?3:sc>=L.pts*.6?2:1;   // the old points rule, only for levels finished before builds kept their ★
+// A level's ★: its best build on the island record (finished · no hints or placed-for-you · no wrong bricks)
+function levelStars(tr,i,o,best){ const L=levelsOf(tr)[i]; o=o||worldStore(); const b=L&&o.builds[`t:${tr}:${i}:${L.name}`]; return b&&b.s?b.s:best?starsFor(best,L):0; }
+const trailStars=(tr,o)=>{ o=o||worldStore(); const B=bestOf(gameStore(),tr); return levelsOf(tr).reduce((a,_,i)=>a+(B[i]?levelStars(tr,i,o,B[i]):0),0); };
+// The ★ this attempt is on course for (shown in the level card as you build)
+const runStars=()=>{ const p=game?game.pen:{hint:0,auto:0}, noHelp=p.hint+p.auto===0; return 1+(noHelp?1:0)+(noHelp&&!(run&&run.miss)?1:0); };
 const starHTML=n=>'★'.repeat(n)+`<i>${'★'.repeat(3-n)}</i>`;
 function charge(kind,n){
   if(mp){ mp.pen[kind]++; mpSendPen(); }
   else { game.pen[kind]++; updateGameBar(); }
-  const f=$(mp?'#mpFlash':'#gbFlash'); f.textContent='−'+n; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go');
+  if(!mp) return;   // a trail level shows the ★ it drops in the game bar instead
+  const f=$('#mpFlash'); f.textContent='−'+n; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go');
 }
 function updateGameBar(){
   const on=!!game;
   $('#gameBar').hidden=!(on&&(tab==='build'||tab==='box'));
-  $('#hintBtn').textContent=(mp&&mp.state&&mp.state.mode==='blitz')?(mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'):(on||mp)?'Hint (−5)':'Hint';
-  $('#autoBtn').textContent=(on||mp)?'Place one for me (−10)':'Place one for me';
+  $('#hintBtn').textContent=(mp&&mp.state&&mp.state.mode==='blitz')?(mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'):mp?'Hint (−5)':'Hint';
+  $('#autoBtn').textContent=mp?'Place one for me (−10)':'Place one for me';
   if(!on) return;
   const LV=levelsOf(gameTrail()), L=LV[game.lvl], p=game.pen;
   // Where you are: the trail (with its friend) and the island it grows
@@ -5584,10 +5615,9 @@ function updateGameBar(){
     let iname=''; try{ iname=ISLES[isle].name; }catch(e){}
     $('#gbWhere').innerHTML=`${who?`<img src="/art/head-${who}.png" alt="">`:''}<div><strong>${escapeHTML(T.name)}</strong>${iname?`<small>🏝️ ${escapeHTML(iname)}</small>`:''}</div>`; }
   $('#gbBadge').textContent=game.lvl+1; $('#gbNum').textContent=`${game.lvl+1} of ${LV.length}`; $('#gbName').textContent=L.name;
-  $('#gbPts').textContent=levelScore(); $('#gbOf').textContent=`of ${L.pts}`;
-  const bits=[]; if(p.hint) bits.push(`Hints ${p.hint}× −${p.hint*5}`); if(p.auto) bits.push(`Placed for you ${p.auto}× −${p.auto*10}`);
-  if(game.math) bits.push(`Math ${game.math.solved.length} of ${game.math.locks.length} pages${game.math.pts?` +${game.math.pts}`:''}`);
-  if(L.pts-p.hint*5-p.auto*10<Math.round(L.pts*.1)) bits.push(`Minimum for finishing: ${Math.round(L.pts*.1)}`);   // the floor: finishing always earns a tenth of the level
+  { const st=runStars(); $('#gbPts').innerHTML=starHTML(st); $('#gbOf').textContent=''; if(game.lastSt&&st<game.lastSt){ const f=$('#gbFlash'); f.textContent='−★'; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); } game.lastSt=st; }
+  const bits=[]; if(p.hint) bits.push(`Hints ${p.hint}`); if(p.auto) bits.push(`Placed for you ${p.auto}`); if(run&&run.miss) bits.push(`Wrong bricks ${run.miss}`);
+  if(game.math) bits.push(`Math ${game.math.solved.length} of ${game.math.locks.length} pages`);
   $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>';
 }
 window.bloppitLevels={otter:OTTER_LEVELS,brain:BRAIN_LEVELS,sea:SEA_LEVELS,blitz:BLITZ_PICKS,mystery:()=>MYSTERY,progress:()=>gameProgress(worldStore()),lib:()=>SAMPLES.filter(released).map(s=>s.name),weekly:w=>weeklyPuzzle(w),count:L=>{ delete L.count; return levelCount(L); },pic:n=>{ const S=SAMPLES.find(x=>x.name===n); return S?S.make()[0][1].toDataURL():null; },thumb:L=>levelThumb(L)};   // for tests and tuning
@@ -5697,7 +5727,8 @@ function endReveal(instant){
 }
 function winLevel(){
   if(!game) return;
-  const LV=levelsOf(gameTrail()), i=game.lvl, L=LV[i], p=game.pen, sc=levelScore(), st=starsFor(sc,L), tr=gameTrail();
+  const LV=levelsOf(gameTrail()), i=game.lvl, L=LV[i], p=game.pen, sc=levelScore(), tr=gameTrail(), W=worldLast&&worldLast.key&&worldLast.key.startsWith('t:')?worldLast:null;
+  const noHelp=W?W.noHint:p.hint+p.auto===0, clean=W?W.clean:noHelp&&!run.miss, st=W?W.stars:1+(noHelp?1:0)+(clean?1:0);
   const g=gameStore(), B=bestOf(g,tr), prev=B[i]||0; if(sc>prev) B[i]=sc; gameStoreSet(g);
   setTrail(tr); winLvl=i;
   $('#winStars').innerHTML=starHTML(st); worldSound();
@@ -5706,15 +5737,10 @@ function winLevel(){
     el.classList.toggle('three',tiny&&hasPup(o));
     if(reveal&&reveal.url) el.hidden=true; else if(hasPup(o)) cheer3(el,tiny?['bloppit','pup',fid]:['bloppit','pup'],tiny?['cheer','happy_hop',tc]:['cheer','happy_hop']); else cheer3(el,tiny?['bloppit',fid]:'bloppit',tiny?['cheer',tc]:'cheer'); }
   $('#winTitle').textContent=`${TRAILS[tr].icon} Level ${i+1} complete!`;
-  const rows=[[`Built the ${L.name}`,L.pts,'']];
-  if(p.hint) rows.push([`Hints (${p.hint})`,-p.hint*5,'neg']);
-  if(p.auto) rows.push([`Placed for you (${p.auto})`,-p.auto*10,'neg']);
-  const mpts=game.math?game.math.pts:0;
-  if(mpts) rows.push([`Math puzzles solved first time (${mpts/10})`,mpts,'']);
-  if(L.pts-p.hint*5-p.auto*10+mpts<sc) rows.push(['Minimum for finishing',sc-(L.pts-p.hint*5-p.auto*10+mpts),'']);
-  $('#winRows').innerHTML=rows.map(([a,b,c])=>`<div class="${c}"><span>${a}</span><span>${b>0?'+':''}${b}</span></div>`).join('')+`<div class="tot"><span>Points</span><span>${sc}</span></div>`;
-  const total=Object.values(B).reduce((a,b)=>a+b,0);
-  $('#winBest').textContent=(sc>prev&&prev?`New best! (was ${prev}) · `:'')+`${TRAILS[tr].name}: ${total.toLocaleString()} points`;
+  const rows=[[`Built the ${L.name}`,true],[noHelp?'No hints or placed-for-you':`Help used (${p.hint+p.auto})`,noHelp],[clean?'Perfect: no help, no wrong bricks':run.miss?`Perfect: no wrong bricks (${run.miss} this time)`:'Perfect: no help, no wrong bricks',clean]];
+  $('#winRows').innerHTML=rows.map(([a,ok])=>`<div class="${ok?'':'neg'}"><span>${a}</span><span>${ok?'★':'–'}</span></div>`).join('')
+    +`<div class="tot"><span>Galaxy Blocks</span><span>+${W?W.gained:0} ${gbIc()}</span></div>`;
+  { const o=worldStore(), ts=trailStars(tr,o), all=LV.length*3; $('#winBest').textContent=`${TRAILS[tr].name}: ${ts} of ${all} ★`; }
   const last=i>=LV.length-1, wait=!last&&tr==='sea'&&!seaWashed(i+1);
   $('#winNext').innerHTML=last?'All levels done!':wait?`<img class="nb-pic" src="${levelThumb(LV[i+1])}" alt=""><span>Next puzzle<small>Washes ashore at ${seaPct(i+1)}% of Bloppitopia</small></span>`:`<img class="nb-pic" src="${levelThumb(LV[i+1])}" alt=""><span>Next<small>Level ${i+2}: ${escapeHTML(LV[i+1].name)}</small></span>`; $('#winNext').disabled=last||wait;
   { const isle={otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr]; $('#winIsland').textContent=`🏝️ Back to Bloppitopia`; $('#winIsland').title=isle&&ISLES[isle]?`See ${ISLES[isle].name} grow`:''; }
@@ -5734,18 +5760,17 @@ function renderGameMap(){
   $('#trOtter').setAttribute('aria-selected',trail==='otter'); $('#trBrain').setAttribute('aria-selected',trail==='brain'); $('#trSea').setAttribute('aria-selected',trail==='sea');
   $('#gmTitle').textContent=`${T.icon} ${T.name}`;
   const pct=trail==='sea'?progressPct(worldStore()):0;
-  $('#gmIntro').textContent=trail==='brain'?'A different set of puzzles, with Bloppit’s math puzzles locking some booklet pages. Solve them to keep building and earn bonus points.':trail==='sea'?`Pippa’s seaside puzzles wash ashore as Bloppitopia grows: a new one about every 8% (you’re at ${pct}%). Each one you build grows Sunrise Shores.`:'Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, so they’re worth more points.';
-  $('#gmTotal').textContent=total.toLocaleString(); $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} points`; syncMathUI();
+  $('#gmIntro').textContent=trail==='brain'?'A different set of puzzles, with Bloppit’s math puzzles locking some booklet pages. Solve them to keep building.':trail==='sea'?`Pippa’s seaside puzzles wash ashore as Bloppitopia grows: a new one about every 8% (you’re at ${pct}%). Each one you build grows Sunrise Shores.`:'Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, and Tiny cheers you all the way.';
+  { const ts=trailStars(trail); $('#gmTotal').textContent=`${ts} ★`; $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} stars`; $('#gmDone').dataset.of=`${levelsOf(trail).length*3}`; } syncMathUI();
   $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} ${trail==='sea'?'puzzles built':'levels done'}`;
   $('#gmLevels').innerHTML=levelsOf(trail).map((L,i)=>{
     const best=B[i], ashore=trail!=='sea'||seaWashed(i), open=i<=unlocked&&(ashore||!!best), cur_=game&&game.lvl===i&&gameTrail()===trail;
-    const st=best?starsFor(best,L):0;
+    const st=best?levelStars(trail,i,null,best):0;
     return `<button class="lvl${i===unlocked&&!best?' next':''}" type="button" data-i="${i}" ${open?'':'disabled'}>
       <span class="ln">${i+1}</span>${cur_?'<span class="tagnew">Playing</span>':(i===unlocked&&!best?'<span class="tagnew">Next</span>':'')}
       <img alt="" src="${levelThumb(L)}"><span class="lt">${L.boss?'👑 Boss: ':''}${L.name}</span>
       <span class="lm" data-c="${i}">${L.count?`${L.count} bricks`:'&nbsp;'}</span>
-      <span class="lp">${L.pts} points</span>
-      ${best?`<span class="ls">${starHTML(st)}</span><span class="lb">Best: ${best}</span>`:open?'<span class="lb">Not played yet</span>':!ashore?`<span class="lb">🌊 Washes ashore at ${seaPct(i)}%</span>`:`<span class="lb">Finish level ${i} to unlock</span>`}
+      ${best?`<span class="ls">${starHTML(st)}</span><span class="lb">${st===3?'All three stars!':'Built ✓'}</span>`:open?'<span class="lb">Not played yet</span>':!ashore?`<span class="lb">🌊 Washes ashore at ${seaPct(i)}%</span>`:`<span class="lb">Finish level ${i} to unlock</span>`}
     </button>`; }).join('');
   // Work out brick counts a few at a time so the map appears straight away
   let k=0; (function next(){ if(tab!=='game'||k>=levelsOf(trail).length) return; const L=levelsOf(trail)[k], el=document.querySelector(`[data-c="${k}"]`); if(el&&!L.count){ levelCount(L); el.textContent=`${L.count} bricks`; } k++; setTimeout(next,0); })();
@@ -5912,7 +5937,7 @@ function mathAnswer(v){
   const n=Number(String(v).replace('−','-').trim());
   if(n===P.a){
     const first=mq.tries===0; game.math.solved.push(k); if(first){ game.math.pts+=10; mathStreak(true); }
-    fb.dataset.kind='ok'; fb.textContent=first?'Yes! Page unlocked. +10 points':'Yes! Page unlocked.';
+    fb.dataset.kind='ok'; fb.textContent='Yes! Page unlocked.';
     sfx.chime(); sfx.chirp(); mq=null; updateGameBar(); unlockPage(k); saveSoon();
     setTimeout(()=>{ if($('#mathDlg').open) $('#mathDlg').close(); },900);
     return;
@@ -5964,6 +5989,7 @@ syncMathUI();
 /* ---------- Player picker ---------- */
 $('#whoAge').innerHTML+=AGE_OPTS;
 const initial=n=>escapeHTML((n.trim()[0]||'?').toUpperCase());
+function playerRating(id){ try{ const o=JSON.parse(localStorage.getItem(keyFor(id,WORLD_KEY))||'null'); return o&&o.builds?worldRating(o):0; }catch(e){ return 0; } }
 function playerStats(id){ const g=gameStore(id), sum=o=>Object.values(o||{}).reduce((a,b)=>a+b,0);
   return {pts:sum(g.best)+sum(g.bbest)+sum(g.sbest), lv:Object.keys(g.best||{}).length, blv:Object.keys(g.bbest||{}).length, slv:Object.keys(g.sbest||{}).length}; }
 function renderWho(){
@@ -5974,7 +6000,7 @@ function renderWhoList(){
     return `<div class="who-card${p.id===players.cur?' now':''}" role="button" tabindex="0" data-id="${p.id}" aria-label="Play as ${escapeHTML(p.name)}">
       ${p.id===players.cur?'<span class="now-tag">Playing</span>':''}<button class="who-edit" type="button" data-edit="${p.id}" aria-label="Edit ${escapeHTML(p.name)}">Edit</button>
       <span class="av" style="background:${p.color}">${initial(p.name)}</span><b>${escapeHTML(p.name)}</b>
-      <span class="meta">${p.age?`Age ${p.age}${p.age===15?'+':''} · `:''}${st.pts.toLocaleString()} points</span>
+      <span class="meta">${p.age?`Age ${p.age}${p.age===15?'+':''} · `:''}${playerRating(p.id)} ★</span>
       <span class="meta">🐸 ${st.lv} · 🧠 ${st.blv} of ${OTTER_LEVELS.length} levels</span></div>`; }).join('');
 }
 let whoEditing=null, whoColor=AV_COLORS[0];
@@ -7033,7 +7059,7 @@ function bottleSync(){ try{
   const tb=$('#tab-sea'); if(tb) tb.classList.toggle('bottle-on',!got&&!!o.arrived);
   if(!card) return; card.classList.toggle('waiting',!got);
   $('#btTitle').textContent=got?'Pippa’s message':'A message in a bottle!';
-  $('#btSub').textContent=got?`+${BOTTLE_XP} XP · another bottle washes up tomorrow`:`Pippa sends one every day. Open it for +${BOTTLE_XP} XP.`;
+  $('#btSub').textContent=got?`+${BOTTLE_XP} XP and a Galaxy Block · another bottle washes up tomorrow`:`Pippa sends one every day. Open it for +${BOTTLE_XP} XP and a Galaxy Block.`;
   $('#btMsg').hidden=!got; $('#btMsg').textContent=got?bottleLine(day):'';
   $('#btOpen').hidden=got;
 }catch(e){} }
@@ -7041,6 +7067,7 @@ $('#btOpen').onclick=()=>{ const o=worldStore(), day=dayKey(); if(bottleDays(o).
   o.bottles=[...bottleDays(o),day].sort(); o.xp=worldXP(o); worldSet(o); track('bottle');
   try{ sfx.chime(); }catch(e){} try{ sfx.voice('pippa'); }catch(e){} bottleSync(); };
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden) bottleSync(); });
+window.bloppitWorld=()=>{ const o=worldStore(); return {level:otterLevel(o),stage:PUP_STAGES[pupStage(o)].name,galaxy:worldStars(o),stars:worldRating(o),xp:worldXP(o)}; };   // for tests
 window.bloppitBottle=()=>({day:dayKey(),days:bottleDays(worldStore()),xp:worldXP(worldStore()),dot:$('#tab-sea').classList.contains('bottle-on')});   // for tests
 // Bibi's Weekly card on the Quick Build page: this week's model and whether it's done
 function qbWeeklySync(){ try{ const week=weekOf(), o=weeklyPuzzle(week), me=weeklyStore().weeks[week];
@@ -7194,18 +7221,19 @@ loadSample(0); setTab('create'); clearTimeout(timer); rebuild(); requestAnimatio
     $('#resume').hidden=false;
   } else saveOn=true;
 }
-/* ---------- Your world (Bloppitopia Lite): XP, Build Stars and the pup ----------
-   Two currencies and no more (Build Stars draft, Oct 2026). XP measures how much you have built; Build Stars how
-   well. Every finished model earns XP once (10 short / 20 medium / 35 long) and up to three stars: one for
-   finishing, one for no hints, one for clean (no wrong placements either). Stars on a model are the best of all
-   attempts. The Weekly's first finish adds +10 XP and a bonus star; a Blitz win against a Longtail is 10 XP and one
-   star, never clean stars. Nothing is bought, sold, traded or lost. The record lives per player on this device
+/* ---------- Your world (Bloppitopia Lite): XP, stars, Galaxy Blocks and the pup ----------
+   One job each (30 Oct 2026). ★ say how well you built: up to three per model (finished · no hints or placed-for-you ·
+   perfect: no help and no wrong bricks), its best attempt, never spent. Galaxy Blocks are the pocket money: one per ★ earned, plus the Weekly,
+   From Memory, the daily bottle and island finales; Bibi's shop sells decorations for them. XP (every new build, and
+   the bottle) sets the Otter Level, which unlocks outfits and grows the otter (Splash at 4, Legend at 8). Nothing is bought, sold, traded or lost. The record lives per player on this device
    and under the pup on the server (the world field); nothing in it is typed by a child: the pup's name is an
    index into a fixed list, and a photo build is keyed by a hash of its file name. */
 var WORLD_KEY='bloppit-world-v1', worldLast=null;
 var PUP_NAMES=['Pebble','Kelp','Sandy','Bubbles','Coral','Finn','Misty','Shelly','Ripple','Dash','Mango','Tide'];
 // Splash at 25 builds, Legend at 65 (of about 71 core builds), so Legend comes near the end of the core content.
-var PUP_STAGES=[{name:'Pup',at:0},{name:'Splash',at:25},{name:'Legend',at:65}];
+var PUP_STAGES=[{name:'Pup',at:0,lvl:1},{name:'Splash',at:25,lvl:4},{name:'Legend',at:65,lvl:8}];
+// From 30 Oct 2026 the otter grows with its Otter Level. An otter that had already reached a stage by builds keeps it.
+const GROW_SWITCH=Date.UTC(2026,9,30,3);
 // Until 24 Oct 2026 it was Splash at 10 and Legend at 40: an otter keeps any stage it reached under those
 // (worked out from when its builds were finished, so every device agrees and nothing new is stored).
 var PUP_STAGES_OLD=[0,10,40], PUP_SWITCH=Date.UTC(2026,9,24,3);
@@ -7264,19 +7292,26 @@ const buildXP=(k,b)=>(b.k==='blitz'?10:Math.max(sizeXP(b.n),(b.t||Infinity)<XP_S
 const BOTTLE_XP=5;   // Pippa's message in a bottle: one a day
 const worldXP=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+buildXP(k,b),0)+BOTTLE_XP*bottleDays(o).length;
 const bottleDays=o=>(Array.isArray(o.bottles)?o.bottles:[]).filter(d=>typeof d==='string'&&/^\d{4}-\d\d-\d\d$/.test(d));
-const worldStarsEarned=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+(b.s||0)+(k.startsWith('w:')?1:0)+(b.m?1:0),0)+finaleStars(o);
+// Galaxy Blocks: the game's pocket money. A build earns one per ★ (its best), a Weekly and a From Memory build one more,
+// each daily bottle one, and a finished island 5 (the whole world 10 more). Decorations spend them; ★ ratings are never spent.
+const worldStarsEarned=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+(b.s||0)+(k.startsWith('w:')?1:0)+(b.m?1:0),0)+finaleStars(o)+bottleDays(o).length;
+const gbIc=()=>'<svg class="gb-ic" viewBox="0 0 120 100" aria-hidden="true"><use href="#gbBlock"/></svg>';
+const gbN=n=>`${n} Galaxy Block${n===1?'':'s'}`;
 function finaleStars(o){ try{ if(typeof ISLES==='undefined') return 0; const n=islesComplete(o).length; return n*5+(n===ISLE_TOTAL?10:0); }catch(e){ return 0; } }
 // Put away / put back: the time it was put away, or minus the time it came back; on a merge the latest choice wins (old 1/0 lose to any timed one)
 const isAway=(o,k)=>((o.away||{})[k]||0)>0, awayMark=back=>back?-Date.now():Date.now();
 function awayMerge(a,b){ const o={...(a||{})}; for(const [k,v] of Object.entries(b||{})) if(!(k in o)||Math.abs(+v||0)>Math.abs(+o[k]||0)) o[k]=v; return o; }
 const decorOut=o=>(o.decor||[]).filter(id=>!isAway(o,'decor:'+id));   // decorations on the island (not put away)   // decorations on the island (not put away)
 const worldStarsSpent=o=>(o.decor||[]).reduce((a,id)=>{ if((o.free||[]).includes(id)) return a; const d=DECOR.find(x=>x.id===id); return a+(d?d.cost:0); },0);
-const worldStars=o=>worldStarsEarned(o)-worldStarsSpent(o);
+const worldStars=o=>worldStarsEarned(o)-worldStarsSpent(o);   // Galaxy Blocks to spend
+const worldRating=o=>Object.values(o.builds||{}).reduce((a,b)=>a+(b.s||0),0);   // ★ earned, all builds
 const stageOf=(list,n)=>{ let k=0; list.forEach((st,i)=>{ if(n>=st.at) k=i; }); return k; };
 const pupHeld=o=>{ const n=Object.values(o.builds||{}).filter(b=>b&&(b.t||Infinity)<PUP_SWITCH).length; return n>=PUP_STAGES_OLD[2]?2:n>=PUP_STAGES_OLD[1]?1:0; };
-const pupStage=o=>Math.max(stageOf(PUP_STAGES,worldCount(o)),pupHeld(o)), islandStage=o=>stageOf(ISLAND_STAGES,worldCount(o));
+const pupByLevel=o=>{ const lv=otterLevel(o); let k=0; PUP_STAGES.forEach((st,i)=>{ if(lv>=st.lvl) k=i; }); return k; };
+const pupByBuildsBefore=o=>stageOf(PUP_STAGES,Object.values(o.builds||{}).filter(b=>b&&(b.t||Infinity)<GROW_SWITCH).length);
+const pupStage=o=>Math.max(pupByLevel(o),pupByBuildsBefore(o),pupHeld(o)), islandStage=o=>stageOf(ISLAND_STAGES,worldCount(o));
 // How far to the next stage (0–100); an otter that kept a stage early starts its bar from where it is
-const pupPct=(o,ps)=>{ const n=worldCount(o), nx=PUP_STAGES[ps+1]; if(!nx) return 100; const from=Math.min(PUP_STAGES[ps].at,n); return Math.max(0,Math.min(100,Math.round(100*(n-from)/Math.max(1,nx.at-from)))); };
+const pupPct=(o,ps)=>{ const xp=worldXP(o), nx=PUP_STAGES[ps+1]; if(!nx) return 100; const to=levelXP(nx.lvl), from=Math.min(levelXP(PUP_STAGES[ps].lvl),xp); return Math.max(0,Math.min(100,Math.round(100*(xp-from)/Math.max(1,to-from)))); };
 const pupName=o=>cleanPupText(o.pupText)||(o.pupName>=0&&PUP_NAMES[o.pupName])||'';
 function hash32(str){ let h=2166136261; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0).toString(36); }
 // A model's key: catalogue models by name, photo models by a hash (the file name never leaves the device)
@@ -7339,9 +7374,9 @@ function worldStripHTML(r){
   if(!r) return '';
   const o=worldStore(), what=r.kind==='blitz'?'Race won':r.clean?'Clean build!':r.noHint?'No hints!':'Finished!';
   const parts=[wsStars(r.stars),`<span>${what}</span>`];
-  if(r.xp) parts.push(`<span>+${r.xp} XP</span>`); else if(!r.first) parts.push('<span>Built before · best kept</span>');
-  if(r.kind==='weekly'&&r.first) parts.push('<span>+1 Weekly star</span>');
-  if(r.memory) parts.push('<span>🧠 From memory! +1 star</span>');
+  if(r.gained) parts.push(`<span class="ws-gb">+${r.gained} ${gbIc()}</span>`);
+  if(r.xp) parts.push(`<span>+${r.xp} XP</span>`); else if(!r.first&&!r.gained) parts.push('<span>Built before · best kept</span>');
+  if(r.memory) parts.push('<span>🧠 From memory!</span>');
   if(r.decor) parts.push(`<span class="ws-up">🏝️ A ${r.decor.name.toLowerCase()} for your island</span>`);
   if(r.pupUp) parts.push(`<span class="ws-up">${pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'})}${escapeHTML(pupName(o))||'Your otter'} is a ${PUP_STAGES[r.after.pup].name}!</span>`);
   else if(r.islandUp) parts.push(`<span class="ws-up">🏝️ ${ISLAND_STAGES[r.after.island].name} built!</span>`);
@@ -7457,8 +7492,8 @@ function renderHomeWorld(){
   el.innerHTML=`<span class="hw-isle">${isle}<span class="hw-tag">🏝️ Bloppitopia · ${ISL3.ok?islandsOpen(o).length+' of '+ISLE_TOTAL+' islands':ISLAND_STAGES[is].name}</span></span>
     <span class="pup ps-${PUP_STAGES[ps].name.toLowerCase()}">${pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'})}</span>
     <div class="wt">${nm?`<b>${escapeHTML(nm)} <span class="sub">· Level ${otterLevel(o)} ${PUP_STAGES[ps].name}</span></b>`:`<span class="wname" id="wName" role="button" tabindex="0">Name your otter</span>`}
-      <span class="sub">${next?`${next.at-n} more build${next.at-n===1?'':'s'} to ${next.name} (another stud on its brick)`:'Legend of Bloppitopia'}</span><span class="bar"><i style="width:${Math.max(4,pct)}%"></i></span></div>
-    <div class="wn"><div><b>${n}</b><span>build${n===1?'':'s'}</span></div><div><b class="st">${worldStars(o)}</b><span>Build Stars</span></div><div><b>${worldXP(o)}</b><span>XP</span></div></div>
+      <span class="sub">${next?`Grows into a ${next.name} at Level ${next.lvl} (another stud on its brick)`:'Legend of Bloppitopia'}</span><span class="bar"><i style="width:${Math.max(4,pct)}%"></i></span></div>
+    <div class="wn"><div><b>${n}</b><span>build${n===1?'':'s'}</span></div><div><b class="st">${gbIc()} ${worldStars(o)}</b><span>Galaxy Blocks</span></div><div><b>${worldXP(o)}</b><span>XP</span></div></div>
     ${(()=>{ const g=ISL3.ok&&typeof worldNextGoal==='function'?worldNextGoal(o):null; if(g) return `<span class="sub" style="grid-column:1/-1">Next: ${escapeHTML(g.text)}</span>`; return inext?`<span class="sub" style="grid-column:1/-1;font-size:13px;font-weight:700;color:var(--muted)">${inext.at-n} more build${inext.at-n===1?'':'s'} to the ${inext.name}</span>`:''; })()}`;
   const w=$('#wName'); if(w){ w.onclick=e=>{ e.stopPropagation(); pupOpen(); }; w.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); e.stopPropagation(); pupOpen(); } }; }
   islandSnap(o,pic?'':isle,nm,n,ISLAND_STAGES[is].name,pic);
@@ -7469,7 +7504,7 @@ function islandSnap(o,svg,nm,n,stage,img){ try{ const v=JSON.stringify({...(img?
 /* ---------- Bloppitopia: the drawn island that grows with every finished build (Bloppitopia Lite) ----------
    Four stages by build count (Beach, Hut at 1, Workshop at 3, Village at 10), fixed model slots (1, 3, 6) that
    the newest finished models drop into, Weeklies in a marked slot by the water, twelve decorations bought with
-   Build Stars in fixed spots, and a postcard from the Village on. The island reads from the world record; the
+   decorations in fixed spots, and a postcard from the Village on. The island reads from the world record; the
    model pictures come from this device's thumbnail cache. */
 const SLOTS=[[320,372],[470,420],[400,482],[600,432],[720,470],[520,502],[230,450],[840,445],[640,505],[300,505],[770,398],[150,412]], WEEKLY_SLOT=[280,514];
 const DECOR_AT={flag:[70,362],campfire:[100,492],bench:[640,382],lantern:[560,388],signpost:[62,424],rockpool:[800,500],sandcastle:[192,506],hammock:[770,526],kite:[680,120],palm:[900,332],crab:[470,544],buoy:[960,546]};
@@ -7693,10 +7728,10 @@ function islandInfo(id,o){
       if(arg==='sea') return {title:'The sea',hint:'Six islands around Home Island: tap one',rows:destinations().map(d=>[d.n?d.name:ISLES[d.id].mystery?'Mystery Island':d.name,d.n?(d.st===3?`${d.milestone} ✓`:`${Math.min(d.n,d.total)} of ${d.total}${d.next?` · next: ${d.next}`:''}`):ISLES[d.id].mystery?mysteryHint():`In the mist · play ${ISLES[d.id].game} to find it`])};
       if(arg==='rocks') return {title:'The rocks',hint:'Crabs like it here',rows:[['Good for','Crabs and rock pools (in the decorations)']],actions:n?[{label:'✨ Decorate',fn:()=>$('#isDecor').click()}]:[]};
       if(arg==='lighthouse') return {title:'The lighthouse',hint:'It lights the way home',rows:[['Stands on','A rock off Bloppitopia'],['Job','Lighting the way home for every boat']]};
-      if(arg==='sky') return {title:'The sky',hint:(o.decor||[]).includes('kite')?'Your kite is flying':'Kites fly here',rows:[['Up here',(o.decor||[]).includes('kite')?'Your kite':'A kite, one day (5 Build Stars)']]};
+      if(arg==='sky') return {title:'The sky',hint:(o.decor||[]).includes('kite')?'Your kite is flying':'Kites fly here',rows:[['Up here',(o.decor||[]).includes('kite')?'Your kite':'A kite, one day (5 Galaxy Blocks)']]};
       break; }
     case 'decor': { const d=DECOR.find(x=>x.id===arg)||{name:arg,cost:0}, gift=(o.free||[]).includes(arg);
-      return {title:d.name,hint:gift?'A gift for a Weekly Bloppit':`Bought for ★ ${d.cost}`,rows:[...(arg!=='buoy'?[['Move it',ISL3.ok?'Hold it and drag it anywhere on the island':'Drag it anywhere on the sand']]:[]),['How you got it',gift?'A gift for finishing a Weekly Bloppit':`Bought with ${d.cost} Build Stars`],['Decorations',`${decorOut(o).length} of ${DECOR.length} on Bloppitopia`]],actions:[{label:'Put it away',fn:()=>decorPut(arg,false)}]}; }
+      return {title:d.name,hint:gift?'A gift for a Weekly Bloppit':`Bought for ${gbN(d.cost)}`,rows:[...(arg!=='buoy'?[['Move it',ISL3.ok?'Hold it and drag it anywhere on the island':'Drag it anywhere on the sand']]:[]),['How you got it',gift?'A gift for finishing a Weekly Bloppit':`Bought with ${gbN(d.cost)}`],['Decorations',`${decorOut(o).length} of ${DECOR.length} on Bloppitopia`]],actions:[{label:'Put it away',fn:()=>decorPut(arg,false)}]}; }
     case 'dest': { const m={ferry:'sunrise',workshop:'brickworks',brain:'brainpeak',speedway:'blitzbay',harbour:'otterwood'}[arg]; if(m) return islandInfo('isle:'+m,o); break; }
     case 'isle': { const I=ISLES[arg]; if(!I) break; const c=isleCount(arg,o), P=PIECES[arg], total=P[P.length-1].at, built=P.filter(x=>c>=x.at), next=P.find(x=>c<x.at);
       if(!c&&I.mystery) return {title:'Mystery Island',hint:mysteryHint(),bar:{pct:mysteryOpen()?100:Math.max(4,Math.round(100*mysteryProgress(o))),label:mysteryOpen()?'Ready to sail!':`${Math.round(100*mysteryProgress(o))}% of the way there`},rows:[['What’s there','Far out at sea, where it’s always night, a faint light glows in a swirl of mist. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Complete all five islands, every piece built (${fiveDone(o)} of ${FIVE_ISLES.length} so far)`],...(mysteryOpen()?[]:[['Still to finish',FIVE_ISLES.filter(id=>!isleComplete(id,o)).map(id=>isleCount(id,o)?`${ISLES[id].name} (${Math.min(isleCount(id,o),PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at})`:`${ISLES[id].name} (still in the mist)`).join(', ')]])],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'🏝️ Back to Bloppitopia',fn:()=>{ islandTipHide(true); isl3GoView(0); try{ sfx.swoosh(-1); }catch(e){} },primary:true}]};   // not open yet: back to the map, no surprise trip elsewhere
@@ -7723,7 +7758,7 @@ function islandInfo(id,o){
     case 'pup': { const nm=pupName(o), ps=pupStage(o), nx=PUP_STAGES[ps+1], c=PUP_COLORS[pupColorOf(o)];
       const lv=otterLevel(o), nl=levelXP(lv+1), nAcc=ACC.find(a=>!a.legend&&!a.finale&&a.lvl>lv);
       return {title:nm||'Your otter',hint:`Level ${lv} ${PUP_STAGES[ps].name} · ${ps+1} stud${ps?'s':''} on its brick`,icon:pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'}),
-        rows:[['Otter level',`${lv} · ${nl-worldXP(o)} XP to Level ${lv+1}`],...(nAcc?[['Next outfit',`${nAcc.name} at level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at ${nx.at} builds: another stud`:'A Legend. That’s the top']],
+        rows:[['Otter level',`${lv} · ${nl-worldXP(o)} XP to Level ${lv+1}`],...(nAcc?[['Next outfit',`${nAcc.name} at level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at Level ${nx.lvl}: another stud`:'A Legend. That’s the top']],
         bar:nx?{pct:Math.max(4,pupPct(o,ps)),label:`${nx.at-n} more build${nx.at-n===1?'':'s'} to ${nx.name}`}:null,
         actions:[{label:'👕 Wardrobe',fn:()=>wardrobeOpen(),primary:true},{label:nm?'Name or colour':'Name your otter',fn:()=>pupOpen()}]}; }
     case 'model': { const f=modelFacts(arg,o), b=f.b, flagW=arg.startsWith('w:')&&!ISL3.ok, onIsle=shown.list.some(m=>m.key===arg)||flagW;
@@ -8685,7 +8720,7 @@ const ISLES={
     milestone:'The moon crystal',grows:'Every chapter of the mystery you build',play:'Explore Moonstone Isle',go:()=>mysteryGo()},
 };
 const ISLE_TOTAL=Object.keys(ISLES).length;
-// An island is complete when its last piece is built; each one is worth 5 Build Stars, and the whole world 10 more
+// An island is complete when its last piece is built; each one is worth 5 Galaxy Blocks, and the whole world 10 more
 const isleComplete=(id,o)=>{ const P=PIECES[id]; return isleCount(id,o)>=P[P.length-1].at; };
 const islesComplete=o=>Object.keys(ISLES).filter(id=>isleComplete(id,o));
 const worldComplete=o=>islesComplete(o).length===ISLE_TOTAL;
@@ -9334,7 +9369,7 @@ function finaleCard(id){
   const o=worldStore(), B=Object.entries(o.builds), sum=f=>B.filter(([k,b])=>f(k,b)).reduce((a,[,b])=>a+(b.n||0),0), nf=n=>n.toLocaleString();
   if(id==='final:all'&&ISL3.on){ theEnd(()=>setTimeout(()=>isl3AfterReveal(worldStore()),400)); return; }
   if(id==='final:all'){ const n=worldCount(o), bricks=B.reduce((a,[,b])=>a+(b.n||0),0);
-    trialDialog({icon:'🌟',title:'You built a whole world!',quick:true,rows:`<div><span>Builds finished</span><span>${nf(n)}</span></div><div><span>Bricks placed</span><span>${nf(bricks)}</span></div><div><span>Islands complete</span><span>${ISLE_TOTAL} of ${ISLE_TOTAL}</span></div><div><span>Moonstone crown</span><span>👑</span></div><div class="tot"><span>Bonus Build Stars</span><span>+10</span></div>`,
+    trialDialog({icon:'🌟',title:'You built a whole world!',quick:true,rows:`<div><span>Builds finished</span><span>${nf(n)}</span></div><div><span>Bricks placed</span><span>${nf(bricks)}</span></div><div><span>Islands complete</span><span>${ISLE_TOTAL} of ${ISLE_TOTAL}</span></div><div><span>Moonstone crown</span><span>👑</span></div><div class="tot"><span>Bonus Galaxy Blocks</span><span>+10 ${gbIc()}</span></div>`,
       note:`Every island in Bloppitopia is finished, and lufu has given ${pupName(o)||'your otter'} the Moonstone crown! A new Weekly Bloppit still comes every Monday, so keep building.`}); return; }
   const isle=id.split(':')[1], N=ISLES[isle]; if(!N) return;
   const line={otterwood:()=>`All ${OTTER_LEVELS.length} Frog Trail levels, boss and all: ${nf(sum(k=>k.startsWith('t:otter:')))} bricks`,
@@ -9343,7 +9378,7 @@ function finaleCard(id){
     blitzbay:()=>`${B.filter(([,b])=>b.k==='blitz').length} Blitz wins, and the Grand Prix against Swoop`,
     brickworks:()=>`${isleCount('brickworks',o)} creations: your own, the library and the Weekly Bloppit`,
     moonstone:()=>`The mystery solved: all ${MYSTERY.length} chapters, and lufu found`}[isle];
-  trialDialog({icon:isle==='moonstone'?'✨':'🏆',title:isle==='moonstone'?'You found lufu!':`${N.name} is complete!`,quick:true,rows:`<div><span>${escapeHTML(line?line():'')}</span><span></span></div><div><span>${escapeHTML(N.milestone)}</span><span>✓</span></div><div class="tot"><span>Bonus Build Stars</span><span>+5</span></div>`,
+  trialDialog({icon:isle==='moonstone'?'✨':'🏆',title:isle==='moonstone'?'You found lufu!':`${N.name} is complete!`,quick:true,rows:`<div><span>${escapeHTML(line?line():'')}</span><span></span></div><div><span>${escapeHTML(N.milestone)}</span><span>✓</span></div><div class="tot"><span>Bonus Galaxy Blocks</span><span>+5 ${gbIc()}</span></div>`,
     note:(isle==='moonstone'?`“We have found each other.” lufu sails home with ${pupName(o)||'your otter'} and lives on Home Island now. `:'')+(islesComplete(o).length<ISLE_TOTAL?`${islesComplete(o).length} of ${ISLE_TOTAL} islands complete. ${ISLE_TOTAL-islesComplete(o).length===1?'One to go!':'Keep going!'}`:'Every island is complete!')});
 }
 function revealText(id,o){ const [k,a,b]=id.split(':');
@@ -9681,10 +9716,10 @@ function renderIsland(){
   if(isl3Init()) isl3Show($('#isWorld'),o); else { $('#isWorld').innerHTML=islandSVG(o,{pop}); islandDrag(); }
   renderIslandIntro(o);
   if(ISL3.ok){ const g=worldNextGoal(o), lv=otterLevel(o);
-    $('#isStage').innerHTML=`${escapeHTML(pupName(o)||'Your otter')} · Level ${lv} ${PUP_STAGES[pupStage(o)].name}<small>${n} build${n===1?'':'s'} finished · ${islandsOpen(o).length} of ${ISLE_TOTAL} islands · ${worldStars(o)} Build Star${worldStars(o)===1?'':'s'} to spend</small>`;
+    $('#isStage').innerHTML=`${escapeHTML(pupName(o)||'Your otter')} · Level ${lv} ${PUP_STAGES[pupStage(o)].name}<small>${n} build${n===1?'':'s'} finished · ${islandsOpen(o).length} of ${ISLE_TOTAL} islands · ${gbN(worldStars(o))} to spend</small>`;
     isProgRender(o);
     $('#isNext').innerHTML=g?`<span>${escapeHTML(g.text)}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*g.frac))}%"></i></span>`:'<span>Every island is complete. What a world!</span>'; }
-  else $('#isStage').innerHTML=`${ISLAND_STAGES[stage].name}<small>${n} build${n===1?'':'s'} finished · ${worldStars(o)} Build Star${worldStars(o)===1?'':'s'} to spend</small>`;
+  else $('#isStage').innerHTML=`${ISLAND_STAGES[stage].name}<small>${n} build${n===1?'':'s'} finished · ${gbN(worldStars(o))} to spend</small>`;
   if(!ISL3.ok) $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>Your village is built. Now grow the five islands around it.</span>';
   $('#isNote').textContent=n?`${pupName(o)||'Your otter'} and Bloppit are home. Tap anything to see what it is${n>1?`, and drag a model anywhere on the ${ISL3.ok?'grass':'sand'}`:''}${ISL3.ok?'. Swipe to move between views, pinch to look closer, and tap anyone to say hello':''}.`:ISL3.ok?`${pupName(o)?pupName(o)+'’s':'Your'} home is waiting to be built. Tap anything to see what it is.`:'Finish any build and the first hut rises from the sand. Tap anything to see what it is.';
   $('#isCard').hidden=stage<3; $('#isDecor').hidden=!n;
@@ -9692,8 +9727,8 @@ function renderIsland(){
 }
 function renderDecorShop(){
   const o=worldStore(), left=worldStars(o);
-  $('#isStars').textContent=`You have ${left} Build Star${left===1?'':'s'}.`;
-  $('#decorGrid').innerHTML=DECOR.map(d=>{ const owned=o.decor.includes(d.id), away=owned&&isAway(o,'decor:'+d.id); return `<button type="button" data-decor="${d.id}"${away?' data-owned="1" data-back="1"':owned?' data-owned="1" disabled':left<d.cost?' disabled':''}><svg viewBox="-64 -136 128 148">${decorSVG(d.id,0,d.id==='kite'?-110:6)}</svg>${d.name}<span class="cost">${away?'Put away · tap to put it back':owned?((o.free||[]).includes(d.id)?'From a Weekly':'On your island'):`Buy · ★ ${d.cost}`}</span></button>`; }).join('');
+  $('#isStars').innerHTML=`You have ${gbIc()} ${gbN(left)}.`;
+  $('#decorGrid').innerHTML=DECOR.map(d=>{ const owned=o.decor.includes(d.id), away=owned&&isAway(o,'decor:'+d.id); return `<button type="button" data-decor="${d.id}"${away?' data-owned="1" data-back="1"':owned?' data-owned="1" disabled':left<d.cost?' disabled':''}><svg viewBox="-64 -136 128 148">${decorSVG(d.id,0,d.id==='kite'?-110:6)}</svg>${d.name}<span class="cost">${away?'Put away · tap to put it back':owned?((o.free||[]).includes(d.id)?'From a Weekly':'On your island'):`Buy · ${gbIc()} ${d.cost}`}</span></button>`; }).join('');
 }
 $('#decorGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-decor]'); if(!b||b.disabled) return;
   const d=DECOR.find(x=>x.id===b.dataset.decor); if(!d) return;
