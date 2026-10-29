@@ -7841,7 +7841,7 @@ function isl3Focus(info,h){ const vi=isl3ViewOf(info); if(vi>=0){ if(ISL3.viewI=
 function isl3FreeLook(on){ const c=ISL3.ctl; if(!c) return; c.enableRotate=on; c.minPolarAngle=on?.12:.35; c.maxPolarAngle=on?1.42:1.12; c.rotateSpeed=.7;
   if(on&&!ISL3.lookTold){ ISL3.lookTold=1; clearTimeout(ISL3.lookT); ISL3.lookT=setTimeout(()=>{ if(!ISL3.revealing&&!ISL3.arrive){ isl3Banner('Drag to look around · pinch to zoom'); ISL3.lookT=setTimeout(()=>isl3Banner(''),2600); } },1000); } }
 // The guided camera: a few set views to swipe between (all of Bloppitopia, Home Island, Bloppit and your otter, each island)
-function isl3Views(){ const v=[{id:'world',name:'Bloppitopia'},{id:'home',name:'Home Island',x:0,z:.4,R:HOME_R*1.08},{id:'friends',name:'Bloppit & '+(pupName(worldStore())||'your otter'),R:3.3}];
+function isl3Views(){ const v=[{id:'world',name:'Bloppitopia'},{id:'home',name:'Home Island',x:0,z:.4,R:HOME_R*1.08},{id:'friends',name:'Bloppit & '+(pupName(worldStore())||'your otter'),R:3.6,y:TOP3+1.25}];
   for(const id of Object.keys(ISLES)){ const I=ISL3.isles&&ISL3.isles[id]; if(I){ const h=I.g?Math.min(7.5,Math.max(0,new THREE.Box3().setFromObject(I.g).max.y)):0;   // tall landmarks: look a little higher and stand back so their tops fit
     v.push({id:'isle:'+id,name:isleCount(id,worldStore())>0?ISLES[id].name:ISLES[id].mystery?'Mystery Island':'A misty island',x:I.x,z:I.z,y:h*.32,R:Math.max(I.r*1.2,Math.hypot(I.r,h*.62)*1.08)}); } }
   const cam=ISL3.cam, vf=cam?THREE.MathUtils.degToRad(cam.fov)/2:.5, hf=cam?Math.atan(Math.tan(vf)*cam.aspect):.6; for(const x of v) if(x.R) x.d=Math.max(7,x.R/Math.tan(Math.min(vf,hf))*1.05); return v; }
