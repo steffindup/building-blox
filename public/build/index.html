@@ -265,7 +265,13 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .c3-host{position:relative}.c3-host>.c3-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;pointer-events:none;transition:opacity .3s}.c3-host.c3on>.c3-canvas{opacity:1}
 .c3-host.c3on>img,.c3-host.c3on>svg{visibility:hidden}.buddy .bud-art.c3on{animation:none!important}.c3-wrap{display:block}.c3-wrap>img{display:block;width:100%;height:100%;object-fit:contain}
 .hm-cont.first .hc-pic.c3-wrap{width:64px}.windlg .wc-pic.c3-wrap{width:106px}.pupfig3d{width:100%;height:100%;object-fit:cover;display:block}
-.win-chars{display:block;width:210px;height:150px;margin:-4px auto 0}.win-chars.three{width:270px}.win-chars[hidden]{display:none}
+.win-chars{display:block;width:210px;height:150px;margin:-4px auto 0}
+/* Blitz Bay's ladder (from Bloppitopia): the next race, nothing to set up */
+.ladderdlg{text-align:center}.ld-tag{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ld-pz{display:flex;gap:12px;align-items:center;justify-content:center;margin:10px auto;text-align:left}.ld-pz img{width:64px;height:64px;border-radius:12px;background:#fff;object-fit:contain}
+.ld-pz b{display:block;font-family:var(--f-display);font-weight:400;font-size:20px}.ld-pz span{font-size:13px;font-weight:700;color:var(--muted)}
+.ld-strip{display:flex;gap:4px;justify-content:center;align-items:center;flex-wrap:wrap;margin:6px auto 2px;max-width:340px}
+.ld-strip i{width:14px;height:14px;border-radius:50%;background:var(--line);display:inline-block}.ld-strip i.done{background:#2E9E4F}.ld-strip i.now{background:#F4BC22;box-shadow:0 0 0 3px rgba(244,188,34,.35)}.ld-strip .gap{width:6px}.ld-strip .gp{font-size:16px;line-height:14px;opacity:.5}.ld-strip .gp.now,.ld-strip .gp.done{opacity:1}.win-chars.three{width:270px}.win-chars[hidden]{display:none}
 .buddy.cheer .bud-art .st-rest,.buddy.think .bud-art .st-rest,.buddy.oops .bud-art .st-rest,.buddy.offer .bud-art .st-rest,.buddy.hug .bud-art .st-rest,.buddy.reach .bud-art .st-rest{display:none}
 .buddy.cheer .bud-art .st-cheer,.buddy.think .bud-art .st-think,.buddy.oops .bud-art .st-oops,.buddy.offer .bud-art .st-offer,.buddy.hug .bud-art .st-hug,.buddy.reach .bud-art .st-reach{display:block}
 .buddy.offer .bud-art{animation:bud-nudge 1.6s ease-in-out infinite;transform-origin:50% 100%}
@@ -1730,6 +1736,15 @@ body.film-on{overflow:hidden}
   <div class="world-strip" data-ws></div>
   <p class="win-best" id="trNote"></p>
   <div class="win-btns"><button class="primary sm" id="trIsland" type="button" hidden>🏝️ See Bloppitopia</button><button class="ghost" id="trNext" type="button" hidden>▶ Play next</button><button class="ghost" id="trShare" type="button" hidden>Share the code</button><button class="ghost" id="trCard" type="button" hidden>📮 Weekly card</button><button class="ghost" id="trRetry" type="button" hidden>Try sending again</button><button class="primary sm" id="trDone" type="button">Done</button></div>
+</dialog>
+<dialog class="windlg ladderdlg" id="ladderDlg" aria-labelledby="ldT">
+  <span class="win-chars" id="ldChars" hidden></span>
+  <div class="ld-tag" id="ldTag"></div>
+  <h2 id="ldT">Race 1</h2>
+  <div class="ld-pz"><img id="ldImg" alt="" width="64" height="64"><div><b id="ldName"></b><span id="ldInfo"></span></div></div>
+  <div class="ld-strip" id="ldStrip" aria-hidden="true"></div>
+  <p class="win-best" id="ldNote"></p>
+  <div class="win-btns"><button class="primary sm" id="ldGo" type="button" autofocus>▶ Start the race</button><button class="ghost" id="ldLater" type="button">Not now</button></div>
 </dialog>
 <dialog class="windlg" id="mpEndDlg" aria-label="Game finished">
   <div class="win-stars">🏆</div>
@@ -5253,23 +5268,35 @@ const progressPct=o=>Math.floor(gameProgress(o)*100);
 const levelsOf=tr=>tr==='brain'?BRAIN_LEVELS:tr==='sea'?SEA_LEVELS:OTTER_LEVELS;
 // Ready-made Blitz races, small enough to be quick (Blitz keeps races to 30 bricks or fewer). Blitz Bay has its own
 // puzzles: none of these is a Frog Trail, Brain Trail, Pippa or mystery build. Brick counts: 9/11/12, 18/19/21, 26/28/30.
+// The Blitz races, in Blitz Bay's order (Oct 2026): fifteen, smallest first, and Swoop faster every five (lv: Warm-up,
+// Race, Full throttle). Through Bloppitopia they're a ladder, one race after another; the Blitz page offers any of them.
 const BLITZ_PICKS=[
- {name:'Trophy',         sample:'Trophy',          size:6,  shape:'flat',   thick:.5, colors:3, diff:'Easy'},
- {name:'Basketball',     sample:'Basketball',      size:6,  shape:'flat',   thick:.5, colors:3, diff:'Easy'},
- {name:'Cupcake',        sample:'Cupcake',         size:8,  shape:'flat',   thick:1,  colors:4, diff:'Easy'},
- {name:'Watermelon',     sample:'Watermelon',      size:5,  shape:'flat',   thick:.5, colors:3, diff:'Medium'},
- {name:'Pizza slice',    sample:'Pizza slice',     size:8,  shape:'flat',   thick:1,  colors:4, diff:'Medium'},
- {name:'Scooter',        sample:'Scooter',         size:7,  shape:'flat',   thick:1,  colors:4, diff:'Medium'},
- {name:'Hot-air balloon',sample:'Hot-air balloon', size:6,  shape:'puffed', thick:.7, colors:5, diff:'Hard'},
- {name:'Helicopter',     sample:'Helicopter',      size:6,  shape:'puffed', thick:.7, colors:5, diff:'Hard'},
- {name:'Sneaker',        sample:'Sneaker',         size:7,  shape:'flat',   thick:1,  colors:4, diff:'Hard'},
+ {name:'Wizard hat',     sample:'Wizard hat',      size:6,  shape:'flat',   thick:.5, colors:4, diff:'Easy',   lv:'easy'},
+ {name:'Astronaut',      sample:'Astronaut',       size:6,  shape:'flat',   thick:.5, colors:4, diff:'Easy',   lv:'easy'},
+ {name:'Trophy',         sample:'Trophy',          size:6,  shape:'flat',   thick:.5, colors:3, diff:'Easy',   lv:'easy'},
+ {name:'Alien',          sample:'Alien',           size:6,  shape:'flat',   thick:.5, colors:4, diff:'Easy',   lv:'easy'},
+ {name:'Basketball',     sample:'Basketball',      size:6,  shape:'flat',   thick:.5, colors:3, diff:'Easy',   lv:'easy'},
+ {name:'Cupcake',        sample:'Cupcake',         size:8,  shape:'flat',   thick:1,  colors:4, diff:'Medium', lv:'medium'},
+ {name:'Donut',          sample:'Donut',           size:6,  shape:'flat',   thick:.5, colors:4, diff:'Medium', lv:'medium'},
+ {name:'Watermelon',     sample:'Watermelon',      size:5,  shape:'flat',   thick:.5, colors:3, diff:'Medium', lv:'medium'},
+ {name:'Pizza slice',    sample:'Pizza slice',     size:8,  shape:'flat',   thick:1,  colors:4, diff:'Medium', lv:'medium'},
+ {name:'Scooter',        sample:'Scooter',         size:7,  shape:'flat',   thick:1,  colors:4, diff:'Medium', lv:'medium'},
+ {name:'Crown',          sample:'Crown',           size:6,  shape:'flat',   thick:.5, colors:4, diff:'Hard',   lv:'hard'},
+ {name:'Pumpkin',        sample:'Pumpkin',         size:6,  shape:'flat',   thick:.5, colors:4, diff:'Hard',   lv:'hard'},
+ {name:'Hot-air balloon',sample:'Hot-air balloon', size:6,  shape:'puffed', thick:.7, colors:5, diff:'Hard',   lv:'hard'},
+ {name:'Helicopter',     sample:'Helicopter',      size:6,  shape:'puffed', thick:.7, colors:5, diff:'Hard',   lv:'hard'},
+ {name:'Sneaker',        sample:'Sneaker',         size:7,  shape:'flat',   thick:1,  colors:4, diff:'Hard',   lv:'hard'},
 ];
-const BLITZ_DEFAULT_PICK='p3';  // the Watermelon, the first Medium race
+const BLITZ_DEFAULT_PICK='p'+BLITZ_PICKS.findIndex(x=>x.name==='Watermelon');  // a Medium race
 // The Blitz boss: a bigger race against Swoop at full throttle, offered once he's been beaten at all three speeds. Winning it completes Blitz Bay.
 const GRAND_PRIX={name:'Grand Prix: Race car', sample:'Race car', size:7, shape:'puffed', thick:.4, colors:4, diff:'Grand Prix', boss:true};   // 39 bricks: longer than a normal race
 BLITZ_PICKS.push(GRAND_PRIX);
 const GP_PICK='p'+(BLITZ_PICKS.length-1);
-const grandPrixOpen=o=>longtailBeaten(o)>=2;
+const LADDER_N=BLITZ_PICKS.length-1;   // the fifteen races before the Grand Prix
+const ladderWon=(i,o)=>{ const L=BLITZ_PICKS[i]; return Object.entries((o||worldStore()).builds||{}).some(([k,b])=>b&&b.k==='blitz'&&k.startsWith(`m:${L.name}:`)); };
+// The next race on Blitz Bay's ladder: the first not yet won, then the Grand Prix; -1 once that's won too
+function ladderStep(o){ o=o||worldStore(); for(let i=0;i<LADDER_N;i++) if(!ladderWon(i,o)) return i; return grandPrixWon(o)?-1:LADDER_N; }
+const grandPrixOpen=o=>longtailBeaten(o)>=2||ladderStep(o)>=LADDER_N;
 const grandPrixWon=o=>Object.values((o||worldStore()).builds||{}).some(b=>b&&b.k==='blitz'&&b.boss);
 // Ready-made Build together puzzles: bigger than races, since everyone takes turns
 const TOGETHER_PICKS=[
@@ -6034,7 +6061,7 @@ function updateMpBar(){
   if(bz){ $('#hintBtn').textContent=s.calm?'Hint':mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'; $('#hintBtn').disabled=done||(!mpMyTurn()&&!hintOn); }
   $('#mpBar').classList.toggle('calm',!!s.calm);
   $('#mpBar').classList.toggle('blitz',bz);
-  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?`vs Swoop · ${CPU_LEVELS[s.cpuLevel].speed}`:'Room'; $('#mpRoomBtn').textContent=mp.cpu?'Race':'Room'; $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
+  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?(cpu&&cpu.ladder!=null?(cpu.ladder>=LADDER_N?'Blitz Bay · The Grand Prix':`Blitz Bay · Race ${cpu.ladder+1} of ${LADDER_N} · ${CPU_LEVELS[s.cpuLevel].speed}`):`vs Swoop · ${CPU_LEVELS[s.cpuLevel].speed}`):'Room'; $('#mpRoomBtn').textContent=mp.cpu?'Race':'Room'; $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
   const cp=s.players[s.turn], mine=s.turn===mp.me, left=mpLeft(s), el=$('#mpTurn');
   el.classList.toggle('mine',mine&&!s.finished&&s.started);
   if(bz&&s.solo&&s.calm) el.innerHTML=s.finished?'Finished!<small>Let’s see how clean it was</small>':`Build it clean<small>${(s.players[0].n||0)} of ${s.quota} placed</small>`;
@@ -6208,7 +6235,11 @@ function mpShowBlitzEnd(){
   if(mp.cpu&&mp.state.solo) return trialEnd();
   const s=mp.state, sc=mpScores(s).sort((a,b)=>a.ms-b.ms), medals=['🥇','🥈','🥉',''], w=sc[0];
   $('#mpEndTitle').textContent=sc.length>1?`⚡ ${w.i===mp.me?'You win':`${w.name} wins`}!`:`⚡ Done in ${fmtTime(w.ms)}!`;
-  $('#mpEndNew').textContent=mp.cpu?'Race again':'New game';
+  $('#mpEndNew').textContent=mp.cpu?'Race again':'New game'; mpEndNext=null;
+  if(mp.cpu&&cpu&&cpu.ladder!=null){ const at=cpu.ladder, won=w.i===mp.me, nx=ladderStep(), pk='p'+at, lv=at>=LADDER_N?'hard':BLITZ_PICKS[at].lv;   // Blitz Bay's ladder: the clear next race
+    if(!won){ $('#mpEndNew').textContent='↻ Try again'; mpEndNext=()=>{ mpLeave(); islandSetOff('blitzbay',()=>nextBlitz(pk,lv,at)); }; }
+    else if(nx>=0){ $('#mpEndNew').textContent=nx>=LADDER_N?'▶ Next: the Grand Prix':`▶ Next: race ${nx+1} of ${LADDER_N}`; mpEndNext=()=>{ mpLeave(); setTab('island'); ladderGo(); }; }
+    else $('#mpEndNew').textContent='Race again'; }
   $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span><b>${fmtTime(p.ms)}</b> · ${p.own} brick${p.own===1?'':'s'} · ${p.miss} miss${p.miss===1?'':'es'}${p.hint?` · ${p.hint} hint${p.hint===1?'':'s'}`:''}</span></div>`).join('');
   const extra=s.moves.filter(m=>m.p<0).length;
   $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and Swoop put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, every miss added 1 second and every hint 5 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Swoop at full throttle. Amazing!':' Ready to race Swoop at a faster speed?'):' Practice makes perfect. Try again?'):''}`;
@@ -6217,7 +6248,8 @@ function mpShowBlitzEnd(){
   $('#mpEndDlg').showModal(); $('#mpEndIsland').focus();
 }
 $('#mpEndClose').onclick=()=>{ $('#mpEndDlg').close(); setTab('build'); };
-$('#mpEndNew').onclick=()=>{ $('#mpEndDlg').close(); const to=mpHomeTab(); mpLeave(); setTab(to); };
+let mpEndNext=null;
+$('#mpEndNew').onclick=()=>{ $('#mpEndDlg').close(); if(mpEndNext){ const f=mpEndNext; mpEndNext=null; f(); return; } const to=mpHomeTab(); mpLeave(); setTab(to); };
 $('#mpEndIsland').onclick=()=>{ track('finish_next:island'); $('#mpEndDlg').close(); mpLeave(); setTab('island'); };   // the recommended way on, win or lose
 // Load what to build: a level, or whatever is on Photos & model now
 function mpUseModel(choice){
@@ -6473,6 +6505,7 @@ $('#bzCpuGo').onclick=async()=>{
     cpu={timer:null,left:0,boss,s:{code:'VS',ver:1,started:true,finished:false,perTurn:3,mode:'blitz',cpuLevel:lvl,nBricks:model.bricks.length,title,level:null,host:0,
       turn:0,turnPlaced:0,turnStart:Date.now()+COUNTDOWN_MS,moves:[],me:0,waiting:[],quota:Math.floor(model.bricks.length/2),
       players:[pl(name,(me&&me.color&&me.color!=='#8A5A3B')?me.color:'#D2352B'),pl(CPU_LEVELS[lvl].name,'#9AA3AD')]}};
+    cpu.ladder=bzLadderNext!=null&&BLITZ_PICKS[bzLadderNext]&&$('#bzModel').value==='p'+bzLadderNext?bzLadderNext:null; bzLadderNext=null;   // a Blitz Bay ladder race (from Bloppitopia)
     mpRememberName(name);
     await mpEnter({cpu:true,code:'VS',playerId:'me',me:0,state:cpuPub()},true,name);
     cpuCountdown();
@@ -7409,7 +7442,7 @@ function islandInfo(id,o){
     case 'longtail': { const L=CPU_LEVELS[arg], S=STORIES[arg]; if(!L||!S) break; const wins=Object.values(o.builds).filter(b=>b.k==='blitz').length;
       return {title:'Swoop the Longtail',hint:ISL3.ltNight?'Asleep on Blitz Bay':'Blitz Bay’s racer · “Ready, set, snap!”',icon:`<img src="${cv3Snap(LT3[arg],null,'bust',192)||`/art/head-${LONGTAIL_ART[arg].id}.png`}" alt="" width="256" height="256">`,story:S.story,
         rows:[['Who',S.who],['Loves',S.loves],['Secret',S.secret],['Your Blitz wins',String(wins)],['Speeds beaten',(()=>{ const m=longtailBeaten(o); return m<0?'None yet. Start at Warm-up!':['Warm-up','Warm-up and Race','All three!'][m]; })()],['Did you know?',LONGTAIL_FACT]],
-        actions:[{label:`Race Swoop · ${L.speed}`,fn:()=>{ try{ bzLevelSet(arg); bzLevelSync(); }catch(e){} homeGo('cpu'); },primary:true}]}; }
+        actions:(()=>{ const i=ladderStep(o); return [...(i>=0?[{label:i>=LADDER_N?'🏆 Race the Grand Prix':`⚡ Race ${i+1} of ${LADDER_N}`,fn:()=>ladderGo(),primary:true}]:[]),{label:'Choose your own race',fn:()=>{ try{ bzLevelSet(arg); bzLevelSync(); }catch(e){} homeGo('cpu'); },primary:i<0}]; })()}; }
     case 'char': { const C=CAST[arg]; if(!C) break; const I=ISLES[C.isle], c=isleCount(C.isle,o), home=arg==='lufu';
       return {title:castFull(arg),hint:home?'Lives on Home Island, beside your otter':`${I.name} · “${C.tag}”`,icon:`<img src="/art/head-${arg}.png" alt="" width="256" height="256">`,story:C.story,
         rows:[['Who',C.who],['Loves',C.loves],['Secret',C.secret],['Brick',`A ${C.brick} two-stud brick`],...(home?[]:[['Lives',c>0?I.name:`${I.name}, still in the mist`],[c>0?'Built so far':'To reach it',c>0?`${Math.min(c,PIECES[C.isle][PIECES[C.isle].length-1].at)} of ${PIECES[C.isle][PIECES[C.isle].length-1].at} ${I.unit}s`:`Finish your first ${I.unit}`]])],
@@ -8330,10 +8363,10 @@ const ISLES={
   sunrise:{name:'Sunrise Shores',game:'Pippa’s Puzzles',unit:'Pippa puzzle',x:5.6,z:-14.8,r:4.3,seed:5.9,ground:['#8AD06A','#5FA94A'],sand:true,
     milestone:'The Festival Clock',grows:'Every one of Pippa’s seaside puzzles you build. A new one washes ashore about every 8% of the way through Bloppitopia',play:'Play Pippa’s puzzle',go:()=>homeGo('sea')},
   blitzbay:{name:'Blitz Bay',game:'Blitz',unit:'Blitz win',x:15.2,z:-4.6,r:4.8,seed:5.3,ground:['#6CC24A','#4E9E3A'],sand:true,
-    milestone:'The Grand Prix cup',grows:'Every Blitz race you win against Swoop, then the Grand Prix',play:'Race Swoop',go:()=>homeGo('cpu')},
+    milestone:'The Grand Prix cup',grows:'Every Blitz race you win against Swoop, then the Grand Prix',play:'Race Swoop',go:()=>ladderGo()},
   brickworks:{name:'Brickworks Island',game:'Creative builds',unit:'creation',x:12.4,z:9.6,r:4.3,seed:6.6,ground:['#7CC45E','#4E9E3A'],
     milestone:'The Grand Creation Gallery',grows:'Every build from your own photo or drawing, from the library, and every Weekly Bloppit',play:'Make your own',
-    go:()=>{ pickPuzzle('quick','draw'); }},
+    go:()=>{ pickPuzzle('quick','top'); }},   // Quick Build's first screen: a photo, a drawing or the library
   moonstone:{name:'Moonstone Isle',game:'The mystery',unit:'chapter',get x(){ return isl3TallNow()?-22.5:23.5; },get z(){ return isl3TallNow()?-11.5:-23.5; },r:4.0,   // far out at sea, in the top corner of the view (upright phones see the world from the side)
    seed:7.7,ground:['#6FB7A4','#4E8F7E'],sand:true,mystery:true,
     milestone:'The moon crystal',grows:'Every chapter of the mystery you build',play:'Explore Moonstone Isle',go:()=>mysteryGo()},
@@ -9777,10 +9810,9 @@ function nextCandidates(){
   const g=gameStore(), o=worldStore(), out=[];
   for(const tr of ['otter','brain','sea']){ const LV=levelsOf(tr), B=bestOf(g,tr), i=LV.findIndex((_,k)=>!B[k]);
     if(i>=0&&(tr!=='sea'||seaWashed(i,o))){ const L=LV[i]; out.push({kind:tr,isle:{otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr],t:tr==='sea'?`🐧 Pippa’s puzzle ${i+1}: ${L.name}`:`${L.boss?'👑 Boss: ':''}${tr==='otter'?'Frog':'Brain'} Trail level ${i+1}: ${L.name}`,s:'',thumb:levelThumb(L),go:()=>{ setTrail(tr); if(mp) mpLeave(); startLevel(i); }}); } }
-  { const beaten=longtailBeaten(o), gp=grandPrixOpen(o)&&!grandPrixWon(o), wins=Object.values(o.builds).filter(b=>b.k==='blitz').length;
-    if(gp||wins<15){ const lvl=gp?'hard':['easy','medium','hard'][Math.min(2,beaten+1)], who=`Swoop (${CPU_LEVELS[lvl].speed})`;
-      const pick=gp?GP_PICK:'p'+(wins%(BLITZ_PICKS.length-1)), L=pickOf(pick);
-      out.push({kind:'blitz',isle:'blitzbay',t:gp?'🏆 The Grand Prix against Swoop':`Blitz race against ${who}: ${L.name}`,s:'',thumb:levelThumb(L),go:()=>nextBlitz(pick,lvl)}); } }
+  { const i=ladderStep(o);   // Blitz Bay's ladder: the next race, Swoop faster every five, then the Grand Prix
+    if(i>=0){ const L=BLITZ_PICKS[i], gp=i>=LADDER_N, lvl=gp?'hard':L.lv;
+      out.push({kind:'blitz',isle:'blitzbay',t:gp?'🏆 The Grand Prix against Swoop':`⚡ Blitz Bay race ${i+1} of ${LADDER_N}: ${L.name} (Swoop at ${CPU_LEVELS[lvl].speed})`,s:'',thumb:levelThumb(L),go:()=>ladderGo(true)}); } }
   { const smp=SAMPLES.find(x=>released(x)&&!Object.keys(o.builds).some(k=>k.startsWith(`m:${x.name}:`)));
     if(smp){ if(!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png'); const i=SAMPLES.indexOf(smp);
       out.push({kind:'library',isle:'brickworks',t:`From the library: ${smp.name}`,s:'',thumb:smp.thumb,go:()=>{ if(mp) mpLeave(); if(game) endGame(); libDefaults(); loadSample(i); clearTimeout(timer); rebuild(); setTab('build'); }}); } }
@@ -9801,7 +9833,22 @@ function nextBuild(){
 }
 window.bloppitNext={next:()=>{ const n=nextBuild(); return n&&{t:n.t,kind:n.kind}; },cands:()=>nextCandidates().map(c=>c.kind),mark:k=>nextMark(k),complete:()=>islesComplete(worldStore()),mysteryOpen:()=>mysteryOpen(),unlocked:()=>worldUnlocked(worldStore()),seen:()=>seenGet(),reveal:ids=>isl3Reveal(ids,worldStore()),go:()=>{ const n=nextBuild(); if(n) n.go(); },count:id=>isleCount(id,worldStore()),wardrobe:()=>wardrobeOpen()};   // for tests
 // Start a Blitz race straight from Play next: the race page with the puzzle and the Longtail picked, then Go
-function nextBlitz(pick,lvl){
+// Blitz Bay through Bloppitopia: the next race on the ladder, shown as one card with one button (no puzzle, speed or
+// name to choose; that's all on the Blitz page for races outside the story)
+function ladderGo(){ const o=worldStore(), i=ladderStep(o); if(i<0){ homeGo('cpu'); return; }
+  const L=BLITZ_PICKS[i], gp=i>=LADDER_N, lvl=gp?'hard':L.lv, n=levelCount(L), each=Math.floor(n/2), d=$('#ladderDlg');
+  $('#ldTag').textContent=gp?'Blitz Bay · the final race':`Blitz Bay · Swoop at ${CPU_LEVELS[lvl].speed}`;
+  $('#ldT').textContent=gp?'🏆 The Grand Prix':`⚡ Race ${i+1} of ${LADDER_N}`;
+  $('#ldImg').src=levelThumb(L); $('#ldName').textContent=gp?'Race car':L.name; $('#ldInfo').textContent=`${n} bricks · ${each} each`;
+  $('#ldStrip').innerHTML=BLITZ_PICKS.slice(0,LADDER_N).map((_,k)=>`${k&&k%5===0?'<span class="gap"></span>':''}<i class="${ladderWon(k,o)?'done':k===i?'now':''}"></i>`).join('')+`<span class="gap"></span><span class="gp${gp?' now':grandPrixWon(o)?' done':''}">🏆</span>`;
+  $('#ldNote').textContent=gp?'You’ve won all fifteen races. Beat Swoop at full throttle on the biggest race of all to complete Blitz Bay!':`Take turns placing 1 to 3 bricks, then tap Done. Your clock only runs on your turn. Shortest time wins. ${i%5===4&&i<LADDER_N-1?'Win this one and Swoop gets faster!':''}`.trim();
+  cheer3($('#ldChars'),LT3[lvl]||'swoop','cheeky_taunt');
+  $('#ldGo').onclick=()=>{ d.close(); track('ladder_go:'+i); islandSetOff('blitzbay',()=>nextBlitz('p'+i,lvl,i)); };
+  if(!d.open) d.showModal(); }
+$('#ldLater').onclick=()=>$('#ladderDlg').close();
+let bzLadderNext=null;   // the ladder race the next race started from Play next belongs to
+function nextBlitz(pick,lvl,ladder){
+  bzLadderNext=ladder==null?null:ladder;
   homeGo('cpu');
   setTimeout(()=>{ try{ mpModelOptions('#bzModel'); $('#bzModel').value=pick; $('#bzModel').dispatchEvent(new Event('change'));
     const r=$(CPU_IDS[lvl]); if(r){ r.checked=true; r.dispatchEvent(new Event('change')); }
