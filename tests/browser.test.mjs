@@ -837,3 +837,15 @@ test('Play next never sends you to a finished island while another has something
   assert.notEqual(n.next.kind, 'library', 'but a finished island is not offered');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
+
+test('the 3D pups: Pup, Splash and Legend hold a 1-, 2- and 3-stud brick in the child’s colour and wear the game’s outfits', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1');
+  const a = await t.page.evaluate(() => window.bloppitPup3('pup0', 0, {}));
+  assert.equal(a.kind, 'model'); assert.deepEqual(a.bricks, [1]); assert.deepEqual(a.outfits, []); assert.deepEqual(a.extras, []); assert.ok(a.lids >= 2, 'eyelids to blink'); assert.ok(a.clips >= 14);
+  assert.equal(a.hex, '0055bf', 'the child’s blue');
+  const b = await t.page.evaluate(() => window.bloppitPup3('pup1', 3, { head: ['beanie', 0], neck: ['scarf', 2], feet: ['shoes', 0] }));
+  assert.deepEqual(b.bricks, [2]); assert.deepEqual(b.outfits, ['beanie', 'scarf']); assert.deepEqual(b.extras, ['shoes']);
+  const c = await t.page.evaluate(() => window.bloppitPup3('pup2', 6, { head: ['moon', 0], face: ['glasses', 1], prop: ['prop', 0] }));
+  assert.deepEqual(c.bricks, [3]); assert.deepEqual(c.outfits, ['crown', 'sunglasses']); assert.deepEqual(c.extras, ['accessory']);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
