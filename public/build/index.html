@@ -425,6 +425,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .hand-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 @media (hover: none) and (pointer: coarse){ kbd{display:none!important} }
 .primary kbd{font-family:var(--f-mono);font-size:11px;border:1px solid currentColor;border-radius:4px;padding:0 4px;opacity:.75;margin-left:4px;vertical-align:2px}
+.ghost kbd{font-family:var(--f-mono);font-size:11px;border:1px solid currentColor;border-radius:4px;padding:0 4px;opacity:.6;margin-left:4px;vertical-align:1px}
 .primary.sm{font-size:16px;padding:9px 16px}
 
 /* Parts box: a scrapbook table of loose bricks and user-made segments */
@@ -1503,10 +1504,10 @@ body.film-on{overflow:hidden}
   <div class="box-top">
     <div><h2>Parts box</h2><p class="note" id="boxInfo"></p></div>
     <div class="box-actions">
-      <button class="ghost" id="binAdd" type="button">+ Segment</button>
-      <button class="ghost" id="sortColour" type="button">Sort by colour</button>
-      <button class="ghost" id="sortSize" type="button">Sort by size</button>
-      <button class="ghost" id="tipOut" type="button">Tip everything out</button>
+      <button class="ghost" id="binAdd" type="button" title="Add a segment (G)">+ Segment <kbd>G</kbd></button>
+      <button class="ghost" id="sortColour" type="button" title="Sort by colour (C)">Sort by colour <kbd>C</kbd></button>
+      <button class="ghost" id="sortSize" type="button" title="Sort by size (S)">Sort by size <kbd>S</kbd></button>
+      <button class="ghost" id="tipOut" type="button" title="Tip everything out (T)">Tip everything out <kbd>T</kbd></button>
     </div>
   </div>
   <div class="box-grid">
@@ -1514,7 +1515,7 @@ body.film-on{overflow:hidden}
     <div class="box-main">
       <div class="pick-bar">
         <span class="note" id="pickNote">Tap bricks to pick them up, as many as this page needs.</span>
-        <button class="ghost" id="pickClear" type="button" hidden>Clear</button>
+        <button class="ghost" id="pickClear" type="button" title="Put them all back (Esc)" hidden>Clear <kbd>Esc</kbd></button>
         <button class="primary sm" id="takeBtn" type="button" title="Take the picked bricks to the build (Enter)" hidden>Take 0 to build</button>
         <button class="ghost" id="boxBack" type="button">Back to build</button>
       </div>
@@ -3904,6 +3905,10 @@ document.addEventListener('keydown',e=>{ if(/INPUT|SELECT|TEXTAREA/.test(e.targe
     if(e.key==='Escape'){ if(chosen.size){chosen.clear(); updatePick();} else setTab('build'); e.preventDefault(); }
     else if(/^(INPUT|TEXTAREA)$/.test(e.target.tagName)||e.metaKey||e.ctrlKey||e.altKey) return;
     else if(e.key==='Enter'&&chosen.size&&!/BUTTON|A/.test(e.target.tagName)){ takeChosen(); e.preventDefault(); }  // Enter: take them
+    else if(e.key==='g'||e.key==='G'){ $('#binAdd').click(); e.preventDefault(); }          // G: a new segment
+    else if(e.key==='c'||e.key==='C'){ $('#sortColour').click(); e.preventDefault(); }      // C: sort by colour
+    else if(e.key==='s'||e.key==='S'){ $('#sortSize').click(); e.preventDefault(); }        // S: sort by size
+    else if(e.key==='t'||e.key==='T'){ $('#tipOut').click(); e.preventDefault(); }          // T: tip everything out (twice when there are segments)
     else if(e.key==='p'||e.key==='P'){ setTab('build'); e.preventDefault(); }                   // P again: back to the build
     return; }
   if(tab!=='build') return;
@@ -4019,7 +4024,7 @@ function showBox(){
 function updatePick(){
   for(const p of pieces){ const el=board.querySelector(`[data-p="${p.id}"]`); if(el) el.classList.toggle('picked',chosen.has(p)); }
   const n=chosen.size;
-  $('#takeBtn').hidden=!n; $('#takeBtn').textContent=`Take ${n} to build`;
+  $('#takeBtn').hidden=!n; $('#takeBtn').innerHTML=`Take ${n} to build <kbd>Enter</kbd>`;
   $('#pickClear').hidden=!n;
   $('#boxBack').hidden=!!n;
   const cap=pickCap(), lim=cap===Infinity?'':` of ${cap}`;
