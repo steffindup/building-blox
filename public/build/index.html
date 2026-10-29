@@ -1103,9 +1103,11 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 .is3-say{position:absolute;left:0;top:0;pointer-events:none;padding:6px 12px 7px;border-radius:16px;background:#fff;color:#14202C;font-family:var(--f-display);font-size:16px;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.2);transform:translate(-50%,-100%);will-change:left,top}
 .is3-say::after{content:'';position:absolute;left:50%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-bottom:0;border-top-color:#fff}
 .is3-play{pointer-events:auto;margin-top:auto;display:grid;justify-items:center;gap:0;min-width:220px;max-width:92%;font-size:18px;padding:10px 22px;border-radius:999px;box-shadow:0 5px 0 #8f1f18,0 8px 18px rgba(0,0,0,.25)}
+.is3-chrome.has-alt .is3-views{bottom:138px}
+.is3-alt{pointer-events:auto;margin-top:8px;font-size:14px;padding:6px 16px;border-radius:999px;background:rgba(255,255,255,.92)}
 .is3-play small{font-family:var(--f-body,inherit);font-size:12px;font-weight:700;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 /* The first arrival, told like the opening of a film */
-#view-island.cine .is-foot,#view-island.cine .is-btns,#view-island.cine #isBuildsGo,#view-island.cine .is3-labels,#view-island.cine .is3-views,#view-island.cine .is3-say,#view-island.cine .is3-play{opacity:0!important;pointer-events:none!important;transition:opacity .6s}
+#view-island.cine .is-foot,#view-island.cine .is-btns,#view-island.cine #isBuildsGo,#view-island.cine .is3-labels,#view-island.cine .is3-views,#view-island.cine .is3-say,#view-island.cine .is3-play,#view-island.cine .is3-alt{opacity:0!important;pointer-events:none!important;transition:opacity .6s}
 .is3-cine{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:3}
 .is3-cine.page{position:fixed;z-index:60;background:#05101a}   /* a film over the whole page: setting off for an island */
 body.film-on{overflow:hidden}
@@ -7843,7 +7845,7 @@ function isl3GoView(i,dur){ const V=isl3Views(); if(!V.length||!ISL3.ctl) return
   if(v.id==='world'){ isl3FlyHome(dur||900); ISL3.fly.done=()=>{ ISL3.moved=false; }; ISL3.ctl.minDistance=Math.max(9,ISL3.fitD*.55); ISL3.ctl.maxDistance=ISL3.fitD+6; }
   else { let x=v.x, z=v.z; if(v.id==='friends'&&ISL3.bloppit){ const p=ISL3.bloppit.position, q=ISL3.pupG?ISL3.pupG.position:p; x=(p.x+q.x)/2; z=(p.z+q.z)/2; }
     isl3FlyTo(x,v.y||0,z,v.d,dur||900); ISL3.moved=true; ISL3.ctl.minDistance=Math.max(4,v.d*.4); ISL3.ctl.maxDistance=v.d*1.8; }
-  track('island_view:'+v.id.replace('isle:','')); isl3WholeBtn(); }
+  track('island_view:'+v.id.replace('isle:','')); isl3WholeBtn(); isl3Chrome(); }
 function isl3ViewOf(info){ const V=isl3Views(), f=id=>V.findIndex(v=>v.id===id);
   if(info.startsWith('isle:')) return f(info); if(info.startsWith('piece:')) return f('isle:'+info.split(':')[1]);
   if(info==='bloppit'||info==='pup') return f('friends'); if(info==='land:beach'||info.startsWith('home:')) return f('home'); return -1; }
@@ -9096,13 +9098,31 @@ function revealText(id,o){ const [k,a,b]=id.split(':');
 function isl3Banner(t,big){ const b=ISL3.box&&ISL3.box.querySelector('.is3-banner'); if(!b) return; b.textContent=t; b.hidden=!t; b.classList.toggle('big',!!big); }
 // The buttons over the world: Play Next (one obvious next step), and the arrival's Build Our First Home
 function isl3Chrome(){ const box=ISL3.box; if(!box) return; let c=box.querySelector('.is3-chrome');
-  if(!c){ c=document.createElement('div'); c.className='is3-chrome'; c.innerHTML='<div class="is3-banner" hidden></div><button class="primary is3-play" type="button"></button><div class="is3-views" hidden><button class="v-world" type="button" aria-label="Back to all of Bloppitopia" title="Bloppitopia" hidden><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="50" fill="#2FB8DC"/><circle cx="50" cy="52" r="15" fill="#6CC04A" stroke="#F2D594" stroke-width="4"/><g transform="translate(50 52) scale(.5)" stroke="#9E2019" stroke-width="2" fill="#D8342C"><rect x="-20" y="-6" width="40" height="18" rx="2.5"/><rect x="-15" y="-13" width="10" height="8" rx="2"/><rect x="5" y="-13" width="10" height="8" rx="2"/></g><circle cx="50.0" cy="19.0" r="8" fill="#9BD32C" stroke="#F2D594" stroke-width="3"/><circle cx="81.4" cy="41.8" r="8" fill="#24407A" stroke="#F2D594" stroke-width="3"/><circle cx="69.4" cy="78.7" r="8" fill="#F2C230" stroke="#F2D594" stroke-width="3"/><circle cx="30.6" cy="78.7" r="8" fill="#2F7FD0" stroke="#F2D594" stroke-width="3"/><circle cx="18.6" cy="41.8" r="8" fill="#E9772A" stroke="#F2D594" stroke-width="3"/></svg></button><button class="v-prev" type="button" aria-label="Previous view">‹</button><span class="v-mid"><span class="v-name"></span><span class="v-dots" aria-hidden="true"></span></span><button class="v-next" type="button" aria-label="Next view">›</button></div><div class="is3-say" hidden></div>'; box.appendChild(c);
+  if(!c){ c=document.createElement('div'); c.className='is3-chrome'; c.innerHTML='<div class="is3-banner" hidden></div><button class="primary is3-play" type="button"></button><button class="ghost is3-alt" type="button" hidden></button><div class="is3-views" hidden><button class="v-world" type="button" aria-label="Back to all of Bloppitopia" title="Bloppitopia" hidden><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="50" fill="#2FB8DC"/><circle cx="50" cy="52" r="15" fill="#6CC04A" stroke="#F2D594" stroke-width="4"/><g transform="translate(50 52) scale(.5)" stroke="#9E2019" stroke-width="2" fill="#D8342C"><rect x="-20" y="-6" width="40" height="18" rx="2.5"/><rect x="-15" y="-13" width="10" height="8" rx="2"/><rect x="5" y="-13" width="10" height="8" rx="2"/></g><circle cx="50.0" cy="19.0" r="8" fill="#9BD32C" stroke="#F2D594" stroke-width="3"/><circle cx="81.4" cy="41.8" r="8" fill="#24407A" stroke="#F2D594" stroke-width="3"/><circle cx="69.4" cy="78.7" r="8" fill="#F2C230" stroke="#F2D594" stroke-width="3"/><circle cx="30.6" cy="78.7" r="8" fill="#2F7FD0" stroke="#F2D594" stroke-width="3"/><circle cx="18.6" cy="41.8" r="8" fill="#E9772A" stroke="#F2D594" stroke-width="3"/></svg></button><button class="v-prev" type="button" aria-label="Previous view">‹</button><span class="v-mid"><span class="v-name"></span><span class="v-dots" aria-hidden="true"></span></span><button class="v-next" type="button" aria-label="Next view">›</button></div><div class="is3-say" hidden></div>'; box.appendChild(c);
     c.querySelector('.v-world').onclick=()=>{ isl3GoView(0); sfx.swoosh(); }; c.querySelector('.v-mid').onclick=()=>{ if(ISL3.viewI){ isl3GoView(0); sfx.swoosh(); } }; c.querySelector('.v-prev').onclick=()=>{ isl3GoView((ISL3.viewI||0)-1); sfx.swoosh(-1); }; c.querySelector('.v-next').onclick=()=>{ isl3GoView((ISL3.viewI||0)+1); sfx.swoosh(1); };
-    c.querySelector('.is3-play').onclick=()=>{ const a=c.querySelector('.is3-play').dataset.act; if(a==='home'){ track('first_home_start'); welcomeStart(); return; } const n=nextBuild(); track('play_next:island'); if(n) n.go(); else homeGo('quick'); }; }
-  const b=c.querySelector('.is3-play'), o=worldStore();
+    c.querySelector('.is3-play').onclick=()=>{ const B=c.querySelector('.is3-play'), a=B.dataset.act, isle=B.dataset.isle; if(a==='home'){ track('first_home_start'); welcomeStart(); return; }
+      if(a==='world'){ isl3GoView(0); sfx.swoosh(-1); return; }
+      if(a==='isle'){ const n=isleNext(isle); track('play_next:isle:'+isle); if(n){ nextMark(n.kind); n.go(); } else isleAnyway(isle); return; }
+      const n=nextBuild(); track('play_next:island'); if(n) n.go(); else homeGo('quick'); };
+    c.querySelector('.is3-alt').onclick=()=>{ const isle=c.querySelector('.is3-alt').dataset.isle; track('play_anyway:'+isle); isleAnyway(isle); }; }
+  const b=c.querySelector('.is3-play'), alt=c.querySelector('.is3-alt'), o=worldStore(); alt.hidden=true; c.classList.remove('has-alt');
   if(ISL3.arrival==='home'){ b.dataset.act='home'; b.innerHTML='🔨 Build Our First Home'; b.hidden=false; }
   else if(ISL3.arrival||ISL3.revealing){ b.hidden=true; }
-  else { const n=nextBuild(); b.dataset.act='next'; b.innerHTML=n?`<span>▶ Play next</span><small>${escapeHTML(n.t)}</small>`:'<span>▶ Build something</span>'; b.hidden=false; } }
+  else { const V=isl3Views(), v=V[ISL3.viewI||0], isle=v&&v.id.startsWith('isle:')?v.id.slice(5):null;
+    b.hidden=false; b.dataset.isle=isle||'';
+    if(!isle){ const n=nextBuild(); b.dataset.act='next'; b.innerHTML=n?`<span>▶ Play next</span><small>${escapeHTML(n.t)}</small>`:'<span>▶ Build something</span>'; return; }
+    // Looking at one island: its own next step (not the whole world's), or, once it's complete, back to Bloppitopia
+    const nm=isleCount(isle,o)>0?ISLES[isle].name:v.name, n=isleNext(isle);
+    if(isleComplete(isle,o)){ b.dataset.act='world'; b.innerHTML=`<span>🏝️ Back to Bloppitopia</span><small>✓ ${escapeHTML(nm)} is complete!</small>`; alt.dataset.isle=isle; alt.textContent='▶ Play anyway'; alt.hidden=false; c.classList.add('has-alt'); }
+    else if(n){ b.dataset.act='isle'; b.innerHTML=`<span>▶ Play</span><small>${escapeHTML(n.t)}</small>`; }
+    else if(isle==='sunrise'){ const i=SEA_LEVELS.findIndex((_,k)=>!bestOf(gameStore(),'sea')[k]), k=seaBuildsTo(Math.max(0,i),o);
+      b.dataset.act='world'; b.innerHTML=`<span>🏝️ Back to Bloppitopia</span><small>Pippa’s next puzzle washes ashore after ${k} more build${k===1?'':'s'}</small>`; }
+    else if(isle==='moonstone'&&!mysteryOpen()){ b.dataset.act='world'; b.innerHTML=`<span>🏝️ Back to Bloppitopia</span><small>${escapeHTML(mysteryHint())}</small>`; }
+    else { b.dataset.act='isle'; b.innerHTML=`<span>▶ Play</span><small>${escapeHTML(nm)}</small>`; } } }
+// An island's own next step (the same one Play next would pick for it), and somewhere to play there once it's done
+function isleNext(isle){ return nextCandidates().find(c=>c.isle===isle)||null; }
+function isleAnyway(isle){ if(isle==='otterwood') trailGo('otter'); else if(isle==='brainpeak') trailGo('brain'); else if(isle==='sunrise') homeGo('sea');
+  else if(isle==='blitzbay') homeGo('cpu'); else if(isle==='moonstone') mysteryStart(0); else homeGo('quick'); }
 function isl3AfterReveal(o){ o=worldStore();
   if(ISL3.finales&&ISL3.finales.length){ const f=ISL3.finales.shift(); finaleCard(f); return; }
   if(ISL3.pending_acc&&ISL3.pending_acc.length){ const a=ISL3.pending_acc.shift(); accOffer(a); return; }

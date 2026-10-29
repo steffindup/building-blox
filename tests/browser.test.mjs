@@ -377,6 +377,24 @@ test('the Weekly bank: each planned Monday shows its model', { skip: skip() }, a
   }
 });
 
+test('island Play: Bloppitopia keeps the recommended next play; an island plays its own next step; a complete one offers Back to Bloppitopia or Play anyway', { skip: skip() }, async () => {
+  const seed = (n) => { const builds = {}, log = [], best = {}; for (let i = 0; i < n; i++) { const k = `t:otter:${i}`; builds[k] = { n: 40, s: 3, t: 1e12 + i, c: 1 }; log.push(k); best[i] = 3; }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 50, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, pick: 'treehouse', isle: 1, arrived: 1 }));
+    localStorage.setItem('building-blox-game-v1', JSON.stringify({ best })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: n, finished: n, welcome: 1 })); };
+  for (const n of [5, 15]) {
+    const t = await open('?nosplash=1&films=0#island', { init: { fn: seed, arg: n } });
+    await t.page.waitForFunction(() => window.bloppitIsland3().ctl, null, { timeout: 90000 });
+    const at = async (i) => { await t.page.evaluate((i) => window.bloppitView(i), i); await t.page.waitForTimeout(100);
+      return t.page.evaluate(() => { const b = document.querySelector('.is3-play'), a = document.querySelector('.is3-alt'); return [document.querySelector('.v-name').textContent, b.textContent, a.hidden ? '' : a.textContent]; }); };
+    const [, world] = await at(0); assert.match(world, /^▶ Play next/);
+    const [frog, play, alt] = await at(3); assert.equal(frog, 'Frog Forest');
+    if (n === 5) { assert.match(play, /^▶ PlayFrog Trail level 6/); assert.equal(alt, ''); }
+    else { assert.match(play, /Back to Bloppitopia✓ Frog Forest is complete!/); assert.equal(alt, '▶ Play anyway'); }
+    const [, brain] = await at(4); assert.match(brain, /^▶ PlayBrain Trail level 1/);
+    assert.deepEqual(t.errors, []); await t.ctx.close();
+  }
+});
+
 test('Bloppitopia renders every stage in 3D (models, buildings, the islands nearby), and as a drawing without WebGL', { skip: skip() }, async () => {
   const seed = (n) => { const builds = {}, log = []; for (let i = 0; i < n; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1 }; log.push(k); }
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: n * 10, bonus: 0, builds, log, decor: n >= 3 ? ['flag'] : [], pupName: 3, pupAsked: true, isle: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: n, finished: n, welcome: 1 })); };
