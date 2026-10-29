@@ -1258,7 +1258,19 @@ body.film-on{overflow:hidden}
 .tabs .tab[aria-selected="true"],.tabs .tab[class*="play"][aria-selected="true"]{opacity:1;background:none;color:inherit;border:0}
 .tabs .tab[aria-selected="true"] .n{background:none}
 .tabs .tab[aria-selected="true"]::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:4px;border-radius:4px;background:var(--tc)}
-#tab-island{--tc:#2FB8DC}#tab-daily{--tc:#14A3A0}#tab-create{--tc:#E9772A}#tab-game{--tc:#7DBE2E}#tab-blitz{--tc:#2F7FD0}#tab-mp{--tc:#8B5CF6}
+#tab-island{--tc:#2FB8DC}#tab-daily{--tc:#E8B20E}#tab-create{--tc:#E9772A}#tab-game{--tc:#7DBE2E}
+/* The character at the top of each page */
+.char-hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 20px;align-items:center;border-radius:20px;padding:14px 24px 14px 14px;background:linear-gradient(115deg,var(--h1),var(--h2));color:var(--hink,#fff);box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer;min-width:0;overflow:hidden}
+#view-create>.char-hero{grid-column:1/-1}
+.char-hero .ch-art,.char-hero .c3-wrap{width:120px;height:132px;object-fit:contain;display:block;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}
+.char-hero .ch-txt{display:grid;gap:2px;min-width:0}
+.char-hero .ch-isle{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.char-hero .ch-title{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(26px,3.2vw,36px);line-height:1.05;text-wrap:balance}
+.char-hero .ch-line{font-family:var(--f-display);font-size:18px;opacity:.95}
+.char-hero .ch-desc{margin:4px 0 0;font-size:14px;font-weight:700;opacity:.9;max-width:62ch;line-height:1.4}
+@media (max-width:560px){.char-hero{padding:10px 14px 10px 8px;gap:4px 12px;border-radius:16px}.char-hero .ch-art,.char-hero .c3-wrap{width:78px;height:88px}.char-hero .ch-line{font-size:15px}.char-hero .ch-desc{font-size:12.5px}}
+#view-game:not([data-sub="hub"]) #gmTitle,#view-game:not([data-sub="hub"])>.crumb[data-up]{display:none}
+.dy-sea{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;text-align:left;cursor:pointer;font:inherit;color:var(--ink)}.dy-sea img{width:52px;height:52px}.dy-sea b{display:block;font-family:var(--f-display);font-weight:400;font-size:20px}.dy-sea span span{font-size:13px;font-weight:700;color:var(--muted)}.dy-go{font-size:28px;color:var(--muted)}.dy-sea:hover{border-color:var(--accent)}#tab-brain{--tc:#3D5FA8}#tab-blitz{--tc:#2F7FD0}#tab-mp{--tc:#8B5CF6}
 @media (max-width:640px){.tabs .tab,.tabs .tab[class*="play"]{padding:6px 8px 10px;gap:5px}.tabs .tab .n{width:24px;height:24px}}
 @media (min-width:641px) and (max-width:1240px){.who{padding:2px;box-shadow:none}.who-txt{display:none}.top{column-gap:16px;flex-wrap:nowrap}.top .tabs{flex-wrap:nowrap;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none;mask-image:linear-gradient(90deg,#000 calc(100% - 18px),transparent)}.top .tabs::-webkit-scrollbar{display:none}}   /* keep the top bar on one line: just the player's face beside the music and sound buttons */
 </style>
@@ -1271,7 +1283,8 @@ body.film-on{overflow:hidden}
     <button class="tab play5" role="tab" id="tab-island" data-tab="island" aria-selected="false"><span class="n"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="50" fill="#2FB8DC"/><circle cx="50" cy="52" r="15" fill="#6CC04A" stroke="#F2D594" stroke-width="4"/><g transform="translate(50 52) scale(.5)" stroke="#9E2019" stroke-width="2" fill="#D8342C"><rect x="-20" y="-6" width="40" height="18" rx="2.5"/><rect x="-15" y="-13" width="10" height="8" rx="2"/><rect x="5" y="-13" width="10" height="8" rx="2"/></g><circle cx="50.0" cy="19.0" r="8" fill="#9BD32C" stroke="#F2D594" stroke-width="3"/><circle cx="81.4" cy="41.8" r="8" fill="#24407A" stroke="#F2D594" stroke-width="3"/><circle cx="69.4" cy="78.7" r="8" fill="#F2C230" stroke="#F2D594" stroke-width="3"/><circle cx="30.6" cy="78.7" r="8" fill="#2F7FD0" stroke="#F2D594" stroke-width="3"/><circle cx="18.6" cy="41.8" r="8" fill="#E9772A" stroke="#F2D594" stroke-width="3"/></svg></span>Island</button>
     <button class="tab play4" role="tab" id="tab-daily" data-tab="daily" aria-selected="false"><span class="n"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span>Weekly</button>
     <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span>Quick Build</button>
-    <button class="tab play" role="tab" id="tab-game" data-tab="game" aria-selected="false"><span class="n"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span>Trails</button>
+    <button class="tab play" role="tab" id="tab-game" data-tab="game" data-sub="otter" aria-selected="false"><span class="n"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span>Frog Trail</button>
+    <button class="tab play" role="tab" id="tab-brain" data-tab="game" data-sub="brain" aria-selected="false"><span class="n"><img src="/art/head-nora.png" alt="" width="256" height="256"></span>Brain Trail</button>
     <button class="tab play3" role="tab" id="tab-blitz" data-tab="blitz" aria-selected="false"><span class="n"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span>Blitz</button>
     <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n"><img src="/art/pup.png" alt="" width="239" height="300"></span>Together</button>
   </nav>
@@ -1337,6 +1350,7 @@ body.film-on{overflow:hidden}
 </div>
 </section>
 <section class="view" id="view-create" hidden>
+  <div class="char-hero" data-hero="create" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
   <div class="usebar" id="useBar" hidden><img id="ubImg" alt=""><span class="ub-txt"><b id="ubName"></b><span id="ubInfo"></span></span><button class="primary sm" id="ubGo" type="button">Use this puzzle ▶</button></div>
   <div class="panel">
     <div class="pick-banner" id="pickBanner" hidden><span id="pickTxt"></span><button class="ghost" id="pickCancel" type="button">Back</button></div>
@@ -1526,12 +1540,12 @@ body.film-on{overflow:hidden}
 </section>
 
 <section class="view" id="view-game" hidden>
+  <div class="char-hero" data-hero="game" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
   <div class="hub" data-hub>
     <div class="gm-head"><div><h2>🐸 Trails</h2><p class="note">Climb 14 levels, from tiny to tricky, then beat the boss. Each trail has its own puzzles and keeps its own points.</p></div></div>
     <div class="hm-grid hub-grid">
       <button class="hm-tile t-game" data-sub="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Frog Trail</b><span id="hubOtterSub">Levels from tiny to tricky</span></button>
       <button class="hm-tile t-brain" data-sub="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Brain Trail</b><span id="hubBrainSub">Levels with math puzzles</span></button>
-      <button class="hm-tile t-sea" data-sub="sea" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span><b>Pippa’s Puzzles</b><span id="hubSeaSub">Seaside puzzles that wash ashore</span></button>
     </div>
   </div>
   <div class="trail-pick" role="tablist" aria-label="Which trail" hidden>
@@ -1563,7 +1577,8 @@ body.film-on{overflow:hidden}
 
 <section class="view" id="view-mp" hidden>
   <div class="hub" data-hub>
-    <div class="gm-head"><div><h2>🧩 Together</h2><p class="note">Play with friends on different phones, tablets or computers.</p></div></div>
+    <div class="char-hero" data-hero="mp" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
+    
     <div class="hm-grid hub-grid">
       <button class="hm-tile t-together" data-sub="start" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="0" y="16" width="66" height="58"/><use href="#bh2" x="58" y="28" width="58" height="51"/><rect x="34" y="80" width="52" height="28" rx="5" fill="#D2352B"/><rect x="40" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="66" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="34" y="100" width="52" height="8" rx="4" fill="#B32A22"/><ellipse cx="34" cy="90" rx="8" ry="7" fill="#8A5A3B"/><ellipse cx="86" cy="90" rx="8" ry="7" fill="#C08A5E"/></svg></span><b>Build together</b><span>One puzzle, taking turns with friends</span></button>
       <button class="hm-tile t-join" data-sub="join" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a game</b><span>Got a code? Type it in to play</span></button>
@@ -1639,7 +1654,8 @@ body.film-on{overflow:hidden}
 
 <section class="view" id="view-blitz" hidden>
   <div class="hub" data-hub>
-    <div class="gm-head"><div><h2>⚡ Bloppit Blitz</h2><p class="note">A head-to-head brick race. Fastest clean build wins.</p></div></div>
+    <div class="char-hero" data-hero="blitz" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
+    
     <div class="hm-grid hub-grid">
       <button class="hm-tile t-blitz" data-sub="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>vs Swoop</b><span>Race the speediest Longtail</span></button>
       <button class="hm-tile t-friend" data-sub="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><ellipse cx="31.6" cy="65.2" rx="10" ry="11" fill="#8A5A3B"/><path d="M24 66 q7.5 6 15 0" stroke="#1B1410" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>vs Friend</b><span>Send a challenge code, or race live</span></button>
@@ -1715,7 +1731,8 @@ body.film-on{overflow:hidden}
   <div class="card is-builds"><div class="gm-head sub-head"><div><h2>📦 Your builds</h2><p class="note" id="isBuildsNote"></p></div></div><div class="builds-grid" id="buildsGrid"></div></div>
 </section>
 <section class="view" id="view-daily" hidden>
-  <div class="gm-head"><div><h2>📅 Weekly Bloppit</h2><p class="note">One puzzle a week, the same for everybody. Build it clean: no misses, no hints. A new one arrives every Monday morning.</p></div></div>
+  <div class="char-hero" data-hero="daily" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
+  <div class="gm-head"><div><h2>📅 This week’s Weekly Bloppit</h2><p class="note">One puzzle a week, the same for everybody. Build it clean: no misses, no hints. A new one arrives every Monday morning.</p></div></div>
   <div class="card daily-card">
     <img class="daily-img" id="dyImg" alt="">
     <div class="daily-txt">
@@ -1727,6 +1744,7 @@ body.film-on{overflow:hidden}
       <p class="msg" id="dyMsg" hidden></p>
     </div>
   </div>
+  <button class="card dy-sea" id="dySea" type="button"><img src="/art/head-pippa.png" alt="" width="256" height="256"><span><b>🐚 Pippa’s seaside puzzles</b><span id="hubSeaSub">Seaside puzzles that wash ashore</span></span><span class="dy-go" aria-hidden="true">›</span></button>
   <div class="card" id="dyBoard" hidden><div class="gm-head sub-head"><div><h2>🏆 This week’s top 100</h2><p class="note">Clean builds first, then stars. Generated names only; no times. A grown-up switched this on in the Grown-ups corner.</p></div></div><div class="board" id="dyBoardList"></div></div>
   <p class="note">Bloppit only counts how many people finished this week’s puzzle and how many finished it clean. No names, no times, no ranks, unless a grown-up switches on the top-100 board, which shows generated names and stars. The counts are deleted after 8 weeks.</p>
 </section>
@@ -2810,6 +2828,29 @@ function niceName(n){ const b=String(n||'').replace(/\.[^.]+$/,'').trim();
 var subOf={game:'hub',blitz:'hub',mp:'hub'};
 const SUB_OK={game:['hub','otter','brain','sea'],blitz:['hub','cpu','friend'],mp:['hub','start','join']};
 // Which top-bar game a page belongs to (the build screen belongs to whatever you're playing)
+// The top bar: one tab per character. Frog Trail and Brain Trail are both the Trails page (their own level maps), and
+// Pippa's seaside puzzles belong to her Weekly tab.
+// Each page has its character at the top: who lives there, their island, their line and what the page is for
+const HERO={
+  daily:{who:'pippa',art:'/art/char-pippa.png',isle:'Sunrise Shores',title:'Pippa’s Puzzles',line:'A new puzzle just washed ashore!',desc:'Every Monday Pippa brings the Weekly Bloppit on the ferry, and her own seaside puzzles wash ashore as Bloppitopia grows.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
+  sea:{who:'pippa',art:'/art/char-pippa.png',isle:'Sunrise Shores',title:'Pippa’s seaside puzzles',line:'Ooh, that one’s clean!',desc:'Twelve seaside builds wash ashore as Bloppitopia grows. Each one adds to Sunrise Shores, all the way to the Festival Clock.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
+  otter:{who:'tiny',art:'/art/char-tiny.png',isle:'Frog Forest',title:'Frog Trail',line:'Small frog, big forest!',desc:'Hop up the trail with Tiny, one level at a time. The levels start tiny and get bigger, and the last is his Lily-pad Palace.',c:['#A6D93A','#3F8F33']},
+  brain:{who:'nora',art:'/art/char-nora.png',isle:'Brainpeak',title:'Brain Trail',line:'A clever mind shines in the dark.',desc:'Nora tucks math puzzles into the booklet: solve one to open its page. The last build is her Great Telescope.',c:['#4A6FC0','#1C2B57']},
+  create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickworks Island',title:'Quick Build',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
+  blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Bloppit Blitz',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Fastest clean build wins.',c:['#5DB4F2','#1F6FC4']},
+  mp:{who:'pup',art:'/art/pup.png',isle:'Friendship Harbour',title:'Build Together',line:'Every build is better with a friend!',desc:'Take turns building one model with friends on their own phones, tablets or computers.',c:['#B9A2F7','#6E4FD6']}};
+function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[data-hero="${t}"]`); if(!el) return;
+  const key=t==='game'?subOf.game:t, H=HERO[key]; el.hidden=!H; if(!H) return;
+  if(el.dataset.k===key) return; el.dataset.k=key;
+  el.style.setProperty('--h1',H.c[0]); el.style.setProperty('--h2',H.c[1]); el.style.setProperty('--hink',H.ink||'#fff');
+  el.querySelector('.ch-isle').textContent='🏝️ '+H.isle; el.querySelector('.ch-title').textContent=H.title; el.querySelector('.ch-line').textContent=H.line; el.querySelector('.ch-desc').textContent=H.desc;
+  const im=new Image(); im.className='ch-art'; im.alt=''; im.src=H.art; el.firstElementChild.replaceWith(im);   // a fresh picture each time (the 3D view draws over it)
+  try{ if(ch3On()) cv3Img(im,{who:H.who,frame:'full'}); }catch(e){} }
+document.addEventListener('click',e=>{ const h=e.target.closest('.char-hero'); if(!h) return; const w=h.querySelector('.c3-wrap'); if(w) cv3Play(w,'poke'); try{ const k=h.dataset.k, who=HERO[k]&&HERO[k].who; sfx.voice(who==='swoop'?'longtail':who); }catch(x){} });
+function tabsSync(t){ const sec=sectionOf(t===undefined?tab:t), tr=typeof trail!=='undefined'?trail:'otter';
+  document.querySelectorAll('.tab').forEach(b=>{ let on=b.dataset.tab===sec;
+    if(sec==='game'){ const sub=(t==='game'&&subOf.game)||tr; on=(b.dataset.sub&&b.dataset.tab==='game'&&b.dataset.sub===sub)||(b.dataset.tab==='daily'&&sub==='sea'); }
+    b.setAttribute('aria-selected',on); }); }
 function sectionOf(t){
   if(t==='build'||t==='box'||t==='booklet'){ if(game) return 'game'; if(mp) return trialOn()&&mp.state.calm?'daily':mpHomeTab(); return 'create'; }
   return t==='home'?'':t;
@@ -2833,7 +2874,7 @@ function setTab(t,sub){
   if(t!=='build'&&reveal) endReveal(true);
   if(sub&&SUB_OK[t]&&SUB_OK[t].includes(sub)) subOf[t]=sub;
   tab=t; try{ sfx.place(); }catch(e){}
-  { const sec=sectionOf(t); document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===sec)); }
+  tabsSync(t); heroSync(t);
   syncSub(t);
   { const sel=document.querySelector('.tab[aria-selected="true"]'), bar=$('.tabs'); if(sel&&bar.scrollWidth>bar.clientWidth) bar.scrollTo({left:sel.offsetLeft-bar.offsetLeft-24,behavior:'smooth'}); }
   ['home','create','build','box','booklet','game','mp','blitz','daily','island'].forEach(v=>$('#view-'+v).hidden=v!==t);
@@ -2907,7 +2948,7 @@ document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
   if(b.dataset.tab==='create'&&mp){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus(`You’re in ${mpWhat()}. Tap Quick Build again to leave it.`,'err'); else showToastLeave(); return; } mpLeave(); }
   if(b.dataset.tab==='game'&&mp){ setTab(mpHomeTab()); mpMsg(`Leave ${mpWhat()} first to play the levels on your own.`); return; }
   if(b.dataset.tab==='create'&&game){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus('You’re in a Trail level. Tap Quick Build again to leave it.','err'); else showToastLeave(); return; } endGame(); }
-  setTab(b.dataset.tab,SUB_OK[b.dataset.tab]&&!(mp||mpw)?'hub':undefined);}));
+  setTab(b.dataset.tab,b.dataset.sub&&!(mp||mpw)?b.dataset.sub:SUB_OK[b.dataset.tab]&&!(mp||mpw)?'hub':undefined);}));
 // Hub tiles and the "‹ Blitz" links
 document.querySelectorAll('.view .hub [data-sub]').forEach(b=>b.addEventListener('click',()=>{ const t=b.closest('.view').id.slice(5);
   if(t==='game'&&mp){ mpMsg(`Leave ${mpWhat()} first to play the Trails on your own.`); setTab(mpHomeTab()); return; }
@@ -2947,6 +2988,7 @@ function qbShow(screen){ screen=QB_T[screen]?screen:'home';
 document.querySelectorAll('[data-qb-go]').forEach(b=>b.addEventListener('click',()=>{ qbShow(b.dataset.qbGo); if(b.dataset.qbGo==='photo') $('#file').click(); }));
 $('#qbBack').onclick=()=>qbShow('home');
 $('#tab-create').addEventListener('click',()=>qbShow('home'));
+$('#dySea').onclick=()=>{ if(mp){ setTab(mpHomeTab()); return; } setTab('game','sea'); };
 qbShow('home');
 function pickPuzzle(forWhat,src){
   if(game) endGame();
