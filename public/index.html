@@ -241,6 +241,22 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
   var t0=Date.now(), done=false, rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
   function go(){ if(done) return; done=true; s.classList.add('out'); setTimeout(function(){ s.remove(); h.classList.remove('sp-on'); },320); }
   s.onclick=go;
+  // Bloppit's signature sound (the same as the game's launch screen): "Brick." "Build." "Bloppit!" in time with the words.
+  // Browsers only allow sound after a tap, so if it can't play straight away, a tap on the launch screen plays it.
+  (function(){ var off=false; try{ off=localStorage.getItem('bloppit-sound')==='off'; }catch(x){} var C=window.AudioContext||window.webkitAudioContext; if(off||!C) return;
+    var ac, played=false, hz=function(m){ return 440*Math.pow(2,(m-69)/12); };
+    function tone(t,f,d,vol,type,to){ var o=ac.createOscillator(), g=ac.createGain(); o.type=type||'sine'; o.frequency.setValueAtTime(f,t); if(to) o.frequency.exponentialRampToValueAtTime(to,t+d); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.004); g.gain.exponentialRampToValueAtTime(.0001,t+d); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t+d+.03); }
+    function mar(t,f,v){ tone(t,f,.55,v); tone(t,f*3.98,.09,v*.3); }
+    function glk(t,f,v,d){ tone(t,f,d,v); tone(t,f*2.76,d*.3,v*.28); }
+    function click(t){ var n=Math.ceil(ac.sampleRate*.016), b=ac.createBuffer(1,n,ac.sampleRate), x=b.getChannelData(0); for(var i=0;i<n;i++) x[i]=(Math.random()*2-1)*Math.pow(1-i/n,3); var s=ac.createBufferSource(), f=ac.createBiquadFilter(), g=ac.createGain(); s.buffer=b; f.type='bandpass'; f.frequency.value=4200; f.Q.value=3; g.gain.value=.25; s.connect(f); f.connect(g); g.connect(ac.destination); s.start(t); }
+    function play(at){ if(played) return; try{ ac=ac||new C(); if(ac.state==='suspended') ac.resume(); if(ac.state!=='running') return; }catch(x){ return; } played=true;
+      var t=ac.currentTime+.03, a=at[0], b1=at[1], b2=at[2], b3=at[3];
+      tone(t+Math.max(0,a-.1),hz(60),.22,.03,'triangle',hz(72)); glk(t+a+.1,hz(84),.025,.5);
+      [[b1,72],[b2,76]].forEach(function(q){ click(t+q[0]); mar(t+q[0]+.008,hz(q[1]),.1); });
+      tone(t+b3,260,.12,.13,'sine',780); [79,84,88].forEach(function(m,k){ mar(t+b3+.13+k*.012,hz(m),.08); }); glk(t+b3+.14,hz(96),.045,.8);
+      [91,95,98,103,107].forEach(function(m,k){ glk(t+b3+.3+k*.045,hz(m),.018,.4); }); }
+    var el=(Date.now()-t0)/1000; play([.1,.25,.4,.55].map(function(x){ return Math.max(0,x-el); }));
+    if(!played){ var tap=function(){ document.removeEventListener('pointerdown',tap,true); play([0,.12,.27,.42]); }; document.addEventListener('pointerdown',tap,true); setTimeout(function(){ document.removeEventListener('pointerdown',tap,true); },4000); } })();
   // Quick: about 1.9 seconds (Bloppit's wink), counted from when the page started, so a slow connection doesn't add to it
   function later(){ setTimeout(go,Math.max(150,(rm?400:1900)-(Date.now()-t0))); }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',later); else later();

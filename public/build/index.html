@@ -90,6 +90,9 @@
   if(!show||/[?&](room|ch|code)=/.test(location.search)||(location.hash&&location.hash!=='#home')){ s.remove(); return; }
   window.BLOPPIT_SPLASH=Date.now();
   s.onclick=function(){ s.classList.add('out'); setTimeout(function(){ s.remove(); },320); };
+  // Bloppit's signature sound plays with the launch screen (sfx.logo, below). Browsers only allow sound after a tap, so
+  // if it can't play straight away, the first tap while the launch screen is up plays it instead.
+  window.BLOPPIT_LOGO_SOUND=1;
 })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2828,7 +2831,7 @@ function setTab(t,sub){
   if(typeof islandTipHide==='function'){ islandTipHide(); const h=document.getElementById('isHover'); if(h) h.hidden=true; }
   if(t!=='build'&&reveal) endReveal(true);
   if(sub&&SUB_OK[t]&&SUB_OK[t].includes(sub)) subOf[t]=sub;
-  tab=t;
+  tab=t; try{ sfx.place(); }catch(e){}
   { const sec=sectionOf(t); document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===sec)); }
   syncSub(t);
   { const sel=document.querySelector('.tab[aria-selected="true"]'), bar=$('.tabs'); if(sel&&bar.scrollWidth>bar.clientWidth) bar.scrollTo({left:sel.offsetLeft-bar.offsetLeft-24,behavior:'smooth'}); }
@@ -3350,7 +3353,8 @@ const sfx=(()=>{
   }
   function musicTick(){ const c=ac; if(!c||!M.playing) return; while(M.next<c.currentTime+.3){ musicNote(c,M.next,M.i); M.i++; M.next+=S16; } }
   const videoOn=()=>[...document.querySelectorAll('video')].some(v=>!v.paused&&!v.ended&&!v.muted);
-  function musicLevel(){ if(!ac||!mbus) return; const want=on&&musicOn&&!document.hidden&&!M.duck&&!videoOn()?.22:0, n=ac.currentTime;
+  const onIsland=()=>{ try{ return tab==='island'; }catch(e){ return false; } };   // the music belongs to Bloppitopia: every game itself is quiet
+  function musicLevel(){ if(!ac||!mbus) return; const want=on&&musicOn&&onIsland()&&!document.hidden&&!M.duck&&!videoOn()?.22:0, n=ac.currentTime;
     mbus.gain.cancelScheduledValues(n); mbus.gain.setValueAtTime(mbus.gain.value,n); mbus.gain.linearRampToValueAtTime(want,n+(want?1.2:.35));
     if(want&&!M.playing){ M.playing=true; M.next=n+.1; M.timer=setInterval(musicTick,60); }
     else if(!want&&M.playing){ clearTimeout(M.stopT); M.stopT=setTimeout(()=>{ if(mbus.gain.value<.01){ M.playing=false; clearInterval(M.timer); } },500); } }
@@ -3365,7 +3369,16 @@ const sfx=(()=>{
     get musicOn(){ return musicOn; },
     set(v){ on=!!v; try{ localStorage.setItem('bloppit-sound',on?'on':'off'); }catch(e){} if(on) ctx(); musicLevel(); },
     music(v){ musicOn=!!v; try{ localStorage.setItem('bloppit-music',musicOn?'on':'off'); }catch(e){} if(musicOn&&on) ctx(); musicLevel(); },
-    duck(v){ M.duck=!!v; musicLevel(); },   // quiet the music for a moment that has its own (the in-game arrival)
+    duck(v){ M.duck=!!v; musicLevel(); },
+    place(){ musicLevel(); },   // the page changed: music in Bloppitopia, quiet everywhere else
+    // Bloppit's signature sound, timed to the launch screen: a bright lift as the name appears, then "Brick." "Build." "Bloppit!"
+    // (two plastic clicks on marimba notes, then a bubbly "blop" and a sparkling "pit"). at = when each of the four lands.
+    logo(at){ const c=ok('logo',2); if(!c) return false; const t=c.currentTime+.03, [a,b1,b2,b3]=at||[.15,.4,.6,.8];
+      slide(c,t+a-.1,hz(60),hz(72),.22,.05,0,'triangle'); glock(c,t+a+.1,hz(84),.04,null,.5);
+      [[b1,72],[b2,76]].forEach(([d,m])=>{ noise(c,t+d,.016,{vol:.45,freq:4200,q:3}); marimba(c,t+d+.008,hz(m),.18); marimba(c,t+d+.008,hz(m-12),.07); });
+      tone(c,t+b3,260,.12,{vol:.22,to:780,att:.003}); tone(c,t+b3+.05,520,.08,{type:'triangle',vol:.06,to:1100});   // "blop"
+      [79,84,88].forEach((m,k)=>marimba(c,t+b3+.13+k*.012,hz(m),.13)); glock(c,t+b3+.14,hz(96),.07,null,.8);   // "pit!"
+      sparkle(c,t+b3+.3,5,91,.03); return true; },   // quiet the music for a moment that has its own (the in-game arrival)
     // A brick snapping in: a crisp plastic click, then a marimba note a step higher than the last one
     snap(delay=0){ haptic('light',delay); const c=ok('snap',.04); if(!c) return; const t=c.currentTime+delay;
       if(c.currentTime-snapT>2.5) snapI=0; snapT=c.currentTime;
@@ -3485,6 +3498,13 @@ const sfx=(()=>{
       noise(c,t,.09,{vol:.35,freq:380,q:1.2,type:'lowpass'}); tone(c,t,150,.22,{vol:.26,to:95,att:.006}); marimba(c,t+.03,hz(55),.12); }
   };
 })();
+// The launch screen's signature sound (see the launch screen script): now if sound is allowed, else on the first tap
+(function(){ if(!window.BLOPPIT_LOGO_SOUND) return; const sp=document.getElementById('splash'); if(!sp||!sfx.on) return;
+  const el=(Date.now()-(window.BLOPPIT_SPLASH||Date.now()))/1000, at=[.15,.4,.6,.8].map(x=>Math.max(0,x-el));
+  let played=false; const play=(late)=>{ if(played) return; try{ const C=window.AudioContext||window.webkitAudioContext; if(!C) return; played=sfx.logo(late?[0,.12,.27,.42]:at); }catch(e){} };
+  play(false);
+  const tap=()=>{ document.removeEventListener('pointerdown',tap,true); if(!played) play(true); };
+  if(!played) document.addEventListener('pointerdown',tap,true); setTimeout(()=>document.removeEventListener('pointerdown',tap,true),4000); })();
 function syncSoundBtn(){ for(const b of [$('#sndBtn'),$('#sndTop')]){ if(!b) continue; b.setAttribute('aria-pressed',sfx.on); b.title=(sfx.on?'Sound is on':'Sound is off')+' (M)'; }
   const m=$('#musTop'), mo=sfx.on&&sfx.musicOn; if(m){ m.setAttribute('aria-pressed',mo); m.title=mo?'Music is on':'Music is off'; } }
 // The music button: on its own it turns just the music on or off (turning it on with all sound off turns sound back on too)
@@ -9340,9 +9360,10 @@ let islandShown=-1;
 // How far through Bloppitopia you are (every piece built on Frog Forest, Brainpeak, Blitz Bay and Brickworks Island),
 // with a tick wherever one of Pippa's puzzles washes ashore, so "the next puzzle at 8%" has something to point at
 function isProgRender(o){ const el=$('#isProg'); if(!el) return; const pct=progressPct(o), P=gameProgress(o);
-  const nx=SEA_LEVELS.findIndex((_,i)=>!seaWashed(i,o)), nb=nx>=0?seaBuildsTo(nx,o):0, note=pct>=100?'every piece built':nx>=0?`Pippa’s next puzzle at ${seaPct(nx)}% (${nb} more build${nb===1?'':'s'})`:'';
+  const SB=bestOf(gameStore(),'sea'), ready=SEA_LEVELS.findIndex((_,i)=>!SB[i]&&seaWashed(i,o)), nx=SEA_LEVELS.findIndex((_,i)=>!seaWashed(i,o)), nb=nx>=0?seaBuildsTo(nx,o):0;   // a puzzle already washed ashore comes first
+  const note=ready>=0?`🐧 Pippa’s puzzle ${ready+1} is ready to build!`:pct>=100?'every piece built':nx>=0?`Pippa’s next puzzle at ${seaPct(nx)}% (${nb} more build${nb===1?'':'s'})`:'';
   el.hidden=false; el.setAttribute('role','progressbar'); el.setAttribute('aria-label','Bloppitopia built'); el.setAttribute('aria-valuenow',pct); el.setAttribute('aria-valuemin',0); el.setAttribute('aria-valuemax',100);
-  el.innerHTML=`<span class="ip-t"><b>Bloppitopia ${pct}%</b>${note?`<span class="ip-long"> · ${note}</span>`:''}${nx>=0&&pct<100?`<span class="ip-short"> · 🐧 next at ${seaPct(nx)}%</span>`:''}</span><span class="ip-bar"><i style="width:${Math.max(2,P*100).toFixed(1)}%"></i>${SEA_LEVELS.map((_,i)=>`<em class="${seaWashed(i,o)?'on':''}" style="left:${((i+1)*100/SEA_LEVELS.length).toFixed(2)}%"></em>`).join('')}</span>`; }
+  el.innerHTML=`<span class="ip-t"><b>Bloppitopia ${pct}%</b>${note?`<span class="ip-long"> · ${note}</span>`:''}${ready>=0?'<span class="ip-short"> · 🐧 puzzle ready!</span>':nx>=0&&pct<100?`<span class="ip-short"> · 🐧 next at ${seaPct(nx)}%</span>`:''}</span><span class="ip-bar"><i style="width:${Math.max(2,P*100).toFixed(1)}%"></i>${SEA_LEVELS.map((_,i)=>`<em class="${seaWashed(i,o)?'on':''}" style="left:${((i+1)*100/SEA_LEVELS.length).toFixed(2)}%"></em>`).join('')}</span>`; }
 function renderIsland(){
   const o=worldStore(), stage=islandStage(o), n=worldCount(o), next=ISLAND_STAGES[stage+1];
   const pop=islandShown>=0&&islandShown<n; islandShown=n;
