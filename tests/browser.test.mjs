@@ -849,3 +849,32 @@ test('the 3D pups: Pup, Splash and Legend hold a 1-, 2- and 3-stud brick in the 
   assert.deepEqual(c.bricks, [3]); assert.deepEqual(c.outfits, ['crown', 'sunglasses']); assert.deepEqual(c.extras, ['accessory']);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
+
+test('stars, Galaxy Blocks and the Otter Level: one job each; the otter grows by level and never shrinks', { skip: skip() }, async () => {
+  // 13 big builds since the change: about 1,400 XP (Level 8) → a Legend, by level not builds
+  const big = { fn: () => { const builds = {}, log = []; for (let i = 0; i < 13; i++) { builds['p:big' + i] = { n: 200, s: 2, k: 'quick', t: Date.now() }; log.push('p:big' + i); }
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 }));
+    if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds, log, decor: ['flag'], free: [], pick: 'treehouse' })); } };
+  let t = await open('?nosplash=1', { init: big });
+  let w = await t.page.evaluate(() => window.bloppitWorld());
+  assert.ok(w.level >= 8); assert.equal(w.stage, 'Legend');
+  assert.equal(w.stars, 26, '★ are never spent'); assert.equal(w.galaxy, 26 - 3, 'the flag cost 3 Galaxy Blocks');
+  await t.ctx.close();
+  // 30 small builds from before the change: a Splash by builds keeps it, even at a low level
+  const old = { fn: () => { const builds = {}, log = []; for (let i = 0; i < 30; i++) { builds['p:old' + i] = { n: 10, s: 1, k: 'quick', t: 1.7e12 }; log.push('p:old' + i); }
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 }));
+    if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds, log, decor: [], free: [], pick: 'treehouse' })); } };
+  t = await open('?nosplash=1', { init: old });
+  w = await t.page.evaluate(() => window.bloppitWorld()); assert.equal(w.stage, 'Splash');
+  // a Frog Trail level with a hint: one ★ (finished), a Galaxy Block for it, no points anywhere
+  await t.page.evaluate(() => window.bloppitLevel('otter', 0)); await t.page.waitForTimeout(1200);
+  assert.equal(await t.text('#hintBtn'), 'Hint'); assert.equal(await t.text('#autoBtn'), 'Place one for me');
+  await t.page.evaluate(() => document.getElementById('hintBtn').click()); await t.page.waitForTimeout(200);
+  assert.equal(await t.page.evaluate(() => document.querySelectorAll('#gbPts i').length ? document.getElementById('gbPts').textContent.length - document.querySelector('#gbPts i').textContent.length : 3), 1);
+  for (let k = 0; k < 120; k++) { const d = await t.page.evaluate(() => { const m = /(\d+) of (\d+)/.exec(document.getElementById('progress').textContent); if (m && m[1] === m[2]) return true; window.bloppitPlaceRight(); return false; }); if (d) break; await t.page.waitForTimeout(150); }
+  await t.page.waitForFunction(() => document.getElementById('winDlg').open, null, { timeout: 20000 });
+  const rows = await t.text('#winRows'); assert.match(rows, /Built the Heart/); assert.match(rows, /Help used \(1\)/); assert.match(rows, /Galaxy Blocks ?\+1/); assert.doesNotMatch(rows, /point/i);
+  assert.match(await t.text('#winBest'), /Frog Trail: 1 of 45 ★/);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
