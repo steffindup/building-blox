@@ -100,6 +100,8 @@ export function merge(server, incoming) {
       // the island films already watched (each plays once): kept from both devices
       films: [...new Set([...(Array.isArray(wa.films) ? wa.films : []), ...(Array.isArray(wb.films) ? wb.films : [])].filter((d) => typeof d === 'string' && d.length <= 40))].slice(0, 40),
       free: [...new Set([...(wa.free || []), ...(wb.free || [])].filter((d) => typeof d === 'string' && d.length <= 20))],
+      // the days Pippa's message in a bottle was opened (one a day, +5 XP each): kept from both devices
+      bottles: [...new Set([...(Array.isArray(wa.bottles) ? wa.bottles : []), ...(Array.isArray(wb.bottles) ? wb.bottles : [])].filter((d) => typeof d === 'string' && /^\d{4}-\d\d-\d\d$/.test(d)))].sort().slice(-4000),
       draw: [...new Map([...(Array.isArray(wb.draw) ? wb.draw : []), ...(Array.isArray(wa.draw) ? wa.draw : [])].filter((d) => d && typeof d.id === 'string' && typeof d.c === 'string' && d.c.length <= 2600).map((d) => [d.id, { id: d.id, c: d.c, t: num(d.t) ?? 0 }])).values()].sort((x, y) => y.t - x.t).slice(0, 12),
       // Where the child put each model and decoration on the island, and the models put away
       pos: Object.fromEntries([...new Set([...Object.keys(obj(wa.pos)), ...Object.keys(obj(wb.pos))])].filter((k) => kept[k] || (k.startsWith('decor:') && decor.includes(k.slice(6)))).map((k) => [k, [obj(wb.pos)[k], obj(wa.pos)[k]].find((v) => Array.isArray(v) && v.length === 2 && v.every((n) => Number.isInteger(n) && n >= 0 && n <= 1000))]).filter(([, v]) => v)),

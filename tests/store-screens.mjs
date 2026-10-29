@@ -62,7 +62,7 @@ for (const [tag, vp, dsf] of [['iphone',{width:440,height:956},3],['ipad',{width
   await page.reload({ waitUntil: 'load' }); await page.waitForTimeout(3500);
   await page.evaluate(() => document.getElementById('tab-island').click()); await page.waitForTimeout(3500);
   await page.screenshot({ path: `${OUT}${tag}-island.png` });
-  await page.evaluate(() => document.getElementById('tab-daily').click()); await page.waitForTimeout(1200); await page.screenshot({ path: `${OUT}${tag}-weekly.png` });
+  await page.evaluate(() => (document.getElementById('tab-create').click(), document.getElementById('qbWeekly').click())); await page.waitForTimeout(1200); await page.screenshot({ path: `${OUT}${tag}-weekly.png` });
   await page.evaluate(() => { window.bloppitHome(); }); await page.waitForTimeout(400); await page.evaluate(() => document.querySelector('[data-go="cpu"]').click()); await page.waitForTimeout(600);
   await page.evaluate(() => { document.getElementById('bzHard').click(); document.getElementById('bzName').value='Pebble'; document.getElementById('bzCpuGo').click(); }); await page.waitForTimeout(4500);
   await page.screenshot({ path: `${OUT}${tag}-blitz.png` });

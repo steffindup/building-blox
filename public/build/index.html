@@ -1371,7 +1371,7 @@ body.film-on{overflow:hidden}
 .tabs .tab[aria-selected="true"],.tabs .tab[class*="play"][aria-selected="true"]{opacity:1;background:none;color:inherit;border:0}
 .tabs .tab[aria-selected="true"] .n{background:none}
 .tabs .tab[aria-selected="true"]::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:4px;border-radius:4px;background:var(--tc)}
-#tab-island{--tc:#2FB8DC}#tab-daily{--tc:#E8B20E}#tab-create{--tc:#E9772A}#tab-game{--tc:#7DBE2E}
+#tab-island{--tc:#2FB8DC}#tab-sea{--tc:#E8B20E}#tab-create{--tc:#E9772A}#tab-game{--tc:#7DBE2E}
 /* The character at the top of each page */
 .char-hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 20px;align-items:center;border-radius:20px;padding:14px 24px 14px 14px;background:linear-gradient(115deg,var(--h1),var(--h2));color:var(--hink,#fff);box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer;min-width:0;overflow:hidden}
 #view-create>.char-hero{grid-column:1/-1}
@@ -1383,6 +1383,22 @@ body.film-on{overflow:hidden}
 .char-hero .ch-desc{margin:4px 0 0;font-size:14px;font-weight:700;opacity:.9;max-width:62ch;line-height:1.4}
 @media (max-width:560px){.char-hero{padding:10px 14px 10px 8px;gap:4px 12px;border-radius:16px}.char-hero .ch-art,.char-hero .c3-wrap{width:78px;height:88px}.char-hero .ch-line{font-size:15px}.char-hero .ch-desc{font-size:12.5px}}
 #view-game:not([data-sub="hub"]) #gmTitle,#view-game:not([data-sub="hub"])>.crumb[data-up]{display:none}
+.qb-weekly{margin-bottom:10px}.qb-weekly[hidden]{display:none}.qb-weekly img{border-radius:10px;object-fit:cover;background:#fff}
+.dy-up{justify-self:start}
+/* Pippa's message in a bottle: one a day, on her puzzles page; a dot on her tab while one is waiting */
+#view-game:not([data-sub="sea"]) #bottleCard{display:none}
+.bottle{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:14px;align-items:center;border:2px solid #F0C64A;background:linear-gradient(135deg,color-mix(in srgb,#FFE9A8 55%,var(--page)),var(--page))}
+.bottle .bt-art{width:64px;height:64px}
+.bottle.waiting .bt-art{animation:bt-bob 2.4s ease-in-out infinite}
+@keyframes bt-bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(4deg)}}
+.bt-txt{display:grid;gap:2px;min-width:0}.bt-txt b{font-family:var(--f-display);font-weight:400;font-size:20px;line-height:1.15}.bt-txt>span{font-size:13px;font-weight:700;color:var(--muted)}
+.bt-msg{display:block;margin-top:6px;padding:8px 12px;border-radius:12px;background:var(--page);border:1px dashed #C9A97A;font-weight:700;font-size:15px;quotes:none}
+.bt-msg[hidden]{display:none}
+#btOpen[hidden]{display:none}
+@media (max-width:560px){.bottle{grid-template-columns:48px minmax(0,1fr)}.bottle .bt-art{width:48px;height:48px}#btOpen{grid-column:1/-1}}
+@media (prefers-reduced-motion: reduce){.bottle .bt-art{animation:none!important}}
+.tab .n{position:relative}
+.tab.bottle-on .n::after{content:"";position:absolute;top:-2px;right:-3px;width:10px;height:10px;border-radius:50%;background:#D2352B;border:2px solid var(--bg)}
 .dy-sea{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;text-align:left;cursor:pointer;font:inherit;color:var(--ink)}.dy-sea img{width:52px;height:52px}.dy-sea b{display:block;font-family:var(--f-display);font-weight:400;font-size:20px}.dy-sea span span{font-size:13px;font-weight:700;color:var(--muted)}.dy-go{font-size:28px;color:var(--muted)}.dy-sea:hover{border-color:var(--accent)}#tab-brain{--tc:#3D5FA8}#tab-blitz{--tc:#2F7FD0}#tab-mp{--tc:#8B5CF6}
 /* The game tabs scroll sideways when they don't all fit: little arrows at either end show there are more, and tap to slide */
 .tabs-wrap{display:contents}.tabs-arr{display:none}
@@ -1408,7 +1424,7 @@ body.film-on{overflow:hidden}
   <div class="tabs-wrap"><button class="tabs-arr l" type="button" tabindex="-1" aria-hidden="true">‹</button>
   <nav class="tabs" role="tablist" aria-label="Games">
     <button class="tab play5" role="tab" id="tab-island" data-tab="island" aria-selected="false"><span class="n"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="50" fill="#2FB8DC"/><circle cx="50" cy="52" r="15" fill="#6CC04A" stroke="#F2D594" stroke-width="4"/><g transform="translate(50 52) scale(.5)" stroke="#9E2019" stroke-width="2" fill="#D8342C"><rect x="-20" y="-6" width="40" height="18" rx="2.5"/><rect x="-15" y="-13" width="10" height="8" rx="2"/><rect x="5" y="-13" width="10" height="8" rx="2"/></g><circle cx="50.0" cy="19.0" r="8" fill="#9BD32C" stroke="#F2D594" stroke-width="3"/><circle cx="81.4" cy="41.8" r="8" fill="#24407A" stroke="#F2D594" stroke-width="3"/><circle cx="69.4" cy="78.7" r="8" fill="#F2C230" stroke="#F2D594" stroke-width="3"/><circle cx="30.6" cy="78.7" r="8" fill="#2F7FD0" stroke="#F2D594" stroke-width="3"/><circle cx="18.6" cy="41.8" r="8" fill="#E9772A" stroke="#F2D594" stroke-width="3"/></svg></span>Island</button>
-    <button class="tab play4" role="tab" id="tab-daily" data-tab="daily" aria-selected="false"><span class="n"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span>Weekly</button>
+    <button class="tab play4" role="tab" id="tab-sea" data-tab="game" data-sub="sea" aria-selected="false"><span class="n"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span>Seaside</button>
     <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span>Quick Build</button>
     <button class="tab play" role="tab" id="tab-game" data-tab="game" data-sub="otter" aria-selected="false"><span class="n"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span>Frog Trail</button>
     <button class="tab play" role="tab" id="tab-brain" data-tab="game" data-sub="brain" aria-selected="false"><span class="n"><img src="/art/head-nora.png" alt="" width="256" height="256"></span>Brain Trail</button>
@@ -1481,6 +1497,7 @@ body.film-on{overflow:hidden}
   <div class="usebar" id="useBar" hidden><img id="ubImg" alt=""><span class="ub-txt"><b id="ubName"></b><span id="ubInfo"></span></span><button class="primary sm" id="ubGo" type="button">Use this puzzle ▶</button></div>
   <div class="panel">
     <div class="pick-banner" id="pickBanner" hidden><span id="pickTxt"></span><button class="ghost" id="pickCancel" type="button">Back</button></div>
+    <button class="card dy-sea qb-weekly" id="qbWeekly" type="button" data-qb="home"><img id="qbWkImg" src="/art/head-bibi.png" alt="" width="256" height="256"><span><b>🎨 Bibi’s Weekly Bloppit</b><span id="qbWkSub">A new one every Monday</span></span><span class="dy-go" aria-hidden="true">›</span></button>
     <div class="qb-tiles" data-qb="home" role="group" aria-label="Choose what to build">
       <button class="qb-tile" type="button" data-qb-go="photo"><span class="qb-ic" aria-hidden="true">📷</span><b>Add a photo</b><small>Turn a picture into bricks</small></button>
       <button class="qb-tile" type="button" data-qb-go="draw"><span class="qb-ic" aria-hidden="true">✏️</span><b>Draw your own</b><small>Paint it stud by stud</small></button>
@@ -1681,6 +1698,11 @@ body.film-on{overflow:hidden}
     <button type="button" role="tab" data-trail="sea" id="trSea">🐧 Pippa’s Puzzles</button>
   </div>
   <button class="crumb" data-up type="button">‹ Trails</button>
+  <div class="card bottle" id="bottleCard">
+    <svg class="bt-art" viewBox="0 0 64 64" aria-hidden="true"><g transform="rotate(-28 32 32)"><rect x="27" y="4" width="10" height="9" rx="2" fill="#B07A4A"/><path d="M26 13h12v7c6 3 9 8 9 14v20a6 6 0 0 1-6 6H23a6 6 0 0 1-6-6V34c0-6 3-11 9-14z" fill="#9FE0D6" stroke="#2C8C82" stroke-width="2"/><rect x="24" y="30" width="16" height="22" rx="3" fill="#FFF4D8" stroke="#C9A97A"/><path d="M27 36h10M27 41h10M27 46h7" stroke="#C9A97A" stroke-width="1.6"/></g></svg>
+    <div class="bt-txt"><b id="btTitle">A message in a bottle!</b><span id="btSub">Pippa sends one every day. Open it for +5 XP.</span><q class="bt-msg" id="btMsg" hidden></q></div>
+    <button class="primary sm" id="btOpen" type="button">Open it</button>
+  </div>
   <div class="gm-head">
     <div><h2 id="gmTitle">Frog Trail</h2><p class="note" id="gmIntro">Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, so they’re worth more points.</p></div>
     <div class="gm-total"><span class="tag" id="gmWho">Your points</span><b id="gmTotal">0</b><span class="note" id="gmDone"></span><button class="ghost sm-link" id="gmSwitch" type="button">Switch player</button></div>
@@ -1859,7 +1881,7 @@ body.film-on{overflow:hidden}
 </section>
 <section class="view" id="view-daily" hidden>
   <div class="char-hero" data-hero="daily" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
-  <div class="gm-head"><div><h2>📅 This week’s Weekly Bloppit</h2><p class="note">One puzzle a week, the same for everybody. Build it clean: no misses, no hints. A new one arrives every Monday morning.</p></div></div>
+  <div class="gm-head"><div><h2>🎨 This week’s Weekly Bloppit</h2><p class="note">One puzzle a week, the same for everybody. Build it clean: no misses, no hints. A new one arrives every Monday morning.</p></div></div>
   <div class="card daily-card">
     <img class="daily-img" id="dyImg" alt="">
     <div class="daily-txt">
@@ -1871,7 +1893,7 @@ body.film-on{overflow:hidden}
       <p class="msg" id="dyMsg" hidden></p>
     </div>
   </div>
-  <button class="card dy-sea" id="dySea" type="button"><img src="/art/head-pippa.png" alt="" width="256" height="256"><span><b>🐚 Pippa’s seaside puzzles</b><span id="hubSeaSub">Seaside puzzles that wash ashore</span></span><span class="dy-go" aria-hidden="true">›</span></button>
+  <button class="crumb dy-up" id="dyUp" type="button">‹ Quick Build</button>
   <div class="card" id="dyBoard" hidden><div class="gm-head sub-head"><div><h2>🏆 This week’s top 100</h2><p class="note">Clean builds first, then stars. Generated names only; no times. A grown-up switched this on in the Grown-ups corner.</p></div></div><div class="board" id="dyBoardList"></div></div>
   <p class="note">Bloppit only counts how many people finished this week’s puzzle and how many finished it clean. No names, no times, no ranks, unless a grown-up switches on the top-100 board, which shows generated names and stars. The counts are deleted after 8 weeks.</p>
 </section>
@@ -2956,14 +2978,14 @@ var subOf={game:'hub',blitz:'hub',mp:'hub'};
 const SUB_OK={game:['hub','otter','brain','sea'],blitz:['hub','cpu','friend'],mp:['hub','start','join']};
 // Which top-bar game a page belongs to (the build screen belongs to whatever you're playing)
 // The top bar: one tab per character. Frog Trail and Brain Trail are both the Trails page (their own level maps), and
-// Pippa's seaside puzzles belong to her Weekly tab.
+// Pippa's tab is her seaside puzzles (and her daily message in a bottle); the Weekly Bloppit is Bibi's, under Quick Build.
 // Each page has its character at the top: who lives there, their island, their line and what the page is for
 const HERO={
-  daily:{who:'pippa',art:'/art/char-pippa.png',isle:'Sunrise Shores',title:'Pippa’s Puzzles',line:'A new puzzle just washed ashore!',desc:'Every Monday Pippa brings the Weekly Bloppit on the ferry, and her own seaside puzzles wash ashore as Bloppitopia grows.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
-  sea:{who:'pippa',art:'/art/char-pippa.png',isle:'Sunrise Shores',title:'Pippa’s seaside puzzles',line:'Ooh, that one’s clean!',desc:'Twelve seaside builds wash ashore as Bloppitopia grows. Each one adds to Sunrise Shores, all the way to the Festival Clock.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
+  daily:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickworks Island',title:'Bibi’s Weekly Bloppit',line:'Fresh paint! This week’s one is ready.',desc:'Every Monday Bibi paints a new Weekly Bloppit for the Grand Creation Gallery. Everybody builds the same one, and each one you build adds to Brickworks Island.',c:['#FFAA55','#DD5F1C']},
+  sea:{who:'pippa',art:'/art/char-pippa.png',isle:'Sunrise Shores',title:'Pippa’s Puzzles',line:'Ooh, that one’s clean!',desc:'Twelve seaside builds wash ashore as Bloppitopia grows. Each one adds to Sunrise Shores, all the way to the Festival Clock. And every day the tide brings a message in a bottle.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
   otter:{who:'tiny',art:'/art/char-tiny.png',isle:'Frog Forest',title:'Frog Trail',line:'Small frog, big forest!',desc:'Hop up the trail with Tiny, one level at a time. The levels start tiny and get bigger, and the last is his Lily-pad Palace.',c:['#A6D93A','#3F8F33']},
   brain:{who:'nora',art:'/art/char-nora.png',isle:'Brainpeak',title:'Brain Trail',line:'A clever mind shines in the dark.',desc:'Nora tucks math puzzles into the booklet: solve one to open its page. The last build is her Great Telescope.',c:['#4A6FC0','#1C2B57']},
-  create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickworks Island',title:'Quick Build',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
+  create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickworks Island',title:'Quick Build',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way, and every Monday there’s a new Weekly Bloppit.',c:['#FFAA55','#DD5F1C']},
   blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Bloppit Blitz',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Fastest clean build wins.',c:['#5DB4F2','#1F6FC4']},
   mp:{who:'pup',art:'/art/pup.png',isle:'Friendship Harbour',title:'Build Together',line:'Every build is better with a friend!',desc:'Take turns building one model with friends on their own phones, tablets or computers.',c:['#B9A2F7','#6E4FD6']}};
 function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[data-hero="${t}"]`); if(!el) return;
@@ -2974,9 +2996,10 @@ function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[d
   const im=new Image(); im.className='ch-art'; im.alt=''; im.src=H.art; el.firstElementChild.replaceWith(im);   // a fresh picture each time (the 3D view draws over it)
   try{ if(ch3On()) cv3Img(im,{who:H.who,frame:'full'}); }catch(e){} }
 document.addEventListener('click',e=>{ const h=e.target.closest('.char-hero'); if(!h) return; const w=h.querySelector('.c3-wrap'); if(w) cv3Play(w,'poke'); try{ const k=h.dataset.k, who=HERO[k]&&HERO[k].who; sfx.voice(who==='swoop'?'longtail':who); }catch(x){} });
-function tabsSync(t){ const sec=sectionOf(t===undefined?tab:t), tr=typeof trail!=='undefined'?trail:'otter';
+function tabsSync(t){ const sec=sectionOf(t===undefined?tab:t), tr=typeof trail!=='undefined'?trail:'otter'; if(typeof bottleSync==='function') bottleSync();
   document.querySelectorAll('.tab').forEach(b=>{ let on=b.dataset.tab===sec;
-    if(sec==='game'){ const sub=(t==='game'&&subOf.game)||tr; on=(b.dataset.sub&&b.dataset.tab==='game'&&b.dataset.sub===sub)||(b.dataset.tab==='daily'&&sub==='sea'); }
+    if(sec==='game'){ const sub=(t==='game'&&subOf.game)||tr; on=!!b.dataset.sub&&b.dataset.tab==='game'&&b.dataset.sub===sub; }
+    if(sec==='daily') on=b.dataset.tab==='create';   // the Weekly Bloppit is Bibi's: it lives with Quick Build
     b.setAttribute('aria-selected',on); }); }
 function sectionOf(t){
   if(t==='build'||t==='box'||t==='booklet'){ if(game) return 'game'; if(mp) return trialOn()&&mp.state.calm?'daily':mpHomeTab(); return 'create'; }
@@ -3006,7 +3029,7 @@ function setTab(t,sub){
   { const sel=document.querySelector('.tab[aria-selected="true"]'), bar=$('.tabs'); if(sel&&bar.scrollWidth>bar.clientWidth) bar.scrollTo({left:sel.offsetLeft-bar.offsetLeft-24,behavior:'smooth'}); }
   ['home','create','build','box','booklet','game','mp','blitz','daily','island'].forEach(v=>$('#view-'+v).hidden=v!==t);
   if(t==='island') renderIsland();
-  if(t==='create') renderDrawSaved();
+  if(t==='create'){ renderDrawSaved(); qbWeeklySync(); }
   if(t==='mp'&&(sub==='hub'||subOf.mp==='hub')) renderCrews(true);
   if(t!=='create'&&pickFor) pickFor=null;
   syncPick();
@@ -3129,7 +3152,7 @@ function qbShow(screen){ screen=QB_T[screen]?screen:'home';
 document.querySelectorAll('[data-qb-go]').forEach(b=>b.addEventListener('click',()=>{ qbShow(b.dataset.qbGo); if(b.dataset.qbGo==='photo') $('#file').click(); }));
 $('#qbBack').onclick=()=>qbShow('home');
 $('#tab-create').addEventListener('click',()=>qbShow('home'));
-$('#dySea').onclick=()=>{ if(mp){ setTab(mpHomeTab()); return; } setTab('game','sea'); };
+$('#dyUp').onclick=()=>setTab('create');
 qbShow('home');
 function pickPuzzle(forWhat,src){
   if(game) endGame();
@@ -5233,9 +5256,12 @@ const SAMPLES=[
      x.poly([[a,b-r*1.6],[a+r*.45,b-r*.45],[a+r*1.6,b],[a+r*.45,b+r*.45],[a,b+r*1.6],[a-r*.45,b+r*.45],[a-r*1.6,b],[a-r*.45,b-r*.45]],k); }
    x.fillStyle='#F4F4F4'; x.fillRect(48,70,8,120);
    return [['front',c]]; }},
- {name:'Scallop shell',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(200,180,'#ffffff');
-   for(let k=0;k<7;k++){ const a0=Math.PI*(1.06+k*.126), a1=a0+.126; x.poly([[100,162],[100+Math.cos(a0)*96,150+Math.sin(a0)*118],[100+Math.cos(a1)*96,150+Math.sin(a1)*118]],k%2?'#FE8A18':'#F2CD37'); }
-   x.poly([[78,150],[122,150],[112,176],[88,176]],'#FE8A18');
+ {name:'Scallop shell',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(220,170,'#ffffff');
+   // a solid fan of five broad ribs (yellow, orange, yellow…), each with a rounded bump at the rim, on a wide hinge
+   const cx=110, cy=146, R=100;
+   for(let k=0;k<5;k++){ const pts=[[cx,cy]]; for(let j=0;j<=10;j++){ const u=j/10, a=Math.PI*(1+(k+u)/5), r=R*(.84+.16*Math.sin(Math.PI*u)); pts.push([cx+Math.cos(a)*r,cy+Math.sin(a)*r]); }
+     x.poly(pts,k%2?'#FE8A18':'#F2CD37'); }
+   x.poly([[46,136],[174,136],[154,166],[66,166]],'#FE8A18');
    return [['front',c]]; }},
  {name:'Beach ball',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(200,200,'#BFE3F5');
    const C=['#0055BF','#F4F4F4','#F2CD37','#F4F4F4','#4B9F4A','#F4F4F4'];
@@ -5445,7 +5471,7 @@ const BRAIN_LEVELS=[
 // through Bloppitopia (Frog Forest, Brainpeak, Blitz Bay and Brickworks Island together), and each also needs the one
 // before it. The last is the Festival Clock. Scores are kept in g.sbest.
 const SEA_LEVELS=[
- {name:'Scallop shell',   sample:'Scallop shell',   size:10,  shape:'flat',   thick:.5, colors:2, pts:100},
+ {name:'Scallop shell',   sample:'Scallop shell',   size:12,  shape:'flat',   thick:.5, colors:2, pts:100},
  {name:'Beach ball',      sample:'Beach ball',      size:8,  shape:'flat',   thick:.6, colors:5, pts:130},
  {name:'Starfish',        sample:'Starfish',        size:12, shape:'flat',   thick:.6, colors:2, pts:160},
  {name:'Jellyfish',       sample:'Jellyfish',       size:10,  shape:'puffed', thick:.5, colors:4, pts:200},
@@ -6979,6 +7005,48 @@ async function renderDaily(){
   $('#dyMsg').hidden=true;
   weeklyFetch().then(j=>{ const el=$('#dyCount'); if(el&&tab==='daily'){ el.textContent=cleanLine(j,me); el.hidden=!el.textContent; } }).catch(()=>{});
 }
+/* ---------- Pippa's message in a bottle: one a day, +5 XP ----------
+   It washes up on her puzzles page each new day (the player's own calendar day). Opening it keeps the day in the
+   world record (o.bottles), and XP is worked out from those days like the builds, so two devices add up correctly. */
+const dayKey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const BOTTLE_LINES=[
+  'Ahoy! The waves are sparkly today. Keep building, you’re doing brilliantly!',
+  'Did you know? A starfish can grow back a lost arm!',
+  'I tried surfing with my sunglasses on. They stayed on my head. Mostly!',
+  'Fun fact: an octopus has three hearts!',
+  'Did you know? A scallop has lots of tiny eyes all along the edge of its shell!',
+  'Bibi painted my ice-cream stall. It’s the brightest one on the beach!',
+  'Swoop raced a seagull this morning. The seagull didn’t know it was a race.',
+  'Did you know? A group of jellyfish is called a smack!',
+  'Tiny says hello from Frog Forest. Can you hear him singing?',
+  'Nora read me a whole book about the stars. My favourite is the twinkly one.',
+  'Did you know? Penguins can’t fly, but they’re super-fast swimmers!',
+  'Bloppit says every big build starts with one brick. Today’s a good day for one!',
+  'Did you know? Sea otters hold paws while they sleep, so they don’t drift apart!',
+  'I found a shell that looks just like a tiny hat. I’m keeping it!',
+  'Did you know? A blue whale’s heart is as big as a small car!',
+  'The Festival Clock is waiting for someone special to build it. Could it be you?',
+];
+const bottleLine=day=>BOTTLE_LINES[parseInt(hash32('bottle:'+day),36)%BOTTLE_LINES.length];
+function bottleSync(){ try{
+  const o=worldStore(), day=dayKey(), got=bottleDays(o).includes(day), card=$('#bottleCard');
+  const tb=$('#tab-sea'); if(tb) tb.classList.toggle('bottle-on',!got&&!!o.arrived);
+  if(!card) return; card.classList.toggle('waiting',!got);
+  $('#btTitle').textContent=got?'Pippa’s message':'A message in a bottle!';
+  $('#btSub').textContent=got?`+${BOTTLE_XP} XP · another bottle washes up tomorrow`:`Pippa sends one every day. Open it for +${BOTTLE_XP} XP.`;
+  $('#btMsg').hidden=!got; $('#btMsg').textContent=got?bottleLine(day):'';
+  $('#btOpen').hidden=got;
+}catch(e){} }
+$('#btOpen').onclick=()=>{ const o=worldStore(), day=dayKey(); if(bottleDays(o).includes(day)) return bottleSync();
+  o.bottles=[...bottleDays(o),day].sort(); o.xp=worldXP(o); worldSet(o); track('bottle');
+  try{ sfx.chime(); }catch(e){} try{ sfx.voice('pippa'); }catch(e){} bottleSync(); };
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) bottleSync(); });
+window.bloppitBottle=()=>({day:dayKey(),days:bottleDays(worldStore()),xp:worldXP(worldStore()),dot:$('#tab-sea').classList.contains('bottle-on')});   // for tests
+// Bibi's Weekly card on the Quick Build page: this week's model and whether it's done
+function qbWeeklySync(){ try{ const week=weekOf(), o=weeklyPuzzle(week), me=weeklyStore().weeks[week];
+  $('#qbWkImg').src=o.thumb||'/art/head-bibi.png';
+  $('#qbWkSub').textContent=me?(me.clean?`${o.name}: built clean ✓ · a new one every Monday`:`${o.name}: built ✓ · try it again for a clean one`):`This week: ${o.name} · ${o.n} bricks`; }catch(e){} }
+$('#qbWeekly').onclick=()=>setTab('daily');
 $('#dyGo').onclick=async()=>{
   const b=$('#dyGo'); b.disabled=true;
   try{ const week=weekOf(), o=weeklyPuzzle(week); if(game) endGame(); if(mp) mpLeave(); weeklyLoad(o);
@@ -7179,7 +7247,7 @@ function worldMerge(a,b){
   // The name (typed or picked) and brick colour: whichever was set last (pupAt); a later 'no name yet' never wipes one
   const later=(b.pupAt||0)>(a.pupAt||0)?b:a, other=later===b?a:b, named=w=>(cleanPupText(w.pupText)||w.pupName>=0)?w:null, nw=named(later)||named(other)||{};
   const pn=typeof nw.pupName==='number'&&nw.pupName>=0?nw.pupName:null, pc=[later.pupColor,other.pupColor].find(v=>Number.isInteger(v)&&v>=0);
-  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,films:[...new Set([...(a.films||[]),...(b.films||[])])],decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},pos:{...(a.pos||{}),...(b.pos||{})},away:awayMerge(a.away,b.away),draw:[...new Map([...(b.draw||[]),...(a.draw||[])].map(d=>[d.id,d])).values()].sort((x,y)=>(y.t||0)-(x.t||0)).slice(0,12),pupName:pn==null?-1:pn,pupText:cleanPupText(nw.pupText),pupAt:Math.max(a.pupAt||0,b.pupAt||0),pupColor:pc==null?-1:pc,...(pc===PUP_MIX&&[later.pupHex,other.pupHex].find(pupHexOk)?{pupHex:[later.pupHex,other.pupHex].find(pupHexOk)}:{}),isle:(a.isle||b.isle)?1:0,arrived:(a.arrived||b.arrived)?1:0,pick:a.pick||b.pick||undefined,...(((b.wearAt||0)>(a.wearAt||0)?b:a).wear?{wear:((b.wearAt||0)>(a.wearAt||0)?b:a).wear,wearAt:Math.max(a.wearAt||0,b.wearAt||0)}:{}),pupAsked:!!(a.pupAsked||b.pupAsked)};
+  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,films:[...new Set([...(a.films||[]),...(b.films||[])])],bottles:[...new Set([...bottleDays(a),...bottleDays(b)])].sort(),decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},pos:{...(a.pos||{}),...(b.pos||{})},away:awayMerge(a.away,b.away),draw:[...new Map([...(b.draw||[]),...(a.draw||[])].map(d=>[d.id,d])).values()].sort((x,y)=>(y.t||0)-(x.t||0)).slice(0,12),pupName:pn==null?-1:pn,pupText:cleanPupText(nw.pupText),pupAt:Math.max(a.pupAt||0,b.pupAt||0),pupColor:pc==null?-1:pc,...(pc===PUP_MIX&&[later.pupHex,other.pupHex].find(pupHexOk)?{pupHex:[later.pupHex,other.pupHex].find(pupHexOk)}:{}),isle:(a.isle||b.isle)?1:0,arrived:(a.arrived||b.arrived)?1:0,pick:a.pick||b.pick||undefined,...(((b.wearAt||0)>(a.wearAt||0)?b:a).wear?{wear:((b.wearAt||0)>(a.wearAt||0)?b:a).wear,wearAt:Math.max(a.wearAt||0,b.wearAt||0)}:{}),pupAsked:!!(a.pupAsked||b.pupAsked)};
 }
 function worldSet(o){ try{ localStorage.setItem(pkey(WORLD_KEY),JSON.stringify(o)); }catch(e){} pupPush(); }
 const worldCount=o=>o.log.length;                                   // distinct models finished
@@ -7193,7 +7261,9 @@ const XP_PER_BRICK=.55, XP_SWITCH=Date.UTC(2026,9,24,3);
 const sizeXP=n=>Math.max(10,Math.round(XP_PER_BRICK*(n||0)));
 const oldSizeXP=n=>n<=20?10:n<=40?20:35;
 const buildXP=(k,b)=>(b.k==='blitz'?10:Math.max(sizeXP(b.n),(b.t||Infinity)<XP_SWITCH?oldSizeXP(b.n):0))+(k.startsWith('w:')?10:0)+(b.m?5:0);
-const worldXP=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+buildXP(k,b),0);
+const BOTTLE_XP=5;   // Pippa's message in a bottle: one a day
+const worldXP=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+buildXP(k,b),0)+BOTTLE_XP*bottleDays(o).length;
+const bottleDays=o=>(Array.isArray(o.bottles)?o.bottles:[]).filter(d=>typeof d==='string'&&/^\d{4}-\d\d-\d\d$/.test(d));
 const worldStarsEarned=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+(b.s||0)+(k.startsWith('w:')?1:0)+(b.m?1:0),0)+finaleStars(o);
 function finaleStars(o){ try{ if(typeof ISLES==='undefined') return 0; const n=islesComplete(o).length; return n*5+(n===ISLE_TOTAL?10:0); }catch(e){ return 0; } }
 // Put away / put back: the time it was put away, or minus the time it came back; on a merge the latest choice wins (old 1/0 lose to any timed one)
@@ -8104,10 +8174,10 @@ const CAST={
     who:'Brainpeak’s stargazer and puzzle-setter',story:'Nora is a yellow-crowned night heron. She watches the stars from Brainpeak and tucks a math puzzle into the Brain Trail booklets.',
     loves:'A good “aha”, quiet nights and clear skies',secret:'Her great telescope is broken, and she needs a builder to fix it.',lines:['A clever mind shines in the dark.','Look closer, the answer’s hiding.','Aha! You saw the pattern.']},
   pippa:{name:'Pippa',kind:'the Penguin',isle:'sunrise',brick:'yellow',h:1.8,aspect:229/360,tag:'A new puzzle just washed ashore!',
-    who:'The visitor who never left',story:'Pippa washed up on Sunrise Shores on holiday, fell in love with the sunshine and stayed. Every Monday she brings the Weekly Bloppit on the ferry, and her own seaside puzzles wash ashore as Bloppitopia grows.',
+    who:'The visitor who never left',story:'Pippa washed up on Sunrise Shores on holiday, fell in love with the sunshine and stayed. Her seaside puzzles wash ashore as Bloppitopia grows, and every day she sends a message in a bottle.',
     loves:'Surprises, parties, and a swim before breakfast',secret:'She wobbles on land, but she’s the best swimmer in Bloppitopia.',lines:['A new puzzle just washed ashore!','Special delivery!','Ooh, that one’s clean!','See you next Monday!']},
   bibi:{name:'Bibi',kind:'the Lion Cub',isle:'brickworks',brick:'orange',h:1.85,aspect:241/360,tag:'Build it bold!',
-    who:'The maker of Brickworks Island',story:'Bibi runs the workshop and paints everything in sight. Whatever you make, he puts it on show and roars with pride.',
+    who:'The maker of Brickworks Island',story:'Bibi runs the workshop and paints everything in sight. Every Monday he paints a new Weekly Bloppit, and whatever you make, he puts it on show and roars with pride.',
     loves:'Big ideas, bright paint, and the crane',secret:'His roar is more of a squeak. He knows, and he roars anyway.',lines:['Build it bold!','If you can dream it, brick it!','ROAR! That’s brilliant!']},
   lufu:{name:'lufu',kind:'',isle:'moonstone',brick:'moonstone',h:1.2,aspect:237/360,tag:'We have found each other.',
     who:'A small, shy spirit of light',story:'lufu lived alone on Moonstone Isle for so long that its glow, and the stars above it, almost went out. Then you came, and built the crystal that made it shine again.',
@@ -10058,12 +10128,14 @@ function nextCandidates(){
 }
 const NEXT_RING=['trail','blitz','library','mystery'];
 const ringOf=k=>k==='otter'||k==='brain'||k==='sea'?'trail':k;
+// Play next grows the least-finished island that has something ready. A finished island is never offered while
+// another island still needs builds (it only comes back once everything is done). Islands level with each other
+// take turns: the category after the one Play next sent you to last time goes first.
 function nextBuild(){
-  const o=worldStore(), C=nextCandidates(); if(!C.length) return null;
-  const at=NEXT_RING.indexOf(ringOf(nextLast()));
-  let best=null;
-  for(let k=1;k<=NEXT_RING.length&&!best;k++){ const slot=NEXT_RING[(at+k+NEXT_RING.length)%NEXT_RING.length], here=C.filter(c=>ringOf(c.kind)===slot);
-    if(here.length) best=here.sort((a,b)=>isleFrac(a.isle,o)-isleFrac(b.isle,o))[0]; }
+  const o=worldStore(), all=nextCandidates(); if(!all.length) return null;
+  const open=all.filter(c=>isleFrac(c.isle,o)<1), C=open.length?open:all;
+  const at=NEXT_RING.indexOf(ringOf(nextLast())), turn=c=>{ const i=NEXT_RING.indexOf(ringOf(c.kind)); return (i-at-1+2*NEXT_RING.length)%NEXT_RING.length; };
+  const best=C.slice().sort((a,b)=>(isleFrac(a.isle,o)-isleFrac(b.isle,o))||(turn(a)-turn(b)))[0];
   const go=best.go; return {...best,go:()=>{ nextMark(best.kind); go(); }};
 }
 window.bloppitNext={next:()=>{ const n=nextBuild(); return n&&{t:n.t,kind:n.kind}; },cands:()=>nextCandidates().map(c=>c.kind),mark:k=>nextMark(k),complete:()=>islesComplete(worldStore()),mysteryOpen:()=>mysteryOpen(),unlocked:()=>worldUnlocked(worldStore()),seen:()=>seenGet(),reveal:ids=>isl3Reveal(ids,worldStore()),go:()=>{ const n=nextBuild(); if(n) n.go(); },count:id=>isleCount(id,worldStore()),wardrobe:()=>wardrobeOpen()};   // for tests
