@@ -265,7 +265,13 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .c3-host{position:relative}.c3-host>.c3-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;pointer-events:none;transition:opacity .3s}.c3-host.c3on>.c3-canvas{opacity:1}
 .c3-host.c3on>img,.c3-host.c3on>svg{visibility:hidden}.buddy .bud-art.c3on{animation:none!important}.c3-wrap{display:block}.c3-wrap>img{display:block;width:100%;height:100%;object-fit:contain}
 .hm-cont.first .hc-pic.c3-wrap{width:64px}.windlg .wc-pic.c3-wrap{width:106px}.pupfig3d{width:100%;height:100%;object-fit:cover;display:block}
-.win-chars{display:block;width:210px;height:150px;margin:-4px auto 0}.win-chars.three{width:270px}.win-chars[hidden]{display:none}
+.win-chars{display:block;width:210px;height:150px;margin:-4px auto 0}
+/* Blitz Bay's ladder (from Bloppitopia): the next race, nothing to set up */
+.ladderdlg{text-align:center}.ld-tag{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ld-pz{display:flex;gap:12px;align-items:center;justify-content:center;margin:10px auto;text-align:left}.ld-pz img{width:64px;height:64px;border-radius:12px;background:#fff;object-fit:contain}
+.ld-pz b{display:block;font-family:var(--f-display);font-weight:400;font-size:20px}.ld-pz span{font-size:13px;font-weight:700;color:var(--muted)}
+.ld-strip{display:flex;gap:4px;justify-content:center;align-items:center;flex-wrap:wrap;margin:6px auto 2px;max-width:340px}
+.ld-strip i{width:14px;height:14px;border-radius:50%;background:var(--line);display:inline-block}.ld-strip i.done{background:#2E9E4F}.ld-strip i.now{background:#F4BC22;box-shadow:0 0 0 3px rgba(244,188,34,.35)}.ld-strip .gap{width:6px}.ld-strip .gp{font-size:16px;line-height:14px;opacity:.5}.ld-strip .gp.now,.ld-strip .gp.done{opacity:1}.win-chars.three{width:270px}.win-chars[hidden]{display:none}
 .buddy.cheer .bud-art .st-rest,.buddy.think .bud-art .st-rest,.buddy.oops .bud-art .st-rest,.buddy.offer .bud-art .st-rest,.buddy.hug .bud-art .st-rest,.buddy.reach .bud-art .st-rest{display:none}
 .buddy.cheer .bud-art .st-cheer,.buddy.think .bud-art .st-think,.buddy.oops .bud-art .st-oops,.buddy.offer .bud-art .st-offer,.buddy.hug .bud-art .st-hug,.buddy.reach .bud-art .st-reach{display:block}
 .buddy.offer .bud-art{animation:bud-nudge 1.6s ease-in-out infinite;transform-origin:50% 100%}
@@ -416,6 +422,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .hand-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 @media (hover: none) and (pointer: coarse){ kbd{display:none!important} }
 .primary kbd{font-family:var(--f-mono);font-size:11px;border:1px solid currentColor;border-radius:4px;padding:0 4px;opacity:.75;margin-left:4px;vertical-align:2px}
+.ghost kbd{font-family:var(--f-mono);font-size:11px;border:1px solid currentColor;border-radius:4px;padding:0 4px;opacity:.6;margin-left:4px;vertical-align:1px}
 .primary.sm{font-size:16px;padding:9px 16px}
 
 /* Parts box: a scrapbook table of loose bricks and user-made segments */
@@ -1248,7 +1255,19 @@ body.film-on{overflow:hidden}
 .tabs .tab[aria-selected="true"],.tabs .tab[class*="play"][aria-selected="true"]{opacity:1;background:none;color:inherit;border:0}
 .tabs .tab[aria-selected="true"] .n{background:none}
 .tabs .tab[aria-selected="true"]::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:4px;border-radius:4px;background:var(--tc)}
-#tab-island{--tc:#2FB8DC}#tab-daily{--tc:#14A3A0}#tab-create{--tc:#E9772A}#tab-game{--tc:#7DBE2E}#tab-blitz{--tc:#2F7FD0}#tab-mp{--tc:#8B5CF6}
+#tab-island{--tc:#2FB8DC}#tab-daily{--tc:#E8B20E}#tab-create{--tc:#E9772A}#tab-game{--tc:#7DBE2E}
+/* The character at the top of each page */
+.char-hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 20px;align-items:center;border-radius:20px;padding:14px 24px 14px 14px;background:linear-gradient(115deg,var(--h1),var(--h2));color:var(--hink,#fff);box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer;min-width:0;overflow:hidden}
+#view-create>.char-hero{grid-column:1/-1}
+.char-hero .ch-art,.char-hero .c3-wrap{width:120px;height:132px;object-fit:contain;display:block;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}
+.char-hero .ch-txt{display:grid;gap:2px;min-width:0}
+.char-hero .ch-isle{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.char-hero .ch-title{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(26px,3.2vw,36px);line-height:1.05;text-wrap:balance}
+.char-hero .ch-line{font-family:var(--f-display);font-size:18px;opacity:.95}
+.char-hero .ch-desc{margin:4px 0 0;font-size:14px;font-weight:700;opacity:.9;max-width:62ch;line-height:1.4}
+@media (max-width:560px){.char-hero{padding:10px 14px 10px 8px;gap:4px 12px;border-radius:16px}.char-hero .ch-art,.char-hero .c3-wrap{width:78px;height:88px}.char-hero .ch-line{font-size:15px}.char-hero .ch-desc{font-size:12.5px}}
+#view-game:not([data-sub="hub"]) #gmTitle,#view-game:not([data-sub="hub"])>.crumb[data-up]{display:none}
+.dy-sea{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;text-align:left;cursor:pointer;font:inherit;color:var(--ink)}.dy-sea img{width:52px;height:52px}.dy-sea b{display:block;font-family:var(--f-display);font-weight:400;font-size:20px}.dy-sea span span{font-size:13px;font-weight:700;color:var(--muted)}.dy-go{font-size:28px;color:var(--muted)}.dy-sea:hover{border-color:var(--accent)}#tab-brain{--tc:#3D5FA8}#tab-blitz{--tc:#2F7FD0}#tab-mp{--tc:#8B5CF6}
 @media (max-width:640px){.tabs .tab,.tabs .tab[class*="play"]{padding:6px 8px 10px;gap:5px}.tabs .tab .n{width:24px;height:24px}}
 @media (min-width:641px) and (max-width:1240px){.who{padding:2px;box-shadow:none}.who-txt{display:none}.top{column-gap:16px;flex-wrap:nowrap}.top .tabs{flex-wrap:nowrap;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none;mask-image:linear-gradient(90deg,#000 calc(100% - 18px),transparent)}.top .tabs::-webkit-scrollbar{display:none}}   /* keep the top bar on one line: just the player's face beside the music and sound buttons */
 </style>
@@ -1261,7 +1280,8 @@ body.film-on{overflow:hidden}
     <button class="tab play5" role="tab" id="tab-island" data-tab="island" aria-selected="false"><span class="n"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="50" fill="#2FB8DC"/><circle cx="50" cy="52" r="15" fill="#6CC04A" stroke="#F2D594" stroke-width="4"/><g transform="translate(50 52) scale(.5)" stroke="#9E2019" stroke-width="2" fill="#D8342C"><rect x="-20" y="-6" width="40" height="18" rx="2.5"/><rect x="-15" y="-13" width="10" height="8" rx="2"/><rect x="5" y="-13" width="10" height="8" rx="2"/></g><circle cx="50.0" cy="19.0" r="8" fill="#9BD32C" stroke="#F2D594" stroke-width="3"/><circle cx="81.4" cy="41.8" r="8" fill="#24407A" stroke="#F2D594" stroke-width="3"/><circle cx="69.4" cy="78.7" r="8" fill="#F2C230" stroke="#F2D594" stroke-width="3"/><circle cx="30.6" cy="78.7" r="8" fill="#2F7FD0" stroke="#F2D594" stroke-width="3"/><circle cx="18.6" cy="41.8" r="8" fill="#E9772A" stroke="#F2D594" stroke-width="3"/></svg></span>Island</button>
     <button class="tab play4" role="tab" id="tab-daily" data-tab="daily" aria-selected="false"><span class="n"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span>Weekly</button>
     <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span>Quick Build</button>
-    <button class="tab play" role="tab" id="tab-game" data-tab="game" aria-selected="false"><span class="n"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span>Trails</button>
+    <button class="tab play" role="tab" id="tab-game" data-tab="game" data-sub="otter" aria-selected="false"><span class="n"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span>Frog Trail</button>
+    <button class="tab play" role="tab" id="tab-brain" data-tab="game" data-sub="brain" aria-selected="false"><span class="n"><img src="/art/head-nora.png" alt="" width="256" height="256"></span>Brain Trail</button>
     <button class="tab play3" role="tab" id="tab-blitz" data-tab="blitz" aria-selected="false"><span class="n"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span>Blitz</button>
     <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n"><img src="/art/pup.png" alt="" width="239" height="300"></span>Together</button>
   </nav>
@@ -1327,6 +1347,7 @@ body.film-on{overflow:hidden}
 </div>
 </section>
 <section class="view" id="view-create" hidden>
+  <div class="char-hero" data-hero="create" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
   <div class="usebar" id="useBar" hidden><img id="ubImg" alt=""><span class="ub-txt"><b id="ubName"></b><span id="ubInfo"></span></span><button class="primary sm" id="ubGo" type="button">Use this puzzle ▶</button></div>
   <div class="panel">
     <div class="pick-banner" id="pickBanner" hidden><span id="pickTxt"></span><button class="ghost" id="pickCancel" type="button">Back</button></div>
@@ -1494,10 +1515,10 @@ body.film-on{overflow:hidden}
   <div class="box-top">
     <div><h2>Parts box</h2><p class="note" id="boxInfo"></p></div>
     <div class="box-actions">
-      <button class="ghost" id="binAdd" type="button">+ Segment</button>
-      <button class="ghost" id="sortColour" type="button">Sort by colour</button>
-      <button class="ghost" id="sortSize" type="button">Sort by size</button>
-      <button class="ghost" id="tipOut" type="button">Tip everything out</button>
+      <button class="ghost" id="binAdd" type="button" title="Add a segment (G)">+ Segment <kbd>G</kbd></button>
+      <button class="ghost" id="sortColour" type="button" title="Sort by colour (C)">Sort by colour <kbd>C</kbd></button>
+      <button class="ghost" id="sortSize" type="button" title="Sort by size (S)">Sort by size <kbd>S</kbd></button>
+      <button class="ghost" id="tipOut" type="button" title="Tip everything out (T)">Tip everything out <kbd>T</kbd></button>
     </div>
   </div>
   <div class="box-grid">
@@ -1505,7 +1526,7 @@ body.film-on{overflow:hidden}
     <div class="box-main">
       <div class="pick-bar">
         <span class="note" id="pickNote">Tap bricks to pick them up, as many as this page needs.</span>
-        <button class="ghost" id="pickClear" type="button" hidden>Clear</button>
+        <button class="ghost" id="pickClear" type="button" title="Put them all back (Esc)" hidden>Clear <kbd>Esc</kbd></button>
         <button class="primary sm" id="takeBtn" type="button" title="Take the picked bricks to the build (Enter)" hidden>Take 0 to build</button>
         <button class="ghost" id="boxBack" type="button">Back to build</button>
       </div>
@@ -1516,12 +1537,12 @@ body.film-on{overflow:hidden}
 </section>
 
 <section class="view" id="view-game" hidden>
+  <div class="char-hero" data-hero="game" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
   <div class="hub" data-hub>
     <div class="gm-head"><div><h2>🐸 Trails</h2><p class="note">Climb 14 levels, from tiny to tricky, then beat the boss. Each trail has its own puzzles and keeps its own points.</p></div></div>
     <div class="hm-grid hub-grid">
       <button class="hm-tile t-game" data-sub="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Frog Trail</b><span id="hubOtterSub">Levels from tiny to tricky</span></button>
       <button class="hm-tile t-brain" data-sub="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Brain Trail</b><span id="hubBrainSub">Levels with math puzzles</span></button>
-      <button class="hm-tile t-sea" data-sub="sea" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span><b>Pippa’s Puzzles</b><span id="hubSeaSub">Seaside puzzles that wash ashore</span></button>
     </div>
   </div>
   <div class="trail-pick" role="tablist" aria-label="Which trail" hidden>
@@ -1553,7 +1574,8 @@ body.film-on{overflow:hidden}
 
 <section class="view" id="view-mp" hidden>
   <div class="hub" data-hub>
-    <div class="gm-head"><div><h2>🧩 Together</h2><p class="note">Play with friends on different phones, tablets or computers.</p></div></div>
+    <div class="char-hero" data-hero="mp" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
+    
     <div class="hm-grid hub-grid">
       <button class="hm-tile t-together" data-sub="start" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="0" y="16" width="66" height="58"/><use href="#bh2" x="58" y="28" width="58" height="51"/><rect x="34" y="80" width="52" height="28" rx="5" fill="#D2352B"/><rect x="40" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="66" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="34" y="100" width="52" height="8" rx="4" fill="#B32A22"/><ellipse cx="34" cy="90" rx="8" ry="7" fill="#8A5A3B"/><ellipse cx="86" cy="90" rx="8" ry="7" fill="#C08A5E"/></svg></span><b>Build together</b><span>One puzzle, taking turns with friends</span></button>
       <button class="hm-tile t-join" data-sub="join" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a game</b><span>Got a code? Type it in to play</span></button>
@@ -1629,7 +1651,8 @@ body.film-on{overflow:hidden}
 
 <section class="view" id="view-blitz" hidden>
   <div class="hub" data-hub>
-    <div class="gm-head"><div><h2>⚡ Bloppit Blitz</h2><p class="note">A head-to-head brick race. Fastest clean build wins.</p></div></div>
+    <div class="char-hero" data-hero="blitz" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
+    
     <div class="hm-grid hub-grid">
       <button class="hm-tile t-blitz" data-sub="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>vs Swoop</b><span>Race the speediest Longtail</span></button>
       <button class="hm-tile t-friend" data-sub="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><ellipse cx="31.6" cy="65.2" rx="10" ry="11" fill="#8A5A3B"/><path d="M24 66 q7.5 6 15 0" stroke="#1B1410" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>vs Friend</b><span>Send a challenge code, or race live</span></button>
@@ -1705,7 +1728,8 @@ body.film-on{overflow:hidden}
   <div class="card is-builds"><div class="gm-head sub-head"><div><h2>📦 Your builds</h2><p class="note" id="isBuildsNote"></p></div></div><div class="builds-grid" id="buildsGrid"></div></div>
 </section>
 <section class="view" id="view-daily" hidden>
-  <div class="gm-head"><div><h2>📅 Weekly Bloppit</h2><p class="note">One puzzle a week, the same for everybody. Build it clean: no misses, no hints. A new one arrives every Monday morning.</p></div></div>
+  <div class="char-hero" data-hero="daily" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
+  <div class="gm-head"><div><h2>📅 This week’s Weekly Bloppit</h2><p class="note">One puzzle a week, the same for everybody. Build it clean: no misses, no hints. A new one arrives every Monday morning.</p></div></div>
   <div class="card daily-card">
     <img class="daily-img" id="dyImg" alt="">
     <div class="daily-txt">
@@ -1717,6 +1741,7 @@ body.film-on{overflow:hidden}
       <p class="msg" id="dyMsg" hidden></p>
     </div>
   </div>
+  <button class="card dy-sea" id="dySea" type="button"><img src="/art/head-pippa.png" alt="" width="256" height="256"><span><b>🐚 Pippa’s seaside puzzles</b><span id="hubSeaSub">Seaside puzzles that wash ashore</span></span><span class="dy-go" aria-hidden="true">›</span></button>
   <div class="card" id="dyBoard" hidden><div class="gm-head sub-head"><div><h2>🏆 This week’s top 100</h2><p class="note">Clean builds first, then stars. Generated names only; no times. A grown-up switched this on in the Grown-ups corner.</p></div></div><div class="board" id="dyBoardList"></div></div>
   <p class="note">Bloppit only counts how many people finished this week’s puzzle and how many finished it clean. No names, no times, no ranks, unless a grown-up switches on the top-100 board, which shows generated names and stars. The counts are deleted after 8 weeks.</p>
 </section>
@@ -1730,6 +1755,15 @@ body.film-on{overflow:hidden}
   <div class="world-strip" data-ws></div>
   <p class="win-best" id="trNote"></p>
   <div class="win-btns"><button class="primary sm" id="trIsland" type="button" hidden>🏝️ See Bloppitopia</button><button class="ghost" id="trNext" type="button" hidden>▶ Play next</button><button class="ghost" id="trShare" type="button" hidden>Share the code</button><button class="ghost" id="trCard" type="button" hidden>📮 Weekly card</button><button class="ghost" id="trRetry" type="button" hidden>Try sending again</button><button class="primary sm" id="trDone" type="button">Done</button></div>
+</dialog>
+<dialog class="windlg ladderdlg" id="ladderDlg" aria-labelledby="ldT">
+  <span class="win-chars" id="ldChars" hidden></span>
+  <div class="ld-tag" id="ldTag"></div>
+  <h2 id="ldT">Race 1</h2>
+  <div class="ld-pz"><img id="ldImg" alt="" width="64" height="64"><div><b id="ldName"></b><span id="ldInfo"></span></div></div>
+  <div class="ld-strip" id="ldStrip" aria-hidden="true"></div>
+  <p class="win-best" id="ldNote"></p>
+  <div class="win-btns"><button class="primary sm" id="ldGo" type="button" autofocus>▶ Start the race</button><button class="ghost" id="ldLater" type="button">Not now</button></div>
 </dialog>
 <dialog class="windlg" id="mpEndDlg" aria-label="Game finished">
   <div class="win-stars">🏆</div>
@@ -2791,6 +2825,29 @@ function niceName(n){ const b=String(n||'').replace(/\.[^.]+$/,'').trim();
 var subOf={game:'hub',blitz:'hub',mp:'hub'};
 const SUB_OK={game:['hub','otter','brain','sea'],blitz:['hub','cpu','friend'],mp:['hub','start','join']};
 // Which top-bar game a page belongs to (the build screen belongs to whatever you're playing)
+// The top bar: one tab per character. Frog Trail and Brain Trail are both the Trails page (their own level maps), and
+// Pippa's seaside puzzles belong to her Weekly tab.
+// Each page has its character at the top: who lives there, their island, their line and what the page is for
+const HERO={
+  daily:{who:'pippa',art:'/art/char-pippa.png',isle:'Sunrise Shores',title:'Pippa’s Puzzles',line:'A new puzzle just washed ashore!',desc:'Every Monday Pippa brings the Weekly Bloppit on the ferry, and her own seaside puzzles wash ashore as Bloppitopia grows.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
+  sea:{who:'pippa',art:'/art/char-pippa.png',isle:'Sunrise Shores',title:'Pippa’s seaside puzzles',line:'Ooh, that one’s clean!',desc:'Twelve seaside builds wash ashore as Bloppitopia grows. Each one adds to Sunrise Shores, all the way to the Festival Clock.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
+  otter:{who:'tiny',art:'/art/char-tiny.png',isle:'Frog Forest',title:'Frog Trail',line:'Small frog, big forest!',desc:'Hop up the trail with Tiny, one level at a time. The levels start tiny and get bigger, and the last is his Lily-pad Palace.',c:['#A6D93A','#3F8F33']},
+  brain:{who:'nora',art:'/art/char-nora.png',isle:'Brainpeak',title:'Brain Trail',line:'A clever mind shines in the dark.',desc:'Nora tucks math puzzles into the booklet: solve one to open its page. The last build is her Great Telescope.',c:['#4A6FC0','#1C2B57']},
+  create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickworks Island',title:'Quick Build',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
+  blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Bloppit Blitz',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Fastest clean build wins.',c:['#5DB4F2','#1F6FC4']},
+  mp:{who:'pup',art:'/art/pup.png',isle:'Friendship Harbour',title:'Build Together',line:'Every build is better with a friend!',desc:'Take turns building one model with friends on their own phones, tablets or computers.',c:['#B9A2F7','#6E4FD6']}};
+function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[data-hero="${t}"]`); if(!el) return;
+  const key=t==='game'?subOf.game:t, H=HERO[key]; el.hidden=!H; if(!H) return;
+  if(el.dataset.k===key) return; el.dataset.k=key;
+  el.style.setProperty('--h1',H.c[0]); el.style.setProperty('--h2',H.c[1]); el.style.setProperty('--hink',H.ink||'#fff');
+  el.querySelector('.ch-isle').textContent='🏝️ '+H.isle; el.querySelector('.ch-title').textContent=H.title; el.querySelector('.ch-line').textContent=H.line; el.querySelector('.ch-desc').textContent=H.desc;
+  const im=new Image(); im.className='ch-art'; im.alt=''; im.src=H.art; el.firstElementChild.replaceWith(im);   // a fresh picture each time (the 3D view draws over it)
+  try{ if(ch3On()) cv3Img(im,{who:H.who,frame:'full'}); }catch(e){} }
+document.addEventListener('click',e=>{ const h=e.target.closest('.char-hero'); if(!h) return; const w=h.querySelector('.c3-wrap'); if(w) cv3Play(w,'poke'); try{ const k=h.dataset.k, who=HERO[k]&&HERO[k].who; sfx.voice(who==='swoop'?'longtail':who); }catch(x){} });
+function tabsSync(t){ const sec=sectionOf(t===undefined?tab:t), tr=typeof trail!=='undefined'?trail:'otter';
+  document.querySelectorAll('.tab').forEach(b=>{ let on=b.dataset.tab===sec;
+    if(sec==='game'){ const sub=(t==='game'&&subOf.game)||tr; on=(b.dataset.sub&&b.dataset.tab==='game'&&b.dataset.sub===sub)||(b.dataset.tab==='daily'&&sub==='sea'); }
+    b.setAttribute('aria-selected',on); }); }
 function sectionOf(t){
   if(t==='build'||t==='box'||t==='booklet'){ if(game) return 'game'; if(mp) return trialOn()&&mp.state.calm?'daily':mpHomeTab(); return 'create'; }
   return t==='home'?'':t;
@@ -2813,8 +2870,8 @@ function setTab(t,sub){
   if(typeof islandTipHide==='function'){ islandTipHide(); const h=document.getElementById('isHover'); if(h) h.hidden=true; }
   if(t!=='build'&&reveal) endReveal(true);
   if(sub&&SUB_OK[t]&&SUB_OK[t].includes(sub)) subOf[t]=sub;
-  tab=t;
-  { const sec=sectionOf(t); document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===sec)); }
+  tab=t; try{ sfx.place(); }catch(e){}
+  tabsSync(t); heroSync(t);
   syncSub(t);
   { const sel=document.querySelector('.tab[aria-selected="true"]'), bar=$('.tabs'); if(sel&&bar.scrollWidth>bar.clientWidth) bar.scrollTo({left:sel.offsetLeft-bar.offsetLeft-24,behavior:'smooth'}); }
   ['home','create','build','box','booklet','game','mp','blitz','daily','island'].forEach(v=>$('#view-'+v).hidden=v!==t);
@@ -2888,7 +2945,7 @@ document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
   if(b.dataset.tab==='create'&&mp){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus(`You’re in ${mpWhat()}. Tap Quick Build again to leave it.`,'err'); else showToastLeave(); return; } mpLeave(); }
   if(b.dataset.tab==='game'&&mp){ setTab(mpHomeTab()); mpMsg(`Leave ${mpWhat()} first to play the levels on your own.`); return; }
   if(b.dataset.tab==='create'&&game){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus('You’re in a Trail level. Tap Quick Build again to leave it.','err'); else showToastLeave(); return; } endGame(); }
-  setTab(b.dataset.tab,SUB_OK[b.dataset.tab]&&!(mp||mpw)?'hub':undefined);}));
+  setTab(b.dataset.tab,b.dataset.sub&&!(mp||mpw)?b.dataset.sub:SUB_OK[b.dataset.tab]&&!(mp||mpw)?'hub':undefined);}));
 // Hub tiles and the "‹ Blitz" links
 document.querySelectorAll('.view .hub [data-sub]').forEach(b=>b.addEventListener('click',()=>{ const t=b.closest('.view').id.slice(5);
   if(t==='game'&&mp){ mpMsg(`Leave ${mpWhat()} first to play the Trails on your own.`); setTab(mpHomeTab()); return; }
@@ -2928,6 +2985,7 @@ function qbShow(screen){ screen=QB_T[screen]?screen:'home';
 document.querySelectorAll('[data-qb-go]').forEach(b=>b.addEventListener('click',()=>{ qbShow(b.dataset.qbGo); if(b.dataset.qbGo==='photo') $('#file').click(); }));
 $('#qbBack').onclick=()=>qbShow('home');
 $('#tab-create').addEventListener('click',()=>qbShow('home'));
+$('#dySea').onclick=()=>{ if(mp){ setTab(mpHomeTab()); return; } setTab('game','sea'); };
 qbShow('home');
 function pickPuzzle(forWhat,src){
   if(game) endGame();
@@ -3335,7 +3393,8 @@ const sfx=(()=>{
   }
   function musicTick(){ const c=ac; if(!c||!M.playing) return; while(M.next<c.currentTime+.3){ musicNote(c,M.next,M.i); M.i++; M.next+=S16; } }
   const videoOn=()=>[...document.querySelectorAll('video')].some(v=>!v.paused&&!v.ended&&!v.muted);
-  function musicLevel(){ if(!ac||!mbus) return; const want=on&&musicOn&&!document.hidden&&!M.duck&&!videoOn()?.22:0, n=ac.currentTime;
+  const onIsland=()=>{ try{ return tab==='island'; }catch(e){ return false; } };   // the music belongs to Bloppitopia: every game itself is quiet
+  function musicLevel(){ if(!ac||!mbus) return; const want=on&&musicOn&&onIsland()&&!document.hidden&&!M.duck&&!videoOn()?.22:0, n=ac.currentTime;
     mbus.gain.cancelScheduledValues(n); mbus.gain.setValueAtTime(mbus.gain.value,n); mbus.gain.linearRampToValueAtTime(want,n+(want?1.2:.35));
     if(want&&!M.playing){ M.playing=true; M.next=n+.1; M.timer=setInterval(musicTick,60); }
     else if(!want&&M.playing){ clearTimeout(M.stopT); M.stopT=setTimeout(()=>{ if(mbus.gain.value<.01){ M.playing=false; clearInterval(M.timer); } },500); } }
@@ -3350,7 +3409,8 @@ const sfx=(()=>{
     get musicOn(){ return musicOn; },
     set(v){ on=!!v; try{ localStorage.setItem('bloppit-sound',on?'on':'off'); }catch(e){} if(on) ctx(); musicLevel(); },
     music(v){ musicOn=!!v; try{ localStorage.setItem('bloppit-music',musicOn?'on':'off'); }catch(e){} if(musicOn&&on) ctx(); musicLevel(); },
-    duck(v){ M.duck=!!v; musicLevel(); },   // quiet the music for a moment that has its own (the in-game arrival)
+    duck(v){ M.duck=!!v; musicLevel(); },
+    place(){ musicLevel(); },   // the page changed: music in Bloppitopia, quiet everywhere else
     // A brick snapping in: a crisp plastic click, then a marimba note a step higher than the last one
     snap(delay=0){ haptic('light',delay); const c=ok('snap',.04); if(!c) return; const t=c.currentTime+delay;
       if(c.currentTime-snapT>2.5) snapI=0; snapT=c.currentTime;
@@ -3869,6 +3929,10 @@ document.addEventListener('keydown',e=>{ if(/INPUT|SELECT|TEXTAREA/.test(e.targe
     if(e.key==='Escape'){ if(chosen.size){chosen.clear(); updatePick();} else setTab('build'); e.preventDefault(); }
     else if(/^(INPUT|TEXTAREA)$/.test(e.target.tagName)||e.metaKey||e.ctrlKey||e.altKey) return;
     else if(e.key==='Enter'&&chosen.size&&!/BUTTON|A/.test(e.target.tagName)){ takeChosen(); e.preventDefault(); }  // Enter: take them
+    else if(e.key==='g'||e.key==='G'){ $('#binAdd').click(); e.preventDefault(); }          // G: a new segment
+    else if(e.key==='c'||e.key==='C'){ $('#sortColour').click(); e.preventDefault(); }      // C: sort by colour
+    else if(e.key==='s'||e.key==='S'){ $('#sortSize').click(); e.preventDefault(); }        // S: sort by size
+    else if(e.key==='t'||e.key==='T'){ $('#tipOut').click(); e.preventDefault(); }          // T: tip everything out (twice when there are segments)
     else if(e.key==='p'||e.key==='P'){ setTab('build'); e.preventDefault(); }                   // P again: back to the build
     return; }
   if(tab!=='build') return;
@@ -3984,7 +4048,7 @@ function showBox(){
 function updatePick(){
   for(const p of pieces){ const el=board.querySelector(`[data-p="${p.id}"]`); if(el) el.classList.toggle('picked',chosen.has(p)); }
   const n=chosen.size;
-  $('#takeBtn').hidden=!n; $('#takeBtn').textContent=`Take ${n} to build`;
+  $('#takeBtn').hidden=!n; $('#takeBtn').innerHTML=`Take ${n} to build <kbd>Enter</kbd>`;
   $('#pickClear').hidden=!n;
   $('#boxBack').hidden=!!n;
   const cap=pickCap(), lim=cap===Infinity?'':` of ${cap}`;
@@ -5253,23 +5317,35 @@ const progressPct=o=>Math.floor(gameProgress(o)*100);
 const levelsOf=tr=>tr==='brain'?BRAIN_LEVELS:tr==='sea'?SEA_LEVELS:OTTER_LEVELS;
 // Ready-made Blitz races, small enough to be quick (Blitz keeps races to 30 bricks or fewer). Blitz Bay has its own
 // puzzles: none of these is a Frog Trail, Brain Trail, Pippa or mystery build. Brick counts: 9/11/12, 18/19/21, 26/28/30.
+// The Blitz races, in Blitz Bay's order (Oct 2026): fifteen, smallest first, and Swoop faster every five (lv: Warm-up,
+// Race, Full throttle). Through Bloppitopia they're a ladder, one race after another; the Blitz page offers any of them.
 const BLITZ_PICKS=[
- {name:'Trophy',         sample:'Trophy',          size:6,  shape:'flat',   thick:.5, colors:3, diff:'Easy'},
- {name:'Basketball',     sample:'Basketball',      size:6,  shape:'flat',   thick:.5, colors:3, diff:'Easy'},
- {name:'Cupcake',        sample:'Cupcake',         size:8,  shape:'flat',   thick:1,  colors:4, diff:'Easy'},
- {name:'Watermelon',     sample:'Watermelon',      size:5,  shape:'flat',   thick:.5, colors:3, diff:'Medium'},
- {name:'Pizza slice',    sample:'Pizza slice',     size:8,  shape:'flat',   thick:1,  colors:4, diff:'Medium'},
- {name:'Scooter',        sample:'Scooter',         size:7,  shape:'flat',   thick:1,  colors:4, diff:'Medium'},
- {name:'Hot-air balloon',sample:'Hot-air balloon', size:6,  shape:'puffed', thick:.7, colors:5, diff:'Hard'},
- {name:'Helicopter',     sample:'Helicopter',      size:6,  shape:'puffed', thick:.7, colors:5, diff:'Hard'},
- {name:'Sneaker',        sample:'Sneaker',         size:7,  shape:'flat',   thick:1,  colors:4, diff:'Hard'},
+ {name:'Wizard hat',     sample:'Wizard hat',      size:6,  shape:'flat',   thick:.5, colors:4, diff:'Easy',   lv:'easy'},
+ {name:'Astronaut',      sample:'Astronaut',       size:6,  shape:'flat',   thick:.5, colors:4, diff:'Easy',   lv:'easy'},
+ {name:'Trophy',         sample:'Trophy',          size:6,  shape:'flat',   thick:.5, colors:3, diff:'Easy',   lv:'easy'},
+ {name:'Alien',          sample:'Alien',           size:6,  shape:'flat',   thick:.5, colors:4, diff:'Easy',   lv:'easy'},
+ {name:'Basketball',     sample:'Basketball',      size:6,  shape:'flat',   thick:.5, colors:3, diff:'Easy',   lv:'easy'},
+ {name:'Cupcake',        sample:'Cupcake',         size:8,  shape:'flat',   thick:1,  colors:4, diff:'Medium', lv:'medium'},
+ {name:'Donut',          sample:'Donut',           size:6,  shape:'flat',   thick:.5, colors:4, diff:'Medium', lv:'medium'},
+ {name:'Watermelon',     sample:'Watermelon',      size:5,  shape:'flat',   thick:.5, colors:3, diff:'Medium', lv:'medium'},
+ {name:'Pizza slice',    sample:'Pizza slice',     size:8,  shape:'flat',   thick:1,  colors:4, diff:'Medium', lv:'medium'},
+ {name:'Scooter',        sample:'Scooter',         size:7,  shape:'flat',   thick:1,  colors:4, diff:'Medium', lv:'medium'},
+ {name:'Crown',          sample:'Crown',           size:6,  shape:'flat',   thick:.5, colors:4, diff:'Hard',   lv:'hard'},
+ {name:'Pumpkin',        sample:'Pumpkin',         size:6,  shape:'flat',   thick:.5, colors:4, diff:'Hard',   lv:'hard'},
+ {name:'Hot-air balloon',sample:'Hot-air balloon', size:6,  shape:'puffed', thick:.7, colors:5, diff:'Hard',   lv:'hard'},
+ {name:'Helicopter',     sample:'Helicopter',      size:6,  shape:'puffed', thick:.7, colors:5, diff:'Hard',   lv:'hard'},
+ {name:'Sneaker',        sample:'Sneaker',         size:7,  shape:'flat',   thick:1,  colors:4, diff:'Hard',   lv:'hard'},
 ];
-const BLITZ_DEFAULT_PICK='p3';  // the Watermelon, the first Medium race
+const BLITZ_DEFAULT_PICK='p'+BLITZ_PICKS.findIndex(x=>x.name==='Watermelon');  // a Medium race
 // The Blitz boss: a bigger race against Swoop at full throttle, offered once he's been beaten at all three speeds. Winning it completes Blitz Bay.
 const GRAND_PRIX={name:'Grand Prix: Race car', sample:'Race car', size:7, shape:'puffed', thick:.4, colors:4, diff:'Grand Prix', boss:true};   // 39 bricks: longer than a normal race
 BLITZ_PICKS.push(GRAND_PRIX);
 const GP_PICK='p'+(BLITZ_PICKS.length-1);
-const grandPrixOpen=o=>longtailBeaten(o)>=2;
+const LADDER_N=BLITZ_PICKS.length-1;   // the fifteen races before the Grand Prix
+const ladderWon=(i,o)=>{ const L=BLITZ_PICKS[i]; return Object.entries((o||worldStore()).builds||{}).some(([k,b])=>b&&b.k==='blitz'&&k.startsWith(`m:${L.name}:`)); };
+// The next race on Blitz Bay's ladder: the first not yet won, then the Grand Prix; -1 once that's won too
+function ladderStep(o){ o=o||worldStore(); for(let i=0;i<LADDER_N;i++) if(!ladderWon(i,o)) return i; return grandPrixWon(o)?-1:LADDER_N; }
+const grandPrixOpen=o=>longtailBeaten(o)>=2||ladderStep(o)>=LADDER_N;
 const grandPrixWon=o=>Object.values((o||worldStore()).builds||{}).some(b=>b&&b.k==='blitz'&&b.boss);
 // Ready-made Build together puzzles: bigger than races, since everyone takes turns
 const TOGETHER_PICKS=[
@@ -6034,7 +6110,7 @@ function updateMpBar(){
   if(bz){ $('#hintBtn').textContent=s.calm?'Hint':mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'; $('#hintBtn').disabled=done||(!mpMyTurn()&&!hintOn); }
   $('#mpBar').classList.toggle('calm',!!s.calm);
   $('#mpBar').classList.toggle('blitz',bz);
-  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?`vs Swoop · ${CPU_LEVELS[s.cpuLevel].speed}`:'Room'; $('#mpRoomBtn').textContent=mp.cpu?'Race':'Room'; $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
+  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?(cpu&&cpu.ladder!=null?(cpu.ladder>=LADDER_N?'Blitz Bay · The Grand Prix':`Blitz Bay · Race ${cpu.ladder+1} of ${LADDER_N} · ${CPU_LEVELS[s.cpuLevel].speed}`):`vs Swoop · ${CPU_LEVELS[s.cpuLevel].speed}`):'Room'; $('#mpRoomBtn').textContent=mp.cpu?'Race':'Room'; $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
   const cp=s.players[s.turn], mine=s.turn===mp.me, left=mpLeft(s), el=$('#mpTurn');
   el.classList.toggle('mine',mine&&!s.finished&&s.started);
   if(bz&&s.solo&&s.calm) el.innerHTML=s.finished?'Finished!<small>Let’s see how clean it was</small>':`Build it clean<small>${(s.players[0].n||0)} of ${s.quota} placed</small>`;
@@ -6208,7 +6284,11 @@ function mpShowBlitzEnd(){
   if(mp.cpu&&mp.state.solo) return trialEnd();
   const s=mp.state, sc=mpScores(s).sort((a,b)=>a.ms-b.ms), medals=['🥇','🥈','🥉',''], w=sc[0];
   $('#mpEndTitle').textContent=sc.length>1?`⚡ ${w.i===mp.me?'You win':`${w.name} wins`}!`:`⚡ Done in ${fmtTime(w.ms)}!`;
-  $('#mpEndNew').textContent=mp.cpu?'Race again':'New game';
+  $('#mpEndNew').textContent=mp.cpu?'Race again':'New game'; mpEndNext=null;
+  if(mp.cpu&&cpu&&cpu.ladder!=null){ const at=cpu.ladder, won=w.i===mp.me, nx=ladderStep(), pk='p'+at, lv=at>=LADDER_N?'hard':BLITZ_PICKS[at].lv;   // Blitz Bay's ladder: the clear next race
+    if(!won){ $('#mpEndNew').textContent='↻ Try again'; mpEndNext=()=>{ mpLeave(); islandSetOff('blitzbay',()=>nextBlitz(pk,lv,at)); }; }
+    else if(nx>=0){ $('#mpEndNew').textContent=nx>=LADDER_N?'▶ Next: the Grand Prix':`▶ Next: race ${nx+1} of ${LADDER_N}`; mpEndNext=()=>{ mpLeave(); setTab('island'); ladderGo(); }; }
+    else $('#mpEndNew').textContent='Race again'; }
   $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span><b>${fmtTime(p.ms)}</b> · ${p.own} brick${p.own===1?'':'s'} · ${p.miss} miss${p.miss===1?'':'es'}${p.hint?` · ${p.hint} hint${p.hint===1?'':'s'}`:''}</span></div>`).join('');
   const extra=s.moves.filter(m=>m.p<0).length;
   $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and Swoop put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, every miss added 1 second and every hint 5 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Swoop at full throttle. Amazing!':' Ready to race Swoop at a faster speed?'):' Practice makes perfect. Try again?'):''}`;
@@ -6217,7 +6297,8 @@ function mpShowBlitzEnd(){
   $('#mpEndDlg').showModal(); $('#mpEndIsland').focus();
 }
 $('#mpEndClose').onclick=()=>{ $('#mpEndDlg').close(); setTab('build'); };
-$('#mpEndNew').onclick=()=>{ $('#mpEndDlg').close(); const to=mpHomeTab(); mpLeave(); setTab(to); };
+let mpEndNext=null;
+$('#mpEndNew').onclick=()=>{ $('#mpEndDlg').close(); if(mpEndNext){ const f=mpEndNext; mpEndNext=null; f(); return; } const to=mpHomeTab(); mpLeave(); setTab(to); };
 $('#mpEndIsland').onclick=()=>{ track('finish_next:island'); $('#mpEndDlg').close(); mpLeave(); setTab('island'); };   // the recommended way on, win or lose
 // Load what to build: a level, or whatever is on Photos & model now
 function mpUseModel(choice){
@@ -6473,6 +6554,7 @@ $('#bzCpuGo').onclick=async()=>{
     cpu={timer:null,left:0,boss,s:{code:'VS',ver:1,started:true,finished:false,perTurn:3,mode:'blitz',cpuLevel:lvl,nBricks:model.bricks.length,title,level:null,host:0,
       turn:0,turnPlaced:0,turnStart:Date.now()+COUNTDOWN_MS,moves:[],me:0,waiting:[],quota:Math.floor(model.bricks.length/2),
       players:[pl(name,(me&&me.color&&me.color!=='#8A5A3B')?me.color:'#D2352B'),pl(CPU_LEVELS[lvl].name,'#9AA3AD')]}};
+    cpu.ladder=bzLadderNext!=null&&BLITZ_PICKS[bzLadderNext]&&$('#bzModel').value==='p'+bzLadderNext?bzLadderNext:null; bzLadderNext=null;   // a Blitz Bay ladder race (from Bloppitopia)
     mpRememberName(name);
     await mpEnter({cpu:true,code:'VS',playerId:'me',me:0,state:cpuPub()},true,name);
     cpuCountdown();
@@ -7409,7 +7491,7 @@ function islandInfo(id,o){
     case 'longtail': { const L=CPU_LEVELS[arg], S=STORIES[arg]; if(!L||!S) break; const wins=Object.values(o.builds).filter(b=>b.k==='blitz').length;
       return {title:'Swoop the Longtail',hint:ISL3.ltNight?'Asleep on Blitz Bay':'Blitz Bay’s racer · “Ready, set, snap!”',icon:`<img src="${cv3Snap(LT3[arg],null,'bust',192)||`/art/head-${LONGTAIL_ART[arg].id}.png`}" alt="" width="256" height="256">`,story:S.story,
         rows:[['Who',S.who],['Loves',S.loves],['Secret',S.secret],['Your Blitz wins',String(wins)],['Speeds beaten',(()=>{ const m=longtailBeaten(o); return m<0?'None yet. Start at Warm-up!':['Warm-up','Warm-up and Race','All three!'][m]; })()],['Did you know?',LONGTAIL_FACT]],
-        actions:[{label:`Race Swoop · ${L.speed}`,fn:()=>{ try{ bzLevelSet(arg); bzLevelSync(); }catch(e){} homeGo('cpu'); },primary:true}]}; }
+        actions:(()=>{ const i=ladderStep(o); return [...(i>=0?[{label:i>=LADDER_N?'🏆 Race the Grand Prix':`⚡ Race ${i+1} of ${LADDER_N}`,fn:()=>ladderGo(),primary:true}]:[]),{label:'Choose your own race',fn:()=>{ try{ bzLevelSet(arg); bzLevelSync(); }catch(e){} homeGo('cpu'); },primary:i<0}]; })()}; }
     case 'char': { const C=CAST[arg]; if(!C) break; const I=ISLES[C.isle], c=isleCount(C.isle,o), home=arg==='lufu';
       return {title:castFull(arg),hint:home?'Lives on Home Island, beside your otter':`${I.name} · “${C.tag}”`,icon:`<img src="/art/head-${arg}.png" alt="" width="256" height="256">`,story:C.story,
         rows:[['Who',C.who],['Loves',C.loves],['Secret',C.secret],['Brick',`A ${C.brick} two-stud brick`],...(home?[]:[['Lives',c>0?I.name:`${I.name}, still in the mist`],[c>0?'Built so far':'To reach it',c>0?`${Math.min(c,PIECES[C.isle][PIECES[C.isle].length-1].at)} of ${PIECES[C.isle][PIECES[C.isle].length-1].at} ${I.unit}s`:`Finish your first ${I.unit}`]])],
@@ -8105,7 +8187,10 @@ const MODEL3={
     map:{happy_hop:'hop',giggle_wiggle:'aha',spin:'hop',wake:'hop',grumpy_wake:'hop',wave:'aha',cheeky_taunt:'cheer',surprised_jump:'hint',show_brick:'offer',look_at_you:'focused'}},
   // Pippa (approved v2, 28 Oct 2026): sunglasses on her head, a wave hello, a wink and a wobble on land
   pippa:{glb:'/3d/pippa.glb',v:'2',loops:['idle'],night:'idle',reactions:['greeting','wink','excited','wobble','hop'],
-    map:{happy_hop:'hop',giggle_wiggle:'wink',spin:'wobble',wake:'hop',grumpy_wake:'hop',wave:'greeting',cheeky_taunt:'wink',surprised_jump:'wobble',show_brick:'offer',look_at_you:'wink'}}};
+    map:{happy_hop:'hop',giggle_wiggle:'wink',spin:'wobble',wake:'hop',grumpy_wake:'hop',wave:'greeting',cheeky_taunt:'wink',surprised_jump:'wobble',show_brick:'offer',look_at_you:'wink'}},
+  // Bibi (approved v4, 29 Oct 2026; formerly Lemmie): a lion cub in a beret holding his orange brick, with a tiny roar
+  bibi:{glb:'/3d/bibi.glb',v:'4',loops:['idle'],night:'idle',reactions:['greeting','roar','idea','cheer','proud','hop'],
+    map:{happy_hop:'hop',giggle_wiggle:'proud',spin:'cheer',wake:'hop',grumpy_wake:'roar',wave:'greeting',cheeky_taunt:'roar',surprised_jump:'hop',show_brick:'offer',look_at_you:'idea'}}};
 for(const [id,m] of Object.entries(MODEL3)) RIG[id].glb=m.glb;
 const M3={wait:{}};
 function ch3Script(src){ return M3.wait[src]||(M3.wait[src]=new Promise((ok,no)=>{ const s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=()=>{ delete M3.wait[src]; no(new Error('could not load '+src)); }; document.head.appendChild(s); })); }
@@ -8129,9 +8214,13 @@ vec3 m3Aces(vec3 c){ const mat3 I=mat3(vec3(0.59719,0.07600,0.02840),vec3(0.3545
 `;
 const ch3Has3d=id=>!!(CH3.gltf[id]&&CH3.gltf[id].model);
 function ch3Pool(){ return CH3.pool||(CH3.pool=(()=>{ const c=document.createElement('canvas'); c.width=c.height=64; const x=c.getContext('2d'), g=x.createRadialGradient(32,32,0,32,32,32); g.addColorStop(0,'rgba(30,36,24,.42)'); g.addColorStop(1,'rgba(30,36,24,0)'); x.fillStyle=g; x.fillRect(0,0,64,64); return new THREE.CanvasTexture(c); })()); }
+// A copy of a model that can move on its own. A skinned mesh (Bibi's) has to be bound to the copy's own bones,
+// or the copy keeps following the original skeleton and only its face morphs play
+function m3Clone(src){ const c=src.clone(true), A=[], B=[]; src.traverse(o=>A.push(o)); c.traverse(o=>B.push(o)); const map=new Map(A.map((o,i)=>[o,B[i]]));
+  B.forEach((o,i)=>{ if(!o.isSkinnedMesh) return; const S=A[i].skeleton; o.bind(new THREE.Skeleton(S.bones.map(b=>map.get(b)),S.boneInverses),A[i].bindMatrix); }); return c; }
 class Model3{
   constructor(id){ const G=CH3.gltf[id], M=G.model; this.id=id; this.G=G; this.R=G.R; this.kind='model'; this.M=M;
-    this.obj=M.scene.clone(true); const s=this.R.h/M.h0; this.obj.scale.setScalar(s); this.obj.position.y=-M.y0*s;   // feet on the ground, as tall as his drawing was
+    this.obj=m3Clone(M.scene); const s=this.R.h/M.h0; this.obj.scale.setScalar(s); this.obj.position.y=-M.y0*s;   // feet on the ground, as tall as his drawing was
     this.body=new THREE.Group(); this.body.add(this.obj); this.root=new THREE.Group(); this.root.add(this.body); this.root.userData.puppet=1;
     this.blob=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:ch3Pool(),transparent:true,depthWrite:false})); this.blob.rotation.x=-Math.PI/2; this.blob.position.y=.01; this.blob.renderOrder=-1;
     this.blob.scale.set(this.R.h*.8,this.R.h*.45,1); this.root.add(this.blob);
@@ -8330,10 +8419,10 @@ const ISLES={
   sunrise:{name:'Sunrise Shores',game:'Pippa’s Puzzles',unit:'Pippa puzzle',x:5.6,z:-14.8,r:4.3,seed:5.9,ground:['#8AD06A','#5FA94A'],sand:true,
     milestone:'The Festival Clock',grows:'Every one of Pippa’s seaside puzzles you build. A new one washes ashore about every 8% of the way through Bloppitopia',play:'Play Pippa’s puzzle',go:()=>homeGo('sea')},
   blitzbay:{name:'Blitz Bay',game:'Blitz',unit:'Blitz win',x:15.2,z:-4.6,r:4.8,seed:5.3,ground:['#6CC24A','#4E9E3A'],sand:true,
-    milestone:'The Grand Prix cup',grows:'Every Blitz race you win against Swoop, then the Grand Prix',play:'Race Swoop',go:()=>homeGo('cpu')},
+    milestone:'The Grand Prix cup',grows:'Every Blitz race you win against Swoop, then the Grand Prix',play:'Race Swoop',go:()=>ladderGo()},
   brickworks:{name:'Brickworks Island',game:'Creative builds',unit:'creation',x:12.4,z:9.6,r:4.3,seed:6.6,ground:['#7CC45E','#4E9E3A'],
     milestone:'The Grand Creation Gallery',grows:'Every build from your own photo or drawing, from the library, and every Weekly Bloppit',play:'Make your own',
-    go:()=>{ pickPuzzle('quick','draw'); }},
+    go:()=>{ pickPuzzle('quick','top'); }},   // Quick Build's first screen: a photo, a drawing or the library
   moonstone:{name:'Moonstone Isle',game:'The mystery',unit:'chapter',get x(){ return isl3TallNow()?-22.5:23.5; },get z(){ return isl3TallNow()?-11.5:-23.5; },r:4.0,   // far out at sea, in the top corner of the view (upright phones see the world from the side)
    seed:7.7,ground:['#6FB7A4','#4E8F7E'],sand:true,mystery:true,
     milestone:'The moon crystal',grows:'Every chapter of the mystery you build',play:'Explore Moonstone Isle',go:()=>mysteryGo()},
@@ -9307,9 +9396,10 @@ let islandShown=-1;
 // How far through Bloppitopia you are (every piece built on Frog Forest, Brainpeak, Blitz Bay and Brickworks Island),
 // with a tick wherever one of Pippa's puzzles washes ashore, so "the next puzzle at 8%" has something to point at
 function isProgRender(o){ const el=$('#isProg'); if(!el) return; const pct=progressPct(o), P=gameProgress(o);
-  const nx=SEA_LEVELS.findIndex((_,i)=>!seaWashed(i,o)), nb=nx>=0?seaBuildsTo(nx,o):0, note=pct>=100?'every piece built':nx>=0?`Pippa’s next puzzle at ${seaPct(nx)}% (${nb} more build${nb===1?'':'s'})`:'';
+  const SB=bestOf(gameStore(),'sea'), ready=SEA_LEVELS.findIndex((_,i)=>!SB[i]&&seaWashed(i,o)), nx=SEA_LEVELS.findIndex((_,i)=>!seaWashed(i,o)), nb=nx>=0?seaBuildsTo(nx,o):0;   // a puzzle already washed ashore comes first
+  const note=ready>=0?`🐧 Pippa’s puzzle ${ready+1} is ready to build!`:pct>=100?'every piece built':nx>=0?`Pippa’s next puzzle at ${seaPct(nx)}% (${nb} more build${nb===1?'':'s'})`:'';
   el.hidden=false; el.setAttribute('role','progressbar'); el.setAttribute('aria-label','Bloppitopia built'); el.setAttribute('aria-valuenow',pct); el.setAttribute('aria-valuemin',0); el.setAttribute('aria-valuemax',100);
-  el.innerHTML=`<span class="ip-t"><b>Bloppitopia ${pct}%</b>${note?`<span class="ip-long"> · ${note}</span>`:''}${nx>=0&&pct<100?`<span class="ip-short"> · 🐧 next at ${seaPct(nx)}%</span>`:''}</span><span class="ip-bar"><i style="width:${Math.max(2,P*100).toFixed(1)}%"></i>${SEA_LEVELS.map((_,i)=>`<em class="${seaWashed(i,o)?'on':''}" style="left:${((i+1)*100/SEA_LEVELS.length).toFixed(2)}%"></em>`).join('')}</span>`; }
+  el.innerHTML=`<span class="ip-t"><b>Bloppitopia ${pct}%</b>${note?`<span class="ip-long"> · ${note}</span>`:''}${ready>=0?'<span class="ip-short"> · 🐧 puzzle ready!</span>':nx>=0&&pct<100?`<span class="ip-short"> · 🐧 next at ${seaPct(nx)}%</span>`:''}</span><span class="ip-bar"><i style="width:${Math.max(2,P*100).toFixed(1)}%"></i>${SEA_LEVELS.map((_,i)=>`<em class="${seaWashed(i,o)?'on':''}" style="left:${((i+1)*100/SEA_LEVELS.length).toFixed(2)}%"></em>`).join('')}</span>`; }
 function renderIsland(){
   const o=worldStore(), stage=islandStage(o), n=worldCount(o), next=ISLAND_STAGES[stage+1];
   const pop=islandShown>=0&&islandShown<n; islandShown=n;
@@ -9777,10 +9867,9 @@ function nextCandidates(){
   const g=gameStore(), o=worldStore(), out=[];
   for(const tr of ['otter','brain','sea']){ const LV=levelsOf(tr), B=bestOf(g,tr), i=LV.findIndex((_,k)=>!B[k]);
     if(i>=0&&(tr!=='sea'||seaWashed(i,o))){ const L=LV[i]; out.push({kind:tr,isle:{otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr],t:tr==='sea'?`🐧 Pippa’s puzzle ${i+1}: ${L.name}`:`${L.boss?'👑 Boss: ':''}${tr==='otter'?'Frog':'Brain'} Trail level ${i+1}: ${L.name}`,s:'',thumb:levelThumb(L),go:()=>{ setTrail(tr); if(mp) mpLeave(); startLevel(i); }}); } }
-  { const beaten=longtailBeaten(o), gp=grandPrixOpen(o)&&!grandPrixWon(o), wins=Object.values(o.builds).filter(b=>b.k==='blitz').length;
-    if(gp||wins<15){ const lvl=gp?'hard':['easy','medium','hard'][Math.min(2,beaten+1)], who=`Swoop (${CPU_LEVELS[lvl].speed})`;
-      const pick=gp?GP_PICK:'p'+(wins%(BLITZ_PICKS.length-1)), L=pickOf(pick);
-      out.push({kind:'blitz',isle:'blitzbay',t:gp?'🏆 The Grand Prix against Swoop':`Blitz race against ${who}: ${L.name}`,s:'',thumb:levelThumb(L),go:()=>nextBlitz(pick,lvl)}); } }
+  { const i=ladderStep(o);   // Blitz Bay's ladder: the next race, Swoop faster every five, then the Grand Prix
+    if(i>=0){ const L=BLITZ_PICKS[i], gp=i>=LADDER_N, lvl=gp?'hard':L.lv;
+      out.push({kind:'blitz',isle:'blitzbay',t:gp?'🏆 The Grand Prix against Swoop':`⚡ Blitz Bay race ${i+1} of ${LADDER_N}: ${L.name} (Swoop at ${CPU_LEVELS[lvl].speed})`,s:'',thumb:levelThumb(L),go:()=>ladderGo(true)}); } }
   { const smp=SAMPLES.find(x=>released(x)&&!Object.keys(o.builds).some(k=>k.startsWith(`m:${x.name}:`)));
     if(smp){ if(!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png'); const i=SAMPLES.indexOf(smp);
       out.push({kind:'library',isle:'brickworks',t:`From the library: ${smp.name}`,s:'',thumb:smp.thumb,go:()=>{ if(mp) mpLeave(); if(game) endGame(); libDefaults(); loadSample(i); clearTimeout(timer); rebuild(); setTab('build'); }}); } }
@@ -9801,7 +9890,22 @@ function nextBuild(){
 }
 window.bloppitNext={next:()=>{ const n=nextBuild(); return n&&{t:n.t,kind:n.kind}; },cands:()=>nextCandidates().map(c=>c.kind),mark:k=>nextMark(k),complete:()=>islesComplete(worldStore()),mysteryOpen:()=>mysteryOpen(),unlocked:()=>worldUnlocked(worldStore()),seen:()=>seenGet(),reveal:ids=>isl3Reveal(ids,worldStore()),go:()=>{ const n=nextBuild(); if(n) n.go(); },count:id=>isleCount(id,worldStore()),wardrobe:()=>wardrobeOpen()};   // for tests
 // Start a Blitz race straight from Play next: the race page with the puzzle and the Longtail picked, then Go
-function nextBlitz(pick,lvl){
+// Blitz Bay through Bloppitopia: the next race on the ladder, shown as one card with one button (no puzzle, speed or
+// name to choose; that's all on the Blitz page for races outside the story)
+function ladderGo(){ const o=worldStore(), i=ladderStep(o); if(i<0){ homeGo('cpu'); return; }
+  const L=BLITZ_PICKS[i], gp=i>=LADDER_N, lvl=gp?'hard':L.lv, n=levelCount(L), each=Math.floor(n/2), d=$('#ladderDlg');
+  $('#ldTag').textContent=gp?'Blitz Bay · the final race':`Blitz Bay · Swoop at ${CPU_LEVELS[lvl].speed}`;
+  $('#ldT').textContent=gp?'🏆 The Grand Prix':`⚡ Race ${i+1} of ${LADDER_N}`;
+  $('#ldImg').src=levelThumb(L); $('#ldName').textContent=gp?'Race car':L.name; $('#ldInfo').textContent=`${n} bricks · ${each} each`;
+  $('#ldStrip').innerHTML=BLITZ_PICKS.slice(0,LADDER_N).map((_,k)=>`${k&&k%5===0?'<span class="gap"></span>':''}<i class="${ladderWon(k,o)?'done':k===i?'now':''}"></i>`).join('')+`<span class="gap"></span><span class="gp${gp?' now':grandPrixWon(o)?' done':''}">🏆</span>`;
+  $('#ldNote').textContent=gp?'You’ve won all fifteen races. Beat Swoop at full throttle on the biggest race of all to complete Blitz Bay!':`Take turns placing 1 to 3 bricks, then tap Done. Your clock only runs on your turn. Shortest time wins. ${i%5===4&&i<LADDER_N-1?'Win this one and Swoop gets faster!':''}`.trim();
+  cheer3($('#ldChars'),LT3[lvl]||'swoop','cheeky_taunt');
+  $('#ldGo').onclick=()=>{ d.close(); track('ladder_go:'+i); islandSetOff('blitzbay',()=>nextBlitz('p'+i,lvl,i)); };
+  if(!d.open) d.showModal(); }
+$('#ldLater').onclick=()=>$('#ladderDlg').close();
+let bzLadderNext=null;   // the ladder race the next race started from Play next belongs to
+function nextBlitz(pick,lvl,ladder){
+  bzLadderNext=ladder==null?null:ladder;
   homeGo('cpu');
   setTimeout(()=>{ try{ mpModelOptions('#bzModel'); $('#bzModel').value=pick; $('#bzModel').dispatchEvent(new Event('change'));
     const r=$(CPU_IDS[lvl]); if(r){ r.checked=true; r.dispatchEvent(new Event('change')); }
@@ -9941,7 +10045,7 @@ new MutationObserver(()=>buddy3()).observe($('#buddy'),{attributes:true,attribut
 window.bloppitCharShot=async(id,frame,px,opt)=>{ opt=opt||{}; await ch3Get(id); if(opt.model) await ch3Model(id); if(opt.exp) M3.exp.value=opt.exp; const r=cv3R(), sc=new THREE.Scene(), cam=new THREE.PerspectiveCamera(24,1,.05,60), i=ch3Make(id); sc.add(i.root); cv3Lights(sc);
   ch3Dress(i,{log:[]},{ci:opt.ci!=null?opt.ci:0,wear:opt.wear||{}}); i.ctl.update(.6); if(opt.clip){ i.ctl.play(opt.clip); i.ctl.update(0); i.ctl.update(opt.t||0); }
   cv3Aim(cam,[id],frame||'full',1,-.25); r.setScissorTest(false); r.setSize(px||420,px||420,false); r.setViewport(0,0,px||420,px||420); r.clear(); r.render(sc,cam); const u=r.domElement.toDataURL('image/png'); i.ctl.dispose(); return u; };
-window.bloppitChars3d=()=>({on:ch3On(),loaded:Object.keys(CH3.gltf),tiny:{model:ch3Has3d('tiny'),clips:ch3Has3d('tiny')?Object.keys(CH3.gltf.tiny.model.clips).sort():[]},nora:{model:ch3Has3d('nora'),clips:ch3Has3d('nora')?Object.keys(CH3.gltf.nora.model.clips).sort():[]},pippa:{model:ch3Has3d('pippa'),clips:ch3Has3d('pippa')?Object.keys(CH3.gltf.pippa.model.clips).sort():[]},island:{bloppit:!!ISL3.b3,pup:!!ISL3.p3,longtail:!!ISL3.l3,clips:[ISL3.b3,ISL3.p3,ISL3.l3].map(i=>i&&(i.ctl.current||i.ctl.activeBase)?(i.ctl.current||i.ctl.activeBase).getClip().name:null)},views:CV3.views.filter(v=>v.host.classList.contains('c3on')&&v.host.offsetParent).map(v=>v.host.id||v.host.className.split(' ')[0])});
+window.bloppitChars3d=()=>({on:ch3On(),loaded:Object.keys(CH3.gltf),tiny:{model:ch3Has3d('tiny'),clips:ch3Has3d('tiny')?Object.keys(CH3.gltf.tiny.model.clips).sort():[]},nora:{model:ch3Has3d('nora'),clips:ch3Has3d('nora')?Object.keys(CH3.gltf.nora.model.clips).sort():[]},pippa:{model:ch3Has3d('pippa'),clips:ch3Has3d('pippa')?Object.keys(CH3.gltf.pippa.model.clips).sort():[]},bibi:{model:ch3Has3d('bibi'),clips:ch3Has3d('bibi')?Object.keys(CH3.gltf.bibi.model.clips).sort():[]},island:{bloppit:!!ISL3.b3,pup:!!ISL3.p3,longtail:!!ISL3.l3,clips:[ISL3.b3,ISL3.p3,ISL3.l3].map(i=>i&&(i.ctl.current||i.ctl.activeBase)?(i.ctl.current||i.ctl.activeBase).getClip().name:null)},views:CV3.views.filter(v=>v.host.classList.contains('c3on')&&v.host.offsetParent).map(v=>v.host.id||v.host.className.split(' ')[0])});
 // On the website the logo opens the menu; on the menu itself it goes to bloppit.com's front page. (The app handles its own links above.)
 $('#brandLink').addEventListener('click',e=>{ if(APP||tab==='home') return; e.preventDefault(); setTab('home'); });
 // Links straight to a page: /build/#photos, #library, #trails, #otter, #brain, #together, #blitz, #daily (anything else opens the menu).

@@ -197,6 +197,13 @@ test('Pippa is a real 3D model (approved v2) with her nine clips', { skip: skip(
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('Bibi is a real 3D model (approved v4) with his nine clips', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0');
+  const r = await t.page.evaluate(async () => { const pic = await window.bloppitCharShot('bibi', 'full', 200, { model: true, clip: 'roar', t: 1 }); return { pic: pic.length > 2000, ...window.bloppitChars3d().bibi }; });
+  assert.deepEqual(r, { pic: true, model: true, clips: ['cheer', 'greeting', 'hop', 'idea', 'idle', 'offer', 'proud', 'release', 'roar'] });
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('Nora is a real 3D model (v1) with her nine clips', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0');
   const r = await t.page.evaluate(async () => { const pic = await window.bloppitCharShot('nora', 'full', 200, { model: true, clip: 'aha', t: .8 }); return { pic: pic.length > 2000, ...window.bloppitChars3d().nora }; });
@@ -483,7 +490,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   // places, Bloppit, the pup, a decoration, the islands nearby: each says what it is, its level and what's next
   assert.match(await tap('land:beach'), /Home Island.*Builds finished3.*Islands discovered/);
   assert.match(await tapChar('bloppit'), /Bloppit.*storm.*build buddy.*Secret.*red brick/);
-  assert.match(await tapChar('longtail:easy'), /Swoop the Longtail.*(Blitz Bay’s racer|Asleep on Blitz Bay).*goggles.*Secret.*Speeds beaten.*Did you know\?.*tropicbirds.*Race Swoop · Warm-up/);
+  assert.match(await tapChar('longtail:easy'), /Swoop the Longtail.*(Blitz Bay’s racer|Asleep on Blitz Bay).*goggles.*Secret.*Speeds beaten.*Did you know\?.*tropicbirds.*Race 1 of 15.*Choose your own race/);
   assert.match(await tapChar('char:pippa'), /Pippa the Penguin.*Sunrise Shores.*Secret.*A yellow two-stud brick.*still in the mist.*Play Pippa’s puzzle/);
   assert.match(await tapChar('pup'), /Bubbles.*Level \d+ Pup.*1 stud.*Otter level.*Wardrobe.*Name or colour/);
   assert.match(await tap('decor:flag'), /Flag/);
