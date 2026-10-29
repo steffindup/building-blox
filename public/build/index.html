@@ -232,9 +232,9 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 @media (max-width:900px){.build-grid{grid-template-columns:minmax(0,1fr)}}
 .bookpane{display:grid;gap:10px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 84px);min-width:0}
 @media (max-width:900px){.bookpane{position:static}}
-/* Phones: the booklet becomes one compact row (the step picture, its number and parts, the page buttons) so the
-   booklet and the build fit on the screen together, instead of scrolling between them for every brick */
-@media (max-width:700px){
+/* Phones and upright iPads: the booklet becomes one compact row (the step picture, its number and parts, the page buttons)
+   so the booklet and the build fit on the screen together, instead of scrolling between them for every brick */
+@media (max-width:900px){
   .build-grid{gap:10px;scroll-margin-top:calc(env(safe-area-inset-top,0px) + 70px)}
   .build-grid .bp-head{display:none}
   .build-grid #bpCard{grid-template-columns:54% minmax(0,1fr);grid-template-rows:auto 1fr;padding:8px;gap:6px 10px}
@@ -250,13 +250,114 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   .build-grid #bpCard .pg-turn{display:none}
   .stage-tools{gap:5px;right:8px;top:8px}.stage-tools .tool{padding:5px 9px;font-size:12px}.stage-tools .tool kbd{display:none}
 }
+/* The build page fits the screen: the booklet, the build and the hand with the Parts box button are all on screen
+   at once, with no scrolling. The build stage takes whatever height is left (--buildTop: where the page starts). */
+body.on-build{padding-bottom:0}
+body.on-build #view-build{height:calc(100vh - var(--buildTop,120px) - 8px);height:calc(100dvh - var(--buildTop,120px) - 8px - env(safe-area-inset-bottom,0px));min-height:0;align-content:stretch}
+body.on-build .build-grid{height:100%;min-height:0;align-items:stretch}
+body.on-build .build-grid>.bookpane{align-self:start}
+body.on-build .playcol{display:flex;flex-direction:column;min-height:0;height:100%}
+body.on-build .playcol>#buildStage{flex:1 1 0;height:auto;min-height:200px}
+body.on-build .playcol>.card{flex:none}
+@media (max-width:900px){
+  body.on-build .build-grid{display:flex;flex-direction:column}
+  body.on-build .build-grid>.bookpane{flex:none;align-self:stretch}
+  body.on-build .build-grid>.playcol{flex:1 1 0}
+  body.on-build .playcol>.card{padding:8px 10px;gap:6px}
+  body.on-build .hand-row{grid-template-columns:auto minmax(0,1fr) auto;gap:10px}
+  body.on-build .hand-btns{grid-column:auto;flex-direction:column;align-items:stretch;gap:4px}
+  body.on-build .hand-btns button{padding:6px 12px;min-height:0;font-size:13px}
+  body.on-build .hand-btns #openBox{padding:10px 14px;font-size:15px}
+  body.on-build .hand-slot{width:64px;height:52px;border-radius:10px;font-size:10px}
+  body.on-build .hand-slot img{max-width:56px;max-height:44px}
+  body.on-build .hand-txt h2{font-size:17px;line-height:1.15}
+  body.on-build #handNote{font-size:13px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  body.on-build .hand-more{margin-top:3px}
+  body.on-build .tray-foot{flex-wrap:nowrap;gap:8px}
+  body.on-build #trayNote,body.on-build #saveNote{display:none}
+  body.on-build .tray-foot #restart{margin-left:auto;padding:4px 10px;min-height:0;font-size:12px}
+  body.on-build .place-pad{padding-top:0}
+}
+@media (min-width:701px) and (max-width:900px){ body.on-build .build-grid #bpCard{grid-template-columns:42% minmax(0,1fr)} }
+@media (max-width:900px){
+  body.on-build .build-grid{gap:8px}
+  body.on-build .build-grid #bpCard .pg-view{aspect-ratio:4/3}
+  body.on-build .build-grid .bp-nav button{padding:4px 10px}
+  body.on-build .playcol{gap:8px}
+}
+body.on-build .appfoot{display:none}
+/* the level card above the build is one slim row on phones and tablets: the trail's face, level, points and Level map */
+@media (max-width:900px),(max-height:560px){
+  body.on-build #gameBar{flex-wrap:nowrap;gap:8px;padding:5px 8px;margin-bottom:8px;border-radius:12px}
+  body.on-build #gameBar .gb-where{padding-right:0;border:0}
+  body.on-build #gameBar .gb-where>div,body.on-build #gameBar .gb-costs,body.on-build #gameBar .gb-score .tag,body.on-build #gameBar .gb-lvl .tag{display:none}
+  body.on-build #gameBar .gb-where img{width:30px;height:30px}
+  body.on-build #gameBar .gb-lvl{gap:6px;min-width:0}
+  body.on-build #gameBar .gb-lvl>div{min-width:0}
+  body.on-build #gameBar .gb-lvl strong{display:block;font-size:17px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  body.on-build #gameBar .gb-badge{width:30px;height:30px;font-size:17px;border-radius:8px;flex:none}
+  body.on-build #gameBar .gb-score{flex:none;margin-left:auto}
+  body.on-build #gameBar .gb-score b{font-size:20px}
+  body.on-build #gameBar .gb-btns{margin-left:0;flex:none}
+  body.on-build #gameBar .gb-btns .ghost{padding:4px 10px;font-size:13px;min-height:0}
+  body.on-build #mpBar{padding:5px 8px;margin-bottom:8px;gap:6px 12px}
+}
+/* a short build area: Bloppit and the message share the bottom edge; his bubble keeps its words, the booklet shows the parts */
+@container (max-height:400px){
+  #buildStage .buddy{max-width:calc(100% - 16px)}
+  #buildStage .buddy .bud-art{width:60px}
+  #buildStage .buddy .bud-say{display:none}
+  #buildStage .buddy .bud-say:has(.bud-next){display:block;font-size:12.5px;padding:5px 8px;margin-bottom:12px}
+  #buildStage .buddy .bud-say:has(.bud-next) .callout{display:none}
+  #buildStage.stage .status{left:8px;bottom:8px;max-width:calc(100% - 92px);font-size:13px;padding:5px 9px;line-height:1.3}
+}
+/* holding a brick on a short phone: the progress line steps aside for the arrows and Place */
+@media (max-width:900px) and (max-height:760px){ body.on-build .playcol>.card:has(#placePad:not([hidden])) .tray-foot,body.on-build .playcol>.card:has(#placePad:not([hidden])) #handNote{display:none} body.on-build .playcol>#buildStage{min-height:160px} }
+/* phones held sideways: booklet on the left, the build on the right, one slim header */
+@media (max-height:500px) and (min-width:560px){
+  body.on-build .build-grid{display:grid!important;grid-template-columns:minmax(200px,32%) minmax(0,1fr);gap:10px}
+  body.on-build .build-grid>.bookpane{overflow:auto;max-height:100%;align-self:start}
+  body.on-build .build-grid .bp-head{display:none}
+  body.on-build .build-grid #bpCard{padding:6px;gap:4px;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto}
+  body.on-build .build-grid #bpCard .pg-top,body.on-build .build-grid #bpCard .pg-view,body.on-build .build-grid #bpCard .pg-foot{grid-column:1;grid-row:auto}
+  body.on-build .build-grid #bpCard .pg-foot{text-align:right}
+  body.on-build .build-grid #bpCard .pg-step{font-size:24px}
+  body.on-build .build-grid #bpCard .pg-view{aspect-ratio:16/11}
+  body.on-build .build-grid #bpCard .pg-turn{display:none}
+  body.on-build .build-grid .bp-nav{flex-wrap:nowrap;gap:4px}
+  body.on-build .build-grid .bp-nav button{padding:4px 8px;font-size:12px;min-height:0}
+  body.on-build .playcol{gap:6px}
+  body.on-build .playcol>.card{padding:6px 10px;gap:4px}
+  body.on-build .playcol .hand-row{grid-template-columns:auto minmax(0,1fr) auto;gap:8px}
+  body.on-build .playcol .hand-btns{grid-column:auto;flex-direction:row}
+  body.on-build .hand-slot{width:52px;height:42px}
+  body.on-build .hand-slot img{max-width:46px;max-height:36px}
+  body.on-build .hand-txt h2{font-size:15px}
+  body.on-build #handNote,body.on-build .tray-foot{display:none}
+  body.on-build .playcol>.card{display:flex;align-items:center;gap:10px}
+  body.on-build .playcol>.card>.hand-row{flex:1;min-width:0}
+  body.on-build .place-pad{flex:none;padding:0;gap:8px;align-items:center}
+  body.on-build .playcol .hand-btns{flex-direction:column}
+  body.on-build .playcol>#buildStage{min-height:160px}
+  body.on-build .pp-arrows{grid-template-columns:repeat(3,34px);grid-template-rows:repeat(2,32px)}
+  body.on-build .pp-act{min-width:96px}
+  body.on-build .pp-turn{height:32px}
+  body.on-build .pp-place{height:38px;font-size:16px}
+}
+/* short phones (iPhone SE, mini): the booklet picture gets flatter so the build keeps its room */
+@media (max-width:900px) and (max-height:760px){
+  body.on-build .build-grid #bpCard .pg-view{aspect-ratio:16/10}
+  body.on-build .build-grid #bpCard .pg-step{font-size:26px}
+  body.on-build .pp-arrows{grid-template-columns:repeat(3,38px);grid-template-rows:repeat(2,36px)}
+  body.on-build .pp-place{height:44px}
+}
 .bp-head,.bp-nav{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .bp-nav .now{border-color:var(--accent);color:var(--accent);font-weight:700}
 .bp-nav .final{font-weight:700}
 .page.live{outline:3px solid transparent;transition:outline-color .2s}
 .page.live.ahead{outline-color:var(--line)}
 /* Bloppit, the building buddy: stands in the corner of the build stage, points at the model, holds up the bricks the step still needs, cheers when a step clicks into place */
-#buildStage{container-type:inline-size}
+#buildStage{container-type:size}
 .buddy{position:absolute;right:8px;bottom:6px;z-index:2;display:grid;grid-template-columns:minmax(0,auto) auto;gap:2px;align-items:end;max-width:min(400px,calc(100% - 16px));pointer-events:none}
 .buddy[hidden]{display:none}
 .buddy .bud-art{position:relative;width:84px;aspect-ratio:300/398;display:block;transform-origin:50% 100%}
@@ -839,6 +940,19 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
   main{padding-block:10px 0}
 }
 @media (max-width:560px){.brand span{display:none}}
+/* short screens (phones held sideways): a slim header, so the game keeps the height */
+@media (max-height:500px){
+  .top{flex-wrap:nowrap;gap:8px;padding-block:4px}
+  .brand{font-size:18px;gap:6px;flex:none}.brand span{display:none}.brand .brand-otter{width:30px;height:30px}
+  .top .tabs .tab,.top .tabs .tab[class*="play"]{padding:3px 8px 7px;gap:5px;font-size:14px;white-space:nowrap;flex:none}
+  .top .tabs .tab .n,.top .tabs .tab[class*="play"] .n{width:22px;height:22px}
+  .top .tabs .tab[aria-selected="true"]::after{bottom:0;height:3px}
+  .top .snd-top{width:32px;height:32px}.top .who .av{width:30px;height:30px}
+  .snd-top{width:32px;height:32px;margin-right:4px}
+  .who{padding:1px;box-shadow:none}.who .av{width:30px;height:30px;font-size:15px}.who-txt{display:none}
+  main{padding-block:6px 0}
+}
+
 /* Booklet zoom */
 .pg-zoom{position:absolute;left:6px;bottom:6px;z-index:2;display:flex;gap:4px}
 .pg-zoom button{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:color-mix(in srgb,var(--page) 88%,transparent);color:var(--ink);font-weight:800;font-size:18px;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0}
@@ -1270,6 +1384,19 @@ body.film-on{overflow:hidden}
 @media (max-width:560px){.char-hero{padding:10px 14px 10px 8px;gap:4px 12px;border-radius:16px}.char-hero .ch-art,.char-hero .c3-wrap{width:78px;height:88px}.char-hero .ch-line{font-size:15px}.char-hero .ch-desc{font-size:12.5px}}
 #view-game:not([data-sub="hub"]) #gmTitle,#view-game:not([data-sub="hub"])>.crumb[data-up]{display:none}
 .dy-sea{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;text-align:left;cursor:pointer;font:inherit;color:var(--ink)}.dy-sea img{width:52px;height:52px}.dy-sea b{display:block;font-family:var(--f-display);font-weight:400;font-size:20px}.dy-sea span span{font-size:13px;font-weight:700;color:var(--muted)}.dy-go{font-size:28px;color:var(--muted)}.dy-sea:hover{border-color:var(--accent)}#tab-brain{--tc:#3D5FA8}#tab-blitz{--tc:#2F7FD0}#tab-mp{--tc:#8B5CF6}
+/* The game tabs scroll sideways when they don't all fit: little arrows at either end show there are more, and tap to slide */
+.tabs-wrap{display:contents}.tabs-arr{display:none}
+@media (max-width:1240px){
+  .tabs-wrap{display:flex;position:relative;flex:1;min-width:0}
+  .tabs-wrap>.tabs{flex:1;mask-image:none!important;-webkit-mask-image:none!important}
+  .tabs-arr{position:absolute;top:50%;z-index:3;width:24px;height:30px;margin-top:-17px;padding:0 0 3px;border:1px solid var(--line);border-radius:999px;background:var(--page);color:var(--ink);font:800 20px/1 var(--f-body);cursor:pointer;box-shadow:0 2px 6px var(--shadow);place-items:center;opacity:0;pointer-events:none;transition:opacity .2s}
+  .tabs-arr.l{left:-4px}.tabs-arr.r{right:-2px}
+  .tabs-wrap.can-l .tabs-arr.l,.tabs-wrap.can-r .tabs-arr.r{display:grid;opacity:.95;pointer-events:auto}
+  .tabs-wrap.can-l .tabs{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 30px)!important;mask-image:linear-gradient(90deg,transparent 0,#000 30px)!important}
+  .tabs-wrap.can-r .tabs{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 30px),transparent)!important;mask-image:linear-gradient(90deg,#000 calc(100% - 30px),transparent)!important}
+  .tabs-wrap.can-l.can-r .tabs{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 30px,#000 calc(100% - 30px),transparent)!important;mask-image:linear-gradient(90deg,transparent 0,#000 30px,#000 calc(100% - 30px),transparent)!important}
+  body.on-home .tabs-arr{display:none!important}
+}
 @media (max-width:640px){.tabs .tab,.tabs .tab[class*="play"]{padding:6px 8px 10px;gap:5px}.tabs .tab .n{width:24px;height:24px}}
 @media (min-width:641px) and (max-width:1240px){.who{padding:2px;box-shadow:none}.who-txt{display:none}.top{column-gap:16px;flex-wrap:nowrap}.top .tabs{flex-wrap:nowrap;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none;mask-image:linear-gradient(90deg,#000 calc(100% - 18px),transparent)}.top .tabs::-webkit-scrollbar{display:none}}   /* keep the top bar on one line: just the player's face beside the music and sound buttons */
 </style>
@@ -1278,6 +1405,7 @@ body.film-on{overflow:hidden}
   <h1 class="brand"><a href="/" id="brandLink" aria-label="Bloppit menu">
     <img class="brand-otter" src="/art/bloppit-avatar.png" alt="" width="256" height="256">
     <span>Bloppit</span></a></h1>
+  <div class="tabs-wrap"><button class="tabs-arr l" type="button" tabindex="-1" aria-hidden="true">‹</button>
   <nav class="tabs" role="tablist" aria-label="Games">
     <button class="tab play5" role="tab" id="tab-island" data-tab="island" aria-selected="false"><span class="n"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="50" fill="#2FB8DC"/><circle cx="50" cy="52" r="15" fill="#6CC04A" stroke="#F2D594" stroke-width="4"/><g transform="translate(50 52) scale(.5)" stroke="#9E2019" stroke-width="2" fill="#D8342C"><rect x="-20" y="-6" width="40" height="18" rx="2.5"/><rect x="-15" y="-13" width="10" height="8" rx="2"/><rect x="5" y="-13" width="10" height="8" rx="2"/></g><circle cx="50.0" cy="19.0" r="8" fill="#9BD32C" stroke="#F2D594" stroke-width="3"/><circle cx="81.4" cy="41.8" r="8" fill="#24407A" stroke="#F2D594" stroke-width="3"/><circle cx="69.4" cy="78.7" r="8" fill="#F2C230" stroke="#F2D594" stroke-width="3"/><circle cx="30.6" cy="78.7" r="8" fill="#2F7FD0" stroke="#F2D594" stroke-width="3"/><circle cx="18.6" cy="41.8" r="8" fill="#E9772A" stroke="#F2D594" stroke-width="3"/></svg></span>Island</button>
     <button class="tab play4" role="tab" id="tab-daily" data-tab="daily" aria-selected="false"><span class="n"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span>Weekly</button>
@@ -1286,7 +1414,7 @@ body.film-on{overflow:hidden}
     <button class="tab play" role="tab" id="tab-brain" data-tab="game" data-sub="brain" aria-selected="false"><span class="n"><img src="/art/head-nora.png" alt="" width="256" height="256"></span>Brain Trail</button>
     <button class="tab play3" role="tab" id="tab-blitz" data-tab="blitz" aria-selected="false"><span class="n"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span>Blitz</button>
     <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n"><img src="/art/pup.png" alt="" width="239" height="300"></span>Together</button>
-  </nav>
+  </nav><button class="tabs-arr r" type="button" tabindex="-1" aria-hidden="true">›</button></div>
   <button class="snd-top mus-top" id="musTop" type="button" aria-pressed="true" aria-label="Music" title="Music on or off"><span class="mus-ic" aria-hidden="true"></span></button>
   <button class="snd-top" id="sndTop" type="button" aria-pressed="true" aria-label="Sound" title="Sound on or off (M)"><span class="snd-ic" aria-hidden="true"></span></button>
   <button class="who" id="whoBtn" type="button" title="Who’s playing? Tap to switch player"><span class="av" id="whoAv"></span><span class="who-txt"><span class="tag">Playing</span><b id="whoName"></b></span></button>
@@ -2883,6 +3011,8 @@ function setTab(t,sub){
   if(t!=='create'&&pickFor) pickFor=null;
   syncPick();
   document.body.classList.toggle('on-home',t==='home');
+  document.body.classList.toggle('on-build',t==='build');
+  if(t==='build'){ scrollTo(0,0); $('.top').classList.remove('tucked'); buildFit(); }
   if(t==='home'){ homeSeen=true; renderer.domElement.remove(); renderHome(); scrollTo(0,0); $('.top').classList.remove('tucked'); }
   // Once the menu has been shown it offers "Continue building", so the Welcome back banner isn't needed
   $('#resume').hidden=!pendingSave||homeSeen;
@@ -2975,7 +3105,19 @@ function syncUseBar(){
 $('#ubGo').onclick=()=>$('#startBuild').click();
 // Hide the ribbon while the page's own Start building button is on screen
 if('IntersectionObserver' in window) new IntersectionObserver(es=>{ startSeen=es[0].isIntersecting; syncUseBar(); }).observe($('#startBuild'));
-{ const top=$('.top'), setH=()=>document.documentElement.style.setProperty('--topH',top.offsetHeight+'px'); setH();
+// Top bar arrows: show which way there are more game tabs to scroll to
+{ const w=$('.tabs-wrap'), bar=$('.tabs'); const sync=()=>{ const max=bar.scrollWidth-bar.clientWidth;
+    w.classList.toggle('can-l',max>2&&bar.scrollLeft>4); w.classList.toggle('can-r',max>2&&bar.scrollLeft<max-4); };
+  bar.addEventListener('scroll',sync,{passive:true}); addEventListener('resize',sync); addEventListener('load',sync);
+  if('ResizeObserver' in window) new ResizeObserver(sync).observe(bar);
+  w.querySelectorAll('.tabs-arr').forEach(b=>b.addEventListener('click',()=>bar.scrollBy({left:(b.classList.contains('l')?-1:1)*bar.clientWidth*.7,behavior:'smooth'})));
+  sync(); window.bloppitTabsArrows=()=>({l:w.classList.contains('can-l'),r:w.classList.contains('can-r')}); }
+// Where the build page starts (below the header and any banner), so it can take exactly the rest of the screen
+function buildFit(){ const v=$('#view-build'); if(!v||v.hidden) return;
+  const y=Math.round(v.getBoundingClientRect().top+scrollY); document.documentElement.style.setProperty('--buildTop',y+'px'); }
+addEventListener('resize',buildFit); addEventListener('orientationchange',()=>setTimeout(buildFit,250));
+if('ResizeObserver' in window){ const r=new ResizeObserver(()=>buildFit()); ['#resume','#mpBar','#gameBar'].forEach(q=>{ const e=$(q); if(e) r.observe(e); }); }
+{ const top=$('.top'), setH=()=>{ document.documentElement.style.setProperty('--topH',top.offsetHeight+'px'); buildFit(); }; setH();
   if('ResizeObserver' in window) new ResizeObserver(setH).observe(top); }
 // Quick Build's screens: 'home' (the three tiles, the current selection and model settings), 'photo', 'draw' or 'library'
 const QB_T={photo:'Add a photo',draw:'Draw your own',library:'Pick from the library'};
@@ -3311,7 +3453,14 @@ const sfx=(()=>{
       const comp=ac.createDynamicsCompressor(); comp.threshold.value=-14; comp.ratio.value=3; comp.attack.value=.004; comp.release.value=.2; comp.connect(master);
       out=ac.createGain(); out.gain.value=.95; out.connect(comp);
       mbus=ac.createGain(); mbus.gain.value=0; mbus.connect(comp); }
-    if(ac.state==='suspended') ac.resume(); return ac; };
+    wake(); return ac; };
+  // Back from the background (or a phone call), iPhone leaves the sound 'interrupted', not 'suspended': wake it from
+  // either. If a tap can't wake it, start a fresh one (it was stuck), so the sound never stays off until a restart.
+  let stuckT=0;
+  function wake(tap){ if(!ac||ac.state==='running') return; if(ac.state!=='closed'){ try{ const r=ac.resume(); r&&r.catch&&r.catch(()=>{}); }catch(e){} }
+    if(tap&&!stuckT) stuckT=setTimeout(()=>{ stuckT=0; if(ac&&ac.state!=='running'&&!document.hidden) fresh(); },600); }
+  function fresh(){ const old=ac; ac=null; master=out=mbus=null; rev=echo=null; clearInterval(M.timer); M.playing=false; last={};
+    try{ old&&old.close&&old.close(); }catch(e){} if(on&&ctx()) musicLevel(); }
   const ok=(k,gap)=>{ if(!on||document.hidden) return null; const c=ctx(); if(!c) return null; const n=c.currentTime; if(last[k]&&n-last[k]<gap) return null; last[k]=n; return c; };
   const jit=(v,f)=>v*(1+(Math.random()*2-1)*f);
   const hz=m=>440*Math.pow(2,(m-69)/12);
@@ -3401,9 +3550,11 @@ const sfx=(()=>{
     if(want&&!M.playing){ M.playing=true; M.next=n+.1; M.timer=setInterval(musicTick,60); }
     else if(!want&&M.playing){ clearTimeout(M.stopT); M.stopT=setTimeout(()=>{ if(mbus.gain.value<.01){ M.playing=false; clearInterval(M.timer); } },500); } }
   // starts with the first tap (browsers only allow sound after one), steps aside for films and when the page is hidden
-  const kick=()=>{ if(!on||!musicOn) return; if(ctx()) musicLevel(); };
+  const kick=()=>{ if(ac) wake(true); if(!on||!musicOn) return; if(ctx()) musicLevel(); };
   ['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,kick,{capture:true,passive:true}));
-  document.addEventListener('visibilitychange',()=>musicLevel());
+  document.addEventListener('visibilitychange',()=>{ if(!document.hidden) wake(); musicLevel(); });
+  addEventListener('pageshow',()=>{ wake(); musicLevel(); }); addEventListener('focus',()=>{ wake(); musicLevel(); });
+  try{ const App=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.App; App&&App.addListener&&App.addListener('resume',()=>{ wake(); musicLevel(); }); }catch(e){}
   ['play','playing','pause','ended','volumechange'].forEach(ev=>document.addEventListener(ev,()=>setTimeout(musicLevel,30),true));
 
   return {
