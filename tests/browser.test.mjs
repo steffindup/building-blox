@@ -418,6 +418,13 @@ test('Nora can be tapped on Brainpeak at every stage (the mountain never breaks 
   }
 });
 
+test('Blitz is fair at any age: Swoop paces himself on the child (a first guess from age, then their own pace)', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0');
+  const r = await t.page.evaluate(() => { const F = window.bloppitBlitzFair, a = [F.agePace(5), F.agePace(9), F.agePace(14), F.pace()]; F.save(60, 10); const b = F.pace(); F.save(30, 10); return [...a, b, F.pace(), F.fair]; });
+  assert.deepEqual(r, [8.5, 5, 3.3, 6, 6, 4.8, { easy: 1.26, medium: 1.084, hard: 1, boss: .97 }]);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('Bloppitopia renders every stage in 3D (models, buildings, the islands nearby), and as a drawing without WebGL', { skip: skip() }, async () => {
   const seed = (n) => { const builds = {}, log = []; for (let i = 0; i < n; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1 }; log.push(k); }
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: n * 10, bonus: 0, builds, log, decor: n >= 3 ? ['flag'] : [], pupName: 3, pupAsked: true, isle: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: n, finished: n, welcome: 1 })); };
