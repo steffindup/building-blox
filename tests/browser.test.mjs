@@ -254,10 +254,17 @@ test('a finished race against Swoop lets go: the banner offers Back to Bloppitop
   await t.page.evaluate(() => document.querySelector('[data-go="cpu"]').click()); await t.page.waitForTimeout(400);
   await t.page.evaluate(() => { document.getElementById('bzEasy').click(); document.getElementById('bzName').value = 'Tester'; document.getElementById('bzCpuGo').click(); });
   await t.page.waitForSelector('#buildStage .go-gate .go-btn', { timeout: 20000 }); await t.page.evaluate(() => document.querySelector('#buildStage .go-btn').click()); await t.page.waitForTimeout(4200);
-  let sawLast = false;
+  let sawLast = false, sawGate = '', sawBoard = '', rushed = false;
   for (let i = 0; i < 600; i++) {
     if (await t.page.evaluate(() => /Finished/.test(document.getElementById('mpTurn').textContent))) break;
-    if (await t.page.evaluate(() => !document.getElementById('turnBanner').hidden && /Your turn/.test(document.getElementById('turnBanner').textContent))) {
+    // between turns: the big scoreboard, and the clock waits for Your turn!
+    if (await t.page.evaluate(() => !!document.querySelector('#buildStage .turn-gate .go-btn'))) {
+      if (!sawGate) { sawGate = await t.text('#buildStage .turn-gate'); const c0 = await t.text('.clk[data-clk="0"]'); await t.page.waitForTimeout(700); assert.equal(await t.text('.clk[data-clk="0"]'), c0, 'your clock waits while the scoreboard is up'); }
+      await t.page.evaluate(() => document.querySelector('#buildStage .turn-gate .go-btn').click()); await t.page.waitForTimeout(200); continue;
+    }
+    if (!sawBoard) { const b = await t.page.evaluate(() => document.querySelector('#mpPlayers .rm-top')?.textContent || ''); if (/\+\d+\.\ds|Neck and neck/.test(b)) sawBoard = b; }
+    if (!rushed && await t.page.evaluate(() => !!document.querySelector('#mpPlayers [data-rush]'))) { rushed = true; await t.page.evaluate(() => document.querySelector('#mpPlayers [data-rush]').click()); }
+    if (await t.page.evaluate(() => !document.getElementById('turnBanner').hidden && /Your turn/.test(document.getElementById('turnBanner').textContent) && !document.querySelector('#buildStage .go-gate'))) {
       if (!sawLast) { const w = await t.page.evaluate(() => window.bloppitPickWhy()); if (w.why === 'last') sawLast = true; }
       await t.page.evaluate(() => window.bloppitPlaceRight()); await t.page.waitForTimeout(200);
       if (await t.page.evaluate(() => { const b = document.getElementById('mpEndTurn'); return !b.hidden && !b.disabled; })) await t.page.evaluate(() => document.getElementById('mpEndTurn').click());
@@ -265,6 +272,8 @@ test('a finished race against Swoop lets go: the banner offers Back to Bloppitop
     await t.page.waitForTimeout(300);
   }
   assert.ok(sawLast, 'the parts box knew it was the last brick');
+  assert.match(sawGate, /Your turn!/); assert.match(sawGate, /placed brick|finished in/);
+  assert.ok(sawBoard, 'the scoreboard says who leads, by how much');
   await t.page.waitForTimeout(1500); await t.page.evaluate(() => document.querySelector('dialog[open]')?.close());
   assert.match(await t.text('#mpRoomBtn'), /Back to Bloppitopia/);
   assert.match(await t.text('.race-meter'), /wins!/);
