@@ -294,6 +294,12 @@ test('a race against Swoop starts and shows him in the banner on his turn', { sk
   assert.equal(await t.page.evaluate(() => !document.querySelector('#buildStage .go-gate')), true);
   assert.equal(await t.page.evaluate(() => document.getElementById('turnBanner').hidden), false);
   assert.match(await t.text('#turnBanner'), /Your turn/);
+  // mid-race the button is Leave race, and it takes a second tap
+  assert.equal(await t.text('#mpRoomBtn'), 'Leave race');
+  await t.page.evaluate(() => document.getElementById('mpRoomBtn').click()); assert.equal(await t.text('#mpRoomBtn'), 'Tap again to leave');
+  assert.equal(await t.page.evaluate(() => document.getElementById('mpBar').hidden), false);
+  await t.page.evaluate(() => document.getElementById('mpRoomBtn').click()); await t.page.waitForTimeout(600);
+  assert.equal(await t.page.evaluate(() => document.getElementById('mpBar').hidden), true);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
