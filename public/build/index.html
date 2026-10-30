@@ -1233,6 +1233,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 .is3-chrome{position:absolute;inset:0;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:12px}
 .is3-banner{pointer-events:none;max-width:90%;text-align:center;padding:8px 16px;border-radius:999px;background:rgba(20,32,44,.86);color:#fff;font-family:var(--f-display);font-size:18px;box-shadow:0 4px 14px rgba(0,0,0,.2);animation:is3-in .4s ease both}
 .is3-banner.big{font-size:22px;background:#008F9B}
+.is3-banner.soon{background:linear-gradient(135deg,rgba(110,53,184,.92),rgba(59,44,155,.92));font-size:15px;margin-top:150px!important}@media (max-width:559px){.is3-banner.soon{margin-top:160px!important;font-size:13px}}
 @media (max-width:559px){.is3-play{min-width:0;font-size:16px;padding:8px 18px}.is3-play small{font-size:11px}.is3-banner{font-size:15px}.is3-banner.big{font-size:18px}}
 @keyframes is3-in{from{transform:translateY(-10px)}to{transform:none}}
 .is3-views{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);display:flex;align-items:center;gap:4px;pointer-events:auto;padding:4px;border-radius:999px;background:rgba(20,32,44,.72);color:#fff;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 3px 10px rgba(0,0,0,.2)}
@@ -9177,7 +9178,7 @@ function isl3Build(o){ ISL3.shadowDirty=true;
   ISL3.lufu=0; if(inLufu()) lufuBuild(o,W,add); else isl3BuildBloppitopia(o,W,add);   // Chapter 2: lufu's world, or Bloppitopia
   ISL3.sc.add(W);
   W.traverse(x=>{ if(x.isMesh||x.isSprite||x.isInstancedMesh) ISL3.hits.push(x); });
-  const AK=['face3','flame','firepool','beam','pulse','belt','bloppit','bob','burst','cheer','cloud','crane','flap','float','fly','fount','hand','kite','longtail','mist','race','roty','smoke','spin','sway','swing','twinkle','upright','waddle','wheel','zzz'];
+  const AK=['face3','flame','firepool','beam','pulse','belt','bloppit','bob','burst','cheer','cloud','crane','flap','coral','float','fly','fount','hand','kite','longtail','mist','race','roty','smoke','spin','sway','swing','twinkle','upright','waddle','wheel','zzz'];
   ISL3.anim=[]; ISL3.sc.traverse(x=>{ const u=x.userData; if(AK.some(k=>u[k]!=null&&u[k]!==false)) ISL3.anim.push(x); });
   isl3Labels(); isl3Tod(true); isl3Kick();
 }
@@ -9316,7 +9317,7 @@ function isl3Characters(o,W){
 /* ---------- lufu's world (Chapter 2, 30 Oct 2026) ----------
    Where the Galaxy ship lands after Moonstone Isle: lufu's own world, one enchanted land under a night sky that never
    ends (a galaxy band, a huge moon, lavender mist), waiting to be rebuilt. For now it has: a silver shore where the
-   Galaxy ship lies beached; dark violet ground; glowing mushroom-trees; moonstone shards drifting in the air; a ruined
+   Galaxy ship lies beached; dark violet ground; glowing torch-coral colonies swaying as if underwater; moonstone shards drifting in the air; a ruined
    moonstone arch (the first thing to rebuild one day); dark cliffs behind. Everyone is here: lufu, the pup, Bloppit
    and the six friends, in a loose group by the ship. Builds the child makes while here go on stands on the ground,
    so Quick Builds and library builds keep working. "Bloppitopia" and "lufu's world" are the two realms; the island
@@ -9344,11 +9345,18 @@ function lufuBody3(){ const g=new THREE.Group(), shapeOf=Q=>new THREE.Shape(Q.ma
   for(let i=0;i<11;i++){ const a=Math.PI*(.18+i*.064), d=LUFU_R*(1.02+(i%3)*.08), h=6+((i*5)%7), w=1.4+(i%2)*.6; const c=mesh3(new THREE.BoxGeometry(w,h,w),m3(i%2?'#1B1838':'#231F48'),Math.cos(a)*d,h/2-1,-Math.sin(a)*d*.78-2.5); c.rotation.y=i*.5; g.add(c);
     if(i%3===0){ const e=mesh3(new THREE.BoxGeometry(w*.3,h*.9,.06),glow3('#8E6DF2'),Math.cos(a)*d,h/2-1,-Math.sin(a)*d*.78-2.5+w/2+.02); e.rotation.y=i*.5; e.castShadow=false; g.add(e); } }
   return g; }
-// A mushroom-tree: a pale stalk and a glowing lavender cap with soft spots
-function moonshroom3(x,z,s,seed){ s=s||1; const g=new THREE.Group(); g.add(cyl3(.16*s,.26*s,1.9*s,7,'#DCD3F0',0,0,0));
-  const cap=mesh3(new THREE.SphereGeometry(.95*s,12,8,0,Math.PI*2,0,Math.PI*.52),glow3('#B48CFF'),0,1.85*s,0); cap.scale.y=.7; g.add(cap);
-  for(let i=0;i<5;i++){ const a=i*1.3+seed, rr=.5*s; const d=mesh3(new THREE.SphereGeometry(.12*s,6,4),m3('#F4EEFF'),Math.cos(a)*rr,2.05*s+Math.sin(i*2.1)*.12*s,Math.sin(a)*rr); d.castShadow=false; g.add(d); }
-  g.add(sparkle3(0,2.6*s,0)); g.position.set(x,TOP3,z); g.userData.sway=seed; return g; }
+// A torch coral: a colony of long tentacles that curve up and outward from a stony base, each shading from violet
+// through gold to green with a glowing tip, swaying slowly as if underwater (lufu's world isn't quite land and isn't quite sea)
+const CORAL_C=[['#6A2FB5','#C7A531','#4FCB5A','#9CF6E6'],['#4B3BAA','#E08A3C','#8ADF55','#BFF7FF'],['#8A3BC9','#D9B23A','#36B86E','#A8FFE8']];
+function torchCoral3(x,z,s,seed){ s=s||1; const g=new THREE.Group(), rnd=i=>{ const v=Math.sin(i*12.9898+seed*78.233)*43758.5453; return v-Math.floor(v); }, C=CORAL_C[seed%CORAL_C.length];
+  g.add(mesh3(new THREE.DodecahedronGeometry(.42*s,0),m3('#3A3270'),0,.18*s,0));   // the stony base
+  const n=14+Math.round(rnd(1)*6); for(let i=0;i<n;i++){ const a=i/n*Math.PI*2+rnd(i)*.6, lean=.35+rnd(i+3)*.75, L=(1.6+rnd(i+5)*1.3)*s, segs=5, pts=[];
+    for(let k=0;k<=segs;k++){ const t=k/segs, r=t*lean*L*.75, y=.25*s+Math.sin(t*Math.PI*.5)*L*(1-lean*.22); pts.push(new THREE.Vector3(Math.cos(a)*r+Math.sin(t*3+i)*.08*s,y,Math.sin(a)*r)); }
+    const curve=new THREE.CatmullRomCurve3(pts), tube=new THREE.TubeGeometry(curve,8,.07*s,5,false), cnt=tube.attributes.position.count, cols=new Float32Array(cnt*3), c0=new THREE.Color(C[0]).convertSRGBToLinear(), c1=new THREE.Color(C[1]).convertSRGBToLinear(), c2=new THREE.Color(C[2]).convertSRGBToLinear(), cc=new THREE.Color();
+    for(let v=0;v<cnt;v++){ const t=Math.floor(v/6)/8; (t<.5?cc.copy(c0).lerp(c1,t*2):cc.copy(c1).lerp(c2,(t-.5)*2)).multiplyScalar(1.9).toArray(cols,v*3); } tube.setAttribute('color',new THREE.BufferAttribute(cols,3));
+    const m=new THREE.Mesh(tube,ISL3.coralMat||(ISL3.coralMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.45,emissive:new THREE.Color('#FFFFFF').convertSRGBToLinear(),emissiveIntensity:.0}))); m.castShadow=false; m.userData.coral=i; g.add(m);
+    const tip=pts[segs], dot=mesh3(new THREE.SphereGeometry(.11*s,8,6),glow3(C[3]),tip.x,tip.y,tip.z); dot.castShadow=false; g.add(dot); }
+  g.add(sparkle3(0,2.2*s,0)); g.position.set(x,TOP3,z); g.userData.sway=seed; return g; }
 // A moonstone shard: a pale crystal that floats and slowly turns
 function shard3(x,y,z,s,seed){ const m=mesh3(new THREE.OctahedronGeometry(.32*s,0),glow3('#E6DBFF'),x,y,z); m.scale.y=1.9; m.rotation.z=.2; m.castShadow=false; m.userData.float=seed; return m; }
 // The old moonstone arch, half fallen: two pillars, one piece of the ring still up, the rest in the grass
@@ -9384,7 +9392,7 @@ const LUFU_STANDS=[[-5.2,-2.4],[5.4,-2.6],[-6.4,.6],[6.6,.4],[-4.2,-5.4],[4.4,-5
 function lufuBuild(o,W,add){ ISL3.lufu=1;
   add(lufuBody3(),'land:lufu'); ISL3.isles.home={x:0,z:0,r:LUFU_R};
   const [sx,sz]=LUFU_AT.ship, ship=galaxyShip3(); ship.rotation.y=Math.PI-.55; ship.position.set(sx,TOP3-.1,sz); tag3(ship,'ship'); W.add(ship);
-  for(const [x,z,s,sd] of [[-7.8,-1.6,1.3,1],[7.6,-2.2,1.1,2],[-5.6,-6.2,1.6,3],[6.2,-6.8,1.4,4],[-9,-4.6,.9,5],[9.2,-5,1,6],[1.2,-8.6,1.2,7],[-3.2,-9,.8,8]]) W.add(moonshroom3(x,z,s,sd));
+  for(const [x,z,s,sd] of [[-7.8,-1.6,1.25,1],[7.6,-2.2,1.05,2],[-5.6,-6.2,1.5,3],[6.2,-6.8,1.35,4],[-9,-4.6,.85,5],[9.2,-5,.95,6],[1.2,-8.6,1.15,7],[-3.2,-9,.8,8],[-9.6,1.2,.7,9],[9.8,-.4,.75,10]]) W.add(torchCoral3(x,z,s,sd));
   for(let i=0;i<10;i++){ const a=i*.63, rr=4+(i%4)*1.6; W.add(shard3(Math.cos(a)*rr,TOP3+2.2+(i%3)*.9,Math.sin(a)*rr*.7-2.6,.7+(i%3)*.25,i)); }
   const arch=ruinArch3(LUFU_AT.arch[0],LUFU_AT.arch[1]); tag3(arch,'ruin'); W.add(arch);
   for(const [x,z] of [[-3,5.4],[4.6,4.8],[-6.6,3.6],[6.9,2.8]]){ const p=mesh3(new THREE.DodecahedronGeometry(.3+((x*z)%2===0?.1:0),0),m3('#A79BD0'),x,TOP3+.12,z); p.castShadow=false; W.add(p); }   // pebbles on the shore
@@ -9405,9 +9413,8 @@ function lufuBuild(o,W,add){ ISL3.lufu=1;
     g.userData.longtail=1; ISL3.longtail=g; ISL3.longtailSprite=sp; tag3(g,'longtail:'+lv); place('swoop',g,LUFU_AT.swoop); }
   // the sky: a galaxy band and a huge moon, low behind the cliffs
   W.add(lufuSky3());
-  ISL3.labels.push({id:'land:lufu',name:'lufu’s world',sub:'Chapter 2: a world to rebuild',x:-7.5,z:6.2,y:.9,home:1});
+  ISL3.labels.push({id:'land:lufu',name:'lufu’s world',sub:'Chapter 2 · coming soon',x:-7.5,z:6.2,y:.9,home:1});
   ISL3.labels.push({id:'ship',name:'The Galaxy ship',sub:'Back to Bloppitopia',x:sx+1.5,z:sz+1.2,y:3.2});
-  ISL3.labels.push({id:'ruin',name:'The old moon arch',sub:'Coming soon: the first thing to rebuild',x:LUFU_AT.arch[0],z:LUFU_AT.arch[1],y:3.9});
 }
 // The views of lufu's world: the whole shore, the ship, the old arch
 function lufuViews(){ const v=[{id:'world',name:'lufu’s world'},{id:'ship',name:'The Galaxy ship',x:LUFU_AT.ship[0]-.5,z:LUFU_AT.ship[1]-1,y:1.4,R:6.4},{id:'friends',name:(pupName(worldStore())||'Your otter')+' & lufu',x:LUFU_AT.pup[0],z:LUFU_AT.pup[1],y:TOP3+1.1,R:3.6},{id:'ruin',name:'The old moon arch',x:LUFU_AT.arch[0],z:LUFU_AT.arch[1],y:1.6,R:5}];
@@ -9503,7 +9510,8 @@ function isl3Animate(x,t){ const u=x.userData;
   if(u.fount) x.scale.setScalar(.9+Math.sin(t*5)*.1);
   if(u.hand){ const d=new Date(), h=(d.getHours()%12)+d.getMinutes()/60, m=d.getMinutes()+d.getSeconds()/60; x.rotation.z=-(u.hand===1?h/12:m/60)*Math.PI*2; }
   if(u.beam){ x.material.opacity=.16+Math.sin(t*1.5)*.06; }
-  if(u.sway!=null) x.rotation.z=Math.sin(t*.7+u.sway)*.04;
+  if(u.sway!=null){ x.rotation.z=Math.sin(t*.7+u.sway)*.04; x.rotation.x=Math.cos(t*.55+u.sway*1.3)*.03; }
+  if(u.coral!=null) x.scale.y=1+Math.sin(t*1.1+u.coral*.9)*.035;
   if(u.float!=null){ x.position.y=(u.y0??(u.y0=x.position.y))+Math.sin(t*.9+u.float)*.25; x.rotation.y=t*.4+u.float; }
   if(u.pulse){ const k=.5+.5*Math.sin(t*1.6); x.scale.setScalar((1.6+k*1.1)*u.pulse); x.material.opacity=.3+.5*k; }
   if(u.twinkle!=null){ const k=(Math.sin(t*3+u.twinkle*1.7)+1)/2; x.scale.setScalar(.25+k*.55); x.material.opacity=.4+k*.6; }
@@ -9655,12 +9663,13 @@ function isl3Chrome(){ const box=ISL3.box; if(!box) return; let c=box.querySelec
     c.querySelector('.is3-alt').onclick=()=>{ const isle=c.querySelector('.is3-alt').dataset.isle; track('play_anyway:'+isle); isleAnyway(isle); };
     c.querySelector('.is3-realm').onclick=()=>realmGo(inLufu()?'bloppitopia':'lufu'); }
   { const rb=c.querySelector('.is3-realm'), open=lufuWorldOpen(); rb.hidden=!open||!!(ISL3.arrival||ISL3.revealing); if(open) rb.innerHTML=inLufu()?'⛵ Sail to Bloppitopia':'✨ Sail to lufu’s world'; }
+  if(!ISL3.revealing&&!ISL3.arrival){ const bn=c.querySelector('.is3-banner'); if(ISL3.lufu){ bn.textContent='🌙 Chapter 2: Bloppit builds lufu’s world · coming soon'; bn.hidden=false; bn.classList.remove('big'); bn.classList.add('soon'); } else if(bn.classList.contains('soon')){ bn.classList.remove('soon'); bn.hidden=true; } }
   const b=c.querySelector('.is3-play'), alt=c.querySelector('.is3-alt'), o=worldStore(); alt.hidden=true; c.classList.remove('has-alt');
   if(ISL3.arrival==='home'){ b.dataset.act='home'; b.innerHTML='🔨 Build Our First Home'; b.hidden=false; }
   else if(ISL3.arrival||ISL3.revealing){ b.hidden=true; }
   else { const V=isl3Views(), v=V[ISL3.viewI||0], isle=v&&v.id.startsWith('isle:')?v.id.slice(5):null;
     b.hidden=false; b.dataset.isle=isle||'';
-    if(ISL3.lufu){ b.dataset.act='lufu'; b.innerHTML='<span>🔨 Build here</span><small>Quick Build: it stands in lufu’s world</small>'; return; }
+    if(ISL3.lufu){ b.dataset.act='lufu'; b.innerHTML='<span>🔨 Build here</span><small>Chapter 2 is coming soon · free building until then</small>'; return; }
     if(!isle){ const n=nextBuild(); b.dataset.act='next'; b.innerHTML=n?`<span>▶ Play next</span><small>${escapeHTML(n.t)}</small>`:'<span>▶ Build something</span>'; return; }
     // Looking at one island: its own next step (not the whole world's), or, once it's complete, back to Bloppitopia
     const nm=isleCount(isle,o)>0?ISLES[isle].name:v.name, n=isleNext(isle);
@@ -9977,8 +9986,8 @@ function renderIsland(){
   if(isl3Init()) isl3Show($('#isWorld'),o); else { $('#isWorld').innerHTML=islandSVG(o,{pop}); islandDrag(); }
   renderIslandIntro(o);
   if(ISL3.ok&&inLufu()){ const lb=Object.values(o.builds).filter(b=>b.realm==='lufu').length;
-    $('#isStage').innerHTML=`lufu’s world<small>Chapter 2 · ${lb} build${lb===1?'':'s'} here so far · ${gbN(worldStars(o))} to spend</small>`; isProgRender(o);
-    $('#isNext').innerHTML='<span>A world to rebuild, one brick at a time. The story continues soon.</span>'; }
+    $('#isStage').innerHTML=`lufu’s world<small>Chapter 2 · coming soon · ${lb} build${lb===1?'':'s'} here so far</small>`; isProgRender(o);
+    $('#isNext').innerHTML='<span>🌙 Chapter 2: Bloppit builds lufu’s world · coming soon. Until then, build anything you like here.</span>'; }
   else if(ISL3.ok){ const g=worldNextGoal(o), lv=otterLevel(o);
     $('#isStage').innerHTML=`${escapeHTML(pupName(o)||'Your otter')} · Level ${lv} ${PUP_STAGES[pupStage(o)].name}<small>${n} build${n===1?'':'s'} finished · ${islandsOpen(o).length} of ${ISLE_TOTAL} islands · ${gbN(worldStars(o))} to spend</small>`;
     isProgRender(o);
