@@ -807,6 +807,25 @@ test('living characters: on the island (dressed pup, the friends, tap for a reac
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('Chapter 2: the ten mystery chapters end with the Galaxy ship; then lufu’s world opens (everyone there, the ship beached, builds on its stands) and the ship sails back and forth', { skip: skip() }, async () => {
+  const done = { fn: () => { const builds = {}, log = []; for (const n of ['Rowboat', 'Old map', 'Lookout tower', 'Little bridge', 'Moon gate', 'Constellation cube', 'Lantern', 'Moonstone Lighthouse', 'Moon crystal', 'Galaxy ship']) { const k = `m:${n}:12`; builds[k] = { n: 12, s: 3, t: 1e12, c: 1 }; log.push(k); }
+    builds['m:Here:9'] = { n: 9, s: 2, t: 1e12 + 1, c: 1, realm: 'lufu' }; log.push('m:Here:9'); builds['m:Home:9'] = { n: 9, s: 2, t: 1e12 + 2, c: 1 }; log.push('m:Home:9');
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 50, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, pick: 'treehouse', isle: 1, arrived: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 5, finished: 5, welcome: 1 })); } };
+  const t = await open('?nosplash=1#island', { init: done });
+  await t.page.waitForFunction(() => window.bloppitIsland3().ctl, null, { timeout: 90000 });
+  const chapters = await t.page.evaluate(() => window.bloppitLevels.mystery().map((m) => m.name));
+  assert.deepEqual(chapters, ['Rowboat', 'Old map', 'Lookout tower', 'Little bridge', 'Moon gate', 'Constellation cube', 'Lantern', 'Moonstone Lighthouse', 'Moon crystal', 'Galaxy ship']);
+  // Bloppitopia first: lufu is not on Home Island any more (it lives in its own world), the realm button offers the voyage, the lufu build is not on the island
+  let r = await t.page.evaluate(() => { const I = window.bloppitIsland3(); return { lufu: I.lufu, cast: Object.keys(I.cast), btn: document.querySelector('.is3-realm').textContent, hidden: document.querySelector('.is3-realm').hidden, models: I.shown.list.map((m) => m.key) }; });
+  assert.equal(r.lufu, 0); assert.ok(!r.cast.includes('lufu')); assert.equal(r.hidden, false); assert.match(r.btn, /Sail to lufu’s world/); assert.ok(r.models.includes('m:Home:9') && !r.models.includes('m:Here:9'));
+  await t.page.evaluate(() => document.querySelector('.is3-realm').click()); await t.page.waitForTimeout(1500);
+  r = await t.page.evaluate(() => { const I = window.bloppitIsland3(); return { lufu: I.lufu, cast: Object.keys(I.cast).sort(), ship: !!I.world.children.find((x) => x.userData.ship), btn: document.querySelector('.is3-realm').textContent, play: document.querySelector('.is3-play').textContent, models: I.shown.list.map((m) => m.key), views: document.querySelector('.v-name').textContent, b: !!I.bloppit, p: !!I.pupG, l: !!I.longtail }; });
+  assert.equal(r.lufu, 1); assert.deepEqual(r.cast, ['bibi', 'lufu', 'nora', 'pippa', 'tiny']); assert.ok(r.ship && r.b && r.p && r.l); assert.match(r.btn, /Sail to Bloppitopia/); assert.match(r.play, /Build here/); assert.deepEqual(r.models, ['m:Here:9']); assert.equal(r.views, 'lufu’s world');
+  await t.page.evaluate(() => document.querySelector('.is3-realm').click()); await t.page.waitForTimeout(1500);
+  assert.equal(await t.page.evaluate(() => window.bloppitIsland3().lufu), 0);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('Mystery Island label: "N islands to go!" and a bar that counts every piece built on the five islands', { skip: skip() }, async () => {
   // Frog Forest complete (15 of 15) and 6 Brain Trail levels: 1 island done, 21 of 73 pieces
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const k = 'm:Cottage:12';
