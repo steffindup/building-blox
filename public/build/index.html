@@ -661,6 +661,31 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .go-card{display:grid;justify-items:center;gap:10px;max-width:min(420px,88%);padding:22px 26px;border-radius:20px;background:var(--panel,#1E2A36);color:#fff;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.4)}
 .go-card img{width:72px;height:72px;border-radius:50%;object-fit:cover}.go-card b{font-family:var(--f-display);font-size:24px}.go-card p{margin:0;opacity:.9;font-size:15px}
 .go-btn{font-size:20px;padding:12px 28px;border-radius:999px}
+/* Race scoreboard (Blitz, two or more racers): who leads and by how much, compared at the same brick, so the brick
+   count only says how far along each racer is. Small in the race bar while building; big between turns. */
+.rm-mini{display:grid;gap:6px;min-width:min(100%,460px);flex:1 1 460px}
+.rm-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--f-display);font-size:24px;line-height:1.1}
+.rm-top .rm-crown{width:28px;height:23px;flex:none}.rm-top.lead-me{color:#F4BC22}.rm-top.lead-them{color:#8EC5FF}.rm-top.even{color:#fff}
+.rm-top small{font-family:var(--f-body,inherit);font-size:13px;font-weight:700;color:rgba(255,255,255,.75)}
+.rm-top .rm-skip{font-family:var(--f-body,inherit);font-size:13px;font-weight:800;padding:5px 12px;border-radius:999px;margin-left:4px}
+.rm-chips{display:flex;gap:8px;flex-wrap:wrap}
+.rm-chip{display:flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border-radius:999px;background:rgba(0,0,0,.22);font-weight:800;font-size:13px}
+.rm-chip.lead{background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 2px #F4BC22}.rm-chip.now .rm-face{box-shadow:0 0 0 3px #fff}
+.rm-face{width:28px;height:28px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:#fff;flex:none}.rm-face img,.rm-face svg{width:100%;height:100%;object-fit:cover}.rm-face i{width:100%;height:100%;border-radius:50%}
+.rm-bricks{display:flex;gap:3px}.rm-bricks i{width:11px;height:8px;border-radius:2px;border:2px dashed rgba(255,255,255,.35);box-sizing:border-box}.rm-bricks i.on{border:0;background:var(--c)}
+.rm-chip .clk{font-family:var(--f-display);font-weight:400;font-size:18px;font-variant-numeric:tabular-nums}
+.rm-chip .rm-pen{font-size:11px}.rm-rule{font-size:11px;font-weight:700;opacity:.7}
+.go-gate.turn-gate{position:fixed;z-index:60;padding:12px;box-sizing:border-box;grid-template-columns:minmax(0,1fr);justify-items:center}
+.turn-gate .go-card{max-width:720px;width:100%;min-width:0;gap:14px;background:#6B4429;max-height:100%;overflow:auto;box-sizing:border-box}
+.tg-what{font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85}
+.tg-vs{display:grid;grid-template-columns:minmax(0,1fr) minmax(150px,auto) minmax(0,1fr);gap:10px;align-items:center;width:100%}
+.tg-p{display:grid;justify-items:center;gap:6px;padding:14px 8px;border-radius:18px;background:rgba(0,0,0,.16)}.tg-p.lead{background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 3px #F4BC22}
+.tg-p .rm-face{width:64px;height:64px;border:3px solid #fff}.tg-p b{font-size:20px}.tg-p .clk{font-family:var(--f-display);font-size:34px;font-variant-numeric:tabular-nums}
+.tg-p .rm-bricks i{width:20px;height:14px;border-radius:4px}
+.tg-mid{display:grid;justify-items:center;gap:2px}.tg-mid svg{width:44px;height:36px}.tg-mid b{font-size:26px!important;line-height:1}.tg-mid .tg-gap{font-family:var(--f-display);font-size:44px;line-height:1}.tg-mid small{font-size:13px;font-weight:700;opacity:.85}
+.tg-mid.lead-me b{color:#F4BC22}.tg-mid.lead-them b{color:#8EC5FF}
+.turn-gate .go-btn{display:grid;justify-items:center;gap:0}.turn-gate .go-btn small{font-family:var(--f-body,inherit);font-size:12px;font-weight:800;opacity:.9}
+@media (max-width:559px){.tg-vs{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.tg-p .rm-bricks{flex-wrap:wrap;justify-content:center}.tg-p .rm-bricks i{width:13px;height:10px;border-radius:3px}.turn-gate .go-card{padding:18px 14px}.tg-mid{grid-column:1/-1;order:-1}.tg-p .clk{font-size:26px}.tg-p .rm-face{width:48px;height:48px}.rm-top{font-size:20px}}
 .mp-pl{display:flex;align-items:center;gap:6px;border:2px solid var(--line);border-radius:999px;padding:3px 10px 3px 4px;font-size:13px;font-weight:800;background:var(--bg)}
 .mp-pl i{width:18px;height:18px;border-radius:50%;display:inline-block;box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
 .mp-pl.now{border-color:var(--ink);background:var(--page)}
@@ -6295,7 +6320,8 @@ function fmtTime(ms){ const t=Math.max(0,Math.floor(ms/100)), m=Math.floor(t/600
 // Blitz: how many more bricks I may place this turn (my share caps it as well as the 3-a-turn limit)
 function mpLeft(s){ const me=s.players[mp.me]||{}, l=s.perTurn-s.turnPlaced; return s.mode==='blitz'&&s.quota?Math.min(l,s.quota-(me.n||0)):l; }
 function mpFlash(t){ const f=$('#mpFlash'); f.textContent=t; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); }
-function mpTick(){ const s=mp&&mp.state; if(!s||s.mode!=='blitz') return; document.querySelectorAll('[data-clk]').forEach(el=>{ el.textContent=fmtTime(mpTime(s,+el.dataset.clk)); }); }
+function mpTick(){ const s=mp&&mp.state; if(!s||s.mode!=='blitz') return; document.querySelectorAll('[data-clk]').forEach(el=>{ el.textContent=fmtTime(mpTime(s,+el.dataset.clk)); });
+  if(!s.finished&&document.querySelector('#mpPlayers .rm-mini')){ const L=raceLead(s), k=L&&L.decided?'d'+L.lead.i:''; if(k!==(mp.rmKey||'')){ mp.rmKey=k; $('#mpPlayers').innerHTML=raceMeter(s); } } }   // a clock passing the winner's time decides the race
 const mpMyTurn=()=>!!(mp&&mp.state&&mp.state.started&&!mp.state.finished&&mp.state.turn===mp.me);
 function mpTurnText(){ const s=mp&&mp.state; if(!s||!s.started) return 'Waiting for the game to start.'; if(s.finished) return 'The model is finished!'; return `It’s ${s.players[s.turn].name}’s turn. Get your bricks ready in the parts box.`; }
 // The race-o-meter (Blitz with two or more players): a lane each, the runner moving along as their bricks go in, the
@@ -6306,12 +6332,41 @@ function raceMeter(s){ const sc=mpScores(s), best=sc.every(p=>p.done)?Math.min(.
     const order=[...sc].sort((a,b)=>a.ms-b.ms), med=['🥇','🥈','🥉'];
     return `<div class="race-meter rm-final" role="group" aria-label="Race result"><div class="rm-head"><b>Race-o-meter</b> · finished · shortest time wins</div>${order.map((p,k)=>{ const bot=mp.cpu&&p.i!==mp.me, face=bot?GULL_HEAD(s.cpuLevel):`<i style="background:${escapeHTML(p.color)}"></i>`;
       return `<div class="rm-lane done${k?'':' won'}" data-pl="${p.i}"><span class="rm-who">${med[k]||''} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span class="rm-res">${face}<b>${k?`${fmtTime(p.ms)}`:`${fmtTime(p.ms)} · wins!`}</b>${k?`<small>+${((p.ms-best)/1000).toFixed(1)}s behind</small>`:''}${p.miss||p.hint?`<span class="rm-pen" title="Already in the time">${p.miss?`${p.miss} miss${p.miss===1?'':'es'} +${p.miss}s`:''}${p.hint?` · ${p.hint} hint${p.hint===1?'':'s'} +${p.hint*5}s`:''}</span>`:''}</span></div>`; }).join('')}</div>`; }
+  if(sc.length>1&&!s.finished) return raceScoreboard(s);
   const lanes=sc.map(p=>{ const pct=Math.min(100,100*p.n/s.quota), bot=mp.cpu&&p.i!==mp.me, now=p.i===s.turn&&!s.finished;
     const face=bot?GULL_HEAD(s.cpuLevel):`<i style="background:${escapeHTML(p.color)}"></i>`;
     return `<div class="rm-lane${now?' now':''}${p.done?' done':''}" data-pl="${p.i}"><span class="rm-who">${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span>
       <span class="rm-track"><span class="rm-fill" style="width:${pct}%;background:${bot?'#2F7FD0':escapeHTML(p.color)}"></span><span class="rm-run" style="left:${pct}%">${face}</span><span class="rm-flag" aria-hidden="true"></span></span>
       <span class="rm-n">${p.done?'✓ done':`${p.n}/${s.quota}`}</span><b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${p.miss||p.hint?`<span class="rm-pen" title="Already in the time">+${p.miss+p.hint*5}s</span>`:''}</div>`; }).join('');
   return `<div class="race-meter" role="group" aria-label="Race-o-meter"><div class="rm-head"><b>Race-o-meter</b> · ${s.quota} bricks each · shortest time wins · miss +1s · hint +5s</div>${lanes}</div>`; }
+// Each racer's time as each of their bricks went in (watched here, so it works for Swoop and for rooms alike)
+function raceSplits(s){ const sp=mp.splits=mp.splits||{}; s.players.forEach((p,i)=>{ const a=sp[i]=sp[i]||[], n=p.n||0; if(a.length>n) a.length=n; while(a.length<n) a.push(mpTime(s,i)); }); return sp; }
+// Who's winning: everyone compared at the last brick they have all placed (fair even when one is further along),
+// and once someone has finished and nobody still racing can beat their time, the race is decided.
+function raceLead(s){ const sc=mpScores(s); if(sc.length<2) return null; const sp=raceSplits(s);
+  const done=sc.filter(p=>p.done);
+  if(done.length&&!s.finished){ const best=done.reduce((a,b)=>b.ms<a.ms?b:a); if(sc.every(p=>p.done||p.ms>best.ms)) return {sc,decided:true,lead:best,k:best.n}; }
+  const k=Math.min(...sc.map(p=>p.n)); if(!k) return {sc,k:0};
+  const at=sc.map(p=>({p,t:(sp[p.i]||[])[k-1]??p.ms})).sort((a,b)=>a.t-b.t), gap=at[1].t-at[0].t;
+  return {sc,k,lead:at[0].p,gap,even:gap<100}; }
+const RM_CROWN='<svg class="rm-crown" viewBox="0 0 34 28" aria-hidden="true"><path d="M3 24 L6 7 L13 15 L17 3 L21 15 L28 7 L31 24 Z" fill="#F4BC22" stroke="#B9860C" stroke-width="2" stroke-linejoin="round"/></svg>';
+const rmFace=(s,p)=>`<span class="rm-face">${mp.cpu&&p.i!==mp.me?GULL_HEAD(s.cpuLevel):`<i style="background:${escapeHTML(p.color)}"></i>`}</span>`;
+const rmWho=p=>p.i===mp.me?'You':escapeHTML(p.name);
+const rmBricks=(s,p)=>s.quota<=12?`<span class="rm-bricks" style="--c:${mp.cpu&&p.i!==mp.me?'#2F7FD0':escapeHTML(p.color)}" aria-label="${p.n} of ${s.quota} bricks">${Array.from({length:s.quota},(_,k)=>`<i class="${k<p.n?'on':''}"></i>`).join('')}</span>`:`<span>${p.done?'✓':`${p.n}/${s.quota}`}</span>`;
+// The headline: one answer to "who's winning?"
+function raceHead(s,L){ if(!L) return '';
+  if(L.decided){ const me=L.lead.i===mp.me, other=L.sc.find(p=>!p.done);
+    const skip=me&&mp.cpu&&cpu&&!cpu.rush&&other?' <button class="ghost rm-skip" type="button" data-rush>Skip to the end</button>':'';
+    return `<div class="rm-top ${me?'lead-me':'lead-them'}">${RM_CROWN} ${me?'You win!':`${escapeHTML(L.lead.name)} wins!`} <small>${other?`${me?escapeHTML(other.name):'You'} can’t catch up: ${me?'his':'your'} clock is past ${fmtTime(L.lead.ms)}`:''}</small>${skip}</div>`; }
+  const meP=L.sc[mp.me], fin=L.sc.filter(p=>p.done&&p.i!==mp.me);
+  if(meP&&!meP.done&&fin.length){ const b=fin.reduce((a,c)=>c.ms<a.ms?c:a); return `<div class="rm-top lead-them">Beat ${fmtTime(b.ms)}! <small>${escapeHTML(b.name)} has finished: place your last ${s.quota-meP.n===1?'brick':`${s.quota-meP.n} bricks`} quicker to win</small></div>`; }   // the target to beat
+  if(!L.k) return `<div class="rm-top even">Ready, set…</div>`;
+  if(L.even) return `<div class="rm-top even">Neck and neck! <small>at brick ${L.k}</small></div>`;
+  const me=L.lead.i===mp.me;
+  return `<div class="rm-top ${me?'lead-me':'lead-them'}">${RM_CROWN} ${rmWho(L.lead)} +${(L.gap/1000).toFixed(1)}s <small>faster to brick ${L.k}</small></div>`; }
+function raceScoreboard(s){ const L=raceLead(s); if(!L) return '';
+  const chips=L.sc.map(p=>`<span class="rm-chip${L.lead&&!L.even&&L.lead.i===p.i?' lead':''}${p.i===s.turn&&!s.finished?' now':''}" data-pl="${p.i}">${rmFace(s,p)}${rmBricks(s,p)}<b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${p.miss||p.hint?`<span class="rm-pen" title="Already in the time">+${p.miss+p.hint*5}s</span>`:''}</span>`).join('');
+  return `<div class="race-meter rm-mini" role="group" aria-label="Race scoreboard">${raceHead(s,L)}<div class="rm-chips">${chips}</div><span class="rm-rule">${s.quota} bricks each · shortest time wins · miss +1s · hint +5s</span></div>`; }
 function mpScores(s){
   return s.players.map((p,i)=>{ const own=s.moves.filter(m=>m.p===i&&!m.a).length, auto=s.moves.filter(m=>m.p===i&&m.a).length, pen=p.pen||{};
     if(s.mode==='blitz') return {i,name:p.name,color:p.color,own,miss:p.miss||0,hint:p.hint||0,stale:p.stale,ms:mpTime(s,i),n:p.n||0,done:!!s.quota&&(p.n||0)>=s.quota};
@@ -6736,6 +6791,9 @@ function turnBanner(s){
   if(bannerKey.split('|')[0]!==String(bot)&&!reduceMotion){ el.classList.add('pop'); if(bannerKey&&bot) sfx.voice('longtail'); }
   bannerKey=key;
 }
+$('#mpPlayers').addEventListener('click',e=>{ if(!e.target.closest('[data-rush]')||!cpu||!mp||!mp.cpu) return; cpu.rush=true; track('race_rush');
+  const s=cpu.s; if(cpuTurnNow()&&cpu.timer){ clearTimeout(cpu.timer); cpu.timer=null; clearTimeout(cpu.aimT); cpuAimGroup.clear(); cpuStep(); } if(s.turn===1&&!s.finished&&!cpu.timer) cpuKick(); cpuSend(); });
+window.bloppitRaceSlow=ms=>{ if(cpu&&cpu.s){ cpu.s.players[mp.me].ms+=ms; cpuSend(); } };   // for tests: a slow racer, to see a decided race
 function cpuGateGone(){ document.querySelectorAll('#buildStage .go-gate').forEach(g=>g.remove()); }
 function cpuStopClock(){ const s=cpu.s, p=s.players[s.turn]; if(s.started&&p) p.ms+=Math.max(0,Date.now()-s.turnStart); }
 const cpuShareDone=i=>(cpu.s.players[i].n||0)>=cpu.s.quota;
@@ -6743,7 +6801,24 @@ const cpuShareDone=i=>(cpu.s.players[i].n||0)>=cpu.s.quota;
 function cpuHandOver(){ const s=cpu.s; if(s.finished) return; cpuSay('point',s.turn===mp.me?'Your turn. Go go go!':'You’re done! My turn again. Zoom!'); }
 function cpuNextTurn(){ const s=cpu.s; cpuStopClock();
   for(let k=0;k<s.players.length;k++){ s.turn=(s.turn+1)%s.players.length; if(!cpuShareDone(s.turn)) break; }
-  s.turnPlaced=0; s.turnStart=Date.now(); }
+  s.turnPlaced=0; s.turnStart=Date.now();
+  if(s.turn===mp.me&&!s.solo&&!s.calm&&!s.finished&&(s.players[mp.me].n||0)<s.quota){ s.turnStart=Date.now()+864e5; const c=cpu; setTimeout(()=>{ if(cpu===c) cpuTurnGate(s); },500); } }   // your clock waits for "Your turn!"
+// Between turns: the big scoreboard, and your clock starts when you tap Your turn! (or press Enter)
+function cpuTurnGate(s){ if(!cpu||cpu.s!==s||!mp||!mp.cpu||s.finished||s.turn!==mp.me) return; cpuSend();
+  const st=$('#buildStage'); st.querySelector('.go-gate')?.remove(); const L=raceLead(s), sc=L.sc, me=sc[mp.me], them=sc.find(p=>p.i!==mp.me);
+  const what=them.done?`${escapeHTML(them.name)} finished in ${fmtTime(them.ms)}`:`${escapeHTML(them.name)} placed brick ${them.n}`;
+  const card=p=>`<div class="tg-p${L.lead&&!L.even&&!L.decided&&L.lead.i===p.i||L.decided&&L.lead.i===p.i?' lead':''}">${rmFace(s,p)}<b>${p.i===mp.me?'You':escapeHTML(p.name)}</b>${rmBricks(s,p)}<span class="clk">${fmtTime(p.ms)}</span>${p.miss||p.hint?`<span class="rm-pen">+${p.miss+p.hint*5}s</span>`:''}</div>`;
+  const mine=L.lead&&L.lead.i===mp.me;
+  const mid=!L.decided&&them.done?`<div class="tg-mid lead-them"><b>Beat ${fmtTime(them.ms)}</b><span class="tg-gap">${((them.ms-me.ms)/1000).toFixed(1)}s</span><small>to spare for your last ${s.quota-me.n===1?'brick':`${s.quota-me.n} bricks`}</small></div>`:L.decided?`<div class="tg-mid ${mine?'lead-me':'lead-them'}">${RM_CROWN}<b>${mine?'You win!':`${escapeHTML(L.lead.name)} wins`}</b><small>${mine?'':'Finish your bricks anyway!'}</small></div>`
+    :!L.k?`<div class="tg-mid"><b>Ready, set…</b></div>`:L.even?`<div class="tg-mid"><b>Neck and neck!</b><small>at brick ${L.k}</small></div>`
+    :`<div class="tg-mid ${mine?'lead-me':'lead-them'}">${RM_CROWN}<b>${mine?'You lead':`${escapeHTML(L.lead.name)} leads`}</b><span class="tg-gap">${(L.gap/1000).toFixed(1)}s</span><small>faster to brick ${L.k}</small></div>`;
+  const left=mpLeft(s), n=(me.n||0)+1;
+  const g=document.createElement('div'); g.className='go-gate turn-gate';
+  g.innerHTML=`<div class="go-card" role="dialog" aria-label="Race scoreboard"><span class="tg-what">${what}</span><div class="tg-vs">${card(me)}${mid}${card(them)}</div><button class="primary go-btn" type="button">Your turn! <small>Brick ${n} of ${s.quota}${left<3?` · your last ${left===1?'one':left}`:''} · Enter</small></button><span class="rm-rule">Shortest time wins · your clock starts when you tap</span></div>`;
+  st.appendChild(g); const c=cpu;
+  const go=()=>{ document.removeEventListener('keydown',key,true); g.remove(); if(cpu!==c||!cpu||cpu.s!==s||s.turn!==mp.me||s.finished) return; s.turnStart=Date.now(); cpuSend(); setStatus('Your turn! Your clock is running.','ok'); };
+  const key=e=>{ if(e.key==='Enter'&&g.isConnected&&tab==='build'){ e.preventDefault(); e.stopPropagation(); go(); } };
+  g.querySelector('.go-btn').onclick=go; document.addEventListener('keydown',key,true); if(tab==='build') sfx.chirp(); setTimeout(()=>{ try{ g.querySelector('.go-btn').focus({preventScroll:true}); }catch(e){} },60); }
 // Same rules as a Blitz room on the server (netlify/functions/room/logic.mjs)
 function cpuPlace(i,b,x,z){
   const s=cpu.s;
@@ -6824,7 +6899,7 @@ function cpuKick(){
 }
 function cpuStep(extra=0,retry=false){
   // after a dropped brick he grabs it straight back: never more than ~12 s without a brick going in
-  const s=cpu.s, L=CPU_LEVELS[s.cpuLevel], wait=retry?rndIn(1500,2500):(cpu.f?cpuPaceWait(s):rndIn(L.ms[0],L.ms[1]))+extra;
+  const s=cpu.s, L=CPU_LEVELS[s.cpuLevel], wait=cpu.rush?350:retry?rndIn(1500,2500):(cpu.f?cpuPaceWait(s):rndIn(L.ms[0],L.ms[1]))+extra;   // rush: the race is decided and you skipped to the end
   const m=cpuPick(), miss=!!m&&!cpu.missed&&Math.random()<L.miss, wrong=miss?[{x:2,z:0},{x:-2,z:0},{x:0,z:2},{x:0,z:-2}][Math.floor(Math.random()*4)]:null;
   cpu.missed=false;
   if(!m) cpuSay('point','Hmm, nothing left for him to place.');
