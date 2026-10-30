@@ -219,6 +219,17 @@ test('Bloppit is a real 3D model (approved v2): twenty clips, his props by activ
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('Bloppit: his eyes never stick shut after blinking (any frame rate), and his brick stays in his free paw while he gardens and fishes', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0');
+  for (const [dt, clip] of [[1 / 60, 'fish'], [1 / 15, 'fish'], [1 / 15, 'logo_idle'], [1 / 15, 'garden']]) {
+    const lids = await t.page.evaluate(([dt, clip]) => window.bloppitLids(dt, 30, clip, 0), [dt, clip]);
+    assert.ok(lids.every(([, h, c]) => h === 0 && c === 0), `${clip} at ${Math.round(1 / dt)} fps: ${JSON.stringify(lids)}`);
+  }
+  assert.ok((await t.page.evaluate(() => window.bloppitLids(1 / 30, 2, 'doze', 1))).every(([, , c]) => c === 1));   // asleep: shut
+  assert.deepEqual(await t.page.evaluate(() => window.bloppitGrip().then((g) => g.clips.sort())), ['fish', 'garden']);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('Nora is a real 3D model (v1) with her nine clips', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0');
   const r = await t.page.evaluate(async () => { const pic = await window.bloppitCharShot('nora', 'full', 200, { model: true, clip: 'aha', t: .8 }); return { pic: pic.length > 2000, ...window.bloppitChars3d().nora }; });
