@@ -9122,7 +9122,7 @@ const PIECES={
     {at:6,name:'Fruit stall',make:g=>g.add(stall3(-2.4,-1.6,'#A5CA18',.9))},
     {at:7,name:'Fountain',make:g=>{ g.add(cyl3(.8,.85,.3,12,'#ECE6DA',1.0,TOP3,2.0)); g.add(cyl3(.68,.68,.05,12,'#6FB7E8',1.0,TOP3+.27,2.0)); g.add(cyl3(.1,.12,.7,6,'#ECE6DA',1.0,TOP3+.3,2.0)); const w=mesh3(new THREE.ConeGeometry(.3,.4,8,1,true),new THREE.MeshBasicMaterial({color:0x9ED3F2,transparent:true,opacity:.6}),1.0,TOP3+1.2,2.0); w.rotation.x=Math.PI; w.userData.fount=1; g.add(w); }},
     {at:8,name:'Street lamps',make:g=>[[-1.0,1.2],[2.3,-1.9],[-2.6,-2.7]].forEach(([x,z])=>g.add(lamp3(x,z)))},
-    {at:9,name:'The clock face',make:g=>{ const c=clockFace3(); c.position.set(0,3.05,.56); g.add(c); }},
+    {at:9,name:'The clock face',make:g=>{ const c=clockFace3(); c.scale.setScalar(.9); c.position.set(0,TOP3+2.05,.515); g.add(c); }},   // on the tower's face, under its cap (it overlapped the cap and the edge)
     {at:10,name:'Bunting',make:g=>g.add(bunting3([[-2.4,1.6,-1.6],[0,2.9,.4],[2.4,1.6,-.8]]))},
     {at:11,name:'Bandstand',make:g=>{ const b=new THREE.Group(); b.add(cyl3(1.0,1.0,.16,8,'#ECE6DA',0,0,0)); for(let i=0;i<6;i++){ const a=i*Math.PI/3; b.add(cyl3(.05,.05,1.1,5,'#FFFFFF',Math.cos(a)*.85,.16,Math.sin(a)*.85)); } b.add(mesh3(new THREE.ConeGeometry(1.15,.6,8),m3('#008F9B'),0,1.55,0)); b.position.set(-1.4,TOP3,-.4); g.add(b); }},
     {at:12,name:'The Festival Clock',make:g=>{ g.add(mesh3(new THREE.ConeGeometry(.75,.9,4),m3('#F4BC22'),0,4.1,0,{y:Math.PI/4})); const s=mesh3(new THREE.OctahedronGeometry(.22,0),glow3('#FFE27A'),0,4.75,0); s.userData.spin=1; g.add(s);
