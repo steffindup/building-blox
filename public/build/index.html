@@ -8464,36 +8464,36 @@ const PUP3={pup:1,loops:['idle','focused'],night:'idle',reactions:['happy_hop','
 const MODEL3={
   // Bloppit (approved v2, 29 Oct 2026): his own rig with twenty clips and his props (watering can, rod, book, monocle)
   // built in; driven by Blop3Ctl below (a port of the delivered controller.js), not the friends' Model3Ctl
-  bloppit:{glb:'/3d/bloppit.glb',v:'2',own:1},
-  tiny:{glb:'/3d/tiny.glb',v:'16',loops:['idle','focused','whistle'],night:'whistle',reactions:['hop','whistle','cheer','offer','oops'],
+  bloppit:{glb:'/3d/bloppit.glb',v:'2c',own:1},
+  tiny:{glb:'/3d/tiny.glb',v:'16c',loops:['idle','focused','whistle'],night:'whistle',reactions:['hop','whistle','cheer','offer','oops'],
     map:{happy_hop:'hop',giggle_wiggle:'hop',spin:'hop',wake:'hop',grumpy_wake:'hop',wave:'whistle',cheeky_taunt:'cheer',surprised_jump:'oops',show_brick:'offer',look_at_you:'focused'}},
   // Nora (v1, 28 Oct 2026): a night heron, so by night she stands thinking under the stars
-  nora:{glb:'/3d/nora.glb',v:'1',loops:['idle','focused','thinking'],night:'thinking',reactions:['hop','aha','cheer','offer','thinking'],
+  nora:{glb:'/3d/nora.glb',v:'1c',loops:['idle','focused','thinking'],night:'thinking',reactions:['hop','aha','cheer','offer','thinking'],
     map:{happy_hop:'hop',giggle_wiggle:'aha',spin:'hop',wake:'hop',grumpy_wake:'hop',wave:'aha',cheeky_taunt:'cheer',surprised_jump:'hint',show_brick:'offer',look_at_you:'focused'}},
   // Pippa (approved v2, 28 Oct 2026): sunglasses on her head, a wave hello, a wink and a wobble on land
-  pippa:{glb:'/3d/pippa.glb',v:'2',loops:['idle'],night:'idle',reactions:['greeting','wink','excited','wobble','hop'],
+  pippa:{glb:'/3d/pippa.glb',v:'2c',loops:['idle'],night:'idle',reactions:['greeting','wink','excited','wobble','hop'],
     map:{happy_hop:'hop',giggle_wiggle:'wink',spin:'wobble',wake:'hop',grumpy_wake:'hop',wave:'greeting',cheeky_taunt:'wink',surprised_jump:'wobble',show_brick:'offer',look_at_you:'wink'}},
   // Bibi (approved v4, 29 Oct 2026; formerly Lemmie): a lion cub in a beret holding his orange brick, with a tiny roar
-  bibi:{glb:'/3d/bibi.glb',v:'4',loops:['idle'],night:'idle',reactions:['greeting','roar','idea','cheer','proud','hop'],
+  bibi:{glb:'/3d/bibi.glb',v:'4c',loops:['idle'],night:'idle',reactions:['greeting','roar','idea','cheer','proud','hop'],
     map:{happy_hop:'hop',giggle_wiggle:'proud',spin:'cheer',wake:'hop',grumpy_wake:'roar',wave:'greeting',cheeky_taunt:'roar',surprised_jump:'hop',show_brick:'offer',look_at_you:'idea'}},
   // Swoop (approved v1, 29 Oct 2026): Blitz Bay's longtail racer in blue goggles, with his blue brick and two tail streamers
-  swoop:{glb:'/3d/swoop.glb',v:'1',loops:['idle','focused'],night:'idle',reactions:['greeting','challenge','wink','cheer','hop','surprised'],
+  swoop:{glb:'/3d/swoop.glb',v:'1c',loops:['idle','focused'],night:'idle',reactions:['greeting','challenge','wink','cheer','hop','surprised'],
     map:{fly_in_land:'greeting',happy_hop:'hop',giggle_wiggle:'wink',spin:'cheer',wake:'hop',grumpy_wake:'surprised',wave:'greeting',cheeky_taunt:'challenge',surprised_jump:'surprised',show_brick:'offer',look_at_you:'focused'}},
   // Your otter (approved v2, 29 Oct 2026): Pup, Splash (25 builds) and Legend (65), one model per age, each holding its
   // 1-, 2- or 3-stud brick in the child's colour, with the wardrobe drawn for that age. Textures at 1024 px for phones;
   // the approved masters (2048 px) are kept outside the game.
-  pup0:{glb:'/3d/pup.glb',v:'v2',...PUP3},
-  pup1:{glb:'/3d/pup-growing.glb',v:'v2',...PUP3},
-  pup2:{glb:'/3d/pup-older.glb',v:'v2',...PUP3}};
+  pup0:{glb:'/3d/pup.glb',v:'v2c',...PUP3},
+  pup1:{glb:'/3d/pup-growing.glb',v:'v2c',...PUP3},
+  pup2:{glb:'/3d/pup-older.glb',v:'v2c',...PUP3}};
 for(const [id,m] of Object.entries(MODEL3)) RIG[id].glb=m.glb;
 const M3={wait:{}};
 function ch3Script(src){ return M3.wait[src]||(M3.wait[src]=new Promise((ok,no)=>{ const s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=()=>{ delete M3.wait[src]; no(new Error('could not load '+src)); }; document.head.appendChild(s); })); }
 function ch3Model(id){ const R=RIG[id], G=CH3.gltf[id]; if(!R||!R.glb||!G) return Promise.reject(new Error('no model for '+id)); if(G.model) return Promise.resolve(G.model);
-  return M3.wait[id]||(M3.wait[id]=(async()=>{ if(!THREE.GLTFLoader) await ch3Script('/3d/GLTFLoader.js?v=2');
-    const gltf=await new Promise((ok,no)=>new THREE.GLTFLoader().load(R.glb+'?v='+MODEL3[id].v,ok,undefined,no)), sc=gltf.scene;
+  return M3.wait[id]||(M3.wait[id]=(async()=>{ if(!THREE.GLTFLoader) await Promise.all([ch3Script('/3d/GLTFLoader.js?v=2'),ch3Script('/3d/meshopt_decoder.js?v=0.22')]);
+    const gltf=await new Promise((ok,no)=>new THREE.GLTFLoader().setMeshoptDecoder(window.MeshoptDecoder).load(R.glb+'?v='+MODEL3[id].v,ok,undefined,no)), sc=gltf.scene;
     sc.traverse(m=>{ if(m.isMesh){ m.castShadow=m.receiveShadow=false; m.frustumCulled=false; [].concat(m.material).forEach(ch3Filmic); } });   // the island's shadows are baked once; a soft pool under the feet instead
     sc.updateMatrixWorld(true); const box=new THREE.Box3(), v=new THREE.Vector3(), clips={};   // his size at rest (three's own box would include every pose's morphs)
-    sc.traverse(m=>{ if(!m.isMesh||m3Extra(m)) return; const P=m.geometry.attributes.position; for(let i=0;i<P.count;i+=3) box.expandByPoint(v.fromBufferAttribute(P,i).applyMatrix4(m.matrixWorld)); }); for(const c of gltf.animations) clips[c.name]=c;
+    sc.traverse(m=>{ if(!m.isMesh||m3Extra(m)) return; const P=m.geometry.attributes.position, k=m3Norm(P); for(let i=0;i<P.count;i+=3) box.expandByPoint(m3Rest(m,P,i,k,v)); }); for(const c of gltf.animations) clips[c.name]=c;
     const M=G.model={scene:sc,clips,h0:box.max.y-box.min.y,y0:box.min.y,w0:box.max.x-box.min.x};
     CH3.size[id]={h:R.h*1.05,w:Math.min(R.h*1.1,R.h*M.w0/M.h0),head:R.h*.72}; ch3Refresh(); return M; })().catch(e=>{ delete M3.wait[id]; console.warn('model',id,e); throw e; })); }
 // The approved look was signed off under filmic tone mapping (ACES, exposure 1.25, newer three.js): the game's renderers have
@@ -8512,6 +8512,17 @@ const m3Extra=m=>{ for(let n=m;n;n=n.parent){ const u=n.userData||{}; if(u.outfi
 function ch3Pool(){ return CH3.pool||(CH3.pool=(()=>{ const c=document.createElement('canvas'); c.width=c.height=64; const x=c.getContext('2d'), g=x.createRadialGradient(32,32,0,32,32,32); g.addColorStop(0,'rgba(30,36,24,.42)'); g.addColorStop(1,'rgba(30,36,24,0)'); x.fillStyle=g; x.fillRect(0,0,64,64); return new THREE.CanvasTexture(c); })()); }
 // A copy of a model that can move on its own. A skinned mesh (Bibi's) has to be bound to the copy's own bones,
 // or the copy keeps following the original skeleton and only its face morphs play
+// The compressed models (Oct 30: textures 1024 WebP, positions as 16-bit whole numbers, meshopt) keep positions
+// "normalized": three's shader scales them back, but reading them here needs the same scale (three r128 doesn't)
+function m3Norm(P){ if(!P.normalized) return 1; const a=P.array; return a instanceof Int16Array?1/32767:a instanceof Uint16Array?1/65535:a instanceof Int8Array?1/127:a instanceof Uint8Array?1/255:1; }
+// Where vertex i stands at rest, as three draws it. A skinned mesh goes through its skeleton (the compressed rigged
+// models keep their scale there, in the bind matrices), anything else through its own transform.
+const M3T={a:new THREE.Vector3(),b:new THREE.Vector3(),m:new THREE.Matrix4(),s:new THREE.Vector4(),w:new THREE.Vector4()};
+function m3Rest(m,P,i,k,v){ v.fromBufferAttribute(P,i).multiplyScalar(k); if(!m.isSkinnedMesh||!m.skeleton) return v.applyMatrix4(m.matrixWorld);
+  const G=m.geometry, J=G.attributes.skinIndex, W=G.attributes.skinWeight, S=m.skeleton, T=M3T; T.s.fromBufferAttribute(J,i); T.w.fromBufferAttribute(W,i);
+  const wk=m3Norm(W); T.w.multiplyScalar(wk); const sum=T.w.x+T.w.y+T.w.z+T.w.w||1; T.a.copy(v).applyMatrix4(m.bindMatrix); v.set(0,0,0);
+  for(let j=0;j<4;j++){ const w=T.w.getComponent(j)/sum; if(!w) continue; const bi=T.s.getComponent(j); T.m.multiplyMatrices(S.bones[bi].matrixWorld,S.boneInverses[bi]); v.addScaledVector(T.b.copy(T.a).applyMatrix4(T.m),w); }
+  return v.applyMatrix4(m.bindMatrixInverse).applyMatrix4(m.matrixWorld); }
 function m3Clone(src){ const c=src.clone(true), A=[], B=[]; src.traverse(o=>A.push(o)); c.traverse(o=>B.push(o)); const map=new Map(A.map((o,i)=>[o,B[i]]));
   B.forEach((o,i)=>{ if(!o.isSkinnedMesh) return; const S=A[i].skeleton; o.bind(new THREE.Skeleton(S.bones.map(b=>map.get(b)),S.boneInverses),A[i].bindMatrix); }); return c; }
 class Model3{
