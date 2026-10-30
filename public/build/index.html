@@ -8622,7 +8622,22 @@ class Blop3Ctl{
     this.stowed=new Set(['garden','fish','read']);
     this.brickTracks=new Map(Object.values(P.M.clips).map(c=>[c.name,c.tracks.filter(t=>t.name.startsWith('Bloppit_Brick.')).map(t=>({property:t.name.split('.').pop(),sample:t.createInterpolant()}))]));
     this.fin=({action})=>{ if(action!==this.cur) return; if(this.queued){ const q=this.queued; this.queued=null; if(!this.play(q)) this.base(); } else this.base(); };
-    this.mixer.addEventListener('finished',this.fin); this.base(); this.mixer.update(Math.random()*2); }
+    this.gripSetup(); this.mixer.addEventListener('finished',this.fin); this.base(); this.mixer.update(Math.random()*2); }
+  // The brick stays with him: in garden and fish one paw is free (the other holds the can or the rod), so the brick sits
+  // in that paw with the grip his wave uses (where one paw holds it alone), instead of tucked behind his back.
+  // Read needs both paws for the book, so there it stays stowed as delivered.
+  gripSetup(){ const A=this.A, B=this.props.Brick, root=this.P.obj; this.grip=null; if(!B||!A.wave) return;
+    const bone=n=>root.getObjectByName(n), L=bone('Fore_L'), R=bone('Fore_R'), Mi=new THREE.Matrix4(), v=new THREE.Vector3(), w=new THREE.Vector3(); if(!L||!R) return;
+    const at=(clip,t)=>{ this.mixer.stopAllAction(); const a=A[clip]; a.reset().play(); a.time=t; this.mixer.update(0); root.updateMatrixWorld(true); };
+    try{ at('logo_idle',.5); this.gripQ=B.quaternion.clone();   // level and facing front, as he holds it at rest
+      at('wave',.5); const gl=Mi.copy(L.matrixWorld).invert().multiply(B.matrixWorld).clone(), gr=new THREE.Matrix4().copy(R.matrixWorld).invert().multiply(B.matrixWorld);
+      const held=L.getWorldPosition(v).distanceTo(B.getWorldPosition(w))<R.getWorldPosition(new THREE.Vector3()).distanceTo(w)?{bone:'Fore_L',off:gl}:{bone:'Fore_R',off:gr};
+      this.grip={}; for(const [clip,prop] of [['garden','WateringCan'],['fish','FishingRod']]){ const P=this.props[prop]; if(!A[clip]||!P) continue; at(clip,1);
+        const pp=P.getWorldPosition(new THREE.Vector3()), dL=L.getWorldPosition(new THREE.Vector3()).distanceTo(pp), dR=R.getWorldPosition(new THREE.Vector3()).distanceTo(pp), free=dL>dR?'Fore_L':'Fore_R';
+        (this.freeInfo=this.freeInfo||{})[clip]={free,dL:+dL.toFixed(2),dR:+dR.toFixed(2)};
+        const S=new THREE.Matrix4().makeScale(-1,1,1);   // the other paw: the same grip, mirrored (the rig's left and right arms are mirror images)
+        this.grip[clip]={bone:root.getObjectByName(free),off:free===held.bone?held.off:S.clone().multiply(held.off).multiply(S)}; }
+      this.gripInfo={held:held.bone,clips:Object.keys(this.grip),free:this.freeInfo}; }catch(e){ this.grip=null; this.gripErr=String(e&&e.message||e); } finally{ this.mixer.stopAllAction(); } }
   get current(){ return this.cur; }
   get activeBase(){ return this.cur?null:this.base0; }
   has(n){ return n==='blink'||!!this.A[BLOP_ALIAS[n]||n]; }
@@ -8655,12 +8670,17 @@ class Blop3Ctl{
     this.mixer.update(dt); this.overlays(dt); this.nextBlink-=dt; if(this.nextBlink<=0){ this.play('blink'); this.nextBlink=3+Math.random()*3; } }
   overlays(dt){ const act=this.cur||this.base0, name=act&&act.getClip().name;
     for(const [key,ob] of Object.entries(this.props)) if(ob){ const show=key==='Brick'?name!=='hug':({WateringCan:'garden',FishingRod:'fish',Book:'read',Monocle:'focused'})[key]===name; ob.scale.setScalar(show?1:.0001); }
-    if(act&&this.props.Brick&&(this.stowed.has(name)||(this.blend&&this.brickSnap))) for(const t of this.brickTracks.get(name)||[]) if(t.property!=='scale') this.props.Brick[t.property].fromArray(t.sample.evaluate(act.time));
+    const G=this.grip&&this.grip[name];
+    if(G&&this.props.Brick){ const B=this.props.Brick, M=new THREE.Matrix4(); this.P.obj.updateMatrixWorld(true); M.copy(B.parent.matrixWorld).invert().multiply(G.bone.matrixWorld).multiply(G.off); M.decompose(B.position,new THREE.Quaternion(),new THREE.Vector3()); if(this.gripQ) B.quaternion.copy(this.gripQ); B.scale.setScalar(1); }   // in his free paw, held level
+    else if(act&&this.props.Brick&&(this.stowed.has(name)||(this.blend&&this.brickSnap))) for(const t of this.brickTracks.get(name)||[]) if(t.property!=='scale') this.props.Brick[t.property].fromArray(t.sample.evaluate(act.time));
     if(name==='doze'||name==='wake'){ this.blinkTime=null; return; }
-    if(this.blinkTime!==null){ this.blinkTime+=dt; const u=this.blinkTime/(1/6); if(u>=1){ this.blinkTime=null; return; }
-      const q=u<.4?u/.4:u<=.6?1:(1-u)/.4, b=q*q*(3-2*q);
-      for(const ob of this.lids){ const d=ob.morphTargetDictionary, a=ob.morphTargetInfluences, half=b<.5?2*b:2-2*b, closed=Math.max(0,2*b-1);
-        if(d.Half!=null) a[d.Half]=a[d.Half]*(1-b)+half*b; if(d.Closed!=null) a[d.Closed]=a[d.Closed]*(1-b)+closed*b; } } }
+    // Lids: every clip but doze and wake holds them open, and three's mixer only rewrites a value when the clip's own value
+    // changes, so it never put them back after a blink: each blink built on the last until his eyes stuck half shut
+    // (30 Oct). Outside doze and wake (handled above) a blink always starts from open and returns there.
+    const own=false;
+    let b=0; if(this.blinkTime!==null){ this.blinkTime+=dt; const u=this.blinkTime/(1/6); if(u>=1) this.blinkTime=null; else { const q=u<.4?u/.4:u<=.6?1:(1-u)/.4; b=q*q*(3-2*q); } }
+    for(const ob of this.lids){ const d=ob.morphTargetDictionary, a=ob.morphTargetInfluences, half=b<.5?2*b:2-2*b, closed=Math.max(0,2*b-1);
+      for(const [k,v] of [['Half',half],['Closed',closed]]) if(d[k]!=null){ const base=own?a[d[k]]:0; a[d[k]]=base*(1-b)+v*b; } } }
   dispose(){ this.mixer.removeEventListener('finished',this.fin); this.P.dispose(); }
 }
 function ch3Make(id){ if(!CH3.gltf[id]) return null; if(ch3Has3d(id)){ const P=new Model3(id); return {id,root:P.root,P,ctl:MODEL3[id].own?new Blop3Ctl(P):new Model3Ctl(P)}; } const P=new Puppet3(id); return {id,root:P.root,P,ctl:new Ch3Ctl(P)}; }
@@ -10627,6 +10647,9 @@ window.bloppitHome=()=>setTab('home');
 setTimeout(()=>{ try{ ch3Warm(); }catch(e){} },1200);
 new MutationObserver(()=>buddy3()).observe($('#buddy'),{attributes:true,attributeFilter:['class','hidden']});
 // for tests and review: a character as a picture, in a chosen clip and moment (who, frame 'full'|'bust', px, {ci, wear, clip, t})
+window.bloppitLids=async(dt,secs,clip,noBlink)=>{ await ch3Get('bloppit'); await ch3Model('bloppit'); const i=ch3Make('bloppit'), c=i.ctl; if(clip) c.play(clip); if(noBlink) c.nextBlink=1e9; const out=[];   // for tests: lid weights after running at a frame rate
+  for(let t=0;t<secs;t+=dt){ c.update(dt); if(noBlink) c.nextBlink=1e9; } for(const o of c.lids){ const d=o.morphTargetDictionary, a=o.morphTargetInfluences; out.push([o.name,+a[d.Half].toFixed(2),+a[d.Closed].toFixed(2)]); } c.dispose(); return out; };
+window.bloppitGrip=async()=>{ await ch3Get('bloppit'); await ch3Model('bloppit'); const i=ch3Make('bloppit'), r=i.ctl.gripInfo||i.ctl.gripErr||null; i.ctl.dispose(); return r; };   // for tests
 window.bloppitCharShot=async(id,frame,px,opt)=>{ opt=opt||{}; await ch3Get(id); if(opt.model) await ch3Model(id); if(opt.exp) M3.exp.value=opt.exp; const r=cv3R(), sc=new THREE.Scene(), cam=new THREE.PerspectiveCamera(24,1,.05,60), i=ch3Make(id); sc.add(i.root); cv3Lights(sc);
   ch3Dress(i,{log:[]},{ci:opt.ci!=null?opt.ci:0,wear:opt.wear||{}}); i.ctl.update(.6); if(opt.clip){ i.ctl.play(opt.clip); i.ctl.update(0); i.ctl.update(opt.t||0); }
   cv3Aim(cam,[id],frame||'full',1,-.25); r.setScissorTest(false); r.setSize(px||420,px||420,false); r.setViewport(0,0,px||420,px||420); r.clear(); r.render(sc,cam); const u=r.domElement.toDataURL('image/png'); i.ctl.dispose(); return u; };
