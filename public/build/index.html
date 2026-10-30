@@ -6489,6 +6489,7 @@ function mpShowEnd(){
 function mpShowBlitzEnd(){
   if(mp.cpu&&mp.state.solo) return trialEnd();
   const s=mp.state, sc=mpScores(s).sort((a,b)=>a.ms-b.ms), medals=['🥇','🥈','🥉',''], w=sc[0];
+  if(mp.cpu&&cpu&&cpu.f&&!cpu.paced){ cpu.paced=1; const me=cpu.s.players[0]; blitzPaceSave(totalMs(me)/1000,me.n); }   // the child's pace, for the next race's first guess
   $('#mpEndTitle').textContent=sc.length>1?`⚡ ${w.i===mp.me?'You win':`${w.name} wins`}!`:`⚡ Done in ${fmtTime(w.ms)}!`;
   $('#mpEndNew').textContent=mp.cpu?'Race again':'New game'; mpEndNext=null;
   if(mp.cpu&&cpu&&cpu.ladder!=null){ const at=cpu.ladder, won=w.i===mp.me, nx=ladderStep(), pk='p'+at, lv=at>=LADDER_N?'hard':BLITZ_PICKS[at].lv;   // Blitz Bay's ladder: the clear next race
@@ -6582,6 +6583,24 @@ const CPU_LEVELS={
   medium:{name:'Swoop',speed:'Race',         ms:[4500,7500], miss:.12,turn:[1,3],note:'Race: Swoop is quick, but careless. A fair race.'},
   hard:  {name:'Swoop',speed:'Full throttle',ms:[2500,4500], miss:.05,turn:[2,3],note:'Full throttle: Swoop is fast and hardly ever misses. Can you beat him?'}};
 const CPU_IDS={easy:'#bzEasy',medium:'#bzMed',hard:'#bzHard'}, COUNTDOWN_MS=3000;
+// A fair race for every child: Swoop paces himself against the child's own speed (seconds per brick, mistakes and
+// hints included), not a fixed clock, so a 5-year-old and a 12-year-old both win about as often as intended:
+// Warm-up ~95% of races, Race ~75%, Full throttle ~50%, the Grand Prix ~40%. Before the child has placed anything
+// the guess is their pace from earlier races, else one from their age. One random "form" per race (r) decides how
+// close it is; Swoop keeps his total on target as he goes (his drops are made up by quicker bricks after them).
+// Checked by simulation over fast, average and slow children and wrong first guesses (scratch blitzsim.py).
+const BLITZ_FAIR={easy:1.26,medium:1.084,hard:1,boss:.97}, BLITZ_FORM=.12, PACE_KEY='bloppit-blitz-pace';
+const agePace=a=>!a?6:a<=4?10:a>=13?3.3:{5:8.5,6:7.5,7:6.5,8:5.5,9:5,10:4.5,11:4,12:3.6}[a];   // seconds a brick, a first guess
+function blitzPace(){ try{ const v=JSON.parse(localStorage.getItem(pkey(PACE_KEY))); if(v&&v.p>0) return v.p; }catch(e){} return agePace(curPlayer().age); }
+function blitzPaceSave(sec,n){ if(!(n>=3)||!(sec>0)) return; const now=Math.min(30,Math.max(1,sec/n));
+  let v=null; try{ v=JSON.parse(localStorage.getItem(pkey(PACE_KEY))); }catch(e){}
+  const p=v&&v.p>0?v.p*.6+now*.4:now; try{ localStorage.setItem(pkey(PACE_KEY),JSON.stringify({p:+p.toFixed(2),n:((v&&v.n)||0)+1})); }catch(e){} }
+window.bloppitBlitzFair={fair:BLITZ_FAIR,agePace:a=>agePace(a),pace:()=>blitzPace(),save:(t,n)=>blitzPaceSave(t,n)};
+const gauss=()=>{ let u=0,v=0; while(!u) u=Math.random(); while(!v) v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); };
+// How long Swoop takes over his next brick: whatever keeps his total at (margin × form × the child's pace) per brick
+function cpuPaceWait(s){ const me=s.players[0], sw=s.players[1], p=(cpu.prior*.5+totalMs(me)/1000)/(.5+(me.n||0));
+  const target=cpu.f*cpu.r*p*((sw.n||0)+1), so=(totalMs(sw)+Math.max(0,Date.now()-s.turnStart))/1000;
+  return Math.round(Math.min(20000,Math.max(1200,(target-so)*1000*rndIn(.85,1.15)))); }
 let cpu=null;
 const rndIn=(a,b)=>a+Math.random()*(b-a);
 function bzLevel(){ const r=document.querySelector('input[name=bzLevel]:checked'); return r&&CPU_LEVELS[r.value]?r.value:'medium'; }
@@ -6714,7 +6733,7 @@ function cpuKick(){
 }
 function cpuStep(extra=0,retry=false){
   // after a dropped brick he grabs it straight back: never more than ~12 s without a brick going in
-  const s=cpu.s, L=CPU_LEVELS[s.cpuLevel], wait=retry?rndIn(1500,2500):rndIn(L.ms[0],L.ms[1])+extra;
+  const s=cpu.s, L=CPU_LEVELS[s.cpuLevel], wait=retry?rndIn(1500,2500):(cpu.f?cpuPaceWait(s):rndIn(L.ms[0],L.ms[1]))+extra;
   const m=cpuPick(), miss=!!m&&!cpu.missed&&Math.random()<L.miss, wrong=miss?[{x:2,z:0},{x:-2,z:0},{x:0,z:2},{x:0,z:-2}][Math.floor(Math.random()*4)]:null;
   cpu.missed=false;
   if(!m) cpuSay('point','Hmm, nothing left for him to place.');
@@ -6760,6 +6779,7 @@ $('#bzCpuGo').onclick=async()=>{
     cpu={timer:null,left:0,boss,s:{code:'VS',ver:1,started:true,finished:false,perTurn:3,mode:'blitz',cpuLevel:lvl,nBricks:model.bricks.length,title,level:null,host:0,
       turn:0,turnPlaced:0,turnStart:Date.now()+COUNTDOWN_MS,moves:[],me:0,waiting:[],quota:Math.floor(model.bricks.length/2),
       players:[pl(name,(me&&me.color&&me.color!=='#8A5A3B')?me.color:'#D2352B'),pl(CPU_LEVELS[lvl].name,'#9AA3AD')]}};
+    cpu.f=BLITZ_FAIR[boss?'boss':lvl]; cpu.r=Math.exp(BLITZ_FORM*gauss()); cpu.prior=blitzPace();   // a fair race (see BLITZ_FAIR)
     cpu.ladder=bzLadderNext!=null&&BLITZ_PICKS[bzLadderNext]&&$('#bzModel').value==='p'+bzLadderNext?bzLadderNext:null; bzLadderNext=null;   // a Blitz Bay ladder race (from Bloppitopia)
     mpRememberName(name);
     await mpEnter({cpu:true,code:'VS',playerId:'me',me:0,state:cpuPub()},true,name);
@@ -8097,7 +8117,7 @@ function isl3Focus(info,h){ const vi=isl3ViewOf(info); if(vi>=0){ if(ISL3.viewI=
 function isl3FreeLook(on){ const c=ISL3.ctl; if(!c) return; c.enableRotate=on; c.minPolarAngle=on?.12:.35; c.maxPolarAngle=on?1.42:1.12; c.rotateSpeed=.7;
   if(on&&!ISL3.lookTold){ ISL3.lookTold=1; clearTimeout(ISL3.lookT); ISL3.lookT=setTimeout(()=>{ if(!ISL3.revealing&&!ISL3.arrive){ isl3Banner('Drag to look around · pinch to zoom'); ISL3.lookT=setTimeout(()=>isl3Banner(''),2600); } },1000); } }
 // The guided camera: a few set views to swipe between (all of Bloppitopia, Home Island, Bloppit and your otter, each island)
-function isl3Views(){ const v=[{id:'world',name:'Bloppitopia'},{id:'home',name:'Home Island',x:0,z:.4,R:HOME_R*1.08},{id:'friends',name:'Bloppit & '+(pupName(worldStore())||'your otter'),R:3.3}];
+function isl3Views(){ const v=[{id:'world',name:'Bloppitopia'},{id:'home',name:'Home Island',x:0,z:.4,R:HOME_R*1.08},{id:'friends',name:'Bloppit & '+(pupName(worldStore())||'your otter'),R:3.6,y:TOP3+1.25}];
   for(const id of Object.keys(ISLES)){ const I=ISL3.isles&&ISL3.isles[id]; if(I){ const h=I.g?Math.min(7.5,Math.max(0,new THREE.Box3().setFromObject(I.g).max.y)):0;   // tall landmarks: look a little higher and stand back so their tops fit
     v.push({id:'isle:'+id,name:isleCount(id,worldStore())>0?ISLES[id].name:ISLES[id].mystery?'Mystery Island':'A misty island',x:I.x,z:I.z,y:h*.32,R:Math.max(I.r*1.2,Math.hypot(I.r,h*.62)*1.08)}); } }
   const cam=ISL3.cam, vf=cam?THREE.MathUtils.degToRad(cam.fov)/2:.5, hf=cam?Math.atan(Math.tan(vf)*cam.aspect):.6; for(const x of v) if(x.R) x.d=Math.max(7,x.R/Math.tan(Math.min(vf,hf))*1.05); return v; }
@@ -8444,6 +8464,9 @@ class Ch3Ctl{
 const PUP3={pup:1,loops:['idle','focused'],night:'idle',reactions:['happy_hop','giggle_wiggle','surprised_jump','spin','show_brick'],
   map:{greeting:'wave',hop:'happy_hop',oops:'surprised_jump',offer:'show_brick',wake:'happy_hop',grumpy_wake:'surprised_jump',cheeky_taunt:'giggle_wiggle',fly_in_land:'happy_hop'}};
 const MODEL3={
+  // Bloppit (approved v2, 29 Oct 2026): his own rig with twenty clips and his props (watering can, rod, book, monocle)
+  // built in; driven by Blop3Ctl below (a port of the delivered controller.js), not the friends' Model3Ctl
+  bloppit:{glb:'/3d/bloppit.glb',v:'2',own:1},
   tiny:{glb:'/3d/tiny.glb',v:'16',loops:['idle','focused','whistle'],night:'whistle',reactions:['hop','whistle','cheer','offer','oops'],
     map:{happy_hop:'hop',giggle_wiggle:'hop',spin:'hop',wake:'hop',grumpy_wake:'hop',wave:'whistle',cheeky_taunt:'cheer',surprised_jump:'oops',show_brick:'offer',look_at_you:'focused'}},
   // Nora (v1, 28 Oct 2026): a night heron, so by night she stands thinking under the stars
@@ -8543,7 +8566,63 @@ class Model3Ctl{
     this.P.mixer.update(dt); this.blink(dt); }
   dispose(){ this.P.dispose(); }
 }
-function ch3Make(id){ if(!CH3.gltf[id]) return null; if(ch3Has3d(id)){ const P=new Model3(id); return {id,root:P.root,P,ctl:new Model3Ctl(P)}; } const P=new Puppet3(id); return {id,root:P.root,P,ctl:new Ch3Ctl(P)}; }
+// Bloppit's controller, ported from the approved package's controller.js (global three r128 instead of a module).
+// Same calls as the drawing's Ch3Ctl: modes 0-5 (idle, garden, fish, read, campfire, doze), a tap cycles five reactions
+// after a look at you, wake, wave, cheer, and any of his clips by name. Props switch discretely (never a tiny watering
+// can growing mid-blend), the brick snaps between paw and back storage (never through his tummy), and blinks are laid
+// over the face after the mixer so a base pose can't half-close them.
+const BLOP_ALIAS={greeting:'wave',hop:'happy_hop',oops:'surprised_jump',offer:'show_brick',spin:'giggle_wiggle',grumpy_wake:'wake',cheeky_taunt:'giggle_wiggle'};
+class Blop3Ctl{
+  constructor(P){ this.P=P; const A=P.acts, root=P.obj; this.A=A; this.mixer=P.mixer;
+    this.loops=[A.logo_idle?'logo_idle':'idle','garden','fish','read','campfire','doze']; this.reactions=['happy_hop','giggle_wiggle','surprised_jump','show_brick','look_at_you'];
+    this.mode=0; this.react=Math.floor(Math.random()*5); this.cur=null; this.base0=null; this.queued=null; this.nextBlink=3+Math.random()*3; this.blinkTime=null; this.blend=null;
+    this.lids=[]; root.traverse(o=>{ if(/^Bloppit_(Lid|Lash)_/.test(o.name)&&o.morphTargetInfluences) this.lids.push(o); });
+    this.props=Object.fromEntries(['Brick','WateringCan','FishingRod','Book','Monocle'].map(n=>[n,root.getObjectByName('Bloppit_'+n)]));
+    this.stowed=new Set(['garden','fish','read']);
+    this.brickTracks=new Map(Object.values(P.M.clips).map(c=>[c.name,c.tracks.filter(t=>t.name.startsWith('Bloppit_Brick.')).map(t=>({property:t.name.split('.').pop(),sample:t.createInterpolant()}))]));
+    this.fin=({action})=>{ if(action!==this.cur) return; if(this.queued){ const q=this.queued; this.queued=null; if(!this.play(q)) this.base(); } else this.base(); };
+    this.mixer.addEventListener('finished',this.fin); this.base(); this.mixer.update(Math.random()*2); }
+  get current(){ return this.cur; }
+  get activeBase(){ return this.cur?null:this.base0; }
+  has(n){ return n==='blink'||!!this.A[BLOP_ALIAS[n]||n]; }
+  base(){ this.play(this.loops[this.mode]); }
+  play(name){ name=BLOP_ALIAS[name]||name; const action=this.A[name]; if(!action) return false;
+    if(name==='blink'){ if(this.mode===5||this.cur===this.A.wake) return false; this.blinkTime=0; return true; }
+    this.queued=null; if(name==='wake') this.mode=0;
+    const previous=this.cur||this.base0, blink=this.A.blink;
+    const outgoing=Object.values(this.A).filter(a=>a!==blink&&(a.isRunning()||a.enabled&&a.getEffectiveWeight()>0&&(a===previous||(this.blend&&this.blend.weights.has(a)))));
+    const weights=new Map(outgoing.map(a=>[a,a.getEffectiveWeight()]));
+    this.brickSnap=this.stowed.has(name)||outgoing.some(a=>this.stowed.has(a.getClip().name));
+    for(const a of outgoing) a.stopFading();
+    const loop=this.loops.includes(name)||name==='idle'||name==='focused';
+    if(loop){ if(this.loops.includes(name)) this.mode=this.loops.indexOf(name); this.cur=null; this.base0=action; }
+    else { this.cur=action; this.base0=null; }
+    action.reset().setEffectiveWeight(1).setEffectiveTimeScale(1).setLoop(loop?THREE.LoopRepeat:THREE.LoopOnce,loop?Infinity:1);
+    action.clampWhenFinished=!loop; action.play();
+    if(previous&&(previous!==action||[...weights.keys()].some(a=>a!==action))){ action.setEffectiveWeight(weights.get(action)||0); if(!weights.has(action)) weights.set(action,0);
+      this.blend={weights,target:action,time:0,duration:loop?.24:.16}; } else this.blend=null;
+    this.mixer.update(1/240); this.overlays(0); return true; }
+  then(name,next){ if(this.play(name)) this.queued=next; }
+  setMode(m){ if(m<0||m>5) return; this.mode=m; if(!this.cur) this.base(); }
+  poke(){ this.queued=null; if(this.mode===5){ this.wake(); return; } this.react=(this.react+1)%this.reactions.length;
+    this.play('look_at_you'); if(this.react!==4) this.queued=this.reactions[this.react]; }
+  wake(){ this.queued=null; this.mode=0; this.play('wake'); }
+  update(dt){
+    if(this.blend){ const b=this.blend; b.time+=dt; const u=Math.min(1,b.time/b.duration), t=u*u*(3-2*u);
+      for(const [a,st] of b.weights) a.setEffectiveWeight(st*(1-t)+(a===b.target?t:0));
+      if(u===1){ for(const a of b.weights.keys()) if(a!==b.target) a.stop(); this.blend=null; } }
+    this.mixer.update(dt); this.overlays(dt); this.nextBlink-=dt; if(this.nextBlink<=0){ this.play('blink'); this.nextBlink=3+Math.random()*3; } }
+  overlays(dt){ const act=this.cur||this.base0, name=act&&act.getClip().name;
+    for(const [key,ob] of Object.entries(this.props)) if(ob){ const show=key==='Brick'?name!=='hug':({WateringCan:'garden',FishingRod:'fish',Book:'read',Monocle:'focused'})[key]===name; ob.scale.setScalar(show?1:.0001); }
+    if(act&&this.props.Brick&&(this.stowed.has(name)||(this.blend&&this.brickSnap))) for(const t of this.brickTracks.get(name)||[]) if(t.property!=='scale') this.props.Brick[t.property].fromArray(t.sample.evaluate(act.time));
+    if(name==='doze'||name==='wake'){ this.blinkTime=null; return; }
+    if(this.blinkTime!==null){ this.blinkTime+=dt; const u=this.blinkTime/(1/6); if(u>=1){ this.blinkTime=null; return; }
+      const q=u<.4?u/.4:u<=.6?1:(1-u)/.4, b=q*q*(3-2*q);
+      for(const ob of this.lids){ const d=ob.morphTargetDictionary, a=ob.morphTargetInfluences, half=b<.5?2*b:2-2*b, closed=Math.max(0,2*b-1);
+        if(d.Half!=null) a[d.Half]=a[d.Half]*(1-b)+half*b; if(d.Closed!=null) a[d.Closed]=a[d.Closed]*(1-b)+closed*b; } } }
+  dispose(){ this.mixer.removeEventListener('finished',this.fin); this.P.dispose(); }
+}
+function ch3Make(id){ if(!CH3.gltf[id]) return null; if(ch3Has3d(id)){ const P=new Model3(id); return {id,root:P.root,P,ctl:MODEL3[id].own?new Blop3Ctl(P):new Model3Ctl(P)}; } const P=new Puppet3(id); return {id,root:P.root,P,ctl:new Ch3Ctl(P)}; }
 // Dressing your otter: its brick colour and what it's wearing (drawn onto it)
 // The otter already standing on the island takes a new brick colour or outfit straight away
 // (it used to keep the old one until the island was next opened)
@@ -10362,7 +10441,7 @@ window.bloppitPup3=async(id,ci,wear)=>{ await ch3Get(id); await ch3Model(id); co
   i.P.obj.traverse(n=>{ const u=n.userData||{}; if(u.brickVariant&&n.visible){ on.bricks.push(u.brickVariant); n.traverse(m=>{ if(!m.isMesh) return; const top=[].concat(m.material).find(x=>/Top/.test(x.name)); if(top) on.hex=top.color.clone().convertLinearToSRGB().getHexString(); }); }
     if(u.outfit&&n.visible) on.outfits.add(u.outfit); if(u.wardrobeSlot&&n.visible) on.extras.add(u.wardrobeSlot); });
   const r={kind:i.P.kind,bricks:on.bricks,outfits:[...on.outfits].sort(),extras:[...on.extras].sort(),lids:i.P.lids.length,clips:Object.keys(i.P.acts).length,hex:on.hex}; i.ctl.dispose(); return r; };
-window.bloppitChars3d=()=>({on:ch3On(),loaded:Object.keys(CH3.gltf),tiny:{model:ch3Has3d('tiny'),clips:ch3Has3d('tiny')?Object.keys(CH3.gltf.tiny.model.clips).sort():[]},nora:{model:ch3Has3d('nora'),clips:ch3Has3d('nora')?Object.keys(CH3.gltf.nora.model.clips).sort():[]},pippa:{model:ch3Has3d('pippa'),clips:ch3Has3d('pippa')?Object.keys(CH3.gltf.pippa.model.clips).sort():[]},bibi:{model:ch3Has3d('bibi'),clips:ch3Has3d('bibi')?Object.keys(CH3.gltf.bibi.model.clips).sort():[]},swoop:{model:ch3Has3d('swoop'),clips:ch3Has3d('swoop')?Object.keys(CH3.gltf.swoop.model.clips).sort():[]},island:{bloppit:!!ISL3.b3,pup:!!ISL3.p3,longtail:!!ISL3.l3,clips:[ISL3.b3,ISL3.p3,ISL3.l3].map(i=>i&&(i.ctl.current||i.ctl.activeBase)?(i.ctl.current||i.ctl.activeBase).getClip().name:null)},views:CV3.views.filter(v=>v.host.classList.contains('c3on')&&v.host.offsetParent).map(v=>v.host.id||v.host.className.split(' ')[0])});
+window.bloppitChars3d=()=>({on:ch3On(),loaded:Object.keys(CH3.gltf),tiny:{model:ch3Has3d('tiny'),clips:ch3Has3d('tiny')?Object.keys(CH3.gltf.tiny.model.clips).sort():[]},nora:{model:ch3Has3d('nora'),clips:ch3Has3d('nora')?Object.keys(CH3.gltf.nora.model.clips).sort():[]},pippa:{model:ch3Has3d('pippa'),clips:ch3Has3d('pippa')?Object.keys(CH3.gltf.pippa.model.clips).sort():[]},bibi:{model:ch3Has3d('bibi'),clips:ch3Has3d('bibi')?Object.keys(CH3.gltf.bibi.model.clips).sort():[]},swoop:{model:ch3Has3d('swoop'),clips:ch3Has3d('swoop')?Object.keys(CH3.gltf.swoop.model.clips).sort():[]},bloppit:{model:ch3Has3d('bloppit'),clips:ch3Has3d('bloppit')?Object.keys(CH3.gltf.bloppit.model.clips).sort():[]},island:{bloppit:!!ISL3.b3,pup:!!ISL3.p3,longtail:!!ISL3.l3,clips:[ISL3.b3,ISL3.p3,ISL3.l3].map(i=>i&&(i.ctl.current||i.ctl.activeBase)?(i.ctl.current||i.ctl.activeBase).getClip().name:null)},views:CV3.views.filter(v=>v.host.classList.contains('c3on')&&v.host.offsetParent).map(v=>v.host.id||v.host.className.split(' ')[0])});
 // On the website the logo opens the menu; on the menu itself it goes to bloppit.com's front page. (The app handles its own links above.)
 $('#brandLink').addEventListener('click',e=>{ if(APP||tab==='home') return; e.preventDefault(); setTab('home'); });
 // Links straight to a page: /build/#photos, #library, #trails, #otter, #brain, #together, #blitz, #daily (anything else opens the menu).

@@ -211,6 +211,13 @@ test('Swoop is a real 3D model (approved v1) with his ten clips', { skip: skip()
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('Bloppit is a real 3D model (approved v2): twenty clips, his props by activity, a tap looks at you then reacts', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0');
+  const r = await t.page.evaluate(async () => { const pic = await window.bloppitCharShot('bloppit', 'full', 200, { model: true, clip: 'fish', t: 1 }); return { pic: pic.length > 2000, ...window.bloppitChars3d().bloppit }; });
+  assert.deepEqual(r, { pic: true, model: true, clips: ['blink', 'campfire', 'cheer', 'doze', 'fish', 'focused', 'garden', 'giggle_wiggle', 'happy_hop', 'hug', 'idle', 'logo_idle', 'look_at_you', 'reach', 'read', 'release', 'show_brick', 'surprised_jump', 'wake', 'wave'] });
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('Nora is a real 3D model (v1) with her nine clips', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0');
   const r = await t.page.evaluate(async () => { const pic = await window.bloppitCharShot('nora', 'full', 200, { model: true, clip: 'aha', t: .8 }); return { pic: pic.length > 2000, ...window.bloppitChars3d().nora }; });
@@ -416,6 +423,13 @@ test('Nora can be tapped on Brainpeak at every stage (the mountain never breaks 
     assert.deepEqual(r, Array(5).fill('char:nora'), `${n} levels: ${r}`);
     assert.deepEqual(t.errors, []); await t.ctx.close();
   }
+});
+
+test('Blitz is fair at any age: Swoop paces himself on the child (a first guess from age, then their own pace)', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0');
+  const r = await t.page.evaluate(() => { const F = window.bloppitBlitzFair, a = [F.agePace(5), F.agePace(9), F.agePace(14), F.pace()]; F.save(60, 10); const b = F.pace(); F.save(30, 10); return [...a, b, F.pace(), F.fair]; });
+  assert.deepEqual(r, [8.5, 5, 3.3, 6, 6, 4.8, { easy: 1.26, medium: 1.084, hard: 1, boss: .97 }]);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
 test('Bloppitopia renders every stage in 3D (models, buildings, the islands nearby), and as a drawing without WebGL', { skip: skip() }, async () => {
@@ -746,7 +760,7 @@ test('living characters: on the island (dressed pup, the friends, tap for a reac
   let t = await open('?nosplash=1&hour=11#island', { init: seed });
   await t.page.waitForFunction(() => { const c = window.bloppitChars3d().island; return c.bloppit && c.pup && c.longtail; }, null, { timeout: 90000, polling: 500 });
   const d = await t.page.evaluate(() => { const I = window.bloppitIsland3(), P = I.p3.P; return { wear: P.wear, ci: P.ci, studs: P.R.stage + 1, mode: I.b3.ctl.mode, clips: window.bloppitChars3d().island.clips, sprite: !!I.bloppitSprite }; });
-  assert.deepEqual(d.wear, { head: ['beanie', 2] }); assert.equal(d.studs, 1); assert.equal(d.clips[0], 'idle'); assert.equal(d.mode, 2); assert.equal(d.sprite, false);   // the living drawing, at rest
+  assert.deepEqual(d.wear, { head: ['beanie', 2] }); assert.equal(d.studs, 1); assert.match(d.clips[0], /^(idle|fish)$/); assert.equal(d.mode, 2);   // fishing at 11: the drawing stands idle, his 3D model plays his fish clip (rod and all) assert.equal(d.sprite, false);   // the living drawing, at rest
   // a new brick colour shows on the otter standing on the island straight away, and stays after the card closes
   await t.page.evaluate(() => window.bloppitPup()); await t.page.waitForTimeout(300);
   await t.page.evaluate(() => document.querySelector('#pupCols [data-col="10"]').click()); await t.page.waitForTimeout(300);
