@@ -8703,7 +8703,9 @@ function ch3Isle(id,g,y,hh){ if(!ch3On()||!ch3Ready(id)) return null; const i=ch
 // Models that arrive after the island was built: rebuild it once with them (never in the middle of a reveal or a flight)
 function isl3CharsLive(){ if(!ISL3.on||!ISL3.world) return; if(ISL3.revealing||ISL3.arrive||ISL3.fly||ISL3.dragging){ clearTimeout(ISL3.c3T); ISL3.c3T=setTimeout(isl3CharsLive,1200); return; }
   const o=worldStore(), lt=LT3[longtailNow()], want=(have,id)=>!have&&ch3Ready(id);
-  const fr=Object.entries(ISL3.cast||{}).some(([id,K])=>(!K.i3&&ch3Ready(id))||(K.i3&&K.i3.P instanceof Puppet3&&ch3Has3d(id)));   // a drawing whose 3D model has now arrived
+  const late=(i,id)=>!!(i&&i.P instanceof Puppet3&&ch3Has3d(id));   // standing there as a drawing, but its 3D model has now arrived
+  const fr=Object.entries(ISL3.cast||{}).some(([id,K])=>(!K.i3&&ch3Ready(id))||late(K.i3,id))
+    ||late(ISL3.b3,'bloppit')||(ISL3.pupG&&late(ISL3.p3,ch3PupId(o)))||late(ISL3.l3,lt);   // Bloppit, the otter and Swoop too (their bigger files often arrive after the friends')
   // the whole cast at once (one rebuild, not one per character as each drawing arrives)
   const ids=['bloppit',...(ISL3.pupG?[ch3PupId(o)]:[]),lt,...Object.keys(ISL3.cast||{})]; if(!ids.every(id=>ch3Ready(id)||CH3.bad[id])) return;
   if(want(ISL3.b3,'bloppit')||(ISL3.pupG&&want(ISL3.p3,ch3PupId(o)))||want(ISL3.l3,lt)||fr){ isl3Build(o); isl3Kick(); } }
