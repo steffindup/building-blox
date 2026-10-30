@@ -962,6 +962,25 @@ test('the 3D pups: Pup, Splash and Legend hold a 1-, 2- and 3-stud brick in the 
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('the Galaxy shop: sections from little touches to showpieces; an island\'s set opens once it is found; a bigger piece finds open ground', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&films=0&lite3d=1&hour=11#island', { init: { fn: () => { const builds = {}, log = []; for (let i = 0; i < 30; i++) { const k = `m:M${i}:10`; builds[k] = { n: 30, s: 3, t: 1e12 + i, c: 1 }; log.push(k); } const ob = {}; for (let i = 0; i < 3; i++) ob[i] = 3;
+    localStorage.setItem('building-blox-game-v1', JSON.stringify({ best: ob, sbest: {} }));
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 500, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, pick: 'lighthouse', isle: 1, arrived: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 5, finished: 5, welcome: 1 })); } } });
+  await t.page.waitForFunction(() => window.bloppitIsland3 && window.bloppitIsland3().ctl, null, { timeout: 90000 }); await t.page.waitForTimeout(1500);
+  await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close()));
+  await t.page.evaluate(() => document.getElementById('isCustom').click()); await t.page.waitForTimeout(500);
+  const heads = await t.page.evaluate(() => [...document.querySelectorAll('#decorGrid .dg-h')].map((h) => h.firstChild.textContent));
+  assert.ok(heads.includes('Little touches') && heads.includes('Bigger builds') && heads.includes('Showpieces') && heads.some((h) => /From Frog Forest/.test(h)), heads.join(','));
+  // Frog Forest is found (Frog Trail levels done), Blitz Bay isn't
+  assert.equal(await t.page.evaluate(() => document.querySelector('[data-decor="frogstatue"]').disabled), false);
+  assert.equal(await t.page.evaluate(() => document.querySelector('[data-decor="finish"]').dataset.locked), '1');
+  assert.match(await t.text('[data-decor="finish"] .cost'), /Find Blitz Bay/);
+  await t.page.evaluate(() => { const b = document.querySelector('[data-decor="windmill"]'); b.click(); b.click(); }); await t.page.waitForTimeout(1500);
+  const w = await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1')));
+  assert.ok(w.decor.includes('windmill')); assert.ok(Array.isArray((w.pos || {})['decor:windmill']), 'it got a spot of its own');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('stars, Galaxy Blocks and the Otter Level: one job each; the otter grows by level and never shrinks', { skip: skip() }, async () => {
   // 13 big builds since the change: about 1,400 XP (Level 8) → a Legend, by level not builds
   const big = { fn: () => { const builds = {}, log = []; for (let i = 0; i < 13; i++) { builds['p:big' + i] = { n: 200, s: 2, k: 'quick', t: Date.now() }; log.push('p:big' + i); }
