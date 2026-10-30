@@ -1223,6 +1223,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 .the-end .te-fin{text-align:center;color:#fff;animation:te-in 1.6s ease both}
 .the-end .te-fin h2{font-family:var(--f-display);font-size:clamp(40px,7vw,64px);margin:0;text-shadow:0 4px 18px rgba(0,0,0,.45)}
 .the-end .te-fin p{margin:6px 0 18px;font-size:18px;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+.the-end .te-fin p.te-next{font-size:15px;opacity:.9;max-width:34em;margin:0 auto 18px}
 .the-end .te-fin .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .the-end .te-fin .ghost{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.6)}
 @keyframes te-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
@@ -1232,6 +1233,7 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 .is3-chrome{position:absolute;inset:0;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:12px}
 .is3-banner{pointer-events:none;max-width:90%;text-align:center;padding:8px 16px;border-radius:999px;background:rgba(20,32,44,.86);color:#fff;font-family:var(--f-display);font-size:18px;box-shadow:0 4px 14px rgba(0,0,0,.2);animation:is3-in .4s ease both}
 .is3-banner.big{font-size:22px;background:#008F9B}
+.is3-banner.soon{background:linear-gradient(135deg,rgba(110,53,184,.92),rgba(59,44,155,.92));font-size:15px;margin-top:150px!important}@media (max-width:559px){.is3-banner.soon{margin-top:160px!important;font-size:13px}}
 @media (max-width:559px){.is3-play{min-width:0;font-size:16px;padding:8px 18px}.is3-play small{font-size:11px}.is3-banner{font-size:15px}.is3-banner.big{font-size:18px}}
 @keyframes is3-in{from{transform:translateY(-10px)}to{transform:none}}
 .is3-views{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);display:flex;align-items:center;gap:4px;pointer-events:auto;padding:4px;border-radius:999px;background:rgba(20,32,44,.72);color:#fff;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 3px 10px rgba(0,0,0,.2)}
@@ -1243,6 +1245,8 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 .is3-say::after{content:'';position:absolute;left:50%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-bottom:0;border-top-color:#fff}
 .is3-play{pointer-events:auto;margin-top:auto;display:grid;justify-items:center;gap:0;min-width:220px;max-width:92%;font-size:18px;padding:10px 22px;border-radius:999px;box-shadow:0 5px 0 #8f1f18,0 8px 18px rgba(0,0,0,.25)}
 .is3-chrome.has-alt .is3-views{bottom:138px}
+.is3-realm{pointer-events:auto;position:absolute;left:50%;bottom:150px;transform:translateX(-50%);font-size:14px;font-weight:800;padding:7px 16px;border-radius:999px;border:0;color:#fff;background:linear-gradient(135deg,#6E35B8,#3B2C9B);box-shadow:0 3px 10px rgba(0,0,0,.25);cursor:pointer}
+.is3-chrome.has-alt .is3-realm{bottom:192px}
 .is3-alt{pointer-events:auto;margin-top:8px;font-size:14px;padding:6px 16px;border-radius:999px;background:rgba(255,255,255,.92)}
 .is3-play small{font-family:var(--f-body,inherit);font-size:12px;font-weight:700;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 /* The first arrival, told like the opening of a film */
@@ -5281,6 +5285,30 @@ const SAMPLES=[
      x.poly([[a,b-r*1.6],[a+r*.45,b-r*.45],[a+r*1.6,b],[a+r*.45,b+r*.45],[a,b+r*1.6],[a-r*.45,b+r*.45],[a-r*1.6,b],[a-r*.45,b-r*.45]],k); }
    x.fillStyle='#F4F4F4'; x.fillRect(48,70,8,120);
    return [['front',c]]; }},
+ {name:'Constellation cube',theme:'Space',hidden:true,make(){ const [c,x]=sheet(240,240,'#ffffff');   // Nora's: a galaxy cube, star trails on its faces
+   x.poly([[120,30],[214,78],[120,126],[26,78]],'#1B2A34'); x.poly([[26,78],[120,126],[120,222],[26,174]],'#0D3C7A'); x.poly([[214,78],[120,126],[120,222],[214,174]],'#20346A');
+   for(const [a,b] of [[70,70],[120,50],[160,66],[100,96],[150,100],[60,120],[80,160],[66,190],[150,140],[180,170],[166,200],[200,130]]) x.dot(a,b,4,'#FFF03A');
+   x.lineWidth=3; x.strokeStyle='#F2CD37'; for(const seg of [[[70,70],[100,96],[150,100],[160,66]],[[60,120],[80,160],[66,190]],[[150,140],[180,170],[166,200]]]){ x.beginPath(); seg.forEach(([a,b],i)=>i?x.lineTo(a,b):x.moveTo(a,b)); x.stroke(); }
+   x.dot(120,50,5,'#AC78BA'); x.dot(100,170,7,'#E9DFFF');   // and one lavender point, on its own
+   return [['front',c]]; }},
+ {name:'Lantern',theme:'Space',hidden:true,make(){ const [c,x]=sheet(170,240,'#ffffff');   // the pup's: a small lantern to hold out to the light
+   x.fillStyle='#352100'; x.rr(60,6,50,18,6); x.fillRect(80,22,10,16);
+   x.fillStyle='#6B4229'; x.rr(34,36,102,22,6); x.rr(34,190,102,24,6);
+   x.fillStyle='#9FC3E9'; x.rr(44,58,82,132,10); x.fillStyle='#E9DFFF'; x.rr(58,80,54,88,12);
+   x.dot(85,124,16,'#AC78BA'); x.dot(85,124,8,'#FFFFFF');
+   for(const [a,b] of [[50,70],[118,72],[52,178],[116,176]]) x.dot(a,b,4,'#352100');
+   x.fillStyle='#352100'; x.rr(60,214,50,18,6);
+   return [['front',c]]; }},
+ {name:'Galaxy ship',theme:'Space',hidden:true,make(){ const [c,x]=sheet(300,220,'#ffffff');   // everyone's: the ship from Moonstone, its hull in Galaxy Blocks
+   const G=['#5B2A9E','#3B2C9B','#8A3BC9','#2C4FB5']; x.fillStyle=G[0]; x.rr(40,130,220,30,8);
+   for(let r=0;r<3;r++) for(let i=0;i<10-r;i++){ x.fillStyle=G[(i+r)%4]; x.fillRect(50+r*11+i*(200-r*22)/(10-r),104+r*(-14)+r*0, (200-r*22)/(10-r)-3, 13); }
+   x.fillStyle=G[2]; x.rr(20,96,30,66,10); x.rr(250,96,30,66,10); x.dot(36,92,12,G[3]); x.dot(264,92,12,G[3]);
+   x.dot(70,142,10,'#F4F4F4'); x.dot(70,142,5,'#1B2A34');
+   x.fillStyle='#6B4229'; x.fillRect(146,20,8,112); x.fillRect(90,34,120,6);
+   x.fillStyle='#F4F4F4'; x.rr(92,40,116,14,7);
+   x.fillStyle='#A95500'; for(let k=0;k<6;k++){ x.save(); x.translate(80+k*30,160); x.rotate(.5); x.fillRect(-3,0,6,44); x.restore(); }
+   x.fillStyle='#FFF03A'; x.rr(42,66,14,18,4); x.dot(49,60,5,'#AC78BA');
+   return [['front',c]]; }},
  {name:'Scallop shell',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(220,170,'#ffffff');
    // a solid fan of five broad ribs (yellow, orange, yellow…), each with a rounded bump at the rim, on a wide hinge
    const cx=110, cy=146, R=100;
@@ -7362,6 +7390,7 @@ function worldFinish(kind){
   const before={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
   let dur=0; try{ dur=(mp&&mp.state&&mp.state.mode==='blitz')?((mpScores(mp.state).find(x=>x.i===mp.me)||{}).ms||0):(run.t0?Date.now()-run.t0:0); }catch(e){}
   const rec=prev?{...prev,s:Math.max(prev.s||0,stars),c:(prev.c||1)+1}:{n:N,s:stars,k:kind,t:Date.now(),c:1}; if(memory) rec.m=1;
+  if(first&&typeof inLufu==='function'&&inLufu()) rec.realm='lufu';   // built in lufu's world: it stands there, not on Home Island
   if(blitz){ const lv=['easy','medium','hard'].indexOf(mp.state.cpuLevel); if(lv>=0) rec.lv=Math.max(prev&&Number.isInteger(prev.lv)?prev.lv:-1,lv); if(cpu&&cpu.boss) rec.boss=1; }   // which Longtail was beaten; the Grand Prix
   if(dur>500&&dur<6*3600e3) rec.d=Math.round(prev&&prev.d?Math.min(prev.d,dur):dur);   // best time, in ms
   o.builds[key]=rec; if(first) o.log.push(key); o.xp=worldXP(o); o.bonus=worldStarsEarned(o)-Object.values(o.builds).reduce((a,b)=>a+(b.s||0),0);  // kept for older readers; derived
@@ -7939,8 +7968,8 @@ function shop3(){ const g=new THREE.Group(); g.add(box3(2.6,1.35,1.7,'#C58B5A',0
 function cottage3(c){ const g=new THREE.Group(); g.add(box3(1.15,.95,1.0,'#FFF8EA',0,0,0)); g.add(gable3(1.15,1.0,.95,.62,c,.12)); g.add(box3(.3,.52,.06,'#8A5A3B',0,0,.51)); g.add(box3(.24,.2,.06,'#6FB7E8',.34,.5,.51)); g.add(box3(.24,.2,.06,'#6FB7E8',-.34,.5,.51)); return g; }
 function well3(){ const g=new THREE.Group(); g.add(cyl3(.42,.46,.45,8,'#B9C2CF',0,0,0)); g.add(cyl3(.34,.34,.05,8,'#4FA6E0',0,.42,0)); g.add(box3(.06,.8,.06,'#8A5A3B',-.38,.42,0)); g.add(box3(.06,.8,.06,'#8A5A3B',.38,.42,0));
   const r=mesh3(new THREE.ConeGeometry(.62,.42,4),m3('#5B6778'),0,1.42,0); r.rotation.y=Math.PI/4; g.add(r); return g; }
-function lighthouse3(){ const g=new THREE.Group(); for(let i=0;i<5;i++) g.add(cyl3(.5-i*.05,.55-i*.05,.5,10,i%2?'#D2352B':'#FFFFFF',0,i*.5,0));
-  { const lamp=cyl3(.42,.42,.4,10,'#FFE27A',0,2.5,0); lamp.material=m3('#FFE27A',{emissive:new THREE.Color('#FFC83D'),emissiveIntensity:.9}); g.add(lamp); } g.add(mesh3(new THREE.ConeGeometry(.55,.55,10),m3('#D2352B'),0,3.18,0)); return g; }
+function lighthouse3(band){ band=band||'#D2352B'; const g=new THREE.Group(); for(let i=0;i<5;i++) g.add(cyl3(.5-i*.05,.55-i*.05,.5,10,i%2?band:'#FFFFFF',0,i*.5,0));
+  { const lamp=cyl3(.42,.42,.4,10,'#FFE27A',0,2.5,0); lamp.material=m3('#FFE27A',{emissive:new THREE.Color('#FFC83D'),emissiveIntensity:.9}); g.add(lamp); } g.add(mesh3(new THREE.ConeGeometry(.55,.55,10),m3(band),0,3.18,0)); return g; }
 function balloon3(){ const g=new THREE.Group(), cv=document.createElement('canvas'); cv.width=256; cv.height=64; const x=cv.getContext('2d');
   for(let i=0;i<8;i++){ x.fillStyle=i%2?'#F4BC22':'#D2352B'; x.fillRect(i*32,0,32,64); } x.fillStyle='#0055BF'; x.fillRect(0,46,256,8);
   const tex=new THREE.CanvasTexture(cv); tex.encoding=THREE.sRGBEncoding;
@@ -8049,7 +8078,7 @@ function isl3Init(){
 function islandModels3(o){
   const cap=ISLAND_STAGES[islandStage(o)].slots, pos=o.pos||{}, away=o.away||{};
   // (Weekly builds too: the drawn island has a flag spot for them, the 3D one puts them on a stand like any build)
-  const all=o.log.filter(k=>!isHomeBuild(k)&&o.builds[k]&&!((away[k]||0)>0)).reverse();
+  const all=o.log.filter(k=>!isHomeBuild(k)&&o.builds[k]&&!((away[k]||0)>0)&&o.builds[k].realm!=='lufu').reverse();
   // The newest builds always get the spaces: a model you dragged somewhere keeps its spot, but never pushes a newer build off the island
   const show=all.slice(0,cap), list=[]; for(const k of show){ const p=pos[k]; if(Array.isArray(p)){ const x=P2W(p[0]), z=P2W(p[1]); if(onGrass(x,z)) list.push({key:k,x,z,placed:true}); } }
   const near=(x,z)=>list.some(m=>Math.hypot(m.x-x,m.z-z)<1.5), stands=STANDS3.slice(0,cap).map(([x,z],i)=>[x,z,i]);
@@ -8075,11 +8104,13 @@ function isl3PlaceLabels(){ const box=ISL3.box; if(!box) return; const w=box.cli
 // Tall screens (phones held upright) look at the world from the side, so its long east-west line runs top to bottom
 const CAM_TALL=a=>a<.8, CAM_DIR3=(a)=>{ if(a==null) a=ISL3&&ISL3.cam?ISL3.cam.aspect:1.5; return (CAM_TALL(a)?new THREE.Vector3(17,40,0):new THREE.Vector3(0,27,31)).normalize(); }, CAM_T3=new THREE.Vector3(.4,0,-2.4);
 function isl3Fit(cam,aspect){ const v=THREE.MathUtils.degToRad(cam.fov)/2, hf=Math.atan(Math.tan(v)*aspect), tall=CAM_TALL(aspect);
+  if(ISL3.lufu){ const T=LUFU_T3, dir=(tall?new THREE.Vector3(1,14,22):new THREE.Vector3(0,9,31)).normalize(), need=Math.max(13.5/Math.tan(hf),9.5/Math.tan(v)), d=Math.max(15,Math.min(80,need)); cam.position.copy(T).addScaledVector(dir,d); cam.lookAt(T); return d; }   // low and close: the shore, the ship, the cliffs and the sky behind
   const need=tall?Math.max(18.5/Math.tan(hf),21.5/Math.tan(v)*.93):Math.max((aspect<1?21:23.5)/Math.tan(hf),19/Math.tan(v)*.92);
   const d=Math.max(24,Math.min(tall?170:84,need)); cam.position.copy(CAM_T3).addScaledVector(CAM_DIR3(aspect),d); cam.lookAt(CAM_T3); return d; }
 function isl3Size(){ const box=ISL3.box, r=ISL3.r; if(!box) return; if(ISL3.world&&box.clientWidth&&box.clientHeight&&CAM_TALL(box.clientWidth/box.clientHeight)!==!!ISL3.tallBuild&&!ISL3.revealing){ ISL3.tallBuild=!ISL3.tallBuild; ISL3.moved=false; setTimeout(()=>{ try{ renderIsland(); }catch(e){} },0); } const w=box.clientWidth||600, im=box.closest('.immersive'), top=im?(()=>{ const hd=document.querySelector('header.top'); return hd?hd.offsetHeight+(parseFloat(getComputedStyle(hd).top)||0):0; })():0;
   const h=Math.round(im?Math.max(360,innerHeight-top):w<560?Math.min(w*1.1,innerHeight*.64):Math.min(w*.78,innerHeight*.72,720)); box.style.height=h+'px';
-  if(r.domElement.width!==Math.round(w*r.getPixelRatio())||r.domElement.height!==Math.round(h*r.getPixelRatio())){ r.setSize(w,h); ISL3.cam.aspect=w/h; ISL3.cam.updateProjectionMatrix(); if(!ISL3.moved){ const d=isl3Fit(ISL3.cam,w/h); ISL3.fitD=d; ISL3.ctl.maxDistance=Math.max(70,d+6); ISL3.sc.fog&&(ISL3.sc.fog.far=Math.max(170,d*2.2)); ISL3.ctl.target.copy(CAM_T3); ISL3.ctl.update(); } } }
+  const realmSwap=ISL3.fitRealm!==(ISL3.lufu?'lufu':'b'); if(realmSwap) ISL3.fitRealm=ISL3.lufu?'lufu':'b';   // a different world needs its own framing
+  if(realmSwap||r.domElement.width!==Math.round(w*r.getPixelRatio())||r.domElement.height!==Math.round(h*r.getPixelRatio())){ r.setSize(w,h); ISL3.cam.aspect=w/h; ISL3.cam.updateProjectionMatrix(); if(realmSwap||!ISL3.moved){ const d=isl3Fit(ISL3.cam,w/h); ISL3.fitD=d; ISL3.ctl.maxDistance=Math.max(70,d+6); ISL3.sc.fog&&(ISL3.sc.fog.far=Math.max(170,d*2.2)); ISL3.ctl.target.copy(ISL3.lufu?LUFU_T3:CAM_T3); ISL3.ctl.maxPolarAngle=ISL3.lufu?1.5:1.42; ISL3.ctl.update(); } } }
 function isl3Kick(){ ISL3.dirty=true; if(!ISL3.raf&&ISL3.on) ISL3.raf=requestAnimationFrame(isl3Frame); }
 // Tap, hover and drag
 function isl3Pick(e){ const r=ISL3.r.domElement.getBoundingClientRect(), v=new THREE.Vector2(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
@@ -8117,7 +8148,8 @@ function isl3Focus(info,h){ const vi=isl3ViewOf(info); if(vi>=0){ if(ISL3.viewI=
 function isl3FreeLook(on){ const c=ISL3.ctl; if(!c) return; c.enableRotate=on; c.minPolarAngle=on?.12:.35; c.maxPolarAngle=on?1.42:1.12; c.rotateSpeed=.7;
   if(on&&!ISL3.lookTold){ ISL3.lookTold=1; clearTimeout(ISL3.lookT); ISL3.lookT=setTimeout(()=>{ if(!ISL3.revealing&&!ISL3.arrive){ isl3Banner('Drag to look around · pinch to zoom'); ISL3.lookT=setTimeout(()=>isl3Banner(''),2600); } },1000); } }
 // The guided camera: a few set views to swipe between (all of Bloppitopia, Home Island, Bloppit and your otter, each island)
-function isl3Views(){ const v=[{id:'world',name:'Bloppitopia'},{id:'home',name:'Home Island',x:0,z:.4,R:HOME_R*1.08},{id:'friends',name:'Bloppit & '+(pupName(worldStore())||'your otter'),R:3.6,y:TOP3+1.25}];
+function isl3Views(){ if(ISL3.lufu) return lufuViews();
+  const v=[{id:'world',name:'Bloppitopia'},{id:'home',name:'Home Island',x:0,z:.4,R:HOME_R*1.08},{id:'friends',name:'Bloppit & '+(pupName(worldStore())||'your otter'),R:3.6,y:TOP3+1.25}];
   for(const id of Object.keys(ISLES)){ const I=ISL3.isles&&ISL3.isles[id]; if(I){ const h=I.g?Math.min(7.5,Math.max(0,new THREE.Box3().setFromObject(I.g).max.y)):0;   // tall landmarks: look a little higher and stand back so their tops fit
     v.push({id:'isle:'+id,name:isleCount(id,worldStore())>0?ISLES[id].name:ISLES[id].mystery?'Mystery Island':'A misty island',x:I.x,z:I.z,y:h*.32,R:Math.max(I.r*1.2,Math.hypot(I.r,h*.62)*1.08)}); } }
   const cam=ISL3.cam, vf=cam?THREE.MathUtils.degToRad(cam.fov)/2:.5, hf=cam?Math.atan(Math.tan(vf)*cam.aspect):.6; for(const x of v) if(x.R) x.d=Math.max(7,x.R/Math.tan(Math.min(vf,hf))*1.05); return v; }
@@ -8769,17 +8801,20 @@ function bloppitCheer(){ if(ISL3.b3){ ISL3.b3.ctl.play('cheer'); try{ sfx.chirp(
    Nothing here is stored beyond the world record: what's built is worked out from the counts. */
 // Moonstone Isle: out in the mist from the start, reachable once 9 Weekly Bloppits are built (?mystery=1 to try).
 // Its eight chapters are hidden library drawings, built at fixed sizes, each bigger than the last.
-const MYSTERY=[   // one friend per chapter (Character Bible); `was` = the chapter's old build, so saves made before 1.0.1 still count
-  {name:'Rowboat',size:10,shape:'puffed',thick:.6,colors:5,who:'Bloppit',story:'One night on the jetty, you and Bloppit spot a faint light far out over the mist. Bloppit fixes up his old rowboat, and you row out together.'},
-  {name:'Old map',size:15,shape:'flat',thick:1,colors:6,who:'Pippa',story:'The mist sends you round in circles. Then Pippa swims up with a bottle that just washed ashore. Inside: a map of an island nobody has heard of.'},
-  {name:'Lookout tower',size:17,shape:'puffed',thick:.6,colors:6,who:'Swoop',was:['Tree frog'],story:'You land, but the trees are too tall to see over. Build a lookout tower, and Swoop flies to the top: there’s a glow at the island’s heart!'},
-  {name:'Little bridge',size:10,shape:'puffed',thick:.8,colors:7,who:'Tiny',was:['Longtail nest'],story:'A stream blocks the way, with tiny glowing footprints on the far side. Tiny hops across the lily pads to show where the bridge should go.'},
-  {name:'Moon gate',size:11,shape:'puffed',thick:.7,colors:8,who:'Bibi',was:['Brick chest'],story:'An old moon gate lies in pieces. Bibi helps you rebuild and paint it. It’s said to open only for friends… and it opens.'},
-  {name:'Jar of stars',size:15,shape:'puffed',thick:.6,colors:6,who:'Nora',was:['Stone arch'],story:'Behind the gate is a jar of fallen stars, almost dark. Nora sees the pattern: someone has been catching falling stars to keep warm. Someone very lonely.'},
-  {name:'Moonstone Lighthouse',size:23,shape:'puffed',thick:1,colors:7,who:'Everyone',story:'All six friends arrive. Each adds a brick in their own colour, and together you light the lighthouse. The stars come back, and a small glow peeks out from behind it. This part is yours.'},
-  {name:'Moon crystal',size:15,shape:'puffed',thick:.7,colors:7,who:'lufu',story:'Just the two of you. The little light is too dim to come close. Build the moon crystal at the lighthouse’s heart, and see what happens.'},
+const MYSTERY=[   // one friend per chapter (the Moonstone chapter lock, 30 Oct 2026); `was` = older names, so saves made before still count
+  {name:'Rowboat',size:10,shape:'puffed',thick:.6,colors:5,who:'Bloppit',film:'Into the Mist',story:'One night on the jetty, you and Bloppit spot a faint lavender light far out over the mist. Bloppit fixes up his old rowboat, and you row out together.'},
+  {name:'Old map',size:15,shape:'flat',thick:1,colors:6,who:'Pippa',film:'The Old Map',story:'The mist sends you round in circles. Then Pippa swims up with a bottle that just washed ashore. Inside: a map of an island nobody has heard of.'},
+  {name:'Lookout tower',size:17,shape:'puffed',thick:.6,colors:6,who:'Swoop',was:['Tree frog'],film:'The Lookout Tower',story:'You land on Moonstone Isle, but the trees are too tall to see over. Build a lookout tower, and Swoop flies to the top: the lavender light is at the island’s heart!'},
+  {name:'Little bridge',size:12,shape:'puffed',thick:.8,colors:7,who:'Tiny',was:['Longtail nest'],film:'The Petal Bridge',story:'A stream blocks the way, with tiny glowing footprints on the far side. Tiny gathers broad leaves and big petals, and shows you where the bridge should go.'},
+  {name:'Moon gate',size:11,shape:'puffed',thick:.7,colors:8,who:'Bibi',was:['Brick chest'],film:'The Moon Gate',story:'An old moon gate lies in pieces. Bibi helps you rebuild it, seals it with one sweep of paint, and it glows open.'},
+  {name:'Constellation cube',size:16,shape:'puffed',thick:.7,colors:6,who:'Nora',was:['Jar of stars','Stone arch'],film:'The Constellation Cube',story:'Beyond the gate, a turning galaxy cube hides the way. Nora knows the star pattern from Brainpeak and solves its faces: six trails of stars, and one lavender point all on its own.'},
+  {name:'Lantern',size:8,shape:'puffed',thick:.6,colors:5,who:'you',film:'The Answering Light',story:'Just you, for a moment. The six trails frame the lavender point, and its two-beat pulse comes back, the one you first saw from Brainpeak. Build a small lantern and hold it out. The light waits… and answers.'},
+  {name:'Moonstone Lighthouse',size:23,shape:'puffed',thick:1,colors:7,who:'Everyone',film:'The Moonstone Lighthouse',story:'All six friends arrive. Each sets a brick in their own colour into the ring, and together you light the lighthouse. Then they step aside. This part is yours.'},
+  {name:'Moon crystal',size:15,shape:'puffed',thick:.7,colors:7,who:'lufu',film:'The Moon Crystal',story:'Alone inside. Build the moon crystal at the lighthouse’s heart, and the little light comes close at last.'},
+  {name:'Galaxy ship',size:28,shape:'puffed',thick:.7,colors:6,who:'Everyone',film:'The Galaxy Ship',story:'lufu’s ship waits on the shore, and its hull is made of Galaxy Blocks: the very ones you’ve been earning. Build it, and all eight of you climb aboard. Where it sails, nobody has been.'},
 ];
 const MYSTERY_NAMES=new Set(MYSTERY.flatMap(m=>[m.name,...(m.was||[])]));
+const MYSTERY_FILMS=['Into the Mist','The Old Map','The Lookout Tower','The Petal Bridge','The Moon Gate','The Constellation Cube','The Answering Light','The Moonstone Lighthouse','The Moon Crystal','The Galaxy Ship','The New Horizon'];   // films 12–22; the last two play together after the ship
 const FIVE_ISLES=['otterwood','brainpeak','sunrise','blitzbay','brickworks'];
 const fiveDone=o=>FIVE_ISLES.filter(id=>isleComplete(id,o||worldStore())).length;
 // The mystery opens once the other five islands are complete. A child who had already started it keeps going.
@@ -8809,7 +8844,7 @@ const ISLES={
     go:()=>{ pickPuzzle('quick','top'); }},   // Quick Build's first screen: a photo, a drawing or the library
   moonstone:{name:'Moonstone Isle',game:'The mystery',unit:'chapter',get x(){ return isl3TallNow()?-22.5:23.5; },get z(){ return isl3TallNow()?-11.5:-23.5; },r:4.0,   // far out at sea, in the top corner of the view (upright phones see the world from the side)
    seed:7.7,ground:['#6FB7A4','#4E8F7E'],sand:true,mystery:true,
-    milestone:'The moon crystal',grows:'Every chapter of the mystery you build',play:'Explore Moonstone Isle',go:()=>mysteryGo()},
+    milestone:'The Galaxy ship',grows:'Every chapter of the mystery you build',play:'Explore Moonstone Isle',go:()=>mysteryGo()},
 };
 const ISLE_TOTAL=Object.keys(ISLES).length;
 // An island is complete when its last piece is built; each one is worth 5 Galaxy Blocks, and the whole world 10 more
@@ -8990,11 +9025,14 @@ const PIECES={
     {at:3,name:'The lookout tower',make:g=>{ const t=new THREE.Group(); for(const [a,b] of [[-.3,-.3],[.3,-.3],[-.3,.3],[.3,.3]]) t.add(box3(.08,2.0,.08,'#7A4E2E',a,0,b)); t.add(box3(.9,.08,.9,'#A86E48',0,2.0,0)); t.add(mesh3(new THREE.ConeGeometry(.7,.5,4),m3('#C91A09'),0,2.55,0,{y:Math.PI/4})); t.add(flag3('#0055BF',0,2.8,0)); t.position.set(1.9,TOP3,-1.9); g.add(t); }},
     {at:4,name:'The little bridge',make:g=>{ g.add(cyl3(.75,.75,.04,14,'#36AEBF',-2.3,TOP3+.01,-1.0)); g.add(ropeBridge3([-3.0,TOP3+.1,-1.3],[-1.6,TOP3+.1,-.7])); for(const [x,z] of [[-2.1,-1.5],[-2.6,-.6]]) g.add(cyl3(.18,.18,.03,8,'#4B9F4A',x,TOP3+.04,z)); }},
     {at:5,name:'The moon gate',make:g=>{ const a=new THREE.Mesh(new THREE.TorusGeometry(.9,.18,8,24,Math.PI),m3('#F4F4F4')); a.position.set(-.6,TOP3,-2.7); a.rotation.y=.3; a.castShadow=true; g.add(a); for(const sx of [-1,1]) g.add(box3(.36,.12,.36,'#F4F4F4',-.6+sx*.86,TOP3,-2.7+sx*.26)); ['#C91A09','#F2CD37','#0055BF','#4B9F4A','#FE8A18','#AC78BA','#C91A09'].forEach((c,i)=>{ const t=Math.PI*(i+.5)/7, d=mesh3(new THREE.SphereGeometry(.09,6,4),m3(c),0,0,0); d.position.set(-.6+Math.cos(t)*.9*Math.cos(.3),TOP3+Math.sin(t)*.9,-2.7-Math.cos(t)*.9*Math.sin(.3)); g.add(d); }); }},
-    {at:6,name:'The jar of stars',make:g=>{ const j=new THREE.Mesh(new THREE.CylinderGeometry(.42,.42,.95,14,1,true),new THREE.MeshStandardMaterial({color:0xBFE3F5,transparent:true,opacity:.35,roughness:.1,side:THREE.DoubleSide})); j.position.set(.4,TOP3+.48,2.6); g.add(j); g.add(cyl3(.44,.44,.12,14,'#A95500',.4,TOP3+.95,2.6));
-      for(let i=0;i<6;i++){ const st=mesh3(new THREE.OctahedronGeometry(.1,0),glow3(i%3?'#FFF03A':'#E9DFFF'),.4+Math.cos(i*2.1)*.22,TOP3+.2+i*.12,2.6+Math.sin(i*2.1)*.22); st.castShadow=false; st.userData.spin=1; g.add(st); } }},
-    {at:7,name:'The Moonstone Lighthouse',make:g=>{ const l=lighthouse3(); l.scale.setScalar(1.25); l.position.set(0,TOP3,0); g.add(l);
+    {at:6,name:'The constellation cube',make:g=>{ const cb=mesh3(new THREE.BoxGeometry(.7,.7,.7),m3('#1B2A4A'),.4,TOP3+.95,2.6); cb.userData.roty=1; g.add(cb);
+      for(let i=0;i<7;i++){ const st=mesh3(new THREE.OctahedronGeometry(.07,0),glow3(i===6?'#E9DFFF':'#FFF03A'),.4+Math.cos(i*.9)*.5,TOP3+.95+Math.sin(i*1.7)*.42,2.6+Math.sin(i*.9)*.5); st.castShadow=false; st.userData.spin=1; g.add(st); } }},
+    {at:7,name:'The lantern',make:g=>{ const p=cyl3(.04,.05,1.1,6,'#6B4229',-1.9,TOP3,-.4); g.add(p); g.add(box3(.26,.3,.26,'#2A2254',-1.9,TOP3+1.1,-.4)); const lg=mesh3(new THREE.BoxGeometry(.16,.2,.16),glow3('#D9C8FF'),-1.9,TOP3+1.25,-.4); lg.castShadow=false; g.add(lg); g.add(sparkle3(-1.9,TOP3+1.7,-.4)); }},
+    {at:8,name:'The Moonstone Lighthouse',make:g=>{ const l=lighthouse3('#5A93DB'); l.scale.setScalar(1.25); l.position.set(0,TOP3,0); g.add(l);
+      ['#C91A09','#A5CA18','#0055BF','#F4BC22','#2E8FE0','#FE8A18'].forEach((c,i)=>{ const a=i/6*Math.PI*2; g.add(box3(.3,.18,.18,c,Math.cos(a)*.95,TOP3,Math.sin(a)*.95,{y:-a})); });   // the six friends' bricks stay in the ring
       const beam=new THREE.Mesh(new THREE.ConeGeometry(1.1,14,12,1,true),new THREE.MeshBasicMaterial({color:0xFFF3B0,transparent:true,opacity:.18,depthWrite:false,side:THREE.DoubleSide})); beam.rotation.z=Math.PI/2; beam.geometry.translate(0,7,0); beam.position.set(0,3.4,0); beam.userData.beam=1; g.add(beam); }},
-    {at:8,name:'The moon crystal',make:g=>{ [['#E9DFFF',0,0,1.3],['#AC78BA',.55,.3,.8],['#AC78BA',-.5,.35,.7],['#9FC3E9',.2,-.55,.6]].forEach(([c,x,z,h])=>{ const k=mesh3(new THREE.OctahedronGeometry(.35,0),glow3(c),x-2.4,TOP3+h*.6,z+.9); k.scale.set(.8,h*1.6,.8); k.castShadow=false; g.add(k); }); g.add(sparkle3(-2.4,2.4,.9)); }},
+    {at:9,name:'The moon crystal',make:g=>{ [['#E9DFFF',0,0,1.3],['#AC78BA',.55,.3,.8],['#AC78BA',-.5,.35,.7],['#9FC3E9',.2,-.55,.6]].forEach(([c,x,z,h])=>{ const k=mesh3(new THREE.OctahedronGeometry(.35,0),glow3(c),x-2.4,TOP3+h*.6,z+.9); k.scale.set(.8,h*1.6,.8); k.castShadow=false; g.add(k); }); g.add(sparkle3(-2.4,2.4,.9)); }},
+    {at:10,name:'The Galaxy ship',make:g=>{ const sh=galaxyShip3(); sh.scale.setScalar(.42); sh.position.set(-1.2,TOP3-.05,3.3); sh.rotation.y=.35; g.add(sh); }},
   ],
 };
 
@@ -9137,6 +9175,14 @@ function isl3Build(o){ ISL3.shadowDirty=true;
   for(const i of ISL3.chars3||[]) i.ctl.dispose(); ISL3.chars3=[]; ISL3.b3=ISL3.p3=ISL3.l3=null;
   const W=new THREE.Group(), n=worldCount(o); ISL3.world=W; ISL3.hits=[]; ISL3.labels=[]; ISL3.pieces={}; ISL3.isles={};
   const add=(g,info,x,z,ry)=>{ if(x!=null) g.position.set(x,g.position.y,z); if(ry) g.rotation.y=ry; if(info) tag3(g,info); W.add(g); return g; };
+  ISL3.lufu=0; if(inLufu()) lufuBuild(o,W,add); else isl3BuildBloppitopia(o,W,add);   // Chapter 2: lufu's world, or Bloppitopia
+  ISL3.sc.add(W);
+  W.traverse(x=>{ if(x.isMesh||x.isSprite||x.isInstancedMesh) ISL3.hits.push(x); });
+  const AK=['face3','flame','firepool','beam','pulse','belt','bloppit','bob','burst','cheer','cloud','crane','flap','coral','float','fly','fount','hand','kite','longtail','mist','race','roty','smoke','spin','sway','swing','twinkle','upright','waddle','wheel','zzz'];
+  ISL3.anim=[]; ISL3.sc.traverse(x=>{ const u=x.userData; if(AK.some(k=>u[k]!=null&&u[k]!==false)) ISL3.anim.push(x); });
+  isl3Labels(); isl3Tod(true); isl3Kick();
+}
+function isl3BuildBloppitopia(o,W,add){
   // Home Island
   add(islandBody3(HOMEP,0,0,1.3,true),'land:beach');
   const home=homeBuild(o,W); home.traverse(x=>{ if(x.userData.piece) ISL3.pieces['home:'+x.userData.piece.replace(/^home(1|3|10)$/,'home$1')]=x; });
@@ -9197,18 +9243,12 @@ function isl3Build(o){ ISL3.shadowDirty=true;
     const misty=!isleCount(C.isle,o), [x,z]=misty?shore(C.isle,{tiny:.7,nora:.75,pippa:-.7,bibi:.7}[id],1.02):spot(C.isle,C.h,0,.6);   // in front of the mist until the island is found
     g.position.set(x,0,z); g.userData.cast=id; if(sp) g.userData.bob=2; ISL3.cast[id]={g,sp,i3}; add(g,'char:'+id); }
   // lufu: a light glimpsed over Moonstone Isle until the mystery is solved, then at home beside your otter
-  if(lufuHome(o)){ const C=CAST.lufu, g=new THREE.Group(), i3=ch3Isle('lufu',g,TOP3,0), sp=i3?null:sprite3('/art/char-lufu.png',C.h,C.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } hitBox(g,C.h);
-    const P=ISL3.pupG?ISL3.pupG.position:ISL3.bloppit.position, spot=clearSpot3(P.x+.95,P.z+.55,.45,[[P.x,P.z]]); g.position.set(spot[0],0,spot[1]); g.userData.cast='lufu'; ISL3.cast.lufu={g,sp,i3}; add(g,'char:lufu'); }
+  if(lufuHome(o)){ /* lufu is home in its own world now (Chapter 2): see lufuBuild */ }
   else if(isleCount('moonstone',o)>0||mysteryOpen()){ const I=ISLES.moonstone, lg=new THREE.Group(), gl=mesh3(new THREE.SphereGeometry(.16,10,8),glow3('#E9DFFF'),0,TOP3+2,0); gl.castShadow=false; gl.userData.fly=3; lg.add(gl); lg.position.set(I.x,0,I.z); W.add(lg); }
   const box=ISL3.box, tall=ISL3.tallBuild=!!(box&&box.clientWidth&&CAM_TALL(box.clientWidth/(box.clientHeight||box.clientWidth)));   // clouds sit behind the world, whichever way it's seen
   for(let i=0;i<5;i++){ const c=cloud3(), a=-24+i*12, b=-18+((i*7)%11); if(tall) c.position.set(b-6,10+(i%2)*2,a); else c.position.set(a,10+(i%2)*2,b); c.userData.cloud=i; c.userData.ax=tall?'z':'x'; W.add(c); }
   if(!ISL3.stars){ const g=new THREE.BufferGeometry(), p=[]; for(let i=0;i<260;i++){ const a=Math.random()*Math.PI*2, e=.15+Math.random()*1.2; p.push(Math.cos(a)*90*Math.cos(e),40+Math.sin(e)*60,Math.sin(a)*90*Math.cos(e)-30); }
     g.setAttribute('position',new THREE.Float32BufferAttribute(p,3)); ISL3.stars=new THREE.Points(g,new THREE.PointsMaterial({color:0xffffff,size:.9,map:ISL3.haloTex||(ISL3.haloTex=sparkTex3()),transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending,fog:false})); ISL3.sc.add(ISL3.stars); }   // round, soft twinkles (plain points draw as squares)
-  ISL3.sc.add(W);
-  W.traverse(x=>{ if(x.isMesh||x.isSprite||x.isInstancedMesh) ISL3.hits.push(x); });
-  const AK=['face3','flame','firepool','beam','pulse','belt','bloppit','bob','burst','cheer','cloud','crane','flap','fly','fount','hand','kite','longtail','mist','race','roty','smoke','spin','swing','twinkle','upright','waddle','wheel','zzz'];
-  ISL3.anim=[]; ISL3.sc.traverse(x=>{ const u=x.userData; if(AK.some(k=>u[k]!=null&&u[k]!==false)) ISL3.anim.push(x); });
-  isl3Labels(); isl3Tod(true); isl3Kick();
 }
 function mist3(r){ const g=new THREE.Group(); for(let i=0;i<9;i++){ const a=i*.7, c=mesh3(new THREE.IcosahedronGeometry(1.1+(i%3)*.4,1),new THREE.MeshStandardMaterial({color:0xF4F7FA,transparent:true,opacity:.82,roughness:1,flatShading:true,depthWrite:false}),Math.cos(a)*r*.6,.8+(i%4)*.5,Math.sin(a)*r*.6); c.castShadow=false; c.userData.mist=i; g.add(c); } return g; }
 // Moonstone Isle before you reach it: far out at sea, where it's always night. Dark water, a slow swirl of lavender mist,
@@ -9273,6 +9313,129 @@ function isl3Characters(o,W){
     else { const p=new THREE.Sprite(new THREE.SpriteMaterial({map:pupTex3(o),transparent:true,alphaTest:.15})); const h=[1.3,1.5,1.7][ps]*346/300; p.scale.set(h*239/346,h,1); p.center.set(.5,0); p.position.y=TOP3; pg.add(p); pg.userData.bob=2; } const onIsle=(x,z)=>inPoly(x,z,scalePoly(HOMEP,0,0,.92)), offs=r==='fish'&&!ISL3.arrival?[[-1.15,-1.7],[-1.25,-2.6],[-.6,-3.4],[.9,-3.2]]:r==='fire'&&!ISL3.arrival?(ISL3.tallBuild?[[1.1,1.6],[1.1,-1.4],[-.3,1.6]]:[[1.6,1.1],[-1.4,1.1],[1.6,-.3]]):[[1.25,.35],[-1.25,.35],[1.2,-.9],[-1.2,-.9],[0,-1.6]];
     const [ox,oz]=offs.find(([dx,dz])=>onIsle(at[0]+dx,at[1]+dz))||[-(at[0])*.25,-(at[1])*.25], spot=clearSpot3(at[0]+ox,at[1]+oz,.5,r==='fire'&&ISL3.fireAt?[at,[at[0]+ISL3.fireAt[0],at[1]+ISL3.fireAt[1]]]:[at]); pg.position.set(spot[0],0,spot[1]); tag3(pg,'pup'); ISL3.pupG=pg; W.add(pg); }
 }
+
+/* ---------- lufu's world (Chapter 2, 30 Oct 2026) ----------
+   Where the Galaxy ship lands after Moonstone Isle: lufu's own world, one enchanted land under a night sky that never
+   ends (a galaxy band, a huge moon, lavender mist), waiting to be rebuilt. For now it has: a silver shore where the
+   Galaxy ship lies beached; dark violet ground; glowing torch-coral colonies swaying as if underwater; moonstone shards drifting in the air; a ruined
+   moonstone arch (the first thing to rebuild one day); dark cliffs behind. Everyone is here: lufu, the pup, Bloppit
+   and the six friends, in a loose group by the ship. Builds the child makes while here go on stands on the ground,
+   so Quick Builds and library builds keep working. "Bloppitopia" and "lufu's world" are the two realms; the island
+   view shows one at a time and a button swaps between them (realmGo). Its story is still to be written: "Bloppit
+   Chapter 2: Bloppit builds lufu's world". */
+const LUFU_R=12.5, LUFUP=blob3(0,0,LUFU_R,4.7,44), LUFU_T3=new THREE.Vector3(0,3.0,-.6);   // where the camera looks: the group by the ship
+const REALM_KEY='bloppit-realm';
+const realmNow=()=>{ if(/[?&]realm=lufu/.test(location.search)) return 'lufu'; try{ return lufuWorldOpen()&&localStorage.getItem(pkey(REALM_KEY))==='lufu'?'lufu':'bloppitopia'; }catch(e){ return 'bloppitopia'; } };   // ?realm=lufu: a look at it (tests, tuning)
+const inLufu=()=>realmNow()==='lufu';
+const lufuWorldOpen=o=>isleComplete('moonstone',o||worldStore());   // the ship has sailed: lufu's world is open (and lufu lives there, not on Home Island)
+function realmSet(r){ try{ localStorage.setItem(pkey(REALM_KEY),r); }catch(e){} }
+// Travel between the realms: the Galaxy ship takes everyone (a swoosh and a fresh world; the camera's whole view resets)
+function realmGo(r){ if(!lufuWorldOpen()) r='bloppitopia'; if(r===realmNow()){ if(tab!=='island') setTab('island'); return; } realmSet(r); track('realm:'+r);
+  if(ISL3.on&&ISL3.box){ ISL3.spots={}; ISL3.moved=false; ISL3.viewI=0; isl3Build(worldStore()); isl3Tod(true); const w=ISL3.box.clientWidth, h=ISL3.box.clientHeight; ISL3.fitD=isl3Fit(ISL3.cam,w/h); ISL3.ctl.maxDistance=Math.max(70,ISL3.fitD+6); ISL3.ctl.target.copy(ISL3.lufu?LUFU_T3:CAM_T3); ISL3.ctl.update(); isl3Chrome(); renderIsland(); isl3Kick(); sfx.swoosh&&sfx.swoosh(1); }
+  if(tab!=='island') setTab('island'); }
+// The ground: a flat violet land with a silver shore on the near side, a cliff wall behind, all under a moonlit sky
+function lufuBody3(){ const g=new THREE.Group(), shapeOf=Q=>new THREE.Shape(Q.map(([x,z])=>new THREE.Vector2(x,-z)));
+  const rock=new THREE.ExtrudeGeometry(shapeOf(scalePoly(LUFUP,0,0,1.02)),{depth:3,bevelEnabled:false,steps:2}); rock.rotateX(-Math.PI/2); rock.translate(0,-3,0);
+  g.add(mesh3(rock,[m3('#2B2552'),m3('#1D1A3C')],0,0,0));
+  const sand=new THREE.ExtrudeGeometry(shapeOf(scalePoly(LUFUP,0,0,1)),{depth:.24,bevelEnabled:true,bevelThickness:.06,bevelSize:.12,bevelSegments:1}); sand.rotateX(-Math.PI/2); sand.translate(0,-.06,0);
+  g.add(mesh3(sand,[m3('#CFC6E8'),m3('#B9AED6')]));   // silver sand all round
+  const top=new THREE.ExtrudeGeometry(shapeOf(scalePoly(LUFUP,0,-1.2,.82)),{depth:.32,bevelEnabled:true,bevelThickness:.05,bevelSize:.08,bevelSegments:1}); top.rotateX(-Math.PI/2); top.translate(0,0,-1.2);
+  g.add(mesh3(top,[m3('#4A3F86'),m3('#372E6B')]));   // the violet meadow, set back from the shore
+  // the cliffs behind: tall dark pillars with a faint galaxy glow at their edges
+  for(let i=0;i<11;i++){ const a=Math.PI*(.18+i*.064), d=LUFU_R*(1.02+(i%3)*.08), h=6+((i*5)%7), w=1.4+(i%2)*.6; const c=mesh3(new THREE.BoxGeometry(w,h,w),m3(i%2?'#1B1838':'#231F48'),Math.cos(a)*d,h/2-1,-Math.sin(a)*d*.78-2.5); c.rotation.y=i*.5; g.add(c);
+    if(i%3===0){ const e=mesh3(new THREE.BoxGeometry(w*.3,h*.9,.06),glow3('#8E6DF2'),Math.cos(a)*d,h/2-1,-Math.sin(a)*d*.78-2.5+w/2+.02); e.rotation.y=i*.5; e.castShadow=false; g.add(e); } }
+  return g; }
+// A torch coral: a colony of long tentacles that curve up and outward from a stony base, each shading from violet
+// through gold to green with a glowing tip, swaying slowly as if underwater (lufu's world isn't quite land and isn't quite sea)
+const CORAL_C=[['#6A2FB5','#C7A531','#4FCB5A','#9CF6E6'],['#4B3BAA','#E08A3C','#8ADF55','#BFF7FF'],['#8A3BC9','#D9B23A','#36B86E','#A8FFE8']];
+function torchCoral3(x,z,s,seed){ s=s||1; const g=new THREE.Group(), rnd=i=>{ const v=Math.sin(i*12.9898+seed*78.233)*43758.5453; return v-Math.floor(v); }, C=CORAL_C[seed%CORAL_C.length];
+  g.add(mesh3(new THREE.DodecahedronGeometry(.42*s,0),m3('#3A3270'),0,.18*s,0));   // the stony base
+  const n=14+Math.round(rnd(1)*6); for(let i=0;i<n;i++){ const a=i/n*Math.PI*2+rnd(i)*.6, lean=.35+rnd(i+3)*.75, L=(1.6+rnd(i+5)*1.3)*s, segs=5, pts=[];
+    for(let k=0;k<=segs;k++){ const t=k/segs, r=t*lean*L*.75, y=.25*s+Math.sin(t*Math.PI*.5)*L*(1-lean*.22); pts.push(new THREE.Vector3(Math.cos(a)*r+Math.sin(t*3+i)*.08*s,y,Math.sin(a)*r)); }
+    const curve=new THREE.CatmullRomCurve3(pts), tube=new THREE.TubeGeometry(curve,8,.07*s,5,false), cnt=tube.attributes.position.count, cols=new Float32Array(cnt*3), c0=new THREE.Color(C[0]).convertSRGBToLinear(), c1=new THREE.Color(C[1]).convertSRGBToLinear(), c2=new THREE.Color(C[2]).convertSRGBToLinear(), cc=new THREE.Color();
+    for(let v=0;v<cnt;v++){ const t=Math.floor(v/6)/8; (t<.5?cc.copy(c0).lerp(c1,t*2):cc.copy(c1).lerp(c2,(t-.5)*2)).multiplyScalar(1.9).toArray(cols,v*3); } tube.setAttribute('color',new THREE.BufferAttribute(cols,3));
+    const m=new THREE.Mesh(tube,ISL3.coralMat||(ISL3.coralMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.45,emissive:new THREE.Color('#FFFFFF').convertSRGBToLinear(),emissiveIntensity:.0}))); m.castShadow=false; m.userData.coral=i; g.add(m);
+    const tip=pts[segs], dot=mesh3(new THREE.SphereGeometry(.11*s,8,6),glow3(C[3]),tip.x,tip.y,tip.z); dot.castShadow=false; g.add(dot); }
+  g.add(sparkle3(0,2.2*s,0)); g.position.set(x,TOP3,z); g.userData.sway=seed; return g; }
+// A moonstone shard: a pale crystal that floats and slowly turns
+function shard3(x,y,z,s,seed){ const m=mesh3(new THREE.OctahedronGeometry(.32*s,0),glow3('#E6DBFF'),x,y,z); m.scale.y=1.9; m.rotation.z=.2; m.castShadow=false; m.userData.float=seed; return m; }
+// The old moonstone arch, half fallen: two pillars, one piece of the ring still up, the rest in the grass
+function ruinArch3(x,z){ const g=new THREE.Group(), st='#CFC6E8';
+  g.add(cyl3(.34,.4,2.8,8,st,-1.4,TOP3,0)); g.add(cyl3(.34,.4,1.6,8,st,1.4,TOP3,0));
+  const ring=mesh3(new THREE.TorusGeometry(1.5,.3,8,20,Math.PI*.55),m3(st),-1.4,TOP3+2.8,0); ring.rotation.z=0; g.add(ring);
+  for(const [dx,dz,ry] of [[1.9,.9,.4],[2.6,-.3,1.2],[.6,1.4,2.1]]){ const b=mesh3(new THREE.BoxGeometry(.7,.42,.5),m3('#B9AED6'),dx,TOP3+.21,dz); b.rotation.y=ry; b.rotation.z=.15; g.add(b); }
+  const gl=mesh3(new THREE.SphereGeometry(.14,8,6),glow3('#D9C8FF'),-1.4,TOP3+2.95,0); gl.castShadow=false; g.add(gl); g.add(sparkle3(0,3.6,0));
+  g.position.set(x,0,z); g.userData.ruin=1; return g; }
+// The Galaxy ship, beached on the silver shore: the hull in two-stud Galaxy Blocks, curled ends, the painted eye, a lantern, the mast, a furled sail, oars
+function galaxyShip3(){ const g=new THREE.Group(), L=7.2, GAL=['#5B2A9E','#3B2C9B','#8A3BC9','#2C4FB5','#B04FD8'];
+  // hull: rows of blocks following a curve, each row a little shorter and lower
+  for(let r=0;r<4;r++){ const n=12-r*1, y=.28+r*.3, half=(L/2)*(1-r*.06); for(let i=0;i<n;i++){ const t=i/(n-1), x=-half+t*half*2, w=half*2/n*.96, zoff=(1.1-r*.12)*(1-Math.pow(Math.abs(t*2-1),3)*.35);
+    for(const sgn of [-1,1]){ const b=box3(w,.3,.26,GAL[(i+r*2)%GAL.length],x,y,sgn*zoff); b.rotation.y=sgn*(t*2-1)*.18; g.add(b); for(const k of [-.25,.25]) g.add(cyl3(.05,.05,.07,8,GAL[(i+r*2+1)%GAL.length],x+k*w*.9,y+.3,sgn*zoff)); } }
+    if(r===3) for(let i=0;i<n;i++){ const t=i/(n-1), x=-half+t*half*2; g.add(box3(half*2/n*.96,.08,2.0,'#4B3B86',x,1.18,0)); } }
+  g.add(box3(L*.9,.18,1.8,'#3B2C9B',0,.3,0));   // the keel plank underneath
+  // curled ends
+  for(const sgn of [-1,1]){ const c=mesh3(new THREE.TorusGeometry(.34,.11,8,14,Math.PI*1.35),m3('#8A3BC9'),sgn*(L/2+.25),1.75,0); c.rotation.z=sgn>0?Math.PI*.15:Math.PI*.85; g.add(c); g.add(box3(.36,1.1,.46,'#5B2A9E',sgn*(L/2+.05),.75,0)); }
+  // the painted eye on the bow (facing the camera side)
+  const eye=new THREE.Group(); eye.add(mesh3(new THREE.CircleGeometry(.3,16),m3('#F4EEFF',{side:THREE.DoubleSide}),0,0,0)); eye.add(mesh3(new THREE.CircleGeometry(.15,12),m3('#1B1838',{side:THREE.DoubleSide}),0,0,-.01)); eye.position.set(-L/2+1.3,.95,-1.24); eye.rotation.y=Math.PI+.18; g.add(eye);   // on the side everyone sees
+  // the lantern at the prow
+  const lan=new THREE.Group(); lan.add(cyl3(.05,.05,1.1,6,'#6E35B8',0,0,0)); lan.add(box3(.3,.36,.3,'#2A2254',0,1.1,0)); const lg=mesh3(new THREE.BoxGeometry(.2,.26,.2),glow3('#FFC25A'),0,1.28,0); lg.castShadow=false; lan.add(lg); const lh=new THREE.Sprite(new THREE.SpriteMaterial({map:ISL3.haloTex||(ISL3.haloTex=sparkTex3()),color:0xFFC25A,transparent:true,opacity:.6,depthWrite:false,blending:THREE.AdditiveBlending})); lh.position.set(0,1.3,0); lh.userData.pulse=.9; lan.add(lh); lan.position.set(-L/2+.6,1.25,0); g.add(lan);
+  // mast, yard, furled sail, rigging
+  g.add(cyl3(.1,.13,5.2,8,'#6E35B8',.3,1.25,0)); const yard=cyl3(.06,.06,4.4,6,'#8A3BC9',.3,5.6,0); yard.rotation.z=Math.PI/2; g.add(yard);
+  const sail=mesh3(new THREE.CylinderGeometry(.26,.26,4.0,10),m3('#F1E9DA'),.3,5.25,0); sail.rotation.z=Math.PI/2; g.add(sail);
+  for(const [x1,x2] of [[-L/2+.4,.3],[L/2-.4,.3]]){ const d=Math.hypot(x2-x1,4.2), r=cyl3(.015,.015,d,3,'#C9A86A',(x1+x2)/2,1.4+2.1,0); r.rotation.z=Math.atan2(x2-x1,4.2); g.add(r); }
+  // oars down the far side, resting on the sand
+  for(let i=0;i<7;i++){ const o=cyl3(.04,.05,2.6,5,'#A8743C',-2.6+i*.95,.8,1.1); o.rotation.x=-1.05; o.rotation.z=.12; g.add(o); }   // down the seaward side (the group stands on the other)
+  g.userData.ship=1; return g; }
+// Where everyone stands in lufu's world: by the ship on the shore, the pup and lufu in front
+const LUFU_AT={ship:[6.2,7.4],lufu:[-2.3,5.0],pup:[-1.0,4.6],bloppit:[.6,4.2],tiny:[-4.6,2.6],nora:[2.6,2.4],pippa:[-3.6,1.1],swoop:[2.0,.6],bibi:[-.7,1.1],arch:[0,-5.2]};
+const LUFU_STANDS=[[-5.2,-2.4],[5.4,-2.6],[-6.4,.6],[6.6,.4],[-4.2,-5.4],[4.4,-5.6],[-7.2,-3.4],[7.4,-3.6],[-2.2,-7.2],[2.4,-7.4],[-6.2,-6.4],[6.4,-6.6]];
+function lufuBuild(o,W,add){ ISL3.lufu=1;
+  add(lufuBody3(),'land:lufu'); ISL3.isles.home={x:0,z:0,r:LUFU_R};
+  const [sx,sz]=LUFU_AT.ship, ship=galaxyShip3(); ship.rotation.y=Math.PI-.55; ship.position.set(sx,TOP3-.1,sz); tag3(ship,'ship'); W.add(ship);
+  for(const [x,z,s,sd] of [[-7.8,-1.6,1.25,1],[7.6,-2.2,1.05,2],[-5.6,-6.2,1.5,3],[6.2,-6.8,1.35,4],[-9,-4.6,.85,5],[9.2,-5,.95,6],[1.2,-8.6,1.15,7],[-3.2,-9,.8,8],[-9.6,1.2,.7,9],[9.8,-.4,.75,10]]) W.add(torchCoral3(x,z,s,sd));
+  for(let i=0;i<10;i++){ const a=i*.63, rr=4+(i%4)*1.6; W.add(shard3(Math.cos(a)*rr,TOP3+2.2+(i%3)*.9,Math.sin(a)*rr*.7-2.6,.7+(i%3)*.25,i)); }
+  const arch=ruinArch3(LUFU_AT.arch[0],LUFU_AT.arch[1]); tag3(arch,'ruin'); W.add(arch);
+  for(const [x,z] of [[-3,5.4],[4.6,4.8],[-6.6,3.6],[6.9,2.8]]){ const p=mesh3(new THREE.DodecahedronGeometry(.3+((x*z)%2===0?.1:0),0),m3('#A79BD0'),x,TOP3+.12,z); p.castShadow=false; W.add(p); }   // pebbles on the shore
+  // builds, on stands around the meadow
+  const shown=lufuModels3(o); ISL3.shown=shown;
+  for(const [x,z,i] of shown.empty){ const g=new THREE.Group(); g.add(cyl3(.62,.68,.14,10,'#DCD3F0',0,TOP3,0)); add(g,'stand:'+i,x,z); }
+  for(const m of shown.list){ const g=model3(m.key); g.userData.key=m.key; add(g,'model:'+m.key,m.x,m.z,m.ry||0); }
+  // everyone, by the ship
+  ISL3.obst=[]; ISL3.cast={};
+  const place=(id,g,[x,z])=>{ g.position.set(x,0,z); g.rotation.y=Math.atan2(-x,8-z)*.2; W.add(g); };
+  { const g=new THREE.Group(), b3=ch3Isle('bloppit',g,TOP3,2.1), b=b3?null:sprite3('/art/bud-3q.png',2.2,.75); if(b){ b.position.y=TOP3; g.add(b); } g.userData.bloppit=1; ISL3.bloppit=g; ISL3.bloppitSprite=b; ISL3.b3=b3; ISL3.bMode=0; if(b3) b3.ctl.setMode(0); tag3(g,'bloppit'); place('bloppit',g,LUFU_AT.bloppit); }
+  { const ps=pupStage(o), pg=new THREE.Group(), p3=ch3Isle(ch3PupId(o),pg,TOP3,[1.1,1.5,1.8][ps]); ISL3.p3=p3; if(p3){ ch3Dress(p3,o); p3.ctl.setMode(0); }
+    else { const p=new THREE.Sprite(new THREE.SpriteMaterial({map:pupTex3(o),transparent:true,alphaTest:.15})); const h=[1.3,1.5,1.7][ps]*346/300; p.scale.set(h*239/346,h,1); p.center.set(.5,0); p.position.y=TOP3; pg.add(p); pg.userData.bob=2; } tag3(pg,'pup'); ISL3.pupG=pg; place('pup',pg,LUFU_AT.pup); }
+  const hitBox=(g,h)=>{ const w=Math.max(1.1,h*.6), tb=new THREE.Mesh(new THREE.BoxGeometry(w,h*1.05,w),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); tb.visible=false; tb.position.y=TOP3+h/2; g.add(tb); };
+  for(const id of ['lufu','tiny','nora','pippa','bibi']){ const C=CAST[id], g=new THREE.Group(), i3=ch3Isle(id,g,TOP3,0), sp=i3?null:sprite3(`/art/char-${id}.png`,C.h,C.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } hitBox(g,C.h);
+    g.userData.cast=id; if(sp) g.userData.bob=2; ISL3.cast[id]={g,sp,i3}; tag3(g,'char:'+id); place(id,g,LUFU_AT[id]); }
+  { const lv=longtailNow(), art=LONGTAIL_ART[lv], g=new THREE.Group(), l3=ch3Isle(LT3[lv],g,TOP3,0), sp=l3?null:sprite3(`/art/longtail-${art.id}.png`,2.1,art.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } ISL3.l3=l3; hitBox(g,1.9); ISL3.ltNight=false;
+    g.userData.longtail=1; ISL3.longtail=g; ISL3.longtailSprite=sp; tag3(g,'longtail:'+lv); place('swoop',g,LUFU_AT.swoop); }
+  // the sky: a galaxy band and a huge moon, low behind the cliffs
+  W.add(lufuSky3());
+  ISL3.labels.push({id:'land:lufu',name:'lufu’s world',sub:'Chapter 2 · coming soon',x:-7.5,z:6.2,y:.9,home:1});
+  ISL3.labels.push({id:'ship',name:'The Galaxy ship',sub:'Back to Bloppitopia',x:sx+1.5,z:sz+1.2,y:3.2});
+}
+// The views of lufu's world: the whole shore, the ship, the old arch
+function lufuViews(){ const v=[{id:'world',name:'lufu’s world'},{id:'ship',name:'The Galaxy ship',x:LUFU_AT.ship[0]-.5,z:LUFU_AT.ship[1]-1,y:1.4,R:6.4},{id:'friends',name:(pupName(worldStore())||'Your otter')+' & lufu',x:LUFU_AT.pup[0],z:LUFU_AT.pup[1],y:TOP3+1.1,R:3.6},{id:'ruin',name:'The old moon arch',x:LUFU_AT.arch[0],z:LUFU_AT.arch[1],y:1.6,R:5}];
+  const cam=ISL3.cam, vf=cam?THREE.MathUtils.degToRad(cam.fov)/2:.5, hf=cam?Math.atan(Math.tan(vf)*cam.aspect):.6; for(const x of v) if(x.R) x.d=Math.max(7,x.R/Math.tan(Math.min(vf,hf))*1.05); return v; }
+function lufuSky3(){ const g=new THREE.Group();
+  const moon=new THREE.Mesh(new THREE.SphereGeometry(4.2,24,16),new THREE.MeshBasicMaterial({color:0xF3EEFF})); moon.position.set(-22,34,-62); moon.scale.setScalar(1.4); g.add(moon);
+  const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:ISL3.haloTex||(ISL3.haloTex=sparkTex3()),color:0xCDBCF5,transparent:true,opacity:.55,depthWrite:false,blending:THREE.AdditiveBlending})); halo.position.copy(moon.position); halo.scale.setScalar(26); g.add(halo);
+  // the galaxy band: a wide soft arc of tinted sparkles
+  const n=260, p=[], c=[], col=new THREE.Color(); for(let i=0;i<n;i++){ const t=i/n, a=-.9+t*2.6, r=60+Math.sin(i*7.3)*9; p.push(Math.cos(a)*r,16+Math.sin(a*1.4)*14+Math.sin(i*3.1)*4,-Math.sin(a)*r*.6-30); col.setHSL(.72+Math.sin(i*1.7)*.07,.7,.72); c.push(col.r,col.g,col.b); }
+  const geo=new THREE.BufferGeometry(); geo.setAttribute('position',new THREE.Float32BufferAttribute(p,3)); geo.setAttribute('color',new THREE.Float32BufferAttribute(c,3));
+  g.add(new THREE.Points(geo,new THREE.PointsMaterial({size:2.2,vertexColors:true,map:ISL3.haloTex,transparent:true,opacity:.75,depthWrite:false,blending:THREE.AdditiveBlending})));
+  return g; }
+// Builds in lufu's world: the same models, on this world's stands (positions saved under their own key, lpos)
+function lufuModels3(o){ const cap=LUFU_STANDS.length, pos=o.lpos||{}, away=o.away||{};
+  const all=o.log.filter(k=>!isHomeBuild(k)&&o.builds[k]&&!((away[k]||0)>0)&&(o.builds[k].realm==='lufu')).reverse();
+  const show=all.slice(0,cap), list=[]; for(const k of show){ const p=pos[k]; if(Array.isArray(p)){ const x=P2W(p[0]), z=P2W(p[1]); if(inPoly(x,z,scalePoly(LUFUP,0,-1.2,.8))) list.push({key:k,x,z,placed:true}); } }
+  const near=(x,z)=>list.some(m=>Math.hypot(m.x-x,m.z-z)<1.5), stands=LUFU_STANDS.map(([x,z],i)=>[x,z,i]);
+  const free=stands.filter(([x,z])=>!near(x,z)), spare=stands.filter(f=>!free.includes(f));
+  for(const k of show){ if(list.some(m=>m.key===k)) continue; const f=free.shift()||spare.shift(); if(!f) break; list.push({key:k,x:f[0],z:f[1],placed:false}); }
+  return {list,empty:free.slice(0,Math.max(0,cap-list.length)),cap}; }
+
 // A campfire: logs, stones and a flickering flame that glows brighter as it gets dark
 function campfire3(){ const g=new THREE.Group();
   for(let i=0;i<7;i++){ const a=i/7*Math.PI*2; g.add(mesh3(new THREE.DodecahedronGeometry(.1,0),m3('#8D96A3'),Math.cos(a)*.32,TOP3+.05,Math.sin(a)*.32)); }
@@ -9285,7 +9448,7 @@ function zzzTex3(){ const c=document.createElement('canvas'); c.width=96; c.heig
 
 // Time of day: sunrise, day, sunset and night from the device's clock (?hour=21 to try)
 const TOD3=[[0,'#0B1D3A',.08,'#7F96E6',.17,'#0E3F68',1],[5,'#0B1D3A',.08,'#7F96E6',.17,'#0E3F68',1],[6.5,'#FFB98A',.6,'#FFC59A',.48,'#2A8FD0',.35],[8,'#BFE6F7',.95,'#FFFFFF',.62,'#22B4EE',0],[17,'#BFE6F7',.95,'#FFFFFF',.62,'#22B4EE',0],[18.7,'#FF9E6E',.6,'#FFB070',.45,'#2C86C4',.35],[20.2,'#0B1D3A',.08,'#7F96E6',.17,'#0E3F68',1],[24,'#0B1D3A',.08,'#7F96E6',.17,'#0E3F68',1]];
-function isl3Tod(force){ const h=isl3Hour(); if(!force&&ISL3.todH!=null&&Math.abs(h-ISL3.todH)<.02) return; ISL3.todH=h; ISL3.shadowDirty=true;
+function isl3Tod(force){ if(ISL3.lufu){ lufuTod(); return; } const h=isl3Hour(); if(!force&&ISL3.todH!=null&&Math.abs(h-ISL3.todH)<.02) return; ISL3.todH=h; ISL3.shadowDirty=true;
   let i=0; while(i<TOD3.length-2&&TOD3[i+1][0]<=h) i++; const A=TOD3[i], B=TOD3[i+1], t=(h-A[0])/Math.max(.001,B[0]-A[0]);
   const col=(a,b)=>new THREE.Color(a).convertSRGBToLinear().lerp(new THREE.Color(b).convertSRGBToLinear(),t), num=(a,b)=>a+(b-a)*t;
   const sky=col(A[1],B[1]); ISL3.r.setClearColor(sky); ISL3.sc.fog.color.copy(sky);
@@ -9297,6 +9460,12 @@ function isl3Tod(force){ const h=isl3Hour(); if(!force&&ISL3.todH!=null&&Math.ab
   // the characters are pictures, not lit by the sun: dim and cool them as it gets dark
   if(ISL3.world){ const k=1-night*.45; ISL3.world.traverse(x=>{ if(x.isSprite&&!x.userData.zzz&&x.material&&x.material.color) x.material.color.setRGB(k,k,Math.min(1,k*1.12)); }); }
   if(ISL3.stars) ISL3.stars.material.opacity=Math.max(0,night-.3)*1.2; }
+// lufu's world: an endless enchanted night (deep violet sky, lavender mist, a cool moon for a sun, a dark sea)
+function lufuTod(){ ISL3.todH=-1; ISL3.shadowDirty=true; const sky=new THREE.Color('#1A1440').convertSRGBToLinear(); ISL3.r.setClearColor(sky); ISL3.sc.fog.color.copy(sky);
+  ISL3.sun.intensity=.55; ISL3.sun.color.copy(new THREE.Color('#C9B8FF').convertSRGBToLinear()); ISL3.sun.position.set(-18,26,-30); ISL3.hemi.intensity=.42; ISL3.sea.material.color.copy(new THREE.Color('#141C4A').convertSRGBToLinear());
+  ISL3.night=1; for(const m of Object.values(ISL3.glows||{})) m.emissiveIntensity=1.6;
+  for(const c of ['#6FB7E8','#FFF0B0','#FFE9A8']){ const m=m3(c); if(!m.userData.win){ m.userData.win=1; m.emissive=new THREE.Color('#FFC24A').convertSRGBToLinear(); } m.emissiveIntensity=1.1; }
+  if(ISL3.world){ ISL3.world.traverse(x=>{ if(x.isSprite&&!x.userData.zzz&&x.material&&x.material.color) x.material.color.setRGB(.72,.7,.9); }); } }
 
 // The loop: about 30 frames a second while Bloppitopia is on screen, nothing when it isn't
 function isl3Frame(now){
@@ -9341,6 +9510,9 @@ function isl3Animate(x,t){ const u=x.userData;
   if(u.fount) x.scale.setScalar(.9+Math.sin(t*5)*.1);
   if(u.hand){ const d=new Date(), h=(d.getHours()%12)+d.getMinutes()/60, m=d.getMinutes()+d.getSeconds()/60; x.rotation.z=-(u.hand===1?h/12:m/60)*Math.PI*2; }
   if(u.beam){ x.material.opacity=.16+Math.sin(t*1.5)*.06; }
+  if(u.sway!=null){ x.rotation.z=Math.sin(t*.7+u.sway)*.04; x.rotation.x=Math.cos(t*.55+u.sway*1.3)*.03; }
+  if(u.coral!=null) x.scale.y=1+Math.sin(t*1.1+u.coral*.9)*.035;
+  if(u.float!=null){ x.position.y=(u.y0??(u.y0=x.position.y))+Math.sin(t*.9+u.float)*.25; x.rotation.y=t*.4+u.float; }
   if(u.pulse){ const k=.5+.5*Math.sin(t*1.6); x.scale.setScalar((1.6+k*1.1)*u.pulse); x.material.opacity=.3+.5*k; }
   if(u.twinkle!=null){ const k=(Math.sin(t*3+u.twinkle*1.7)+1)/2; x.scale.setScalar(.25+k*.55); x.material.opacity=.4+k*.6; }
   if(u.mist!=null) x.position.x+=Math.sin(t*.3+u.mist)*.002;
@@ -9357,8 +9529,8 @@ const ease3=k=>k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
 function isl3StopSpin(){ const c=ISL3.ctl; if(!c||!c.enableDamping) return; c.enableDamping=false; c.update(); c.enableDamping=true; }
 function isl3FlyTo(x,y,z,dist,dur){ isl3StopSpin(); const cam=ISL3.cam, ctl=ISL3.ctl, dir=cam.position.clone().sub(ctl.target).normalize();
   ISL3.fly={t0:performance.now(),dur:dur||1100,p0:cam.position.clone(),q0:ctl.target.clone(),q1:new THREE.Vector3(x,y,z),p1:new THREE.Vector3(x,y,z).addScaledVector(dir,dist)}; isl3Kick(); }
-function isl3FlyHome(dur){ ISL3.viewI=0; isl3StopSpin(); isl3FreeLook(true); const cam=ISL3.cam, box=ISL3.box, w=box.clientWidth, h=box.clientHeight, c=cam.clone(); isl3Fit(c,w/h); const d=c.position.distanceTo(CAM_T3);
-  ISL3.fly={t0:performance.now(),dur:dur||1000,p0:cam.position.clone(),q0:ISL3.ctl.target.clone(),q1:CAM_T3.clone(),p1:c.position.clone()}; isl3Kick(); }
+function isl3FlyHome(dur){ ISL3.viewI=0; isl3StopSpin(); isl3FreeLook(true); const cam=ISL3.cam, box=ISL3.box, w=box.clientWidth, h=box.clientHeight, c=cam.clone(); isl3Fit(c,w/h); const T=ISL3.lufu?LUFU_T3:CAM_T3, d=c.position.distanceTo(T);
+  ISL3.fly={t0:performance.now(),dur:dur||1000,p0:cam.position.clone(),q0:ISL3.ctl.target.clone(),q1:T.clone(),p1:c.position.clone()}; isl3Kick(); }
 function isl3FlyStep(now){ const F=ISL3.fly, k=Math.min(1,(now-F.t0)/F.dur), e=ease3(k); ISL3.cam.position.lerpVectors(F.p0,F.p1,e); ISL3.ctl.target.lerpVectors(F.q0,F.q1,e); ISL3.cam.lookAt(ISL3.ctl.target); if(k>=1){ ISL3.fly=null; ISL3.ctl.update(); if(F.done) F.done(); } }
 // Pops (a new piece springs up), islands rising from the mist, confetti
 function isl3Pop(obj,kind){ if(!obj) return; ISL3.pops=ISL3.pops||[]; obj.userData.s0=obj.scale.x||1; ISL3.pops.push({obj,kind:kind||'pop',t0:performance.now()}); if(kind!=='rise') obj.scale.setScalar(.01); isl3Kick(); }
@@ -9437,7 +9609,7 @@ function theEnd(then){
       el.insertAdjacentHTML('beforeend',`<div class="te-card"><img src="/art/head-${S.img}.png" alt=""><span><b>${S.name}</b><q>${escapeHTML(S.say)}</q><small>${escapeHTML(S.got)}</small></span></div>`);
       sfx.chime&&sfx.chime(); timer=setTimeout(()=>go(i+1),6000); return; }
     if(S.roll){ isl3FlyHome(2200); const keys=[...new Set(o.log)].filter(k=>worldThumb(k)).slice(-48), dur=reduceMotion?7:Math.max(9,Math.min(22,6+keys.length*.45));
-      el.insertAdjacentHTML('beforeend',`<div class="te-roll"><div class="te-col" style="--d:${dur}s"><h3>Built by ${escapeHTML(who)}</h3><div class="te-pics">${keys.map(k=>`<img src="${worldThumb(k)}" alt="">`).join('')}</div><h3>with Bloppit, Tiny, Nora, Pippa, Swoop, Bibi and lufu</h3></div></div>`);
+      el.insertAdjacentHTML('beforeend',`<div class="te-roll"><div class="te-col" style="--d:${dur}s"><h3>Built by ${escapeHTML(who)}</h3><div class="te-pics">${keys.map(k=>`<img src="${worldThumb(k)}" alt="">`).join('')}</div><h3>with Bloppit, Tiny, Nora, Pippa, Swoop, Bibi… and lufu</h3></div></div>`);
       timer=setTimeout(()=>go(i+1),dur*1000+400); return; }
     if(S.nums){ const ts=B.map(([,b])=>b.t).filter(t=>t>0), days=new Set(ts.map(t=>new Date(t).toDateString())).size, since=ts.length?new Date(Math.min(...ts)):null;
       el.insertAdjacentHTML('beforeend',`<div class="te-nums"><h3>${escapeHTML(who)}’s Bloppitopia</h3><div><span>Bricks placed</span><b>${nf(B.reduce((a,[,b])=>a+(b.n||0),0))}</b></div><div><span>Builds finished</span><b>${nf(worldCount(o))}</b></div><div><span>Days of building</span><b>${nf(days)}</b></div>${since?`<div><span>Started</span><b>${since.toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'})}</b></div>`:''}<div><span>Islands complete</span><b>${ISLE_TOTAL} of ${ISLE_TOTAL}</b></div><div><span>Friends made</span><b>7</b></div></div>`);
@@ -9445,7 +9617,8 @@ function theEnd(then){
     // The end: the whole of Bloppitopia under the stars
     isl3FlyHome(2600);   // the whole of Bloppitopia at night, every island lit (a close-up of Home Island is too busy on a full island)
     el.className='the-end final';
-    el.innerHTML=`<div class="te-fin"><h2>The end.</h2><p>${escapeHTML(who)} and lufu, home at last.<br>Bloppitopia is yours. Keep building.</p><div class="row"><button class="primary" type="button" data-te="keep">Keep playing</button><button class="ghost" type="button" data-te="replay">Replay a level</button></div></div>`;
+    el.innerHTML=`<div class="te-fin"><h2>The end of Chapter 1.</h2><p>${escapeHTML(who)} and lufu have found each other.<br>Bloppitopia is yours. Keep building.</p><p class="te-next">Chapter 2: lufu’s world is waiting to be rebuilt. The Galaxy ship will take you there and back.</p><div class="row"><button class="primary" type="button" data-te="lufu">✨ Sail to lufu’s world</button><button class="ghost" type="button" data-te="keep">Stay in Bloppitopia</button></div></div>`;
+    el.querySelector('[data-te="lufu"]').onclick=e=>{ e.stopPropagation(); done(); realmGo('lufu'); };
     el.querySelector('[data-te="keep"]').onclick=e=>{ e.stopPropagation(); done(); };
     el.querySelector('[data-te="replay"]').onclick=e=>{ e.stopPropagation(); done(); setTab('game','hub'); };
   };
@@ -9470,8 +9643,8 @@ function finaleCard(id){
     blitzbay:()=>`${B.filter(([,b])=>b.k==='blitz').length} Blitz wins, and the Grand Prix against Swoop`,
     brickworks:()=>`${isleCount('brickworks',o)} creations: your own, the library and the Weekly Bloppit`,
     moonstone:()=>`The mystery solved: all ${MYSTERY.length} chapters, and lufu found`}[isle];
-  trialDialog({icon:isle==='moonstone'?'✨':'🏆',title:isle==='moonstone'?'You found lufu!':`${N.name} is complete!`,quick:true,rows:`<div><span>${escapeHTML(line?line():'')}</span><span></span></div><div><span>${escapeHTML(N.milestone)}</span><span>✓</span></div><div class="tot"><span>Bonus Galaxy Blocks</span><span>+5 ${gbIc()}</span></div>`,
-    note:(isle==='moonstone'?`“We have found each other.” lufu sails home with ${pupName(o)||'your otter'} and lives on Home Island now. `:'')+(islesComplete(o).length<ISLE_TOTAL?`${islesComplete(o).length} of ${ISLE_TOTAL} islands complete. ${ISLE_TOTAL-islesComplete(o).length===1?'One to go!':'Keep going!'}`:'Every island is complete!')});
+  trialDialog({icon:isle==='moonstone'?'⛵':'🏆',title:isle==='moonstone'?'The Galaxy ship sets sail!':`${N.name} is complete!`,quick:true,rows:`<div><span>${escapeHTML(line?line():'')}</span><span></span></div><div><span>${escapeHTML(N.milestone)}</span><span>✓</span></div><div class="tot"><span>Bonus Galaxy Blocks</span><span>+5 ${gbIc()}</span></div>`,
+    note:(isle==='moonstone'?`All eight of you are aboard: ${pupName(o)||'your otter'} and lufu at the bow, Bloppit and the friends behind. The ship sails for lufu’s own world. `:'')+(islesComplete(o).length<ISLE_TOTAL?`${islesComplete(o).length} of ${ISLE_TOTAL} islands complete. ${ISLE_TOTAL-islesComplete(o).length===1?'One to go!':'Keep going!'}`:'Every island is complete!')});
 }
 function revealText(id,o){ const [k,a,b]=id.split(':');
   if(k==='isle') return {t:`🏝️ ${ISLES[a].name} rose from the mist!`,kind:'isle'};
@@ -9480,18 +9653,23 @@ function revealText(id,o){ const [k,a,b]=id.split(':');
 function isl3Banner(t,big){ const b=ISL3.box&&ISL3.box.querySelector('.is3-banner'); if(!b) return; b.textContent=t; b.hidden=!t; b.classList.toggle('big',!!big); }
 // The buttons over the world: Play Next (one obvious next step), and the arrival's Build Our First Home
 function isl3Chrome(){ const box=ISL3.box; if(!box) return; let c=box.querySelector('.is3-chrome');
-  if(!c){ c=document.createElement('div'); c.className='is3-chrome'; c.innerHTML='<div class="is3-banner" hidden></div><button class="primary is3-play" type="button"></button><button class="ghost is3-alt" type="button" hidden></button><div class="is3-views" hidden><button class="v-world" type="button" aria-label="Back to all of Bloppitopia" title="Bloppitopia" hidden><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="50" fill="#2FB8DC"/><circle cx="50" cy="52" r="15" fill="#6CC04A" stroke="#F2D594" stroke-width="4"/><g transform="translate(50 52) scale(.5)" stroke="#9E2019" stroke-width="2" fill="#D8342C"><rect x="-20" y="-6" width="40" height="18" rx="2.5"/><rect x="-15" y="-13" width="10" height="8" rx="2"/><rect x="5" y="-13" width="10" height="8" rx="2"/></g><circle cx="50.0" cy="19.0" r="8" fill="#9BD32C" stroke="#F2D594" stroke-width="3"/><circle cx="81.4" cy="41.8" r="8" fill="#24407A" stroke="#F2D594" stroke-width="3"/><circle cx="69.4" cy="78.7" r="8" fill="#F2C230" stroke="#F2D594" stroke-width="3"/><circle cx="30.6" cy="78.7" r="8" fill="#2F7FD0" stroke="#F2D594" stroke-width="3"/><circle cx="18.6" cy="41.8" r="8" fill="#E9772A" stroke="#F2D594" stroke-width="3"/></svg></button><button class="v-prev" type="button" aria-label="Previous view">‹</button><span class="v-mid"><span class="v-name"></span><span class="v-dots" aria-hidden="true"></span></span><button class="v-next" type="button" aria-label="Next view">›</button></div><div class="is3-say" hidden></div>'; box.appendChild(c);
+  if(!c){ c=document.createElement('div'); c.className='is3-chrome'; c.innerHTML='<div class="is3-banner" hidden></div><button class="primary is3-play" type="button"></button><button class="ghost is3-alt" type="button" hidden></button><button class="is3-realm" type="button" hidden></button><div class="is3-views" hidden><button class="v-world" type="button" aria-label="Back to all of Bloppitopia" title="Bloppitopia" hidden><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="50" fill="#2FB8DC"/><circle cx="50" cy="52" r="15" fill="#6CC04A" stroke="#F2D594" stroke-width="4"/><g transform="translate(50 52) scale(.5)" stroke="#9E2019" stroke-width="2" fill="#D8342C"><rect x="-20" y="-6" width="40" height="18" rx="2.5"/><rect x="-15" y="-13" width="10" height="8" rx="2"/><rect x="5" y="-13" width="10" height="8" rx="2"/></g><circle cx="50.0" cy="19.0" r="8" fill="#9BD32C" stroke="#F2D594" stroke-width="3"/><circle cx="81.4" cy="41.8" r="8" fill="#24407A" stroke="#F2D594" stroke-width="3"/><circle cx="69.4" cy="78.7" r="8" fill="#F2C230" stroke="#F2D594" stroke-width="3"/><circle cx="30.6" cy="78.7" r="8" fill="#2F7FD0" stroke="#F2D594" stroke-width="3"/><circle cx="18.6" cy="41.8" r="8" fill="#E9772A" stroke="#F2D594" stroke-width="3"/></svg></button><button class="v-prev" type="button" aria-label="Previous view">‹</button><span class="v-mid"><span class="v-name"></span><span class="v-dots" aria-hidden="true"></span></span><button class="v-next" type="button" aria-label="Next view">›</button></div><div class="is3-say" hidden></div>'; box.appendChild(c);
     c.querySelector('.v-world').onclick=()=>{ isl3GoView(0); sfx.swoosh(); }; c.querySelector('.v-mid').onclick=()=>{ if(ISL3.viewI){ isl3GoView(0); sfx.swoosh(); } }; c.querySelector('.v-prev').onclick=()=>{ isl3GoView((ISL3.viewI||0)-1); sfx.swoosh(-1); }; c.querySelector('.v-next').onclick=()=>{ isl3GoView((ISL3.viewI||0)+1); sfx.swoosh(1); };
     c.querySelector('.is3-play').onclick=()=>{ const B=c.querySelector('.is3-play'), a=B.dataset.act, isle=B.dataset.isle; if(a==='home'){ track('first_home_start'); welcomeStart(); return; }
       if(a==='world'){ isl3GoView(0); sfx.swoosh(-1); return; }
+      if(a==='lufu'){ track('lufu_build'); pickPuzzle('quick','top'); return; }
       if(a==='isle'){ const n=isleNext(isle); track('play_next:isle:'+isle); if(n){ nextMark(n.kind); n.go(); } else isleAnyway(isle); return; }
       const n=nextBuild(); track('play_next:island'); if(n) n.go(); else homeGo('quick'); };
-    c.querySelector('.is3-alt').onclick=()=>{ const isle=c.querySelector('.is3-alt').dataset.isle; track('play_anyway:'+isle); isleAnyway(isle); }; }
+    c.querySelector('.is3-alt').onclick=()=>{ const isle=c.querySelector('.is3-alt').dataset.isle; track('play_anyway:'+isle); isleAnyway(isle); };
+    c.querySelector('.is3-realm').onclick=()=>realmGo(inLufu()?'bloppitopia':'lufu'); }
+  { const rb=c.querySelector('.is3-realm'), open=lufuWorldOpen(); rb.hidden=!open||!!(ISL3.arrival||ISL3.revealing); if(open) rb.innerHTML=inLufu()?'⛵ Sail to Bloppitopia':'✨ Sail to lufu’s world'; }
+  if(!ISL3.revealing&&!ISL3.arrival){ const bn=c.querySelector('.is3-banner'); if(ISL3.lufu){ bn.textContent='🌙 Chapter 2: Bloppit builds lufu’s world · coming soon'; bn.hidden=false; bn.classList.remove('big'); bn.classList.add('soon'); } else if(bn.classList.contains('soon')){ bn.classList.remove('soon'); bn.hidden=true; } }
   const b=c.querySelector('.is3-play'), alt=c.querySelector('.is3-alt'), o=worldStore(); alt.hidden=true; c.classList.remove('has-alt');
   if(ISL3.arrival==='home'){ b.dataset.act='home'; b.innerHTML='🔨 Build Our First Home'; b.hidden=false; }
   else if(ISL3.arrival||ISL3.revealing){ b.hidden=true; }
   else { const V=isl3Views(), v=V[ISL3.viewI||0], isle=v&&v.id.startsWith('isle:')?v.id.slice(5):null;
     b.hidden=false; b.dataset.isle=isle||'';
+    if(ISL3.lufu){ b.dataset.act='lufu'; b.innerHTML='<span>🔨 Build here</span><small>Chapter 2 is coming soon · free building until then</small>'; return; }
     if(!isle){ const n=nextBuild(); b.dataset.act='next'; b.innerHTML=n?`<span>▶ Play next</span><small>${escapeHTML(n.t)}</small>`:'<span>▶ Build something</span>'; return; }
     // Looking at one island: its own next step (not the whole world's), or, once it's complete, back to Bloppitopia
     const nm=isleCount(isle,o)>0?ISLES[isle].name:v.name, n=isleNext(isle);
@@ -9807,7 +9985,10 @@ function renderIsland(){
   const pop=islandShown>=0&&islandShown<n; islandShown=n;
   if(isl3Init()) isl3Show($('#isWorld'),o); else { $('#isWorld').innerHTML=islandSVG(o,{pop}); islandDrag(); }
   renderIslandIntro(o);
-  if(ISL3.ok){ const g=worldNextGoal(o), lv=otterLevel(o);
+  if(ISL3.ok&&inLufu()){ const lb=Object.values(o.builds).filter(b=>b.realm==='lufu').length;
+    $('#isStage').innerHTML=`lufu’s world<small>Chapter 2 · coming soon · ${lb} build${lb===1?'':'s'} here so far</small>`; isProgRender(o);
+    $('#isNext').innerHTML='<span>🌙 Chapter 2: Bloppit builds lufu’s world · coming soon. Until then, build anything you like here.</span>'; }
+  else if(ISL3.ok){ const g=worldNextGoal(o), lv=otterLevel(o);
     $('#isStage').innerHTML=`${escapeHTML(pupName(o)||'Your otter')} · Level ${lv} ${PUP_STAGES[pupStage(o)].name}<small>${n} build${n===1?'':'s'} finished · ${islandsOpen(o).length} of ${ISLE_TOTAL} islands · ${gbN(worldStars(o))} to spend</small>`;
     isProgRender(o);
     $('#isNext').innerHTML=g?`<span>${escapeHTML(g.text)}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*g.frac))}%"></i></span>`:'<span>Every island is complete. What a world!</span>'; }
