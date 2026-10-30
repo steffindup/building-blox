@@ -8259,8 +8259,6 @@ const RIG={
     poses:{cheer:'/art/happy-snap.svg',wave:'/art/happy-snap.svg',show_brick:'/art/offering.svg',giggle_wiggle:'/art/hugging.svg',surprised_jump:'/art/oops.svg',look_at_you:'/art/bloppit-3q.svg'}},
   pup0:{kind:'pup',h:1.08,stage:0},pup1:{kind:'pup',h:1.32,stage:1},pup2:{kind:'pup',h:1.56,stage:2},
   swoop:{kind:'bird',h:1.84,fill:'#F3F4F2',art:'/art/swoop.svg',neck:.4,belly:.7,brick:.62,eyes:[[252,284,33,30],[363,300,27,32]],lid:['#FFFFFF','#E3E6EA'],lash:'#2A2E33'},
-  scraps:{kind:'bird',h:1.5,fill:'#F3F4F2',art:'/art/scraps.svg',neck:.4,belly:.7,brick:.45},
-  squint:{kind:'bird',h:1.98,fill:'#F3F4F2',art:'/art/squint.svg',neck:.4,belly:.7,brick:.5},
   tiny:{kind:'friend',h:1.5/.85,art:'/art/char-tiny.png',neck:.45,belly:.72,brick:.58,eyes:[[68,54,38,39],[217,54,38,39]],lid:['#B7CC55','#86B240'],lash:'#2A1D06'},
   nora:{kind:'friend',h:2.3/.85,art:'/art/char-nora.png',neck:.33,belly:.72,brick:.6,eyes:[[37,69,19,20],[116,72,18,20]],lid:['#F2EEE6','#D9D4CB'],lash:'#2A2420'},
   pippa:{kind:'friend',h:1.8/.85,art:'/art/char-pippa.png',neck:.5,belly:.78,brick:.62,eyes:[[65,113,19,23],[164,111,19,23]],lid:['#FBF6EC','#ECE4D4'],lash:'#2A2420'},
@@ -8491,7 +8489,7 @@ for(const [id,m] of Object.entries(MODEL3)) RIG[id].glb=m.glb;
 const M3={wait:{}};
 function ch3Script(src){ return M3.wait[src]||(M3.wait[src]=new Promise((ok,no)=>{ const s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=()=>{ delete M3.wait[src]; no(new Error('could not load '+src)); }; document.head.appendChild(s); })); }
 function ch3Model(id){ const R=RIG[id], G=CH3.gltf[id]; if(!R||!R.glb||!G) return Promise.reject(new Error('no model for '+id)); if(G.model) return Promise.resolve(G.model);
-  return M3.wait[id]||(M3.wait[id]=(async()=>{ if(!THREE.GLTFLoader) await ch3Script('/3d/GLTFLoader.js');
+  return M3.wait[id]||(M3.wait[id]=(async()=>{ if(!THREE.GLTFLoader) await ch3Script('/3d/GLTFLoader.js?v=2');
     const gltf=await new Promise((ok,no)=>new THREE.GLTFLoader().load(R.glb+'?v='+MODEL3[id].v,ok,undefined,no)), sc=gltf.scene;
     sc.traverse(m=>{ if(m.isMesh){ m.castShadow=m.receiveShadow=false; m.frustumCulled=false; [].concat(m.material).forEach(ch3Filmic); } });   // the island's shadows are baked once; a soft pool under the feet instead
     sc.updateMatrixWorld(true); const box=new THREE.Box3(), v=new THREE.Vector3(), clips={};   // his size at rest (three's own box would include every pose's morphs)
@@ -8709,7 +8707,9 @@ function isl3CharsLive(){ if(!ISL3.on||!ISL3.world) return; if(ISL3.revealing||I
   // the whole cast at once (one rebuild, not one per character as each drawing arrives)
   const ids=['bloppit',...(ISL3.pupG?[ch3PupId(o)]:[]),lt,...Object.keys(ISL3.cast||{})]; if(!ids.every(id=>ch3Ready(id)||CH3.bad[id])) return;
   if(want(ISL3.b3,'bloppit')||(ISL3.pupG&&want(ISL3.p3,ch3PupId(o)))||want(ISL3.l3,lt)||fr){ isl3Build(o); isl3Kick(); } }
-function isl3CharsLoad(o){ if(!ch3On()) return; Promise.all(['bloppit',ch3PupId(o),LT3[longtailNow()],'tiny','nora','pippa','bibi',...(lufuHome(o)?['lufu']:[])].map(id=>ch3Get(id).catch(()=>null))).then(()=>{ isl3CharsLive(); for(const id of Object.keys(RIG)) if(RIG[id].glb) ch3Model(id).catch(()=>{}); }); }
+function isl3CharsLoad(o){ if(!ch3On()) return; const ids=['bloppit',ch3PupId(o),LT3[longtailNow()],'tiny','nora','pippa','bibi',...(lufuHome(o)?['lufu']:[])];
+  // only the models this island shows: the otter's current stage, not all three (each is 7 MB)
+  Promise.all(ids.map(id=>ch3Get(id).catch(()=>null))).then(()=>{ isl3CharsLive(); for(const id of ids) if(RIG[id]&&RIG[id].glb) ch3Model(id).catch(()=>{}); }); }
 const REACT_LINES={
   bloppit:['Hee hee! That tickles!','Let’s build something!','Click! Snap! Done!','Whoa, careful!','Wheee!','High five!','Have you seen my red brick? Oh, here it is.'],
   pup:['Wheee!','Hello, friend!','Again! Again!','Let’s build!','Look at me!','Hee hee!'],
