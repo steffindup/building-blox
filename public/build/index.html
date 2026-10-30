@@ -661,6 +661,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .go-card{display:grid;justify-items:center;gap:10px;max-width:min(420px,88%);padding:22px 26px;border-radius:20px;background:var(--panel,#1E2A36);color:#fff;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.4)}
 .go-card img{width:72px;height:72px;border-radius:50%;object-fit:cover}.go-card b{font-family:var(--f-display);font-size:24px}.go-card p{margin:0;opacity:.9;font-size:15px}
 .go-btn{font-size:20px;padding:12px 28px;border-radius:999px}
+#bpCallout .bp-left{flex-basis:100%;font-size:12px;font-weight:800;color:#F4BC22}
 body.bz-jump #view-blitz{visibility:hidden}
 .lufuhi{max-width:min(560px,94vw)}.lufuhi .lh-txt{text-align:left;line-height:1.5;margin:4px 0 10px}.lufuhi .lh-sub{font-weight:800;margin:6px 0;text-align:left}
 .lh-list{display:grid;gap:8px}.lh-list button{display:grid;grid-template-columns:36px 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-align:left;padding:10px 14px;border-radius:14px;border:2px solid var(--line);background:var(--page);color:var(--ink);font:inherit;cursor:pointer}
@@ -2851,7 +2852,10 @@ function showStep(k,animate){
     src.forEach((b,i)=>{ const ms=new THREE.Mesh(brickGeo(b.sx,b.sz),MIRROR_SRC_MAT); ms.scale.set(1.04,1.06,1.04); ms.add(new THREE.LineSegments(edgeGeo(b.sx,b.sz),MIRROR_EDGE_MAT));
       ms.position.set(b.x-b.sx*.02,b.y*1.2-.03,b.z-b.sz*.02); ms.userData.ty=ms.position.y; ms.userData.i=i; ms.userData.b=b; current.add(ms); });
     return; }
+  const doneB=k===cur?usedSet():null, part=!!doneB&&doneB.size>0&&model.steps[k].bricks.some(b=>!doneB.has(b));
   model.steps[k].bricks.forEach((b,i)=>{
+    if(part&&doneB.has(b)){ const ms=new THREE.Mesh(brickGeo(b.sx,b.sz),mat(model.paint?PAINT_C:b.c)); ms.position.set(b.x,b.y*1.2,b.z); ms.userData.ty=b.y*1.2; ms.userData.i=i; ms.userData.b=b; current.add(ms); return; }   // already in: shown like the rest of the model
+    if(part){ const hl=new THREE.Mesh(brickGeo(b.sx,b.sz),MIRROR_SRC_MAT); hl.scale.set(1.08,1.1,1.08); hl.position.set(b.x-b.sx*.04,b.y*1.2-.06,b.z-b.sz*.04); hl.userData.ty=hl.position.y; hl.userData.i=i; current.add(hl); }   // still to go: glowing
     const bc=model.paint?PAINT_C:b.c, ms=new THREE.Mesh(brickGeo(b.sx,b.sz),hang?xrayMat(bc):mat(bc)); if(hang) ms.renderOrder=5;
     ms.add(new THREE.LineSegments(edgeGeo(b.sx,b.sz),edgeMat));
     ms.position.set(b.x,b.y*1.2,b.z); ms.userData.ty=b.y*1.2; ms.userData.i=i; ms.userData.b=b;
@@ -3593,13 +3597,15 @@ function stepImage(k){
 }
 function showPage(k){
   const N=model.steps.length; k=clamp(k,0,N); viewPage=k;
-  if(bookK!==k){ bookK=k; showStep(k,k===cur&&k<N); }
+  const pSig=k===cur&&k<N?usedSet().size:-1;   // a brick of this page just went in (Swoop's, a friend's): redraw it
+  if(bookK!==k||pSig!==showPage.sig){ const again=bookK===k; bookK=k; showPage.sig=pSig; showStep(k,!again&&k===cur&&k<N); bookDirty=true; }
   if(k>=N){
     $('#bpStep').textContent='✓'; $('#bpCallout').innerHTML='<b style="padding:4px 2px">Finished model</b>';
     $('#bpFoot').textContent=`${model.bricks.length.toLocaleString()} pcs`;
   } else {
     const s=model.steps[k];
-    $('#bpStep').textContent=k+1; $('#bpCallout').innerHTML=calloutHTML(s.bricks);
+    const u=k===cur?usedSet():null, left=u?s.bricks.filter(b=>!u.has(b)):s.bricks;
+    $('#bpStep').textContent=k+1; $('#bpCallout').innerHTML=left.length&&left.length<s.bricks.length?`${calloutHTML(left)}<small class="bp-left">${s.bricks.length-left.length} of ${s.bricks.length} already in · ${left.length} to go</small>`:calloutHTML(s.bricks);   // part-done page: only what's still to place
     $('#bpFoot').textContent=`${TILES?`Row ${s.row+1} of ${model.D}`:`Layer ${s.layer+1} of ${model.H}`}${hangNote(s)}${s.parts>1?` · part ${s.part} of ${s.parts}`:''} · ${k<cur?'done':k===cur?'building now':'coming up'}`;
   }
   if(!TILES) bookAim();
