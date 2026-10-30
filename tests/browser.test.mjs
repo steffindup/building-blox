@@ -171,6 +171,18 @@ test('a finger on the brick in hand slides the brick, and the view stays still',
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('a Pippa puzzle still out at sea can be tapped: it says how many builds bring it in and offers Play next', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0&films=0', { init: { fn: () => { const sb = {}; for (let i = 0; i < 9; i++) sb[i] = 2; localStorage.setItem('building-blox-game-v1', JSON.stringify({ best: {}, sbest: sb })); } } });
+  await t.page.evaluate(() => [...document.querySelectorAll('.tab')].find((x) => /Seaside/.test(x.textContent)).click()); await t.page.waitForTimeout(800);
+  assert.match(await t.text('#gmLevels .lvl[data-i="9"] .tagnew'), /🌊 \d+ more builds?/);
+  assert.equal(await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="9"]').disabled), false);
+  await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="9"]').click()); await t.page.waitForTimeout(400);
+  assert.equal(await t.page.evaluate(() => document.getElementById('tideDlg').open), true);
+  assert.match(await t.text('#tdTxt'), /84%.*more builds? on the other islands/);
+  assert.equal(await t.page.evaluate(() => document.getElementById('tdGo').hidden), false);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('a Trail level finish shows the stars strip and counts a build', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0');
   await t.page.evaluate(() => document.querySelector('[data-go="otter"]').click()); await t.page.waitForTimeout(400);

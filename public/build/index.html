@@ -740,6 +740,13 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .lvl:hover:not(:disabled){border-color:var(--ink);transform:translateY(-2px)}
 .lvl:disabled{cursor:default;background:color-mix(in srgb,var(--line) 35%,var(--page))}
 .lvl:disabled>*{opacity:.5}
+.lvl.wait{background:color-mix(in srgb,var(--line) 35%,var(--page))}
+.lvl.wait>*:not(.tagnew){opacity:.5}
+.lvl.wait .ln{background:var(--line);color:var(--muted)}
+.lvl.wait img{filter:grayscale(1)}
+.lvl .tagnew.tide{background:#2B7FC4;color:#fff;white-space:nowrap}
+#tideDlg .td-pic{width:110px;height:110px;object-fit:contain;border-radius:14px;background:#fff;filter:grayscale(.6);margin:4px auto 0;display:block}
+#tdGo small{display:block;font-size:12px;font-weight:700;opacity:.9}
 .lvl.next{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
 .lvl .ln{position:absolute;left:10px;top:10px;width:30px;height:30px;border-radius:8px;background:var(--hi);color:#14202C;display:grid;place-items:center;font-family:var(--f-display);font-size:17px}
 .lvl:disabled .ln{background:var(--line);color:var(--muted)}
@@ -1957,6 +1964,13 @@ body.film-on{overflow:hidden}
   <div class="world-strip" data-ws></div>
   <p class="win-best" id="trNote"></p>
   <div class="win-btns"><button class="primary sm" id="trIsland" type="button" hidden>🏝️ See Bloppitopia</button><button class="ghost" id="trNext" type="button" hidden>▶ Play next</button><button class="ghost" id="trShare" type="button" hidden>Share the code</button><button class="ghost" id="trCard" type="button" hidden>📮 Weekly card</button><button class="ghost" id="trRetry" type="button" hidden>Try sending again</button><button class="primary sm" id="trDone" type="button">Done</button></div>
+</dialog>
+<dialog class="windlg" id="tideDlg" aria-labelledby="tdTitle">
+  <div class="win-stars">🌊</div>
+  <h2 id="tdTitle">Still out at sea</h2>
+  <img class="td-pic" id="tdPic" alt="">
+  <p class="win-best" id="tdTxt"></p>
+  <div class="win-btns"><button class="primary sm" id="tdGo" type="button">▶ Play next</button><button class="ghost" id="tdOk" type="button">OK</button></div>
 </dialog>
 <dialog class="windlg ladderdlg" id="ladderDlg" aria-labelledby="ldT">
   <span class="win-chars" id="ldChars" hidden></span>
@@ -5829,9 +5843,9 @@ function renderGameMap(){
   $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} ${trail==='sea'?'puzzles built':'levels done'}`;
   $('#gmLevels').innerHTML=levelsOf(trail).map((L,i)=>{
     const best=B[i], ashore=trail!=='sea'||seaWashed(i), open=i<=unlocked&&(ashore||!!best), cur_=game&&game.lvl===i&&gameTrail()===trail;
-    const st=best?levelStars(trail,i,null,best):0;
-    return `<button class="lvl${i===unlocked&&!best?' next':''}" type="button" data-i="${i}" ${open?'':'disabled'}>
-      <span class="ln">${i+1}</span>${cur_?'<span class="tagnew">Playing</span>':(i===unlocked&&!best?'<span class="tagnew">Next</span>':'')}
+    const st=best?levelStars(trail,i,null,best):0, wait=!best&&!ashore, k=wait?seaBuildsTo(i):0;   // a Pippa puzzle still out at sea: tap it to hear how to bring it in
+    return `<button class="lvl${i===unlocked&&!best&&!wait?' next':''}${wait?' wait':''}" type="button" data-i="${i}" ${wait?'data-wait="1"':''} ${open||wait?'':'disabled'}>
+      <span class="ln">${i+1}</span>${cur_?'<span class="tagnew">Playing</span>':(i===unlocked&&!best?(wait?`<span class="tagnew tide">🌊 ${k} more build${k===1?'':'s'}</span>`:'<span class="tagnew">Next</span>'):'')}
       <img alt="" src="${levelThumb(L)}"><span class="lt">${L.boss?'👑 Boss: ':''}${L.name}</span>
       <span class="lm" data-c="${i}">${L.count?`${L.count} bricks`:'&nbsp;'}</span>
       ${best?`<span class="ls">${starHTML(st)}</span><span class="lb">${st===3?'All three stars!':'Built ✓'}</span>`:open?'<span class="lb">Not played yet</span>':!ashore?`<span class="lb">🌊 Washes ashore at ${seaPct(i)}%</span>`:`<span class="lb">Finish level ${i} to unlock</span>`}
@@ -5839,9 +5853,16 @@ function renderGameMap(){
   // Work out brick counts a few at a time so the map appears straight away
   let k=0; (function next(){ if(tab!=='game'||k>=levelsOf(trail).length) return; const L=levelsOf(trail)[k], el=document.querySelector(`[data-c="${k}"]`); if(el&&!L.count){ levelCount(L); el.textContent=`${L.count} bricks`; } k++; setTimeout(next,0); })();
 }
-$('#gmLevels').addEventListener('click',e=>{ const b=e.target.closest('.lvl'); if(!b||b.disabled) return; const i=+b.dataset.i;
+$('#gmLevels').addEventListener('click',e=>{ const b=e.target.closest('.lvl'); if(!b||b.disabled) return; const i=+b.dataset.i; if(b.dataset.wait){ tideShow(i); return; }
   if(game&&game.lvl===i&&gameTrail()===trail&&model&&cur<model.steps.length){ setTab('build'); return; } startLevelFilm(trail,i); });
 document.querySelector('.trail-pick').addEventListener('click',e=>{ const b=e.target.closest('[data-trail]'); if(!b) return; setTrail(b.dataset.trail); renderGameMap(); });
+// A Pippa puzzle the tide hasn't brought in yet: what it's waiting for, and a button to the build that gets it there
+function tideShow(i){ const L=SEA_LEVELS[i], o=worldStore(), k=seaBuildsTo(i,o), B=bestOf(gameStore(),'sea'), first=SEA_LEVELS.findIndex((x,j)=>!(B[j]>0)), n=nextBuild();
+  $('#tdTitle').textContent=`${L.name} is still out at sea`; $('#tdPic').src=levelThumb(L);
+  $('#tdTxt').innerHTML=`The tide brings it in when Bloppitopia reaches <b>${seaPct(i)}%</b> (you’re at ${progressPct(o)}%). That’s <b>${k} more build${k===1?'':'s'}</b> on the other islands: Frog Trail, Brain Trail, Blitz or Quick Build. Pippa’s own puzzles don’t move the tide.`+(first>=0&&first<i?` And build ${escapeHTML(SEA_LEVELS[first].name)} first.`:'');
+  const g=$('#tdGo'); g.hidden=!n; if(n) g.innerHTML=`▶ Play next<small>${escapeHTML(n.t)}</small>`;
+  g.onclick=()=>{ $('#tideDlg').close(); if(n) n.go(); }; $('#tdOk').onclick=()=>$('#tideDlg').close(); $('#tideDlg').showModal(); }
+window.bloppitTide=tideShow;   // for tests
 $('#gmSwitch').onclick=openWho;
 $('#gmReset').onclick=()=>{ const b=$('#gmReset'); if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent=`Tap again to wipe your ${TRAILS[trail].name} scores`; setTimeout(()=>{delete b.dataset.confirm; b.textContent='Reset game progress';},3000); return; }
   delete b.dataset.confirm; b.textContent='Reset game progress'; const g=gameStore(); if(trail==='brain') g.bbest={}; else if(trail==='sea') g.sbest={}; else g.best={}; gameStoreSet(g); renderGameMap(); };
