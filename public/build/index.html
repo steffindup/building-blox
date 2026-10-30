@@ -915,6 +915,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .hm-world .hw-isle .hw-tag{position:absolute;left:10px;top:10px;padding:4px 12px;border-radius:999px;background:rgba(20,32,44,.82);color:#fff;font-family:var(--f-display);font-size:18px}
 .hm-world.lead{border:3px solid #008F9B}
 .hm-world .pup.ps-splash{width:76px;height:76px}.hm-world .pup.ps-legend{width:88px;height:88px;border-color:#F4BC22}
+.hm-world .hw-card{grid-column:1/-1;justify-self:end;display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:999px;border:1px solid var(--line);background:var(--page);font-weight:800;font-size:14px;box-shadow:0 2px 0 var(--shadow)}.hm-world .hw-card:hover{border-color:var(--ink)}
 .hm-world .wt{display:grid;gap:3px;min-width:0}
 .hm-world .wt b{font-family:var(--f-display);font-weight:400;font-size:22px;line-height:1.1}
 .hm-world .wt .sub{font-size:13px;font-weight:700;color:var(--muted)}
@@ -1110,8 +1111,8 @@ html:has(#view-island.immersive:not([hidden])),body:has(#view-island.immersive:n
 #view-island.immersive .is-foot{pointer-events:auto!important;cursor:pointer;transition:transform .15s}#view-island.immersive .is-foot:hover{transform:translateY(-1px);background:rgba(20,32,44,.88)}
 #view-island.immersive .is-foot::after{content:'›';position:absolute;right:10px;top:8px;font-size:20px;opacity:.6}
 #view-island .is-custom{display:none}
-#view-island.immersive .is-btns .is-custom{display:flex;align-items:center;gap:10px;font-size:16px!important;font-weight:800;padding:10px 16px!important;border-radius:16px!important;color:#fff!important;background:linear-gradient(135deg,#8A3BC9,#3B2C9B)!important;box-shadow:0 5px 0 #24195E,0 8px 18px rgba(0,0,0,.28)!important;cursor:pointer}
-#view-island .is-custom:hover{filter:brightness(1.08)}#view-island .is-custom .ic-gb,.isd-gb{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.18);font-size:14px}
+#view-island.immersive .is-btns .is-custom{display:flex;align-items:center;gap:10px;font-size:16px!important;font-weight:800;padding:10px 16px!important;border-radius:16px!important;color:#fff!important;background:#4A2398!important;box-shadow:0 5px 0 #26105C,0 8px 18px rgba(0,0,0,.28)!important;cursor:pointer}
+#view-island .is-custom:hover{filter:brightness(1.08)}#view-island .is-custom .ic-gb,.isd-gb{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.18);font-size:14px}#view-island .is-custom .ic-gb{background:#fff;color:#4A2398}
 #view-island .ic-gb svg,#view-island .ic-gb img,.isd-gb svg,.isd-gb img{width:18px;height:18px}
 .is-drawer{position:absolute;z-index:5;top:10px;right:10px;bottom:10px;width:min(560px,calc(100% - 20px));display:flex;flex-direction:column;border-radius:20px;background:var(--page);color:var(--ink);border:1px solid var(--line);box-shadow:0 18px 50px rgba(0,0,0,.35);overflow:hidden}
 .isd-head{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line)}
@@ -1921,7 +1922,7 @@ body.film-on{overflow:hidden}
 <div class="is-tip" id="isTip" role="dialog" hidden></div><div class="is-hover" id="isHover" aria-hidden="true" hidden></div>
 <section class="view" id="view-island" hidden>
   <div class="gm-head"><div><h2>🏝️ Bloppitopia</h2><p class="note" id="isNote">Every build you finish grows your world.</p></div>
-    <div class="is-btns"><button class="is-custom" id="isCustom" type="button"><span class="ic-t">🎨 Customise<span class="ic-long"> Bloppitopia</span></span><span class="ic-gb" id="isGb"></span></button><button class="ghost" id="isDecor" type="button" hidden>✨ Decorate</button><button class="ghost" id="isCard" type="button" hidden>📮 Postcard</button><button class="ghost" id="isBuildsGo" type="button" hidden>📦 Your builds</button></div></div>
+    <div class="is-btns"><button class="is-custom" id="isCustom" type="button"><span class="ic-t">Customise<span class="ic-long"> Bloppitopia</span></span><span class="ic-gb" id="isGb"></span></button><button class="ghost" id="isDecor" type="button" hidden>✨ Decorate</button><button class="ghost" id="isCard" type="button" hidden>📮 Postcard</button><button class="ghost" id="isBuildsGo" type="button" hidden>📦 Your builds</button></div></div>
   <div class="card is-intro" id="isIntro" hidden>
     <div class="ii-head"><span class="ii-pup" id="iiPup"></span><div><h2 id="iiTitle">Welcome to Bloppitopia</h2><p id="iiTxt">Your otter lives here with Bloppit.</p></div></div>
     <p style="margin:0">Every build you finish grows the island, and your models stand on it. Builds earn Galaxy Blocks, and Bibi’s shop sells decorations for them.</p>
@@ -7617,7 +7618,9 @@ function renderHomeWorld(){
     <div class="wt">${nm?`<b>${escapeHTML(nm)} <span class="sub">· Level ${otterLevel(o)} ${PUP_STAGES[ps].name}</span></b>`:`<span class="wname" id="wName" role="button" tabindex="0">Name your otter</span>`}
       <span class="sub">${next?`Grows into a ${next.name} at Level ${next.lvl} (another stud on its brick)`:'Legend of Bloppitopia'}</span><span class="bar"><i style="width:${Math.max(4,pct)}%"></i></span></div>
     <div class="wn"><div><b>${n}</b><span>build${n===1?'':'s'}</span></div><div><b class="st">${gbIc()} ${worldStars(o)}</b><span>Galaxy Blocks</span></div><div><b>${worldXP(o)}</b><span>XP</span></div></div>
-    ${(()=>{ const g=ISL3.ok&&typeof worldNextGoal==='function'?worldNextGoal(o):null; if(g) return `<span class="sub" style="grid-column:1/-1">Next: ${escapeHTML(g.text)}</span>`; return inext?`<span class="sub" style="grid-column:1/-1;font-size:13px;font-weight:700;color:var(--muted)">${inext.at-n} more build${inext.at-n===1?'':'s'} to the ${inext.name}</span>`:''; })()}`;
+    ${(()=>{ const g=ISL3.ok&&typeof worldNextGoal==='function'?worldNextGoal(o):null; if(g) return `<span class="sub" style="grid-column:1/-1">Next: ${escapeHTML(g.text)}</span>`; return inext?`<span class="sub" style="grid-column:1/-1;font-size:13px;font-weight:700;color:var(--muted)">${inext.at-n} more build${inext.at-n===1?'':'s'} to the ${inext.name}</span>`:''; })()}
+    ${is>=3?'<span class="hw-card" id="hwCard" role="button" tabindex="0">📮 Postcard</span>':''}`;
+  const hc=$('#hwCard'); if(hc){ const go=e=>{ e.stopPropagation(); e.preventDefault(); $('#isCard').onclick(); }; hc.onclick=go; hc.onkeydown=e=>{ if(e.key==='Enter'||e.key===' ') go(e); }; }   // the postcard, straight from the menu
   const w=$('#wName'); if(w){ w.onclick=e=>{ e.stopPropagation(); pupOpen(); }; w.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); e.stopPropagation(); pupOpen(); } }; }
   islandSnap(o,pic?'':isle,nm,n,ISLAND_STAGES[is].name,pic);
 }
@@ -9855,9 +9858,11 @@ function isl3Immersive(){ const v=$('#view-island'), card=v&&v.querySelector('.i
   v.classList.add('immersive'); v.setAttribute('aria-label','Bloppitopia'); if(btns.parentElement!==card) card.appendChild(btns);
   // Customise Bloppitopia: a drawer over the world with Bibi's shop and your builds (they used to sit below, so the page scrolled)
   let dr=$('#isDrawer'); if(!dr){ dr=document.createElement('div'); dr.id='isDrawer'; dr.className='is-drawer'; dr.hidden=true; dr.setAttribute('role','dialog'); dr.setAttribute('aria-label','Customise Bloppitopia');
-    dr.innerHTML='<div class="isd-head"><div class="isd-tabs" role="tablist"><button type="button" role="tab" data-isd="shop">✨ Decorate</button><button type="button" role="tab" data-isd="builds">📦 Your builds</button></div><span class="isd-gb" id="isdGb"></span><button class="isd-x" type="button" aria-label="Close">✕</button></div><div class="isd-body"></div>';
+    dr.innerHTML='<div class="isd-head"><div class="isd-tabs" role="tablist"><button type="button" role="tab" data-isd="shop">✨ Decorate</button><button type="button" role="tab" data-isd="builds">📦 Your builds</button><button type="button" id="isdCard" hidden>📮 Postcard</button></div><span class="isd-gb" id="isdGb"></span><button class="isd-x" type="button" aria-label="Close">✕</button></div><div class="isd-body"></div>';
     const body=dr.querySelector('.isd-body'); body.appendChild($('#isShop')); body.appendChild(v.querySelector('.is-builds')); card.appendChild(dr);
-    dr.querySelectorAll('[data-isd]').forEach(b=>b.onclick=()=>isDrawerTab(b.dataset.isd)); dr.querySelector('.isd-x').onclick=()=>isDrawer(false); }
+    dr.querySelectorAll('[data-isd]').forEach(b=>b.onclick=()=>isDrawerTab(b.dataset.isd)); dr.querySelector('.isd-x').onclick=()=>isDrawer(false);
+    dr.querySelector('#isdCard').onclick=()=>$('#isCard').onclick();   // the postcard is one of Customise's options now
+    const pc=$('#isCard'); dr.querySelector('#isdCard').hidden=pc.hidden; pc.hidden=true; }
   $('#isCustom').onclick=()=>isDrawer(!!$('#isDrawer').hidden);
   // the card over the world opens your otter: level, outfits, colour
   const ft=v.querySelector('.is-foot'); if(ft&&!ft.dataset.tap){ ft.dataset.tap=1; ft.setAttribute('role','button'); ft.tabIndex=0; ft.title='Your otter: level, outfits and colour';
@@ -10102,7 +10107,7 @@ function renderIsland(){
   else $('#isStage').innerHTML=`${ISLAND_STAGES[stage].name}<small>${n} build${n===1?'':'s'} finished · ${gbN(worldStars(o))} to spend</small>`;
   if(!ISL3.ok) $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>Your village is built. Now grow the five islands around it.</span>';
   $('#isNote').textContent=n?`${pupName(o)||'Your otter'} and Bloppit are home. Tap anything to see what it is${n>1?`, and drag a model anywhere on the ${ISL3.ok?'grass':'sand'}`:''}${ISL3.ok?'. Swipe to move between views, pinch to look closer, and tap anyone to say hello':''}.`:ISL3.ok?`${pupName(o)?pupName(o)+'’s':'Your'} home is waiting to be built. Tap anything to see what it is.`:'Finish any build and the first hut rises from the sand. Tap anything to see what it is.';
-  $('#isCard').hidden=stage<3; $('#isDecor').hidden=!n||!!$('#isDrawer');   // with the Customise button, Decorate lives in its drawer
+  { const d=$('#isdCard'); if(d) d.hidden=stage<3; $('#isCard').hidden=stage<3||!!d; } $('#isDecor').hidden=!n||!!$('#isDrawer');   // with the Customise button, Decorate lives in its drawer
   renderDecorShop(); renderBuilds(); isGbSync();
 }
 function renderDecorShop(){
