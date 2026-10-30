@@ -661,6 +661,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .go-card{display:grid;justify-items:center;gap:10px;max-width:min(420px,88%);padding:22px 26px;border-radius:20px;background:var(--panel,#1E2A36);color:#fff;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.4)}
 .go-card img{width:72px;height:72px;border-radius:50%;object-fit:cover}.go-card b{font-family:var(--f-display);font-size:24px}.go-card p{margin:0;opacity:.9;font-size:15px}
 .go-btn{font-size:20px;padding:12px 28px;border-radius:999px}
+body.bz-jump #view-blitz{visibility:hidden}
 /* Race scoreboard (Blitz, two or more racers): who leads and by how much, compared at the same brick, so the brick
    count only says how far along each racer is. Small in the race bar while building; big between turns. */
 .rm-mini{display:grid;gap:6px;min-width:min(100%,460px);flex:1 1 460px}
@@ -3111,7 +3112,7 @@ function syncSub(t){
 // A finished race against Swoop (or a finished timed build) is over: going anywhere else leaves it. It used to hold on,
 // so "Play Pippa's puzzle" (or any Trail) landed on the race page asking you to leave a race that had already ended.
 function mpDoneLeave(){ if(mp&&mp.cpu&&mp.state&&mp.state.finished){ mpLeave(); return true; } return false; }
-function setTab(t,sub){ if(t!=='build'&&t!==mpHomeTab0()) mpDoneLeave();
+function setTab(t,sub){ if(t!=='build'&&t!==mpHomeTab0()) mpDoneLeave(); if(t==='build') document.body.classList.remove('bz-jump');
   if(t!=='island'&&ISL3&&ISL3.on) isl3Hide();
   if(typeof islandTipHide==='function'){ islandTipHide(); const h=document.getElementById('isHover'); if(h) h.hidden=true; }
   if(t!=='build'&&reveal) endReveal(true);
@@ -4097,7 +4098,7 @@ function autoPlace(){
   else if(held) setGhost(); else { sel=null; ghostGroup.clear(); }
   updateBuildUI();
 }
-function openBox(){ if(!model) return; setTab('box'); showBox(); }
+function openBox(){ if(!model) return; if(document.querySelector('#buildStage .turn-gate')){ setStatus('Tap Your turn! first. Then your clock starts and the parts box opens.'); return; } setTab('box'); showBox(); }
 const cvs=renderer.domElement; let downXY=null, ghostDrag=null;
 // Grab the see-through brick (or the spot under it) and drag it around. This runs before the view-turning
 // controls see the press, so dragging the brick moves the brick instead of turning the view.
@@ -6341,14 +6342,15 @@ function raceMeter(s){ const sc=mpScores(s), best=sc.every(p=>p.done)?Math.min(.
       <span class="rm-n">${p.done?'✓ done':`${p.n}/${s.quota}`}</span><b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${p.miss||p.hint?`<span class="rm-pen" title="Already in the time">+${p.miss+p.hint*5}s</span>`:''}</div>`; }).join('');
   return `<div class="race-meter" role="group" aria-label="Race-o-meter"><div class="rm-head"><b>Race-o-meter</b> · ${s.quota} bricks each · shortest time wins · miss +1s · hint +5s</div>${lanes}</div>`; }
 // Each racer's time as each of their bricks went in (watched here, so it works for Swoop and for rooms alike)
-function raceSplits(s){ const sp=mp.splits=mp.splits||{}; s.players.forEach((p,i)=>{ const a=sp[i]=sp[i]||[], n=p.n||0; if(a.length>n) a.length=n; while(a.length<n) a.push(mpTime(s,i)); }); return sp; }
+// a[k] is the clock while they had k bricks, up to the moment the next went in (so time spent before tapping Done counts)
+function raceSplits(s){ const sp=mp.splits=mp.splits||{}; s.players.forEach((p,i)=>{ const a=sp[i]=sp[i]||[], n=p.n||0, now=mpTime(s,i); if(a.length>n+1) a.length=n+1; for(let j=Math.max(0,a.length-1);j<=n;j++) a[j]=now; }); return sp; }
 // Who's winning: everyone compared at the last brick they have all placed (fair even when one is further along),
 // and once someone has finished and nobody still racing can beat their time, the race is decided.
 function raceLead(s){ const sc=mpScores(s); if(sc.length<2) return null; const sp=raceSplits(s);
   const done=sc.filter(p=>p.done);
   if(done.length&&!s.finished){ const best=done.reduce((a,b)=>b.ms<a.ms?b:a); if(sc.every(p=>p.done||p.ms>best.ms)) return {sc,decided:true,lead:best,k:best.n}; }
   const k=Math.min(...sc.map(p=>p.n)); if(!k) return {sc,k:0};
-  const at=sc.map(p=>({p,t:(sp[p.i]||[])[k-1]??p.ms})).sort((a,b)=>a.t-b.t), gap=at[1].t-at[0].t;
+  const at=sc.map(p=>({p,t:(sp[p.i]||[])[k]??p.ms})).sort((a,b)=>a.t-b.t), gap=at[1].t-at[0].t;   // everyone's clock at k bricks each
   return {sc,k,lead:at[0].p,gap,even:gap<100}; }
 const RM_CROWN='<svg class="rm-crown" viewBox="0 0 34 28" aria-hidden="true"><path d="M3 24 L6 7 L13 15 L17 3 L21 15 L28 7 L31 24 Z" fill="#F4BC22" stroke="#B9860C" stroke-width="2" stroke-linejoin="round"/></svg>';
 const rmFace=(s,p)=>`<span class="rm-face">${mp.cpu&&p.i!==mp.me?GULL_HEAD(s.cpuLevel):`<i style="background:${escapeHTML(p.color)}"></i>`}</span>`;
@@ -6364,7 +6366,7 @@ function raceHead(s,L){ if(!L) return '';
   if(!L.k) return `<div class="rm-top even">Ready, set…</div>`;
   if(L.even) return `<div class="rm-top even">Neck and neck! <small>at brick ${L.k}</small></div>`;
   const me=L.lead.i===mp.me;
-  return `<div class="rm-top ${me?'lead-me':'lead-them'}">${RM_CROWN} ${rmWho(L.lead)} +${(L.gap/1000).toFixed(1)}s <small>faster to brick ${L.k}</small></div>`; }
+  return `<div class="rm-top ${me?'lead-me':'lead-them'}">${RM_CROWN} ${rmWho(L.lead)} +${(L.gap/1000).toFixed(1)}s <small>at ${L.k} brick${L.k===1?'':'s'} each</small></div>`; }
 function raceScoreboard(s){ const L=raceLead(s); if(!L) return '';
   const chips=L.sc.map(p=>`<span class="rm-chip${L.lead&&!L.even&&L.lead.i===p.i?' lead':''}${p.i===s.turn&&!s.finished?' now':''}" data-pl="${p.i}">${rmFace(s,p)}${rmBricks(s,p)}<b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${p.miss||p.hint?`<span class="rm-pen" title="Already in the time">+${p.miss+p.hint*5}s</span>`:''}</span>`).join('');
   return `<div class="race-meter rm-mini" role="group" aria-label="Race scoreboard">${raceHead(s,L)}<div class="rm-chips">${chips}</div><span class="rm-rule">${s.quota} bricks each · shortest time wins · miss +1s · hint +5s</span></div>`; }
@@ -6461,7 +6463,7 @@ function updateMpBar(){
   if(bz){ $('#hintBtn').textContent=s.calm?'Hint':mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'; $('#hintBtn').disabled=done||(!mpMyTurn()&&!hintOn); }
   $('#mpBar').classList.toggle('calm',!!s.calm);
   $('#mpBar').classList.toggle('blitz',bz);
-  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?(cpu&&cpu.ladder!=null?(cpu.ladder>=LADDER_N?'Blitz Bay · The Grand Prix':`Blitz Bay · Race ${cpu.ladder+1} of ${LADDER_N} · ${CPU_LEVELS[s.cpuLevel].speed}`):`vs Swoop · ${CPU_LEVELS[s.cpuLevel].speed}`):'Room'; $('#mpRoomBtn').textContent=mp.cpu&&s.finished?'🏝️ Back to Bloppitopia':mp.cpu?'Race':'Room'; $('#mpRoomBtn').classList.toggle('primary',!!(mp.cpu&&s.finished)); $('#mpRoomBtn').classList.toggle('ghost',!(mp.cpu&&s.finished)); $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
+  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?(cpu&&cpu.ladder!=null?(cpu.ladder>=LADDER_N?'Blitz Bay · The Grand Prix':`Blitz Bay · Race ${cpu.ladder+1} of ${LADDER_N} · ${CPU_LEVELS[s.cpuLevel].speed}`):`vs Swoop · ${CPU_LEVELS[s.cpuLevel].speed}`):'Room'; $('#mpRoomBtn').textContent=mp.cpu&&s.finished?'🏝️ Back to Bloppitopia':mp.cpu?($('#mpRoomBtn').dataset.confirm?'Tap again to leave':s.solo?'Leave':'Leave race'):'Room'; $('#mpRoomBtn').classList.toggle('primary',!!(mp.cpu&&s.finished)); $('#mpRoomBtn').classList.toggle('ghost',!(mp.cpu&&s.finished)); $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
   const cp=s.players[s.turn], mine=s.turn===mp.me, left=mpLeft(s), el=$('#mpTurn');
   el.classList.toggle('mine',mine&&!s.finished&&s.started);
   if(bz&&s.solo&&s.calm) el.innerHTML=s.finished?'Finished!<small>Let’s see how clean it was</small>':`Build it clean<small>${(s.players[0].n||0)} of ${s.quota} placed</small>`;
@@ -6687,7 +6689,11 @@ $('#mpWaitStop').onclick=()=>{ mpWaitStop(true); renderMpView(); };
 $('#mpCodeIn').addEventListener('input',e=>{ e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
 $('#mpStart').onclick=()=>mpPost({action:'start'}).then(j=>mpApply(j.state)).catch(e=>mpMsg(e.message,'err'));
 $('#mpGoBuild').onclick=()=>setTab('build');
-$('#mpRoomBtn').onclick=()=>{ if(mpDoneLeave()){ setTab('island'); return; } setTab(mpHomeTab()); };
+$('#mpRoomBtn').onclick=()=>{ if(mpDoneLeave()){ setTab('island'); return; }
+  // vs Swoop (or a timed build), mid-race: Leave race, and a second tap to be sure (a race left doesn't count)
+  const b=$('#mpRoomBtn'); if(mp&&mp.cpu&&mp.state&&!mp.state.finished){ if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent='Tap again to leave'; b.title='This race won’t count'; setStatus('Tap Leave again to stop this race. It won’t count.'); clearTimeout(b._t); b._t=setTimeout(()=>{ delete b.dataset.confirm; b.title=''; if(mp&&mp.state) b.textContent=mp.state.solo?'Leave':'Leave race'; },3500); return; }
+    delete b.dataset.confirm; clearTimeout(b._t); b.title=''; track('race_leave'); const t=mpHomeTab(); mpLeave(); setTab(t); return; }
+  setTab(mpHomeTab()); };
 const mpHomeTab0=()=>{ try{ return mp?mpHomeTab():''; }catch(e){ return ''; } };
 $('#mpLeave').onclick=()=>{ mpLeave(); renderMpView(); };
 $('#mpEndTurn').onclick=()=>mpPost({action:'pass'}).then(j=>mpApply(j.state)).catch(e=>setStatus(e.message,'err'));
@@ -6812,11 +6818,11 @@ function cpuTurnGate(s){ if(!cpu||cpu.s!==s||!mp||!mp.cpu||s.finished||s.turn!==
   const mine=L.lead&&L.lead.i===mp.me;
   const mid=!L.decided&&them.done?`<div class="tg-mid lead-them"><b>Beat ${fmtTime(them.ms)}</b><span class="tg-gap">${((them.ms-me.ms)/1000).toFixed(1)}s</span><small>to spare for your last ${s.quota-me.n===1?'brick':`${s.quota-me.n} bricks`}</small></div>`:L.decided?`<div class="tg-mid ${mine?'lead-me':'lead-them'}">${RM_CROWN}<b>${mine?'You win!':`${escapeHTML(L.lead.name)} wins`}</b><small>${mine?'':'Finish your bricks anyway!'}</small></div>`
     :!L.k?`<div class="tg-mid"><b>Ready, set…</b></div>`:L.even?`<div class="tg-mid"><b>Neck and neck!</b><small>at brick ${L.k}</small></div>`
-    :`<div class="tg-mid ${mine?'lead-me':'lead-them'}">${RM_CROWN}<b>${mine?'You lead':`${escapeHTML(L.lead.name)} leads`}</b><span class="tg-gap">${(L.gap/1000).toFixed(1)}s</span><small>faster to brick ${L.k}</small></div>`;
+    :`<div class="tg-mid ${mine?'lead-me':'lead-them'}">${RM_CROWN}<b>${mine?'You lead':`${escapeHTML(L.lead.name)} leads`}</b><span class="tg-gap">${(L.gap/1000).toFixed(1)}s</span><small>at ${L.k} brick${L.k===1?'':'s'} each</small></div>`;
   const left=mpLeft(s), n=(me.n||0)+1;
   const g=document.createElement('div'); g.className='go-gate turn-gate';
   g.innerHTML=`<div class="go-card" role="dialog" aria-label="Race scoreboard"><span class="tg-what">${what}</span><div class="tg-vs">${card(me)}${mid}${card(them)}</div><button class="primary go-btn" type="button">Your turn! <small>Brick ${n} of ${s.quota}${left<3?` · your last ${left===1?'one':left}`:''} · Enter</small></button><span class="rm-rule">Shortest time wins · your clock starts when you tap</span></div>`;
-  st.appendChild(g); const c=cpu;
+  st.appendChild(g); const c=cpu; if(tab==='box') setTab('build');   // no picking bricks while the clock waits
   const go=()=>{ document.removeEventListener('keydown',key,true); g.remove(); if(cpu!==c||!cpu||cpu.s!==s||s.turn!==mp.me||s.finished) return; s.turnStart=Date.now(); cpuSend(); setStatus('Your turn! Your clock is running.','ok'); };
   const key=e=>{ if(e.key==='Enter'&&g.isConnected&&tab==='build'){ e.preventDefault(); e.stopPropagation(); go(); } };
   g.querySelector('.go-btn').onclick=go; document.addEventListener('keydown',key,true); if(tab==='build') sfx.chirp(); setTimeout(()=>{ try{ g.querySelector('.go-btn').focus({preventScroll:true}); }catch(e){} },60); }
@@ -9122,7 +9128,7 @@ const PIECES={
     {at:6,name:'Fruit stall',make:g=>g.add(stall3(-2.4,-1.6,'#A5CA18',.9))},
     {at:7,name:'Fountain',make:g=>{ g.add(cyl3(.8,.85,.3,12,'#ECE6DA',1.0,TOP3,2.0)); g.add(cyl3(.68,.68,.05,12,'#6FB7E8',1.0,TOP3+.27,2.0)); g.add(cyl3(.1,.12,.7,6,'#ECE6DA',1.0,TOP3+.3,2.0)); const w=mesh3(new THREE.ConeGeometry(.3,.4,8,1,true),new THREE.MeshBasicMaterial({color:0x9ED3F2,transparent:true,opacity:.6}),1.0,TOP3+1.2,2.0); w.rotation.x=Math.PI; w.userData.fount=1; g.add(w); }},
     {at:8,name:'Street lamps',make:g=>[[-1.0,1.2],[2.3,-1.9],[-2.6,-2.7]].forEach(([x,z])=>g.add(lamp3(x,z)))},
-    {at:9,name:'The clock face',make:g=>{ const c=clockFace3(); c.position.set(0,3.05,.56); g.add(c); }},
+    {at:9,name:'The clock face',make:g=>{ const c=clockFace3(); c.scale.setScalar(.9); c.position.set(0,TOP3+2.05,.515); g.add(c); }},   // on the tower's face, under its cap (it overlapped the cap and the edge)
     {at:10,name:'Bunting',make:g=>g.add(bunting3([[-2.4,1.6,-1.6],[0,2.9,.4],[2.4,1.6,-.8]]))},
     {at:11,name:'Bandstand',make:g=>{ const b=new THREE.Group(); b.add(cyl3(1.0,1.0,.16,8,'#ECE6DA',0,0,0)); for(let i=0;i<6;i++){ const a=i*Math.PI/3; b.add(cyl3(.05,.05,1.1,5,'#FFFFFF',Math.cos(a)*.85,.16,Math.sin(a)*.85)); } b.add(mesh3(new THREE.ConeGeometry(1.15,.6,8),m3('#008F9B'),0,1.55,0)); b.position.set(-1.4,TOP3,-.4); g.add(b); }},
     {at:12,name:'The Festival Clock',make:g=>{ g.add(mesh3(new THREE.ConeGeometry(.75,.9,4),m3('#F4BC22'),0,4.1,0,{y:Math.PI/4})); const s=mesh3(new THREE.OctahedronGeometry(.22,0),glow3('#FFE27A'),0,4.75,0); s.userData.spin=1; g.add(s);
@@ -9458,16 +9464,20 @@ const isNight3=()=>routine3(isl3Hour())==='fire';
 function isl3Obstacles(W){ const out=[], b=new THREE.Box3(); W.updateMatrixWorld(true);
   W.traverse(x=>{ if(!(x.isMesh||x.isInstancedMesh)||!x.visible||x.isSprite) return; let p=x, skip=false; while(p){ const i=p.userData.info; if(i&&/^(land:sea|isle:|piece:|longtail|bloppit|pup)/.test(i)){ skip=true; break; } p=p.parent; } if(skip) return;
     b.setFromObject(x); if(b.isEmpty()||b.max.y<TOP3+.3||b.min.y>TOP3+4) return; const r=Math.hypot(b.max.x-b.min.x,b.max.z-b.min.z)/2; if(r>6) return;
-    out.push([(b.min.x+b.max.x)/2,(b.min.z+b.max.z)/2,(b.max.x-b.min.x)/2,(b.max.z-b.min.z)/2]); });
+    out.push([(b.min.x+b.max.x)/2,(b.min.z+b.max.z)/2,(b.max.x-b.min.x)/2,(b.max.z-b.min.z)/2,b.max.y-TOP3]); });
   return out; }
-function clearSpot3(ax,az,gap,taken){ const O=ISL3.obst||[], P=scalePoly(HOMEP,0,0,.86), ok=(x,z)=>inPoly(x,z,P)&&O.every(([cx,cz,hx,hz])=>Math.abs(x-cx)>hx+gap||Math.abs(z-cz)>hz+gap)&&(taken||[]).every(([tx,tz])=>Math.hypot(x-tx,z-tz)>1.45);
+// Not hidden either: nothing tall (a lighthouse, a house) just in front of them as the camera looks, which would stand
+// across them however much ground there is between.
+function clearSpot3(ax,az,gap,taken){ const O=ISL3.obst||[], P=scalePoly(HOMEP,0,0,.86), D=CAM_DIR3(), hl=Math.hypot(D.x,D.z)||1, ux=D.x/hl, uz=D.z/hl, rise=D.y/hl;
+  const hid=(x,z)=>O.some(([cx,cz,hx,hz,h])=>{ if(!h) return false; const dx=cx-x, dz=cz-z, al=dx*ux+dz*uz, lat=Math.abs(dx*-uz+dz*ux); return al>0&&al-Math.max(hx,hz)<(h-.6)/rise&&lat<Math.max(hx,hz)+.45; });
+  const ok=(x,z)=>inPoly(x,z,P)&&O.every(([cx,cz,hx,hz])=>Math.abs(x-cx)>hx+gap||Math.abs(z-cz)>hz+gap)&&(taken||[]).every(([tx,tz])=>Math.hypot(x-tx,z-tz)>1.45)&&!hid(x,z);
   if(ok(ax,az)) return [ax,az]; for(let r=.35;r<=4.2;r+=.35) for(let k=0;k<16;k++){ const a=k/16*Math.PI*2+(r*1.7), x=ax+Math.cos(a)*r, z=az+Math.sin(a)*r*1.0; if(ok(x,z)) return [x,z]; }
   return [ax,az]; }
 function isl3Characters(o,W){
   const r=routine3(isl3Hour()), n=worldCount(o), at={garden:POL3(22,4.5),fish:[HOME_AT.jetty[0]+.2,HOME_AT.jetty[1]+2.6],read:POL3(190,4.6),fire:POL3(176,5.5)}[r];
   if(ISL3.arrival==='boat') { at[0]=HOME_AT.jetty[0]-.2; at[1]=HOME_AT.jetty[1]+1.2; }   // waiting at the end of the jetty for the boat
   else if(ISL3.arrival) { [at[0],at[1]]=POL3(198,4.5); }
-  ISL3.obst=isl3Obstacles(W); const onJetty=(r==='fish'&&!ISL3.arrival)||ISL3.arrival==='boat'; if(!onJetty){ const c=clearSpot3(at[0],at[1],.55); at[0]=c[0]; at[1]=c[1]; }
+  ISL3.obst=isl3Obstacles(W); const onJetty=(r==='fish'&&!ISL3.arrival)||ISL3.arrival==='boat'; if(!onJetty){ const c=clearSpot3(at[0],at[1],.8); at[0]=c[0]; at[1]=c[1]; }   // room for Bloppit himself as well as the gap
   const pose=ISL3.arrival?'/art/bud-offer.png':{garden:'/art/bud-3q.png',fish:'/art/bud-focused.png',read:'/art/bud-focused.png',fire:'/art/bud-3q.png'}[r];
   const dozing=!ISL3.arrival&&!!ISL3.wakeDue; ISL3.dozing=dozing; const pose0=dozing?'/art/bud-hug.png':pose;
   const g=new THREE.Group(), b3=ch3Isle('bloppit',g,onJetty?TOP3-.05:TOP3,2.1), b=b3?null:sprite3(pose0,2.2,.75); if(b){ b.position.y=onJetty?TOP3-.05:TOP3; g.add(b); }
@@ -9484,7 +9494,7 @@ function isl3Characters(o,W){
   if((n>0||ISL3.arrival||pupName(o))&&ISL3.arrival!=='boat'){ const ps=pupStage(o), pg=new THREE.Group(), p3=ch3Isle(ch3PupId(o),pg,TOP3,[1.1,1.5,1.8][ps]); ISL3.p3=p3;
     if(p3){ ch3Dress(p3,o); p3.ctl.setMode(r==='fire'&&!ISL3.arrival?4:0); }
     else { const p=new THREE.Sprite(new THREE.SpriteMaterial({map:pupTex3(o),transparent:true,alphaTest:.15})); const h=[1.3,1.5,1.7][ps]*346/300; p.scale.set(h*239/346,h,1); p.center.set(.5,0); p.position.y=TOP3; pg.add(p); pg.userData.bob=2; } const onIsle=(x,z)=>inPoly(x,z,scalePoly(HOMEP,0,0,.92)), offs=r==='fish'&&!ISL3.arrival?[[-1.15,-1.7],[-1.25,-2.6],[-.6,-3.4],[.9,-3.2]]:r==='fire'&&!ISL3.arrival?(ISL3.tallBuild?[[1.1,1.6],[1.1,-1.4],[-.3,1.6]]:[[1.6,1.1],[-1.4,1.1],[1.6,-.3]]):[[1.25,.35],[-1.25,.35],[1.2,-.9],[-1.2,-.9],[0,-1.6]];
-    const [ox,oz]=offs.find(([dx,dz])=>onIsle(at[0]+dx,at[1]+dz))||[-(at[0])*.25,-(at[1])*.25], spot=clearSpot3(at[0]+ox,at[1]+oz,.5,r==='fire'&&ISL3.fireAt?[at,[at[0]+ISL3.fireAt[0],at[1]+ISL3.fireAt[1]]]:[at]); pg.position.set(spot[0],0,spot[1]); tag3(pg,'pup'); ISL3.pupG=pg; W.add(pg); }
+    const [ox,oz]=offs.find(([dx,dz])=>onIsle(at[0]+dx,at[1]+dz))||[-(at[0])*.25,-(at[1])*.25], spot=clearSpot3(at[0]+ox,at[1]+oz,.55+[.3,.4,.5][ps],r==='fire'&&ISL3.fireAt?[at,[at[0]+ISL3.fireAt[0],at[1]+ISL3.fireAt[1]]]:[at]); pg.position.set(spot[0],0,spot[1]); tag3(pg,'pup'); ISL3.pupG=pg; W.add(pg); }
 }
 
 /* ---------- lufu's world (Chapter 2, 30 Oct 2026) ----------
@@ -10679,11 +10689,12 @@ $('#ldLater').onclick=()=>$('#ladderDlg').close();
 let bzLadderNext=null;   // the ladder race the next race started from Play next belongs to
 function nextBlitz(pick,lvl,ladder){
   bzLadderNext=ladder==null?null:ladder;
+  document.body.classList.add('bz-jump'); setTimeout(()=>document.body.classList.remove('bz-jump'),3000);
   homeGo('cpu');
   setTimeout(()=>{ try{ mpModelOptions('#bzModel'); $('#bzModel').value=pick; $('#bzModel').dispatchEvent(new Event('change'));
     const r=$(CPU_IDS[lvl]); if(r){ r.checked=true; r.dispatchEvent(new Event('change')); }
     const nm=$('#bzName'); if(!nm.value.trim()) nm.value=(curPlayer().name||'').slice(0,14);
-    if(nm.value.trim()) $('#bzCpuGo').click(); }catch(e){} },120);
+    if(nm.value.trim()) $('#bzCpuGo').click(); else document.body.classList.remove('bz-jump'); }catch(e){ document.body.classList.remove('bz-jump'); } },120);
 }
 function nextButtonHTML(n,cls){ return n?`<img src="${n.thumb}" alt="">${escapeHTML(n.t)}`:''; }
 
