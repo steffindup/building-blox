@@ -10125,7 +10125,8 @@ $('#decorGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-de
 function decorPut(id,on){ const o=worldStore(), d=DECOR.find(x=>x.id===id); if(!d||!o.decor.includes(id)) return; o.away={...(o.away||{}),['decor:'+id]:awayMark(on)};
   worldSet(o); track(on?'decor_put_back:'+id:'decor_put_away:'+id); sfx.snap(); islandTipHide(); islandShown=-1; renderIsland(); renderDecorShop(); if(on) decorPlaced(d,true); }
 // Just bought: close the shop, go to the island, fly to it and say how to move it
-function decorPlaced(d,back){ $('#isShop').hidden=true; try{ if($('#view-island').classList.contains('immersive')){ const up=()=>scrollTo({top:0,behavior:'instant'}); up(); setTimeout(up,60); setTimeout(up,400); } else $('#isWorld').scrollIntoView({behavior:'auto',block:'center'}); }catch(e){}
+function decorPlaced(d,back){ $('#isShop').hidden=true; if($('#isDrawer')) isDrawer(false); try{   // the Customise drawer closes too, so the new piece is in view to drag
+  if($('#view-island').classList.contains('immersive')){ const up=()=>scrollTo({top:0,behavior:'instant'}); up(); setTimeout(up,60); setTimeout(up,400); } else $('#isWorld').scrollIntoView({behavior:'auto',block:'center'}); }catch(e){}
   if(!ISL3.ok||!ISL3.on||!ISL3.world) return; let g=null; ISL3.world.traverse(x=>{ if(!g&&x.userData.info==='decor:'+d.id) g=x; }); if(!g) return; const p=g.position;
   isl3FlyTo(p.x,0,p.z,13,900); ISL3.moved=true; isl3Pop&&isl3Pop(g); isl3Confetti(p.x,TOP3+1,p.z,20);
   clearTimeout(ISL3.decorT); ISL3.decorT=setTimeout(()=>{ isl3Banner(d.id==='buoy'?`Your ${d.name.toLowerCase()} is bobbing by the jetty!`:`Your ${d.name.toLowerCase()} is ${back?'back':'here'}! Hold it and drag it anywhere on the island.`,true); ISL3.decorT=setTimeout(()=>isl3Banner(''),6500); },900); }
