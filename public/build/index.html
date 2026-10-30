@@ -662,6 +662,9 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .go-card img{width:72px;height:72px;border-radius:50%;object-fit:cover}.go-card b{font-family:var(--f-display);font-size:24px}.go-card p{margin:0;opacity:.9;font-size:15px}
 .go-btn{font-size:20px;padding:12px 28px;border-radius:999px}
 body.bz-jump #view-blitz{visibility:hidden}
+.lufuhi{max-width:min(560px,94vw)}.lufuhi .lh-txt{text-align:left;line-height:1.5;margin:4px 0 10px}.lufuhi .lh-sub{font-weight:800;margin:6px 0;text-align:left}
+.lh-list{display:grid;gap:8px}.lh-list button{display:grid;grid-template-columns:36px 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-align:left;padding:10px 14px;border-radius:14px;border:2px solid var(--line);background:var(--page);color:var(--ink);font:inherit;cursor:pointer}
+.lh-list button:hover{border-color:#8A3BC9}.lh-list span{grid-row:1/3;font-size:24px;text-align:center}.lh-list b{font-weight:800}.lh-list small{color:var(--muted);font-weight:700}
 /* Race scoreboard (Blitz, two or more racers): who leads and by how much, compared at the same brick, so the brick
    count only says how far along each racer is. Small in the race bar while building; big between turns. */
 .rm-mini{display:grid;gap:6px;min-width:min(100%,460px);flex:1 1 460px}
@@ -2000,6 +2003,19 @@ body.film-on{overflow:hidden}
   <img class="td-pic" id="tdPic" alt="">
   <p class="win-best" id="tdTxt"></p>
   <div class="win-btns"><button class="primary sm" id="tdGo" type="button">▶ Play next</button><button class="ghost" id="tdOk" type="button">OK</button></div>
+</dialog>
+<dialog class="windlg lufuhi" id="lufuHiDlg" aria-labelledby="lhTitle">
+  <div class="win-stars">🌙</div>
+  <h2 id="lhTitle">Welcome to lufu’s world</h2>
+  <p class="lh-txt" id="lhTxt"></p>
+  <p class="lh-sub">Until Chapter 2 arrives, you can:</p>
+  <div class="lh-list">
+    <button type="button" data-lh="build"><span>🔨</span><b>Build anything here</b><small>Free builds stand on lufu’s world</small></button>
+    <button type="button" data-lh="sail"><span>⛵</span><b>Sail back to Bloppitopia</b><small>The Galaxy ship takes you between the two, any time</small></button>
+    <button type="button" data-lh="pup"><span>🦦</span><b>Start a new game</b><small>A new player with a new pup, from the very beginning</small></button>
+    <button type="button" data-lh="builds"><span>🧱</span><b>Browse the builds</b><small>Photos, drawings and the whole library to build from</small></button>
+  </div>
+  <div class="win-btns"><button class="primary" type="button" data-lh="stay" autofocus>✨ Let’s explore</button></div>
 </dialog>
 <dialog class="windlg ladderdlg" id="ladderDlg" aria-labelledby="ldT">
   <span class="win-chars" id="ldChars" hidden></span>
@@ -9589,9 +9605,21 @@ const inLufu=()=>realmNow()==='lufu';
 const lufuWorldOpen=o=>isleComplete('moonstone',o||worldStore());   // the ship has sailed: lufu's world is open (and lufu lives there, not on Home Island)
 function realmSet(r){ try{ localStorage.setItem(pkey(REALM_KEY),r); }catch(e){} }
 // Travel between the realms: the Galaxy ship takes everyone (a swoosh and a fresh world; the camera's whole view resets)
-function realmGo(r){ if(!lufuWorldOpen()) r='bloppitopia'; if(r===realmNow()){ if(tab!=='island') setTab('island'); return; } realmSet(r); track('realm:'+r);
+function realmGo(r,filmed){ if(!lufuWorldOpen()) r='bloppitopia'; if(r===realmNow()){ if(tab!=='island') setTab('island'); return; }
+  // the first time there: its arrival film (when there is one), then lufu's world, then the welcome
+  if(r==='lufu'&&!lufuHiSeen()){ const f=FILMS.find(x=>x.at==='realm:lufu'); if(f&&!filmed&&!filmSeen(f.id)){ isl3Film(f,()=>realmGo('lufu',true)); return; } setTimeout(lufuHi,reduceMotion?300:1400); }
+  realmSet(r); track('realm:'+r);
   if(ISL3.on&&ISL3.box){ ISL3.spots={}; ISL3.moved=false; ISL3.viewI=0; isl3Build(worldStore()); isl3Tod(true); const w=ISL3.box.clientWidth, h=ISL3.box.clientHeight; ISL3.fitD=isl3Fit(ISL3.cam,w/h); ISL3.ctl.maxDistance=Math.max(70,ISL3.fitD+6); ISL3.ctl.target.copy(ISL3.lufu?LUFU_T3:CAM_T3); ISL3.ctl.update(); isl3Chrome(); renderIsland(); isl3Kick(); sfx.swoosh&&sfx.swoosh(1); }
   if(tab!=='island') setTab('island'); }
+// Welcome to lufu's world: Chapter 1 is done, Chapter 2 is being made, and what there is to do meanwhile (once, the first time there)
+const LUFU_HI_KEY='bloppit-lufu-hi';
+function lufuHiSeen(){ try{ return localStorage.getItem(pkey(LUFU_HI_KEY))==='1'; }catch(e){ return false; } }
+function lufuHi(){ try{ localStorage.setItem(pkey(LUFU_HI_KEY),'1'); }catch(e){} track('lufu_welcome');
+  const o=worldStore(), nm=pupName(o)||'your otter', d=$('#lufuHiDlg');
+  $('#lhTxt').innerHTML=`You did it! <b>Chapter 1 is complete.</b> Every island of Bloppitopia is built, the Moonstone light shines again, and the Galaxy ship has carried ${escapeHTML(nm)}, Bloppit and all your friends home with lufu. This moonlit world is where lufu comes from, and it’s waiting to be rebuilt. <b>Chapter 2: Bloppit builds lufu’s world</b> is being made right now, with new builds, new places and new adventures.`;
+  if(!d.open) d.showModal(); }
+$('#lufuHiDlg').addEventListener('click',e=>{ const b=e.target.closest('[data-lh]'); if(!b) return; const a=b.dataset.lh; $('#lufuHiDlg').close(); track('lufu_welcome:'+a);
+  if(a==='build') pickPuzzle('quick','top'); else if(a==='sail') realmGo('bloppitopia'); else if(a==='pup') openWho(); else if(a==='builds') homeGo('quick'); });
 // The ground: a flat violet land with a silver shore on the near side, a cliff wall behind, all under a moonlit sky
 function lufuBody3(){ const g=new THREE.Group(), shapeOf=Q=>new THREE.Shape(Q.map(([x,z])=>new THREE.Vector2(x,-z)));
   const rock=new THREE.ExtrudeGeometry(shapeOf(scalePoly(LUFUP,0,0,1.02)),{depth:3,bevelEnabled:false,steps:2}); rock.rotateX(-Math.PI/2); rock.translate(0,-3,0);
