@@ -20,6 +20,10 @@ test('pup: world merge keeps the films watched on either device', () => {
   const w = merge({ world: { films: ['frog-arrival'] } }, cleanData({ world: { films: ['frog-arrival', 'blitzbay-arrival', 7] } })).world;
   assert.deepEqual(w.films, ['frog-arrival', 'blitzbay-arrival']);
 });
+test('pup: world merge keeps the days a message in a bottle was opened on either device', () => {
+  const w = merge({ world: { bottles: ['2026-10-28'] } }, cleanData({ world: { bottles: ['2026-10-29', '2026-10-28', 'nope', 5] } })).world;
+  assert.deepEqual(w.bottles, ['2026-10-28', '2026-10-29']);
+});
 test('pup: world merge keeps best stars, earliest time, union of log/decor, the name, From Memory', () => {
   const a = { world: { xp: 20, builds: { 'm:Tree:6': { n: 6, s: 2, t: 100, c: 1 }, 'm:Duck:18': { n: 18, s: 3, t: 200, c: 1, m: 1 } }, log: ['m:Tree:6', 'm:Duck:18'], decor: ['flag'], pupName: -1 } };
   const b = { world: { xp: 30, bonus: 1, builds: { 'm:Tree:6': { n: 6, s: 3, t: 90, c: 2 }, 'w:2026-10-26': { n: 48, s: 2, t: 300, c: 1 } }, log: ['m:Tree:6', 'w:2026-10-26'], decor: ['crab'], pupName: 4 } };

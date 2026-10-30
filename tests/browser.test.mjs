@@ -268,7 +268,7 @@ test('the Weekly is calm: no Blitz tag, no stopwatch, no seconds for a miss; the
   assert.equal(await t.view(), 'view-build');
   const ui = await t.page.evaluate(() => ({ tag: !!document.querySelector('#mpTitle .blitz-tag'), race: document.getElementById('mpRoomBtn').hidden, banner: document.getElementById('turnBanner').hidden,
     tab: document.querySelector('.tab[aria-selected="true"]')?.dataset.tab }));
-  assert.deepEqual(ui, { tag: false, race: true, banner: true, tab: 'daily' });
+  assert.deepEqual(ui, { tag: false, race: true, banner: true, tab: 'create' });   // the Weekly is Bibi's: it lives with Quick Build
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
@@ -604,8 +604,8 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   assert.ok(await pt('decor:bench'), 'the bench is back');
   // the keyboard list has everything too
   assert.ok(await t.page.evaluate(() => document.querySelectorAll('#isA11y [data-info]').length > 15));
-  // the board on the Weekly page
-  await t.page.evaluate(() => document.getElementById('tab-daily').click()); await t.page.waitForTimeout(1200);
+  // the board on the Weekly page (Bibi's, through Quick Build)
+  await t.page.evaluate(() => { document.getElementById('tab-create').click(); document.getElementById('qbWeekly').click(); }); await t.page.waitForTimeout(1200);
   assert.equal(await t.page.evaluate(() => document.getElementById('dyBoard').hidden), false);
   assert.match(await t.text('#dyBoardList'), /Nobody on the board yet/);
   assert.deepEqual(t.errors, []); await t.ctx.close();
@@ -803,3 +803,85 @@ test('Mystery Island label: "N islands to go!" and a bar that counts every piece
   assert.equal(m.sub, '4 islands to go!'); assert.equal(m.now, Math.round(100 * 21 / 73));
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
+
+test('Pippa’s tab: her puzzles and a message in a bottle once a day (+5 XP); the Weekly is Bibi’s, under Quick Build', { skip: skip() }, async () => {
+  const seed = { fn: () => { localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 }));
+    if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [], free: [] })); } };
+  const t = await open('?nosplash=1#island', { init: seed });
+  // a bottle is waiting: a dot on Pippa's tab
+  let b = await t.page.evaluate(() => window.bloppitBottle()); assert.equal(b.dot, true); assert.deepEqual(b.days, []);
+  await t.page.evaluate(() => document.getElementById('tab-sea').click()); await t.page.waitForTimeout(800);
+  assert.equal(await t.view(), 'view-game'); assert.equal(await t.page.evaluate(() => document.getElementById('view-game').dataset.sub), 'sea');
+  assert.equal(await t.page.evaluate(() => document.querySelector('.tab[aria-selected="true"]').id), 'tab-sea');
+  assert.equal(await t.page.evaluate(() => getComputedStyle(document.getElementById('bottleCard')).display !== 'none'), true);
+  const xp0 = b.xp; await t.page.evaluate(() => document.getElementById('btOpen').click()); await t.page.waitForTimeout(300);
+  b = await t.page.evaluate(() => window.bloppitBottle()); assert.equal(b.xp, xp0 + 5); assert.deepEqual(b.days, [b.day]); assert.equal(b.dot, false);
+  assert.match(await t.text('#btMsg'), /\w/); assert.equal(await t.page.evaluate(() => document.getElementById('btOpen').hidden), true);
+  // only one a day
+  await t.page.evaluate(() => document.getElementById('btOpen').click()); b = await t.page.evaluate(() => window.bloppitBottle()); assert.equal(b.xp, xp0 + 5);
+  // the bottle is only on Pippa's page, not the Frog Trail
+  await t.page.evaluate(() => document.getElementById('tab-game').click()); await t.page.waitForTimeout(500);
+  assert.equal(await t.page.evaluate(() => getComputedStyle(document.getElementById('bottleCard')).display), 'none');
+  // Bibi's Weekly is on Quick Build, and the Weekly page lights up the Quick Build tab
+  await t.page.evaluate(() => document.getElementById('tab-create').click()); await t.page.waitForTimeout(500);
+  assert.match(await t.text('#qbWeekly'), /Bibi’s Weekly Bloppit/);
+  await t.page.evaluate(() => document.getElementById('qbWeekly').click()); await t.page.waitForTimeout(800);
+  assert.equal(await t.view(), 'view-daily'); assert.equal(await t.page.evaluate(() => document.querySelector('.tab[aria-selected="true"]').id), 'tab-create');
+  assert.match(await t.text('#view-daily .char-hero'), /Bibi/);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('Play next never sends you to a finished island while another has something ready', { skip: skip() }, async () => {
+  // Brickworks complete (15 photo builds), one Blitz win, and Pippa's first puzzles washed ashore; Play next last went to Blitz
+  const seed = { fn: () => { const builds = {}, log = []; for (let i = 0; i < 15; i++) { builds['p:x' + i] = { n: 20, s: 3, k: 'quick', t: 1 }; log.push('p:x' + i); }
+    builds['m:Swoop race:12'] = { n: 12, s: 1, k: 'blitz', t: 1 }; log.push('m:Swoop race:12');
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 }));
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds, log, decor: [], free: [] }));
+    localStorage.setItem('bloppit-next-v1', 'blitz'); } };
+  const t = await open('?nosplash=1#island', { init: seed });
+  const n = await t.page.evaluate(() => ({ next: window.bloppitNext.next(), cands: window.bloppitNext.cands(), done: window.bloppitNext.complete() }));
+  assert.ok(n.done.includes('brickworks')); assert.ok(n.cands.includes('library'), 'the library is still a candidate');
+  assert.notEqual(n.next.kind, 'library', 'but a finished island is not offered');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('the 3D pups: Pup, Splash and Legend hold a 1-, 2- and 3-stud brick in the child’s colour and wear the game’s outfits', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1');
+  const a = await t.page.evaluate(() => window.bloppitPup3('pup0', 0, {}));
+  assert.equal(a.kind, 'model'); assert.deepEqual(a.bricks, [1]); assert.deepEqual(a.outfits, []); assert.deepEqual(a.extras, []); assert.ok(a.lids >= 2, 'eyelids to blink'); assert.ok(a.clips >= 14);
+  assert.equal(a.hex, '0055bf', 'the child’s blue');
+  const b = await t.page.evaluate(() => window.bloppitPup3('pup1', 3, { head: ['beanie', 0], neck: ['scarf', 2], feet: ['shoes', 0] }));
+  assert.deepEqual(b.bricks, [2]); assert.deepEqual(b.outfits, ['beanie', 'scarf']); assert.deepEqual(b.extras, ['shoes']);
+  const c = await t.page.evaluate(() => window.bloppitPup3('pup2', 6, { head: ['moon', 0], face: ['glasses', 1], prop: ['prop', 0] }));
+  assert.deepEqual(c.bricks, [3]); assert.deepEqual(c.outfits, ['crown', 'sunglasses']); assert.deepEqual(c.extras, ['accessory']);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('stars, Galaxy Blocks and the Otter Level: one job each; the otter grows by level and never shrinks', { skip: skip() }, async () => {
+  // 13 big builds since the change: about 1,400 XP (Level 8) → a Legend, by level not builds
+  const big = { fn: () => { const builds = {}, log = []; for (let i = 0; i < 13; i++) { builds['p:big' + i] = { n: 200, s: 2, k: 'quick', t: Date.now() }; log.push('p:big' + i); }
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 }));
+    if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds, log, decor: ['flag'], free: [], pick: 'treehouse' })); } };
+  let t = await open('?nosplash=1', { init: big });
+  let w = await t.page.evaluate(() => window.bloppitWorld());
+  assert.ok(w.level >= 8); assert.equal(w.stage, 'Legend');
+  assert.equal(w.stars, 26, '★ are never spent'); assert.equal(w.galaxy, 26 - 3, 'the flag cost 3 Galaxy Blocks');
+  await t.ctx.close();
+  // 30 small builds from before the change: a Splash by builds keeps it, even at a low level
+  const old = { fn: () => { const builds = {}, log = []; for (let i = 0; i < 30; i++) { builds['p:old' + i] = { n: 10, s: 1, k: 'quick', t: 1.7e12 }; log.push('p:old' + i); }
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 }));
+    if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds, log, decor: [], free: [], pick: 'treehouse' })); } };
+  t = await open('?nosplash=1', { init: old });
+  w = await t.page.evaluate(() => window.bloppitWorld()); assert.equal(w.stage, 'Splash');
+  // a Frog Trail level with a hint: one ★ (finished), a Galaxy Block for it, no points anywhere
+  await t.page.evaluate(() => window.bloppitLevel('otter', 0)); await t.page.waitForTimeout(1200);
+  assert.equal(await t.text('#hintBtn'), 'Hint'); assert.equal(await t.text('#autoBtn'), 'Place one for me');
+  await t.page.evaluate(() => document.getElementById('hintBtn').click()); await t.page.waitForTimeout(200);
+  assert.equal(await t.page.evaluate(() => document.querySelectorAll('#gbPts i').length ? document.getElementById('gbPts').textContent.length - document.querySelector('#gbPts i').textContent.length : 3), 1);
+  for (let k = 0; k < 120; k++) { const d = await t.page.evaluate(() => { const m = /(\d+) of (\d+)/.exec(document.getElementById('progress').textContent); if (m && m[1] === m[2]) return true; window.bloppitPlaceRight(); return false; }); if (d) break; await t.page.waitForTimeout(150); }
+  await t.page.waitForFunction(() => document.getElementById('winDlg').open, null, { timeout: 20000 });
+  const rows = await t.text('#winRows'); assert.match(rows, /Built the Heart/); assert.match(rows, /Help used \(1\)/); assert.match(rows, /Galaxy Blocks ?\+1/); assert.doesNotMatch(rows, /point/i);
+  assert.match(await t.text('#winBest'), /Frog Trail: 1 of 45 ★/);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+

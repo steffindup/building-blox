@@ -65,6 +65,27 @@
 <title>Bloppit: Build it. Grow your world.</title>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <linearGradient id="gbTop" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7C5CFF"/><stop offset=".55" stop-color="#4B2DBF"/><stop offset="1" stop-color="#2A1A7A"/></linearGradient>
+  <radialGradient id="gbNebTop" cx=".38" cy=".42" r=".55"><stop offset="0" stop-color="#FF7AD9" stop-opacity=".85"/><stop offset=".5" stop-color="#C04DE0" stop-opacity=".35"/><stop offset="1" stop-color="#C04DE0" stop-opacity="0"/></radialGradient>
+  <linearGradient id="gbLeft" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3A2496"/><stop offset="1" stop-color="#1C1158"/></linearGradient>
+  <radialGradient id="gbNebLeft" cx=".7" cy=".4" r=".7"><stop offset="0" stop-color="#3FD2FF" stop-opacity=".55"/><stop offset="1" stop-color="#3FD2FF" stop-opacity="0"/></radialGradient>
+  <linearGradient id="gbRight" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#25166E"/><stop offset="1" stop-color="#110A3A"/></linearGradient>
+  <radialGradient id="gbNebRight" cx=".35" cy=".5" r=".7"><stop offset="0" stop-color="#FF7AD9" stop-opacity=".4"/><stop offset="1" stop-color="#FF7AD9" stop-opacity="0"/></radialGradient>
+  <linearGradient id="gbCap" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9C86FF"/><stop offset="1" stop-color="#5A3BD6"/></linearGradient>
+  <clipPath id="gbcTop"><path d="M14 40 L66 14 L106 34 L54 60 Z"/></clipPath><clipPath id="gbcLeft"><path d="M14 40 L54 60 L54 84 L14 64 Z"/></clipPath><clipPath id="gbcRight"><path d="M54 60 L106 34 L106 58 L54 84 Z"/></clipPath>
+  <g id="gbBlock">
+    <path d="M14 40 L54 60 L54 84 L14 64 Z" fill="url(#gbLeft)"/><path d="M14 40 L54 60 L54 84 L14 64 Z" fill="url(#gbNebLeft)"/>
+    <g clip-path="url(#gbcLeft)" fill="#fff"><circle cx="24" cy="54" r="1" opacity=".8"/><circle cx="38" cy="66" r=".8" opacity=".6"/><circle cx="46" cy="72" r="1.2" opacity=".9"/><circle cx="30" cy="62" r=".6" opacity=".5"/></g>
+    <path d="M54 60 L106 34 L106 58 L54 84 Z" fill="url(#gbRight)"/><path d="M54 60 L106 34 L106 58 L54 84 Z" fill="url(#gbNebRight)"/>
+    <g clip-path="url(#gbcRight)" fill="#fff"><circle cx="66" cy="66" r=".9" opacity=".7"/><circle cx="80" cy="56" r="1.2" opacity=".9"/><circle cx="94" cy="52" r=".7" opacity=".6"/><circle cx="72" cy="72" r=".6" opacity=".5"/><circle cx="99" cy="44" r=".8" opacity=".7"/></g>
+    <path d="M14 40 L66 14 L106 34 L54 60 Z" fill="url(#gbTop)"/><path d="M14 40 L66 14 L106 34 L54 60 Z" fill="url(#gbNebTop)"/>
+    <g clip-path="url(#gbcTop)" fill="#fff"><circle cx="30" cy="40" r=".9" opacity=".8"/><circle cx="88" cy="34" r=".8" opacity=".7"/><circle cx="62" cy="48" r=".7" opacity=".6"/><circle cx="50" cy="24" r=".7" opacity=".6"/></g>
+    <path d="M14 40 L66 14 L106 34 L106 58 L54 84 L14 64 Z M14 40 L54 60 L106 34 M54 60 L54 84" fill="none" stroke="#120A33" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M63 30 v-6 a10 5 0 0 0 20 0 v6 a10 5 0 0 1 -20 0 Z" fill="#2E1C86" stroke="#120A33" stroke-width="1.6" stroke-linejoin="round"/><ellipse cx="73" cy="24" rx="10" ry="5" fill="url(#gbCap)" stroke="#120A33" stroke-width="1.6"/><ellipse cx="70" cy="22.5" rx="4" ry="1.6" fill="#fff" opacity=".45"/>
+    <path d="M37 43 v-6 a10 5 0 0 0 20 0 v6 a10 5 0 0 1 -20 0 Z" fill="#2E1C86" stroke="#120A33" stroke-width="1.6" stroke-linejoin="round"/><ellipse cx="47" cy="37" rx="10" ry="5" fill="url(#gbCap)" stroke="#120A33" stroke-width="1.6"/><ellipse cx="44" cy="35.5" rx="4" ry="1.6" fill="#fff" opacity=".45"/>
+    <path d="M94 40 l1.6 4.4 4.4 1.6 -4.4 1.6 -1.6 4.4 -1.6 -4.4 -4.4 -1.6 4.4 -1.6 Z" fill="#FFF6C8"/>
+  </g></defs></svg>
 <svg class="sr" width="0" height="0" aria-hidden="true" focusable="false"><defs>
 <symbol id="bh" viewBox="0 0 200 175"><image href="/art/head-bloppit.png" x="0" y="-12" width="200" height="200" preserveAspectRatio="xMidYMid meet"/></symbol>
 <symbol id="bh2" viewBox="0 0 200 175"><circle cx="42" cy="38" r="16" fill="#C08A5E"/><circle cx="42" cy="38" r="7" fill="#9C6A42"/><circle cx="158" cy="38" r="16" fill="#C08A5E"/><circle cx="158" cy="38" r="7" fill="#9C6A42"/><ellipse cx="100" cy="94" rx="88" ry="74" fill="#C08A5E"/><ellipse cx="100" cy="116" rx="56" ry="40" fill="#FBEBD3"/><ellipse cx="64" cy="88" rx="17" ry="20" fill="#1B1410"/><ellipse cx="136" cy="88" rx="17" ry="20" fill="#1B1410"/><circle cx="70" cy="80" r="6" fill="#fff"/><circle cx="142" cy="80" r="6" fill="#fff"/><path d="M88 106 q12 -7 24 0 q-3 12 -12 14 q-9 -2 -12 -14z" fill="#3A2418"/><path d="M86 124 q14 12 28 0" stroke="#3A2418" stroke-width="4" stroke-linecap="round" fill="none"/></symbol>
@@ -112,6 +133,10 @@
   --callout:#1B2F46; --accent:#EF5348; --accent-ink:#FFFFFF; --hi:#F4BC22; --shadow:rgba(0,0,0,.35); --paper:#19222C; --dot:#2C3946; color-scheme:dark }
 
 *{box-sizing:border-box}
+/* a Galaxy Block, the size of the text around it */
+.gb-ic{display:inline-block;width:1.35em;height:1.13em;vertical-align:-.22em;flex:none}
+.decor-grid .cost .gb-ic,.win-rows .gb-ic{width:1.35em!important;height:1.13em!important;margin:0!important;display:inline-block!important}
+.gb-stars{color:#F4BC22;letter-spacing:1px}.gb-stars i{font-style:normal;color:var(--line)}
 html,body{min-height:100%}
 /* the page never slides sideways (iPhone web views let a slightly crooked vertical swipe drift the page left and right).
    clip, not hidden, so the sticky header keeps working; scrollers inside the page (tabs, chips) still scroll */
@@ -232,9 +257,9 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 @media (max-width:900px){.build-grid{grid-template-columns:minmax(0,1fr)}}
 .bookpane{display:grid;gap:10px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 84px);min-width:0}
 @media (max-width:900px){.bookpane{position:static}}
-/* Phones: the booklet becomes one compact row (the step picture, its number and parts, the page buttons) so the
-   booklet and the build fit on the screen together, instead of scrolling between them for every brick */
-@media (max-width:700px){
+/* Phones and upright iPads: the booklet becomes one compact row (the step picture, its number and parts, the page buttons)
+   so the booklet and the build fit on the screen together, instead of scrolling between them for every brick */
+@media (max-width:900px){
   .build-grid{gap:10px;scroll-margin-top:calc(env(safe-area-inset-top,0px) + 70px)}
   .build-grid .bp-head{display:none}
   .build-grid #bpCard{grid-template-columns:54% minmax(0,1fr);grid-template-rows:auto 1fr;padding:8px;gap:6px 10px}
@@ -250,13 +275,114 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   .build-grid #bpCard .pg-turn{display:none}
   .stage-tools{gap:5px;right:8px;top:8px}.stage-tools .tool{padding:5px 9px;font-size:12px}.stage-tools .tool kbd{display:none}
 }
+/* The build page fits the screen: the booklet, the build and the hand with the Parts box button are all on screen
+   at once, with no scrolling. The build stage takes whatever height is left (--buildTop: where the page starts). */
+body.on-build{padding-bottom:0}
+body.on-build #view-build{height:calc(100vh - var(--buildTop,120px) - 8px);height:calc(100dvh - var(--buildTop,120px) - 8px - env(safe-area-inset-bottom,0px));min-height:0;align-content:stretch}
+body.on-build .build-grid{height:100%;min-height:0;align-items:stretch}
+body.on-build .build-grid>.bookpane{align-self:start}
+body.on-build .playcol{display:flex;flex-direction:column;min-height:0;height:100%}
+body.on-build .playcol>#buildStage{flex:1 1 0;height:auto;min-height:200px}
+body.on-build .playcol>.card{flex:none}
+@media (max-width:900px){
+  body.on-build .build-grid{display:flex;flex-direction:column}
+  body.on-build .build-grid>.bookpane{flex:none;align-self:stretch}
+  body.on-build .build-grid>.playcol{flex:1 1 0}
+  body.on-build .playcol>.card{padding:8px 10px;gap:6px}
+  body.on-build .hand-row{grid-template-columns:auto minmax(0,1fr) auto;gap:10px}
+  body.on-build .hand-btns{grid-column:auto;flex-direction:column;align-items:stretch;gap:4px}
+  body.on-build .hand-btns button{padding:6px 12px;min-height:0;font-size:13px}
+  body.on-build .hand-btns #openBox{padding:10px 14px;font-size:15px}
+  body.on-build .hand-slot{width:64px;height:52px;border-radius:10px;font-size:10px}
+  body.on-build .hand-slot img{max-width:56px;max-height:44px}
+  body.on-build .hand-txt h2{font-size:17px;line-height:1.15}
+  body.on-build #handNote{font-size:13px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  body.on-build .hand-more{margin-top:3px}
+  body.on-build .tray-foot{flex-wrap:nowrap;gap:8px}
+  body.on-build #trayNote,body.on-build #saveNote{display:none}
+  body.on-build .tray-foot #restart{margin-left:auto;padding:4px 10px;min-height:0;font-size:12px}
+  body.on-build .place-pad{padding-top:0}
+}
+@media (min-width:701px) and (max-width:900px){ body.on-build .build-grid #bpCard{grid-template-columns:42% minmax(0,1fr)} }
+@media (max-width:900px){
+  body.on-build .build-grid{gap:8px}
+  body.on-build .build-grid #bpCard .pg-view{aspect-ratio:4/3}
+  body.on-build .build-grid .bp-nav button{padding:4px 10px}
+  body.on-build .playcol{gap:8px}
+}
+body.on-build .appfoot{display:none}
+/* the level card above the build is one slim row on phones and tablets: the trail's face, level, points and Level map */
+@media (max-width:900px),(max-height:560px){
+  body.on-build #gameBar{flex-wrap:nowrap;gap:8px;padding:5px 8px;margin-bottom:8px;border-radius:12px}
+  body.on-build #gameBar .gb-where{padding-right:0;border:0}
+  body.on-build #gameBar .gb-where>div,body.on-build #gameBar .gb-costs,body.on-build #gameBar .gb-score .tag,body.on-build #gameBar .gb-lvl .tag{display:none}
+  body.on-build #gameBar .gb-where img{width:30px;height:30px}
+  body.on-build #gameBar .gb-lvl{gap:6px;min-width:0}
+  body.on-build #gameBar .gb-lvl>div{min-width:0}
+  body.on-build #gameBar .gb-lvl strong{display:block;font-size:17px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  body.on-build #gameBar .gb-badge{width:30px;height:30px;font-size:17px;border-radius:8px;flex:none}
+  body.on-build #gameBar .gb-score{flex:none;margin-left:auto}
+  body.on-build #gameBar .gb-score b{font-size:20px}
+  body.on-build #gameBar .gb-btns{margin-left:0;flex:none}
+  body.on-build #gameBar .gb-btns .ghost{padding:4px 10px;font-size:13px;min-height:0}
+  body.on-build #mpBar{padding:5px 8px;margin-bottom:8px;gap:6px 12px}
+}
+/* a short build area: Bloppit and the message share the bottom edge; his bubble keeps its words, the booklet shows the parts */
+@container (max-height:400px){
+  #buildStage .buddy{max-width:calc(100% - 16px)}
+  #buildStage .buddy .bud-art{width:60px}
+  #buildStage .buddy .bud-say{display:none}
+  #buildStage .buddy .bud-say:has(.bud-next){display:block;font-size:12.5px;padding:5px 8px;margin-bottom:12px}
+  #buildStage .buddy .bud-say:has(.bud-next) .callout{display:none}
+  #buildStage.stage .status{left:8px;bottom:8px;max-width:calc(100% - 92px);font-size:13px;padding:5px 9px;line-height:1.3}
+}
+/* holding a brick on a short phone: the progress line steps aside for the arrows and Place */
+@media (max-width:900px) and (max-height:760px){ body.on-build .playcol>.card:has(#placePad:not([hidden])) .tray-foot,body.on-build .playcol>.card:has(#placePad:not([hidden])) #handNote{display:none} body.on-build .playcol>#buildStage{min-height:160px} }
+/* phones held sideways: booklet on the left, the build on the right, one slim header */
+@media (max-height:500px) and (min-width:560px){
+  body.on-build .build-grid{display:grid!important;grid-template-columns:minmax(200px,32%) minmax(0,1fr);gap:10px}
+  body.on-build .build-grid>.bookpane{overflow:auto;max-height:100%;align-self:start}
+  body.on-build .build-grid .bp-head{display:none}
+  body.on-build .build-grid #bpCard{padding:6px;gap:4px;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto}
+  body.on-build .build-grid #bpCard .pg-top,body.on-build .build-grid #bpCard .pg-view,body.on-build .build-grid #bpCard .pg-foot{grid-column:1;grid-row:auto}
+  body.on-build .build-grid #bpCard .pg-foot{text-align:right}
+  body.on-build .build-grid #bpCard .pg-step{font-size:24px}
+  body.on-build .build-grid #bpCard .pg-view{aspect-ratio:16/11}
+  body.on-build .build-grid #bpCard .pg-turn{display:none}
+  body.on-build .build-grid .bp-nav{flex-wrap:nowrap;gap:4px}
+  body.on-build .build-grid .bp-nav button{padding:4px 8px;font-size:12px;min-height:0}
+  body.on-build .playcol{gap:6px}
+  body.on-build .playcol>.card{padding:6px 10px;gap:4px}
+  body.on-build .playcol .hand-row{grid-template-columns:auto minmax(0,1fr) auto;gap:8px}
+  body.on-build .playcol .hand-btns{grid-column:auto;flex-direction:row}
+  body.on-build .hand-slot{width:52px;height:42px}
+  body.on-build .hand-slot img{max-width:46px;max-height:36px}
+  body.on-build .hand-txt h2{font-size:15px}
+  body.on-build #handNote,body.on-build .tray-foot{display:none}
+  body.on-build .playcol>.card{display:flex;align-items:center;gap:10px}
+  body.on-build .playcol>.card>.hand-row{flex:1;min-width:0}
+  body.on-build .place-pad{flex:none;padding:0;gap:8px;align-items:center}
+  body.on-build .playcol .hand-btns{flex-direction:column}
+  body.on-build .playcol>#buildStage{min-height:160px}
+  body.on-build .pp-arrows{grid-template-columns:repeat(3,34px);grid-template-rows:repeat(2,32px)}
+  body.on-build .pp-act{min-width:96px}
+  body.on-build .pp-turn{height:32px}
+  body.on-build .pp-place{height:38px;font-size:16px}
+}
+/* short phones (iPhone SE, mini): the booklet picture gets flatter so the build keeps its room */
+@media (max-width:900px) and (max-height:760px){
+  body.on-build .build-grid #bpCard .pg-view{aspect-ratio:16/10}
+  body.on-build .build-grid #bpCard .pg-step{font-size:26px}
+  body.on-build .pp-arrows{grid-template-columns:repeat(3,38px);grid-template-rows:repeat(2,36px)}
+  body.on-build .pp-place{height:44px}
+}
 .bp-head,.bp-nav{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .bp-nav .now{border-color:var(--accent);color:var(--accent);font-weight:700}
 .bp-nav .final{font-weight:700}
 .page.live{outline:3px solid transparent;transition:outline-color .2s}
 .page.live.ahead{outline-color:var(--line)}
 /* Bloppit, the building buddy: stands in the corner of the build stage, points at the model, holds up the bricks the step still needs, cheers when a step clicks into place */
-#buildStage{container-type:inline-size}
+#buildStage{container-type:size}
 .buddy{position:absolute;right:8px;bottom:6px;z-index:2;display:grid;grid-template-columns:minmax(0,auto) auto;gap:2px;align-items:end;max-width:min(400px,calc(100% - 16px));pointer-events:none}
 .buddy[hidden]{display:none}
 .buddy .bud-art{position:relative;width:84px;aspect-ratio:300/398;display:block;transform-origin:50% 100%}
@@ -839,6 +965,19 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
   main{padding-block:10px 0}
 }
 @media (max-width:560px){.brand span{display:none}}
+/* short screens (phones held sideways): a slim header, so the game keeps the height */
+@media (max-height:500px){
+  .top{flex-wrap:nowrap;gap:8px;padding-block:4px}
+  .brand{font-size:18px;gap:6px;flex:none}.brand span{display:none}.brand .brand-otter{width:30px;height:30px}
+  .top .tabs .tab,.top .tabs .tab[class*="play"]{padding:3px 8px 7px;gap:5px;font-size:14px;white-space:nowrap;flex:none}
+  .top .tabs .tab .n,.top .tabs .tab[class*="play"] .n{width:22px;height:22px}
+  .top .tabs .tab[aria-selected="true"]::after{bottom:0;height:3px}
+  .top .snd-top{width:32px;height:32px}.top .who .av{width:30px;height:30px}
+  .snd-top{width:32px;height:32px;margin-right:4px}
+  .who{padding:1px;box-shadow:none}.who .av{width:30px;height:30px;font-size:15px}.who-txt{display:none}
+  main{padding-block:6px 0}
+}
+
 /* Booklet zoom */
 .pg-zoom{position:absolute;left:6px;bottom:6px;z-index:2;display:flex;gap:4px}
 .pg-zoom button{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:color-mix(in srgb,var(--page) 88%,transparent);color:var(--ink);font-weight:800;font-size:18px;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0}
@@ -1257,7 +1396,7 @@ body.film-on{overflow:hidden}
 .tabs .tab[aria-selected="true"],.tabs .tab[class*="play"][aria-selected="true"]{opacity:1;background:none;color:inherit;border:0}
 .tabs .tab[aria-selected="true"] .n{background:none}
 .tabs .tab[aria-selected="true"]::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:4px;border-radius:4px;background:var(--tc)}
-#tab-island{--tc:#2FB8DC}#tab-daily{--tc:#E8B20E}#tab-create{--tc:#E9772A}#tab-game{--tc:#7DBE2E}
+#tab-island{--tc:#2FB8DC}#tab-sea{--tc:#E8B20E}#tab-create{--tc:#E9772A}#tab-game{--tc:#7DBE2E}
 /* The character at the top of each page */
 .char-hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 20px;align-items:center;border-radius:20px;padding:14px 24px 14px 14px;background:linear-gradient(115deg,var(--h1),var(--h2));color:var(--hink,#fff);box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer;min-width:0;overflow:hidden}
 #view-create>.char-hero{grid-column:1/-1}
@@ -1269,7 +1408,36 @@ body.film-on{overflow:hidden}
 .char-hero .ch-desc{margin:4px 0 0;font-size:14px;font-weight:700;opacity:.9;max-width:62ch;line-height:1.4}
 @media (max-width:560px){.char-hero{padding:10px 14px 10px 8px;gap:4px 12px;border-radius:16px}.char-hero .ch-art,.char-hero .c3-wrap{width:78px;height:88px}.char-hero .ch-line{font-size:15px}.char-hero .ch-desc{font-size:12.5px}}
 #view-game:not([data-sub="hub"]) #gmTitle,#view-game:not([data-sub="hub"])>.crumb[data-up]{display:none}
+.qb-weekly{margin-bottom:10px}.qb-weekly[hidden]{display:none}.qb-weekly img{border-radius:10px;object-fit:cover;background:#fff}
+.dy-up{justify-self:start}
+/* Pippa's message in a bottle: one a day, on her puzzles page; a dot on her tab while one is waiting */
+#view-game:not([data-sub="sea"]) #bottleCard{display:none}
+.bottle{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:14px;align-items:center;border:2px solid #F0C64A;background:linear-gradient(135deg,color-mix(in srgb,#FFE9A8 55%,var(--page)),var(--page))}
+.bottle .bt-art{width:64px;height:64px}
+.bottle.waiting .bt-art{animation:bt-bob 2.4s ease-in-out infinite}
+@keyframes bt-bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(4deg)}}
+.bt-txt{display:grid;gap:2px;min-width:0}.bt-txt b{font-family:var(--f-display);font-weight:400;font-size:20px;line-height:1.15}.bt-txt>span{font-size:13px;font-weight:700;color:var(--muted)}
+.bt-msg{display:block;margin-top:6px;padding:8px 12px;border-radius:12px;background:var(--page);border:1px dashed #C9A97A;font-weight:700;font-size:15px;quotes:none}
+.bt-msg[hidden]{display:none}
+#btOpen[hidden]{display:none}
+@media (max-width:560px){.bottle{grid-template-columns:48px minmax(0,1fr)}.bottle .bt-art{width:48px;height:48px}#btOpen{grid-column:1/-1}}
+@media (prefers-reduced-motion: reduce){.bottle .bt-art{animation:none!important}}
+.tab .n{position:relative}
+.tab.bottle-on .n::after{content:"";position:absolute;top:-2px;right:-3px;width:10px;height:10px;border-radius:50%;background:#D2352B;border:2px solid var(--bg)}
 .dy-sea{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;text-align:left;cursor:pointer;font:inherit;color:var(--ink)}.dy-sea img{width:52px;height:52px}.dy-sea b{display:block;font-family:var(--f-display);font-weight:400;font-size:20px}.dy-sea span span{font-size:13px;font-weight:700;color:var(--muted)}.dy-go{font-size:28px;color:var(--muted)}.dy-sea:hover{border-color:var(--accent)}#tab-brain{--tc:#3D5FA8}#tab-blitz{--tc:#2F7FD0}#tab-mp{--tc:#8B5CF6}
+/* The game tabs scroll sideways when they don't all fit: little arrows at either end show there are more, and tap to slide */
+.tabs-wrap{display:contents}.tabs-arr{display:none}
+@media (max-width:1240px){
+  .tabs-wrap{display:flex;position:relative;flex:1;min-width:0}
+  .tabs-wrap>.tabs{flex:1;mask-image:none!important;-webkit-mask-image:none!important}
+  .tabs-arr{position:absolute;top:50%;z-index:3;width:24px;height:30px;margin-top:-17px;padding:0 0 3px;border:1px solid var(--line);border-radius:999px;background:var(--page);color:var(--ink);font:800 20px/1 var(--f-body);cursor:pointer;box-shadow:0 2px 6px var(--shadow);place-items:center;opacity:0;pointer-events:none;transition:opacity .2s}
+  .tabs-arr.l{left:-4px}.tabs-arr.r{right:-2px}
+  .tabs-wrap.can-l .tabs-arr.l,.tabs-wrap.can-r .tabs-arr.r{display:grid;opacity:.95;pointer-events:auto}
+  .tabs-wrap.can-l .tabs{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 30px)!important;mask-image:linear-gradient(90deg,transparent 0,#000 30px)!important}
+  .tabs-wrap.can-r .tabs{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 30px),transparent)!important;mask-image:linear-gradient(90deg,#000 calc(100% - 30px),transparent)!important}
+  .tabs-wrap.can-l.can-r .tabs{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 30px,#000 calc(100% - 30px),transparent)!important;mask-image:linear-gradient(90deg,transparent 0,#000 30px,#000 calc(100% - 30px),transparent)!important}
+  body.on-home .tabs-arr{display:none!important}
+}
 @media (max-width:640px){.tabs .tab,.tabs .tab[class*="play"]{padding:6px 8px 10px;gap:5px}.tabs .tab .n{width:24px;height:24px}}
 @media (min-width:641px) and (max-width:1240px){.who{padding:2px;box-shadow:none}.who-txt{display:none}.top{column-gap:16px;flex-wrap:nowrap}.top .tabs{flex-wrap:nowrap;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none;mask-image:linear-gradient(90deg,#000 calc(100% - 18px),transparent)}.top .tabs::-webkit-scrollbar{display:none}}   /* keep the top bar on one line: just the player's face beside the music and sound buttons */
 </style>
@@ -1278,15 +1446,16 @@ body.film-on{overflow:hidden}
   <h1 class="brand"><a href="/" id="brandLink" aria-label="Bloppit menu">
     <img class="brand-otter" src="/art/bloppit-avatar.png" alt="" width="256" height="256">
     <span>Bloppit</span></a></h1>
+  <div class="tabs-wrap"><button class="tabs-arr l" type="button" tabindex="-1" aria-hidden="true">‹</button>
   <nav class="tabs" role="tablist" aria-label="Games">
     <button class="tab play5" role="tab" id="tab-island" data-tab="island" aria-selected="false"><span class="n"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="50" fill="#2FB8DC"/><circle cx="50" cy="52" r="15" fill="#6CC04A" stroke="#F2D594" stroke-width="4"/><g transform="translate(50 52) scale(.5)" stroke="#9E2019" stroke-width="2" fill="#D8342C"><rect x="-20" y="-6" width="40" height="18" rx="2.5"/><rect x="-15" y="-13" width="10" height="8" rx="2"/><rect x="5" y="-13" width="10" height="8" rx="2"/></g><circle cx="50.0" cy="19.0" r="8" fill="#9BD32C" stroke="#F2D594" stroke-width="3"/><circle cx="81.4" cy="41.8" r="8" fill="#24407A" stroke="#F2D594" stroke-width="3"/><circle cx="69.4" cy="78.7" r="8" fill="#F2C230" stroke="#F2D594" stroke-width="3"/><circle cx="30.6" cy="78.7" r="8" fill="#2F7FD0" stroke="#F2D594" stroke-width="3"/><circle cx="18.6" cy="41.8" r="8" fill="#E9772A" stroke="#F2D594" stroke-width="3"/></svg></span>Island</button>
-    <button class="tab play4" role="tab" id="tab-daily" data-tab="daily" aria-selected="false"><span class="n"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span>Weekly</button>
+    <button class="tab play4" role="tab" id="tab-sea" data-tab="game" data-sub="sea" aria-selected="false"><span class="n"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span>Seaside</button>
     <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span>Quick Build</button>
     <button class="tab play" role="tab" id="tab-game" data-tab="game" data-sub="otter" aria-selected="false"><span class="n"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span>Frog Trail</button>
     <button class="tab play" role="tab" id="tab-brain" data-tab="game" data-sub="brain" aria-selected="false"><span class="n"><img src="/art/head-nora.png" alt="" width="256" height="256"></span>Brain Trail</button>
     <button class="tab play3" role="tab" id="tab-blitz" data-tab="blitz" aria-selected="false"><span class="n"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span>Blitz</button>
     <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n"><img src="/art/pup.png" alt="" width="239" height="300"></span>Together</button>
-  </nav>
+  </nav><button class="tabs-arr r" type="button" tabindex="-1" aria-hidden="true">›</button></div>
   <button class="snd-top mus-top" id="musTop" type="button" aria-pressed="true" aria-label="Music" title="Music on or off"><span class="mus-ic" aria-hidden="true"></span></button>
   <button class="snd-top" id="sndTop" type="button" aria-pressed="true" aria-label="Sound" title="Sound on or off (M)"><span class="snd-ic" aria-hidden="true"></span></button>
   <button class="who" id="whoBtn" type="button" title="Who’s playing? Tap to switch player"><span class="av" id="whoAv"></span><span class="who-txt"><span class="tag">Playing</span><b id="whoName"></b></span></button>
@@ -1296,7 +1465,7 @@ body.film-on{overflow:hidden}
 <div class="gamebar" id="gameBar" hidden>
   <div class="gb-where" id="gbWhere"></div>
   <div class="gb-lvl"><span class="gb-badge" id="gbBadge">1</span><div><div class="tag">Level <span id="gbNum"></span></div><strong id="gbName"></strong></div></div>
-  <div class="gb-score"><div class="tag">Points for this level</div><b id="gbPts">100</b><span class="gb-of" id="gbOf"></span><span class="gb-flash" id="gbFlash"></span></div>
+  <div class="gb-score"><div class="tag">Stars for this build</div><b id="gbPts" class="gb-stars">★★★</b><span class="gb-of" id="gbOf"></span><span class="gb-flash" id="gbFlash"></span></div>
   <div class="gb-costs" id="gbCosts"></div>
   <div class="gb-btns"><button class="ghost" id="gbMap" type="button">Level map</button></div>
 </div>
@@ -1353,6 +1522,7 @@ body.film-on{overflow:hidden}
   <div class="usebar" id="useBar" hidden><img id="ubImg" alt=""><span class="ub-txt"><b id="ubName"></b><span id="ubInfo"></span></span><button class="primary sm" id="ubGo" type="button">Use this puzzle ▶</button></div>
   <div class="panel">
     <div class="pick-banner" id="pickBanner" hidden><span id="pickTxt"></span><button class="ghost" id="pickCancel" type="button">Back</button></div>
+    <button class="card dy-sea qb-weekly" id="qbWeekly" type="button" data-qb="home"><img id="qbWkImg" src="/art/head-bibi.png" alt="" width="256" height="256"><span><b>🎨 Bibi’s Weekly Bloppit</b><span id="qbWkSub">A new one every Monday</span></span><span class="dy-go" aria-hidden="true">›</span></button>
     <div class="qb-tiles" data-qb="home" role="group" aria-label="Choose what to build">
       <button class="qb-tile" type="button" data-qb-go="photo"><span class="qb-ic" aria-hidden="true">📷</span><b>Add a photo</b><small>Turn a picture into bricks</small></button>
       <button class="qb-tile" type="button" data-qb-go="draw"><span class="qb-ic" aria-hidden="true">✏️</span><b>Draw your own</b><small>Paint it stud by stud</small></button>
@@ -1553,19 +1723,24 @@ body.film-on{overflow:hidden}
     <button type="button" role="tab" data-trail="sea" id="trSea">🐧 Pippa’s Puzzles</button>
   </div>
   <button class="crumb" data-up type="button">‹ Trails</button>
+  <div class="card bottle" id="bottleCard">
+    <svg class="bt-art" viewBox="0 0 64 64" aria-hidden="true"><g transform="rotate(-28 32 32)"><rect x="27" y="4" width="10" height="9" rx="2" fill="#B07A4A"/><path d="M26 13h12v7c6 3 9 8 9 14v20a6 6 0 0 1-6 6H23a6 6 0 0 1-6-6V34c0-6 3-11 9-14z" fill="#9FE0D6" stroke="#2C8C82" stroke-width="2"/><rect x="24" y="30" width="16" height="22" rx="3" fill="#FFF4D8" stroke="#C9A97A"/><path d="M27 36h10M27 41h10M27 46h7" stroke="#C9A97A" stroke-width="1.6"/></g></svg>
+    <div class="bt-txt"><b id="btTitle">A message in a bottle!</b><span id="btSub">Pippa sends one every day. Open it for +5 XP.</span><q class="bt-msg" id="btMsg" hidden></q></div>
+    <button class="primary sm" id="btOpen" type="button">Open it</button>
+  </div>
   <div class="gm-head">
-    <div><h2 id="gmTitle">Frog Trail</h2><p class="note" id="gmIntro">Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, so they’re worth more points.</p></div>
-    <div class="gm-total"><span class="tag" id="gmWho">Your points</span><b id="gmTotal">0</b><span class="note" id="gmDone"></span><button class="ghost sm-link" id="gmSwitch" type="button">Switch player</button></div>
+    <div><h2 id="gmTitle">Frog Trail</h2><p class="note" id="gmIntro">Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, and Tiny cheers you all the way.</p></div>
+    <div class="gm-total"><span class="tag" id="gmWho">Your stars</span><b id="gmTotal">0</b><span class="note" id="gmDone"></span><button class="ghost sm-link" id="gmSwitch" type="button">Switch player</button></div>
   </div>
   <div class="gm-rules">
-    <span><b>Finish a level</b> to earn its points</span>
-    <span><b>Hint</b> costs 5 points (it lasts for one step)</span>
-    <span><b>Place one for me</b> costs 10</span>
-    <span>★★★ for keeping 90% or more</span>
+    <span>★ <b>Finish</b> the build</span>
+    <span>★ <b>No hints</b> or placed-for-you</span>
+    <span>★ <b>Perfect</b>: no help and no wrong bricks</span>
+    <span>Every ★ earns a Galaxy Block</span>
   </div>
   <div class="gm-math" id="gmMath">
     <b class="gm-mt">🧠 Math puzzles</b>
-    <p class="note">Some booklet pages are locked with a math puzzle from Bloppit. Solve it to open the page and earn <b>+10 points</b>. Puzzles get harder as the levels go up, and higher levels lock more pages.</p>
+    <p class="note">Some booklet pages are locked with a math puzzle from Bloppit. Solve it to open the page. Puzzles get harder as the levels go up, and higher levels lock more pages.</p>
     <div class="gm-age"><label for="mathAge">Player’s age</label>
       <select class="inp" id="mathAge"></select><span class="note" style="margin:0">for <b id="mathAgeFor"></b></span>
       <span class="tag" id="mathTier"></span></div>
@@ -1717,21 +1892,21 @@ body.film-on{overflow:hidden}
     <div class="is-btns"><button class="ghost" id="isDecor" type="button">✨ Decorate</button><button class="ghost" id="isCard" type="button" hidden>📮 Postcard</button><button class="ghost" id="isBuildsGo" type="button" hidden>📦 Your builds</button></div></div>
   <div class="card is-intro" id="isIntro" hidden>
     <div class="ii-head"><span class="ii-pup" id="iiPup"></span><div><h2 id="iiTitle">Welcome to Bloppitopia</h2><p id="iiTxt">Your otter lives here with Bloppit.</p></div></div>
-    <p style="margin:0">Every build you finish grows the island, and your models stand on it. Build Stars buy decorations.</p>
+    <p style="margin:0">Every build you finish grows the island, and your models stand on it. Builds earn Galaxy Blocks, and Bibi’s shop sells decorations for them.</p>
     <ol class="ii-steps" id="iiSteps"></ol>
     <div class="ii-btns"><button class="primary sm" id="iiNext" type="button">Keep building</button><button class="ghost" id="iiWeekly" type="button">📅 This week’s Bloppit</button><button class="ghost" id="iiLook" type="button">Look around</button></div>
   </div>
   <div class="card is-card"><div class="island" id="isWorld"></div><div class="is-a11y" id="isA11y"></div>
     <div class="is-foot"><div class="is-stage" id="isStage"></div><div class="is-next" id="isNext"></div><div class="is-prog" id="isProg" hidden></div></div></div>
   <div class="card is-shop" id="isShop" hidden>
-    <div class="gm-head sub-head"><div><h2>✨ Decorate your island</h2><p class="note">Build Stars buy decorations. Nothing here is ever sold for money. <b id="isStars"></b></p></div><button class="ghost" id="isShopClose" type="button">Done</button></div>
+    <div class="gm-head sub-head"><div><h2>✨ Bibi’s shop</h2><p class="note">Spend your Galaxy Blocks on decorations for your island. Nothing here is ever sold for money. <b id="isStars"></b></p></div><button class="ghost" id="isShopClose" type="button">Done</button></div>
     <div class="decor-grid" id="decorGrid"></div>
   </div>
   <div class="card is-builds"><div class="gm-head sub-head"><div><h2>📦 Your builds</h2><p class="note" id="isBuildsNote"></p></div></div><div class="builds-grid" id="buildsGrid"></div></div>
 </section>
 <section class="view" id="view-daily" hidden>
   <div class="char-hero" data-hero="daily" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
-  <div class="gm-head"><div><h2>📅 This week’s Weekly Bloppit</h2><p class="note">One puzzle a week, the same for everybody. Build it clean: no misses, no hints. A new one arrives every Monday morning.</p></div></div>
+  <div class="gm-head"><div><h2>🎨 This week’s Weekly Bloppit</h2><p class="note">One puzzle a week, the same for everybody. Build it clean: no misses, no hints. A new one arrives every Monday morning.</p></div></div>
   <div class="card daily-card">
     <img class="daily-img" id="dyImg" alt="">
     <div class="daily-txt">
@@ -1743,7 +1918,7 @@ body.film-on{overflow:hidden}
       <p class="msg" id="dyMsg" hidden></p>
     </div>
   </div>
-  <button class="card dy-sea" id="dySea" type="button"><img src="/art/head-pippa.png" alt="" width="256" height="256"><span><b>🐚 Pippa’s seaside puzzles</b><span id="hubSeaSub">Seaside puzzles that wash ashore</span></span><span class="dy-go" aria-hidden="true">›</span></button>
+  <button class="crumb dy-up" id="dyUp" type="button">‹ Quick Build</button>
   <div class="card" id="dyBoard" hidden><div class="gm-head sub-head"><div><h2>🏆 This week’s top 100</h2><p class="note">Clean builds first, then stars. Generated names only; no times. A grown-up switched this on in the Grown-ups corner.</p></div></div><div class="board" id="dyBoardList"></div></div>
   <p class="note">Bloppit only counts how many people finished this week’s puzzle and how many finished it clean. No names, no times, no ranks, unless a grown-up switches on the top-100 board, which shows generated names and stars. The counts are deleted after 8 weeks.</p>
 </section>
@@ -2828,14 +3003,14 @@ var subOf={game:'hub',blitz:'hub',mp:'hub'};
 const SUB_OK={game:['hub','otter','brain','sea'],blitz:['hub','cpu','friend'],mp:['hub','start','join']};
 // Which top-bar game a page belongs to (the build screen belongs to whatever you're playing)
 // The top bar: one tab per character. Frog Trail and Brain Trail are both the Trails page (their own level maps), and
-// Pippa's seaside puzzles belong to her Weekly tab.
+// Pippa's tab is her seaside puzzles (and her daily message in a bottle); the Weekly Bloppit is Bibi's, under Quick Build.
 // Each page has its character at the top: who lives there, their island, their line and what the page is for
 const HERO={
-  daily:{who:'pippa',art:'/art/char-pippa.png',isle:'Sunrise Shores',title:'Pippa’s Puzzles',line:'A new puzzle just washed ashore!',desc:'Every Monday Pippa brings the Weekly Bloppit on the ferry, and her own seaside puzzles wash ashore as Bloppitopia grows.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
-  sea:{who:'pippa',art:'/art/char-pippa.png',isle:'Sunrise Shores',title:'Pippa’s seaside puzzles',line:'Ooh, that one’s clean!',desc:'Twelve seaside builds wash ashore as Bloppitopia grows. Each one adds to Sunrise Shores, all the way to the Festival Clock.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
+  daily:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickworks Island',title:'Bibi’s Weekly Bloppit',line:'Fresh paint! This week’s one is ready.',desc:'Every Monday Bibi paints a new Weekly Bloppit for the Grand Creation Gallery. Everybody builds the same one, and each one you build adds to Brickworks Island.',c:['#FFAA55','#DD5F1C']},
+  sea:{who:'pippa',art:'/art/char-pippa.png',isle:'Sunrise Shores',title:'Pippa’s Puzzles',line:'Ooh, that one’s clean!',desc:'Twelve seaside builds wash ashore as Bloppitopia grows. Each one adds to Sunrise Shores, all the way to the Festival Clock. And every day the tide brings a message in a bottle.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
   otter:{who:'tiny',art:'/art/char-tiny.png',isle:'Frog Forest',title:'Frog Trail',line:'Small frog, big forest!',desc:'Hop up the trail with Tiny, one level at a time. The levels start tiny and get bigger, and the last is his Lily-pad Palace.',c:['#A6D93A','#3F8F33']},
   brain:{who:'nora',art:'/art/char-nora.png',isle:'Brainpeak',title:'Brain Trail',line:'A clever mind shines in the dark.',desc:'Nora tucks math puzzles into the booklet: solve one to open its page. The last build is her Great Telescope.',c:['#4A6FC0','#1C2B57']},
-  create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickworks Island',title:'Quick Build',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
+  create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickworks Island',title:'Quick Build',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way, and every Monday there’s a new Weekly Bloppit.',c:['#FFAA55','#DD5F1C']},
   blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Bloppit Blitz',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Fastest clean build wins.',c:['#5DB4F2','#1F6FC4']},
   mp:{who:'pup',art:'/art/pup.png',isle:'Friendship Harbour',title:'Build Together',line:'Every build is better with a friend!',desc:'Take turns building one model with friends on their own phones, tablets or computers.',c:['#B9A2F7','#6E4FD6']}};
 function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[data-hero="${t}"]`); if(!el) return;
@@ -2846,9 +3021,10 @@ function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[d
   const im=new Image(); im.className='ch-art'; im.alt=''; im.src=H.art; el.firstElementChild.replaceWith(im);   // a fresh picture each time (the 3D view draws over it)
   try{ if(ch3On()) cv3Img(im,{who:H.who,frame:'full'}); }catch(e){} }
 document.addEventListener('click',e=>{ const h=e.target.closest('.char-hero'); if(!h) return; const w=h.querySelector('.c3-wrap'); if(w) cv3Play(w,'poke'); try{ const k=h.dataset.k, who=HERO[k]&&HERO[k].who; sfx.voice(who==='swoop'?'longtail':who); }catch(x){} });
-function tabsSync(t){ const sec=sectionOf(t===undefined?tab:t), tr=typeof trail!=='undefined'?trail:'otter';
+function tabsSync(t){ const sec=sectionOf(t===undefined?tab:t), tr=typeof trail!=='undefined'?trail:'otter'; if(typeof bottleSync==='function') bottleSync();
   document.querySelectorAll('.tab').forEach(b=>{ let on=b.dataset.tab===sec;
-    if(sec==='game'){ const sub=(t==='game'&&subOf.game)||tr; on=(b.dataset.sub&&b.dataset.tab==='game'&&b.dataset.sub===sub)||(b.dataset.tab==='daily'&&sub==='sea'); }
+    if(sec==='game'){ const sub=(t==='game'&&subOf.game)||tr; on=!!b.dataset.sub&&b.dataset.tab==='game'&&b.dataset.sub===sub; }
+    if(sec==='daily') on=b.dataset.tab==='create';   // the Weekly Bloppit is Bibi's: it lives with Quick Build
     b.setAttribute('aria-selected',on); }); }
 function sectionOf(t){
   if(t==='build'||t==='box'||t==='booklet'){ if(game) return 'game'; if(mp) return trialOn()&&mp.state.calm?'daily':mpHomeTab(); return 'create'; }
@@ -2878,11 +3054,13 @@ function setTab(t,sub){
   { const sel=document.querySelector('.tab[aria-selected="true"]'), bar=$('.tabs'); if(sel&&bar.scrollWidth>bar.clientWidth) bar.scrollTo({left:sel.offsetLeft-bar.offsetLeft-24,behavior:'smooth'}); }
   ['home','create','build','box','booklet','game','mp','blitz','daily','island'].forEach(v=>$('#view-'+v).hidden=v!==t);
   if(t==='island') renderIsland();
-  if(t==='create') renderDrawSaved();
+  if(t==='create'){ renderDrawSaved(); qbWeeklySync(); }
   if(t==='mp'&&(sub==='hub'||subOf.mp==='hub')) renderCrews(true);
   if(t!=='create'&&pickFor) pickFor=null;
   syncPick();
   document.body.classList.toggle('on-home',t==='home');
+  document.body.classList.toggle('on-build',t==='build');
+  if(t==='build'){ scrollTo(0,0); $('.top').classList.remove('tucked'); buildFit(); }
   if(t==='home'){ homeSeen=true; renderer.domElement.remove(); renderHome(); scrollTo(0,0); $('.top').classList.remove('tucked'); }
   // Once the menu has been shown it offers "Continue building", so the Welcome back banner isn't needed
   $('#resume').hidden=!pendingSave||homeSeen;
@@ -2975,7 +3153,19 @@ function syncUseBar(){
 $('#ubGo').onclick=()=>$('#startBuild').click();
 // Hide the ribbon while the page's own Start building button is on screen
 if('IntersectionObserver' in window) new IntersectionObserver(es=>{ startSeen=es[0].isIntersecting; syncUseBar(); }).observe($('#startBuild'));
-{ const top=$('.top'), setH=()=>document.documentElement.style.setProperty('--topH',top.offsetHeight+'px'); setH();
+// Top bar arrows: show which way there are more game tabs to scroll to
+{ const w=$('.tabs-wrap'), bar=$('.tabs'); const sync=()=>{ const max=bar.scrollWidth-bar.clientWidth;
+    w.classList.toggle('can-l',max>2&&bar.scrollLeft>4); w.classList.toggle('can-r',max>2&&bar.scrollLeft<max-4); };
+  bar.addEventListener('scroll',sync,{passive:true}); addEventListener('resize',sync); addEventListener('load',sync);
+  if('ResizeObserver' in window) new ResizeObserver(sync).observe(bar);
+  w.querySelectorAll('.tabs-arr').forEach(b=>b.addEventListener('click',()=>bar.scrollBy({left:(b.classList.contains('l')?-1:1)*bar.clientWidth*.7,behavior:'smooth'})));
+  sync(); window.bloppitTabsArrows=()=>({l:w.classList.contains('can-l'),r:w.classList.contains('can-r')}); }
+// Where the build page starts (below the header and any banner), so it can take exactly the rest of the screen
+function buildFit(){ const v=$('#view-build'); if(!v||v.hidden) return;
+  const y=Math.round(v.getBoundingClientRect().top+scrollY); document.documentElement.style.setProperty('--buildTop',y+'px'); }
+addEventListener('resize',buildFit); addEventListener('orientationchange',()=>setTimeout(buildFit,250));
+if('ResizeObserver' in window){ const r=new ResizeObserver(()=>buildFit()); ['#resume','#mpBar','#gameBar'].forEach(q=>{ const e=$(q); if(e) r.observe(e); }); }
+{ const top=$('.top'), setH=()=>{ document.documentElement.style.setProperty('--topH',top.offsetHeight+'px'); buildFit(); }; setH();
   if('ResizeObserver' in window) new ResizeObserver(setH).observe(top); }
 // Quick Build's screens: 'home' (the three tiles, the current selection and model settings), 'photo', 'draw' or 'library'
 const QB_T={photo:'Add a photo',draw:'Draw your own',library:'Pick from the library'};
@@ -2987,7 +3177,7 @@ function qbShow(screen){ screen=QB_T[screen]?screen:'home';
 document.querySelectorAll('[data-qb-go]').forEach(b=>b.addEventListener('click',()=>{ qbShow(b.dataset.qbGo); if(b.dataset.qbGo==='photo') $('#file').click(); }));
 $('#qbBack').onclick=()=>qbShow('home');
 $('#tab-create').addEventListener('click',()=>qbShow('home'));
-$('#dySea').onclick=()=>{ if(mp){ setTab(mpHomeTab()); return; } setTab('game','sea'); };
+$('#dyUp').onclick=()=>setTab('create');
 qbShow('home');
 function pickPuzzle(forWhat,src){
   if(game) endGame();
@@ -3311,7 +3501,14 @@ const sfx=(()=>{
       const comp=ac.createDynamicsCompressor(); comp.threshold.value=-14; comp.ratio.value=3; comp.attack.value=.004; comp.release.value=.2; comp.connect(master);
       out=ac.createGain(); out.gain.value=.95; out.connect(comp);
       mbus=ac.createGain(); mbus.gain.value=0; mbus.connect(comp); }
-    if(ac.state==='suspended') ac.resume(); return ac; };
+    wake(); return ac; };
+  // Back from the background (or a phone call), iPhone leaves the sound 'interrupted', not 'suspended': wake it from
+  // either. If a tap can't wake it, start a fresh one (it was stuck), so the sound never stays off until a restart.
+  let stuckT=0;
+  function wake(tap){ if(!ac||ac.state==='running') return; if(ac.state!=='closed'){ try{ const r=ac.resume(); r&&r.catch&&r.catch(()=>{}); }catch(e){} }
+    if(tap&&!stuckT) stuckT=setTimeout(()=>{ stuckT=0; if(ac&&ac.state!=='running'&&!document.hidden) fresh(); },600); }
+  function fresh(){ const old=ac; ac=null; master=out=mbus=null; rev=echo=null; clearInterval(M.timer); M.playing=false; last={};
+    try{ old&&old.close&&old.close(); }catch(e){} if(on&&ctx()) musicLevel(); }
   const ok=(k,gap)=>{ if(!on||document.hidden) return null; const c=ctx(); if(!c) return null; const n=c.currentTime; if(last[k]&&n-last[k]<gap) return null; last[k]=n; return c; };
   const jit=(v,f)=>v*(1+(Math.random()*2-1)*f);
   const hz=m=>440*Math.pow(2,(m-69)/12);
@@ -3401,9 +3598,11 @@ const sfx=(()=>{
     if(want&&!M.playing){ M.playing=true; M.next=n+.1; M.timer=setInterval(musicTick,60); }
     else if(!want&&M.playing){ clearTimeout(M.stopT); M.stopT=setTimeout(()=>{ if(mbus.gain.value<.01){ M.playing=false; clearInterval(M.timer); } },500); } }
   // starts with the first tap (browsers only allow sound after one), steps aside for films and when the page is hidden
-  const kick=()=>{ if(!on||!musicOn) return; if(ctx()) musicLevel(); };
+  const kick=()=>{ if(ac) wake(true); if(!on||!musicOn) return; if(ctx()) musicLevel(); };
   ['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,kick,{capture:true,passive:true}));
-  document.addEventListener('visibilitychange',()=>musicLevel());
+  document.addEventListener('visibilitychange',()=>{ if(!document.hidden) wake(); musicLevel(); });
+  addEventListener('pageshow',()=>{ wake(); musicLevel(); }); addEventListener('focus',()=>{ wake(); musicLevel(); });
+  try{ const App=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.App; App&&App.addListener&&App.addListener('resume',()=>{ wake(); musicLevel(); }); }catch(e){}
   ['play','playing','pause','ended','volumechange'].forEach(ev=>document.addEventListener(ev,()=>setTimeout(musicLevel,30),true));
 
   return {
@@ -3774,7 +3973,7 @@ function tryPlace(){
   const o=curOff(), u=usedSet();
   const turned=sel.sx!==sel.sz&&s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o||Math.abs(b.x+o.x-ax)<=2&&Math.abs(b.z+o.z-az)<=2));
   const wrong=wrongBrickMsg();
-  if(!autoBusy) run.miss++;
+  if(!autoBusy){ run.miss++; if(game&&!mp) updateGameBar(); }
   setStatus(wrong||(turned?turnTip():'Not quite. Compare with the picture in the booklet.'),'err');
   sfx.bonk();
   const g=ghostGroup.children[0]; if(g){g.material=errMat; setTimeout(()=>{if(g.parent) g.material=ghostMat(sel?sel.c:0);},380);}
@@ -5082,9 +5281,12 @@ const SAMPLES=[
      x.poly([[a,b-r*1.6],[a+r*.45,b-r*.45],[a+r*1.6,b],[a+r*.45,b+r*.45],[a,b+r*1.6],[a-r*.45,b+r*.45],[a-r*1.6,b],[a-r*.45,b-r*.45]],k); }
    x.fillStyle='#F4F4F4'; x.fillRect(48,70,8,120);
    return [['front',c]]; }},
- {name:'Scallop shell',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(200,180,'#ffffff');
-   for(let k=0;k<7;k++){ const a0=Math.PI*(1.06+k*.126), a1=a0+.126; x.poly([[100,162],[100+Math.cos(a0)*96,150+Math.sin(a0)*118],[100+Math.cos(a1)*96,150+Math.sin(a1)*118]],k%2?'#FE8A18':'#F2CD37'); }
-   x.poly([[78,150],[122,150],[112,176],[88,176]],'#FE8A18');
+ {name:'Scallop shell',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(220,170,'#ffffff');
+   // a solid fan of five broad ribs (yellow, orange, yellow…), each with a rounded bump at the rim, on a wide hinge
+   const cx=110, cy=146, R=100;
+   for(let k=0;k<5;k++){ const pts=[[cx,cy]]; for(let j=0;j<=10;j++){ const u=j/10, a=Math.PI*(1+(k+u)/5), r=R*(.84+.16*Math.sin(Math.PI*u)); pts.push([cx+Math.cos(a)*r,cy+Math.sin(a)*r]); }
+     x.poly(pts,k%2?'#FE8A18':'#F2CD37'); }
+   x.poly([[46,136],[174,136],[154,166],[66,166]],'#FE8A18');
    return [['front',c]]; }},
  {name:'Beach ball',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(200,200,'#BFE3F5');
    const C=['#0055BF','#F4F4F4','#F2CD37','#F4F4F4','#4B9F4A','#F4F4F4'];
@@ -5294,7 +5496,7 @@ const BRAIN_LEVELS=[
 // through Bloppitopia (Frog Forest, Brainpeak, Blitz Bay and Brickworks Island together), and each also needs the one
 // before it. The last is the Festival Clock. Scores are kept in g.sbest.
 const SEA_LEVELS=[
- {name:'Scallop shell',   sample:'Scallop shell',   size:10,  shape:'flat',   thick:.5, colors:2, pts:100},
+ {name:'Scallop shell',   sample:'Scallop shell',   size:12,  shape:'flat',   thick:.5, colors:2, pts:100},
  {name:'Beach ball',      sample:'Beach ball',      size:8,  shape:'flat',   thick:.6, colors:5, pts:130},
  {name:'Starfish',        sample:'Starfish',        size:12, shape:'flat',   thick:.6, colors:2, pts:160},
  {name:'Jellyfish',       sample:'Jellyfish',       size:10,  shape:'puffed', thick:.5, colors:4, pts:200},
@@ -5388,18 +5590,24 @@ function levelCount(L){
   return L.count=m&&m.bricks?m.bricks.length:0;
 }
 const levelScore=()=>{ const L=levelsOf(gameTrail())[game.lvl], p=game.pen; return Math.max(Math.round(L.pts*.1), L.pts-p.hint*5-p.auto*10)+(game.math?game.math.pts:0); };
-const starsFor=(sc,L)=>sc>=L.pts*.9?3:sc>=L.pts*.6?2:1;
+const starsFor=(sc,L)=>sc>=L.pts*.9?3:sc>=L.pts*.6?2:1;   // the old points rule, only for levels finished before builds kept their ★
+// A level's ★: its best build on the island record (finished · no hints or placed-for-you · no wrong bricks)
+function levelStars(tr,i,o,best){ const L=levelsOf(tr)[i]; o=o||worldStore(); const b=L&&o.builds[`t:${tr}:${i}:${L.name}`]; return b&&b.s?b.s:best?starsFor(best,L):0; }
+const trailStars=(tr,o)=>{ o=o||worldStore(); const B=bestOf(gameStore(),tr); return levelsOf(tr).reduce((a,_,i)=>a+(B[i]?levelStars(tr,i,o,B[i]):0),0); };
+// The ★ this attempt is on course for (shown in the level card as you build)
+const runStars=()=>{ const p=game?game.pen:{hint:0,auto:0}, noHelp=p.hint+p.auto===0; return 1+(noHelp?1:0)+(noHelp&&!(run&&run.miss)?1:0); };
 const starHTML=n=>'★'.repeat(n)+`<i>${'★'.repeat(3-n)}</i>`;
 function charge(kind,n){
   if(mp){ mp.pen[kind]++; mpSendPen(); }
   else { game.pen[kind]++; updateGameBar(); }
-  const f=$(mp?'#mpFlash':'#gbFlash'); f.textContent='−'+n; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go');
+  if(!mp) return;   // a trail level shows the ★ it drops in the game bar instead
+  const f=$('#mpFlash'); f.textContent='−'+n; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go');
 }
 function updateGameBar(){
   const on=!!game;
   $('#gameBar').hidden=!(on&&(tab==='build'||tab==='box'));
-  $('#hintBtn').textContent=(mp&&mp.state&&mp.state.mode==='blitz')?(mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'):(on||mp)?'Hint (−5)':'Hint';
-  $('#autoBtn').textContent=(on||mp)?'Place one for me (−10)':'Place one for me';
+  $('#hintBtn').textContent=(mp&&mp.state&&mp.state.mode==='blitz')?(mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'):mp?'Hint (−5)':'Hint';
+  $('#autoBtn').textContent=mp?'Place one for me (−10)':'Place one for me';
   if(!on) return;
   const LV=levelsOf(gameTrail()), L=LV[game.lvl], p=game.pen;
   // Where you are: the trail (with its friend) and the island it grows
@@ -5407,10 +5615,9 @@ function updateGameBar(){
     let iname=''; try{ iname=ISLES[isle].name; }catch(e){}
     $('#gbWhere').innerHTML=`${who?`<img src="/art/head-${who}.png" alt="">`:''}<div><strong>${escapeHTML(T.name)}</strong>${iname?`<small>🏝️ ${escapeHTML(iname)}</small>`:''}</div>`; }
   $('#gbBadge').textContent=game.lvl+1; $('#gbNum').textContent=`${game.lvl+1} of ${LV.length}`; $('#gbName').textContent=L.name;
-  $('#gbPts').textContent=levelScore(); $('#gbOf').textContent=`of ${L.pts}`;
-  const bits=[]; if(p.hint) bits.push(`Hints ${p.hint}× −${p.hint*5}`); if(p.auto) bits.push(`Placed for you ${p.auto}× −${p.auto*10}`);
-  if(game.math) bits.push(`Math ${game.math.solved.length} of ${game.math.locks.length} pages${game.math.pts?` +${game.math.pts}`:''}`);
-  if(L.pts-p.hint*5-p.auto*10<Math.round(L.pts*.1)) bits.push(`Minimum for finishing: ${Math.round(L.pts*.1)}`);   // the floor: finishing always earns a tenth of the level
+  { const st=runStars(); $('#gbPts').innerHTML=starHTML(st); $('#gbOf').textContent=''; if(game.lastSt&&st<game.lastSt){ const f=$('#gbFlash'); f.textContent='−★'; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); } game.lastSt=st; }
+  const bits=[]; if(p.hint) bits.push(`Hints ${p.hint}`); if(p.auto) bits.push(`Placed for you ${p.auto}`); if(run&&run.miss) bits.push(`Wrong bricks ${run.miss}`);
+  if(game.math) bits.push(`Math ${game.math.solved.length} of ${game.math.locks.length} pages`);
   $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>';
 }
 window.bloppitLevels={otter:OTTER_LEVELS,brain:BRAIN_LEVELS,sea:SEA_LEVELS,blitz:BLITZ_PICKS,mystery:()=>MYSTERY,progress:()=>gameProgress(worldStore()),lib:()=>SAMPLES.filter(released).map(s=>s.name),weekly:w=>weeklyPuzzle(w),count:L=>{ delete L.count; return levelCount(L); },pic:n=>{ const S=SAMPLES.find(x=>x.name===n); return S?S.make()[0][1].toDataURL():null; },thumb:L=>levelThumb(L)};   // for tests and tuning
@@ -5520,7 +5727,8 @@ function endReveal(instant){
 }
 function winLevel(){
   if(!game) return;
-  const LV=levelsOf(gameTrail()), i=game.lvl, L=LV[i], p=game.pen, sc=levelScore(), st=starsFor(sc,L), tr=gameTrail();
+  const LV=levelsOf(gameTrail()), i=game.lvl, L=LV[i], p=game.pen, sc=levelScore(), tr=gameTrail(), W=worldLast&&worldLast.key&&worldLast.key.startsWith('t:')?worldLast:null;
+  const noHelp=W?W.noHint:p.hint+p.auto===0, clean=W?W.clean:noHelp&&!run.miss, st=W?W.stars:1+(noHelp?1:0)+(clean?1:0);
   const g=gameStore(), B=bestOf(g,tr), prev=B[i]||0; if(sc>prev) B[i]=sc; gameStoreSet(g);
   setTrail(tr); winLvl=i;
   $('#winStars').innerHTML=starHTML(st); worldSound();
@@ -5529,15 +5737,10 @@ function winLevel(){
     el.classList.toggle('three',tiny&&hasPup(o));
     if(reveal&&reveal.url) el.hidden=true; else if(hasPup(o)) cheer3(el,tiny?['bloppit','pup',fid]:['bloppit','pup'],tiny?['cheer','happy_hop',tc]:['cheer','happy_hop']); else cheer3(el,tiny?['bloppit',fid]:'bloppit',tiny?['cheer',tc]:'cheer'); }
   $('#winTitle').textContent=`${TRAILS[tr].icon} Level ${i+1} complete!`;
-  const rows=[[`Built the ${L.name}`,L.pts,'']];
-  if(p.hint) rows.push([`Hints (${p.hint})`,-p.hint*5,'neg']);
-  if(p.auto) rows.push([`Placed for you (${p.auto})`,-p.auto*10,'neg']);
-  const mpts=game.math?game.math.pts:0;
-  if(mpts) rows.push([`Math puzzles solved first time (${mpts/10})`,mpts,'']);
-  if(L.pts-p.hint*5-p.auto*10+mpts<sc) rows.push(['Minimum for finishing',sc-(L.pts-p.hint*5-p.auto*10+mpts),'']);
-  $('#winRows').innerHTML=rows.map(([a,b,c])=>`<div class="${c}"><span>${a}</span><span>${b>0?'+':''}${b}</span></div>`).join('')+`<div class="tot"><span>Points</span><span>${sc}</span></div>`;
-  const total=Object.values(B).reduce((a,b)=>a+b,0);
-  $('#winBest').textContent=(sc>prev&&prev?`New best! (was ${prev}) · `:'')+`${TRAILS[tr].name}: ${total.toLocaleString()} points`;
+  const rows=[[`Built the ${L.name}`,true],[noHelp?'No hints or placed-for-you':`Help used (${p.hint+p.auto})`,noHelp],[clean?'Perfect: no help, no wrong bricks':run.miss?`Perfect: no wrong bricks (${run.miss} this time)`:'Perfect: no help, no wrong bricks',clean]];
+  $('#winRows').innerHTML=rows.map(([a,ok])=>`<div class="${ok?'':'neg'}"><span>${a}</span><span>${ok?'★':'–'}</span></div>`).join('')
+    +`<div class="tot"><span>Galaxy Blocks</span><span>+${W?W.gained:0} ${gbIc()}</span></div>`;
+  { const o=worldStore(), ts=trailStars(tr,o), all=LV.length*3; $('#winBest').textContent=`${TRAILS[tr].name}: ${ts} of ${all} ★`; }
   const last=i>=LV.length-1, wait=!last&&tr==='sea'&&!seaWashed(i+1);
   $('#winNext').innerHTML=last?'All levels done!':wait?`<img class="nb-pic" src="${levelThumb(LV[i+1])}" alt=""><span>Next puzzle<small>Washes ashore at ${seaPct(i+1)}% of Bloppitopia</small></span>`:`<img class="nb-pic" src="${levelThumb(LV[i+1])}" alt=""><span>Next<small>Level ${i+2}: ${escapeHTML(LV[i+1].name)}</small></span>`; $('#winNext').disabled=last||wait;
   { const isle={otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr]; $('#winIsland').textContent=`🏝️ Back to Bloppitopia`; $('#winIsland').title=isle&&ISLES[isle]?`See ${ISLES[isle].name} grow`:''; }
@@ -5557,18 +5760,17 @@ function renderGameMap(){
   $('#trOtter').setAttribute('aria-selected',trail==='otter'); $('#trBrain').setAttribute('aria-selected',trail==='brain'); $('#trSea').setAttribute('aria-selected',trail==='sea');
   $('#gmTitle').textContent=`${T.icon} ${T.name}`;
   const pct=trail==='sea'?progressPct(worldStore()):0;
-  $('#gmIntro').textContent=trail==='brain'?'A different set of puzzles, with Bloppit’s math puzzles locking some booklet pages. Solve them to keep building and earn bonus points.':trail==='sea'?`Pippa’s seaside puzzles wash ashore as Bloppitopia grows: a new one about every 8% (you’re at ${pct}%). Each one you build grows Sunrise Shores.`:'Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, so they’re worth more points.';
-  $('#gmTotal').textContent=total.toLocaleString(); $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} points`; syncMathUI();
+  $('#gmIntro').textContent=trail==='brain'?'A different set of puzzles, with Bloppit’s math puzzles locking some booklet pages. Solve them to keep building.':trail==='sea'?`Pippa’s seaside puzzles wash ashore as Bloppitopia grows: a new one about every 8% (you’re at ${pct}%). Each one you build grows Sunrise Shores.`:'Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, and Tiny cheers you all the way.';
+  { const ts=trailStars(trail); $('#gmTotal').textContent=`${ts} ★`; $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} stars`; $('#gmDone').dataset.of=`${levelsOf(trail).length*3}`; } syncMathUI();
   $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} ${trail==='sea'?'puzzles built':'levels done'}`;
   $('#gmLevels').innerHTML=levelsOf(trail).map((L,i)=>{
     const best=B[i], ashore=trail!=='sea'||seaWashed(i), open=i<=unlocked&&(ashore||!!best), cur_=game&&game.lvl===i&&gameTrail()===trail;
-    const st=best?starsFor(best,L):0;
+    const st=best?levelStars(trail,i,null,best):0;
     return `<button class="lvl${i===unlocked&&!best?' next':''}" type="button" data-i="${i}" ${open?'':'disabled'}>
       <span class="ln">${i+1}</span>${cur_?'<span class="tagnew">Playing</span>':(i===unlocked&&!best?'<span class="tagnew">Next</span>':'')}
       <img alt="" src="${levelThumb(L)}"><span class="lt">${L.boss?'👑 Boss: ':''}${L.name}</span>
       <span class="lm" data-c="${i}">${L.count?`${L.count} bricks`:'&nbsp;'}</span>
-      <span class="lp">${L.pts} points</span>
-      ${best?`<span class="ls">${starHTML(st)}</span><span class="lb">Best: ${best}</span>`:open?'<span class="lb">Not played yet</span>':!ashore?`<span class="lb">🌊 Washes ashore at ${seaPct(i)}%</span>`:`<span class="lb">Finish level ${i} to unlock</span>`}
+      ${best?`<span class="ls">${starHTML(st)}</span><span class="lb">${st===3?'All three stars!':'Built ✓'}</span>`:open?'<span class="lb">Not played yet</span>':!ashore?`<span class="lb">🌊 Washes ashore at ${seaPct(i)}%</span>`:`<span class="lb">Finish level ${i} to unlock</span>`}
     </button>`; }).join('');
   // Work out brick counts a few at a time so the map appears straight away
   let k=0; (function next(){ if(tab!=='game'||k>=levelsOf(trail).length) return; const L=levelsOf(trail)[k], el=document.querySelector(`[data-c="${k}"]`); if(el&&!L.count){ levelCount(L); el.textContent=`${L.count} bricks`; } k++; setTimeout(next,0); })();
@@ -5735,7 +5937,7 @@ function mathAnswer(v){
   const n=Number(String(v).replace('−','-').trim());
   if(n===P.a){
     const first=mq.tries===0; game.math.solved.push(k); if(first){ game.math.pts+=10; mathStreak(true); }
-    fb.dataset.kind='ok'; fb.textContent=first?'Yes! Page unlocked. +10 points':'Yes! Page unlocked.';
+    fb.dataset.kind='ok'; fb.textContent='Yes! Page unlocked.';
     sfx.chime(); sfx.chirp(); mq=null; updateGameBar(); unlockPage(k); saveSoon();
     setTimeout(()=>{ if($('#mathDlg').open) $('#mathDlg').close(); },900);
     return;
@@ -5787,6 +5989,7 @@ syncMathUI();
 /* ---------- Player picker ---------- */
 $('#whoAge').innerHTML+=AGE_OPTS;
 const initial=n=>escapeHTML((n.trim()[0]||'?').toUpperCase());
+function playerRating(id){ try{ const o=JSON.parse(localStorage.getItem(keyFor(id,WORLD_KEY))||'null'); return o&&o.builds?worldRating(o):0; }catch(e){ return 0; } }
 function playerStats(id){ const g=gameStore(id), sum=o=>Object.values(o||{}).reduce((a,b)=>a+b,0);
   return {pts:sum(g.best)+sum(g.bbest)+sum(g.sbest), lv:Object.keys(g.best||{}).length, blv:Object.keys(g.bbest||{}).length, slv:Object.keys(g.sbest||{}).length}; }
 function renderWho(){
@@ -5797,7 +6000,7 @@ function renderWhoList(){
     return `<div class="who-card${p.id===players.cur?' now':''}" role="button" tabindex="0" data-id="${p.id}" aria-label="Play as ${escapeHTML(p.name)}">
       ${p.id===players.cur?'<span class="now-tag">Playing</span>':''}<button class="who-edit" type="button" data-edit="${p.id}" aria-label="Edit ${escapeHTML(p.name)}">Edit</button>
       <span class="av" style="background:${p.color}">${initial(p.name)}</span><b>${escapeHTML(p.name)}</b>
-      <span class="meta">${p.age?`Age ${p.age}${p.age===15?'+':''} · `:''}${st.pts.toLocaleString()} points</span>
+      <span class="meta">${p.age?`Age ${p.age}${p.age===15?'+':''} · `:''}${playerRating(p.id)} ★</span>
       <span class="meta">🐸 ${st.lv} · 🧠 ${st.blv} of ${OTTER_LEVELS.length} levels</span></div>`; }).join('');
 }
 let whoEditing=null, whoColor=AV_COLORS[0];
@@ -6828,6 +7031,49 @@ async function renderDaily(){
   $('#dyMsg').hidden=true;
   weeklyFetch().then(j=>{ const el=$('#dyCount'); if(el&&tab==='daily'){ el.textContent=cleanLine(j,me); el.hidden=!el.textContent; } }).catch(()=>{});
 }
+/* ---------- Pippa's message in a bottle: one a day, +5 XP ----------
+   It washes up on her puzzles page each new day (the player's own calendar day). Opening it keeps the day in the
+   world record (o.bottles), and XP is worked out from those days like the builds, so two devices add up correctly. */
+const dayKey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const BOTTLE_LINES=[
+  'Ahoy! The waves are sparkly today. Keep building, you’re doing brilliantly!',
+  'Did you know? A starfish can grow back a lost arm!',
+  'I tried surfing with my sunglasses on. They stayed on my head. Mostly!',
+  'Fun fact: an octopus has three hearts!',
+  'Did you know? A scallop has lots of tiny eyes all along the edge of its shell!',
+  'Bibi painted my ice-cream stall. It’s the brightest one on the beach!',
+  'Swoop raced a seagull this morning. The seagull didn’t know it was a race.',
+  'Did you know? A group of jellyfish is called a smack!',
+  'Tiny says hello from Frog Forest. Can you hear him singing?',
+  'Nora read me a whole book about the stars. My favourite is the twinkly one.',
+  'Did you know? Penguins can’t fly, but they’re super-fast swimmers!',
+  'Bloppit says every big build starts with one brick. Today’s a good day for one!',
+  'Did you know? Sea otters hold paws while they sleep, so they don’t drift apart!',
+  'I found a shell that looks just like a tiny hat. I’m keeping it!',
+  'Did you know? A blue whale’s heart is as big as a small car!',
+  'The Festival Clock is waiting for someone special to build it. Could it be you?',
+];
+const bottleLine=day=>BOTTLE_LINES[parseInt(hash32('bottle:'+day),36)%BOTTLE_LINES.length];
+function bottleSync(){ try{
+  const o=worldStore(), day=dayKey(), got=bottleDays(o).includes(day), card=$('#bottleCard');
+  const tb=$('#tab-sea'); if(tb) tb.classList.toggle('bottle-on',!got&&!!o.arrived);
+  if(!card) return; card.classList.toggle('waiting',!got);
+  $('#btTitle').textContent=got?'Pippa’s message':'A message in a bottle!';
+  $('#btSub').textContent=got?`+${BOTTLE_XP} XP and a Galaxy Block · another bottle washes up tomorrow`:`Pippa sends one every day. Open it for +${BOTTLE_XP} XP and a Galaxy Block.`;
+  $('#btMsg').hidden=!got; $('#btMsg').textContent=got?bottleLine(day):'';
+  $('#btOpen').hidden=got;
+}catch(e){} }
+$('#btOpen').onclick=()=>{ const o=worldStore(), day=dayKey(); if(bottleDays(o).includes(day)) return bottleSync();
+  o.bottles=[...bottleDays(o),day].sort(); o.xp=worldXP(o); worldSet(o); track('bottle');
+  try{ sfx.chime(); }catch(e){} try{ sfx.voice('pippa'); }catch(e){} bottleSync(); };
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) bottleSync(); });
+window.bloppitWorld=()=>{ const o=worldStore(); return {level:otterLevel(o),stage:PUP_STAGES[pupStage(o)].name,galaxy:worldStars(o),stars:worldRating(o),xp:worldXP(o)}; };   // for tests
+window.bloppitBottle=()=>({day:dayKey(),days:bottleDays(worldStore()),xp:worldXP(worldStore()),dot:$('#tab-sea').classList.contains('bottle-on')});   // for tests
+// Bibi's Weekly card on the Quick Build page: this week's model and whether it's done
+function qbWeeklySync(){ try{ const week=weekOf(), o=weeklyPuzzle(week), me=weeklyStore().weeks[week];
+  $('#qbWkImg').src=o.thumb||'/art/head-bibi.png';
+  $('#qbWkSub').textContent=me?(me.clean?`${o.name}: built clean ✓ · a new one every Monday`:`${o.name}: built ✓ · try it again for a clean one`):`This week: ${o.name} · ${o.n} bricks`; }catch(e){} }
+$('#qbWeekly').onclick=()=>setTab('daily');
 $('#dyGo').onclick=async()=>{
   const b=$('#dyGo'); b.disabled=true;
   try{ const week=weekOf(), o=weeklyPuzzle(week); if(game) endGame(); if(mp) mpLeave(); weeklyLoad(o);
@@ -6975,18 +7221,19 @@ loadSample(0); setTab('create'); clearTimeout(timer); rebuild(); requestAnimatio
     $('#resume').hidden=false;
   } else saveOn=true;
 }
-/* ---------- Your world (Bloppitopia Lite): XP, Build Stars and the pup ----------
-   Two currencies and no more (Build Stars draft, Oct 2026). XP measures how much you have built; Build Stars how
-   well. Every finished model earns XP once (10 short / 20 medium / 35 long) and up to three stars: one for
-   finishing, one for no hints, one for clean (no wrong placements either). Stars on a model are the best of all
-   attempts. The Weekly's first finish adds +10 XP and a bonus star; a Blitz win against a Longtail is 10 XP and one
-   star, never clean stars. Nothing is bought, sold, traded or lost. The record lives per player on this device
+/* ---------- Your world (Bloppitopia Lite): XP, stars, Galaxy Blocks and the pup ----------
+   One job each (30 Oct 2026). ★ say how well you built: up to three per model (finished · no hints or placed-for-you ·
+   perfect: no help and no wrong bricks), its best attempt, never spent. Galaxy Blocks are the pocket money: one per ★ earned, plus the Weekly,
+   From Memory, the daily bottle and island finales; Bibi's shop sells decorations for them. XP (every new build, and
+   the bottle) sets the Otter Level, which unlocks outfits and grows the otter (Splash at 4, Legend at 8). Nothing is bought, sold, traded or lost. The record lives per player on this device
    and under the pup on the server (the world field); nothing in it is typed by a child: the pup's name is an
    index into a fixed list, and a photo build is keyed by a hash of its file name. */
 var WORLD_KEY='bloppit-world-v1', worldLast=null;
 var PUP_NAMES=['Pebble','Kelp','Sandy','Bubbles','Coral','Finn','Misty','Shelly','Ripple','Dash','Mango','Tide'];
 // Splash at 25 builds, Legend at 65 (of about 71 core builds), so Legend comes near the end of the core content.
-var PUP_STAGES=[{name:'Pup',at:0},{name:'Splash',at:25},{name:'Legend',at:65}];
+var PUP_STAGES=[{name:'Pup',at:0,lvl:1},{name:'Splash',at:25,lvl:4},{name:'Legend',at:65,lvl:8}];
+// From 30 Oct 2026 the otter grows with its Otter Level. An otter that had already reached a stage by builds keeps it.
+const GROW_SWITCH=Date.UTC(2026,9,30,3);
 // Until 24 Oct 2026 it was Splash at 10 and Legend at 40: an otter keeps any stage it reached under those
 // (worked out from when its builds were finished, so every device agrees and nothing new is stored).
 var PUP_STAGES_OLD=[0,10,40], PUP_SWITCH=Date.UTC(2026,9,24,3);
@@ -7028,7 +7275,7 @@ function worldMerge(a,b){
   // The name (typed or picked) and brick colour: whichever was set last (pupAt); a later 'no name yet' never wipes one
   const later=(b.pupAt||0)>(a.pupAt||0)?b:a, other=later===b?a:b, named=w=>(cleanPupText(w.pupText)||w.pupName>=0)?w:null, nw=named(later)||named(other)||{};
   const pn=typeof nw.pupName==='number'&&nw.pupName>=0?nw.pupName:null, pc=[later.pupColor,other.pupColor].find(v=>Number.isInteger(v)&&v>=0);
-  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,films:[...new Set([...(a.films||[]),...(b.films||[])])],decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},pos:{...(a.pos||{}),...(b.pos||{})},away:awayMerge(a.away,b.away),draw:[...new Map([...(b.draw||[]),...(a.draw||[])].map(d=>[d.id,d])).values()].sort((x,y)=>(y.t||0)-(x.t||0)).slice(0,12),pupName:pn==null?-1:pn,pupText:cleanPupText(nw.pupText),pupAt:Math.max(a.pupAt||0,b.pupAt||0),pupColor:pc==null?-1:pc,...(pc===PUP_MIX&&[later.pupHex,other.pupHex].find(pupHexOk)?{pupHex:[later.pupHex,other.pupHex].find(pupHexOk)}:{}),isle:(a.isle||b.isle)?1:0,arrived:(a.arrived||b.arrived)?1:0,pick:a.pick||b.pick||undefined,...(((b.wearAt||0)>(a.wearAt||0)?b:a).wear?{wear:((b.wearAt||0)>(a.wearAt||0)?b:a).wear,wearAt:Math.max(a.wearAt||0,b.wearAt||0)}:{}),pupAsked:!!(a.pupAsked||b.pupAsked)};
+  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,films:[...new Set([...(a.films||[]),...(b.films||[])])],bottles:[...new Set([...bottleDays(a),...bottleDays(b)])].sort(),decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},pos:{...(a.pos||{}),...(b.pos||{})},away:awayMerge(a.away,b.away),draw:[...new Map([...(b.draw||[]),...(a.draw||[])].map(d=>[d.id,d])).values()].sort((x,y)=>(y.t||0)-(x.t||0)).slice(0,12),pupName:pn==null?-1:pn,pupText:cleanPupText(nw.pupText),pupAt:Math.max(a.pupAt||0,b.pupAt||0),pupColor:pc==null?-1:pc,...(pc===PUP_MIX&&[later.pupHex,other.pupHex].find(pupHexOk)?{pupHex:[later.pupHex,other.pupHex].find(pupHexOk)}:{}),isle:(a.isle||b.isle)?1:0,arrived:(a.arrived||b.arrived)?1:0,pick:a.pick||b.pick||undefined,...(((b.wearAt||0)>(a.wearAt||0)?b:a).wear?{wear:((b.wearAt||0)>(a.wearAt||0)?b:a).wear,wearAt:Math.max(a.wearAt||0,b.wearAt||0)}:{}),pupAsked:!!(a.pupAsked||b.pupAsked)};
 }
 function worldSet(o){ try{ localStorage.setItem(pkey(WORLD_KEY),JSON.stringify(o)); }catch(e){} pupPush(); }
 const worldCount=o=>o.log.length;                                   // distinct models finished
@@ -7042,20 +7289,29 @@ const XP_PER_BRICK=.55, XP_SWITCH=Date.UTC(2026,9,24,3);
 const sizeXP=n=>Math.max(10,Math.round(XP_PER_BRICK*(n||0)));
 const oldSizeXP=n=>n<=20?10:n<=40?20:35;
 const buildXP=(k,b)=>(b.k==='blitz'?10:Math.max(sizeXP(b.n),(b.t||Infinity)<XP_SWITCH?oldSizeXP(b.n):0))+(k.startsWith('w:')?10:0)+(b.m?5:0);
-const worldXP=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+buildXP(k,b),0);
-const worldStarsEarned=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+(b.s||0)+(k.startsWith('w:')?1:0)+(b.m?1:0),0)+finaleStars(o);
+const BOTTLE_XP=5;   // Pippa's message in a bottle: one a day
+const worldXP=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+buildXP(k,b),0)+BOTTLE_XP*bottleDays(o).length;
+const bottleDays=o=>(Array.isArray(o.bottles)?o.bottles:[]).filter(d=>typeof d==='string'&&/^\d{4}-\d\d-\d\d$/.test(d));
+// Galaxy Blocks: the game's pocket money. A build earns one per ★ (its best), a Weekly and a From Memory build one more,
+// each daily bottle one, and a finished island 5 (the whole world 10 more). Decorations spend them; ★ ratings are never spent.
+const worldStarsEarned=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+(b.s||0)+(k.startsWith('w:')?1:0)+(b.m?1:0),0)+finaleStars(o)+bottleDays(o).length;
+const gbIc=()=>'<svg class="gb-ic" viewBox="0 0 120 100" aria-hidden="true"><use href="#gbBlock"/></svg>';
+const gbN=n=>`${n} Galaxy Block${n===1?'':'s'}`;
 function finaleStars(o){ try{ if(typeof ISLES==='undefined') return 0; const n=islesComplete(o).length; return n*5+(n===ISLE_TOTAL?10:0); }catch(e){ return 0; } }
 // Put away / put back: the time it was put away, or minus the time it came back; on a merge the latest choice wins (old 1/0 lose to any timed one)
 const isAway=(o,k)=>((o.away||{})[k]||0)>0, awayMark=back=>back?-Date.now():Date.now();
 function awayMerge(a,b){ const o={...(a||{})}; for(const [k,v] of Object.entries(b||{})) if(!(k in o)||Math.abs(+v||0)>Math.abs(+o[k]||0)) o[k]=v; return o; }
 const decorOut=o=>(o.decor||[]).filter(id=>!isAway(o,'decor:'+id));   // decorations on the island (not put away)   // decorations on the island (not put away)
 const worldStarsSpent=o=>(o.decor||[]).reduce((a,id)=>{ if((o.free||[]).includes(id)) return a; const d=DECOR.find(x=>x.id===id); return a+(d?d.cost:0); },0);
-const worldStars=o=>worldStarsEarned(o)-worldStarsSpent(o);
+const worldStars=o=>worldStarsEarned(o)-worldStarsSpent(o);   // Galaxy Blocks to spend
+const worldRating=o=>Object.values(o.builds||{}).reduce((a,b)=>a+(b.s||0),0);   // ★ earned, all builds
 const stageOf=(list,n)=>{ let k=0; list.forEach((st,i)=>{ if(n>=st.at) k=i; }); return k; };
 const pupHeld=o=>{ const n=Object.values(o.builds||{}).filter(b=>b&&(b.t||Infinity)<PUP_SWITCH).length; return n>=PUP_STAGES_OLD[2]?2:n>=PUP_STAGES_OLD[1]?1:0; };
-const pupStage=o=>Math.max(stageOf(PUP_STAGES,worldCount(o)),pupHeld(o)), islandStage=o=>stageOf(ISLAND_STAGES,worldCount(o));
+const pupByLevel=o=>{ const lv=otterLevel(o); let k=0; PUP_STAGES.forEach((st,i)=>{ if(lv>=st.lvl) k=i; }); return k; };
+const pupByBuildsBefore=o=>stageOf(PUP_STAGES,Object.values(o.builds||{}).filter(b=>b&&(b.t||Infinity)<GROW_SWITCH).length);
+const pupStage=o=>Math.max(pupByLevel(o),pupByBuildsBefore(o),pupHeld(o)), islandStage=o=>stageOf(ISLAND_STAGES,worldCount(o));
 // How far to the next stage (0–100); an otter that kept a stage early starts its bar from where it is
-const pupPct=(o,ps)=>{ const n=worldCount(o), nx=PUP_STAGES[ps+1]; if(!nx) return 100; const from=Math.min(PUP_STAGES[ps].at,n); return Math.max(0,Math.min(100,Math.round(100*(n-from)/Math.max(1,nx.at-from)))); };
+const pupPct=(o,ps)=>{ const xp=worldXP(o), nx=PUP_STAGES[ps+1]; if(!nx) return 100; const to=levelXP(nx.lvl), from=Math.min(levelXP(PUP_STAGES[ps].lvl),xp); return Math.max(0,Math.min(100,Math.round(100*(xp-from)/Math.max(1,to-from)))); };
 const pupName=o=>cleanPupText(o.pupText)||(o.pupName>=0&&PUP_NAMES[o.pupName])||'';
 function hash32(str){ let h=2166136261; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0).toString(36); }
 // A model's key: catalogue models by name, photo models by a hash (the file name never leaves the device)
@@ -7118,9 +7374,9 @@ function worldStripHTML(r){
   if(!r) return '';
   const o=worldStore(), what=r.kind==='blitz'?'Race won':r.clean?'Clean build!':r.noHint?'No hints!':'Finished!';
   const parts=[wsStars(r.stars),`<span>${what}</span>`];
-  if(r.xp) parts.push(`<span>+${r.xp} XP</span>`); else if(!r.first) parts.push('<span>Built before · best kept</span>');
-  if(r.kind==='weekly'&&r.first) parts.push('<span>+1 Weekly star</span>');
-  if(r.memory) parts.push('<span>🧠 From memory! +1 star</span>');
+  if(r.gained) parts.push(`<span class="ws-gb">+${r.gained} ${gbIc()}</span>`);
+  if(r.xp) parts.push(`<span>+${r.xp} XP</span>`); else if(!r.first&&!r.gained) parts.push('<span>Built before · best kept</span>');
+  if(r.memory) parts.push('<span>🧠 From memory!</span>');
   if(r.decor) parts.push(`<span class="ws-up">🏝️ A ${r.decor.name.toLowerCase()} for your island</span>`);
   if(r.pupUp) parts.push(`<span class="ws-up">${pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'})}${escapeHTML(pupName(o))||'Your otter'} is a ${PUP_STAGES[r.after.pup].name}!</span>`);
   else if(r.islandUp) parts.push(`<span class="ws-up">🏝️ ${ISLAND_STAGES[r.after.island].name} built!</span>`);
@@ -7236,8 +7492,8 @@ function renderHomeWorld(){
   el.innerHTML=`<span class="hw-isle">${isle}<span class="hw-tag">🏝️ Bloppitopia · ${ISL3.ok?islandsOpen(o).length+' of '+ISLE_TOTAL+' islands':ISLAND_STAGES[is].name}</span></span>
     <span class="pup ps-${PUP_STAGES[ps].name.toLowerCase()}">${pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'})}</span>
     <div class="wt">${nm?`<b>${escapeHTML(nm)} <span class="sub">· Level ${otterLevel(o)} ${PUP_STAGES[ps].name}</span></b>`:`<span class="wname" id="wName" role="button" tabindex="0">Name your otter</span>`}
-      <span class="sub">${next?`${next.at-n} more build${next.at-n===1?'':'s'} to ${next.name} (another stud on its brick)`:'Legend of Bloppitopia'}</span><span class="bar"><i style="width:${Math.max(4,pct)}%"></i></span></div>
-    <div class="wn"><div><b>${n}</b><span>build${n===1?'':'s'}</span></div><div><b class="st">${worldStars(o)}</b><span>Build Stars</span></div><div><b>${worldXP(o)}</b><span>XP</span></div></div>
+      <span class="sub">${next?`Grows into a ${next.name} at Level ${next.lvl} (another stud on its brick)`:'Legend of Bloppitopia'}</span><span class="bar"><i style="width:${Math.max(4,pct)}%"></i></span></div>
+    <div class="wn"><div><b>${n}</b><span>build${n===1?'':'s'}</span></div><div><b class="st">${gbIc()} ${worldStars(o)}</b><span>Galaxy Blocks</span></div><div><b>${worldXP(o)}</b><span>XP</span></div></div>
     ${(()=>{ const g=ISL3.ok&&typeof worldNextGoal==='function'?worldNextGoal(o):null; if(g) return `<span class="sub" style="grid-column:1/-1">Next: ${escapeHTML(g.text)}</span>`; return inext?`<span class="sub" style="grid-column:1/-1;font-size:13px;font-weight:700;color:var(--muted)">${inext.at-n} more build${inext.at-n===1?'':'s'} to the ${inext.name}</span>`:''; })()}`;
   const w=$('#wName'); if(w){ w.onclick=e=>{ e.stopPropagation(); pupOpen(); }; w.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); e.stopPropagation(); pupOpen(); } }; }
   islandSnap(o,pic?'':isle,nm,n,ISLAND_STAGES[is].name,pic);
@@ -7248,7 +7504,7 @@ function islandSnap(o,svg,nm,n,stage,img){ try{ const v=JSON.stringify({...(img?
 /* ---------- Bloppitopia: the drawn island that grows with every finished build (Bloppitopia Lite) ----------
    Four stages by build count (Beach, Hut at 1, Workshop at 3, Village at 10), fixed model slots (1, 3, 6) that
    the newest finished models drop into, Weeklies in a marked slot by the water, twelve decorations bought with
-   Build Stars in fixed spots, and a postcard from the Village on. The island reads from the world record; the
+   decorations in fixed spots, and a postcard from the Village on. The island reads from the world record; the
    model pictures come from this device's thumbnail cache. */
 const SLOTS=[[320,372],[470,420],[400,482],[600,432],[720,470],[520,502],[230,450],[840,445],[640,505],[300,505],[770,398],[150,412]], WEEKLY_SLOT=[280,514];
 const DECOR_AT={flag:[70,362],campfire:[100,492],bench:[640,382],lantern:[560,388],signpost:[62,424],rockpool:[800,500],sandcastle:[192,506],hammock:[770,526],kite:[680,120],palm:[900,332],crab:[470,544],buoy:[960,546]};
@@ -7472,10 +7728,10 @@ function islandInfo(id,o){
       if(arg==='sea') return {title:'The sea',hint:'Six islands around Home Island: tap one',rows:destinations().map(d=>[d.n?d.name:ISLES[d.id].mystery?'Mystery Island':d.name,d.n?(d.st===3?`${d.milestone} ✓`:`${Math.min(d.n,d.total)} of ${d.total}${d.next?` · next: ${d.next}`:''}`):ISLES[d.id].mystery?mysteryHint():`In the mist · play ${ISLES[d.id].game} to find it`])};
       if(arg==='rocks') return {title:'The rocks',hint:'Crabs like it here',rows:[['Good for','Crabs and rock pools (in the decorations)']],actions:n?[{label:'✨ Decorate',fn:()=>$('#isDecor').click()}]:[]};
       if(arg==='lighthouse') return {title:'The lighthouse',hint:'It lights the way home',rows:[['Stands on','A rock off Bloppitopia'],['Job','Lighting the way home for every boat']]};
-      if(arg==='sky') return {title:'The sky',hint:(o.decor||[]).includes('kite')?'Your kite is flying':'Kites fly here',rows:[['Up here',(o.decor||[]).includes('kite')?'Your kite':'A kite, one day (5 Build Stars)']]};
+      if(arg==='sky') return {title:'The sky',hint:(o.decor||[]).includes('kite')?'Your kite is flying':'Kites fly here',rows:[['Up here',(o.decor||[]).includes('kite')?'Your kite':'A kite, one day (5 Galaxy Blocks)']]};
       break; }
     case 'decor': { const d=DECOR.find(x=>x.id===arg)||{name:arg,cost:0}, gift=(o.free||[]).includes(arg);
-      return {title:d.name,hint:gift?'A gift for a Weekly Bloppit':`Bought for ★ ${d.cost}`,rows:[...(arg!=='buoy'?[['Move it',ISL3.ok?'Hold it and drag it anywhere on the island':'Drag it anywhere on the sand']]:[]),['How you got it',gift?'A gift for finishing a Weekly Bloppit':`Bought with ${d.cost} Build Stars`],['Decorations',`${decorOut(o).length} of ${DECOR.length} on Bloppitopia`]],actions:[{label:'Put it away',fn:()=>decorPut(arg,false)}]}; }
+      return {title:d.name,hint:gift?'A gift for a Weekly Bloppit':`Bought for ${gbN(d.cost)}`,rows:[...(arg!=='buoy'?[['Move it',ISL3.ok?'Hold it and drag it anywhere on the island':'Drag it anywhere on the sand']]:[]),['How you got it',gift?'A gift for finishing a Weekly Bloppit':`Bought with ${gbN(d.cost)}`],['Decorations',`${decorOut(o).length} of ${DECOR.length} on Bloppitopia`]],actions:[{label:'Put it away',fn:()=>decorPut(arg,false)}]}; }
     case 'dest': { const m={ferry:'sunrise',workshop:'brickworks',brain:'brainpeak',speedway:'blitzbay',harbour:'otterwood'}[arg]; if(m) return islandInfo('isle:'+m,o); break; }
     case 'isle': { const I=ISLES[arg]; if(!I) break; const c=isleCount(arg,o), P=PIECES[arg], total=P[P.length-1].at, built=P.filter(x=>c>=x.at), next=P.find(x=>c<x.at);
       if(!c&&I.mystery) return {title:'Mystery Island',hint:mysteryHint(),bar:{pct:mysteryOpen()?100:Math.max(4,Math.round(100*mysteryProgress(o))),label:mysteryOpen()?'Ready to sail!':`${Math.round(100*mysteryProgress(o))}% of the way there`},rows:[['What’s there','Far out at sea, where it’s always night, a faint light glows in a swirl of mist. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Complete all five islands, every piece built (${fiveDone(o)} of ${FIVE_ISLES.length} so far)`],...(mysteryOpen()?[]:[['Still to finish',FIVE_ISLES.filter(id=>!isleComplete(id,o)).map(id=>isleCount(id,o)?`${ISLES[id].name} (${Math.min(isleCount(id,o),PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at})`:`${ISLES[id].name} (still in the mist)`).join(', ')]])],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'🏝️ Back to Bloppitopia',fn:()=>{ islandTipHide(true); isl3GoView(0); try{ sfx.swoosh(-1); }catch(e){} },primary:true}]};   // not open yet: back to the map, no surprise trip elsewhere
@@ -7502,7 +7758,7 @@ function islandInfo(id,o){
     case 'pup': { const nm=pupName(o), ps=pupStage(o), nx=PUP_STAGES[ps+1], c=PUP_COLORS[pupColorOf(o)];
       const lv=otterLevel(o), nl=levelXP(lv+1), nAcc=ACC.find(a=>!a.legend&&!a.finale&&a.lvl>lv);
       return {title:nm||'Your otter',hint:`Level ${lv} ${PUP_STAGES[ps].name} · ${ps+1} stud${ps?'s':''} on its brick`,icon:pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'}),
-        rows:[['Otter level',`${lv} · ${nl-worldXP(o)} XP to Level ${lv+1}`],...(nAcc?[['Next outfit',`${nAcc.name} at level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at ${nx.at} builds: another stud`:'A Legend. That’s the top']],
+        rows:[['Otter level',`${lv} · ${nl-worldXP(o)} XP to Level ${lv+1}`],...(nAcc?[['Next outfit',`${nAcc.name} at level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at Level ${nx.lvl}: another stud`:'A Legend. That’s the top']],
         bar:nx?{pct:Math.max(4,pupPct(o,ps)),label:`${nx.at-n} more build${nx.at-n===1?'':'s'} to ${nx.name}`}:null,
         actions:[{label:'👕 Wardrobe',fn:()=>wardrobeOpen(),primary:true},{label:nm?'Name or colour':'Name your otter',fn:()=>pupOpen()}]}; }
     case 'model': { const f=modelFacts(arg,o), b=f.b, flagW=arg.startsWith('w:')&&!ISL3.ok, onIsle=shown.list.some(m=>m.key===arg)||flagW;
@@ -7953,10 +8209,10 @@ const CAST={
     who:'Brainpeak’s stargazer and puzzle-setter',story:'Nora is a yellow-crowned night heron. She watches the stars from Brainpeak and tucks a math puzzle into the Brain Trail booklets.',
     loves:'A good “aha”, quiet nights and clear skies',secret:'Her great telescope is broken, and she needs a builder to fix it.',lines:['A clever mind shines in the dark.','Look closer, the answer’s hiding.','Aha! You saw the pattern.']},
   pippa:{name:'Pippa',kind:'the Penguin',isle:'sunrise',brick:'yellow',h:1.8,aspect:229/360,tag:'A new puzzle just washed ashore!',
-    who:'The visitor who never left',story:'Pippa washed up on Sunrise Shores on holiday, fell in love with the sunshine and stayed. Every Monday she brings the Weekly Bloppit on the ferry, and her own seaside puzzles wash ashore as Bloppitopia grows.',
+    who:'The visitor who never left',story:'Pippa washed up on Sunrise Shores on holiday, fell in love with the sunshine and stayed. Her seaside puzzles wash ashore as Bloppitopia grows, and every day she sends a message in a bottle.',
     loves:'Surprises, parties, and a swim before breakfast',secret:'She wobbles on land, but she’s the best swimmer in Bloppitopia.',lines:['A new puzzle just washed ashore!','Special delivery!','Ooh, that one’s clean!','See you next Monday!']},
   bibi:{name:'Bibi',kind:'the Lion Cub',isle:'brickworks',brick:'orange',h:1.85,aspect:241/360,tag:'Build it bold!',
-    who:'The maker of Brickworks Island',story:'Bibi runs the workshop and paints everything in sight. Whatever you make, he puts it on show and roars with pride.',
+    who:'The maker of Brickworks Island',story:'Bibi runs the workshop and paints everything in sight. Every Monday he paints a new Weekly Bloppit, and whatever you make, he puts it on show and roars with pride.',
     loves:'Big ideas, bright paint, and the crane',secret:'His roar is more of a squeak. He knows, and he roars anyway.',lines:['Build it bold!','If you can dream it, brick it!','ROAR! That’s brilliant!']},
   lufu:{name:'lufu',kind:'',isle:'moonstone',brick:'moonstone',h:1.2,aspect:237/360,tag:'We have found each other.',
     who:'A small, shy spirit of light',story:'lufu lived alone on Moonstone Isle for so long that its glow, and the stars above it, almost went out. Then you came, and built the crystal that made it shine again.',
@@ -8185,6 +8441,8 @@ class Ch3Ctl{
    in the game catches the brick, so it would snap back into his hands. */
 // Each friend with an approved 3D model: its file and version, how the drawings' moves map onto its own clips, its
 // looping clips, what a tap cycles through, and its resting clip at night
+const PUP3={pup:1,loops:['idle','focused'],night:'idle',reactions:['happy_hop','giggle_wiggle','surprised_jump','spin','show_brick'],
+  map:{greeting:'wave',hop:'happy_hop',oops:'surprised_jump',offer:'show_brick',wake:'happy_hop',grumpy_wake:'surprised_jump',cheeky_taunt:'giggle_wiggle',fly_in_land:'happy_hop'}};
 const MODEL3={
   // Bloppit (approved v2, 29 Oct 2026): his own rig with twenty clips and his props (watering can, rod, book, monocle)
   // built in; driven by Blop3Ctl below (a port of the delivered controller.js), not the friends' Model3Ctl
@@ -8202,7 +8460,13 @@ const MODEL3={
     map:{happy_hop:'hop',giggle_wiggle:'proud',spin:'cheer',wake:'hop',grumpy_wake:'roar',wave:'greeting',cheeky_taunt:'roar',surprised_jump:'hop',show_brick:'offer',look_at_you:'idea'}},
   // Swoop (approved v1, 29 Oct 2026): Blitz Bay's longtail racer in blue goggles, with his blue brick and two tail streamers
   swoop:{glb:'/3d/swoop.glb',v:'1',loops:['idle','focused'],night:'idle',reactions:['greeting','challenge','wink','cheer','hop','surprised'],
-    map:{fly_in_land:'greeting',happy_hop:'hop',giggle_wiggle:'wink',spin:'cheer',wake:'hop',grumpy_wake:'surprised',wave:'greeting',cheeky_taunt:'challenge',surprised_jump:'surprised',show_brick:'offer',look_at_you:'focused'}}};
+    map:{fly_in_land:'greeting',happy_hop:'hop',giggle_wiggle:'wink',spin:'cheer',wake:'hop',grumpy_wake:'surprised',wave:'greeting',cheeky_taunt:'challenge',surprised_jump:'surprised',show_brick:'offer',look_at_you:'focused'}},
+  // Your otter (approved v2, 29 Oct 2026): Pup, Splash (25 builds) and Legend (65), one model per age, each holding its
+  // 1-, 2- or 3-stud brick in the child's colour, with the wardrobe drawn for that age. Textures at 1024 px for phones;
+  // the approved masters (2048 px) are kept outside the game.
+  pup0:{glb:'/3d/pup.glb',v:'v2',...PUP3},
+  pup1:{glb:'/3d/pup-growing.glb',v:'v2',...PUP3},
+  pup2:{glb:'/3d/pup-older.glb',v:'v2',...PUP3}};
 for(const [id,m] of Object.entries(MODEL3)) RIG[id].glb=m.glb;
 const M3={wait:{}};
 function ch3Script(src){ return M3.wait[src]||(M3.wait[src]=new Promise((ok,no)=>{ const s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=()=>{ delete M3.wait[src]; no(new Error('could not load '+src)); }; document.head.appendChild(s); })); }
@@ -8211,7 +8475,7 @@ function ch3Model(id){ const R=RIG[id], G=CH3.gltf[id]; if(!R||!R.glb||!G) retur
     const gltf=await new Promise((ok,no)=>new THREE.GLTFLoader().load(R.glb+'?v='+MODEL3[id].v,ok,undefined,no)), sc=gltf.scene;
     sc.traverse(m=>{ if(m.isMesh){ m.castShadow=m.receiveShadow=false; m.frustumCulled=false; [].concat(m.material).forEach(ch3Filmic); } });   // the island's shadows are baked once; a soft pool under the feet instead
     sc.updateMatrixWorld(true); const box=new THREE.Box3(), v=new THREE.Vector3(), clips={};   // his size at rest (three's own box would include every pose's morphs)
-    sc.traverse(m=>{ if(!m.isMesh) return; const P=m.geometry.attributes.position; for(let i=0;i<P.count;i+=3) box.expandByPoint(v.fromBufferAttribute(P,i).applyMatrix4(m.matrixWorld)); }); for(const c of gltf.animations) clips[c.name]=c;
+    sc.traverse(m=>{ if(!m.isMesh||m3Extra(m)) return; const P=m.geometry.attributes.position; for(let i=0;i<P.count;i+=3) box.expandByPoint(v.fromBufferAttribute(P,i).applyMatrix4(m.matrixWorld)); }); for(const c of gltf.animations) clips[c.name]=c;
     const M=G.model={scene:sc,clips,h0:box.max.y-box.min.y,y0:box.min.y,w0:box.max.x-box.min.x};
     CH3.size[id]={h:R.h*1.05,w:Math.min(R.h*1.1,R.h*M.w0/M.h0),head:R.h*.72}; ch3Refresh(); return M; })().catch(e=>{ delete M3.wait[id]; console.warn('model',id,e); throw e; })); }
 // The approved look was signed off under filmic tone mapping (ACES, exposure 1.25, newer three.js): the game's renderers have
@@ -8225,6 +8489,8 @@ vec3 m3Aces(vec3 c){ const mat3 I=mat3(vec3(0.59719,0.07600,0.02840),vec3(0.3545
   c/=0.6; c=I*c; c=m3RRT(c); c=O*c; return clamp(c,0.0,1.0); }
 `;
 const ch3Has3d=id=>!!(CH3.gltf[id]&&CH3.gltf[id].model);
+// A wardrobe piece or one of the pup's three bricks (not part of the otter's own size)
+const m3Extra=m=>{ for(let n=m;n;n=n.parent){ const u=n.userData||{}; if(u.outfit||u.wardrobeSlot||u.brickVariant) return true; } return false; };
 function ch3Pool(){ return CH3.pool||(CH3.pool=(()=>{ const c=document.createElement('canvas'); c.width=c.height=64; const x=c.getContext('2d'), g=x.createRadialGradient(32,32,0,32,32,32); g.addColorStop(0,'rgba(30,36,24,.42)'); g.addColorStop(1,'rgba(30,36,24,0)'); x.fillStyle=g; x.fillRect(0,0,64,64); return new THREE.CanvasTexture(c); })()); }
 // A copy of a model that can move on its own. A skinned mesh (Bibi's) has to be bound to the copy's own bones,
 // or the copy keeps following the original skeleton and only its face morphs play
@@ -8236,31 +8502,48 @@ class Model3{
     this.body=new THREE.Group(); this.body.add(this.obj); this.root=new THREE.Group(); this.root.add(this.body); this.root.userData.puppet=1;
     this.blob=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:ch3Pool(),transparent:true,depthWrite:false})); this.blob.rotation.x=-Math.PI/2; this.blob.position.y=.01; this.blob.renderOrder=-1;
     this.blob.scale.set(this.R.h*.8,this.R.h*.45,1); this.root.add(this.blob);
-    this.mixer=new THREE.AnimationMixer(this.obj); this.acts={}; for(const [n,c] of Object.entries(M.clips)) this.acts[n]=this.mixer.clipAction(c); }
+    this.mixer=new THREE.AnimationMixer(this.obj); this.acts={}; for(const [n,c] of Object.entries(M.clips)) this.acts[n]=this.mixer.clipAction(c);
+    this.lids=[]; this.obj.traverse(m=>{ const d=m.morphTargetDictionary; if(d&&d.Closed!=null&&d.Half!=null) this.lids.push(m); });   // eyelids for blinking
+    if(MODEL3[id]&&MODEL3[id].pup){ const o=worldStore(); this.dress(pupColorOf(o),accWear(o)); } }   // the raw model wears everything: dress it before it's ever drawn
+  // The 3D pup's game outfits: the model has one of each piece, drawn for its age. Head, neck and face can be worn together.
+  dress(ci,wear){ if(!(MODEL3[this.id]&&MODEL3[this.id].pup)) return; const w=wear||{}, k=JSON.stringify([ci,ci===PUP_MIX?PUP_HEX:0,w]); if(k===this.dk) return; this.dk=k; this.ci=ci; this.wear=w;
+    const col=new THREE.Color((PUP_COLORS[ci]||PUP_COLORS[0]).c).convertSRGBToLinear(), studs=(RIG[this.id].stage|0)+1, on=new Set();
+    for(const sl of ['neck','head','face']){ const id=(w[sl]||[])[0], m=PUP3_WEAR[id]; if(m) on.add(m); }
+    this.obj.traverse(n=>{ const u=n.userData||{};
+      if(u.brickVariant){ n.visible=u.brickVariant===studs;
+        n.traverse(m=>{ if(!m.isMesh) return; if(!m.userData.ownBrick){ m.material=Array.isArray(m.material)?m.material.map(x=>x.clone()):m.material.clone(); [].concat(m.material).forEach(ch3Filmic); m.userData.ownBrick=1; }
+          for(const mt of [].concat(m.material)) mt.color.copy(col).multiplyScalar(/Side/.test(mt.name)?.4:/Top/.test(mt.name)?1:.7); }); }
+      else if(u.outfit) n.visible=on.has(u.outfit);
+      else if(u.wardrobeSlot) n.visible=!!(u.wardrobeSlot==='shoes'?w.feet:u.wardrobeSlot==='accessory'?w.prop:0); }); }
   dispose(){ this.mixer.stopAllAction(); this.mixer.uncacheRoot(this.obj); this.blob.geometry.dispose(); this.blob.material.dispose(); }
 }
+// The game's outfits in the 3D pup's wardrobe (the straw hat is the model's hat; the Moonstone crown wears the crown)
+const PUP3_WEAR={scarf:'scarf',bowtie:'bow_tie',beanie:'beanie',straw:'hat',sailor:'sailor_cap',crown:'crown',moon:'crown',glasses:'sunglasses'};
 // The drawings' moves, in Tiny's own clips
 
 class Model3Ctl{
-  constructor(P){ this.P=P; this.rest='idle'; this.cur=null; this.left=0; this.queued=null; this.a=null; const C=MODEL3[P.id]; this.C=C; this.loops=new Set(C.loops); this.react=Math.floor(Math.random()*C.reactions.length); this.reactions=C.reactions;
+  constructor(P){ this.P=P; this.rest='idle'; this.cur=null; this.left=0; this.queued=null; this.a=null; this.nb=2+Math.random()*3; this.bt=-1; const C=MODEL3[P.id]; this.C=C; this.loops=new Set(C.loops); this.react=Math.floor(Math.random()*C.reactions.length); this.reactions=C.reactions;
     this.to('idle',false,0); P.mixer.update(Math.random()*2.4); }
   get current(){ const n=this.cur; return n?{getClip:()=>({name:n})}:null; }
   get activeBase(){ return this.cur?null:{getClip:()=>({name:this.rest})}; }
   clip(n){ n=this.C.map[n]||n; return this.P.acts[n]?n:null; }
   has(n){ return !!this.clip(n)||n==='blink'; }
+  blink(dt){ const L=this.P.lids; if(!L||!L.length) return; this.nb-=dt; if(this.nb<=0&&this.bt<0){ this.bt=0; this.nb=3+Math.random()*3; }
+    let half=0, closed=0; if(this.bt>=0){ this.bt+=dt; const u=this.bt*6; if(u>=1) this.bt=-1; else { const q=u<.4?u/.4:u<=.6?1:(1-u)/.4, b=q*q*(3-2*q); half=b<.5?2*b:2-2*b; closed=Math.max(0,2*b-1); } }
+    for(const m of L){ const d=m.morphTargetDictionary, a=m.morphTargetInfluences; a[d.Half]=half; a[d.Closed]=closed; } }
   to(n,once,fade){ const A=this.P.acts[n], old=this.a; if(A===old&&!once) return;
     A.reset(); A.setLoop(once?THREE.LoopOnce:THREE.LoopRepeat,once?1:Infinity); A.clampWhenFinished=!!once; A.enabled=true; A.setEffectiveTimeScale(1); A.setEffectiveWeight(1); A.play();
     if(old&&old!==A){ if(fade) A.crossFadeFrom(old,fade,false); else old.stop(); } this.a=A; }
   base(){ this.cur=null; this.queued=null; this.to(this.rest,false,.25); }
   setRest(n){ if(n===this.rest||!this.P.acts[n]) return; this.rest=n; if(!this.cur) this.to(n,false,.5); }
-  play(name){ if(name==='blink') return false; if(name==='idle'){ this.base(); return true; }
+  play(name){ if(name==='blink'){ if(this.P.lids&&this.P.lids.length&&this.bt<0){ this.bt=0; return true; } return false; } if(name==='idle'){ this.base(); return true; }
     const n=this.clip(name); if(!n) return false; this.queued=null; this.cur=n; this.left=this.P.acts[n].getClip().duration; this.to(n,!this.loops.has(n),.2); return true; }
   then(name,next){ if(this.play(name)) this.queued=next; }
   setMode(){}
   poke(){ this.react=(this.react+1)%this.reactions.length; this.play(this.reactions[this.react]); }
   wake(){ this.play('hop'); }
   update(dt){ if(this.cur){ this.left-=dt; if(this.left<=.2){ const q=this.queued; this.queued=null; this.cur=null; if(!(q&&this.play(q))) this.to(this.rest,false,.25); } }
-    this.P.mixer.update(dt); }
+    this.P.mixer.update(dt); this.blink(dt); }
   dispose(){ this.P.dispose(); }
 }
 // Bloppit's controller, ported from the approved package's controller.js (global three r128 instead of a module).
@@ -8496,7 +8779,7 @@ const ISLES={
     milestone:'The moon crystal',grows:'Every chapter of the mystery you build',play:'Explore Moonstone Isle',go:()=>mysteryGo()},
 };
 const ISLE_TOTAL=Object.keys(ISLES).length;
-// An island is complete when its last piece is built; each one is worth 5 Build Stars, and the whole world 10 more
+// An island is complete when its last piece is built; each one is worth 5 Galaxy Blocks, and the whole world 10 more
 const isleComplete=(id,o)=>{ const P=PIECES[id]; return isleCount(id,o)>=P[P.length-1].at; };
 const islesComplete=o=>Object.keys(ISLES).filter(id=>isleComplete(id,o));
 const worldComplete=o=>islesComplete(o).length===ISLE_TOTAL;
@@ -9145,7 +9428,7 @@ function finaleCard(id){
   const o=worldStore(), B=Object.entries(o.builds), sum=f=>B.filter(([k,b])=>f(k,b)).reduce((a,[,b])=>a+(b.n||0),0), nf=n=>n.toLocaleString();
   if(id==='final:all'&&ISL3.on){ theEnd(()=>setTimeout(()=>isl3AfterReveal(worldStore()),400)); return; }
   if(id==='final:all'){ const n=worldCount(o), bricks=B.reduce((a,[,b])=>a+(b.n||0),0);
-    trialDialog({icon:'🌟',title:'You built a whole world!',quick:true,rows:`<div><span>Builds finished</span><span>${nf(n)}</span></div><div><span>Bricks placed</span><span>${nf(bricks)}</span></div><div><span>Islands complete</span><span>${ISLE_TOTAL} of ${ISLE_TOTAL}</span></div><div><span>Moonstone crown</span><span>👑</span></div><div class="tot"><span>Bonus Build Stars</span><span>+10</span></div>`,
+    trialDialog({icon:'🌟',title:'You built a whole world!',quick:true,rows:`<div><span>Builds finished</span><span>${nf(n)}</span></div><div><span>Bricks placed</span><span>${nf(bricks)}</span></div><div><span>Islands complete</span><span>${ISLE_TOTAL} of ${ISLE_TOTAL}</span></div><div><span>Moonstone crown</span><span>👑</span></div><div class="tot"><span>Bonus Galaxy Blocks</span><span>+10 ${gbIc()}</span></div>`,
       note:`Every island in Bloppitopia is finished, and lufu has given ${pupName(o)||'your otter'} the Moonstone crown! A new Weekly Bloppit still comes every Monday, so keep building.`}); return; }
   const isle=id.split(':')[1], N=ISLES[isle]; if(!N) return;
   const line={otterwood:()=>`All ${OTTER_LEVELS.length} Frog Trail levels, boss and all: ${nf(sum(k=>k.startsWith('t:otter:')))} bricks`,
@@ -9154,7 +9437,7 @@ function finaleCard(id){
     blitzbay:()=>`${B.filter(([,b])=>b.k==='blitz').length} Blitz wins, and the Grand Prix against Swoop`,
     brickworks:()=>`${isleCount('brickworks',o)} creations: your own, the library and the Weekly Bloppit`,
     moonstone:()=>`The mystery solved: all ${MYSTERY.length} chapters, and lufu found`}[isle];
-  trialDialog({icon:isle==='moonstone'?'✨':'🏆',title:isle==='moonstone'?'You found lufu!':`${N.name} is complete!`,quick:true,rows:`<div><span>${escapeHTML(line?line():'')}</span><span></span></div><div><span>${escapeHTML(N.milestone)}</span><span>✓</span></div><div class="tot"><span>Bonus Build Stars</span><span>+5</span></div>`,
+  trialDialog({icon:isle==='moonstone'?'✨':'🏆',title:isle==='moonstone'?'You found lufu!':`${N.name} is complete!`,quick:true,rows:`<div><span>${escapeHTML(line?line():'')}</span><span></span></div><div><span>${escapeHTML(N.milestone)}</span><span>✓</span></div><div class="tot"><span>Bonus Galaxy Blocks</span><span>+5 ${gbIc()}</span></div>`,
     note:(isle==='moonstone'?`“We have found each other.” lufu sails home with ${pupName(o)||'your otter'} and lives on Home Island now. `:'')+(islesComplete(o).length<ISLE_TOTAL?`${islesComplete(o).length} of ${ISLE_TOTAL} islands complete. ${ISLE_TOTAL-islesComplete(o).length===1?'One to go!':'Keep going!'}`:'Every island is complete!')});
 }
 function revealText(id,o){ const [k,a,b]=id.split(':');
@@ -9492,10 +9775,10 @@ function renderIsland(){
   if(isl3Init()) isl3Show($('#isWorld'),o); else { $('#isWorld').innerHTML=islandSVG(o,{pop}); islandDrag(); }
   renderIslandIntro(o);
   if(ISL3.ok){ const g=worldNextGoal(o), lv=otterLevel(o);
-    $('#isStage').innerHTML=`${escapeHTML(pupName(o)||'Your otter')} · Level ${lv} ${PUP_STAGES[pupStage(o)].name}<small>${n} build${n===1?'':'s'} finished · ${islandsOpen(o).length} of ${ISLE_TOTAL} islands · ${worldStars(o)} Build Star${worldStars(o)===1?'':'s'} to spend</small>`;
+    $('#isStage').innerHTML=`${escapeHTML(pupName(o)||'Your otter')} · Level ${lv} ${PUP_STAGES[pupStage(o)].name}<small>${n} build${n===1?'':'s'} finished · ${islandsOpen(o).length} of ${ISLE_TOTAL} islands · ${gbN(worldStars(o))} to spend</small>`;
     isProgRender(o);
     $('#isNext').innerHTML=g?`<span>${escapeHTML(g.text)}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*g.frac))}%"></i></span>`:'<span>Every island is complete. What a world!</span>'; }
-  else $('#isStage').innerHTML=`${ISLAND_STAGES[stage].name}<small>${n} build${n===1?'':'s'} finished · ${worldStars(o)} Build Star${worldStars(o)===1?'':'s'} to spend</small>`;
+  else $('#isStage').innerHTML=`${ISLAND_STAGES[stage].name}<small>${n} build${n===1?'':'s'} finished · ${gbN(worldStars(o))} to spend</small>`;
   if(!ISL3.ok) $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>Your village is built. Now grow the five islands around it.</span>';
   $('#isNote').textContent=n?`${pupName(o)||'Your otter'} and Bloppit are home. Tap anything to see what it is${n>1?`, and drag a model anywhere on the ${ISL3.ok?'grass':'sand'}`:''}${ISL3.ok?'. Swipe to move between views, pinch to look closer, and tap anyone to say hello':''}.`:ISL3.ok?`${pupName(o)?pupName(o)+'’s':'Your'} home is waiting to be built. Tap anything to see what it is.`:'Finish any build and the first hut rises from the sand. Tap anything to see what it is.';
   $('#isCard').hidden=stage<3; $('#isDecor').hidden=!n;
@@ -9503,8 +9786,8 @@ function renderIsland(){
 }
 function renderDecorShop(){
   const o=worldStore(), left=worldStars(o);
-  $('#isStars').textContent=`You have ${left} Build Star${left===1?'':'s'}.`;
-  $('#decorGrid').innerHTML=DECOR.map(d=>{ const owned=o.decor.includes(d.id), away=owned&&isAway(o,'decor:'+d.id); return `<button type="button" data-decor="${d.id}"${away?' data-owned="1" data-back="1"':owned?' data-owned="1" disabled':left<d.cost?' disabled':''}><svg viewBox="-64 -136 128 148">${decorSVG(d.id,0,d.id==='kite'?-110:6)}</svg>${d.name}<span class="cost">${away?'Put away · tap to put it back':owned?((o.free||[]).includes(d.id)?'From a Weekly':'On your island'):`Buy · ★ ${d.cost}`}</span></button>`; }).join('');
+  $('#isStars').innerHTML=`You have ${gbIc()} ${gbN(left)}.`;
+  $('#decorGrid').innerHTML=DECOR.map(d=>{ const owned=o.decor.includes(d.id), away=owned&&isAway(o,'decor:'+d.id); return `<button type="button" data-decor="${d.id}"${away?' data-owned="1" data-back="1"':owned?' data-owned="1" disabled':left<d.cost?' disabled':''}><svg viewBox="-64 -136 128 148">${decorSVG(d.id,0,d.id==='kite'?-110:6)}</svg>${d.name}<span class="cost">${away?'Put away · tap to put it back':owned?((o.free||[]).includes(d.id)?'From a Weekly':'On your island'):`Buy · ${gbIc()} ${d.cost}`}</span></button>`; }).join('');
 }
 $('#decorGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-decor]'); if(!b||b.disabled) return;
   const d=DECOR.find(x=>x.id===b.dataset.decor); if(!d) return;
@@ -9966,12 +10249,14 @@ function nextCandidates(){
 }
 const NEXT_RING=['trail','blitz','library','mystery'];
 const ringOf=k=>k==='otter'||k==='brain'||k==='sea'?'trail':k;
+// Play next grows the least-finished island that has something ready. A finished island is never offered while
+// another island still needs builds (it only comes back once everything is done). Islands level with each other
+// take turns: the category after the one Play next sent you to last time goes first.
 function nextBuild(){
-  const o=worldStore(), C=nextCandidates(); if(!C.length) return null;
-  const at=NEXT_RING.indexOf(ringOf(nextLast()));
-  let best=null;
-  for(let k=1;k<=NEXT_RING.length&&!best;k++){ const slot=NEXT_RING[(at+k+NEXT_RING.length)%NEXT_RING.length], here=C.filter(c=>ringOf(c.kind)===slot);
-    if(here.length) best=here.sort((a,b)=>isleFrac(a.isle,o)-isleFrac(b.isle,o))[0]; }
+  const o=worldStore(), all=nextCandidates(); if(!all.length) return null;
+  const open=all.filter(c=>isleFrac(c.isle,o)<1), C=open.length?open:all;
+  const at=NEXT_RING.indexOf(ringOf(nextLast())), turn=c=>{ const i=NEXT_RING.indexOf(ringOf(c.kind)); return (i-at-1+2*NEXT_RING.length)%NEXT_RING.length; };
+  const best=C.slice().sort((a,b)=>(isleFrac(a.isle,o)-isleFrac(b.isle,o))||(turn(a)-turn(b)))[0];
   const go=best.go; return {...best,go:()=>{ nextMark(best.kind); go(); }};
 }
 window.bloppitNext={next:()=>{ const n=nextBuild(); return n&&{t:n.t,kind:n.kind}; },cands:()=>nextCandidates().map(c=>c.kind),mark:k=>nextMark(k),complete:()=>islesComplete(worldStore()),mysteryOpen:()=>mysteryOpen(),unlocked:()=>worldUnlocked(worldStore()),seen:()=>seenGet(),reveal:ids=>isl3Reveal(ids,worldStore()),go:()=>{ const n=nextBuild(); if(n) n.go(); },count:id=>isleCount(id,worldStore()),wardrobe:()=>wardrobeOpen()};   // for tests
@@ -10131,6 +10416,11 @@ new MutationObserver(()=>buddy3()).observe($('#buddy'),{attributes:true,attribut
 window.bloppitCharShot=async(id,frame,px,opt)=>{ opt=opt||{}; await ch3Get(id); if(opt.model) await ch3Model(id); if(opt.exp) M3.exp.value=opt.exp; const r=cv3R(), sc=new THREE.Scene(), cam=new THREE.PerspectiveCamera(24,1,.05,60), i=ch3Make(id); sc.add(i.root); cv3Lights(sc);
   ch3Dress(i,{log:[]},{ci:opt.ci!=null?opt.ci:0,wear:opt.wear||{}}); i.ctl.update(.6); if(opt.clip){ i.ctl.play(opt.clip); i.ctl.update(0); i.ctl.update(opt.t||0); }
   cv3Aim(cam,[id],frame||'full',1,-.25); r.setScissorTest(false); r.setSize(px||420,px||420,false); r.setViewport(0,0,px||420,px||420); r.clear(); r.render(sc,cam); const u=r.domElement.toDataURL('image/png'); i.ctl.dispose(); return u; };
+// for tests: load a 3D pup, dress it, and say which bricks, outfits and extras show
+window.bloppitPup3=async(id,ci,wear)=>{ await ch3Get(id); await ch3Model(id); const i=ch3Make(id); ch3Dress(i,{log:[]},{ci,wear}); const on={bricks:[],outfits:new Set(),extras:new Set(),hex:''};
+  i.P.obj.traverse(n=>{ const u=n.userData||{}; if(u.brickVariant&&n.visible){ on.bricks.push(u.brickVariant); n.traverse(m=>{ if(!m.isMesh) return; const top=[].concat(m.material).find(x=>/Top/.test(x.name)); if(top) on.hex=top.color.clone().convertLinearToSRGB().getHexString(); }); }
+    if(u.outfit&&n.visible) on.outfits.add(u.outfit); if(u.wardrobeSlot&&n.visible) on.extras.add(u.wardrobeSlot); });
+  const r={kind:i.P.kind,bricks:on.bricks,outfits:[...on.outfits].sort(),extras:[...on.extras].sort(),lids:i.P.lids.length,clips:Object.keys(i.P.acts).length,hex:on.hex}; i.ctl.dispose(); return r; };
 window.bloppitChars3d=()=>({on:ch3On(),loaded:Object.keys(CH3.gltf),tiny:{model:ch3Has3d('tiny'),clips:ch3Has3d('tiny')?Object.keys(CH3.gltf.tiny.model.clips).sort():[]},nora:{model:ch3Has3d('nora'),clips:ch3Has3d('nora')?Object.keys(CH3.gltf.nora.model.clips).sort():[]},pippa:{model:ch3Has3d('pippa'),clips:ch3Has3d('pippa')?Object.keys(CH3.gltf.pippa.model.clips).sort():[]},bibi:{model:ch3Has3d('bibi'),clips:ch3Has3d('bibi')?Object.keys(CH3.gltf.bibi.model.clips).sort():[]},swoop:{model:ch3Has3d('swoop'),clips:ch3Has3d('swoop')?Object.keys(CH3.gltf.swoop.model.clips).sort():[]},bloppit:{model:ch3Has3d('bloppit'),clips:ch3Has3d('bloppit')?Object.keys(CH3.gltf.bloppit.model.clips).sort():[]},island:{bloppit:!!ISL3.b3,pup:!!ISL3.p3,longtail:!!ISL3.l3,clips:[ISL3.b3,ISL3.p3,ISL3.l3].map(i=>i&&(i.ctl.current||i.ctl.activeBase)?(i.ctl.current||i.ctl.activeBase).getClip().name:null)},views:CV3.views.filter(v=>v.host.classList.contains('c3on')&&v.host.offsetParent).map(v=>v.host.id||v.host.className.split(' ')[0])});
 // On the website the logo opens the menu; on the menu itself it goes to bloppit.com's front page. (The app handles its own links above.)
 $('#brandLink').addEventListener('click',e=>{ if(APP||tab==='home') return; e.preventDefault(); setTab('home'); });
