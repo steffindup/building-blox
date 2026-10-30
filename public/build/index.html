@@ -2620,6 +2620,10 @@ function buildModel(){
       if(low>0&&low<H){ for(let y=0;y<H;y++)for(let z=0;z<D;z++)for(let x=0;x<W;x++) vox[vi(x,y,z)]=y+low<H?vox[vi(x,y+low,z)]:-1; }
     } }
 
+  // Pippa's mirror builds: the model is made exactly symmetric (the right half is the left half reflected), and no
+  // brick crosses the middle except along the middle column, so every brick on one side has its twin on the other.
+  const MIR=!!S.mirror, half=Math.floor(W/2), odd=W%2, seg=x=>x<half?0:(odd&&x===half?1:2);
+  if(MIR) for(let y=0;y<H;y++)for(let z=0;z<D;z++)for(let x=0;x<half;x++) vox[vi(W-1-x,y,z)]=vox[vi(x,y,z)];
   // merge cubes into bricks, layer by layer, alternating direction so layers interlock.
   // Each brick should sit on at least one stud of the layer below, so bricks that do are tried first.
   const bricks=[], steps=[], layers=[], occ=[];
@@ -2627,7 +2631,7 @@ function buildModel(){
     const used=new Uint8Array(W*D), opts=[];
     for(const [a,b] of SIZES){ if(a===b) opts.push([a,b]); else if(y%2===0) opts.push([b,a],[a,b]); else opts.push([a,b],[b,a]); }
     const below=y?occ[y-1]:null, layer=[];
-    const fits=(x,z,sx,sz,c)=>{ if(x+sx>W||z+sz>D) return false;
+    const fits=(x,z,sx,sz,c)=>{ if(x+sx>W||z+sz>D) return false; if(MIR&&seg(x)!==seg(x+sx-1)) return false;
       for(let dz=0;dz<sz;dz++)for(let dx=0;dx<sx;dx++){const xx=x+dx,zz=z+dz; if(used[xx+zz*W]||vox[vi(xx,y,zz)]!==c) return false;} return true; };
     const rests=(x,z,sx,sz)=>{ if(!below) return true; for(let dz=0;dz<sz;dz++)for(let dx=0;dx<sx;dx++) if(below[x+dx+(z+dz)*W]) return true; return false; };
     const lay=(x,z,sx,sz,c)=>{ for(let dz=0;dz<sz;dz++)for(let dx=0;dx<sx;dx++) used[x+dx+(z+dz)*W]=1; layer.push({x,y,z,sx,sz,c}); };
@@ -2644,6 +2648,7 @@ function buildModel(){
       if(!pick) for(const [sx,sz] of opts) if(fits(x,z,sx,sz,c)){ pick=[sx,sz]; break; }
       lay(x,z,pick[0],pick[1],c);
     }
+    if(MIR){ const keep=layer.filter(b=>seg(b.x)!==2); layer.length=0; for(const b of keep){ layer.push(b); if(seg(b.x)===0) layer.push({...b,x:W-b.x-b.sx}); } }   // the right half: the left half's bricks, reflected
     layers.push(layer); occ.push(used);
   }
   // No floating bricks. Like real LEGO, a brick can sit on studs below it OR clip onto the underside of a brick
@@ -2671,6 +2676,8 @@ function buildModel(){
       for(let yy=best.y-1;yy>=0&&!occ[yy][best.x+best.z*W];yy--){ occ[yy][best.x+best.z*W]=1; layers[yy].push({x:best.x,y:yy,z:best.z,sx:1,sz:1,c:best.c}); }
     }
   }
+  if(MIR) for(let y=0;y<H;y++){ const L=layers[y], k=new Set(L.map(b=>b.x+','+b.z+','+b.sx+','+b.sz));   // a post added on one side gets its twin
+    for(const b of [...L]){ if(seg(b.x)===1) continue; const mx=W-b.x-b.sx; if(!k.has(mx+','+b.z+','+b.sx+','+b.sz)){ L.push({...b,x:mx}); k.add(mx+','+b.z+','+b.sx+','+b.sz); for(let dz=0;dz<b.sz;dz++)for(let dx=0;dx<b.sx;dx++) occ[y][mx+dx+(b.z+dz)*W]=1; } } }
   // Build order: layer by layer from the bottom. A brick goes in once there's a brick under it to sit on;
   // one that hangs goes in right after the brick above it that it clips onto.
   const cells=new Map(), placed=new Set();
@@ -2697,6 +2704,11 @@ function buildModel(){
     }
   }
   for(let y=0;y<H;y++) addSteps(layers[y].filter(b=>!placed.has(b)),y,false);  // can't happen, but never lose a brick
+  if(MIR){   // each step in two: Pippa's bricks (the left half and the middle), then yours (their reflections)
+    const st2=[], br2=[];
+    for(const s0 of steps){ const P=s0.bricks.filter(b=>seg(b.x)!==2), K=s0.bricks.filter(b=>seg(b.x)===2);
+      for(const [list,who] of [[P,'pippa'],[K,'kid']]) if(list.length){ const idx=st2.length; list.forEach(b=>{ b.step=idx; br2.push(b); }); st2.push({...s0,bricks:list,[who]:true}); } }
+    return {W,H,D,bricks:br2,steps:st2,mirror:{axis:W/2},name:niceName(front.name)}; }
   return {W,H,D,bricks,steps,name:niceName(front.name)};
 }
 function partsOf(list){
@@ -2811,7 +2823,7 @@ function buildScene(m){
 function frame(c,ctl){
   const {center,r}=frameInfo, dist=r/Math.sin(THREE.MathUtils.degToRad(c.fov/2))*1.02;
   // Pictures are seen from above and in front, like a picture lying on a table
-  const dir=(TILES?new THREE.Vector3(0,2.2,.7):new THREE.Vector3(-.62,.5,1)).normalize();
+  const dir=(TILES?new THREE.Vector3(0,2.2,.7):model&&model.mirror?new THREE.Vector3(0,.55,1):new THREE.Vector3(-.62,.5,1)).normalize();   // a mirror build face on, its two halves side by side
   c.position.copy(center).addScaledVector(dir,dist); c.near=dist/100; c.far=dist*10; c.updateProjectionMatrix();
   if(ctl){ctl.target.copy(center); ctl.update();} else c.lookAt(center);
 }
@@ -2827,8 +2839,14 @@ function showStep(k,animate){
   while(current.children.length) current.remove(current.children[0]);
   anim=null;
   bookGrid(k);
+  if(bookMirror) bookMirror.visible=!!(model&&model.mirror&&k<model.steps.length);
   if(!model||k>=model.steps.length) return;
   const hang=!!model.steps[k].hang;
+  if(model.mirror&&model.steps[k].kid){   // your half: the booklet shows Pippa's bricks you're reflecting, not the answer
+    const src=model.steps[k-1]&&model.steps[k-1].pippa?model.steps[k-1].bricks:[];
+    src.forEach((b,i)=>{ const ms=new THREE.Mesh(brickGeo(b.sx,b.sz),MIRROR_SRC_MAT); ms.scale.set(1.04,1.06,1.04); ms.add(new THREE.LineSegments(edgeGeo(b.sx,b.sz),MIRROR_EDGE_MAT));
+      ms.position.set(b.x-b.sx*.02,b.y*1.2-.03,b.z-b.sz*.02); ms.userData.ty=ms.position.y; ms.userData.i=i; ms.userData.b=b; current.add(ms); });
+    return; }
   model.steps[k].bricks.forEach((b,i)=>{
     const ms=new THREE.Mesh(brickGeo(b.sx,b.sz),hang?xrayMat(b.c):mat(b.c)); if(hang) ms.renderOrder=5;
     ms.add(new THREE.LineSegments(edgeGeo(b.sx,b.sz),edgeMat));
@@ -2847,6 +2865,7 @@ function bookGrid(k){ for(const m of bookGridG.children){ m.geometry.dispose(); 
   const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));
   bookGridG.add(new THREE.LineSegments(g,BOOK_GRID_MAT));
   const pl=new THREE.Mesh(new THREE.PlaneGeometry(x1-x0,z1-z0),BOOK_PLATE_MAT); pl.rotation.x=-Math.PI/2; pl.position.set((x0+x1)/2,y-.003,(z0+z1)/2); bookGridG.add(pl); }
+const MIRROR_SRC_MAT=new THREE.MeshBasicMaterial({color:0xFFE27A,transparent:true,opacity:.35,depthWrite:false}), MIRROR_EDGE_MAT=new THREE.LineBasicMaterial({color:0xF4BC22});
 const BOOK_GRID_MAT=new THREE.LineBasicMaterial({color:0x6E8496,transparent:true,opacity:.75,depthWrite:false});
 const BOOK_PLATE_MAT=new THREE.MeshBasicMaterial({color:0x8FA3B5,transparent:true,opacity:.16,depthWrite:false,side:THREE.DoubleSide});
 function stepAnim(now){
@@ -3371,7 +3390,7 @@ function frameBuild(animate){
   const dist=r/Math.sin(Math.min(vh,hh))*1.08;
   // Keep the angle you're looking from; only move in or out and re-centre
   let dir=playCam.position.clone().sub(playControls.target);
-  if(dir.lengthSq()<1e-6) dir.set(-.62,.5,1);
+  if(dir.lengthSq()<1e-6) dir.set(-.62,.5,1); if(model&&model.mirror&&placedN===0) dir.set(0,.55,1);
   dir.normalize(); if(dir.y<.25){ dir.y=.25; dir.normalize(); }
   const p2=center.clone().addScaledVector(dir,dist);
   playCam.near=Math.max(.05,dist/100); playCam.far=dist*40; playCam.updateProjectionMatrix();
@@ -3379,8 +3398,16 @@ function frameBuild(animate){
   if(animate&&!reduceMotion) camAnim={t0:performance.now(),t1:playControls.target.clone(),t2:center,p1:playCam.position.clone(),p2};
   else { camAnim=null; playControls.target.copy(center); playCam.position.copy(p2); playControls.update(); }
 }
+// The mirror line: a glassy wall down the middle of a mirror build, on the table and in the booklet
+let mirrorWall=null, bookMirror=null;
+function mirrorMesh(m){ const h=(m.H+1)*1.2, g=new THREE.Group(), w=new THREE.Mesh(new THREE.PlaneGeometry(m.D+2,h),new THREE.MeshBasicMaterial({color:0x7FD3F5,transparent:true,opacity:.16,depthWrite:false,side:THREE.DoubleSide}));
+  w.rotation.y=Math.PI/2; w.position.set(m.W/2,h/2,m.D/2); g.add(w);
+  const P=[m.W/2,.02,-1,m.W/2,.02,m.D+1, m.W/2,h,-1,m.W/2,h,m.D+1], lg=new THREE.BufferGeometry(); lg.setAttribute('position',new THREE.Float32BufferAttribute(P,3));
+  g.add(new THREE.LineSegments(lg,new THREE.LineDashedMaterial({color:0x2F9FD6,dashSize:.5,gapSize:.35}))); g.children[1].computeLineDistances(); return g; }
 function setupPlay(m){
   playGroup.position.set(-m.W/2,0,-m.D/2);
+  if(mirrorWall){ playGroup.remove(mirrorWall); mirrorWall=null; } if(bookMirror){ modelGroup.remove(bookMirror); bookMirror=null; }
+  if(m.mirror){ mirrorWall=mirrorMesh(m); playGroup.add(mirrorWall); bookMirror=mirrorMesh(m); bookMirror.visible=false; modelGroup.add(bookMirror); }
   if(floor) playGroup.remove(floor);
   if(layerGrid) playGroup.remove(layerGrid);
   // A table top with a faint stud grid, so you can see where bricks snap. No plate.
@@ -3412,6 +3439,7 @@ function resetBuild(){
   run={miss:0,hints:new Set(),auto:0,memory:null};  // this attempt's misses, hinted steps, placed-for-me bricks (the clean score) and whether it was built from memory
   // A picture goes on its baseplate, so where each tile goes is fixed from the start
   if(model&&model.kind==='picture') off={x:0,z:0};
+  if(model&&model.mirror){ off={x:0,z:0}; $('#trayNote').textContent='Pippa builds her side first. Then build the same on your side of the glassy mirror line, flipped like a reflection: a brick on her far left goes on your far right. The glowing bricks in the booklet are the ones to copy.'; }   // a mirror build sits where Pippa starts it
   if(model) makePieces();
   setStatus(model?(TILES?'Open the parts box and pick up the tiles for row 1. Row 1 is the top of the picture, at the far edge.':'Open the parts box and pick up a brick to start.'):'');
   updateBuildUI(); frameBuild(false);
@@ -4076,7 +4104,7 @@ function placeBrick(t,ax,az){
   sfx.snap(reduceMotion?0:.23);  // lands at the end of the drop
   // Take the brick out of the box (from your hand if you were holding one like it).
   const a=Math.min(t.sx,t.sz), l=Math.max(t.sx,t.sz), match=p=>p.a===a&&p.l===l&&p.c===t.c;
-  const used=held&&match(held)?held:(hand.find(match)||pieces.find(p=>match(p)&&!p.hand)||pieces.find(match));
+  const used=pippaBusy?(pieces.find(p=>match(p)&&!p.hand&&!hand.includes(p))||pieces.find(p=>match(p)&&!hand.includes(p))):held&&match(held)?held:(hand.find(match)||pieces.find(p=>match(p)&&!p.hand)||pieces.find(match));
   // The next brick in hand starts beside the build (ghostHome), not where this one just landed
   if(!autoBusy) lastAnchor=null;
   if(used){ pieces.splice(pieces.indexOf(used),1); if(hand.includes(used)) dropFromHand(used); }
@@ -4093,10 +4121,24 @@ function placeBrick(t,ax,az){
   setStatus(`Step ${cur+1} done!`,'ok'); updateBuildUI();
   setTimeout(()=>{ busy=false; if(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))) cur++; follow=true; if(game||mp) hintOn=false;
     setStatus(cur>=model.steps.length?'Every step complete. Great build!':`On to step ${cur+1}.${model.steps[cur].hang?' These clip on underneath the bricks above.':''}${held?'':' Open the parts box for the next brick.'}`, cur>=model.steps.length?'ok':'');
-    updateBuildUI(); frameBuild(true);
+    updateBuildUI(); frameBuild(true); pippaTurn();
     if(relay&&relay.role==='first'&&cur>=relay.half&&cur<model.steps.length){ relayHalfDone(); return; }
     if(cur>=model.steps.length&&!mp){ buildFinished(game?'trail':relay&&relay.role==='second'?'relay':'quick'); setTimeout(()=>playReveal(game?winLevel:welcomeOn()?welcomeDone:relay&&relay.role==='second'?relayDone:worldAfterQuick),350); } }, 700);
 }
+// Pippa's half of a mirror build: she places her bricks herself (free, never a hint), then it's your turn to reflect them
+let pippaT=null, pippaBusy=false;
+function pippaTurn(){ if(model&&model.mirror&&!mp&&model.steps[cur]&&model.steps[cur].kid) setStatus(`🪞 Your turn: build the same as Pippa’s glowing bricks on your side of the mirror line, flipped like a reflection.${held?'':' Open the parts box.'}`,'ok');
+  if(pippaT||!model||!model.mirror||mp||cur>=model.steps.length||!model.steps[cur].pippa) return;
+  const go=()=>{ pippaT=null; if(!model||!model.mirror||cur>=model.steps.length||!model.steps[cur].pippa||tab==='create') return; if(busy){ pippaT=setTimeout(go,180); return; }
+    const s=model.steps[cur], t=s.bricks.find(b=>!placed.has(b)); if(!t) return;
+    const prev=held, prevSel=sel?{...sel}:null, prevA=lastAnchor;
+    sel={sx:t.sx,sz:t.sz,c:t.c}; lastAnchor={ax:t.x,az:t.z,px:t.x+t.sx/2,pz:t.z+t.sz/2};
+    autoBusy=true; pippaBusy=true; try{ tryPlace(); } finally{ autoBusy=false; pippaBusy=false; }
+    lastAnchor=prevA; if(prev&&hand.includes(prev)){ held=prev; sel=prevSel; setGhost(); } else if(prevSel&&held){ sel=prevSel; setGhost(); } else { sel=null; ghostGroup.clear(); }
+    if(s.bricks.every(b=>placed.has(b))) setStatus(`🐧 Pippa built her side. Your turn: build the same on your side of the mirror line, flipped like a reflection.`,'ok');
+    else pippaT=setTimeout(go,reduceMotion?60:280);
+    updateBuildUI(); };
+  setStatus('🐧 Pippa is building her side…'); pippaT=setTimeout(go,reduceMotion?100:500); }
 function autoPlace(){
   if(busy||!model||cur>=model.steps.length||mpBlitz()) return;
   if(isLocked(cur)){ setStatus('This page is locked. Solve Bloppit’s math puzzle to open it.','err'); openMath(cur); return; }
@@ -4203,6 +4245,7 @@ window.bloppitDemo={
     const v=new THREE.Vector3(t.x+o.x+t.sx/2+playGroup.position.x,s.layer*1.2,t.z+o.z+t.sz/2+playGroup.position.z).project(playCam), r=renderer.domElement.getBoundingClientRect();
     return {x:r.left+(v.x+1)/2*r.width,y:r.top+(1-v.y)/2*r.height,turn:t.sx!==sel.sx}; },
 };
+window.bloppitMirror=()=>model&&model.mirror?{W:model.W,steps:model.steps.map(s=>s.pippa?'P':s.kid?'K':'?').join(''),cur,bricks:model.bricks.map(b=>[b.x,b.y,b.z,b.sx,b.sz,b.c])}:null;   // for tests
 window.bloppitPeek=()=>{ if(!model||cur>=model.steps.length) return null; const u=usedSet(), t=model.steps[cur].bricks.find(b=>!u.has(b)); return t?{c:t.c,sx:t.sx,sz:t.sz,step:cur}:null; };
 window.bloppitTryBrick=(c,k=0)=>{ if(busy||!model||cur>=model.steps.length) return null; const s=model.steps[cur], u=usedSet(), o=curOff()||{x:0,z:0}, t=s.bricks.filter(b=>!u.has(b))[k]; if(!t) return null;
   sel={sx:t.sx,sz:t.sz,c}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2}; const n0=placedN; tryPlace(); const ok=placedN>n0; lastAnchor=null; ghostGroup.visible=false;
@@ -5450,6 +5493,15 @@ const SAMPLES=[
    x.lineWidth=7; x.strokeStyle='#F2CD37'; for(const a of [110,146]){ x.beginPath(); x.arc(a,62,13,0,7); x.stroke(); }
    x.oval(108,180,16,8,0,'#FE8A18'); x.oval(148,180,16,8,0,'#FE8A18');
    return [['front',c]]; }},
+ {name:'Pippa',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(240,250,'#ffffff');   // Pippa face on, for her mirror puzzle (symmetrical)
+   x.fillStyle='#E4CD9E'; x.rr(20,214,200,30,10);
+   x.oval(120,130,58,74,0,'#1B2A34'); x.oval(120,146,40,56,0,'#F4F4F4');
+   x.oval(60,136,13,38,.5,'#1B2A34'); x.oval(180,136,13,38,-.5,'#1B2A34');
+   x.dot(102,98,9,'#F4F4F4'); x.dot(138,98,9,'#F4F4F4'); x.dot(102,99,4.5,'#1B2A34'); x.dot(138,99,4.5,'#1B2A34');
+   x.poly([[108,112],[132,112],[120,128]],'#FE8A18'); x.dot(88,116,7,'#E4ADC8'); x.dot(152,116,7,'#E4ADC8');
+   x.lineWidth=8; x.strokeStyle='#F2CD37'; for(const a of [100,140]){ x.beginPath(); x.arc(a,64,15,0,7); x.stroke(); }
+   x.oval(98,206,20,9,0,'#FE8A18'); x.oval(142,206,20,9,0,'#FE8A18');
+   return [['front',c]]; }},
  {name:'Festival Clock',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(240,300,'#BFE3F5');
    x.fillStyle='#E4CD9E'; x.rr(0,270,240,30,8); x.fillStyle='#A95500'; x.fillRect(50,256,140,16);
    x.fillStyle='#F4F4F4'; x.fillRect(70,92,100,166); x.fillStyle='#008F9B'; x.fillRect(64,86,112,14); x.fillRect(64,170,112,10);
@@ -5618,20 +5670,20 @@ const BRAIN_LEVELS=[
 // Pippa's Puzzles: twelve seaside builds that grow Sunrise Shores. A new one washes ashore every twelfth of the way
 // through Bloppitopia (Frog Forest, Brainpeak, Blitz Bay and Brickworks Island together), and each also needs the one
 // before it. The last is the Festival Clock. Scores are kept in g.sbest.
-const SEA_LEVELS=[
- {name:'Scallop shell',   sample:'Scallop shell',   size:12,  shape:'flat',   thick:.5, colors:2, pts:100},
- {name:'Beach ball',      sample:'Beach ball',      size:8,  shape:'flat',   thick:.6, colors:5, pts:130},
- {name:'Starfish',        sample:'Starfish',        size:12, shape:'flat',   thick:.6, colors:2, pts:160},
- {name:'Jellyfish',       sample:'Jellyfish',       size:10,  shape:'puffed', thick:.5, colors:4, pts:200},
- {name:'Bucket and spade',sample:'Bucket and spade',size:10, shape:'puffed', thick:.4, colors:6, pts:250},
- {name:'Octopus',         sample:'Octopus',         size:9, shape:'puffed', thick:.6, colors:5, pts:300},
- {name:'Beach hut',       sample:'Beach hut',       size:10, shape:'puffed', thick:.6, colors:6, pts:360},
- {name:'Shark',           sample:'Shark',           size:12, shape:'puffed', thick:.6, colors:5, pts:430},
- {name:'Sandcastle',      sample:'Sandcastle',      size:11, shape:'puffed', thick:.8, colors:6, pts:520},
- {name:'Whale',           sample:'Whale',           size:12, shape:'puffed', thick:.5, colors:5, pts:640},
- {name:'Pippa surfing',   sample:'Pippa surfing',   size:14, shape:'puffed', thick:.7, colors:7, pts:800},
+const SEA_LEVELS=[   // mirror builds (Oct 2026): Pippa builds one half, you build its reflection. Every one is symmetrical.
+ {name:'Scallop shell',   sample:'Scallop shell',   size:12, shape:'flat',   thick:.5, colors:2, pts:100, mirror:true},
+ {name:'Beach ball',      sample:'Beach ball',      size:8,  shape:'flat',   thick:.6, colors:5, pts:130, mirror:true},
+ {name:'Starfish',        sample:'Starfish',        size:12, shape:'flat',   thick:.6, colors:2, pts:160, mirror:true},
+ {name:'Jellyfish',       sample:'Jellyfish',       size:10, shape:'puffed', thick:.5, colors:4, pts:200, mirror:true},
+ {name:'Crab',            sample:'Crab',            size:10, shape:'flat',   thick:.6, colors:3, pts:250, mirror:true},
+ {name:'Octopus',         sample:'Octopus',         size:9,  shape:'puffed', thick:.6, colors:5, pts:300, mirror:true},
+ {name:'Beach hut',       sample:'Beach hut',       size:10, shape:'puffed', thick:.6, colors:6, pts:360, mirror:true},
+ {name:'Turtle',          sample:'Turtle',          size:12, shape:'flat',   thick:.6, colors:5, pts:430, mirror:true},
+ {name:'Sandcastle',      sample:'Sandcastle',      size:11, shape:'puffed', thick:.8, colors:6, pts:520, mirror:true},
+ {name:'Lighthouse',      sample:'Striped lighthouse', size:14, shape:'puffed', thick:.6, colors:5, pts:640, mirror:true},
+ {name:'Pippa',           sample:'Pippa',           size:14, shape:'puffed', thick:.7, colors:6, pts:800, mirror:true},
  // The last one: the Festival Clock. Building it completes Sunrise Shores and starts Pippa's festival.
- {name:'Festival Clock',  sample:'Festival Clock',  size:21, shape:'puffed', thick:.8, colors:8, pts:1200, boss:true},
+ {name:'Festival Clock',  sample:'Festival Clock',  size:21, shape:'puffed', thick:.8, colors:8, pts:1200, boss:true, mirror:true},
 ];
 const PROGRESS_ISLES=['otterwood','brainpeak','blitzbay','brickworks'];
 // How far through Bloppitopia the child is, 0 to 1: the pieces built on the four islands, out of all of them
@@ -5703,7 +5755,7 @@ function gameStore(id){ try{ return JSON.parse(localStorage.getItem(keyFor(id||p
 function gameStoreSet(g){ if(leavingPlayer) return; try{ localStorage.setItem(pkey(GAME_KEY),JSON.stringify(g)); }catch(e){} pupPush(); }
 function levelMake(L){ return L.art?levelArt(L.art):SAMPLES.find(s=>s.name===L.sample).make(); }
 function levelThumb(L){ if(!L.thumb) L.thumb=levelMake(L)[0][1].toDataURL('image/png'); return L.thumb; }
-function levelSettings(L){ return {size:L.size,shape:L.shape,thick:L.thick,tol:48,maxColors:L.colors,gray:true}; }
+function levelSettings(L){ return {size:L.size,shape:L.shape,thick:L.thick,tol:48,maxColors:L.colors,gray:true,mirror:!!L.mirror}; }
 function levelPhotos(L){ return levelMake(L).map(([view,c])=>{const d=canvasData(c); return {id:++pid,name:L.name,d,m:null,view,sample:true};}); }
 function levelCount(L){
   if(L.count) return L.count;
@@ -5756,7 +5808,8 @@ function startLevel(i){
   const mp_=mathPrefs(); mathAsked=-1;
   if(trail==='brain'&&model) game.math={v:2,tier:mathRung(mp_.grade,i,mathAdj(),mathUp()),grade:mp_.grade,locks:mathLocks(i,model.steps.length),solved:[],pts:0,q:{},right:0,miss:0};
   setTab('build'); updateGameBar();
-  setStatus(trail==='sea'?`🐧 Pippa’s puzzle ${i+1}: build ${/^Pippa/.test(L.name)?'':'the '}${L.name}! Open the parts box to pick up bricks.`:`${TRAILS[trail].icon} Level ${i+1}: build the ${L.name}! Open the parts box to pick up bricks.`,'ok');
+  if(model&&model.mirror){ setTimeout(pippaTurn,700); }
+  if(model&&model.mirror) setStatus(`🐧 Pippa’s puzzle ${i+1}: a mirror build! Pippa builds one side, and you build the other side, flipped like a reflection.`,'ok'); else setStatus(trail==='sea'?`🐧 Pippa’s puzzle ${i+1}: build ${/^Pippa/.test(L.name)?'':'the '}${L.name}! Open the parts box to pick up bricks.`:`${TRAILS[trail].icon} Level ${i+1}: build the ${L.name}! Open the parts box to pick up bricks.`,'ok');
   saveNow();
 }
 function endGame(){
@@ -5860,7 +5913,7 @@ function winLevel(){
     el.classList.toggle('three',tiny&&hasPup(o));
     if(reveal&&reveal.url) el.hidden=true; else if(hasPup(o)) cheer3(el,tiny?['bloppit','pup',fid]:['bloppit','pup'],tiny?['cheer','happy_hop',tc]:['cheer','happy_hop']); else cheer3(el,tiny?['bloppit',fid]:'bloppit',tiny?['cheer',tc]:'cheer'); }
   $('#winTitle').textContent=`${TRAILS[tr].icon} Level ${i+1} complete!`;
-  const rows=[[`Built the ${L.name}`,true],[noHelp?'No hints or placed-for-you':`Help used (${p.hint+p.auto})`,noHelp],[clean?'Perfect: no help, no wrong bricks':run.miss?`Perfect: no wrong bricks (${run.miss} this time)`:'Perfect: no help, no wrong bricks',clean]];
+  const rows=[[`Built ${/^Pippa/.test(L.name)?"":"the "}${L.name}`,true],[noHelp?'No hints or placed-for-you':`Help used (${p.hint+p.auto})`,noHelp],[clean?'Perfect: no help, no wrong bricks':run.miss?`Perfect: no wrong bricks (${run.miss} this time)`:'Perfect: no help, no wrong bricks',clean]];
   $('#winRows').innerHTML=rows.map(([a,ok])=>`<div class="${ok?'':'neg'}"><span>${a}</span><span>${ok?'★':'–'}</span></div>`).join('')
     +`<div class="tot"><span>Galaxy Blocks</span><span>+${W?W.gained:0} ${gbIc()}</span></div>`;
   { const o=worldStore(), ts=trailStars(tr,o), all=LV.length*3; $('#winBest').textContent=`${TRAILS[tr].name}: ${ts} of ${all} ★`; }
@@ -7372,7 +7425,7 @@ document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==
 function loadPng(src){ return new Promise((res,rej)=>{ const img=new Image(); img.onload=()=>{ const c=document.createElement('canvas'); c.width=img.naturalWidth; c.height=img.naturalHeight; c.getContext('2d').drawImage(img,0,0); res(canvasData(c)); }; img.onerror=rej; img.src=src; }); }
 function setControls(s){
   libTuned=false;
-  Object.assign(S,s);
+  Object.assign(S,s); S.mirror=!!s.mirror;   // only Pippa's puzzles are mirror builds
   S.kind=s.kind||'model'; if(s.pw==null) S.pw=48; if(s.pcol==null) S.pcol=24;
   for(const [id,k] of [['size','size'],['thick','thick'],['tol','tol'],['colors','maxColors'],['pw','pw'],['pcol','pcol']]){ const el=$('#'+id); el.value=S[k]; el.dispatchEvent(new Event('input')); }
   syncKind();
