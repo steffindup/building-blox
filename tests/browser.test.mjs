@@ -16,9 +16,10 @@ async function finishFirst(page) {
   for (let i = 0; i < 30; i++) { if (await page.evaluate(() => (JSON.parse(localStorage.getItem('bloppit-world-v1') || '{}').log || []).length > 0)) break; await autoPlace(page, 1); }
   await page.waitForTimeout(5000);
 }
-async function open(url, { viewport = { width: 1000, height: 800 }, init, at, touch } = {}) {
+async function open(url, { viewport = { width: 1000, height: 800 }, init, at, touch, slow } = {}) {
   const ctx = await browser.newContext({ viewport, acceptDownloads: true, ...(touch ? { isMobile: true, hasTouch: true } : {}) });
-  await ctx.route('**/*', (r) => { const u = r.request().url();
+  await ctx.route('**/*', async (r) => { const u = r.request().url();
+    if (slow && slow.files.some((f) => u.includes(f))) await new Promise((ok) => setTimeout(ok, slow.ms));   // a file that arrives late (a big model on a slow line)
     const f = ['three.min.js', 'OrbitControls.js', 'BufferGeometryUtils.js'].find((k) => u.endsWith(k));
     if (f && !u.includes('/vendor/')) return r.fulfill({ status: 302, headers: { location: `http://localhost:${PORT}/vendor/${f}` } });
     if (/fonts\.g/.test(u)) return r.fulfill({ status: 200, body: '', contentType: 'text/css' });
@@ -429,6 +430,16 @@ test('Blitz is fair at any age: Swoop paces himself on the child (a first guess 
   const t = await open('?nosplash=1&welcome=0');
   const r = await t.page.evaluate(() => { const F = window.bloppitBlitzFair, a = [F.agePace(5), F.agePace(9), F.agePace(14), F.pace()]; F.save(60, 10); const b = F.pace(); F.save(30, 10); return [...a, b, F.pace(), F.fair]; });
   assert.deepEqual(r, [8.5, 5, 3.3, 6, 6, 4.8, { easy: 1.26, medium: 1.084, hard: 1, boss: .97 }]);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('Bloppitopia: Bloppit and the otter turn 3D even when their models arrive after the friends’ (they used to stay drawings)', { skip: skip() }, async () => {
+  const seed = { fn: () => { const builds = {}, log = []; for (let i = 0; i < 3; i++) { const k = `m:M${i}:10`; builds[k] = { n: 10, s: 2, t: 1e12 + i, c: 1 }; log.push(k); }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); } };
+  const t = await open('?nosplash=1&hour=11#island', { init: seed, slow: { files: ['/3d/bloppit.glb', '/3d/pup.glb', '/3d/pup-growing.glb', '/3d/pup-older.glb'], ms: 12000 } });
+  await t.page.waitForFunction(() => { const I = window.bloppitIsland3(), C = I.cast || {}; return C.tiny && C.tiny.i3 && C.tiny.i3.P.kind === 'model'; }, null, { timeout: 90000, polling: 300 });
+  assert.notEqual(await t.page.evaluate(() => window.bloppitIsland3().b3?.P.kind), 'model');   // the friends first: Bloppit is still his drawing
+  await t.page.waitForFunction(() => { const I = window.bloppitIsland3(); return I.b3 && I.b3.P.kind === 'model' && I.p3 && I.p3.P.kind === 'model'; }, null, { timeout: 90000, polling: 300 });
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
