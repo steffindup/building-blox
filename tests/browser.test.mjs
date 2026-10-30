@@ -889,8 +889,14 @@ test('Chapter 2: the ten mystery chapters end with the Galaxy ship; then lufu’
   await t.page.evaluate(() => document.querySelector('.is3-realm').click()); await t.page.waitForTimeout(1500);
   r = await t.page.evaluate(() => { const I = window.bloppitIsland3(); return { lufu: I.lufu, cast: Object.keys(I.cast).sort(), ship: !!I.world.children.find((x) => x.userData.ship), btn: document.querySelector('.is3-realm').textContent, play: document.querySelector('.is3-play').textContent, models: I.shown.list.map((m) => m.key), views: document.querySelector('.v-name').textContent, b: !!I.bloppit, p: !!I.pupG, l: !!I.longtail }; });
   assert.equal(r.lufu, 1); assert.deepEqual(r.cast, ['bibi', 'lufu', 'nora', 'pippa', 'tiny']); assert.ok(r.ship && r.b && r.p && r.l); assert.match(r.btn, /Sail to Bloppitopia/); assert.match(r.play, /Build here/); assert.deepEqual(r.models, ['m:Here:9']); assert.equal(r.views, 'lufu’s world');
+  // the first time there: the welcome (Chapter 1 done, Chapter 2 being made, what to do meanwhile)
+  await t.page.waitForFunction(() => document.getElementById('lufuHiDlg').open, null, { timeout: 5000 });
+  assert.match(await t.text('#lhTxt'), /Chapter 1 is complete/); assert.equal(await t.page.evaluate(() => document.querySelectorAll('#lufuHiDlg [data-lh]').length), 5);
+  await t.page.evaluate(() => document.querySelector('#lufuHiDlg [data-lh="stay"]').click());
   await t.page.evaluate(() => document.querySelector('.is3-realm').click()); await t.page.waitForTimeout(1500);
   assert.equal(await t.page.evaluate(() => window.bloppitIsland3().lufu), 0);
+  await t.page.evaluate(() => document.querySelector('.is3-realm').click()); await t.page.waitForTimeout(2200);
+  assert.equal(await t.page.evaluate(() => document.getElementById('lufuHiDlg').open), false, 'only the first time');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
