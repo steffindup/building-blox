@@ -384,6 +384,29 @@ test('the Brain Trail Ghost keeps its face', { skip: skip() }, async () => {
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('Pippa\'s puzzles are mirror builds: every model is symmetrical, Pippa builds her half, you build its reflection; the finale is in your colours', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0&films=0');
+  const sym = await t.page.evaluate(() => window.bloppitLevels.sea.map((L, i) => { window.bloppitLevel('sea', i); const M = window.bloppitMirror(); if (!M) return `${L.name}: not a mirror build`;
+    const set = new Set(M.bricks.map((b) => b.join(','))); const bad = M.bricks.filter(([x, y, z, sx, sz, c]) => !set.has([M.W - x - sx, y, z, sx, sz, c].join(','))).length; return bad ? `${L.name}: ${bad} bricks without a twin` : (/PK|KP/.test(M.steps) ? '' : `${L.name}: no turns`); }));
+  assert.deepEqual(sym.filter(Boolean), []);
+  await t.page.evaluate(() => window.bloppitLevel('sea', 0)); await t.page.waitForTimeout(300);
+  assert.equal(await t.page.evaluate(() => window.bloppitMirror().steps[0]), 'P');
+  assert.equal(await t.page.evaluate(() => window.bloppitPlaceRight()), false, 'you can’t place Pippa’s bricks for her');
+  await t.page.waitForFunction(() => { const M = window.bloppitMirror(); return M.steps[M.cur] === 'K'; }, null, { timeout: 20000 });
+  assert.match(await t.text('#status'), /mirror line|reflection/);
+  for (let i = 0; i < 400; i++) { const M = await t.page.evaluate(() => window.bloppitMirror()); if (M.cur >= M.steps.length) break; if (M.steps[M.cur] === 'K') await t.page.evaluate(() => window.bloppitPlaceRight()); await t.page.waitForTimeout(150); }
+  await t.page.waitForFunction(() => document.getElementById('winDlg').open, null, { timeout: 30000 });
+  // the finale: you build first, in any colour, and Pippa copies it
+  await t.page.evaluate(() => document.getElementById('winDlg').close());
+  await t.page.evaluate(() => window.bloppitLevel('sea', 11)); await t.page.waitForTimeout(300);
+  assert.equal(await t.page.evaluate(() => window.bloppitMirror().steps[0]), 'K');
+  for (let k = 0; k < 6; k++) { await t.page.waitForFunction(() => { const M = window.bloppitMirror(); return M.steps[M.cur] === 'K'; }, null, { timeout: 20000 }); await t.page.evaluate(() => window.bloppitPlaceRight(4)); await t.page.waitForTimeout(150); }
+  await t.page.waitForFunction(() => { const M = window.bloppitMirror(); return M.paint.length >= 8; }, null, { timeout: 20000 }); await t.page.waitForTimeout(2500);
+  const copy = await t.page.evaluate(() => { const M = window.bloppitMirror(), m = new Map(M.paint); let pairs = 0, same = 0; for (const [k, c] of m) { const [x, y, z, sx, sz] = k.split(',').map(Number), tw = (M.W - x - sx) + ',' + y + ',' + z + ',' + sx + ',' + sz; if (tw !== k && m.has(tw)) { pairs++; if (m.get(tw) === c) same++; } } return { pairs, same }; });
+  assert.ok(copy.pairs > 0 && copy.same === copy.pairs, JSON.stringify(copy));
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('every island has its own puzzles: no build repeats across the trails, Pippa, Blitz and the mystery', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0');
   const r = await t.page.evaluate(() => { const L = window.bloppitLevels, seen = new Map(), dup = [];
