@@ -2,7 +2,7 @@ Approved and locked by the user on 29 October 2026. See APPROVAL.json. Any pendi
 
 # Bibi — integration notes
 
-Bibi is the new canonical name for Lemmie, the lion cub on Brickworks Island. Keep any existing Lemmie game identifiers as aliases if save compatibility requires them; display Bibi to players.
+Bibi is the new canonical name for Lemmie, the lion cub on Brickyard Cove. Keep any existing Lemmie game identifiers as aliases if save compatibility requires them; display Bibi to players.
 
 ## Model and clips
 

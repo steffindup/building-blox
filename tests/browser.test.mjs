@@ -647,7 +647,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   assert.match(await tap('land:beach'), /Home Island.*Builds finished3.*Islands discovered/);
   assert.match(await tapChar('bloppit'), /Bloppit.*storm.*build buddy.*Secret.*red brick/);
   assert.match(await tapChar('longtail:easy'), /Swoop the Longtail.*(Blitz Bay’s racer|Asleep on Blitz Bay).*goggles.*Secret.*Speeds beaten.*Did you know\?.*tropicbirds.*Race 1 of 15.*Choose your own race/);
-  assert.match(await tapChar('char:pippa'), /Pippa the Penguin.*Sunrise Shores.*Secret.*A yellow two-stud brick.*still in the mist.*Play Pippa’s puzzle/);
+  assert.match(await tapChar('char:pippa'), /Pippa the Penguin.*Flipper Beach.*Secret.*A yellow two-stud brick.*still in the mist.*Play Pippa’s puzzle/);
   assert.match(await tapChar('pup'), /Bubbles.*Level \d+ Pup.*1 stud.*Otter level.*Wardrobe.*Name or colour/);
   assert.match(await tap('decor:flag'), /Flag/);
   assert.match(await tap('isle:sunrise'), /A misty island.*Pippa’s first puzzle washes ashore at 9%.*Back to Bloppitopia/);
@@ -799,7 +799,7 @@ test('Frog Forest films: its arrival film plays when it rises from the mist, its
   // My films lists all three, in order
   const u = await open('?nosplash=1', { init: seed });
   await u.page.evaluate(() => document.getElementById('hmFilms').click()); await u.page.waitForTimeout(400);
-  assert.deepEqual(await u.page.evaluate(() => [...document.querySelectorAll('#filmList [data-film]')].map((b) => b.dataset.film)), ['arrival', 'frog-arrival', 'frog-complete', 'brickworks-arrival']);   // (its three quick builds found Brickworks Island too)
+  assert.deepEqual(await u.page.evaluate(() => [...document.querySelectorAll('#filmList [data-film]')].map((b) => b.dataset.film)), ['arrival', 'frog-arrival', 'frog-complete', 'brickworks-arrival']);   // (its three quick builds found Brickyard Cove too)
   // and the lines play in My films too: Tiny's "We did it" in the completion film
   await u.page.evaluate(() => document.querySelector('#filmList [data-film="frog-complete"]').click());
   await u.page.waitForFunction(() => document.getElementById('filmVid').readyState >= 1, null, { timeout: 15000 });
@@ -831,7 +831,7 @@ test('Frog Forest arrival film: Play next to Frog Trail level 1 plays it first, 
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('island arrival films from the menu: vs Swoop plays Blitz Bay’s first, Quick Build plays Brickworks Island’s, each once', { skip: skip() }, async () => {
+test('island arrival films from the menu: vs Swoop plays Blitz Bay’s first, Quick Build plays Brickyard Cove’s, each once', { skip: skip() }, async () => {
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const k = 'm:Cottage:12';
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 10, bonus: 0, builds: { [k]: { n: 12, s: 2, t: 1e12, c: 1, k: 'welcome' } }, log: [k], decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1 }));
     localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); } };
