@@ -171,6 +171,18 @@ test('a finger on the brick in hand slides the brick, and the view stays still',
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('a Pippa puzzle still out at sea can be tapped: it says how many builds bring it in and offers Play next', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0&films=0', { init: { fn: () => { const sb = {}; for (let i = 0; i < 9; i++) sb[i] = 2; localStorage.setItem('building-blox-game-v1', JSON.stringify({ best: {}, sbest: sb })); } } });
+  await t.page.evaluate(() => [...document.querySelectorAll('.tab')].find((x) => /Seaside/.test(x.textContent)).click()); await t.page.waitForTimeout(800);
+  assert.match(await t.text('#gmLevels .lvl[data-i="9"] .tagnew'), /🌊 \d+ more builds?/);
+  assert.equal(await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="9"]').disabled), false);
+  await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="9"]').click()); await t.page.waitForTimeout(400);
+  assert.equal(await t.page.evaluate(() => document.getElementById('tideDlg').open), true);
+  assert.match(await t.text('#tdTxt'), /84%.*more builds? on the other islands/);
+  assert.equal(await t.page.evaluate(() => document.getElementById('tdGo').hidden), false);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('a Trail level finish shows the stars strip and counts a build', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0');
   await t.page.evaluate(() => document.querySelector('[data-go="otter"]').click()); await t.page.waitForTimeout(400);
@@ -237,11 +249,40 @@ test('Nora is a real 3D model (v1) with her nine clips', { skip: skip() }, async
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('a finished race against Swoop lets go: the banner offers Back to Bloppitopia, and a Trail (Pippa) opens straight away; the parts box says when it is your last brick', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0');
+  await t.page.evaluate(() => document.querySelector('[data-go="cpu"]').click()); await t.page.waitForTimeout(400);
+  await t.page.evaluate(() => { document.getElementById('bzEasy').click(); document.getElementById('bzName').value = 'Tester'; document.getElementById('bzCpuGo').click(); });
+  await t.page.waitForSelector('#buildStage .go-gate .go-btn', { timeout: 20000 }); await t.page.evaluate(() => document.querySelector('#buildStage .go-btn').click()); await t.page.waitForTimeout(4200);
+  let sawLast = false;
+  for (let i = 0; i < 600; i++) {
+    if (await t.page.evaluate(() => /Finished/.test(document.getElementById('mpTurn').textContent))) break;
+    if (await t.page.evaluate(() => !document.getElementById('turnBanner').hidden && /Your turn/.test(document.getElementById('turnBanner').textContent))) {
+      if (!sawLast) { const w = await t.page.evaluate(() => window.bloppitPickWhy()); if (w.why === 'last') sawLast = true; }
+      await t.page.evaluate(() => window.bloppitPlaceRight()); await t.page.waitForTimeout(200);
+      if (await t.page.evaluate(() => { const b = document.getElementById('mpEndTurn'); return !b.hidden && !b.disabled; })) await t.page.evaluate(() => document.getElementById('mpEndTurn').click());
+    }
+    await t.page.waitForTimeout(300);
+  }
+  assert.ok(sawLast, 'the parts box knew it was the last brick');
+  await t.page.waitForTimeout(1500); await t.page.evaluate(() => document.querySelector('dialog[open]')?.close());
+  assert.match(await t.text('#mpRoomBtn'), /Back to Bloppitopia/);
+  assert.match(await t.text('.race-meter'), /wins!/);
+  await t.page.evaluate(() => [...document.querySelectorAll('.tab')].find((x) => /Seaside/.test(x.textContent)).click()); await t.page.waitForTimeout(800);
+  assert.equal(await t.view(), 'view-game'); assert.equal(await t.page.evaluate(() => document.getElementById('mpBar').hidden), true);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('a race against Swoop starts and shows him in the banner on his turn', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0');
   await t.page.evaluate(() => document.querySelector('[data-go="cpu"]').click()); await t.page.waitForTimeout(400);
   await t.page.evaluate(() => { document.getElementById('bzHard').click(); document.getElementById('bzName').value = 'Tester'; document.getElementById('bzCpuGo').click(); });
+  // the clock waits for Let's go! (it used to count down straight away)
+  await t.page.waitForSelector('#buildStage .go-gate .go-btn', { timeout: 20000 }); await t.page.waitForTimeout(2500);
+  assert.equal(await t.text('.clk[data-clk="0"]'), '0:00.0'); assert.match(await t.text('#status'), /Let’s go/);
+  await t.page.evaluate(() => document.querySelector('#buildStage .go-btn').click());
   await t.page.waitForTimeout(4500);
+  assert.equal(await t.page.evaluate(() => !document.querySelector('#buildStage .go-gate')), true);
   assert.equal(await t.page.evaluate(() => document.getElementById('turnBanner').hidden), false);
   assert.match(await t.text('#turnBanner'), /Your turn/);
   assert.deepEqual(t.errors, []); await t.ctx.close();
@@ -807,6 +848,7 @@ test('living characters: on the island (dressed pup, the friends, tap for a reac
   t = await open('?nosplash=1&welcome=0', { init: seed });
   await t.page.evaluate(() => document.querySelector('[data-go="cpu"]').click()); await t.page.waitForTimeout(400);
   await t.page.evaluate(() => { document.getElementById('bzHard').click(); document.getElementById('bzName').value = 'Tester'; document.getElementById('bzCpuGo').click(); });
+  await t.page.waitForSelector('#buildStage .go-gate .go-btn', { timeout: 20000 }); await t.page.evaluate(() => document.querySelector('#buildStage .go-btn').click());
   await t.page.waitForFunction(() => window.bloppitChars3d().views.includes('bud-art'), null, { timeout: 60000, polling: 500 });
   assert.equal(await t.page.evaluate(() => document.querySelector('#buddy .bud-art').__who), 'bloppit');
   await t.page.evaluate(() => document.getElementById('buddy').classList.add('big'));
