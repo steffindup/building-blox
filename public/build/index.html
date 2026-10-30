@@ -1633,7 +1633,7 @@ body.film-on{overflow:hidden}
           <input type="radio" name="kind" id="kd-picture" value="picture"><label for="kd-picture">Picture</label>
         </div>
         <p class="note pic-only" style="margin:6px 0 0">A flat mosaic of tiles that looks like your photo, made on this device. The more tiles, the more lifelike.</p>
-        <p class="note photo-only" id="photo3dNote" style="margin:6px 0 0" hidden>Photos become brick pictures for now. 3D photo models are coming to Brickworks Island.</p>
+        <p class="note photo-only" id="photo3dNote" style="margin:6px 0 0" hidden>Photos become brick pictures for now. 3D photo models are coming to Brickyard Cove.</p>
       </div>
       <div class="field pic-only">
         <label for="pw">Detail <output id="pwOut"></output></label>
@@ -1965,7 +1965,7 @@ body.film-on{overflow:hidden}
   <div class="card is-card"><div class="island" id="isWorld"></div><div class="is-a11y" id="isA11y"></div>
     <div class="is-foot"><div class="is-stage" id="isStage"></div><div class="is-next" id="isNext"></div><div class="is-prog" id="isProg" hidden></div></div></div>
   <div class="card is-shop" id="isShop" hidden>
-    <div class="gm-head sub-head"><div><h2>✨ Bibi’s shop</h2><p class="note">Bibi, the maker of Brickworks Island, paints and builds these decorations in his workshop. Spend your Galaxy Blocks on any you like, then place them anywhere on Bloppitopia. Every build you finish earns more Galaxy Blocks. <b id="isStars"></b></p></div><button class="ghost" id="isShopClose" type="button">Done</button></div>
+    <div class="gm-head sub-head"><div><h2>✨ Bibi’s shop</h2><p class="note">Bibi, the maker of Brickyard Cove, paints and builds these decorations in his workshop. Spend your Galaxy Blocks on any you like, then place them anywhere on Bloppitopia. Every build you finish earns more Galaxy Blocks. <b id="isStars"></b></p></div><button class="ghost" id="isShopClose" type="button">Done</button></div>
     <div class="decor-grid" id="decorGrid"></div>
   </div>
   <div class="card is-builds"><div class="gm-head sub-head"><div><h2>📦 Your builds</h2><p class="note" id="isBuildsNote"></p></div></div><div class="builds-grid" id="buildsGrid"></div></div>
@@ -3113,11 +3113,11 @@ const SUB_OK={game:['hub','otter','brain','sea'],blitz:['hub','cpu','friend'],mp
 // Pippa's tab is her seaside puzzles (and her daily message in a bottle); the Weekly Bloppit is Bibi's, under Quick Build.
 // Each page has its character at the top: who lives there, their island, their line and what the page is for
 const HERO={
-  daily:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickworks Island',title:'Bibi’s Weekly Bloppit',line:'Fresh paint! This week’s one is ready.',desc:'Every Monday Bibi paints a new Weekly Bloppit for the Grand Creation Gallery. Everybody builds the same one, and each one you build adds to Brickworks Island.',c:['#FFAA55','#DD5F1C']},
-  sea:{who:'pippa',art:'/art/char-pippa.png',isle:'Sunrise Shores',title:'Pippa’s Puzzles',line:'Ooh, that one’s clean!',desc:'Twelve seaside builds wash ashore as Bloppitopia grows. Each one adds to Sunrise Shores, all the way to the Festival Clock. And every day the tide brings a message in a bottle.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
+  daily:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Bibi’s Weekly Bloppit',line:'Fresh paint! This week’s one is ready.',desc:'Every Monday Bibi paints a new Weekly Bloppit for the Grand Creation Gallery. Everybody builds the same one, and each one you build adds to Brickyard Cove.',c:['#FFAA55','#DD5F1C']},
+  sea:{who:'pippa',art:'/art/char-pippa.png',isle:'Flipper Beach',title:'Pippa’s Puzzles',line:'Ooh, that one’s clean!',desc:'Twelve mirror puzzles wash ashore as Bloppitopia grows: Pippa builds one half, and you flip it to build the other. Each one adds to Flipper Beach, all the way to the Festival Clock in your own colours. And every day the tide brings a message in a bottle.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
   otter:{who:'tiny',art:'/art/char-tiny.png',isle:'Frog Forest',title:'Frog Trail',line:'Small frog, big forest!',desc:'Hop up the trail with Tiny, one level at a time. The levels start tiny and get bigger, and the last is his Lily-pad Palace.',c:['#A6D93A','#3F8F33']},
   brain:{who:'nora',art:'/art/char-nora.png',isle:'Brainpeak',title:'Brain Trail',line:'A clever mind shines in the dark.',desc:'Nora tucks math puzzles into the booklet: solve one to open its page. The last build is her Great Telescope.',c:['#4A6FC0','#1C2B57']},
-  create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickworks Island',title:'Quick Build',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way, and every Monday there’s a new Weekly Bloppit.',c:['#FFAA55','#DD5F1C']},
+  create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Quick Build',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way, and every Monday there’s a new Weekly Bloppit.',c:['#FFAA55','#DD5F1C']},
   blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Bloppit Blitz',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Fastest clean build wins.',c:['#5DB4F2','#1F6FC4']},
   mp:{who:'pup',art:'/art/pup.png',isle:'Friendship Harbour',title:'Build Together',line:'Every build is better with a friend!',desc:'Take turns building one model with friends on their own phones, tablets or computers.',c:['#B9A2F7','#6E4FD6']}};
 function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[data-hero="${t}"]`); if(!el) return;
@@ -3513,9 +3513,9 @@ const FILMS=[
     say:[{t:11,who:'tiny',text:'We did it, {name}!'}]},
   // [arrival no, complete no, island id, place, file, hints, who speaks, when in the arrival film, when in the completion film]
   ...[['04','05','brainpeak','Brainpeak','brainpeak','Set off for Brainpeak','Finish every Brain Trail level','nora',12,24.5],
-      ['06','07','sunrise','Sunrise Shores','sunrise-shores','Set off for Sunrise Shores','Build all of Pippa’s puzzles','pippa',15,17],
+      ['06','07','sunrise','Flipper Beach','sunrise-shores','Set off for Flipper Beach','Build all of Pippa’s puzzles','pippa',15,17],
       ['08','09','blitzbay','Blitz Bay','blitz-bay','Race Swoop','Win the Grand Prix','swoop',19,20],
-      ['10','11','brickworks','Brickworks Island','brickworks','Set off for Brickworks Island','Fill Brickworks Island with your own builds','bibi',2,20]]
+      ['10','11','brickworks','Brickyard Cove','brickworks','Set off for Brickyard Cove','Fill Brickyard Cove with your own builds','bibi',2,20]]
     .flatMap(([a,c,isle,place,file,ha,hc,who,ta,tc])=>[
       {id:isle+'-arrival',no:a,name:'Arrival',place,file:file+'-arrival',at:'isle:'+isle,open:o=>filmSeen(isle+'-arrival',o)||isleCount(isle,o)>0,hint:ha,
         say:[{t:ta,who,text:`Welcome to ${place}, {name}!`}]},
@@ -5282,7 +5282,7 @@ const SAMPLES=[
    return [['front',c]]; }},
  // ---- Authored Weeklies (Q4 2026 bank). `weekly` = the release week key: hidden from the library and from
  // the hash pick until that Monday 8 am ET, then they join the library like any other model.
- {name:'Jack-o’-lantern',theme:'Spooky',weekly:'2026-10-26',beat:'Pippa found the biggest pumpkin on Sunrise Shores. Give it a grin!',ws:{shape:'flat',size:9},make(){ const [c,x]=sheet(220,200,'#ffffff');
+ {name:'Jack-o’-lantern',theme:'Spooky',weekly:'2026-10-26',beat:'Pippa found the biggest pumpkin on Flipper Beach. Give it a grin!',ws:{shape:'flat',size:9},make(){ const [c,x]=sheet(220,200,'#ffffff');
    x.fillStyle='#3E9A3A'; x.rr(100,14,20,34,6); x.oval(132,30,18,8,-.4,'#4B9F4A');
    x.oval(110,118,92,72,0,'#FE8A18');
    x.oval(64,118,34,66,0,'#E5700B'); x.oval(156,118,34,66,0,'#E5700B'); x.oval(110,118,26,70,0,'#FE8A18');
@@ -5689,8 +5689,8 @@ const BRAIN_LEVELS=[
  // The boss: Nora's Great Telescope, broken just when she needs it. Rebuilding it (math pages and all) completes Brainpeak.
  {name:'Great Telescope', sample:'Great Telescope', size:22, shape:'puffed', thick:.7,  colors:7, pts:1500, boss:true},
 ];
-// Pippa's Puzzles: twelve seaside builds that grow Sunrise Shores. A new one washes ashore every twelfth of the way
-// through Bloppitopia (Frog Forest, Brainpeak, Blitz Bay and Brickworks Island together), and each also needs the one
+// Pippa's Puzzles: twelve seaside builds that grow Flipper Beach. A new one washes ashore every twelfth of the way
+// through Bloppitopia (Frog Forest, Brainpeak, Blitz Bay and Brickyard Cove together), and each also needs the one
 // before it. The last is the Festival Clock. Scores are kept in g.sbest.
 const SEA_LEVELS=[   // mirror builds (Oct 2026): Pippa builds one half, you build its reflection. Every one is symmetrical.
  {name:'Scallop shell',   sample:'Scallop shell',   size:12, shape:'flat',   thick:.5, colors:2, pts:100, mirror:true},
@@ -5704,7 +5704,7 @@ const SEA_LEVELS=[   // mirror builds (Oct 2026): Pippa builds one half, you bui
  {name:'Sandcastle',      sample:'Sandcastle',      size:11, shape:'puffed', thick:.8, colors:6, pts:520, mirror:true},
  {name:'Lighthouse',      sample:'Striped lighthouse', size:14, shape:'puffed', thick:.6, colors:5, pts:640, mirror:true},
  {name:'Pippa',           sample:'Pippa',           size:14, shape:'puffed', thick:.7, colors:6, pts:800, mirror:true},
- // The last one: the Festival Clock. Building it completes Sunrise Shores and starts Pippa's festival.
+ // The last one: the Festival Clock. Building it completes Flipper Beach and starts Pippa's festival.
  {name:'Festival Clock',  sample:'Festival Clock',  size:21, shape:'puffed', thick:.8, colors:8, pts:1200, boss:true, mirror:true, paint:true},   // the finale: you build first in your own colours, Pippa mirrors you
 ];
 const PROGRESS_ISLES=['otterwood','brainpeak','blitzbay','brickworks'];
@@ -5958,7 +5958,7 @@ function renderGameMap(){
   $('#trOtter').setAttribute('aria-selected',trail==='otter'); $('#trBrain').setAttribute('aria-selected',trail==='brain'); $('#trSea').setAttribute('aria-selected',trail==='sea');
   $('#gmTitle').textContent=`${T.icon} ${T.name}`;
   const pct=trail==='sea'?progressPct(worldStore()):0;
-  $('#gmIntro').textContent=trail==='brain'?'A different set of puzzles, with Bloppit’s math puzzles locking some booklet pages. Solve them to keep building.':trail==='sea'?`Pippa’s seaside puzzles wash ashore as Bloppitopia grows: a new one about every 8% (you’re at ${pct}%). Each one you build grows Sunrise Shores.`:'Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, and Tiny cheers you all the way.';
+  $('#gmIntro').textContent=trail==='brain'?'A different set of puzzles, with Bloppit’s math puzzles locking some booklet pages. Solve them to keep building.':trail==='sea'?`Pippa’s seaside puzzles wash ashore as Bloppitopia grows: a new one about every 8% (you’re at ${pct}%). Each one you build grows Flipper Beach.`:'Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, and Tiny cheers you all the way.';
   { const ts=trailStars(trail); $('#gmTotal').textContent=`${ts} ★`; $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} stars`; $('#gmDone').dataset.of=`${levelsOf(trail).length*3}`; } syncMathUI();
   $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} ${trail==='sea'?'puzzles built':'levels done'}`;
   $('#gmLevels').innerHTML=levelsOf(trail).map((L,i)=>{
@@ -8064,7 +8064,7 @@ function islandInfo(id,o){
     case 'dest': { const m={ferry:'sunrise',workshop:'brickworks',brain:'brainpeak',speedway:'blitzbay',harbour:'otterwood'}[arg]; if(m) return islandInfo('isle:'+m,o); break; }
     case 'isle': { const I=ISLES[arg]; if(!I) break; const c=isleCount(arg,o), P=PIECES[arg], total=P[P.length-1].at, built=P.filter(x=>c>=x.at), next=P.find(x=>c<x.at);
       if(!c&&I.mystery) return {title:'Mystery Island',hint:mysteryHint(),bar:{pct:mysteryOpen()?100:Math.max(4,Math.round(100*mysteryProgress(o))),label:mysteryOpen()?'Ready to sail!':`${Math.round(100*mysteryProgress(o))}% of the way there`},rows:[['What’s there','Far out at sea, where it’s always night, a faint light glows in a swirl of mist. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Complete all five islands, every piece built (${fiveDone(o)} of ${FIVE_ISLES.length} so far)`],...(mysteryOpen()?[]:[['Still to finish',FIVE_ISLES.filter(id=>!isleComplete(id,o)).map(id=>isleCount(id,o)?`${ISLES[id].name} (${Math.min(isleCount(id,o),PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at})`:`${ISLES[id].name} (still in the mist)`).join(', ')]])],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'🏝️ Back to Bloppitopia',fn:()=>{ islandTipHide(true); isl3GoView(0); try{ sfx.swoosh(-1); }catch(e){} },primary:true}]};   // not open yet: back to the map, no surprise trip elsewhere
-      if(!c&&arg==='sunrise'&&!seaWashed(0,o)) return {title:'A misty island',hint:`Pippa’s first puzzle washes ashore at ${seaPct(0)}%`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',(()=>{ const nb=seaBuildsTo(0,o); return `Reach ${seaPct(0)}% of Bloppitopia (you’re at ${progressPct(o)}%): ${nb} more build${nb===1?'':'s'} on Frog Forest, Brainpeak, Blitz Bay or Brickworks Island, then build Pippa’s first puzzle`; })()]],actions:[{label:'🏝️ Back to Bloppitopia',fn:()=>{ islandTipHide(true); isl3GoView(0); try{ sfx.swoosh(-1); }catch(e){} },primary:true}]};   // nothing to play here yet, so no surprise trip elsewhere
+      if(!c&&arg==='sunrise'&&!seaWashed(0,o)) return {title:'A misty island',hint:`Pippa’s first puzzle washes ashore at ${seaPct(0)}%`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',(()=>{ const nb=seaBuildsTo(0,o); return `Reach ${seaPct(0)}% of Bloppitopia (you’re at ${progressPct(o)}%): ${nb} more build${nb===1?'':'s'} on Frog Forest, Brainpeak, Blitz Bay or Brickyard Cove, then build Pippa’s first puzzle`; })()]],actions:[{label:'🏝️ Back to Bloppitopia',fn:()=>{ islandTipHide(true); isl3GoView(0); try{ sfx.swoosh(-1); }catch(e){} },primary:true}]};   // nothing to play here yet, so no surprise trip elsewhere
       if(!c) return {title:'A misty island',hint:`Play ${I.game} to discover it`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Finish your first ${I.unit}`]],actions:[{label:I.play,fn:I.go,primary:true}]};
       return {title:I.name,hint:`${I.game} · ${Math.min(c,total)} of ${total}`,rows:[['Grows with',I.grows],['Built',`${built.length} of ${P.length} pieces`],...(next?[['Next piece',`${next.name}: ${next.at-c} more ${I.unit}${next.at-c===1?'':'s'}`]]:[]),['Milestone',c>=total?`${I.milestone} ✓`:`${I.milestone} at ${total}`]],
         chips:P.map(x=>[x.name,c>=x.at]),bar:{pct:Math.max(4,Math.min(100,Math.round(100*c/total))),label:c>=total?'Complete!':`${total-c} more to ${I.milestone}`},actions:[...(arg==='moonstone'&&worldComplete(o)?[{label:'🌙 Watch the ending',fn:()=>{ theEnd(); },primary:true}]:[]),{label:I.play,fn:I.go,primary:!(arg==='moonstone'&&worldComplete(o))}]}; }
@@ -8578,10 +8578,10 @@ const CAST={
     who:'Brainpeak’s stargazer and puzzle-setter',story:'Nora is a yellow-crowned night heron. She watches the stars from Brainpeak and tucks a math puzzle into the Brain Trail booklets.',
     loves:'A good “aha”, quiet nights and clear skies',secret:'Her great telescope is broken, and she needs a builder to fix it.',lines:['A clever mind shines in the dark.','Look closer, the answer’s hiding.','Aha! You saw the pattern.']},
   pippa:{name:'Pippa',kind:'the Penguin',isle:'sunrise',brick:'yellow',h:1.8,aspect:229/360,tag:'A new puzzle just washed ashore!',
-    who:'The visitor who never left',story:'Pippa washed up on Sunrise Shores on holiday, fell in love with the sunshine and stayed. Her seaside puzzles wash ashore as Bloppitopia grows, and every day she sends a message in a bottle.',
+    who:'The visitor who never left',story:'Pippa washed up on Flipper Beach on holiday, fell in love with the sunshine and stayed. Her mirror puzzles wash ashore as Bloppitopia grows (she builds one half, you flip it to build the other), and every day she sends a message in a bottle.',
     loves:'Surprises, parties, and a swim before breakfast',secret:'She wobbles on land, but she’s the best swimmer in Bloppitopia.',lines:['A new puzzle just washed ashore!','Special delivery!','Ooh, that one’s clean!','See you next Monday!']},
   bibi:{name:'Bibi',kind:'the Lion Cub',isle:'brickworks',brick:'orange',h:1.85,aspect:241/360,tag:'Build it bold!',
-    who:'The maker of Brickworks Island',story:'Bibi runs the workshop and paints everything in sight. Every Monday he paints a new Weekly Bloppit, and whatever you make, he puts it on show and roars with pride.',
+    who:'The maker of Brickyard Cove',story:'Bibi runs the workshop and paints everything in sight. Every Monday he paints a new Weekly Bloppit, and whatever you make, he puts it on show and roars with pride.',
     loves:'Big ideas, bright paint, and the crane',secret:'His roar is more of a squeak. He knows, and he roars anyway.',lines:['Build it bold!','If you can dream it, brick it!','ROAR! That’s brilliant!']},
   lufu:{name:'lufu',kind:'',isle:'moonstone',brick:'moonstone',h:1.2,aspect:237/360,tag:'We have found each other.',
     who:'A small, shy spirit of light',story:'lufu lived alone on Moonstone Isle for so long that its glow, and the stars above it, almost went out. Then you came, and built the crystal that made it shine again.',
@@ -9172,11 +9172,11 @@ const ISLES={
     milestone:'The Lily-pad Palace',grows:'Every Frog Trail level you finish (the last is the boss)',play:'Play Frog Trail',go:()=>trailGo('otter')},
   brainpeak:{name:'Brainpeak',game:'Brain Trail',unit:'Brain Trail level',x:-8.4,z:-12.8,r:4.4,seed:4.1,ground:['#79C25A','#4E9E3A'],
     milestone:'The Great Telescope',grows:'Every Brain Trail level you finish (the last is the boss)',play:'Play Brain Trail',go:()=>trailGo('brain')},
-  sunrise:{name:'Sunrise Shores',game:'Pippa’s Puzzles',unit:'Pippa puzzle',x:5.6,z:-14.8,r:4.3,seed:5.9,ground:['#8AD06A','#5FA94A'],sand:true,
+  sunrise:{name:'Flipper Beach',game:'Pippa’s Puzzles',unit:'Pippa puzzle',x:5.6,z:-14.8,r:4.3,seed:5.9,ground:['#8AD06A','#5FA94A'],sand:true,
     milestone:'The Festival Clock',grows:'Every one of Pippa’s seaside puzzles you build. A new one washes ashore about every 8% of the way through Bloppitopia',play:'Play Pippa’s puzzle',go:()=>homeGo('sea')},
   blitzbay:{name:'Blitz Bay',game:'Blitz',unit:'Blitz win',x:15.2,z:-4.6,r:4.8,seed:5.3,ground:['#6CC24A','#4E9E3A'],sand:true,
     milestone:'The Grand Prix cup',grows:'Every Blitz race you win against Swoop, then the Grand Prix',play:'Race Swoop',go:()=>ladderGo()},
-  brickworks:{name:'Brickworks Island',game:'Creative builds',unit:'creation',x:12.4,z:9.6,r:4.3,seed:6.6,ground:['#7CC45E','#4E9E3A'],
+  brickworks:{name:'Brickyard Cove',game:'Creative builds',unit:'creation',x:12.4,z:9.6,r:4.3,seed:6.6,ground:['#7CC45E','#4E9E3A'],
     milestone:'The Grand Creation Gallery',grows:'Every build from your own photo or drawing, from the library, and every Weekly Bloppit',play:'Make your own',
     go:()=>{ pickPuzzle('quick','top'); }},   // Quick Build's first screen: a photo, a drawing or the library
   moonstone:{name:'Moonstone Isle',game:'The mystery',unit:'chapter',get x(){ return isl3TallNow()?-22.5:23.5; },get z(){ return isl3TallNow()?-11.5:-23.5; },r:4.0,   // far out at sea, in the top corner of the view (upright phones see the world from the side)
@@ -10158,7 +10158,7 @@ function isl3Show(box,o){ isl3Immersive(); isl3WakeCheck(); isl3CharsLoad(o);
   isl3A11y(o);
   ISL3.pending_acc=accNew(o);
   const un=worldUnlocked(o); let seen=seenGet();
-  // Sunrise Shores now grows with Pippa's Puzzles (from 24 Oct 2026), so pieces it had from Weekly Bloppits are gone
+  // Flipper Beach now grows with Pippa's Puzzles (from 24 Oct 2026), so pieces it had from Weekly Bloppits are gone
   // until they're built again: forget them as seen so each one is revealed again when it comes back
   if(seen){ const keep=seen.filter(i=>!/^(sunrise:\d+|isle:sunrise|done:sunrise|final:all)$/.test(i)||un.includes(i)); if(keep.length<seen.length){ seen=keep; seenSet(seen); } }
   if(seen===null){ seenSet([...un,...ACC.filter(a=>accOwned(a,o)).map(a=>'acc:'+a.id)]); ISL3.pending_acc=[]; }
@@ -10349,7 +10349,7 @@ function arr3Landed(){ const nm=pupName(worldStore()); return nm?`${nm} has arri
 function isl3ShowHome(){ const [x,z]=HOME_AT.home; isl3FlyTo(x,.8,z,12,1200); isl3Banner('This is your home. Let’s finish it together!'); isl3Chrome(); ISL3.jumpT=performance.now(); }
 
 let islandShown=-1;
-// How far through Bloppitopia you are (every piece built on Frog Forest, Brainpeak, Blitz Bay and Brickworks Island),
+// How far through Bloppitopia you are (every piece built on Frog Forest, Brainpeak, Blitz Bay and Brickyard Cove),
 // with a tick wherever one of Pippa's puzzles washes ashore, so "the next puzzle at 8%" has something to point at
 function isProgRender(o){ const el=$('#isProg'); if(!el) return; const pct=progressPct(o), P=gameProgress(o);
   const SB=bestOf(gameStore(),'sea'), ready=SEA_LEVELS.findIndex((_,i)=>!SB[i]&&seaWashed(i,o)), nx=SEA_LEVELS.findIndex((_,i)=>!seaWashed(i,o)), nb=nx>=0?seaBuildsTo(nx,o):0;   // a puzzle already washed ashore comes first
