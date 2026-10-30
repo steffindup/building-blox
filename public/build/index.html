@@ -6489,6 +6489,7 @@ function mpShowEnd(){
 function mpShowBlitzEnd(){
   if(mp.cpu&&mp.state.solo) return trialEnd();
   const s=mp.state, sc=mpScores(s).sort((a,b)=>a.ms-b.ms), medals=['🥇','🥈','🥉',''], w=sc[0];
+  if(mp.cpu&&cpu&&cpu.f&&!cpu.paced){ cpu.paced=1; const me=cpu.s.players[0]; blitzPaceSave(totalMs(me)/1000,me.n); }   // the child's pace, for the next race's first guess
   $('#mpEndTitle').textContent=sc.length>1?`⚡ ${w.i===mp.me?'You win':`${w.name} wins`}!`:`⚡ Done in ${fmtTime(w.ms)}!`;
   $('#mpEndNew').textContent=mp.cpu?'Race again':'New game'; mpEndNext=null;
   if(mp.cpu&&cpu&&cpu.ladder!=null){ const at=cpu.ladder, won=w.i===mp.me, nx=ladderStep(), pk='p'+at, lv=at>=LADDER_N?'hard':BLITZ_PICKS[at].lv;   // Blitz Bay's ladder: the clear next race
@@ -6582,6 +6583,24 @@ const CPU_LEVELS={
   medium:{name:'Swoop',speed:'Race',         ms:[4500,7500], miss:.12,turn:[1,3],note:'Race: Swoop is quick, but careless. A fair race.'},
   hard:  {name:'Swoop',speed:'Full throttle',ms:[2500,4500], miss:.05,turn:[2,3],note:'Full throttle: Swoop is fast and hardly ever misses. Can you beat him?'}};
 const CPU_IDS={easy:'#bzEasy',medium:'#bzMed',hard:'#bzHard'}, COUNTDOWN_MS=3000;
+// A fair race for every child: Swoop paces himself against the child's own speed (seconds per brick, mistakes and
+// hints included), not a fixed clock, so a 5-year-old and a 12-year-old both win about as often as intended:
+// Warm-up ~95% of races, Race ~75%, Full throttle ~50%, the Grand Prix ~40%. Before the child has placed anything
+// the guess is their pace from earlier races, else one from their age. One random "form" per race (r) decides how
+// close it is; Swoop keeps his total on target as he goes (his drops are made up by quicker bricks after them).
+// Checked by simulation over fast, average and slow children and wrong first guesses (scratch blitzsim.py).
+const BLITZ_FAIR={easy:1.26,medium:1.084,hard:1,boss:.97}, BLITZ_FORM=.12, PACE_KEY='bloppit-blitz-pace';
+const agePace=a=>!a?6:a<=4?10:a>=13?3.3:{5:8.5,6:7.5,7:6.5,8:5.5,9:5,10:4.5,11:4,12:3.6}[a];   // seconds a brick, a first guess
+function blitzPace(){ try{ const v=JSON.parse(localStorage.getItem(pkey(PACE_KEY))); if(v&&v.p>0) return v.p; }catch(e){} return agePace(curPlayer().age); }
+function blitzPaceSave(sec,n){ if(!(n>=3)||!(sec>0)) return; const now=Math.min(30,Math.max(1,sec/n));
+  let v=null; try{ v=JSON.parse(localStorage.getItem(pkey(PACE_KEY))); }catch(e){}
+  const p=v&&v.p>0?v.p*.6+now*.4:now; try{ localStorage.setItem(pkey(PACE_KEY),JSON.stringify({p:+p.toFixed(2),n:((v&&v.n)||0)+1})); }catch(e){} }
+window.bloppitBlitzFair={fair:BLITZ_FAIR,agePace:a=>agePace(a),pace:()=>blitzPace(),save:(t,n)=>blitzPaceSave(t,n)};
+const gauss=()=>{ let u=0,v=0; while(!u) u=Math.random(); while(!v) v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); };
+// How long Swoop takes over his next brick: whatever keeps his total at (margin × form × the child's pace) per brick
+function cpuPaceWait(s){ const me=s.players[0], sw=s.players[1], p=(cpu.prior*.5+totalMs(me)/1000)/(.5+(me.n||0));
+  const target=cpu.f*cpu.r*p*((sw.n||0)+1), so=(totalMs(sw)+Math.max(0,Date.now()-s.turnStart))/1000;
+  return Math.round(Math.min(20000,Math.max(1200,(target-so)*1000*rndIn(.85,1.15)))); }
 let cpu=null;
 const rndIn=(a,b)=>a+Math.random()*(b-a);
 function bzLevel(){ const r=document.querySelector('input[name=bzLevel]:checked'); return r&&CPU_LEVELS[r.value]?r.value:'medium'; }
@@ -6714,7 +6733,7 @@ function cpuKick(){
 }
 function cpuStep(extra=0,retry=false){
   // after a dropped brick he grabs it straight back: never more than ~12 s without a brick going in
-  const s=cpu.s, L=CPU_LEVELS[s.cpuLevel], wait=retry?rndIn(1500,2500):rndIn(L.ms[0],L.ms[1])+extra;
+  const s=cpu.s, L=CPU_LEVELS[s.cpuLevel], wait=retry?rndIn(1500,2500):(cpu.f?cpuPaceWait(s):rndIn(L.ms[0],L.ms[1]))+extra;
   const m=cpuPick(), miss=!!m&&!cpu.missed&&Math.random()<L.miss, wrong=miss?[{x:2,z:0},{x:-2,z:0},{x:0,z:2},{x:0,z:-2}][Math.floor(Math.random()*4)]:null;
   cpu.missed=false;
   if(!m) cpuSay('point','Hmm, nothing left for him to place.');
@@ -6760,6 +6779,7 @@ $('#bzCpuGo').onclick=async()=>{
     cpu={timer:null,left:0,boss,s:{code:'VS',ver:1,started:true,finished:false,perTurn:3,mode:'blitz',cpuLevel:lvl,nBricks:model.bricks.length,title,level:null,host:0,
       turn:0,turnPlaced:0,turnStart:Date.now()+COUNTDOWN_MS,moves:[],me:0,waiting:[],quota:Math.floor(model.bricks.length/2),
       players:[pl(name,(me&&me.color&&me.color!=='#8A5A3B')?me.color:'#D2352B'),pl(CPU_LEVELS[lvl].name,'#9AA3AD')]}};
+    cpu.f=BLITZ_FAIR[boss?'boss':lvl]; cpu.r=Math.exp(BLITZ_FORM*gauss()); cpu.prior=blitzPace();   // a fair race (see BLITZ_FAIR)
     cpu.ladder=bzLadderNext!=null&&BLITZ_PICKS[bzLadderNext]&&$('#bzModel').value==='p'+bzLadderNext?bzLadderNext:null; bzLadderNext=null;   // a Blitz Bay ladder race (from Bloppitopia)
     mpRememberName(name);
     await mpEnter({cpu:true,code:'VS',playerId:'me',me:0,state:cpuPub()},true,name);
