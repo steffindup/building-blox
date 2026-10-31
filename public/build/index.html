@@ -1139,7 +1139,10 @@ body:has(#view-island.immersive:not([hidden])) main{padding-top:0}
 #view-island.immersive .is3-banner{margin-top:84px;max-width:min(560px,92%)}@media (max-width:559px){#view-island.immersive .is3-banner{margin-top:118px}}
 #view-island.immersive .is-btns{position:absolute;top:10px;right:10px;flex-direction:column;align-items:flex-end;gap:6px;z-index:2}
 /* Bloppitopia is one window: no page scroll, no footer under it */
-html:has(#view-island.immersive:not([hidden])),body:has(#view-island.immersive:not([hidden])){overflow:hidden}body:has(#view-island.immersive:not([hidden])) .appfoot{display:none}
+html:has(#view-island.immersive:not([hidden])),body:has(#view-island.immersive:not([hidden])){overflow:hidden}
+body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!important}
+#view-island.immersive .is3-chrome{padding-bottom:calc(12px + env(safe-area-inset-bottom,0px))}   /* Play next clear of the iPhone's home bar */
+#view-island.immersive .is3-views{bottom:calc(96px + env(safe-area-inset-bottom,0px))}#view-island.immersive .is3-chrome.has-alt .is3-views{bottom:calc(138px + env(safe-area-inset-bottom,0px))}   /* body is the scroller here, so its safe-area padding already clears the notch: top:env() pushed the bar a second notch down on iPhone (and hid the top of the world under it) */body:has(#view-island.immersive:not([hidden])) .appfoot{display:none}
 #view-island.immersive .is-foot{pointer-events:auto!important;cursor:pointer;transition:transform .15s}#view-island.immersive .is-foot:hover{transform:translateY(-1px);background:rgba(20,32,44,.88)}
 #view-island.immersive .is-foot::after{content:'›';position:absolute;right:10px;top:8px;font-size:20px;opacity:.6}
 #view-island .is-custom{display:none}
@@ -8436,7 +8439,7 @@ function isl3Fit(cam,aspect){ const v=THREE.MathUtils.degToRad(cam.fov)/2, hf=Ma
   if(ISL3.lufu){ const T=LUFU_T3, dir=(tall?new THREE.Vector3(1,14,22):new THREE.Vector3(0,9,31)).normalize(), need=Math.max(13.5/Math.tan(hf),9.5/Math.tan(v)), d=Math.max(15,Math.min(80,need)); cam.position.copy(T).addScaledVector(dir,d); cam.lookAt(T); return d; }   // low and close: the shore, the ship, the cliffs and the sky behind
   const need=tall?Math.max(18.5/Math.tan(hf),21.5/Math.tan(v)*.93):Math.max((aspect<1?21:23.5)/Math.tan(hf),19/Math.tan(v)*.92);
   const d=Math.max(24,Math.min(tall?170:84,need)); cam.position.copy(CAM_T3).addScaledVector(CAM_DIR3(aspect),d); cam.lookAt(CAM_T3); return d; }
-function isl3Size(){ const box=ISL3.box, r=ISL3.r; if(!box) return; if(ISL3.world&&box.clientWidth&&box.clientHeight&&CAM_TALL(box.clientWidth/box.clientHeight)!==!!ISL3.tallBuild&&!ISL3.revealing){ ISL3.tallBuild=!ISL3.tallBuild; ISL3.moved=false; setTimeout(()=>{ try{ renderIsland(); }catch(e){} },0); } const w=box.clientWidth||600, im=box.closest('.immersive'), top=im?(()=>{ const hd=document.querySelector('header.top'); return hd?hd.offsetHeight+(parseFloat(getComputedStyle(hd).top)||0):0; })():0;
+function isl3Size(){ const box=ISL3.box, r=ISL3.r; if(!box) return; if(ISL3.world&&box.clientWidth&&box.clientHeight&&CAM_TALL(box.clientWidth/box.clientHeight)!==!!ISL3.tallBuild&&!ISL3.revealing){ ISL3.tallBuild=!ISL3.tallBuild; ISL3.moved=false; setTimeout(()=>{ try{ renderIsland(); }catch(e){} },0); } const w=box.clientWidth||600, im=box.closest('.immersive'), top=im?(()=>{ const hd=document.querySelector('header.top'); const mn=document.querySelector('main'); return mn?Math.max(0,mn.getBoundingClientRect().top+scrollY):hd?hd.offsetHeight:0; })():0;   // where the page really starts under the bar (on iPhone the bar sits below the notch; a tucked-away bar doesn't count)
   const h=Math.round(im?Math.max(360,innerHeight-top):w<560?Math.min(w*1.1,innerHeight*.64):Math.min(w*.78,innerHeight*.72,720)); box.style.height=h+'px';
   const realmSwap=ISL3.fitRealm!==(ISL3.lufu?'lufu':'b'); if(realmSwap) ISL3.fitRealm=ISL3.lufu?'lufu':'b';   // a different world needs its own framing
   if(realmSwap||r.domElement.width!==Math.round(w*r.getPixelRatio())||r.domElement.height!==Math.round(h*r.getPixelRatio())){ r.setSize(w,h); ISL3.cam.aspect=w/h; ISL3.cam.updateProjectionMatrix(); if(realmSwap||!ISL3.moved){ const d=isl3Fit(ISL3.cam,w/h); ISL3.fitD=d; ISL3.ctl.maxDistance=Math.max(70,d+6); ISL3.sc.fog&&(ISL3.sc.fog.far=Math.max(170,d*2.2)); ISL3.ctl.target.copy(ISL3.lufu?LUFU_T3:CAM_T3); ISL3.ctl.maxPolarAngle=ISL3.lufu?1.5:1.42; ISL3.ctl.update(); } } }
@@ -8446,7 +8449,8 @@ function isl3Pick(e){ const r=ISL3.r.domElement.getBoundingClientRect(), v=new T
   const rc=new THREE.Raycaster(); rc.setFromCamera(v,ISL3.cam); let hits=[];
   for(const x of [...ISL3.hits,ISL3.sc.children.find(x=>x.userData.info==='land:sea')]){ if(!x) continue; try{ rc.intersectObject(x,false,hits); }catch(e){} }   // one odd mesh never stops every tap
   hits.sort((a,b)=>a.distance-b.distance); const tag=h=>{ let o=h.object; while(o&&!o.userData.info) o=o.parent; return o; };
-  const ch=hits.find(h=>{ const o=tag(h); return o&&/^(char:|longtail:|bloppit$|pup$)/.test(o.userData.info); });
+  let ch=hits.find(h=>{ const o=tag(h); return o&&/^(char:|longtail:|bloppit$|pup$)/.test(o.userData.info); });
+  { const f=hits.find(h=>tag(h)); const fo=f&&tag(f); if(ch&&fo&&f.distance<ch.distance&&/^(decor:|model:)/.test(fo.userData.info)) ch=null; }   // a friend's wide tap area, but not over a decoration or model standing in front of them
   for(const h of ch?[ch,...hits]:hits){ const o=tag(h); if(o) return {obj:o,info:o.userData.info,point:h.point}; } return null; }
 function isl3Ground(e){ const r=ISL3.r.domElement.getBoundingClientRect(), v=new THREE.Vector2(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
   const rc=new THREE.Raycaster(); rc.setFromCamera(v,ISL3.cam); const p=new THREE.Vector3(); return rc.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),-TOP3),p)?p:null; }
@@ -9649,8 +9653,10 @@ function isl3Obstacles(W){ const out=[], b=new THREE.Box3(); W.updateMatrixWorld
 // across them however much ground there is between.
 function clearSpot3(ax,az,gap,taken){ const O=ISL3.obst||[], P=scalePoly(HOMEP,0,0,.86), D=CAM_DIR3(), hl=Math.hypot(D.x,D.z)||1, ux=D.x/hl, uz=D.z/hl, rise=D.y/hl;
   const hid=(x,z)=>O.some(([cx,cz,hx,hz,h])=>{ if(!h) return false; const dx=cx-x, dz=cz-z, al=dx*ux+dz*uz, lat=Math.abs(dx*-uz+dz*ux); return al>0&&al-Math.max(hx,hz)<(h-.6)/rise&&lat<Math.max(hx,hz)+.45; });
-  const ok=(x,z)=>inPoly(x,z,P)&&O.every(([cx,cz,hx,hz])=>Math.abs(x-cx)>hx+gap||Math.abs(z-cz)>hz+gap)&&(taken||[]).every(([tx,tz])=>Math.hypot(x-tx,z-tz)>1.45)&&!hid(x,z);
-  if(ok(ax,az)) return [ax,az]; for(let r=.35;r<=4.2;r+=.35) for(let k=0;k<16;k++){ const a=k/16*Math.PI*2+(r*1.7), x=ax+Math.cos(a)*r, z=az+Math.sin(a)*r*1.0; if(ok(x,z)) return [x,z]; }
+  // A crowded island: if nowhere is perfect, give up first the view (hidden behind something tall), then some of the room around, before ever standing in something
+  for(const [g,look] of [[gap,true],[gap,false],[Math.min(gap,.45),false],[.25,false]]){
+    const ok=(x,z)=>inPoly(x,z,P)&&O.every(([cx,cz,hx,hz])=>Math.abs(x-cx)>hx+g||Math.abs(z-cz)>hz+g)&&(taken||[]).every(([tx,tz])=>Math.hypot(x-tx,z-tz)>1.45)&&!(look&&hid(x,z));
+    if(ok(ax,az)) return [ax,az]; for(let r=.35;r<=6;r+=.35) for(let k=0;k<16;k++){ const a=k/16*Math.PI*2+(r*1.7), x=ax+Math.cos(a)*r, z=az+Math.sin(a)*r*1.0; if(ok(x,z)) return [x,z]; } }
   return [ax,az]; }
 function isl3Characters(o,W){
   const r=routine3(isl3Hour()), n=worldCount(o), at={garden:POL3(22,4.5),fish:[HOME_AT.jetty[0]+.2,HOME_AT.jetty[1]+2.6],read:POL3(190,4.6),fire:POL3(176,5.5)}[r];
