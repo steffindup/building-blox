@@ -3525,6 +3525,12 @@ const FILMS=[
         say:[{t:ta,who,text:`Welcome to ${place}, {name}!`}]},
       {id:isle+'-complete',no:c,name:'Complete',place,file:file+'-complete',at:'done:'+isle,open:o=>isleComplete(isle,o),hint:hc,
         say:[{t:tc,who,text:'We did it, {name}!'}]}]),
+  // Moonstone Isle: one film for each chapter, played when its piece rises (series bible, films 12–22)
+  ...[['12','Into the Mist','into-the-mist',0,'Build the rowboat',{t:7,who:'bloppit',text:'Look, {name}! A light in the mist. Let’s row out to it!'}],
+      ['13','The Old Map','the-old-map',1,'Build Moonstone chapter 2',{t:13,who:'pippa',text:'Ooh, a map! And the light is marked right here!'}],
+      ['14','The Lookout Tower','the-lookout-tower',2,'Build Moonstone chapter 3',{t:17,who:'swoop',text:'There it is again! Follow me, {name}!'}],
+      ['15','The Petal Bridge','the-petal-bridge',3,'Build Moonstone chapter 4',{t:20,who:'tiny',text:'A bridge of petals! Hop across, {name}!'}]]
+    .map(([no,name,file,i,hint,say])=>({id:'moon-'+no,no,name,place:'Moonstone Isle',file:'moonstone-'+file,at:'moonstone:'+i,open:o=>filmSeen('moon-'+no,o)||mysteryDone(o)>i,hint,say:[say]})),
 ];
 // What the characters say over a film: a speech bubble with the speaker's face and name, shown for 5.5 s from its time
 // ({name} is the otter's name, or "pup" while it has none)

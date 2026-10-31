@@ -774,6 +774,20 @@ test('island: a new build always shows, even when older models were dragged into
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('Moonstone films: building a chapter plays its film as its piece rises (Into the Mist for the rowboat), and it joins My films', { skip: skip() }, async () => {
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const k = 'm:Rowboat:10';
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds: { [k]: { n: 10, s: 2, t: 1e12, c: 1 } }, log: [k], decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, films: [] })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 }));
+    localStorage.setItem('bloppit-seen3-v1', JSON.stringify(['home:home1'])); } };
+  const t = await open('?nosplash=1&hour=11&films=1#island', { init: seed });
+  await t.page.waitForFunction(() => window.bloppitFilmOn() === 'moon-12', null, { timeout: 40000, polling: 200 });
+  assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), /\/video\/moonstone-into-the-mist\.mp4$/);
+  await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click()); await t.page.waitForTimeout(1500);
+  await t.page.evaluate(() => window.bloppitHome()); await t.page.waitForTimeout(800);
+  await t.page.evaluate(() => document.getElementById('hmFilms').click()); await t.page.waitForTimeout(600);
+  assert.match(await t.text('#filmList'), /12 · Into the Mist/);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('Frog Forest films: its arrival film plays when it rises from the mist, its completion film when it is complete, then both are in My films', { skip: skip() }, async () => {
   // every Frog Trail level done, and the island not yet revealed: both moments are new
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; for (let i = 0; i < 3; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1 }; log.push(k); }
