@@ -56,6 +56,23 @@ test('first visit: name the otter first, then the arrival film, which can be ski
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('films on a phone cover the whole page (above the menu bar) and offer ⛶ Full screen; upright or sideways', { skip: skip() }, async () => {
+  for (const viewport of [{ width: 393, height: 852 }, { width: 852, height: 393 }]) {
+    const t = await open('?nosplash=1&films=1', { viewport, touch: true });
+    await t.page.evaluate(() => document.getElementById('hmCont').click());
+    await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 10000 });
+    await t.page.evaluate(() => document.getElementById('pupSuggest').click()); await t.page.waitForTimeout(200);
+    await t.page.evaluate(() => document.getElementById('pupLater').click());
+    await t.page.waitForFunction(() => !!document.querySelector('.is3-cine video.cn-film'), null, { timeout: 10000 }); await t.page.waitForTimeout(1500);
+    assert.deepEqual(await t.page.evaluate(() => window.bloppitFilmBig()), { page: true, parent: true, full: true }, JSON.stringify(viewport));
+    const r = await t.page.evaluate(() => { const b = document.querySelector('.is3-cine').getBoundingClientRect(), top = document.elementFromPoint(innerWidth / 2, 20); return { w: b.width, h: b.height, top: !!top?.closest('.is3-cine') }; });
+    assert.ok(r.w >= viewport.width - 1 && r.h >= viewport.height - 1 && r.top, 'the film is over the whole page, menu bar too');
+    await t.page.evaluate(() => document.querySelector('.is3-cine .cn-skip').click()); await t.page.waitForTimeout(1600);
+    assert.equal(await t.page.evaluate(() => document.body.classList.contains('film-on') || !!document.querySelector('.is3-cine.page')), false);
+    assert.deepEqual(t.errors, []); await t.ctx.close();
+  }
+});
+
 test('My films: hidden until the arrival film is unlocked, then plays it again from the menu', { skip: skip() }, async () => {
   const t = await open('?nosplash=1');
   assert.equal(await t.page.evaluate(() => document.getElementById('hmFilms').hidden), true);
