@@ -206,6 +206,21 @@ test('phone build page: no arrows or Place (tap the brick, Rotate turns it), the
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('the 3D island has no welcome card on top (a world with builds that never saw the arrival); the drawn island\'s card has ✕', { skip: skip() }, async () => {
+  const seed = { fn: () => { localStorage.setItem('bloppit-world-v1', JSON.stringify({ pupAsked: true, pupName: 2, builds: { 'm:Little house:12': { n: 12, s: 2, k: 'quick', t: Date.now() - 864e5, c: 1 } }, log: ['m:Little house:12'], decor: [] })); } };
+  let t = await open('?nosplash=1&welcome=0#island', { viewport: { width: 393, height: 760 }, touch: true, init: seed });
+  await t.page.waitForTimeout(1000);
+  assert.equal(await t.page.evaluate(() => document.getElementById('isIntro').hidden), true);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+  t = await open('?nosplash=1&welcome=0&island3d=0#island', { viewport: { width: 393, height: 760 }, touch: true, init: seed });
+  await t.page.waitForTimeout(1000);
+  if (!(await t.page.evaluate(() => document.getElementById('isIntro').hidden))) {
+    await t.page.evaluate(() => document.getElementById('iiX').click()); await t.page.waitForTimeout(200);
+    assert.equal(await t.page.evaluate(() => document.getElementById('isIntro').hidden), true);
+  }
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('a Pippa puzzle still out at sea can be tapped: it says how many builds bring it in and offers Play next', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0&films=0', { init: { fn: () => { const sb = {}; for (let i = 0; i < 9; i++) sb[i] = 2; localStorage.setItem('building-blox-game-v1', JSON.stringify({ best: {}, sbest: sb })); } } });
   await t.page.evaluate(() => [...document.querySelectorAll('.tab')].find((x) => /Seaside/.test(x.textContent)).click()); await t.page.waitForTimeout(800);
