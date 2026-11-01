@@ -171,6 +171,24 @@ test('a finger on the brick in hand slides the brick, and the view stays still',
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('phone build page: no arrows or Place (tap the brick, Rotate turns it), the build gets the room; a star and a moon mark the same sides in the booklet and the build', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0', { viewport: { width: 390, height: 664 }, touch: true });
+  await t.page.evaluate(() => document.querySelector('[data-go="otter"]').click()); await t.page.waitForTimeout(400);
+  await t.page.evaluate(() => [...document.querySelectorAll('#view-game button')].find((x) => /Heart/.test(x.textContent) && x.offsetParent).click()); await t.page.waitForTimeout(800);
+  await t.page.evaluate(() => [...document.querySelectorAll('button')].find((x) => /^(Play|Start|Build)/.test(x.textContent.trim()) && x.offsetParent)?.click()); await t.page.waitForTimeout(800);
+  await autoPlace(t.page, 3);
+  await t.page.evaluate(() => document.getElementById('openBox').click()); await t.page.waitForTimeout(600);
+  await t.page.evaluate(() => { document.querySelector('#view-box [data-p]').click(); }); await t.page.waitForTimeout(300);
+  await t.page.evaluate(() => document.getElementById('takeBtn').click()); await t.page.waitForTimeout(1000);
+  assert.ok(await t.page.evaluate(() => window.bloppitGhost()), 'a brick in hand');
+  const m = await t.page.evaluate(() => ({ pad: document.getElementById('placePad').offsetParent !== null, stage: document.getElementById('buildStage').getBoundingClientRect().height, hand: document.querySelector('#view-build .playcol>.card').getBoundingClientRect().height, scroll: document.documentElement.scrollHeight - innerHeight, status: document.getElementById('status').textContent }));
+  assert.equal(m.pad, false, 'no arrows, Turn or Place on a phone'); assert.match(m.status, /tap it to put it down/); assert.doesNotMatch(m.status, /Place\./);
+  assert.ok(m.stage > m.hand * 2.5 && m.stage >= 220, `the build is the big part (${m.stage} vs ${m.hand})`); assert.ok(m.scroll <= 2, 'no scrolling');
+  const sd = await t.page.evaluate(() => window.bloppitSides());
+  assert.deepEqual(sd.book.map((x) => x[0]), ['star', 'moon']); assert.ok(sd.book[0][1] < sd.book[1][1] && sd.play[0][1] < sd.play[1][1], 'star on the left, moon on the right, in both');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('a Pippa puzzle still out at sea can be tapped: it says how many builds bring it in and offers Play next', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0&films=0', { init: { fn: () => { const sb = {}; for (let i = 0; i < 9; i++) sb[i] = 2; localStorage.setItem('building-blox-game-v1', JSON.stringify({ best: {}, sbest: sb })); } } });
   await t.page.evaluate(() => [...document.querySelectorAll('.tab')].find((x) => /Seaside/.test(x.textContent)).click()); await t.page.waitForTimeout(800);

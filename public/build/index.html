@@ -336,7 +336,7 @@ body.on-build .appfoot{display:none}
   #buildStage .buddy .bud-say:has(.bud-next) .callout{display:none}
   #buildStage.stage .status{left:8px;bottom:8px;max-width:calc(100% - 92px);font-size:13px;padding:5px 9px;line-height:1.3}
 }
-/* holding a brick on a short phone: the progress line steps aside for the arrows and Place */
+/* holding a brick on a short screen: the progress line steps aside for the arrows and Place */
 @media (max-width:900px) and (max-height:760px){ body.on-build .playcol>.card:has(#placePad:not([hidden])) .tray-foot,body.on-build .playcol>.card:has(#placePad:not([hidden])) #handNote{display:none} body.on-build .playcol>#buildStage{min-height:160px} }
 /* phones held sideways: booklet on the left, the build on the right, one slim header */
 @media (max-height:500px) and (min-width:560px){
@@ -376,6 +376,39 @@ body.on-build .appfoot{display:none}
   body.on-build .pp-arrows{grid-template-columns:repeat(3,38px);grid-template-rows:repeat(2,36px)}
   body.on-build .pp-place{height:44px}
 }
+/* phones (upright, or sideways and short): the build gets the room. A tap on the brick in hand puts it down and Rotate
+   turns it, so the arrows and the Turn and Place buttons go; the hand is one slim row, the booklet picture flatter and
+   the stage's tools one short row. (Tablets and computers keep the arrows and Place.) */
+@media (max-width:700px),(max-height:500px) and (min-width:560px){
+  body.on-build #placePad{display:none!important}
+  body.on-build .playcol>.card{padding:6px 8px;gap:4px}
+  body.on-build .playcol .hand-row{grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center}
+  body.on-build .hand-slot{width:50px;height:40px;border-radius:9px}
+  body.on-build .hand-slot img{max-width:44px;max-height:34px}
+  body.on-build .hand-txt h2{font-size:15px;line-height:1.15}
+  body.on-build .playcol .hand-btns{display:grid;grid-template-columns:auto auto;gap:4px;flex-direction:row}
+  body.on-build .playcol .hand-btns #openBox{grid-column:1 / -1;padding:8px 12px;font-size:14px}
+  body.on-build .playcol .hand-btns #openBox kbd{display:none}
+  body.on-build .playcol .hand-btns .ghost{padding:3px 8px;font-size:12px;min-height:0;white-space:nowrap}
+  body.on-build .playcol>.card:has(#putBack:not([hidden])) #handNote,body.on-build .playcol>.card:has(#putBack:not([hidden])) .tray-foot{display:none}
+  body.on-build .stage-tools{justify-content:flex-end;right:6px;top:6px;max-width:calc(100% - 12px);gap:4px}
+  body.on-build .stage-tools .tool{flex:none;padding:4px 7px;font-size:12px;white-space:nowrap}
+  body.on-build .stage-tools .lg,body.on-build .stage-tools .tool kbd{display:none}
+}
+@media (max-height:500px) and (min-width:560px){ body.on-build .playcol .hand-btns #openBox{grid-column:auto} }
+@media (max-width:700px){
+  body.on-build .build-grid{gap:6px}
+  body.on-build .build-grid #bpCard{padding:6px;gap:4px 8px}
+  body.on-build .build-grid #bpCard .pg-view{aspect-ratio:16/10}
+  body.on-build .build-grid #bpCard .pg-step{font-size:24px}
+  body.on-build .build-grid #bpCard .callout{font-size:12.5px;line-height:1.2}
+  body.on-build .build-grid #bpCard .pg-foot{font-size:11.5px}
+  body.on-build .build-grid .bp-nav button{padding:3px 9px;font-size:12px}
+  body.on-build .playcol{gap:6px}
+  body.on-build .playcol>#buildStage{min-height:220px}
+}
+/* Rotate turns the brick in hand: it lights up while the brick can be turned */
+.stage-tools .tool.hot{border-color:var(--accent);color:var(--accent)}
 .bp-head,.bp-nav{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .bp-nav .now{border-color:var(--accent);color:var(--accent);font-weight:700}
 .bp-nav .final{font-weight:700}
@@ -1708,12 +1741,12 @@ body.film-on{overflow:hidden}
     <div class="playcol">
       <div class="stage" id="buildStage">
         <div class="stage-tools">
-          <button class="tool how" id="howBtn" type="button" hidden>▶ How to play</button>
+          <button class="tool how" id="howBtn" type="button" aria-label="How to play" hidden>▶<span class="lg"> How to play</span></button>
           <button class="tool" id="bookBtn" type="button" aria-pressed="true">Booklet <kbd>B</kbd></button>
-          <button class="tool" id="fitBtn" type="button">Zoom to build <kbd>F</kbd></button>
+          <button class="tool" id="fitBtn" type="button">Zoom<span class="lg"> to build</span> <kbd>F</kbd></button>
           <button class="tool" id="rotBtn" type="button">Rotate <kbd>R</kbd></button>
           <button class="tool" id="hintBtn" type="button" aria-pressed="false">Hint</button>
-          <button class="tool" id="autoBtn" type="button">Place one for me</button>
+          <button class="tool" id="autoBtn" type="button">Place one<span class="lg"> for me</span></button>
           <button class="tool snd" id="sndBtn" type="button" aria-pressed="true" aria-label="Sound" title="Sound on or off (M)"><span class="snd-ic" aria-hidden="true"></span><kbd>M</kbd></button>
         </div>
         <div class="status" id="status"></div>
@@ -3409,6 +3442,24 @@ function frameBuild(animate){
   if(animate&&!reduceMotion) camAnim={t0:performance.now(),t1:playControls.target.clone(),t2:center,p1:playCam.position.clone(),p2};
   else { camAnim=null; playControls.target.copy(center); playCam.position.copy(p2); playControls.update(); }
 }
+// Side markers: a yellow star on the model's left and a blue moon on its right, the same in the booklet and on the build,
+// so however either view has been turned you can see which side is which (star on the left in both = turned the same way).
+function sideTex(k){ const n=128, c=document.createElement('canvas'); c.width=c.height=n; const x=c.getContext('2d');
+  x.beginPath(); x.arc(n/2,n/2,n/2-4,0,Math.PI*2); x.fillStyle=k==='star'?'#F4BC22':'#3B7DDD'; x.fill(); x.lineWidth=7; x.strokeStyle='#FFFFFF'; x.stroke();
+  x.fillStyle='#FFFFFF';
+  if(k==='star'){ x.beginPath(); for(let i=0;i<10;i++){ const a=-Math.PI/2+i*Math.PI/5, r=i%2?16:38; x.lineTo(n/2+Math.cos(a)*r,n/2+4+Math.sin(a)*r); } x.closePath(); x.fill(); }
+  else { const m=document.createElement('canvas'); m.width=m.height=n; const y=m.getContext('2d'); y.fillStyle='#FFFFFF';
+    y.beginPath(); y.arc(n/2-4,n/2,36,0,Math.PI*2); y.fill(); y.globalCompositeOperation='destination-out'; y.beginPath(); y.arc(n/2+14,n/2-10,31,0,Math.PI*2); y.fill(); x.drawImage(m,0,0); }
+  const t=new THREE.CanvasTexture(c); t.anisotropy=4; return t; }
+const SIDE_MAT={}; for(const k of ['star','moon']) SIDE_MAT[k]=new THREE.SpriteMaterial({map:sideTex(k),transparent:true,depthWrite:false,toneMapped:false});
+function sideMarks(){ const g=new THREE.Group(); for(const k of ['star','moon']){ const sp=new THREE.Sprite(SIDE_MAT[k]); sp.userData.k=k; sp.renderOrder=3; g.add(sp); } g.visible=false; return g; }
+const bookSides=sideMarks(), playSides=sideMarks(); modelGroup.add(bookSides); playGroup.add(playSides);
+function placeSides(g,o){ const m=model;
+  if(!m||TILES||!m.bricks||!m.bricks.length){ g.visible=false; return; }
+  let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9,y1=1; for(const b of m.bricks){ x0=Math.min(x0,b.x); z0=Math.min(z0,b.z); x1=Math.max(x1,b.x+b.sx); z1=Math.max(z1,b.z+b.sz); y1=Math.max(y1,b.y+1); }
+  const sz=clamp(Math.max(x1-x0,z1-z0,y1*1.2)*.16,1.4,3), zm=(z0+z1)/2+o.z, y=Math.max(sz*.6,y1*1.2*.45), [st,mo]=g.children;   // beside the model, about half way up
+  st.position.set(x0+o.x-sz*.75,y,zm); mo.position.set(x1+o.x+sz*.75,y,zm); st.scale.set(sz,sz,1); mo.scale.set(sz,sz,1); g.visible=true; }
+window.bloppitSides=()=>({book:bookSides.visible?bookSides.children.map(s=>[s.userData.k,+s.position.x.toFixed(2),+s.position.z.toFixed(2)]):null,play:playSides.visible?playSides.children.map(s=>[s.userData.k,+s.position.x.toFixed(2),+s.position.z.toFixed(2)]):null});   // for tests
 // The mirror line: a glassy wall down the middle of a mirror build, on the table and in the booklet
 let mirrorWall=null, bookMirror=null;
 function mirrorMesh(m){ const h=(m.H+1)*1.2, g=new THREE.Group(), w=new THREE.Mesh(new THREE.PlaneGeometry(m.D+2,h),new THREE.MeshBasicMaterial({color:0x7FD3F5,transparent:true,opacity:.16,depthWrite:false,side:THREE.DoubleSide}));
@@ -3439,6 +3490,7 @@ function setupPlay(m){
   if(m.kind==='picture'){ playBase=makeBase(m); playGroup.add(playBase); }
   playControls.minDistance=0; playControls.maxDistance=Infinity;
   frame(playCam,playControls); frame(bookCam,bookControls); bookK=-1;
+  placeSides(bookSides,{x:0,z:0}); bookDirty=true;
   resetBuild();
 }
 function resetBuild(){
@@ -3481,7 +3533,7 @@ function renderHand(){
   if(held){
     slot.innerHTML=`<img alt="" src="${brickIcon(held.a,held.l,held.c)}">`;
     $('#handTitle').textContent=`${pieceName(held)} in hand`;
-    $('#handNote').textContent=mpBlitz()?'Move it where it goes, then press Place'+(held.a!==held.l?'. Turn it if it needs turning.':'.')+(hand.length>1?` You’re holding ${hand.length} bricks; tap one below to switch.`:''):(stepNeeds(held)?'Move it where it goes, then press Place'+(held.a!==held.l?'. Turn it if it needs turning.':'.'):`Step ${cur+1} doesn’t use this one. Check the booklet${hand.length>1?', switch to another brick below,':''} or put it back.`)+(hand.length>1?` You’re holding ${hand.length} bricks; tap one below to switch.`:'');
+    $('#handNote').textContent=mpBlitz()?`Move it where it goes, then ${placeWord().replace('✓ ','')}`+(held.a!==held.l?(noPad()?'. Tap Rotate if it needs turning.':'. Turn it if it needs turning.'):'.')+(hand.length>1?` You’re holding ${hand.length} bricks; tap one below to switch.`:''):(stepNeeds(held)?`Move it where it goes, then ${placeWord().replace('✓ ','')}`+(held.a!==held.l?(noPad()?'. Tap Rotate if it needs turning.':'. Turn it if it needs turning.'):'.'):`Step ${cur+1} doesn’t use this one. Check the booklet${hand.length>1?', switch to another brick below,':''} or put it back.`)+(hand.length>1?` You’re holding ${hand.length} bricks; tap one below to switch.`:'');
   } else {
     slot.textContent='Empty';
     $('#handTitle').textContent=done?'All done':'Your hand is empty';
@@ -3591,6 +3643,7 @@ function updateBuildUI(){
   $('#progress').textContent=`${placedN} of ${model.bricks.length} placed`;
   const o=curOff();
   layerGrid.visible=!done&&!!o; if(layerGrid.visible) layerGrid.position.set(o.x,s.layer*1.2+.004,o.z);
+  placeSides(playSides,o||{x:0,z:0}); buildDirty=true;
   setXray(!!(s&&s.hang));
   $('#doneBadge').hidden=!done;
   ['rotBtn','hintBtn','autoBtn'].forEach(id=>$('#'+id).disabled=done);
@@ -4011,8 +4064,13 @@ function nudgeGhost(dir){
   const dx=Math.abs(v.x)>=Math.abs(v.z)?Math.sign(v.x):0, dz=dx?0:Math.sign(v.z);
   placeGhost(lastAnchor.ax+sel.sx/2+dx,lastAnchor.az+sel.sz/2+dz); sfx.tick&&sfx.tick();
 }
+// Phones have no arrows or Place button: a tap on the brick puts it down, and Rotate turns it (same query as the CSS)
+const PHONE_Q=matchMedia('(max-width:700px),(max-height:500px) and (min-width:560px)');
+const noPad=()=>PHONE_Q.matches;
+const placeWord=()=>noPad()?'tap it to put it down':'press ✓ Place';
 function padSync(){
   const on=tab==='build'&&!!sel&&!!model&&cur<model.steps.length;
+  $('#rotBtn').classList.toggle('hot',on&&!!sel&&sel.sx!==sel.sz);
   $('#placePad').hidden=!on;
   if(!on) return;
   $('#ppTurn').hidden=!sel||sel.sx===sel.sz;
@@ -4232,7 +4290,7 @@ cvs.addEventListener('pointerup',e=>{
   // end of a turn and swing a brick you just dragged near the edge back to the build)
   if(ghostDrag&&e.pointerId===ghostDrag.id){ const g=ghostDrag; ghostDrag=null; setTimeout(()=>viewHold(false),0);
     if(!g.moved) tryPlace();  // a tap on the brick puts it down
-    else setStatus(e.pointerType==='mouse'?'Happy with it? Click it or press ✓ Place.':'Happy with it? Tap it or press ✓ Place.');
+    else setStatus(e.pointerType==='mouse'?'Happy with it? Click it or press ✓ Place.':noPad()?'Happy with it? Tap the brick to put it down.':'Happy with it? Tap it or press ✓ Place.');
     return; }
   if(tab!=='build'||!downXY||!model) return;
   const d=Math.hypot(e.clientX-downXY[0],e.clientY-downXY[1]); downXY=null;
@@ -4242,7 +4300,7 @@ cvs.addEventListener('pointerup',e=>{
   // With a mouse the brick already follows the pointer, so a click puts it down.
   // With a finger, a tap only moves it there, so you can check it before pressing Place.
   if(e.pointerType==='mouse') tryPlace();
-  else setStatus('Drag the brick or use the arrows to adjust it, then press ✓ Place.');
+  else setStatus(noPad()?'Drag the brick to adjust it, then tap it to put it down.':'Drag the brick or use the arrows to adjust it, then press ✓ Place.');
 });
 cvs.addEventListener('pointercancel',()=>{ if(ghostDrag) viewHold(false); ghostDrag=null; downXY=null; });
 document.querySelectorAll('#placePad [data-mv]').forEach(b=>b.addEventListener('click',()=>nudgeGhost(b.dataset.mv)));
@@ -4464,8 +4522,8 @@ function takeChosen(){
   takeToHand(list);
   setTab('build');
   if(mpBlitz()) setStatus(list.length>1?`${list.length} bricks in hand. Check the booklet for where they go.`:`${pieceName(list[0])} in hand. Check the booklet for where it goes.`);
-  else { const tapW=matchMedia('(hover: none) and (pointer: coarse)').matches?'Drag it where it goes, then tap ✓ Place.':'Click where it goes.', spot=firstSpotBrick()?' The glowing square is a good spot, but anywhere works.':'';
-  setStatus(list.length>1?`${list.length} bricks in hand. ${held&&stepNeeds(held)?(tapW==='Click where it goes.'?'Click where the first one goes.':'Drag the first one where it goes, then tap ✓ Place.'):'Check the booklet for where they go.'}`:
+  else { const tapW=matchMedia('(hover: none) and (pointer: coarse)').matches?`Drag it where it goes, then ${noPad()?'tap it to put it down':'tap ✓ Place'}.`:'Click where it goes.', spot=firstSpotBrick()?' The glowing square is a good spot, but anywhere works.':'';
+  setStatus(list.length>1?`${list.length} bricks in hand. ${held&&stepNeeds(held)?(tapW==='Click where it goes.'?'Click where the first one goes.':`Drag the first one where it goes, then ${noPad()?'tap it to put it down':'tap ✓ Place'}.`):'Check the booklet for where they go.'}`:
     stepNeeds(list[0])?`${pieceName(list[0])} in hand. ${tapW}${spot}`:`${pieceName(list[0])} in hand, but step ${cur+1} doesn’t use it.`, held&&stepNeeds(held)?'':'err'); }
   lookAlikeWarn();
   updateBuildUI();
@@ -5819,7 +5877,7 @@ function updateGameBar(){
   const on=!!game;
   $('#gameBar').hidden=!(on&&(tab==='build'||tab==='box'));
   $('#hintBtn').textContent=(mp&&mp.state&&mp.state.mode==='blitz')?(mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'):mp?'Hint (−5)':'Hint';
-  $('#autoBtn').textContent=mp?'Place one for me (−10)':'Place one for me';
+  $('#autoBtn').innerHTML=mp?'Place one<span class="lg"> for me</span> (−10)':'Place one<span class="lg"> for me</span>';
   if(!on) return;
   const LV=levelsOf(gameTrail()), L=LV[game.lvl], p=game.pen;
   // Where you are: the trail (with its friend) and the island it grows
