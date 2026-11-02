@@ -3663,8 +3663,8 @@ const FILMS=[
       ['16','The Moon Gate','the-moon-gate',4,'Build Moonstone chapter 5',{t:20,who:'bibi',text:'A dab of moon paint… and the gate glows! Through we go, {name}!'}],
       ['17','The Constellation Cube','the-constellation-cube',5,'Build Moonstone chapter 6',{t:21,who:'nora',text:'The stars point the way: to the lighthouse, {name}!'}],
       ['18','The Answering Light','the-answering-light',6,'Build Moonstone chapter 7',null],
-      ['19','The Moonstone Lighthouse','the-moonstone-lighthouse',7,'Build Moonstone chapter 8',{t:31,who:'bloppit',text:'One brick each, all together… and the light is lit, {name}!'}]]   // just you and the light: nobody speaks
-    .map(([no,name,file,i,hint,say])=>({id:'moon-'+no,no,name,place:'Moonstone Isle',file:'moonstone-'+file,at:'moonstone:'+i,open:o=>filmSeen('moon-'+no,o)||mysteryDone(o)>i,hint,say:say?[say]:[]})),
+      ['19','The Moonstone Lighthouse','the-moonstone-lighthouse',7,'Build Moonstone chapter 8',[{t:31,who:'swoop',text:'Teamwork!',d:4},{t:39,who:'bloppit',text:'Go on, {name}. This part is yours.'}]]]   // just you and the light: nobody speaks
+    .map(([no,name,file,i,hint,say])=>({id:'moon-'+no,no,name,place:'Moonstone Isle',file:'moonstone-'+file,at:'moonstone:'+i,open:o=>filmSeen('moon-'+no,o)||mysteryDone(o)>i,hint,say:!say?[]:Array.isArray(say)?say:[say]})),
 ];
 // What the characters say over a film: a speech bubble with the speaker's face and name, shown for 5.5 s from its time
 // ({name} is the otter's name, or "pup" while it has none)
