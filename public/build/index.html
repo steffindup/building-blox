@@ -327,6 +327,22 @@ body.on-build .appfoot{display:none}
   body.on-build #gameBar .gb-btns .ghost{padding:4px 10px;font-size:13px;min-height:0}
   body.on-build #mpBar{padding:5px 8px;margin-bottom:8px;gap:6px 12px}
 }
+/* …and above the parts box */
+@media (max-width:900px),(max-height:560px){
+  body.on-box #gameBar{flex-wrap:nowrap;gap:8px;padding:5px 8px;margin-bottom:8px;border-radius:12px}
+  body.on-box #gameBar .gb-where{padding-right:0;border:0}
+  body.on-box #gameBar .gb-where>div,body.on-box #gameBar .gb-costs,body.on-box #gameBar .gb-score .tag,body.on-box #gameBar .gb-lvl .tag{display:none}
+  body.on-box #gameBar .gb-where img{width:30px;height:30px}
+  body.on-box #gameBar .gb-lvl{gap:6px;min-width:0}
+  body.on-box #gameBar .gb-lvl>div{min-width:0}
+  body.on-box #gameBar .gb-lvl strong{display:block;font-size:17px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  body.on-box #gameBar .gb-badge{width:30px;height:30px;font-size:17px;border-radius:8px;flex:none}
+  body.on-box #gameBar .gb-score{flex:none;margin-left:auto}
+  body.on-box #gameBar .gb-score b{font-size:20px}
+  body.on-box #gameBar .gb-btns{margin-left:0;flex:none}
+  body.on-box #gameBar .gb-btns .ghost{padding:4px 10px;font-size:13px;min-height:0}
+  body.on-box #mpBar{padding:5px 8px;margin-bottom:8px;gap:6px 12px}
+}
 /* a short build area: Bloppit and the message share the bottom edge; his bubble keeps its words, the booklet shows the parts */
 @container (max-height:400px){
   #buildStage .buddy{max-width:calc(100% - 16px)}
@@ -619,6 +635,54 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .box-grid{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:20px;align-items:start}
 @media (max-width:900px){.box-grid{grid-template-columns:minmax(0,1fr)}#boxBook .pg-view{aspect-ratio:16/9}}
 #boxBook .bookpane{top:calc(env(safe-area-inset-top,0px) + 84px)}
+.box-actions .sm{display:none}
+/* Phones: the parts box fits one screen. The booklet page sits on top, the parts board fills the rest, and the tools are
+   one ribbon of small buttons (--boxTop: where the page starts, from buildFit). */
+@media (max-width:700px),(max-height:500px) and (min-width:560px){
+  body.on-box{padding-bottom:0}
+  body.on-box .appfoot{display:none}
+  body.on-box #view-box{display:flex;flex-direction:column;gap:6px;height:calc(100vh - var(--boxTop,120px) - 8px);height:calc(100dvh - var(--boxTop,120px) - 8px - env(safe-area-inset-bottom,0px));min-height:0}
+  body.on-box .box-top{flex:none;flex-wrap:nowrap;gap:8px;align-items:center}
+  body.on-box .box-top>div:first-child{display:flex;align-items:baseline;gap:6px;flex:none}
+  body.on-box .box-top h2{display:none}   /* the board says what it is: its line is the count */
+  body.on-box #boxInfo{margin:0;font-size:12px;font-weight:800;white-space:nowrap;padding:3px 9px;border-radius:999px;background:var(--callout);color:var(--ink)}
+  body.on-box .box-actions{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:4px;min-width:0;margin-left:auto}
+  body.on-box .box-actions::-webkit-scrollbar{display:none}
+  body.on-box .box-actions .ghost{flex:none;padding:4px 7px;font-size:11.5px;min-height:0;white-space:nowrap}
+  body.on-box .box-actions kbd,body.on-box .box-actions .lg{display:none}
+  body.on-box .box-actions .sm{display:inline}
+  body.on-box .box-grid{display:flex;flex-direction:column;align-items:stretch;gap:6px;flex:1 1 0;min-height:0}
+  body.on-box #boxBook{flex:none}
+  body.on-box #boxBook .bp-head{display:none}
+  body.on-box #boxBook #bpCard{grid-template-columns:54% minmax(0,1fr);grid-template-rows:auto 1fr;padding:6px;gap:4px 8px}
+  body.on-box #boxBook #bpCard .pg-view{grid-column:1;grid-row:1 / span 2;aspect-ratio:16/10}
+  body.on-box #boxBook #bpCard .pg-top{grid-column:2;grid-row:1;gap:6px}
+  body.on-box #boxBook #bpCard .pg-foot{grid-column:2;grid-row:2;align-self:end;text-align:left;font-size:11.5px}
+  body.on-box #boxBook #bpCard .pg-step{font-size:24px}
+  body.on-box #boxBook #bpCard .callout{padding:5px 8px;gap:4px 10px;font-size:12.5px;line-height:1.2}
+  body.on-box #boxBook #bpCard .callout img{height:24px}
+  body.on-box #boxBook #bpCard .pg-turn{display:none}
+  body.on-box #boxBook .bp-nav{flex-wrap:nowrap;gap:4px;margin-top:4px}
+  body.on-box #boxBook .bp-nav button{padding:3px 9px;font-size:12px;min-height:0}
+  body.on-box .box-main{display:flex;flex-direction:column;gap:6px;flex:1 1 0;min-height:0}
+  body.on-box .pick-bar{flex:none;flex-wrap:nowrap;gap:6px}
+  body.on-box #pickNote{flex:1 1 0;min-width:0;font-size:12px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  body.on-box .pick-bar .ghost,body.on-box .pick-bar .primary{flex:none;padding:6px 10px;font-size:13px;min-height:0;white-space:nowrap}
+  body.on-box .pick-bar kbd{display:none}
+  body.on-box .pick-bar:has(#takeBtn:not([hidden])) #pickNote{display:none}   /* picked: the buttons; the brick's own label says what it is */
+  body.on-box .pick-bar:has(#takeBtn:not([hidden])){justify-content:flex-end}
+  body.on-box .board-wrap{flex:1 1 0;height:auto;min-height:0}
+  body.on-box .box-main>p.note{display:none}
+}
+/* phones held sideways: the booklet on the left, the parts on the right */
+@media (max-height:500px) and (min-width:560px){
+  body.on-box .box-grid{display:grid;grid-template-columns:minmax(200px,34%) minmax(0,1fr);align-items:stretch}
+  body.on-box #boxBook{overflow:auto;min-height:0}
+  body.on-box #boxBook #bpCard{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto}
+  body.on-box #boxBook #bpCard .pg-view{aspect-ratio:16/11}
+  body.on-box #boxBook #bpCard .pg-foot{display:none}
+  body.on-box #boxBook #bpCard .pg-top,body.on-box #boxBook #bpCard .pg-view,body.on-box #boxBook #bpCard .pg-foot{grid-column:1;grid-row:auto}
+}
 .box-main{display:grid;gap:10px;min-width:0}
 .pick-bar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
 .pick-bar .note{margin-right:auto}
@@ -1800,9 +1864,9 @@ body.film-on{overflow:hidden}
     <div><h2>Parts box</h2><p class="note" id="boxInfo"></p></div>
     <div class="box-actions">
       <button class="ghost" id="binAdd" type="button" title="Add a segment (G)">+ Segment <kbd>G</kbd></button>
-      <button class="ghost" id="sortColour" type="button" title="Sort by colour (C)">Sort by colour <kbd>C</kbd></button>
-      <button class="ghost" id="sortSize" type="button" title="Sort by size (S)">Sort by size <kbd>S</kbd></button>
-      <button class="ghost" id="tipOut" type="button" title="Tip everything out (T)">Tip everything out <kbd>T</kbd></button>
+      <button class="ghost" id="sortColour" type="button" title="Sort by colour (C)"><span class="lg">Sort by colour</span><span class="sm">🎨 Colour</span> <kbd>C</kbd></button>
+      <button class="ghost" id="sortSize" type="button" title="Sort by size (S)"><span class="lg">Sort by size</span><span class="sm">📏 Size</span> <kbd>S</kbd></button>
+      <button class="ghost" id="tipOut" type="button" title="Tip everything out (T)"><span class="lg">Tip everything out</span><span class="sm">⤵ Tip out</span> <kbd>T</kbd></button>
     </div>
   </div>
   <div class="box-grid">
@@ -3220,6 +3284,8 @@ function setTab(t,sub){ if(t!=='build'&&t!==mpHomeTab0()) mpDoneLeave(); if(t===
   syncPick();
   document.body.classList.toggle('on-home',t==='home');
   document.body.classList.toggle('on-build',t==='build');
+  document.body.classList.toggle('on-box',t==='box');
+  if(t==='box'){ scrollTo(0,0); $('.top').classList.remove('tucked'); requestAnimationFrame(buildFit); }
   if(t==='build'){ scrollTo(0,0); $('.top').classList.remove('tucked'); buildFit(); }
   if(t==='home'){ homeSeen=true; renderer.domElement.remove(); renderHome(); scrollTo(0,0); $('.top').classList.remove('tucked'); }
   // Once the menu has been shown it offers "Continue building", so the Welcome back banner isn't needed
@@ -3321,7 +3387,8 @@ if('IntersectionObserver' in window) new IntersectionObserver(es=>{ startSeen=es
   w.querySelectorAll('.tabs-arr').forEach(b=>b.addEventListener('click',()=>bar.scrollBy({left:(b.classList.contains('l')?-1:1)*bar.clientWidth*.7,behavior:'smooth'})));
   sync(); window.bloppitTabsArrows=()=>({l:w.classList.contains('can-l'),r:w.classList.contains('can-r')}); }
 // Where the build page starts (below the header and any banner), so it can take exactly the rest of the screen
-function buildFit(){ const v=$('#view-build'); if(!v||v.hidden) return;
+function buildFit(){ const b=$('#view-box'); if(b&&!b.hidden) document.documentElement.style.setProperty('--boxTop',Math.round(b.getBoundingClientRect().top+scrollY)+'px');
+  const v=$('#view-build'); if(!v||v.hidden) return;
   const y=Math.round(v.getBoundingClientRect().top+scrollY); document.documentElement.style.setProperty('--buildTop',y+'px'); }
 addEventListener('resize',buildFit); addEventListener('orientationchange',()=>setTimeout(buildFit,250));
 if('ResizeObserver' in window){ const r=new ResizeObserver(()=>buildFit()); ['#resume','#mpBar','#gameBar'].forEach(q=>{ const e=$(q); if(e) r.observe(e); }); }
@@ -4385,7 +4452,7 @@ function makePieces(){
 }
 const pieceById=id=>pieces.find(p=>p.id===id);
 const binById=id=>bins.find(b=>b.id===id);
-const boardW=()=>Math.max(520,boardWrap.clientWidth-28);
+const boardW=()=>Math.max(innerWidth<=700?300:520,boardWrap.clientWidth-28);   // phones: the bricks spread over the board you can see
 function tipOut(){
   bins=[];
   const n=pieces.length; if(!n){renderBox(); return;}
