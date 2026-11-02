@@ -188,7 +188,7 @@ test('a finger on the brick in hand slides the brick, and the view stays still',
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('phone build page: no arrows or Place (tap the brick, Rotate turns it), the build gets the room; a star and a moon mark the same sides in the booklet and the build', { skip: skip() }, async () => {
+test('phone build page: no arrows or Place (tap the brick, Rotate turns it), the build gets the room; yellow and blue table edges mark the same sides in the booklet and the build', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0', { viewport: { width: 390, height: 664 }, touch: true });
   await t.page.evaluate(() => document.querySelector('[data-go="otter"]').click()); await t.page.waitForTimeout(400);
   await t.page.evaluate(() => [...document.querySelectorAll('#view-game button')].find((x) => /Heart/.test(x.textContent) && x.offsetParent).click()); await t.page.waitForTimeout(800);
@@ -202,7 +202,7 @@ test('phone build page: no arrows or Place (tap the brick, Rotate turns it), the
   assert.equal(m.pad, false, 'no arrows, Turn or Place on a phone'); assert.match(m.status, /tap it to put it down/); assert.doesNotMatch(m.status, /Place\./);
   assert.ok(m.stage > m.hand * 2.5 && m.stage >= 220, `the build is the big part (${m.stage} vs ${m.hand})`); assert.ok(m.scroll <= 2, 'no scrolling');
   const sd = await t.page.evaluate(() => window.bloppitSides());
-  assert.deepEqual(sd.book.map((x) => x[0]), ['star', 'moon']); assert.ok(sd.book[0][1] < sd.book[1][1] && sd.play[0][1] < sd.play[1][1], 'star on the left, moon on the right, in both');
+  assert.deepEqual(sd.book.map((x) => x[0]), ['left', 'right']); assert.ok(sd.book[0][1] < sd.book[1][1] && sd.play[0][1] < sd.play[1][1], 'yellow on the left, blue on the right, in both');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
