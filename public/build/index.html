@@ -10241,7 +10241,9 @@ function isl3Show(box,o){ isl3Immersive(); isl3WakeCheck(); isl3CharsLoad(o);
   if(ISL3.revealing&&ISL3.on&&ISL3.box===box) return;   // a reveal is playing: don't pull the world out from under it
   if(ISL3.cine&&ISL3.on&&ISL3.box===box) return;   // nor the arrival film
   ISL3.box=box; if(!box.contains(ISL3.r.domElement)){ box.innerHTML=''; box.appendChild(ISL3.r.domElement); box.classList.add('is3'); }
-  const n=worldCount(o); ISL3.arrival=n===0?(!pupName(o)&&!o.pupAsked&&!o.arrived?(ISL3.arrival==='home'?'home':'boat'):'home'):null;
+  // A world that already has builds but never saw the arrival (it went straight to a Trail, or started before the arrival
+  // existed) still gets the boat once: the arrival film is where the story starts. It lands on the island as it stands.
+  const n=worldCount(o); ISL3.arrival=n===0?(!pupName(o)&&!o.pupAsked&&!o.arrived?(ISL3.arrival==='home'?'home':'boat'):'home'):(!o.arrived&&!mp?'boat':null);
   isl3Build(o); isl3Size(); ISL3.on=true; ISL3.settle=30; isl3Chrome(); isl3Kick(); if(!ISL3.moved) ISL3.viewI=0; isl3WholeBtn();
   if(!ISL3.ro){ ISL3.ro=new ResizeObserver(()=>{ if(ISL3.on){ isl3Size(); isl3Kick(); } }); ISL3.ro.observe(box); }
   isl3A11y(o);

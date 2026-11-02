@@ -221,6 +221,20 @@ test('the 3D island has no welcome card on top (a world with builds that never s
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('a world with builds that never saw the arrival gets the boat and the arrival film once, then the island as it stands', { skip: skip() }, async () => {
+  const seed = { fn: () => { if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ pupAsked: true, pupName: 2, builds: { 'm:Little house:12': { n: 12, s: 2, k: 'quick', t: Date.now() - 864e5, c: 1 } }, log: ['m:Little house:12'], decor: [] })); } };
+  const t = await open('?nosplash=1&welcome=0&films=1#island', { init: seed });
+  await t.page.waitForFunction(() => !!document.querySelector('.is3-cine video.cn-film'), null, { timeout: 12000 }); await t.page.waitForTimeout(1500);
+  await t.page.evaluate(() => document.querySelector('.is3-cine .cn-skip').click());
+  await t.page.waitForFunction(() => !!JSON.parse(localStorage.getItem('bloppit-world-v1')).arrived, null, { timeout: 10000 }); await t.page.waitForTimeout(1500);
+  assert.equal(await t.page.evaluate(() => !document.querySelector('.is3-cine') && !document.getElementById('view-island').classList.contains('cine')), true);
+  assert.equal(await t.page.evaluate(() => /Build Our First Home/.test(document.querySelector('#isWorld .is3-play')?.textContent || '')), false, 'the island as it stands, not the first home again');
+  // and only once
+  await t.page.reload(); await t.page.waitForTimeout(3500);
+  assert.equal(await t.page.evaluate(() => !document.querySelector('.is3-cine')), true);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('a Pippa puzzle still out at sea can be tapped: it says how many builds bring it in and offers Play next', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0&films=0', { init: { fn: () => { const sb = {}; for (let i = 0; i < 9; i++) sb[i] = 2; localStorage.setItem('building-blox-game-v1', JSON.stringify({ best: {}, sbest: sb })); } } });
   await t.page.evaluate(() => [...document.querySelectorAll('.tab')].find((x) => /Seaside/.test(x.textContent)).click()); await t.page.waitForTimeout(800);
