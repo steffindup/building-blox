@@ -46,7 +46,7 @@ test('first visit: name the otter first, then the arrival film, which can be ski
   await t.page.evaluate(() => document.getElementById('pupLater').click());
   await t.page.waitForFunction(() => !!document.querySelector('#isWorld .is3-cine .cn-skip'), null, { timeout: 10000 }); await t.page.waitForTimeout(800);
   // the arrival is the film (public/video/arrival.mp4), playing
-  assert.equal(await t.page.evaluate(() => { const v = document.querySelector('#isWorld .is3-cine video.cn-film'); return !!v && /\/video\/arrival\.mp4$/.test(v.src) && !!window.bloppitIsland3().cine.film; }), true);
+  assert.equal(await t.page.evaluate(() => { const v = document.querySelector('#isWorld .is3-cine video.cn-film'); return !!v && /\/video\/arrival\.mp4(\?v=\w+)?$/.test(v.src) && !!window.bloppitIsland3().cine.film; }), true);
   const t0 = Date.now(); await t.page.evaluate(() => document.querySelector('#isWorld .is3-cine .cn-skip').click());
   await t.page.waitForFunction((nm) => (document.querySelector('#isWorld .is3-banner')?.textContent || '').includes(`${nm} has arrived`), nm, { timeout: 6000 });
   // then straight to the home: no card after the trip
@@ -87,7 +87,7 @@ test('My films: hidden until the arrival film is unlocked, then plays it again f
   assert.equal(await u.page.evaluate(() => document.getElementById('filmsDlg').open), true);
   assert.match(await u.text('#filmNow'), /01 · Arrival/);
   await u.page.evaluate(() => document.querySelector('#filmList [data-film="arrival"]').click());
-  await u.page.waitForFunction(() => { const v = document.getElementById('filmVid'); return /\/video\/arrival\.mp4$/.test(v.src) && v.currentTime > 0.3; }, null, { timeout: 10000 }); await shot(2);
+  await u.page.waitForFunction(() => { const v = document.getElementById('filmVid'); return /\/video\/arrival\.mp4(\?v=\w+)?$/.test(v.src) && v.currentTime > 0.3; }, null, { timeout: 10000 }); await shot(2);
   await u.page.evaluate(() => document.getElementById('filmsClose').click()); await u.page.waitForTimeout(300);
   assert.equal(await u.page.evaluate(() => !document.getElementById('filmsDlg').open && document.getElementById('filmVid').paused), true);
   assert.deepEqual(u.errors, []); await u.ctx.close();
@@ -844,7 +844,7 @@ test('Moonstone films: building a chapter plays its film as its piece rises (Int
     localStorage.setItem('bloppit-seen3-v1', JSON.stringify(['home:home1'])); } };
   const t = await open('?nosplash=1&hour=11&films=1#island', { init: seed });
   await t.page.waitForFunction(() => window.bloppitFilmOn() === 'moon-12', null, { timeout: 40000, polling: 200 });
-  assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), /\/video\/moonstone-into-the-mist\.mp4$/);
+  assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), /\/video\/moonstone-into-the-mist\.mp4(\?v=\w+)?$/);
   await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click()); await t.page.waitForTimeout(1500);
   await t.page.evaluate(() => window.bloppitHome()); await t.page.waitForTimeout(800);
   await t.page.evaluate(() => document.getElementById('hmFilms').click()); await t.page.waitForTimeout(600);
@@ -860,7 +860,7 @@ test('Frog Forest films: its arrival film plays when it rises from the mist, its
     localStorage.setItem('bloppit-seen3-v1', JSON.stringify(['home:home1'])); } };
   const t = await open('?nosplash=1&hour=11&films=1#island', { init: seed });
   await t.page.waitForFunction(() => window.bloppitFilmOn() === 'frog-arrival', null, { timeout: 30000, polling: 200 });
-  assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), /\/video\/frog-forest-arrival\.mp4$/);
+  assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), /\/video\/frog-forest-arrival\.mp4(\?v=\w+)?$/);
   await t.page.waitForFunction(() => document.querySelector('.is3-film video').currentTime > .3, null, { timeout: 15000 });
   // Tiny welcomes the otter by name when he's on screen (and says nothing before)
   assert.equal(await t.page.evaluate(() => window.bloppitFilmSay()), null);
@@ -869,7 +869,7 @@ test('Frog Forest films: its arrival film plays when it rises from the mist, its
   await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click());
   // then the island rises as before, and later the completion film plays before the fireworks
   await t.page.waitForFunction(() => window.bloppitFilmOn() === 'frog-complete', null, { timeout: 90000, polling: 200 });
-  assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), /\/video\/frog-forest-complete\.mp4$/);
+  assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), /\/video\/frog-forest-complete\.mp4(\?v=\w+)?$/);
   await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click());
   await t.page.waitForFunction(() => /Frog Forest is complete/.test(document.querySelector('#isWorld .is3-banner')?.textContent || ''), null, { timeout: 20000 });
   assert.equal(await t.page.evaluate(() => !document.querySelector('.is3-film') && window.bloppitFilmOn() === null), true);
@@ -895,7 +895,7 @@ test('Frog Forest arrival film: Play next to Frog Trail level 1 plays it first, 
   await t.page.waitForFunction(() => /Frog Trail level 1/.test(document.querySelector('#isWorld .is3-play')?.textContent || ''), null, { timeout: 30000 });
   await t.page.evaluate(() => document.querySelector('#isWorld .is3-play').click());
   await t.page.waitForFunction(() => window.bloppitFilmOn() === 'frog-arrival', null, { timeout: 15000, polling: 200 });
-  assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), /\/video\/frog-forest-arrival\.mp4$/);
+  assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), /\/video\/frog-forest-arrival\.mp4(\?v=\w+)?$/);
   await t.page.waitForFunction(() => document.querySelector('.is3-film video').currentTime > .3, null, { timeout: 15000 });
   await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click());
   // then the puzzle: Frog Trail level 1

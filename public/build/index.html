@@ -3565,6 +3565,10 @@ $('#hmHow').onclick=()=>howOpen('menu');
    My films to watch again. Add a film here when it's made: file = public/video/<file>.mp4 with a <file>.jpg poster.
    Locked films show only their hint, never their name, so nothing is spoiled. */
 const VID_BASE=APP?'video/':'/video/';
+// Each film's link carries a fingerprint of its file, so a phone that saved an older cut of a film (same name) fetches
+// the new one. tests/browser.test.mjs checks these match the files: after replacing a film, update its line here.
+const FILM_V={"arrival":"03bd218b","blitz-bay-arrival":"571db048","blitz-bay-complete":"f34b1dab","brainpeak-arrival":"7b824f5e","brainpeak-complete":"9bd45b4f","brickworks-arrival":"f64b3581","brickworks-complete":"c47da25f","frog-forest-arrival":"2a2d03b9","frog-forest-complete":"ea3c873c","moonstone-into-the-mist":"90f8a2d2","moonstone-the-lookout-tower":"a7d008bd","moonstone-the-old-map":"24d9def2","moonstone-the-petal-bridge":"9f560cba","sunrise-shores-arrival":"c6498bc7","sunrise-shores-complete":"ddf20679"};
+const vidUrl=(file,ext)=>VID_BASE+file+'.'+ext+(APP||!FILM_V[file]?'':'?v='+FILM_V[file]);
 const FILMS=[
   // say: what a character says over the film, at t seconds ({name} = the player's otter, or "pup" while it has no name)
   {id:'arrival',no:'01',name:'Arrival',place:'Home Island',file:'arrival',open:o=>!!o.arrived||worldCount(o)>0,
@@ -3620,13 +3624,13 @@ function trailGo(tr){ const isle=TRAIL_ISLE[tr]; if(mp||isleCount(isle)>0){ home
 const filmsOpen=o=>FILMS.filter(f=>{ try{ return f.open(o); }catch(e){ return false; } });
 function renderFilmsTile(){ const n=filmsOpen(worldStore()).length, el=$('#hmFilms'); el.hidden=!n; if(n) $('#hmFilmsS').textContent=n===1?'1 film to watch again':`${n} films to watch again`; }
 let filmCur=null;
-function filmShow(f,play){ const v=$('#filmVid'); filmCur=f.id; filmSay($('#filmBox'),f,-1); v.setAttribute('poster',VID_BASE+f.file+'.jpg'); v.src=VID_BASE+f.file+'.mp4';
+function filmShow(f,play){ const v=$('#filmVid'); filmCur=f.id; filmSay($('#filmBox'),f,-1); v.setAttribute('poster',vidUrl(f.file,'jpg')); v.src=vidUrl(f.file,'mp4');
   $('#filmNow').innerHTML=`${f.no} · ${escapeHTML(f.name)} <small>· ${escapeHTML(f.place)}</small>`;
   $('#filmList').querySelectorAll('button[data-film]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.film===f.id?'true':'false'));
   if(play){ try{ v.muted=!sfx.on; const p=v.play(); if(p&&p.catch) p.catch(()=>{}); }catch(e){} track('film_play:'+f.id); } }
 function filmsShow(){ const d=$('#filmsDlg'); if(d.open) return; const o=worldStore(), open=filmsOpen(o); if(!open.length) return;
   const locked=FILMS.filter(f=>!open.includes(f));
-  $('#filmList').innerHTML=open.map(f=>`<button type="button" data-film="${f.id}" aria-pressed="false"><img src="${VID_BASE+f.file}.jpg" alt="" loading="lazy"><b>${f.no} · ${escapeHTML(f.name)}</b><small>${escapeHTML(f.place)}</small></button>`).join('')
+  $('#filmList').innerHTML=open.map(f=>`<button type="button" data-film="${f.id}" aria-pressed="false"><img src="${vidUrl(f.file,'jpg')}" alt="" loading="lazy"><b>${f.no} · ${escapeHTML(f.name)}</b><small>${escapeHTML(f.place)}</small></button>`).join('')
     +locked.slice(0,1).map(f=>`<button type="button" disabled><span class="lock" aria-hidden="true">🔒</span><b>${f.no} · ???</b><small>${escapeHTML(f.hint||'Keep building to unlock')}</small></button>`).join('');
   $('#filmList').querySelectorAll('button[data-film]').forEach(b=>b.onclick=()=>filmShow(FILMS.find(f=>f.id===b.dataset.film),true));
   $('#filmMore').hidden=false; filmShow(open[open.length-1],false); d.showModal(); track('films_open'); }
@@ -10328,7 +10332,7 @@ function arr3Begin(A){ const rm=!!reduceMotion; A.t0=performance.now()-A.t*1000;
   setTimeout(()=>A.ov.querySelector('.cn-veil').classList.add('off'),rm?0:250); isl3CineStep(performance.now()); isl3Kick(); }
 // The arrival film (01, Home Island): plays over the island with its own sound, then we meet the otter on the jetty.
 // If it can't start (no video support, or still not ready after 9 s) the arrival made in the game plays instead.
-const ARR_FILM=(APP?'video/':'/video/')+'arrival.mp4';
+const ARR_FILM=vidUrl('arrival','mp4');
 // Phones: a film covers the whole page (above the menu bar, so the browser's bars are the only thing left around it), and
 // ⛶ Full screen hands it to the phone's own player: on an iPhone that player turns sideways with the phone and shows the
 // whole film edge to edge (the speech bubbles stay on the page). Elsewhere the page goes full screen and turns sideways.
@@ -10386,7 +10390,7 @@ function isl3Film(f,then){
   v.addEventListener('ended',()=>end('ended'));
   v.addEventListener('error',()=>end(started?'error':'fallback'));
   const T=setTimeout(()=>{ if(!started) end('fallback'); },9000);
-  v.muted=!sfx.on; v.src=VID_BASE+f.file+'.mp4'; arr3FilmFrame(v,0,true); requestAnimationFrame(tick);
+  v.muted=!sfx.on; v.src=vidUrl(f.file,'mp4'); arr3FilmFrame(v,0,true); requestAnimationFrame(tick);
   const go=()=>{ let p; try{ p=v.play(); }catch(e){ return end('fallback'); } if(p&&p.catch) p.catch(e=>{ if(done) return; if(e&&e.name==='NotAllowedError'&&!v.muted){ v.muted=true; go(); } else if(!(e&&e.name==='AbortError')) end('fallback'); }); };
   go(); track('film_start:'+f.id); }
 window.bloppitFilmOn=()=>ISL3.filmOn||null;   // for tests
