@@ -3634,7 +3634,7 @@ $('#hmHow').onclick=()=>howOpen('menu');
 const VID_BASE=APP?'video/':'/video/';
 // Each film's link carries a fingerprint of its file, so a phone that saved an older cut of a film (same name) fetches
 // the new one. tests/browser.test.mjs checks these match the files: after replacing a film, update its line here.
-const FILM_V={"arrival":"03bd218b","blitz-bay-arrival":"571db048","blitz-bay-complete":"f34b1dab","brainpeak-arrival":"7b824f5e","brainpeak-complete":"9bd45b4f","brickworks-arrival":"f64b3581","brickworks-complete":"c47da25f","frog-forest-arrival":"2a2d03b9","frog-forest-complete":"ea3c873c","moonstone-into-the-mist":"90f8a2d2","moonstone-the-lookout-tower":"a7d008bd","moonstone-the-old-map":"24d9def2","moonstone-the-petal-bridge":"9f560cba","sunrise-shores-arrival":"c6498bc7","sunrise-shores-complete":"ddf20679"};
+const FILM_V={"arrival":"03bd218b","blitz-bay-arrival":"571db048","blitz-bay-complete":"f34b1dab","brainpeak-arrival":"7b824f5e","brainpeak-complete":"9bd45b4f","brickworks-arrival":"f64b3581","brickworks-complete":"c47da25f","frog-forest-arrival":"2a2d03b9","frog-forest-complete":"ea3c873c","moonstone-into-the-mist":"90f8a2d2","moonstone-the-lookout-tower":"a7d008bd","moonstone-the-moon-gate":"0f9532da","moonstone-the-old-map":"24d9def2","moonstone-the-petal-bridge":"9f560cba","sunrise-shores-arrival":"c6498bc7","sunrise-shores-complete":"ddf20679"};
 const vidUrl=(file,ext)=>VID_BASE+file+'.'+ext+(APP||!FILM_V[file]?'':'?v='+FILM_V[file]);
 const FILMS=[
   // say: what a character says over the film, at t seconds ({name} = the player's otter, or "pup" while it has no name)
@@ -3659,7 +3659,8 @@ const FILMS=[
   ...[['12','Into the Mist','into-the-mist',0,'Build the rowboat',{t:7,who:'bloppit',text:'Look, {name}! A light in the mist. Let’s row out to it!'}],
       ['13','The Old Map','the-old-map',1,'Build Moonstone chapter 2',{t:13,who:'pippa',text:'Ooh, a map! And the light is marked right here!'}],
       ['14','The Lookout Tower','the-lookout-tower',2,'Build Moonstone chapter 3',{t:17,who:'swoop',text:'There it is again! Follow me, {name}!'}],
-      ['15','The Petal Bridge','the-petal-bridge',3,'Build Moonstone chapter 4',{t:20,who:'tiny',text:'A bridge of petals! Hop across, {name}!'}]]
+      ['15','The Petal Bridge','the-petal-bridge',3,'Build Moonstone chapter 4',{t:20,who:'tiny',text:'A bridge of petals! Hop across, {name}!'}],
+      ['16','The Moon Gate','the-moon-gate',4,'Build Moonstone chapter 5',{t:20,who:'bibi',text:'A dab of moon paint… and the gate glows! Through we go, {name}!'}]]
     .map(([no,name,file,i,hint,say])=>({id:'moon-'+no,no,name,place:'Moonstone Isle',file:'moonstone-'+file,at:'moonstone:'+i,open:o=>filmSeen('moon-'+no,o)||mysteryDone(o)>i,hint,say:[say]})),
 ];
 // What the characters say over a film: a speech bubble with the speaker's face and name, shown for 5.5 s from its time
