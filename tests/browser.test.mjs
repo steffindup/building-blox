@@ -235,6 +235,22 @@ test('a world with builds that never saw the arrival gets the boat and the arriv
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('phone parts box: one screen, the booklet page on top, the parts board filling the rest, the tools a ribbon', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0', { viewport: { width: 390, height: 664 }, touch: true });
+  await t.page.evaluate(() => document.querySelector('[data-go="otter"]').click()); await t.page.waitForTimeout(400);
+  await t.page.evaluate(() => [...document.querySelectorAll('#view-game button')].find((x) => /Heart/.test(x.textContent) && x.offsetParent).click()); await t.page.waitForTimeout(800);
+  await t.page.evaluate(() => [...document.querySelectorAll('button')].find((x) => /^(Play|Start|Build)/.test(x.textContent.trim()) && x.offsetParent)?.click()); await t.page.waitForTimeout(800);
+  await t.page.evaluate(() => document.getElementById('openBox').click()); await t.page.waitForTimeout(1000);
+  await t.page.evaluate(() => document.querySelector('#view-box [data-p]').click()); await t.page.waitForTimeout(300);
+  const m = await t.page.evaluate(() => { const r = (q) => document.querySelector(q).getBoundingClientRect(), b = r('#boardWrap'), k = r('#boxBook'), tk = r('#takeBtn');
+    return { scroll: document.documentElement.scrollHeight - innerHeight, board: b.height, bookAbove: k.bottom <= b.top + 1, boardBottom: b.bottom <= innerHeight, take: tk.right <= innerWidth && tk.width > 0, ribbon: getComputedStyle(document.querySelector('.box-actions')).flexWrap }; });
+  assert.equal(m.scroll <= 2, true, 'no scrolling'); assert.ok(m.board >= 664 * 0.38, `the board is the big part (${m.board})`);
+  assert.ok(m.bookAbove && m.boardBottom, 'booklet on top, board below, all on screen'); assert.ok(m.take, 'Take to build fits'); assert.equal(m.ribbon, 'nowrap');
+  await t.page.evaluate(() => document.getElementById('takeBtn').click()); await t.page.waitForTimeout(800);
+  assert.equal(await t.view(), 'view-build');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('a Pippa puzzle still out at sea can be tapped: it says how many builds bring it in and offers Play next', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0&films=0', { init: { fn: () => { const sb = {}; for (let i = 0; i < 9; i++) sb[i] = 2; localStorage.setItem('building-blox-game-v1', JSON.stringify({ best: {}, sbest: sb })); } } });
   await t.page.evaluate(() => [...document.querySelectorAll('.tab')].find((x) => /Seaside/.test(x.textContent)).click()); await t.page.waitForTimeout(800);
