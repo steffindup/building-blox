@@ -3452,23 +3452,17 @@ function frameBuild(animate){
   if(animate&&!reduceMotion) camAnim={t0:performance.now(),t1:playControls.target.clone(),t2:center,p1:playCam.position.clone(),p2};
   else { camAnim=null; playControls.target.copy(center); playCam.position.copy(p2); playControls.update(); }
 }
-// Side markers: a yellow star on the model's left and a blue moon on its right, the same in the booklet and on the build,
-// so however either view has been turned you can see which side is which (star on the left in both = turned the same way).
-function sideTex(k){ const n=128, c=document.createElement('canvas'); c.width=c.height=n; const x=c.getContext('2d');
-  x.beginPath(); x.arc(n/2,n/2,n/2-4,0,Math.PI*2); x.fillStyle=k==='star'?'#F4BC22':'#3B7DDD'; x.fill(); x.lineWidth=7; x.strokeStyle='#FFFFFF'; x.stroke();
-  x.fillStyle='#FFFFFF';
-  if(k==='star'){ x.beginPath(); for(let i=0;i<10;i++){ const a=-Math.PI/2+i*Math.PI/5, r=i%2?16:38; x.lineTo(n/2+Math.cos(a)*r,n/2+4+Math.sin(a)*r); } x.closePath(); x.fill(); }
-  else { const m=document.createElement('canvas'); m.width=m.height=n; const y=m.getContext('2d'); y.fillStyle='#FFFFFF';
-    y.beginPath(); y.arc(n/2-4,n/2,36,0,Math.PI*2); y.fill(); y.globalCompositeOperation='destination-out'; y.beginPath(); y.arc(n/2+14,n/2-10,31,0,Math.PI*2); y.fill(); x.drawImage(m,0,0); }
-  const t=new THREE.CanvasTexture(c); t.anisotropy=4; return t; }
-const SIDE_MAT={}; for(const k of ['star','moon']) SIDE_MAT[k]=new THREE.SpriteMaterial({map:sideTex(k),transparent:true,depthWrite:false,toneMapped:false});
-function sideMarks(){ const g=new THREE.Group(); for(const k of ['star','moon']){ const sp=new THREE.Sprite(SIDE_MAT[k]); sp.userData.k=k; sp.renderOrder=3; g.add(sp); } g.visible=false; return g; }
+// Coloured table edges: a yellow rail along the model's left side and a blue rail along its right, the same in the booklet
+// and on the build, so however either view has been turned you can match them up (yellow on the left in both = same way round).
+const SIDE_MAT={left:new THREE.MeshBasicMaterial({color:0xF4BC22}),right:new THREE.MeshBasicMaterial({color:0x2F7BEA})};
+function sideMarks(){ const g=new THREE.Group(); for(const k of ['left','right']){ const r=new THREE.Mesh(new THREE.BoxGeometry(1,1,1),SIDE_MAT[k]); r.userData.k=k; g.add(r); } g.visible=false; return g; }
 const bookSides=sideMarks(), playSides=sideMarks(); modelGroup.add(bookSides); playGroup.add(playSides);
 function placeSides(g,o){ const m=model;
   if(!m||TILES||!m.bricks||!m.bricks.length){ g.visible=false; return; }
-  let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9,y1=1; for(const b of m.bricks){ x0=Math.min(x0,b.x); z0=Math.min(z0,b.z); x1=Math.max(x1,b.x+b.sx); z1=Math.max(z1,b.z+b.sz); y1=Math.max(y1,b.y+1); }
-  const sz=clamp(Math.max(x1-x0,z1-z0,y1*1.2)*.16,1.4,3), zm=(z0+z1)/2+o.z, y=Math.max(sz*.6,y1*1.2*.45), [st,mo]=g.children;   // beside the model, about half way up
-  st.position.set(x0+o.x-sz*.75,y,zm); mo.position.set(x1+o.x+sz*.75,y,zm); st.scale.set(sz,sz,1); mo.scale.set(sz,sz,1); g.visible=true; }
+  let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9; for(const b of m.bricks){ x0=Math.min(x0,b.x); z0=Math.min(z0,b.z); x1=Math.max(x1,b.x+b.sx); z1=Math.max(z1,b.z+b.sz); }
+  const w=1, h=.1, len=Math.max(z1-z0+4,Math.min(10,(x1-x0)*.8)), zm=(z0+z1)/2+o.z, [L,R]=g.children;   // a stud's gap from the model, a little longer than it is deep
+  for(const [r,x] of [[L,x0+o.x-1.2-w/2],[R,x1+o.x+1.2+w/2]]){ r.scale.set(w,h,len); r.position.set(x,h/2,zm); }
+  g.visible=true; }
 window.bloppitSides=()=>({book:bookSides.visible?bookSides.children.map(s=>[s.userData.k,+s.position.x.toFixed(2),+s.position.z.toFixed(2)]):null,play:playSides.visible?playSides.children.map(s=>[s.userData.k,+s.position.x.toFixed(2),+s.position.z.toFixed(2)]):null});   // for tests
 // The mirror line: a glassy wall down the middle of a mirror build, on the table and in the booklet
 let mirrorWall=null, bookMirror=null;
