@@ -1583,6 +1583,7 @@ body.film-on{overflow:hidden}
 .tabs .tab[aria-selected="true"],.tabs .tab[class*="play"][aria-selected="true"]{opacity:1;background:none;color:inherit;border:0}
 .tabs .tab[aria-selected="true"] .n{background:none}
 .tabs .tab[aria-selected="true"]::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:4px;border-radius:4px;background:var(--tc)}
+#tab-mp .n.n2{position:relative;width:40px!important}#tab-mp .n.n2 img{position:absolute;top:0;width:28px;height:28px}#tab-mp .n.n2 img:first-child{left:0}#tab-mp .n.n2 img:last-child{right:0;transform:scaleX(-1)}   /* Together: two Bloppits, facing each other */
 #tab-island{--tc:#2FB8DC}#tab-sea{--tc:#E8B20E}#tab-create{--tc:#E9772A}#tab-cove{--tc:#E9772A}#tab-game{--tc:#7DBE2E}
 /* The character at the top of each page */
 .char-hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 20px;align-items:center;border-radius:20px;padding:14px 24px 14px 14px;background:linear-gradient(115deg,var(--h1),var(--h2));color:var(--hink,#fff);box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer;min-width:0;overflow:hidden}
@@ -1641,8 +1642,8 @@ body.film-on{overflow:hidden}
     <button class="tab play4" role="tab" id="tab-sea" data-tab="game" data-sub="sea" aria-selected="false"><span class="n"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span>Flipper Beach</button>
     <button class="tab play3" role="tab" id="tab-blitz" data-tab="blitz" aria-selected="false"><span class="n"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span>Blitz Bay</button>
     <button class="tab play4" role="tab" id="tab-cove" data-tab="daily" aria-selected="false"><span class="n"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span>Brickyard Cove</button>
-    <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="50" fill="#E9772A"/><rect x="24" y="40" width="52" height="30" rx="4" fill="#fff"/><rect x="30" y="32" width="12" height="9" rx="2" fill="#fff"/><rect x="58" y="32" width="12" height="9" rx="2" fill="#fff"/><circle cx="50" cy="55" r="9" fill="#E9772A"/><circle cx="50" cy="55" r="4" fill="#fff"/></svg></span>Quick Build</button>
-    <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n"><img src="/art/pup.png" alt="" width="239" height="300"></span>Together</button>
+    <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span>Quick Build</button>
+    <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n n2"><img src="/art/head-bloppit.png" alt="" width="256" height="256"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span>Together</button>
   </nav><button class="tabs-arr r" type="button" tabindex="-1" aria-hidden="true">›</button></div>
   <button class="snd-top mus-top" id="musTop" type="button" aria-pressed="true" aria-label="Music" title="Music on or off"><span class="mus-ic" aria-hidden="true"></span></button>
   <button class="snd-top" id="sndTop" type="button" aria-pressed="true" aria-label="Sound" title="Sound on or off (M)"><span class="snd-ic" aria-hidden="true"></span></button>
