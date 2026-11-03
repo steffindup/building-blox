@@ -240,7 +240,13 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
   if(!h.classList.contains('sp-on')){ s.remove(); return; }
   var t0=Date.now(), done=false, rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
   function go(){ if(done) return; done=true; s.classList.add('out'); setTimeout(function(){ s.remove(); h.classList.remove('sp-on'); },320); }
-  s.onclick=go;
+  // The trademark sound: Stian and Elmar saying "Bloppit", timed so "-pit!" lands as Bloppit's eye shuts.
+  // Browsers may block sound before the first tap; then it plays if the launch screen is tapped instead.
+  var snd=null, played=false;
+  try{ if(localStorage.getItem('bloppit-sound')!=='off'){ snd=new Audio('/sound/bloppit.m4a'); snd.preload='auto'; } }catch(x){}
+  function say(){ if(!snd||played) return; played=true; try{ var p=snd.play(); if(p&&p.catch) p.catch(function(){ played=false; }); }catch(x){ played=false; } }
+  if(snd) setTimeout(say,Math.max(0,450-(Date.now()-t0)));
+  s.onclick=function(){ say(); go(); };
   // Quick: about 1.9 seconds (Bloppit's wink), counted from when the page started, so a slow connection doesn't add to it
   function later(){ setTimeout(go,Math.max(150,(rm?400:1900)-(Date.now()-t0))); }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',later); else later();

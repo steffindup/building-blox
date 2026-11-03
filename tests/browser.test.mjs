@@ -1132,3 +1132,17 @@ test('stars, Galaxy Blocks and the Otter Level: one job each; the otter grows by
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+
+test('launch screen: the boys say "Bloppit" as Bloppit winks, and not when the sound is off', { skip: skip() }, async () => {
+  for (const off of [false, true]) {
+    const ctx = await browser.newContext(); const page = await ctx.newPage();
+    if (off) await page.addInitScript(() => localStorage.setItem('bloppit-sound', 'off'));
+    await page.goto(BASE + '?lite3d=1&films=0', { waitUntil: 'load' }); await page.waitForTimeout(150);
+    const r = await page.evaluate(() => window.bloppitWinkSound && window.bloppitWinkSound());
+    assert.ok(r, 'the launch screen showed');
+    if (off) assert.equal(r.src, null); else assert.match(r.src, /\/sound\/bloppit\.m4a$/);
+    const res = off ? null : await page.request.get(`http://localhost:${PORT}/sound/bloppit.m4a`);
+    if (res) assert.equal(res.status(), 200);
+    await ctx.close();
+  }
+});
