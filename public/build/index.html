@@ -3645,7 +3645,7 @@ $('#hmHow').onclick=()=>howOpen('menu');
 const VID_BASE=APP?'video/':'/video/';
 // Each film's link carries a fingerprint of its file, so a phone that saved an older cut of a film (same name) fetches
 // the new one. tests/browser.test.mjs checks these match the files: after replacing a film, update its line here.
-const FILM_V={"arrival":"03bd218b","blitz-bay-arrival":"571db048","blitz-bay-complete":"f34b1dab","brainpeak-arrival":"7b824f5e","brainpeak-complete":"9bd45b4f","brickworks-arrival":"f64b3581","brickworks-complete":"c47da25f","frog-forest-arrival":"2a2d03b9","frog-forest-complete":"ea3c873c","moonstone-into-the-mist":"90f8a2d2","moonstone-the-answering-light":"963ad012","moonstone-the-constellation-cube":"a1ef2aed","moonstone-the-lookout-tower":"a7d008bd","moonstone-the-moon-gate":"0f9532da","moonstone-the-moonstone-lighthouse":"cdf76ebf","moonstone-the-old-map":"24d9def2","moonstone-the-petal-bridge":"9f560cba","sunrise-shores-arrival":"c6498bc7","sunrise-shores-complete":"ddf20679"};
+const FILM_V={"arrival":"03bd218b","blitz-bay-arrival":"571db048","blitz-bay-complete":"f34b1dab","brainpeak-arrival":"7b824f5e","brainpeak-complete":"9bd45b4f","brickworks-arrival":"f64b3581","brickworks-complete":"c47da25f","frog-forest-arrival":"2a2d03b9","frog-forest-complete":"ea3c873c","moonstone-into-the-mist":"90f8a2d2","moonstone-the-answering-light":"963ad012","moonstone-the-constellation-cube":"a1ef2aed","moonstone-the-galaxy-ship":"baf21701","moonstone-the-lookout-tower":"a7d008bd","moonstone-the-moon-crystal":"7d2bb79b","moonstone-the-moon-gate":"0f9532da","moonstone-the-moonstone-lighthouse":"cdf76ebf","moonstone-the-new-horizon":"c2f75c5e","moonstone-the-old-map":"24d9def2","moonstone-the-petal-bridge":"9f560cba","sunrise-shores-arrival":"c6498bc7","sunrise-shores-complete":"ddf20679"};
 const vidUrl=(file,ext)=>VID_BASE+file+'.'+ext+(APP||!FILM_V[file]?'':'?v='+FILM_V[file]);
 const FILMS=[
   // say: what a character says over the film, at t seconds ({name} = the player's otter, or "pup" while it has no name)
@@ -3673,13 +3673,17 @@ const FILMS=[
       ['15','The Petal Bridge','the-petal-bridge',3,'Build Moonstone chapter 4',{t:20,who:'tiny',text:'A bridge of petals! Hop across, {name}!'}],
       ['16','The Moon Gate','the-moon-gate',4,'Build Moonstone chapter 5',{t:20,who:'bibi',text:'A dab of moon paint… and the gate glows! Through we go, {name}!'}],
       ['17','The Constellation Cube','the-constellation-cube',5,'Build Moonstone chapter 6',{t:21,who:'nora',text:'The stars point the way: to the lighthouse, {name}!'}],
-      ['18','The Answering Light','the-answering-light',6,'Build Moonstone chapter 7',null],
-      ['19','The Moonstone Lighthouse','the-moonstone-lighthouse',7,'Build Moonstone chapter 8',[{t:31,who:'swoop',text:'Teamwork!',d:4},{t:39,who:'bloppit',text:'Go on, {name}. This part is yours.'}]]]   // just you and the light: nobody speaks
+      ['18','The Answering Light','the-answering-light',6,'Build Moonstone chapter 7',null],   // just you and the light: nobody speaks
+      ['19','The Moonstone Lighthouse','the-moonstone-lighthouse',7,'Build Moonstone chapter 8',[{t:31,who:'swoop',text:'Teamwork!',d:4},{t:39,who:'bloppit',text:'Go on, {name}. This part is yours.'}]],
+      ['20','The Moon Crystal','the-moon-crystal',8,'Build Moonstone chapter 9',{t:21,who:'lufu',text:'We have found each other.',d:7}],   // lufu never speaks: the words are the game's, as the series bible says
+      ['21','The Galaxy Ship','the-galaxy-ship',9,'Build the Galaxy ship',{t:21,who:'bloppit',text:'All aboard, {name}! Wherever lufu goes, we go too.'}]]
     .map(([no,name,file,i,hint,say])=>({id:'moon-'+no,no,name,place:'Moonstone Isle',file:'moonstone-'+file,at:'moonstone:'+i,open:o=>filmSeen('moon-'+no,o)||mysteryDone(o)>i,hint,say:!say?[]:Array.isArray(say)?say:[say]})),
+  {id:'moon-22',no:'22',name:'The New Horizon',place:'lufu’s world',file:'moonstone-the-new-horizon',at:'realm:lufu',open:o=>filmSeen('moon-22',o)||mysteryDone(o)>=10,hint:'Sail to lufu’s world',
+    say:[{t:16,who:'nora',text:'A whole new world… this is where lufu comes from!'}]},   // plays the first time the Galaxy ship sails there, then lufu's world and its welcome
 ];
 // What the characters say over a film: a speech bubble with the speaker's face and name, shown for 5.5 s from its time
 // ({name} is the otter's name, or "pup" while it has none)
-const FILM_WHO={bloppit:['Bloppit','#D8342C'],tiny:['Tiny','#7DBE2E'],nora:['Nora','#24407A'],pippa:['Pippa','#C9920A'],swoop:['Swoop','#2F7FD0'],bibi:['Bibi','#E9772A']};
+const FILM_WHO={lufu:['lufu','#8A6FD1'],bloppit:['Bloppit','#D8342C'],tiny:['Tiny','#7DBE2E'],nora:['Nora','#24407A'],pippa:['Pippa','#C9920A'],swoop:['Swoop','#2F7FD0'],bibi:['Bibi','#E9772A']};
 function filmLine(s,o){ return s.text.replace(/\{name\}/g,pupName(o||worldStore())||'pup'); }
 function filmSay(box,f,t){ if(!box||!f) return; let b=box.querySelector(':scope>.film-say');
   const s=(f.say||[]).find(s=>t>=s.t&&t<s.t+(s.d||5.5)), key=s?f.id+'@'+s.t:'';

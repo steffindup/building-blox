@@ -854,6 +854,20 @@ test('island: a new build always shows, even when older models were dragged into
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('The New Horizon plays the first time the Galaxy ship sails to lufu\'s world, then the welcome', { skip: skip() }, async () => {
+  const done = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; for (const n of ['Rowboat', 'Old map', 'Lookout tower', 'Little bridge', 'Moon gate', 'Constellation cube', 'Lantern', 'Moonstone Lighthouse', 'Moon crystal', 'Galaxy ship']) { const k = `m:${n}:12`; builds[k] = { n: 12, s: 2, t: 1e12, c: 1 }; log.push(k); }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 50, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, pick: 'treehouse', isle: 1, arrived: 1, films: ['moon-12', 'moon-13', 'moon-14', 'moon-15', 'moon-16', 'moon-17', 'moon-18', 'moon-19', 'moon-21'] })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 5, finished: 5, welcome: 1 })); } };
+  const t = await open('?nosplash=1&films=1#island', { init: done });
+  await t.page.waitForFunction(() => window.bloppitIsland3().ctl && !document.querySelector('.is3-film'), null, { timeout: 90000 });
+  await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close()));
+  await t.page.evaluate(() => document.querySelector('.is3-realm').click());
+  await t.page.waitForFunction(() => window.bloppitFilmOn() === 'moon-22', null, { timeout: 20000, polling: 200 });
+  assert.equal(await t.page.evaluate(() => document.getElementById('lufuHiDlg').open), false, 'the welcome waits for the film');
+  await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click());
+  await t.page.waitForFunction(() => document.getElementById('lufuHiDlg').open && window.bloppitIsland3().lufu === 1, null, { timeout: 20000 });
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('Moonstone films: building a chapter plays its film as its piece rises (Into the Mist for the rowboat), and it joins My films', { skip: skip() }, async () => {
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const k = 'm:Rowboat:10';
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds: { [k]: { n: 10, s: 2, t: 1e12, c: 1 } }, log: [k], decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, films: [] })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 }));
