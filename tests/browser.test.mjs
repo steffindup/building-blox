@@ -253,7 +253,7 @@ test('phone parts box: one screen, the booklet page on top, the parts board fill
 
 test('a Pippa puzzle still out at sea can be tapped: it says how many builds bring it in and offers Play next', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0&films=0', { init: { fn: () => { const sb = {}; for (let i = 0; i < 9; i++) sb[i] = 2; localStorage.setItem('building-blox-game-v1', JSON.stringify({ best: {}, sbest: sb })); } } });
-  await t.page.evaluate(() => [...document.querySelectorAll('.tab')].find((x) => /Seaside/.test(x.textContent)).click()); await t.page.waitForTimeout(800);
+  await t.page.evaluate(() => [...document.querySelectorAll('.tab')].find((x) => /Flipper Beach/.test(x.textContent)).click()); await t.page.waitForTimeout(800);
   assert.match(await t.text('#gmLevels .lvl[data-i="9"] .tagnew'), /🌊 \d+ more builds?/);
   assert.equal(await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="9"]').disabled), false);
   await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="9"]').click()); await t.page.waitForTimeout(400);
@@ -357,7 +357,7 @@ test('a finished race against Swoop lets go: the banner offers Back to Bloppitop
   await t.page.waitForTimeout(1500); await t.page.evaluate(() => document.querySelector('dialog[open]')?.close());
   assert.match(await t.text('#mpRoomBtn'), /Back to Bloppitopia/);
   assert.match(await t.text('.race-meter'), /wins!/);
-  await t.page.evaluate(() => [...document.querySelectorAll('.tab')].find((x) => /Seaside/.test(x.textContent)).click()); await t.page.waitForTimeout(800);
+  await t.page.evaluate(() => [...document.querySelectorAll('.tab')].find((x) => /Flipper Beach/.test(x.textContent)).click()); await t.page.waitForTimeout(800);
   assert.equal(await t.view(), 'view-game'); assert.equal(await t.page.evaluate(() => document.getElementById('mpBar').hidden), true);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
@@ -416,7 +416,7 @@ test('the Weekly is calm: no Blitz tag, no stopwatch, no seconds for a miss; the
   assert.equal(await t.view(), 'view-build');
   const ui = await t.page.evaluate(() => ({ tag: !!document.querySelector('#mpTitle .blitz-tag'), race: document.getElementById('mpRoomBtn').hidden, banner: document.getElementById('turnBanner').hidden,
     tab: document.querySelector('.tab[aria-selected="true"]')?.dataset.tab }));
-  assert.deepEqual(ui, { tag: false, race: true, banner: true, tab: 'create' });   // the Weekly is Bibi's: it lives with Quick Build
+  assert.deepEqual(ui, { tag: false, race: true, banner: true, tab: 'daily' });   // the Weekly is Bibi's: the Brickyard Cove tab
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
@@ -1064,11 +1064,11 @@ test('Pippa’s tab: her puzzles and a message in a bottle once a day (+5 XP); t
   // the bottle is only on Pippa's page, not the Frog Trail
   await t.page.evaluate(() => document.getElementById('tab-game').click()); await t.page.waitForTimeout(500);
   assert.equal(await t.page.evaluate(() => getComputedStyle(document.getElementById('bottleCard')).display), 'none');
-  // Bibi's Weekly is on Quick Build, and the Weekly page lights up the Quick Build tab
+  // Bibi's Weekly is on Quick Build too, and the Weekly page lights up the Brickyard Cove tab
   await t.page.evaluate(() => document.getElementById('tab-create').click()); await t.page.waitForTimeout(500);
   assert.match(await t.text('#qbWeekly'), /Bibi’s Weekly Bloppit/);
   await t.page.evaluate(() => document.getElementById('qbWeekly').click()); await t.page.waitForTimeout(800);
-  assert.equal(await t.view(), 'view-daily'); assert.equal(await t.page.evaluate(() => document.querySelector('.tab[aria-selected="true"]').id), 'tab-create');
+  assert.equal(await t.view(), 'view-daily'); assert.equal(await t.page.evaluate(() => document.querySelector('.tab[aria-selected="true"]').id), 'tab-cove');
   assert.match(await t.text('#view-daily .char-hero'), /Bibi/);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
