@@ -2654,7 +2654,7 @@ function buildModel(){
   const side=photos.find(p=>p!==front&&p.view==='side');
   const back=photos.find(p=>p!==front&&p.view==='back');
   const H=S.size, fb=front.m.bbox;
-  const W=clamp(Math.round(H*1.2*(fb[2]-fb[0]+1)/(fb[3]-fb[1]+1)),1,80);
+  let W=clamp(Math.round(H*1.2*(fb[2]-fb[0]+1)/(fb[3]-fb[1]+1)),1,80); if(S.mirror&&W%2) W+=W<80?1:-1;   // a mirror build is an even number of studs wide, so the mirror line runs between Pippa's half and yours (never through a middle column)
   const fg=sampleGrid(front.d,front.m,W,H);
   const fc=(x,y)=>x+(H-1-y)*W;
   let D, fill, sg=null, bk=null;
