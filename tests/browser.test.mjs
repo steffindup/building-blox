@@ -1022,7 +1022,12 @@ test('Chapter 2: the ten mystery chapters end with the Galaxy ship; then lufu’
   assert.equal(r.lufu, 1); assert.deepEqual(r.cast, ['bibi', 'lufu', 'nora', 'pippa', 'tiny']); assert.ok(r.ship && r.b && r.p && r.l); assert.match(r.btn, /Sail to Bloppitopia/); assert.match(r.play, /Build here/); assert.deepEqual(r.models, ['m:Here:9']); assert.equal(r.views, 'lufu’s world');
   // the first time there: the welcome (Chapter 1 done, Chapter 2 being made, what to do meanwhile)
   await t.page.waitForFunction(() => document.getElementById('lufuHiDlg').open, null, { timeout: 5000 });
-  assert.match(await t.text('#lhTxt'), /Chapter 1 is complete/); assert.equal(await t.page.evaluate(() => document.querySelectorAll('#lufuHiDlg [data-lh]').length), 5);
+  assert.match(await t.text('#lhTxt'), /Chapter 1 is complete/); assert.equal(await t.page.evaluate(() => document.querySelectorAll('#lufuHiDlg [data-lh]').length), 6);
+  // the whole Moonstone story, from the welcome
+  await t.page.evaluate(() => document.querySelector('#lufuHiDlg [data-lh="film"]').click()); await t.page.waitForTimeout(800);
+  assert.equal(await t.page.evaluate(() => document.getElementById('filmsDlg').open), true);
+  assert.match(await t.page.evaluate(() => document.getElementById('filmVid').src), /moonstone-feature\.mp4/);
+  await t.page.evaluate(() => document.getElementById('filmsDlg').close());
   await t.page.evaluate(() => document.querySelector('#lufuHiDlg [data-lh="stay"]').click());
   await t.page.evaluate(() => document.querySelector('.is3-realm').click()); await t.page.waitForTimeout(1500);
   assert.equal(await t.page.evaluate(() => window.bloppitIsland3().lufu), 0);
