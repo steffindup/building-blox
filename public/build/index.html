@@ -773,7 +773,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 body.bz-jump #view-blitz{visibility:hidden}
 .lufuhi{max-width:min(560px,94vw)}.lufuhi .lh-txt{text-align:left;line-height:1.5;margin:4px 0 10px}.lufuhi .lh-sub{font-weight:800;margin:6px 0;text-align:left}
 .lh-list{display:grid;gap:8px}.lh-list button{display:grid;grid-template-columns:36px 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-align:left;padding:10px 14px;border-radius:14px;border:2px solid var(--line);background:var(--page);color:var(--ink);font:inherit;cursor:pointer}
-.lh-list button:hover{border-color:#8A3BC9}.lh-list span{grid-row:1/3;font-size:24px;text-align:center}.lh-list b{font-weight:800}.lh-list small{color:var(--muted);font-weight:700}
+.lh-list button:hover{border-color:#8A3BC9}.lh-list .lh-film{border-color:#8A3BC9;background:color-mix(in srgb,#8A3BC9 12%,var(--page))}.lh-list span{grid-row:1/3;font-size:24px;text-align:center}.lh-list b{font-weight:800}.lh-list small{color:var(--muted);font-weight:700}
 .paint-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px}.paint-row span{font-size:12px;font-weight:800;color:var(--muted)}
 .paint-row button{width:28px;height:28px;border-radius:50%;border:2px solid rgba(0,0,0,.25);cursor:pointer;padding:0}.paint-row button[aria-pressed="true"]{outline:3px solid #F4BC22;outline-offset:2px}
 /* Race scoreboard (Blitz, two or more racers): who leads and by how much, compared at the same brick, so the brick
@@ -2134,6 +2134,7 @@ body.film-on{overflow:hidden}
   <p class="lh-txt" id="lhTxt"></p>
   <p class="lh-sub">Until Chapter 2 arrives, you can:</p>
   <div class="lh-list">
+    <button type="button" data-lh="film" class="lh-film"><span>🎬</span><b>Watch the whole Moonstone story</b><small>Chapter 1’s ending as one film, from the light in the mist to lufu’s world (5½ minutes)</small></button>
     <button type="button" data-lh="build"><span>🔨</span><b>Build anything here</b><small>Free builds stand on lufu’s world</small></button>
     <button type="button" data-lh="sail"><span>⛵</span><b>Sail back to Bloppitopia</b><small>The Galaxy ship takes you between the two, any time</small></button>
     <button type="button" data-lh="pup"><span>🦦</span><b>Start a new game</b><small>A new player with a new pup, from the very beginning</small></button>
@@ -3645,7 +3646,7 @@ $('#hmHow').onclick=()=>howOpen('menu');
 const VID_BASE=APP?'video/':'/video/';
 // Each film's link carries a fingerprint of its file, so a phone that saved an older cut of a film (same name) fetches
 // the new one. tests/browser.test.mjs checks these match the files: after replacing a film, update its line here.
-const FILM_V={"arrival":"03bd218b","blitz-bay-arrival":"571db048","blitz-bay-complete":"f34b1dab","brainpeak-arrival":"7b824f5e","brainpeak-complete":"9bd45b4f","brickworks-arrival":"f64b3581","brickworks-complete":"c47da25f","frog-forest-arrival":"2a2d03b9","frog-forest-complete":"ea3c873c","moonstone-into-the-mist":"90f8a2d2","moonstone-the-answering-light":"963ad012","moonstone-the-constellation-cube":"a1ef2aed","moonstone-the-galaxy-ship":"baf21701","moonstone-the-lookout-tower":"a7d008bd","moonstone-the-moon-crystal":"7d2bb79b","moonstone-the-moon-gate":"0f9532da","moonstone-the-moonstone-lighthouse":"cdf76ebf","moonstone-the-new-horizon":"c2f75c5e","moonstone-the-old-map":"24d9def2","moonstone-the-petal-bridge":"9f560cba","sunrise-shores-arrival":"c6498bc7","sunrise-shores-complete":"ddf20679"};
+const FILM_V={"arrival":"03bd218b","blitz-bay-arrival":"571db048","blitz-bay-complete":"f34b1dab","brainpeak-arrival":"7b824f5e","brainpeak-complete":"9bd45b4f","brickworks-arrival":"f64b3581","brickworks-complete":"c47da25f","frog-forest-arrival":"2a2d03b9","frog-forest-complete":"ea3c873c","moonstone-feature":"51f84d5c","moonstone-into-the-mist":"90f8a2d2","moonstone-the-answering-light":"963ad012","moonstone-the-constellation-cube":"a1ef2aed","moonstone-the-galaxy-ship":"baf21701","moonstone-the-lookout-tower":"a7d008bd","moonstone-the-moon-crystal":"7d2bb79b","moonstone-the-moon-gate":"0f9532da","moonstone-the-moonstone-lighthouse":"cdf76ebf","moonstone-the-new-horizon":"c2f75c5e","moonstone-the-old-map":"24d9def2","moonstone-the-petal-bridge":"9f560cba","sunrise-shores-arrival":"c6498bc7","sunrise-shores-complete":"ddf20679"};
 const vidUrl=(file,ext)=>VID_BASE+file+'.'+ext+(APP||!FILM_V[file]?'':'?v='+FILM_V[file]);
 const FILMS=[
   // say: what a character says over the film, at t seconds ({name} = the player's otter, or "pup" while it has no name)
@@ -3679,7 +3680,9 @@ const FILMS=[
       ['21','The Galaxy Ship','the-galaxy-ship',9,'Build the Galaxy ship',{t:21,who:'bloppit',text:'All aboard, {name}! Wherever lufu goes, we go too.'}]]
     .map(([no,name,file,i,hint,say])=>({id:'moon-'+no,no,name,place:'Moonstone Isle',file:'moonstone-'+file,at:'moonstone:'+i,open:o=>filmSeen('moon-'+no,o)||mysteryDone(o)>i,hint,say:!say?[]:Array.isArray(say)?say:[say]})),
   {id:'moon-22',no:'22',name:'The New Horizon',place:'lufu’s world',file:'moonstone-the-new-horizon',at:'realm:lufu',open:o=>filmSeen('moon-22',o)||mysteryDone(o)>=10,hint:'Sail to lufu’s world',
-    say:[{t:16,who:'nora',text:'A whole new world… this is where lufu comes from!'}]},   // plays the first time the Galaxy ship sails there, then lufu's world and its welcome
+    say:[{t:16,who:'nora',text:'A whole new world… this is where lufu comes from!'}]},
+  // The whole of Chapter 1's Moonstone story, films 12–22 cut together: opens once the Galaxy ship is built (and from lufu's welcome)
+  {id:'moonstone-feature',no:'★',name:'The Moonstone Story',place:'Chapter 1’s ending, in one film',file:'moonstone-feature',hint:'Build the Galaxy ship',open:o=>filmSeen('moonstone-feature',o)||mysteryDone(o)>=10},   // plays the first time the Galaxy ship sails there, then lufu's world and its welcome
 ];
 // What the characters say over a film: a speech bubble with the speaker's face and name, shown for 5.5 s from its time
 // ({name} is the otter's name, or "pup" while it has none)
@@ -3714,12 +3717,12 @@ function filmShow(f,play){ const v=$('#filmVid'); filmCur=f.id; filmSay($('#film
   $('#filmNow').innerHTML=`${f.no} · ${escapeHTML(f.name)} <small>· ${escapeHTML(f.place)}</small>`;
   $('#filmList').querySelectorAll('button[data-film]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.film===f.id?'true':'false'));
   if(play){ try{ v.muted=!sfx.on; const p=v.play(); if(p&&p.catch) p.catch(()=>{}); }catch(e){} track('film_play:'+f.id); } }
-function filmsShow(){ const d=$('#filmsDlg'); if(d.open) return; const o=worldStore(), open=filmsOpen(o); if(!open.length) return;
+function filmsShow(pick){ const d=$('#filmsDlg'); if(d.open) return; const o=worldStore(), open=filmsOpen(o); if(!open.length) return;
   const locked=FILMS.filter(f=>!open.includes(f));
   $('#filmList').innerHTML=open.map(f=>`<button type="button" data-film="${f.id}" aria-pressed="false"><img src="${vidUrl(f.file,'jpg')}" alt="" loading="lazy"><b>${f.no} · ${escapeHTML(f.name)}</b><small>${escapeHTML(f.place)}</small></button>`).join('')
     +locked.slice(0,1).map(f=>`<button type="button" disabled><span class="lock" aria-hidden="true">🔒</span><b>${f.no} · ???</b><small>${escapeHTML(f.hint||'Keep building to unlock')}</small></button>`).join('');
   $('#filmList').querySelectorAll('button[data-film]').forEach(b=>b.onclick=()=>filmShow(FILMS.find(f=>f.id===b.dataset.film),true));
-  $('#filmMore').hidden=false; filmShow(open[open.length-1],false); d.showModal(); track('films_open'); }
+  const pf=pick&&open.find(f=>f.id===pick); $('#filmMore').hidden=false; filmShow(pf||open[open.length-1],!!pf); d.showModal(); track('films_open'); }   // pick: open on that film, playing
 function filmsClose(){ const d=$('#filmsDlg'); try{ $('#filmVid').pause(); }catch(e){} if(d.open) d.close(); }
 $('#hmFilms').onclick=()=>filmsShow();
 $('#filmsX').onclick=$('#filmsClose').onclick=()=>filmsClose();
@@ -9867,7 +9870,7 @@ function lufuHi(){ try{ localStorage.setItem(pkey(LUFU_HI_KEY),'1'); }catch(e){}
   $('#lhTxt').innerHTML=`You did it! <b>Chapter 1 is complete.</b> Every island of Bloppitopia is built, the Moonstone light shines again, and the Galaxy ship has carried ${escapeHTML(nm)}, Bloppit and all your friends home with lufu. This moonlit world is where lufu comes from, and it’s waiting to be rebuilt. <b>Chapter 2: Bloppit builds lufu’s world</b> is being made right now, with new builds, new places and new adventures.`;
   if(!d.open) d.showModal(); }
 $('#lufuHiDlg').addEventListener('click',e=>{ const b=e.target.closest('[data-lh]'); if(!b) return; const a=b.dataset.lh; $('#lufuHiDlg').close(); track('lufu_welcome:'+a);
-  if(a==='build') pickPuzzle('quick','top'); else if(a==='sail') realmGo('bloppitopia'); else if(a==='pup') openWho(); else if(a==='builds') homeGo('quick'); });
+  if(a==='film') filmsShow('moonstone-feature'); else if(a==='build') pickPuzzle('quick','top'); else if(a==='sail') realmGo('bloppitopia'); else if(a==='pup') openWho(); else if(a==='builds') homeGo('quick'); });
 // The ground: a flat violet land with a silver shore on the near side, a cliff wall behind, all under a moonlit sky
 function lufuBody3(){ const g=new THREE.Group(), shapeOf=Q=>new THREE.Shape(Q.map(([x,z])=>new THREE.Vector2(x,-z)));
   const rock=new THREE.ExtrudeGeometry(shapeOf(scalePoly(LUFUP,0,0,1.02)),{depth:3,bevelEnabled:false,steps:2}); rock.rotateX(-Math.PI/2); rock.translate(0,-3,0);
