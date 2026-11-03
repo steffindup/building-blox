@@ -114,9 +114,9 @@
   // The app plays it straight away; a browser may block sound before the first tap, then a tap on the launch screen plays it.
   // Off when the game's sound is switched off.
   var snd=null, played=false;
-  try{ if(localStorage.getItem('bloppit-sound')!=='off'){ snd=new Audio((window.BLOPPIT_APP?'':'/')+'sound/bloppit.m4a'); snd.preload='auto'; } }catch(x){}
+  try{ if(localStorage.getItem('bloppit-sound')!=='off'){ snd=new Audio((window.BLOPPIT_APP?'':'/')+'sound/bloppit.m4a?v=2'); snd.preload='auto'; } }catch(x){}
   function say(){ if(!snd||played) return; played=true; try{ var p=snd.play(); if(p&&p.catch) p.catch(function(){ played=false; }); }catch(x){ played=false; } }
-  if(snd) setTimeout(say,450);
+  if(snd) setTimeout(say,220);
   window.bloppitWinkSound=function(){ return { src:snd&&snd.src, played:played }; };   // test hook
   s.onclick=function(){ say(); s.classList.add('out'); setTimeout(function(){ s.remove(); },320); };
 })();

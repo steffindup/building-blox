@@ -1140,7 +1140,7 @@ test('launch screen: the boys say "Bloppit" as Bloppit winks, and not when the s
     await page.goto(BASE + '?lite3d=1&films=0', { waitUntil: 'load' }); await page.waitForTimeout(150);
     const r = await page.evaluate(() => window.bloppitWinkSound && window.bloppitWinkSound());
     assert.ok(r, 'the launch screen showed');
-    if (off) assert.equal(r.src, null); else assert.match(r.src, /\/sound\/bloppit\.m4a$/);
+    if (off) assert.equal(r.src, null); else assert.match(r.src, /\/sound\/bloppit\.m4a\?v=2$/);
     const res = off ? null : await page.request.get(`http://localhost:${PORT}/sound/bloppit.m4a`);
     if (res) assert.equal(res.status(), 200);
     await ctx.close();
