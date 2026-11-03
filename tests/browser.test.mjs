@@ -195,6 +195,8 @@ test('phone build page: no arrows or Place (tap the brick, Rotate turns it), the
   await t.page.evaluate(() => [...document.querySelectorAll('button')].find((x) => /^(Play|Start|Build)/.test(x.textContent.trim()) && x.offsetParent)?.click()); await t.page.waitForTimeout(800);
   await autoPlace(t.page, 3);
   await t.page.evaluate(() => document.getElementById('openBox').click()); await t.page.waitForTimeout(600);
+  const fill = await t.page.evaluate(() => [document.getElementById('board').offsetHeight, document.getElementById('boardWrap').clientHeight, getComputedStyle(document.getElementById('board')).maxHeight]);
+  assert.ok(fill[0] >= fill[1] - 4 && fill[2] === 'none', 'the parts board fills its panel (no black strip under it): ' + fill);   // the weekly top-100 list's style once capped it at 420px
   await t.page.evaluate(() => { document.querySelector('#view-box [data-p]').click(); }); await t.page.waitForTimeout(300);
   await t.page.evaluate(() => document.getElementById('takeBtn').click()); await t.page.waitForTimeout(1000);
   assert.ok(await t.page.evaluate(() => window.bloppitGhost()), 'a brick in hand');
@@ -697,7 +699,7 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
 
 test('island: tap anything for its card; drag a model anywhere on the grass; put away and back; the weekly board shows when a grown-up switches it on', { skip: skip() }, async () => {
   const t = await open('?nosplash=1#island', { init: { fn: () => { const builds = {}, log = []; for (let i = 0; i < 3; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1, d: 95000 }; log.push(k); }
-    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: ['flag'], pupName: 3, pupAsked: true, isle: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); localStorage.setItem('bloppit-board-v1', '1'); } } });
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: ['flag'], pupName: 3, pupAsked: true, isle: 1, arrived: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); localStorage.setItem('bloppit-board-v1', '1'); } } });
   const models = () => t.page.evaluate(() => window.bloppitIsland3().shown.list.map((m) => m.key));
   assert.equal((await models()).length, 3);
   const pt = (id) => t.page.evaluate((i) => window.bloppitIslandPoint(i), id);
