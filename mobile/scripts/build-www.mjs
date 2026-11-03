@@ -15,6 +15,8 @@ mkdirSync(join(www, 'vendor', 'fonts'), { recursive: true });
 cpSync(join(root, 'public', 'art'), join(www, 'art'), { recursive: true });
 // The How to play video (public/video): played from the menu and the first builds.
 cpSync(join(root, 'public', 'video'), join(www, 'video'), { recursive: true });
+// The launch screen's trademark sound (public/sound): the boys saying "Bloppit" as Bloppit winks.
+cpSync(join(root, 'public', 'sound'), join(www, 'sound'), { recursive: true });
 // The 3D characters (public/3d): models, the glTF/Draco loaders and the decoder, loaded on first need.
 cpSync(join(root, 'public', '3d'), join(www, '3d'), { recursive: true });
 
