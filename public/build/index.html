@@ -766,6 +766,9 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .go-card{display:grid;justify-items:center;gap:10px;max-width:min(420px,88%);padding:22px 26px;border-radius:20px;background:var(--panel,#1E2A36);color:#fff;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.4)}
 .go-card img{width:72px;height:72px;border-radius:50%;object-fit:cover}.go-card b{font-family:var(--f-display);font-size:24px}.go-card p{margin:0;opacity:.9;font-size:15px}
 .go-btn{font-size:20px;padding:12px 28px;border-radius:999px}
+/* The Ready? gate covers the whole screen: inside the build stage it was taller than the stage on phones, so the Let's go! button was cut off and the race could never start */
+.go-gate.ready-gate{position:fixed;z-index:60;padding:12px;box-sizing:border-box}
+.ready-gate .go-card{max-height:100%;overflow:auto;box-sizing:border-box}
 #bpCallout .bp-left{flex-basis:100%;font-size:12px;font-weight:800;color:#F4BC22}
 body.bz-jump #view-blitz{visibility:hidden}
 .lufuhi{max-width:min(560px,94vw)}.lufuhi .lh-txt{text-align:left;line-height:1.5;margin:4px 0 10px}.lufuhi .lh-sub{font-weight:800;margin:6px 0;text-align:left}
@@ -7260,7 +7263,7 @@ async function trialStart(info,name){
 // straight away, while they were still finding the parts box)
 function cpuReady(){ const s=cpu&&cpu.s; if(!s) return; if(s.calm){ cpuCountdown(); return; }
   s.turnStart=Date.now()+864e5; cpuSend(); setStatus('Ready? Your clock starts when you tap Let’s go!');
-  const st=$('#buildStage'); st.querySelector('.go-gate')?.remove(); const g=document.createElement('div'); g.className='go-gate';
+  const st=$('#buildStage'); st.querySelector('.go-gate')?.remove(); const g=document.createElement('div'); g.className='go-gate ready-gate';
   const vs=!s.solo, lvl=vs?CPU_LEVELS[s.cpuLevel]:null;
   g.innerHTML=`<div class="go-card">${vs?GULL_HEAD(s.cpuLevel):''}<b>${vs?`Ready to race ${escapeHTML(lvl.name)}?`:'Ready?'}</b><p>${vs?`${s.quota} bricks each. Take turns placing 1, 2 or 3, then tap Done. Your clock only runs on your turn.`:`${s.quota} bricks. Your clock runs until the last one is in.`}</p><button class="primary go-btn" type="button">⚡ Let’s go! <kbd>Enter</kbd></button></div>`;
   st.appendChild(g); const me=cpu;
