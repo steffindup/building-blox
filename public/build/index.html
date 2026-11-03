@@ -1140,6 +1140,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .pg-zoom button:hover{border-color:var(--ink)}
 .pg-zoom button:disabled{opacity:.4;cursor:default}
 .pg-zoom .zx{font-size:15px}
+@media (max-width:900px){ .build-grid #bpCard .pg-zoom,#boxBook #bpCard .pg-zoom{top:4px;bottom:auto;left:4px;gap:3px;flex-direction:column} .build-grid #bpCard .pg-zoom button,#boxBook #bpCard .pg-zoom button{width:26px;height:26px;border-radius:7px;font-size:15px} .build-grid #bpCard .pg-zoom .zx,#boxBook #bpCard .pg-zoom .zx{font-size:12px} }   /* phones: small, stacked down the left edge, clear of the model */
 .pg-chart{touch-action:none}
 /* Menu: the first page after the launch screen */
 body.on-home .tabs{visibility:hidden}
@@ -3053,13 +3054,18 @@ function bookZoom(f){ // f>1 zooms in
   if(TILES){ chartZoom=clamp(chartZoom*f,.5,4); redrawCharts(); return; }
   bookAim(bookCam.position.distanceTo(bookControls.target)/f);
 }
+// Zoomed out, the booklet looks at the middle of what's built so far (up to this page): the first layers sit in the
+// middle of the picture instead of low down under the zoom buttons, at the same size as the whole model would be
+function bookMid(){ const c=frameInfo.center; if(TILES||!model||!model.bricks) return c; const k=bookK>=0?bookK:viewPage; let top=0;
+  for(const b of model.bricks) if(b.step<=k) top=Math.max(top,(b.y+1)*1.2);
+  return top>0&&top<c.y*2?new THREE.Vector3(c.x,Math.max(top/2,.6),c.z):c; }
 // Zoomed in, the booklet looks at this step's new bricks; zoomed all the way out, at the whole model
 function bookAim(L){
   if(!model||!frameInfo) return;
   const fit=frameInfo.r/Math.sin(THREE.MathUtils.degToRad(bookCam.fov/2));
   L=clamp(L??bookCam.position.distanceTo(bookControls.target),fit*.15,fit*3);
   const dir=bookCam.position.clone().sub(bookControls.target).normalize();
-  const zoomed=L<fit*.95&&current.children.length, tgt=zoomed?new THREE.Box3().setFromObject(current).getCenter(new THREE.Vector3()):frameInfo.center;
+  const zoomed=L<fit*.95&&current.children.length, tgt=zoomed?new THREE.Box3().setFromObject(current).getCenter(new THREE.Vector3()):bookMid();
   bookControls.target.copy(tgt); bookCam.position.copy(tgt).addScaledVector(dir,L); bookControls.update();
 }
 bookControls.addEventListener('end',()=>bookAim());
