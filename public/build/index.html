@@ -2141,8 +2141,8 @@ body.film-on{overflow:hidden}
     </div>
   </div>
   <button class="crumb dy-up" id="dyUp" type="button">‹ Quick Build</button>
-  <div class="card" id="dyBoard" hidden><div class="gm-head sub-head"><div><h2>🏆 This week’s top 100</h2><p class="note">Clean builds first, then stars. Generated names only; no times. A grown-up switched this on in the Grown-ups corner.</p></div></div><div class="board" id="dyBoardList"></div></div>
-  <p class="note">Bloppit only counts how many people finished this week’s puzzle and how many finished it clean. No names, no times, no ranks, unless a grown-up switches on the top-100 board, which shows generated names and stars. The counts are deleted after 8 weeks.</p>
+  <div class="card" id="dyBoard" hidden><div class="gm-head sub-head"><div><h2>🏆 This week’s top 100</h2><p class="note">Clean builds first, then stars. Generated names only; no times. A grown-up can switch it off in the Grown-ups corner.</p></div></div><div class="board" id="dyBoardList"></div></div>
+  <p class="note">Bloppit only counts how many people finished this week’s puzzle and how many finished it clean. No real names and no times. The top-100 board shows generated names and stars; a grown-up can switch it off. The counts are deleted after 8 weeks.</p>
 </section>
 
 
@@ -2254,7 +2254,7 @@ body.film-on{overflow:hidden}
   </section>
   <section class="grown-sec">
     <h3>Weekly top-100 board</h3>
-    <p class="note">Off by default. When on, this player’s Weekly finishes are listed on a top-100 board with other players, under a generated name like “Brave Otter 214”: clean builds first, then stars. No real names and no times are ever shown.</p>
+    <p class="note">On by default. When on, this player’s Weekly finishes are listed on a top-100 board with other players, under a generated name like “Brave Otter 214”: clean builds first, then stars. No real names and no times are ever shown.</p>
     <label class="switch"><input type="checkbox" id="grownBoard"> Show the board and list this player on it</label>
   </section>
   <section class="grown-sec">
@@ -10981,9 +10981,9 @@ $('#famList').addEventListener('click',async e=>{
     try{ await pupApi('POST',{action:'family-delete',key,pup:b.dataset.famDel}); players.list.forEach(p=>{ if(p.pup===b.dataset.famDel) delete p.pup; }); playersSave(); track('family_deleted'); famList(key); }catch(x){ famNote(x.message,'err'); } }
 });
 
-/* ---------- The Weekly top-100 board, behind a parent switch (per player, on this device) ---------- *//* ---------- The Weekly top-100 board, behind a parent switch (per player, on this device) ---------- */
+/* ---------- The Weekly top-100 board: on by default, a parent switch turns it off (per player, on this device) ---------- */
 const BOARD_KEY='bloppit-board-v1';
-function boardOn(){ try{ return localStorage.getItem(pkey(BOARD_KEY))==='1'; }catch(e){ return false; } }
+function boardOn(){ try{ return localStorage.getItem(pkey(BOARD_KEY))!=='0'; }catch(e){ return true; } }   // on by default; off only once a grown-up switches it off
 function boardSet(on){ try{ localStorage.setItem(pkey(BOARD_KEY),on?'1':'0'); }catch(e){} track(on?'board_on':'board_off'); renderBoard(); }
 $('#grownBoard').addEventListener('change',e=>boardSet(e.target.checked));
 function boardRows(b){ return b.length?b.map(e=>`<div class="${e.me?'me':''}"><span class="rk">${e.rank}</span><span>${escapeHTML(e.name)}${e.me?' (you)':''}</span><span>${e.clean?'✨ clean':''}</span>${wsStars(e.stars)}</div>`).join(''):'<p class="note">Nobody on the board yet this week. Finish the Weekly to be first.</p>'; }

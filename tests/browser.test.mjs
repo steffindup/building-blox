@@ -712,9 +712,9 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   assert.deepEqual(a.errors, []); assert.deepEqual(b.errors, []); await a.ctx.close(); await b.ctx.close();
 });
 
-test('island: tap anything for its card; drag a model anywhere on the grass; put away and back; the weekly board shows when a grown-up switches it on', { skip: skip() }, async () => {
+test('island: tap anything for its card; drag a model anywhere on the grass; put away and back; the weekly board shows by default and a grown-up can switch it off', { skip: skip() }, async () => {
   const t = await open('?nosplash=1#island', { init: { fn: () => { const builds = {}, log = []; for (let i = 0; i < 3; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1, d: 95000 }; log.push(k); }
-    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: ['flag'], pupName: 3, pupAsked: true, isle: 1, arrived: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); localStorage.setItem('bloppit-board-v1', '1'); } } });
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: ['flag'], pupName: 3, pupAsked: true, isle: 1, arrived: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); } } });
   const models = () => t.page.evaluate(() => window.bloppitIsland3().shown.list.map((m) => m.key));
   assert.equal((await models()).length, 3);
   const pt = (id) => t.page.evaluate((i) => window.bloppitIslandPoint(i), id);
@@ -813,6 +813,9 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   await t.page.evaluate(() => { document.getElementById('tab-create').click(); document.getElementById('qbWeekly').click(); }); await t.page.waitForTimeout(1200);
   assert.equal(await t.page.evaluate(() => document.getElementById('dyBoard').hidden), false);
   assert.match(await t.text('#dyBoardList'), /Nobody on the board yet/);
+  // the grown-up switch turns it off (and it stays off)
+  assert.equal(await t.page.evaluate(() => { const c = document.getElementById('grownBoard'); c.checked = false; c.dispatchEvent(new Event('change')); return document.getElementById('dyBoard').hidden; }), true, 'off hides the board');
+  assert.equal(await t.page.evaluate(() => Object.keys(localStorage).some(k => k.includes('bloppit-board-v1') && localStorage.getItem(k) === '0')), true, 'off is remembered');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
