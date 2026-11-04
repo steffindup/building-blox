@@ -452,11 +452,23 @@ body.on-build .appfoot{display:none}
 /* Blitz Bay's ladder (from Bloppitopia): the next race, nothing to set up */
 .ladderdlg{text-align:center}.ld-tag{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .qp-opts{display:grid;gap:10px;margin:12px 0 4px}
-.qp-opt{display:grid;grid-template-columns:52px minmax(0,1fr);gap:4px 12px;align-items:center;text-align:left;padding:12px 14px;border-radius:16px;border:2px solid var(--line,#D9E1EA);background:var(--card,#fff);color:inherit;font:inherit;cursor:pointer}
+.qp-opt{display:grid;grid-template-columns:52px minmax(0,1fr);gap:4px 12px;align-items:center;text-align:left;padding:12px 14px;border-radius:16px;border:2px solid var(--line,#D9E1EA);background:var(--page,#fff);color:var(--ink);font:inherit;cursor:pointer}
 .qp-opt:hover,.qp-opt:focus-visible{border-color:var(--hi,#F2CD37)}
 .qp-opt img,.qp-opt .qp-ic{grid-row:span 2;width:52px;height:52px;border-radius:12px;object-fit:contain;display:grid;place-items:center;font-size:30px;background:color-mix(in srgb,var(--hi,#F2CD37) 22%,transparent)}
 .qp-opt b{font-size:1.05rem}.qp-opt span{font-size:.88rem;opacity:.8}
 .qp-opt.isle{border-color:color-mix(in srgb,#2FB8DC 55%,transparent)}
+/* the difficulty slider (Steff, 4 Nov 2026): pick how tricky, and a puzzle to match is ready to build */
+.qp-quick{cursor:default}.qp-quick:hover{border-color:var(--line,#D9E1EA)}
+.qp-quick>.qp-diff,.qp-quick>.qp-pz,.qp-quick>#qpQuick,.qp-quick>#qpPick{grid-column:1/-1}
+.qp-diff{margin-top:6px}.qp-diff label{display:flex;justify-content:space-between;align-items:baseline;font-size:.9rem;font-weight:700}
+.qp-diff label b{font-size:1rem}.qp-diff input{width:100%;margin:6px 0 0;accent-color:#F4BC22;height:28px}
+.qp-diff .qp-ends{display:flex;justify-content:space-between;font-size:.75rem;opacity:.7}
+.qp-pz{display:flex;gap:10px;align-items:center;padding:8px;border-radius:12px;background:color-mix(in srgb,var(--hi,#F2CD37) 12%,transparent)}
+.qp-pz img{width:52px;height:52px;border-radius:10px;background:#fff;object-fit:contain;flex:none}
+.qp-pzt{flex:1;min-width:0;display:grid}.qp-quick .qp-pzt b{font-size:1rem}.qp-quick .qp-pzt span{font-size:.82rem}
+.qp-pz #qpShuffle{flex:none;font-size:20px;padding:6px 10px}
+.qp-quick #qpQuick{width:100%;margin-top:4px}.qp-quick #qpPick{justify-self:center;font-size:.85rem}
+.qpdlg.solo #qpIsle{display:none}
 .ld-pz{display:flex;gap:12px;align-items:center;justify-content:center;margin:10px auto;text-align:left}.ld-pz img{width:64px;height:64px;border-radius:12px;background:#fff;object-fit:contain}
 .ld-pz b{display:block;font-family:var(--f-display);font-weight:400;font-size:20px}.ld-pz span{font-size:13px;font-weight:700;color:var(--muted)}
 .ld-strip{display:flex;gap:4px;justify-content:center;align-items:center;flex-wrap:wrap;margin:6px auto 2px;max-width:340px}
@@ -2195,7 +2207,14 @@ body.film-on{overflow:hidden}
   <h2 id="qpT">Quick Build</h2>
   <div class="qp-opts">
     <button class="qp-opt isle" id="qpIsle" type="button"><img id="qpImg" src="/art/head-bibi.png" alt=""><b id="qpIsleT">🏝️ Play on Brickyard Cove</b><span>In Bloppitopia: every build grows the island and earns ★, XP and Galaxy Blocks.</span></button>
-    <button class="qp-opt" id="qpQuick" type="button"><span class="qp-ic" aria-hidden="true">⚡</span><b>Quick play</b><span>Just build, any puzzle. Nothing is added to Bloppitopia.</span></button>
+    <div class="qp-opt qp-quick" id="qpQuickCard"><span class="qp-ic" id="qpQuickIc" aria-hidden="true">⚡</span><b id="qpQuickT">Quick play</b><span id="qpQuickS">Just build. Nothing is added to Bloppitopia.</span>
+      <div class="qp-diff"><label for="qpDiff">How tricky? <b id="qpDiffT">🙂 Easy</b></label>
+        <input type="range" id="qpDiff" min="1" max="5" step="1" value="2">
+        <div class="qp-ends" aria-hidden="true"><span>🐣 Tiny</span><span>🔥 Super tricky</span></div></div>
+      <div class="qp-pz"><img id="qpPzImg" alt=""><div class="qp-pzt"><b id="qpPzName"></b><span id="qpPzInfo"></span></div><button class="ghost sm" id="qpShuffle" type="button" aria-label="Another puzzle" title="Another puzzle">🔀</button></div>
+      <button class="primary" id="qpQuick" type="button">▶ Build it</button>
+      <button class="ghost sm" id="qpPick" type="button">Or pick one yourself</button>
+    </div>
   </div>
   <div class="win-btns"><button class="ghost" id="qpX" type="button">Not now</button></div>
 </dialog>
@@ -11428,14 +11447,61 @@ function quickGo(where){ quickPlaySet(true); track('quick_play:'+where);
   if(where==='quick'){ if(game) endGame(); pickPuzzle('quick','top'); return; }
   if(where==='cpu'){ setTab('blitz','cpu'); scrollTo(0,0); return; }
   setTab('game',where); }
+// The difficulty slider (Steff, 4 Nov 2026): Quick play (and Pippa's Puzzles, which has no island) has a "How tricky?"
+// slider from Tiny to Super tricky, and a puzzle to match is picked and shown, ready to build (🔀 for another one).
+// Trails and races: their puzzles are already in order from tiny to tricky, so the slider takes a fifth of the list.
+// Quick Build: any library puzzle, made smaller and simpler or bigger and more colourful (QP_LIB).
+// vs Swoop: the race's own speed comes with it (Warm-up, Race, Full throttle). The slider is kept per tile.
+const QP_LV=['🐣 Tiny','🙂 Easy','🧱 Medium','🤔 Tricky','🔥 Super tricky'];
+const QP_LIB=[{size:6,shape:'flat',thick:.5,colors:2},{size:8,shape:'flat',thick:1,colors:3},{size:10,shape:'puffed',thick:1,colors:4},{size:13,shape:'puffed',thick:1,colors:6},{size:16,shape:'puffed',thick:1,colors:8}];
+const QP_SPEED={easy:'Warm-up',medium:'Race',hard:'Full throttle'};
+QP_TILES.flip={who:'pippa',t:'Pippa’s Puzzles',solo:true};
+let qpCur=null;
+function qpDiffs(){ try{ return JSON.parse(localStorage.getItem('bloppit-qp-diff'))||{}; }catch(e){ return {}; } }
+function qpPool(where,d){
+  if(where==='quick') return SAMPLES.map((s,i)=>({i,s})).filter(x=>released(x.s)).map(({i,s})=>({i,L:{name:s.name,sample:s.name,...QP_LIB[d-1]}}));
+  const list=where==='cpu'?BLITZ_PICKS.slice(0,LADDER_N):levelsOf(where), n=list.length, out=[];
+  list.forEach((L,i)=>{ if(Math.min(4,Math.floor(i*5/n))===d-1) out.push({i,L}); });
+  if(where==='cpu'&&d===5&&grandPrixOpen()) out.push({i:BLITZ_PICKS.length-1,L:GRAND_PRIX});
+  return out; }
+function qpChoose(where,d,avoid){ const P=qpPool(where,d), A=P.filter(x=>x.i!==avoid); const pool=A.length?A:P; return pool[Math.floor(Math.random()*pool.length)]||null; }
+function qpShow(){ const C=qpCur; if(!C) return; const P=C.pick;
+  $('#qpDiffT').textContent=QP_LV[C.d-1]; $('#qpDiff').value=C.d; $('#qpDiff').setAttribute('aria-valuetext',QP_LV[C.d-1].replace(/^\S+ /,''));
+  $('#qpShuffle').hidden=qpPool(C.where,C.d).length<2; $('#qpQuick').disabled=!P;
+  if(!P){ $('#qpPzName').textContent='No puzzle yet'; $('#qpPzInfo').textContent=''; $('#qpPzImg').hidden=true; return; }
+  const L=P.L; let thumb=''; try{ thumb=C.where==='quick'?(SAMPLES[P.i].thumb||(SAMPLES[P.i].thumb=SAMPLES[P.i].make()[0][1].toDataURL('image/png'))):levelThumb(L); }catch(e){}
+  $('#qpPzImg').hidden=!thumb; if(thumb) $('#qpPzImg').src=thumb;
+  $('#qpPzName').textContent=C.where==='quick'?niceName(L.name):L.name;
+  let n=0; try{ n=levelCount(L); }catch(e){}
+  const bits=[]; if(n) bits.push(`${n} bricks`); if(C.where==='cpu') bits.push(`Swoop: ${QP_SPEED[L.boss?'hard':L.lv]||'Race'}`);
+  if(C.where==='otter'||C.where==='brain'||C.where==='flip') bits.unshift(`${C.where==='flip'?'Puzzle':'Level'} ${P.i+1}`);
+  $('#qpPzInfo').textContent=bits.join(' · ');
+  $('#qpQuick').textContent=C.where==='cpu'?'▶ Set up the race':`▶ Build ${C.where==='quick'?'it':'this one'}`; }
+function qpSet(d,avoid){ const C=qpCur; C.d=Math.max(1,Math.min(5,+d||2)); C.pick=qpChoose(C.where,C.d,avoid);
+  const D=qpDiffs(); D[C.where]=C.d; try{ localStorage.setItem('bloppit-qp-diff',JSON.stringify(D)); }catch(e){} qpShow(); }
+$('#qpDiff').addEventListener('input',e=>qpSet(e.target.value));
+$('#qpShuffle').addEventListener('click',()=>{ if(qpCur) qpSet(qpCur.d,qpCur.pick&&qpCur.pick.i); });
+// Start the puzzle the slider picked: straight into the build (a race: the race set up with it and Swoop's speed)
+function qpStart(where,P){ if(!P) return; quickPlaySet(where!=='flip'); track(`quick_play:${where}:d${qpCur?qpCur.d:0}`);
+  if(where==='quick'){ pickPuzzle('quick','top'); setControls(levelSettings(P.L)); loadSample(P.i); clearTimeout(timer); rebuild(); usePicked=true;
+    if(model&&!model.error&&model.bricks&&model.bricks.length) setTab('build'); return; }
+  if(where==='cpu'){ setTab('blitz','cpu'); mpModelOptions('#bzModel'); $('#bzModel').value='p'+P.i; renderBzPuzzle();
+    const lv=P.L.boss?'hard':P.L.lv, r=document.querySelector(`input[name=bzLevel][value="${lv}"]`); if(r){ r.checked=true; r.dispatchEvent(new Event('change',{bubbles:true})); }
+    scrollTo(0,0); return; }
+  setTrail(where); startLevelFilm(where,P.i); }
 function playAsk(where){ const T=QP_TILES[where]; if(!T||mp){ homeGo(where); return; }
   let iname=''; try{ iname=ISLES[T.isle].name; }catch(e){}
   $('#qpT').textContent=T.t; $('#qpImg').src=`/art/head-${T.who}.png`; $('#qpIsleT').textContent=`🏝️ Play on ${iname||'Bloppitopia'}`;
-  const d=$('#qpDlg');
+  const d=$('#qpDlg'); d.classList.toggle('solo',!!T.solo);
+  $('#qpQuickT').textContent=T.solo?'Pick how tricky':'Quick play'; $('#qpQuickIc').textContent=T.solo?'🪞':'⚡';
+  $('#qpQuickS').textContent=T.solo?'Pippa finds a mirror puzzle to match.':where==='cpu'?'Just race. Nothing is added to Bloppitopia.':'Just build. Nothing is added to Bloppitopia.';
+  qpCur={where,d:qpDiffs()[where]||2,pick:null}; qpSet(qpCur.d);
   $('#qpIsle').onclick=()=>{ d.close(); quickPlaySet(false); track('quick_play_no:'+where); homeGo(where); };
-  $('#qpQuick').onclick=()=>{ d.close(); quickGo(where); };
+  $('#qpQuick').onclick=()=>{ const P=qpCur&&qpCur.pick; d.close(); qpStart(where,P); };
+  $('#qpPick').onclick=()=>{ d.close(); if(T.solo){ quickPlaySet(false); homeGo(where); } else quickGo(where); };
   $('#qpX').onclick=()=>d.close();
   d.showModal(); }
+window.bloppitQP=()=>qpCur&&{where:qpCur.where,d:qpCur.d,i:qpCur.pick&&qpCur.pick.i,name:qpCur.pick&&qpCur.pick.L.name,pool:qpPool(qpCur.where,qpCur.d).map(x=>x.i)};   // for tests
 document.querySelectorAll('#view-home [data-go]').forEach(b=>b.addEventListener('click',()=>playAsk(b.dataset.go)));
 window.bloppitQuickPlay=()=>quickPlay;   // for tests
 window.bloppitHome=()=>setTab('home');
