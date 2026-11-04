@@ -3377,7 +3377,7 @@ function syncSub(t){
 // A finished race against Swoop (or a finished timed build) is over: going anywhere else leaves it. It used to hold on,
 // so "Play Pippa's puzzle" (or any Trail) landed on the race page asking you to leave a race that had already ended.
 function mpDoneLeave(){ if(mp&&mp.cpu&&mp.state&&mp.state.finished){ mpLeave(); return true; } return false; }
-function setTab(t,sub){ if(t==='island'&&typeof quickPlaySet==='function') quickPlaySet(false); if(t!=='build'&&t!==mpHomeTab0()) mpDoneLeave(); if(t==='build') document.body.classList.remove('bz-jump');
+function setTab(t,sub){ if(t!=='island'&&typeof ISL3!=='undefined') ISL3.thenChapter=null; if(t==='island'&&typeof quickPlaySet==='function') quickPlaySet(false); if(t!=='build'&&t!==mpHomeTab0()) mpDoneLeave(); if(t==='build') document.body.classList.remove('bz-jump');
   if(t!=='island'&&ISL3&&ISL3.on) isl3Hide();
   if(typeof islandTipHide==='function'){ islandTipHide(); const h=document.getElementById('isHover'); if(h) h.hidden=true; }
   if(t!=='build'&&reveal) endReveal(true);
@@ -8003,7 +8003,7 @@ function worldToast(){
 }
 // After a Quick Build's reveal: the stars, and on the first ever finish the pup
 function worldAfterQuick(){ pupMaybe(()=>{ const o=worldStore(), g=ISL3.ok&&typeof worldNextGoal==='function'?worldNextGoal(o):null;
-  trialDialog({icon:'🧱',title:'You built it!',note:quickPlay?'⚡ Quick play: this one isn’t added to Bloppitopia.':g?'Next on Bloppitopia: '+g.text+'.':'',next:true,quick:true}); }); }
+  trialDialog({icon:'🧱',title:'You built it!',note:quickPlay?'⚡ Quick play: this one isn’t added to Bloppitopia.':g?(/^Next /.test(g.text)?g.text+' on Moonstone Isle.':'Next on Bloppitopia: '+g.text+'.'):'',next:true,quick:true}); }); }
 function pupMaybe(then){ const o=worldStore(); if(pupName(o)||worldCount(o)!==1||o.pupAsked){ if(then) then(); return; } o.pupAsked=true; worldSet(o); pupOpen(then); }
 // Meet your pup: its brick colour, then a name. Typing one is the main way; the list and "later" are there too.
 // After the first time, Bloppitopia is introduced (unless something else is already waiting: then()).
@@ -9474,7 +9474,12 @@ function mysteryStart(i){
   if(mp) mpLeave(); if(game) endGame(); setControls({kind:'model',shape:m.shape,thick:m.thick,tol:48,maxColors:m.colors,gray:true,size:m.size,pw:48,pcol:24});
   loadSample(k); clearTimeout(timer); rebuild(); setTab('build'); updateGameBar(); setStatus(`Chapter ${i+1} of ${MYSTERY.length}, with ${m.who}: ${m.story}`);
 }
-function mysteryGo(){ if(!mysteryOpen()){ setTab('daily'); return; } const i=mysteryNext(); if(i>=0) mysteryStart(i); else setTab('island'); }
+// Each Moonstone film plays when its piece rises on the island, so the next chapter goes by the island first if the
+// last one's piece (and film) hasn't been revealed yet; the chapter starts when the reveal ends (isl3AfterReveal).
+function mysteryUnrevealed(){ if(typeof ISL3==='undefined'||!ISL3.ok) return false; const seen=seenGet(); if(!seen) return false;
+  return worldUnlocked(worldStore()).some(id=>/^(isle|done):moonstone$|^moonstone:\d+$/.test(id)&&!seen.includes(id)); }
+function mysteryVia(i){ if(!mysteryUnrevealed()){ mysteryStart(i); return; } ISL3.thenChapter=i; setTab('island'); }
+function mysteryGo(){ if(!mysteryOpen()){ setTab('daily'); return; } const i=mysteryNext(); if(i>=0) mysteryVia(i); else setTab('island'); }
 const MYST_S=.66;   // how big Mystery Island looks until it's reached
 const isl3TallNow=()=>{ const b=typeof ISL3!=='undefined'&&ISL3.box; return !!(b&&b.clientWidth&&CAM_TALL(b.clientWidth/(b.clientHeight||b.clientWidth))); };
 const ISLES={
@@ -9807,12 +9812,14 @@ function isleBase(id,g,n){
 }
 function islePieces(id,n){ return PIECES[id].filter(p=>n>=p.at); }
 // The nearest next thing to grow anywhere in the world (for the line under the map)
-function worldNextGoal(o){ const n=worldCount(o), out=[];
+function worldNextGoal(o){ return worldGoals(o)[0]||null; }
+function worldGoals(o){ const n=worldCount(o), out=[];
   const hp=HOME_PIECES.find(p=>!p.hide&&p.id!=='pick'&&p.at>n); if(hp){ const prev=Math.max(0,...HOME_PIECES.filter(p=>!p.hide&&p.at<=n).map(p=>p.at)); out.push({left:hp.at-n,text:`${hp.at-n} more build${hp.at-n===1?'':'s'} and Home Island gets ${/^(the|your) /i.test(hp.name)?'its '+hp.name.replace(/^(the|your) /i,''):hp.name}`,frac:(n-prev)/Math.max(1,hp.at-prev)}); }
   for(const id of Object.keys(ISLES)){ const I=ISLES[id], c=isleCount(id,o), p=PIECES[id].find(q=>q.at>c); if(!p) continue; const prev=Math.max(0,...PIECES[id].filter(q=>q.at<=c).map(q=>q.at)), k=p.at-c;
     if(I.mystery&&!c){ if(mysteryOpen()) out.push({left:.5,text:'Mystery Island is ready: build the rowboat',frac:0}); continue; }
+    if(I.mystery){ out.push({left:k,text:`Next chapter: ${p.name.replace(/^The /,'the ')}`,frac:(c-prev)/Math.max(1,p.at-prev)}); continue; }   // one piece per chapter: "1 more chapter: The moon gate" read oddly
     out.push({left:k+(c?0:.5),text:c?`${k} more ${I.unit}${k===1?'':'s'}: ${p.name} on ${I.name}`:`Your first ${I.unit} finds ${I.name} in the mist`,frac:(c-prev)/Math.max(1,p.at-prev)}); }
-  out.sort((a,b)=>a.left-b.left); return out[0]||null; }
+  out.sort((a,b)=>a.left-b.left); return out; }
 const islandsOpen=o=>Object.keys(ISLES).filter(id=>isleCount(id,o)>0);
 
 // What's built, as ids: home pieces, discovered islands, each island's pieces. New ones get revealed.
@@ -10381,6 +10388,7 @@ function isleAnyway(isle){ if(isle==='otterwood') trailGo('otter'); else if(isle
   else if(isle==='blitzbay') homeGo('cpu'); else if(isle==='moonstone') mysteryStart(0); else homeGo('quick'); }
 function isl3AfterReveal(o){ o=worldStore();
   if(ISL3.finales&&ISL3.finales.length){ const f=ISL3.finales.shift(); finaleCard(f); return; }
+  if(ISL3.thenChapter!=null){ const i=ISL3.thenChapter; ISL3.thenChapter=null; if(ISL3.on&&!ISL3.revealing){ setTimeout(()=>mysteryStart(i),600); return; } }   // came from "The mystery, chapter N": on to it
   if(ISL3.pending_acc&&ISL3.pending_acc.length){ const a=ISL3.pending_acc.shift(); accOffer(a); return; }
   if(worldCount(o)>=10&&!o.pick&&!ISL3.askedPick){ ISL3.askedPick=true; pickOpen(); } }
 
@@ -11236,7 +11244,7 @@ function nextCandidates(){
     if(smp){ if(!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png'); const i=SAMPLES.indexOf(smp);
       out.push({kind:'library',isle:'brickworks',t:`From the library: ${smp.name}`,s:'',thumb:smp.thumb,go:()=>{ if(mp) mpLeave(); if(game) endGame(); libDefaults(); loadSample(i); clearTimeout(timer); rebuild(); setTab('build'); }}); } }
   if(mysteryOpen()){ const i=mysteryNext(o); if(i>=0){ const m=MYSTERY[i], smp=SAMPLES.find(x=>x.name===m.name); if(smp&&!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png');
-    out.push({kind:'mystery',isle:'moonstone',t:`🌙 The mystery, chapter ${i+1}: ${m.name}`,s:'',thumb:smp?smp.thumb:'',go:()=>mysteryStart(i)}); } }
+    out.push({kind:'mystery',isle:'moonstone',t:`🌙 The mystery, chapter ${i+1}: ${m.name}`,s:'',thumb:smp?smp.thumb:'',go:()=>mysteryVia(i)}); } }
   for(const c of out){ const go=c.go; c.go=()=>islandSetOff(c.isle,go); }   // an island not found yet: its arrival film first
   return out;
 }
@@ -11252,7 +11260,7 @@ function nextBuild(){
   const best=C.slice().sort((a,b)=>(isleFrac(a.isle,o)-isleFrac(b.isle,o))||(turn(a)-turn(b)))[0];
   const go=best.go; return {...best,go:()=>{ quickPlaySet(false); nextMark(best.kind); go(); }};
 }
-window.bloppitNext={next:()=>{ const n=nextBuild(); return n&&{t:n.t,kind:n.kind}; },cands:()=>nextCandidates().map(c=>c.kind),mark:k=>nextMark(k),complete:()=>islesComplete(worldStore()),mysteryOpen:()=>mysteryOpen(),unlocked:()=>worldUnlocked(worldStore()),seen:()=>seenGet(),reveal:ids=>isl3Reveal(ids,worldStore()),go:()=>{ const n=nextBuild(); if(n) n.go(); },count:id=>isleCount(id,worldStore()),wardrobe:()=>wardrobeOpen(),chapter:i=>mysteryStart(i)};   // for tests
+window.bloppitNext={next:()=>{ const n=nextBuild(); return n&&{t:n.t,kind:n.kind}; },cands:()=>nextCandidates().map(c=>c.kind),mark:k=>nextMark(k),complete:()=>islesComplete(worldStore()),mysteryOpen:()=>mysteryOpen(),unlocked:()=>worldUnlocked(worldStore()),seen:()=>seenGet(),reveal:ids=>isl3Reveal(ids,worldStore()),go:()=>{ const n=nextBuild(); if(n) n.go(); },count:id=>isleCount(id,worldStore()),wardrobe:()=>wardrobeOpen(),chapter:i=>mysteryStart(i),via:i=>mysteryVia(i),goals:()=>worldGoals(worldStore()).map(g=>g.text)};   // for tests
 // Start a Blitz race straight from Play next: the race page with the puzzle and the Longtail picked, then Go
 // Blitz Bay through Bloppitopia: the next race on the ladder, shown as one card with one button (no puzzle, speed or
 // name to choose; that's all on the Blitz page for races outside the story)
