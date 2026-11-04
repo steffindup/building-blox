@@ -9654,19 +9654,26 @@ const PIECES={
   ],
   // Moonstone Isle: one piece per chapter of the mystery
   moonstone:[
-    {at:1,name:'The rowboat',make:g=>{ const b=boat3('#A95500',.9); b.traverse(x=>{ if(x.isMesh&&(x.geometry.type==='ShapeGeometry'||x.geometry.type==='BoxGeometry')) x.visible=false; }); b.position.set(3.2,TOP3-.25,1.8); b.rotation.y=.8; g.add(b); for(let i=0;i<3;i++) g.add(box3(.5,.08,.4,'#8A5A3B',2.2-i*.45,TOP3,1.2-i*.2)); }},
-    {at:2,name:'The map stone',make:g=>{ g.add(box3(1.1,.7,.18,'#E4CD9E',-1.6,TOP3,2.4,{y:.4})); g.add(mesh3(new THREE.SphereGeometry(.08,6,4),m3('#C91A09'),-1.5,TOP3+.45,2.52)); }},
-    {at:3,name:'The lookout tower',make:g=>{ const t=new THREE.Group(); for(const [a,b] of [[-.3,-.3],[.3,-.3],[-.3,.3],[.3,.3]]) t.add(box3(.08,2.0,.08,'#7A4E2E',a,0,b)); t.add(box3(.9,.08,.9,'#A86E48',0,2.0,0)); t.add(mesh3(new THREE.ConeGeometry(.7,.5,4),m3('#C91A09'),0,2.55,0,{y:Math.PI/4})); t.add(flag3('#0055BF',0,2.8,0)); t.position.set(1.9,TOP3,-1.9); g.add(t); }},
+    {at:1,name:'The rowboat',make:g=>{ const b=boat3('#A95500',.9); b.traverse(x=>{ if(x.isMesh&&(x.geometry.type==='ShapeGeometry'||x.geometry.type==='BoxGeometry'||(x.geometry.parameters||{}).radiusTop<.05)) x.visible=false; });   /* a rowboat: no cabin, sail or mast */
+      const I=ISLES.moonstone, t=Math.atan2(-I.z,-I.x), c=Math.cos(t), sn=Math.sin(t);   // on the water at the shore facing home: the boat you came in (Bloppit's old rowboat)
+      b.position.set(c*I.r*1.12,0,sn*I.r*1.12); b.rotation.y=-t+Math.PI/2; g.add(b); for(let i=0;i<3;i++){ const d=I.r*(.62+i*.13); g.add(box3(.5,.08,.4,'#8A5A3B',c*d,TOP3,sn*d,{y:-t})); } }},
+    {at:2,name:'The map stone',make:g=>{ g.add(box3(1.1,.7,.18,'#E4CD9E',-1.6,TOP3,2.4,{y:.4})); g.add(mesh3(new THREE.SphereGeometry(.08,6,4),glow3('#C9B6F2'),-1.5,TOP3+.45,2.52)); }},   // the map marks the lavender light
+    {at:3,name:'The lookout tower',make:g=>{ const t=new THREE.Group(); for(const [a,b] of [[-.3,-.3],[.3,-.3],[-.3,.3],[.3,.3]]) t.add(box3(.08,2.0,.08,'#7A4E2E',a,0,b)); t.add(box3(.9,.08,.9,'#A86E48',0,2.0,0)); t.add(mesh3(new THREE.ConeGeometry(.7,.5,4),m3('#3E4A7A'),0,2.55,0,{y:Math.PI/4})); t.add(flag3('#0055BF',0,2.8,0)); t.position.set(1.9,TOP3,-1.9); g.add(t); }},
     {at:4,name:'The little bridge',make:g=>{ g.add(cyl3(.75,.75,.04,14,'#36AEBF',-2.3,TOP3+.01,-1.0)); g.add(ropeBridge3([-3.0,TOP3+.1,-1.3],[-1.6,TOP3+.1,-.7])); for(const [x,z] of [[-2.1,-1.5],[-2.6,-.6]]) g.add(cyl3(.18,.18,.03,8,'#4B9F4A',x,TOP3+.04,z)); }},
     {at:5,name:'The moon gate',make:g=>{ const a=new THREE.Mesh(new THREE.TorusGeometry(.9,.18,8,24,Math.PI),m3('#F4F4F4')); a.position.set(-.6,TOP3,-2.7); a.rotation.y=.3; a.castShadow=true; g.add(a); for(const sx of [-1,1]) g.add(box3(.36,.12,.36,'#F4F4F4',-.6+sx*.86,TOP3,-2.7+sx*.26)); ['#C91A09','#F2CD37','#0055BF','#4B9F4A','#FE8A18','#AC78BA','#C91A09'].forEach((c,i)=>{ const t=Math.PI*(i+.5)/7, d=mesh3(new THREE.SphereGeometry(.09,6,4),m3(c),0,0,0); d.position.set(-.6+Math.cos(t)*.9*Math.cos(.3),TOP3+Math.sin(t)*.9,-2.7-Math.cos(t)*.9*Math.sin(.3)); g.add(d); }); }},
     {at:6,name:'The constellation cube',make:g=>{ const cb=mesh3(new THREE.BoxGeometry(.7,.7,.7),m3('#1B2A4A'),.4,TOP3+.95,2.6); cb.userData.roty=1; g.add(cb);
       for(let i=0;i<7;i++){ const st=mesh3(new THREE.OctahedronGeometry(.07,0),glow3(i===6?'#E9DFFF':'#FFF03A'),.4+Math.cos(i*.9)*.5,TOP3+.95+Math.sin(i*1.7)*.42,2.6+Math.sin(i*.9)*.5); st.castShadow=false; st.userData.spin=1; g.add(st); } }},
     {at:7,name:'The lantern',make:g=>{ const p=cyl3(.04,.05,1.1,6,'#6B4229',-1.9,TOP3,-.4); g.add(p); g.add(box3(.26,.3,.26,'#2A2254',-1.9,TOP3+1.1,-.4)); const lg=mesh3(new THREE.BoxGeometry(.16,.2,.16),glow3('#D9C8FF'),-1.9,TOP3+1.25,-.4); lg.castShadow=false; g.add(lg); g.add(sparkle3(-1.9,TOP3+1.7,-.4)); }},
-    {at:8,name:'The Moonstone Lighthouse',make:g=>{ const l=lighthouse3('#5A93DB'); l.scale.setScalar(1.25); l.position.set(0,TOP3,0); g.add(l);
+    {at:8,name:'The Moonstone Lighthouse',make:(g,c)=>{ const l=lighthouse3('#5A93DB'); l.scale.setScalar(1.25); l.position.set(0,TOP3,0); g.add(l);
+      if(c>=9){ const lr=l.children[5]; lr.material=new THREE.MeshBasicMaterial({color:0xB9A6F0,transparent:true,opacity:.22,depthWrite:false}); lr.scale.y=1.9; lr.position.y=2.88; l.children[6].position.y+=.38; }   // the lamp room turns to tall glass round the moon crystal (it sits under an overhanging roof)
       ['#C91A09','#A5CA18','#0055BF','#F4BC22','#2E8FE0','#FE8A18'].forEach((c,i)=>{ const a=i/6*Math.PI*2; g.add(box3(.3,.18,.18,c,Math.cos(a)*.95,TOP3,Math.sin(a)*.95,{y:-a})); });   // the six friends' bricks stay in the ring
-      const beam=new THREE.Mesh(new THREE.ConeGeometry(1.1,14,12,1,true),new THREE.MeshBasicMaterial({color:0xFFF3B0,transparent:true,opacity:.18,depthWrite:false,side:THREE.DoubleSide})); beam.rotation.z=Math.PI/2; beam.geometry.translate(0,7,0); beam.position.set(0,3.4,0); beam.userData.beam=1; g.add(beam); }},
-    {at:9,name:'The moon crystal',make:g=>{ [['#E9DFFF',0,0,1.3],['#AC78BA',.55,.3,.8],['#AC78BA',-.5,.35,.7],['#9FC3E9',.2,-.55,.6]].forEach(([c,x,z,h])=>{ const k=mesh3(new THREE.OctahedronGeometry(.35,0),glow3(c),x-2.4,TOP3+h*.6,z+.9); k.scale.set(.8,h*1.6,.8); k.castShadow=false; g.add(k); }); g.add(sparkle3(-2.4,2.4,.9)); }},
-    {at:10,name:'The Galaxy ship',make:g=>{ const sh=galaxyShip3(); sh.scale.setScalar(.42); sh.position.set(-1.2,TOP3-.05,3.3); sh.rotation.y=.35; g.add(sh); }},
+      const beam=new THREE.Mesh(new THREE.ConeGeometry(1.1,14,12,1,true),new THREE.MeshBasicMaterial({color:0xFFF3B0,transparent:true,opacity:.18,depthWrite:false,side:THREE.DoubleSide})); beam.rotation.z=Math.PI/2; beam.geometry.translate(0,7,0); beam.position.set(0,3.4,0); beam.userData.beam=1; if(c>=9) beam.material.color.set(0xD9C8FF); g.add(beam); }},
+    {at:9,name:'The moon crystal',make:g=>{ const y=TOP3+3.6;   // at the lighthouse's heart: inside the lamp room (centre 2.88 up, ×1.25), which turns to glass
+      [['#B898FF',0,0,.5],['#9A5FC0',.17,.09,.3],['#9A5FC0',-.16,.11,.28],['#7FA4E6',.06,-.17,.24]].forEach(([c,x,z,h])=>{ const k=mesh3(new THREE.OctahedronGeometry(.16,0),new THREE.MeshBasicMaterial({color:new THREE.Color(c).convertSRGBToLinear()}),x,y-.22+h*.42,z); k.scale.set(.9,h*3.2,.9); k.castShadow=false; g.add(k); }); }},
+    {at:10,name:'The Galaxy ship',make:g=>{ const sh=galaxyShip3(); sh.scale.setScalar(.42);
+      const I=ISLES.moonstone, t=Math.atan2(-I.z,-I.x), bx=Math.cos(t)*I.r*1.12, bz=Math.sin(t)*I.r*1.12;   // on the front shore away from the rowboat
+      const [x,z,ry]=[[-1.2,3.3,.35],[2.5,2.4,-.55]].sort((p,q)=>Math.hypot(q[0]-bx,q[1]-bz)-Math.hypot(p[0]-bx,p[1]-bz))[0];
+      sh.position.set(x,TOP3-.05,z); sh.rotation.y=ry; g.add(sh); }},
   ],
 };
 
@@ -9842,9 +9849,9 @@ function isl3BuildBloppitopia(o,W,add){
   // the five islands: built up to their count, or waiting in the mist
   for(const id of Object.keys(ISLES)){ const I=ISLES[id], c=isleCount(id,o), P=blob3(0,0,I.r,I.seed,26), g=new THREE.Group();
     g.add(islandBody3(P,0,0,I.seed,!!I.sand)); g.position.set(I.x,0,I.z); tag3(g,'isle:'+id); ISL3.isles[id]={x:I.x,z:I.z,r:I.r,g};
-    if(c>0){ isleBase(id,g,c); const ctx={creations:Object.entries(o.builds).filter(([k])=>k.startsWith('p:')).sort((a,b)=>(b[1].t||0)-(a[1].t||0)).map(([k])=>k)};
+    if(c>0){ isleBase(id,g,c); if(I.mystery) moonRecolor3(g); const ctx={creations:Object.entries(o.builds).filter(([k])=>k.startsWith('p:')).sort((a,b)=>(b[1].t||0)-(a[1].t||0)).map(([k])=>k)};
       PIECES[id].forEach((p,i)=>{ if(c<p.at) return; const pg=new THREE.Group(); p.make(pg,c,ctx); tag3(pg,'piece:'+id+':'+i); pg.userData.piece=id+':'+i; g.add(pg); ISL3.pieces[id+':'+i]=pg; });
-      if(I.mystery){ const b=boat3('#8B5A2B',.9), t=Math.atan2(-I.z,-I.x); b.position.set(Math.cos(t)*I.r*1.12,0,Math.sin(t)*I.r*1.12); b.rotation.y=-t; b.userData.bob=1; g.add(b); }   // reached by rowboat, not a bridge
+      if(I.mystery) moonNight3(g,I.r);   // reached by the chapter 1 rowboat (no bridge, no second boat); always night there
       else { const a=edge3(HOMEP,0,0,I.x,I.z), b=edge3(blob3(I.x,I.z,I.r,I.seed,26),I.x,I.z,0,0); W.add(tag3(bridge3(a,b,id==='brainpeak'),'isle:'+id)); }
       const next=PIECES[id].find(p=>c<p.at); if(next&&next.at-c<=1) g.add(sparkle3(0,2.6,0)); if(!next) g.add(sparkle3(0,6.2,0));
     } else if(I.mystery){ g.traverse(x=>{ if(x.isMesh) x.material=m3('#3B4466'); }); g.add(mysteryVeil3(I.r,mysteryOpen())); g.scale.setScalar(MYST_S); g.userData.misty=1; }   // small and far: a hint on the horizon
@@ -9897,6 +9904,19 @@ function mist3(r){ const g=new THREE.Group(); for(let i=0;i<9;i++){ const a=i*.7
 // Moonstone Isle before you reach it: far out at sea, where it's always night. Dark water, a slow swirl of lavender mist,
 // tall dark trees and a lighthouse showing through, and at its top a faint lavender light that pulses (lufu's, though
 // nobody knows that yet). Once the five islands are done the mist thins and the light grows brighter.
+// Moonstone Isle once reached: always night there, inside a sunny Bloppitopia. Its own ground and trees in night colours
+// (pale silver sand, dark violet ground, dark trees), the sea dark around it, low lavender mist and a few stars.
+const MOON_NIGHT={'#6CC24A':'#3A3462','#4E9E3A':'#2C2750','#F1DFBC':'#DCE1EC','#E3C99A':'#BCC4D6','#EFE9DD':'#5B6286','#D9D1C2':'#474D70',
+  '#4FB33A':'#1F4F4C','#3E9E36':'#183F3E','#5CC046':'#255C5A','#7A4E2E':'#3E3040','#8D96A3':'#7D86AC'};
+function moonRecolor3(g){ const swap=new Map(Object.entries(MOON_NIGHT).map(([a,b])=>[m3(a),m3(b)]));
+  g.traverse(x=>{ if(!x.isMesh) return; x.material=Array.isArray(x.material)?x.material.map(m=>swap.get(m)||m):(swap.get(x.material)||x.material); }); }
+function moonNight3(g,r){
+  const nt=ISL3.moonSeaTex||(ISL3.moonSeaTex=(()=>{ const c=document.createElement('canvas'); c.width=c.height=128; const x=c.getContext('2d'), gr=x.createRadialGradient(64,64,0,64,64,64); gr.addColorStop(0,'rgba(16,18,52,.92)'); gr.addColorStop(.6,'rgba(22,24,66,.8)'); gr.addColorStop(1,'rgba(30,30,90,0)'); x.fillStyle=gr; x.fillRect(0,0,128,128); return new THREE.CanvasTexture(c); })());
+  const sea=new THREE.Mesh(new THREE.PlaneGeometry(r*4.4,r*4.4),new THREE.MeshBasicMaterial({map:nt,transparent:true,depthWrite:false})); sea.rotation.x=-Math.PI/2; sea.position.y=.04; sea.renderOrder=-1; g.add(sea);   // the sea goes dark round it
+  const dome=new THREE.Mesh(new THREE.SphereGeometry(r*1.75,24,12,0,Math.PI*2,0,Math.PI/2),new THREE.MeshBasicMaterial({color:0x1A1F4A,transparent:true,opacity:.38,depthWrite:false,side:THREE.BackSide})); dome.position.y=-.2; dome.castShadow=false; dome.renderOrder=-1; dome.raycast=()=>{}; g.add(dome);   // a pocket of night sky over it
+  const st=new THREE.Group(); for(let i=0;i<12;i++){ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:ISL3.haloTex||(ISL3.haloTex=sparkTex3()),color:0xE6DEFF,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
+    const a=i*2.3, d=r*(.35+(i%4)*.3); s.scale.setScalar(.22+(i%3)*.08); s.position.set(Math.cos(a)*d,4.6+(i%5)*.45,Math.sin(a)*d); s.userData.twinkle=i; s.raycast=()=>{}; st.add(s); }
+  g.add(st); g.userData.night=1; return g; }
 function mysteryVeil3(r,open){ const g=new THREE.Group();
   const nt=ISL3.nightTex||(ISL3.nightTex=(()=>{ const c=document.createElement('canvas'); c.width=c.height=128; const x=c.getContext('2d'), gr=x.createRadialGradient(64,64,10,64,64,64); gr.addColorStop(0,'rgba(18,22,60,.78)'); gr.addColorStop(.55,'rgba(26,28,78,.5)'); gr.addColorStop(1,'rgba(30,30,90,0)'); x.fillStyle=gr; x.fillRect(0,0,128,128); return new THREE.CanvasTexture(c); })());
   const nw=new THREE.Mesh(new THREE.PlaneGeometry(r*3.6,r*3.6),new THREE.MeshBasicMaterial({map:nt,transparent:true,depthWrite:false})); nw.rotation.x=-Math.PI/2; nw.position.y=.04; nw.renderOrder=-1; g.add(nw);   // the sea darkens around it: always night there
