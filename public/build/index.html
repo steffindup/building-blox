@@ -2857,11 +2857,11 @@ function buildModel(){
     }
   }
   for(let y=0;y<H;y++) addSteps(layers[y].filter(b=>!placed.has(b)),y,false);  // can't happen, but never lose a brick
-  if(MIR){   // each step in two: Pippa's bricks (the left half and the middle), then yours (their reflections). The finale turns it round: you build first, in your colours, and Pippa copies you
+  if(MIR){   // each step in two: Pippa's bricks (the left half and the middle), then yours (their reflections). The finale too, but your half is in any colours you like
     const st2=[], br2=[];
     const kb=(x,b)=>x+','+b.y+','+b.z+','+b.sx+','+b.sz+','+b.c, twin=new Map(); for(const b of bricks) if(seg(b.x)===2) twin.set(kb(b.x,b),b);
     for(const s0 of steps){ const P=s0.bricks.filter(b=>seg(b.x)!==2), K=P.filter(b=>seg(b.x)===0).map(b=>twin.get(kb(W-b.x-b.sx,b))).filter(Boolean);   // your step: exactly the reflections of Pippa's
-      for(const [list,who] of S.paint?[[P,'kid'],[K,'pippa']]:[[P,'pippa'],[K,'kid']]) if(list.length){ const idx=st2.length; list.forEach(b=>{ b.step=idx; br2.push(b); }); st2.push({...s0,bricks:list,[who]:true}); } }
+      for(const [list,who] of [[P,'pippa'],[K,'kid']]) if(list.length){ const idx=st2.length; list.forEach(b=>{ b.step=idx; br2.push(b); }); st2.push({...s0,bricks:list,[who]:true}); } }
     return {W,H,D,bricks:br2,steps:st2,mirror:{axis:W/2},paint:S.paint?new Map():null,name:niceName(front.name)}; }
   return {W,H,D,bricks,steps,name:niceName(front.name)};
 }
@@ -2901,8 +2901,9 @@ function brickIcon(a,l,c){
 const partName=p=>`${PALETTE[p.c][0]} ${PIECE()} ${p.a} × ${p.l}`;
 // Short name for a brick, as kids would say it: "Light Blue 1×2 brick"
 const brickLabel=(c,a,l)=>`${PALETTE[c][0]} ${Math.min(a,l)}×${Math.max(a,l)} ${PIECE()}`;
-const PAINT_C=PALETTE.findIndex(p=>p[0]==='White');   // the finale's booklet: shapes only, the colours are yours
-const calloutHTML=list=>partsOf(model&&model.paint?list.map(b=>({...b,c:PAINT_C})):list).map(p=>`<div class="pc" role="button" tabindex="0" data-name="${brickLabel(p.c,p.a,p.l)}" title="${brickLabel(p.c,p.a,p.l)}"><img alt="${brickLabel(p.c,p.a,p.l)}" src="${brickIcon(p.a,p.l,p.c)}"><b>${p.n}x</b></div>`).join('');
+const PAINT_C=PALETTE.findIndex(p=>p[0]==='White');   // the finale's booklet: your half is shapes only, the colours are yours
+const showC=(m,b)=>m&&m.paint&&m.steps[b.step]&&m.steps[b.step].kid?PAINT_C:b.c;   // Pippa's half keeps her colours
+const calloutHTML=list=>partsOf(model&&model.paint?list.map(b=>({...b,c:showC(model,b)})):list).map(p=>`<div class="pc" role="button" tabindex="0" data-name="${brickLabel(p.c,p.a,p.l)}" title="${brickLabel(p.c,p.a,p.l)}"><img alt="${brickLabel(p.c,p.a,p.l)}" src="${brickIcon(p.a,p.l,p.c)}"><b>${p.n}x</b></div>`).join('');
 const partsHTML=list=>partsOf(list).map(p=>`<div class="part-row"><img alt="" src="${brickIcon(p.a,p.l,p.c)}"><div><div class="q">${p.n}x</div><div class="d">${PALETTE[p.c][0]}<br>${TILES?'Tile':'Brick'} ${p.a} × ${p.l}</div></div></div>`).join('');
 
 /* ---------- Three.js scene ---------- */
@@ -2960,11 +2961,11 @@ function buildScene(m){
   if(m.kind==='picture'){ basePlate=makeBase(m); modelGroup.add(basePlate); }
   modelGroup.position.set(-m.W/2,0,-m.D/2);
   const groups=new Map();
-  for(const b of m.bricks){const k=b.sx+'x'+b.sz+'|'+b.c; if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(b);}
+  for(const b of m.bricks){const k=b.sx+'x'+b.sz+'|'+showC(m,b); if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(b);}
   const M=new THREE.Matrix4();
   for(const list of groups.values()){
     list.sort((a,b)=>a.step-b.step);
-    const b0=list[0], im=new THREE.InstancedMesh(brickGeo(b0.sx,b0.sz),mat(m.paint?PAINT_C:b0.c),list.length);
+    const b0=list[0], im=new THREE.InstancedMesh(brickGeo(b0.sx,b0.sz),mat(showC(m,b0)),list.length);
     list.forEach((b,i)=>{M.makeTranslation(b.x,b.y*1.2,b.z); im.setMatrixAt(i,M);});
     im.instanceMatrix.needsUpdate=true; im.frustumCulled=false;
     im.userData.steps=Int32Array.from(list,b=>b.step); im.userData.bricks=list;
@@ -2997,16 +2998,16 @@ function showStep(k,animate){
   if(bookMirror) bookMirror.visible=!!(model&&model.mirror&&k<model.steps.length);
   if(!model||k>=model.steps.length) return;
   const hang=!!model.steps[k].hang;
-  if(model.mirror&&model.steps[k].kid&&!model.paint){   // your half: the booklet shows Pippa's bricks you're reflecting, not the answer
+  if(model.mirror&&model.steps[k].kid){   // your half: the booklet shows Pippa's bricks you're reflecting, not the answer (the finale too)
     const src=model.steps[k-1]&&model.steps[k-1].pippa?model.steps[k-1].bricks:[];
     src.forEach((b,i)=>{ const ms=new THREE.Mesh(brickGeo(b.sx,b.sz),MIRROR_SRC_MAT); ms.scale.set(1.04,1.06,1.04); ms.add(new THREE.LineSegments(edgeGeo(b.sx,b.sz),MIRROR_EDGE_MAT));
       ms.position.set(b.x-b.sx*.02,b.y*1.2-.03,b.z-b.sz*.02); ms.userData.ty=ms.position.y; ms.userData.i=i; ms.userData.b=b; current.add(ms); });
     return; }
   const doneB=k===cur?usedSet():null, part=!!doneB&&doneB.size>0&&model.steps[k].bricks.some(b=>!doneB.has(b));
   model.steps[k].bricks.forEach((b,i)=>{
-    if(part&&doneB.has(b)){ const ms=new THREE.Mesh(brickGeo(b.sx,b.sz),mat(model.paint?PAINT_C:b.c)); ms.position.set(b.x,b.y*1.2,b.z); ms.userData.ty=b.y*1.2; ms.userData.i=i; ms.userData.b=b; current.add(ms); return; }   // already in: shown like the rest of the model
+    if(part&&doneB.has(b)){ const ms=new THREE.Mesh(brickGeo(b.sx,b.sz),mat(showC(model,b))); ms.position.set(b.x,b.y*1.2,b.z); ms.userData.ty=b.y*1.2; ms.userData.i=i; ms.userData.b=b; current.add(ms); return; }   // already in: shown like the rest of the model
     if(part){ const hl=new THREE.Mesh(brickGeo(b.sx,b.sz),MIRROR_SRC_MAT); hl.scale.set(1.08,1.1,1.08); hl.position.set(b.x-b.sx*.04,b.y*1.2-.06,b.z-b.sz*.04); hl.userData.ty=hl.position.y; hl.userData.i=i; current.add(hl); }   // still to go: glowing
-    const bc=model.paint?PAINT_C:b.c, ms=new THREE.Mesh(brickGeo(b.sx,b.sz),hang?xrayMat(bc):mat(bc)); if(hang) ms.renderOrder=5;
+    const bc=showC(model,b), ms=new THREE.Mesh(brickGeo(b.sx,b.sz),hang?xrayMat(bc):mat(bc)); if(hang) ms.renderOrder=5;
     ms.add(new THREE.LineSegments(edgeGeo(b.sx,b.sz),edgeMat));
     ms.position.set(b.x,b.y*1.2,b.z); ms.userData.ty=b.y*1.2; ms.userData.i=i; ms.userData.b=b;
     current.add(ms);
@@ -3618,7 +3619,7 @@ function resetBuild(){
   run={miss:0,hints:new Set(),auto:0,memory:null};  // this attempt's misses, hinted steps, placed-for-me bricks (the clean score) and whether it was built from memory
   // A picture goes on its baseplate, so where each tile goes is fixed from the start
   if(model&&model.kind==='picture') off={x:0,z:0};
-  if(model&&model.mirror){ off={x:0,z:0}; $('#trayNote').textContent=model.paint?'The finale, in your colours: you build first. Pick up a brick, choose any colour under it, and build the shape in the booklet on your side. Pippa copies your colours on her side of the mirror line.':'Pippa builds her side first. Then build the same on your side of the glassy mirror line, flipped like a reflection: a brick on her far left goes on your far right. The glowing bricks in the booklet are the ones to copy.'; }   // a mirror build sits where Pippa starts it
+  if(model&&model.mirror){ off={x:0,z:0}; $('#trayNote').textContent=model.paint?'The finale, in your colours: Pippa builds her side first, then you mirror it on your side, flipped like a reflection. Pick up a brick and choose any colour under it: your side is yours to paint.':'Pippa builds her side first. Then build the same on your side of the glassy mirror line, flipped like a reflection: a brick on her far left goes on your far right. The glowing bricks in the booklet are the ones to copy.'; }   // a mirror build sits where Pippa starts it
   if(model) makePieces();
   setStatus(model?(TILES?'Open the parts box and pick up the tiles for row 1. Row 1 is the top of the picture, at the far edge.':'Open the parts box and pick up a brick to start.'):'');
   updateBuildUI(); frameBuild(false);
@@ -4341,17 +4342,16 @@ function placeBrick(t,ax,az){
 }
 // Pippa's half of a mirror build: she places her bricks herself (free, never a hint), then it's your turn to reflect them
 let pippaT=null, pippaBusy=false;
-function pippaTurn(){ if(model&&model.paint&&!mp&&model.steps[cur]&&model.steps[cur].kid) setStatus(`🎨 Your side, your colours! Build the shape in the booklet in any colours you like (pick a colour under your brick). Pippa will copy you.${held?'':' Open the parts box.'}`,'ok');
+function pippaTurn(){ if(model&&model.paint&&!mp&&model.steps[cur]&&model.steps[cur].kid) setStatus(`🎨 Your turn: build the same as Pippa’s glowing bricks on your side of the mirror line, flipped like a reflection, in any colours you like (pick a colour under your brick).${held?'':' Open the parts box.'}`,'ok');
   else if(model&&model.mirror&&!mp&&model.steps[cur]&&model.steps[cur].kid) setStatus(`🪞 Your turn: build the same as Pippa’s glowing bricks on your side of the mirror line, flipped like a reflection.${held?'':' Open the parts box.'}`,'ok');
   if(pippaT||!model||!model.mirror||mp||cur>=model.steps.length||!model.steps[cur].pippa) return;
   const go=()=>{ pippaT=null; if(!model||!model.mirror||cur>=model.steps.length||!model.steps[cur].pippa||tab==='create') return; if(busy){ pippaT=setTimeout(go,180); return; }
     const s=model.steps[cur], t=s.bricks.find(b=>!placed.has(b)); if(!t) return;
     const prev=held, prevSel=sel?{...sel}:null, prevA=lastAnchor;
-    const tw=model.paint&&model.paint.get((model.W-t.x-t.sx)+','+t.y+','+t.z+','+t.sx+','+t.sz);   // the finale: your colour, copied
-    sel={sx:t.sx,sz:t.sz,c:tw!=null?tw:t.c}; lastAnchor={ax:t.x,az:t.z,px:t.x+t.sx/2,pz:t.z+t.sz/2};
+    sel={sx:t.sx,sz:t.sz,c:t.c}; lastAnchor={ax:t.x,az:t.z,px:t.x+t.sx/2,pz:t.z+t.sz/2};
     autoBusy=true; pippaBusy=true; try{ tryPlace(); } finally{ autoBusy=false; pippaBusy=false; }
     lastAnchor=prevA; if(prev&&hand.includes(prev)){ held=prev; sel=prevSel; setGhost(); } else if(prevSel&&held){ sel=prevSel; setGhost(); } else { sel=null; ghostGroup.clear(); }
-    if(s.bricks.every(b=>placed.has(b))&&model.paint) setStatus('🐧 Pippa copied your colours on her side!','ok');
+    if(s.bricks.every(b=>placed.has(b))&&model.paint) setStatus('🐧 Pippa built her side. Your turn: mirror it on your side, in any colours you like!','ok');
     else if(s.bricks.every(b=>placed.has(b))) setStatus(`🐧 Pippa built her side. Your turn: build the same on your side of the mirror line, flipped like a reflection.`,'ok');
     else pippaT=setTimeout(go,reduceMotion?60:280);
     updateBuildUI(); };
@@ -5909,7 +5909,7 @@ const SEA_LEVELS=[   // mirror builds (Oct 2026): Pippa builds one half, you bui
  {name:'Lighthouse',      sample:'Striped lighthouse', size:14, shape:'puffed', thick:.6, colors:5, pts:640, mirror:true},
  {name:'Pippa',           sample:'Pippa',           size:14, shape:'puffed', thick:.7, colors:6, pts:800, mirror:true},
  // The last one: the Festival Clock. Building it completes Flipper Beach and starts Pippa's festival.
- {name:'Festival Clock',  sample:'Festival Clock',  size:21, shape:'puffed', thick:.8, colors:8, pts:1200, boss:true, mirror:true, paint:true},   // the finale: you build first in your own colours, Pippa mirrors you
+ {name:'Festival Clock',  sample:'Festival Clock',  size:21, shape:'puffed', thick:.8, colors:8, pts:1200, boss:true, mirror:true, paint:true},   // the finale: you mirror Pippa as always, in your own colourss, Pippa mirrors you
 ];
 const PROGRESS_ISLES=['otterwood','brainpeak','blitzbay','brickworks'];
 // How far through Bloppitopia the child is, 0 to 1: the pieces built on the four islands, out of all of them
@@ -6036,7 +6036,7 @@ function startLevel(i){
   if(trail==='brain'&&model) game.math={v:2,tier:mathRung(mp_.grade,i,mathAdj(),mathUp()),grade:mp_.grade,locks:mathLocks(i,model.steps.length),solved:[],pts:0,q:{},right:0,miss:0};
   setTab('build'); updateGameBar();
   if(model&&model.mirror){ setTimeout(pippaTurn,700); }
-  if(model&&model.paint) setStatus(`🎨 The Festival Clock, in your colours! This time you build first, any colours you like, and Pippa mirrors you.`,'ok'); else if(model&&model.mirror) setStatus(`🐧 Pippa’s puzzle ${i+1}: a mirror build! Pippa builds one side, and you build the other side, flipped like a reflection.`,'ok'); else setStatus(trail==='sea'?`🐧 Pippa’s puzzle ${i+1}: build ${/^Pippa/.test(L.name)?'':'the '}${L.name}! Open the parts box to pick up bricks.`:`${TRAILS[trail].icon} Level ${i+1}: build the ${L.name}! Open the parts box to pick up bricks.`,'ok');
+  if(model&&model.paint) setStatus(`🎨 The Festival Clock, in your colours! Pippa builds her side first, and you mirror it in any colours you like.`,'ok'); else if(model&&model.mirror) setStatus(`🐧 Pippa’s puzzle ${i+1}: a mirror build! Pippa builds one side, and you build the other side, flipped like a reflection.`,'ok'); else setStatus(trail==='sea'?`🐧 Pippa’s puzzle ${i+1}: build ${/^Pippa/.test(L.name)?'':'the '}${L.name}! Open the parts box to pick up bricks.`:`${TRAILS[trail].icon} Level ${i+1}: build the ${L.name}! Open the parts box to pick up bricks.`,'ok');
   saveNow();
 }
 function endGame(){
