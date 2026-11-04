@@ -870,6 +870,30 @@ test('The New Horizon plays the first time the Galaxy ship sails to lufu\'s worl
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('the ring ceremony: film 19 ends, the child sets their brick in the empty slot (drag or tap), the ring lights, then film 20', { skip: skip() }, async () => {
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; for (const n of ['Rowboat', 'Old map', 'Lookout tower', 'Little bridge', 'Moon gate', 'Constellation cube', 'Lantern', 'Moonstone Lighthouse']) { const k = `m:${n}:12`; builds[k] = { n: 12, s: 2, t: 1e12, c: 1 }; log.push(k); }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 50, bonus: 0, builds, log, decor: [], pupName: 3, pupColor: 3, pupAsked: true, isle: 1, arrived: 1, films: ['moon-12', 'moon-13', 'moon-14', 'moon-15', 'moon-16', 'moon-17', 'moon-18'] })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 5, finished: 5, welcome: 1 })); } };
+  const t = await open('?nosplash=1&films=1#island', { init: seed });
+  await t.page.waitForFunction(() => window.bloppitIsland3().ctl && !document.querySelector('.is3-film'), null, { timeout: 90000 });
+  await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close()));
+  await t.page.evaluate(() => window.bloppitNext.reveal(['moonstone:7']));
+  await t.page.waitForFunction(() => window.bloppitFilmOn() === 'moon-19', null, { timeout: 30000, polling: 200 });
+  await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click());
+  await t.page.waitForFunction(() => window.bloppitRing(), null, { timeout: 10000, polling: 100 });
+  assert.equal(await t.page.evaluate(() => window.bloppitFilmOn()), null, 'film 20 waits for the brick');
+  assert.match((await t.page.evaluate(() => window.bloppitRing())).say, /Your brick, .+\. Right in the middle\./);
+  await t.page.waitForTimeout(800);
+  const br = await t.page.locator('.rg-brick').boundingBox(), sl = await t.page.locator('.rg-slot').boundingBox();
+  await t.page.mouse.move(br.x + br.width / 2, br.y + br.height / 2); await t.page.mouse.down();
+  for (let k = 1; k <= 10; k++) await t.page.mouse.move(br.x + br.width / 2 + (sl.x + sl.width / 2 - br.x - br.width / 2) * k / 10, br.y + br.height / 2 + (sl.y + sl.height / 2 - br.y - br.height / 2) * k / 10);
+  await t.page.mouse.up();
+  await t.page.waitForFunction(() => window.bloppitRing()?.lit, null, { timeout: 5000, polling: 100 });
+  await t.page.waitForFunction(() => window.bloppitFilmOn() === 'moon-20', null, { timeout: 15000, polling: 200 });
+  assert.ok(await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1')).films.includes('ring')), 'once per world');
+  assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), /\/video\/moonstone-the-moon-crystal\.mp4/);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('Moonstone films: building a chapter plays its film as its piece rises (Into the Mist for the rowboat), and it joins My films', { skip: skip() }, async () => {
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const k = 'm:Rowboat:10';
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds: { [k]: { n: 10, s: 2, t: 1e12, c: 1 } }, log: [k], decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, films: [] })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 }));
