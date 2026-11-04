@@ -983,6 +983,12 @@ body.bz-jump #view-blitz{visibility:hidden}
 .grown-sec .note{margin:0 0 8px}
 @media (max-width:640px){.who{padding-right:10px}.who-txt .tag{display:none}}
 .windlg::backdrop{background:rgba(10,16,24,.55)}
+/* In-app reader for About us, How it works, FAQ and Privacy (App Store app only; the pages are bundled in the app) */
+.pagedlg{border:0;padding:0;margin:0;width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;background:var(--page);color:var(--ink);display:flex;flex-direction:column}
+.pagedlg:not([open]){display:none}
+.pagedlg::backdrop{background:rgba(10,16,24,.55)}
+.pagedlg-bar{flex:none;display:flex;justify-content:flex-end;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;border-bottom:1px solid var(--line)}
+.pagedlg iframe{flex:1;width:100%;border:0;background:var(--page)}
 .windlg .wc-pic{display:block;width:auto;height:140px;margin:-6px auto 2px}
 .windlg .share-pic{display:block;width:150px;height:112px;object-fit:contain;margin:-4px auto 6px}
 .family{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
@@ -2286,6 +2292,10 @@ body.film-on{overflow:hidden}
   <p class="mq-fb" id="gateFb" aria-live="polite"></p>
   <div class="win-btns"><button class="ghost" id="gateNo" type="button">Cancel</button><button class="primary sm" id="gateGo" type="button">Continue</button></div>
 </dialog>
+<dialog class="pagedlg" id="pageDlg" aria-label="Bloppit page">
+  <div class="pagedlg-bar"><button class="primary sm" id="pageClose" type="button">Done</button></div>
+  <iframe id="pageFrame" title="Bloppit page"></iframe>
+</dialog>
 <dialog class="windlg" id="winDlg" aria-label="Level complete">
   <img class="win-pic" id="winPic" alt="" hidden>
   <span class="win-chars" id="winChars" hidden></span>
@@ -2406,14 +2416,54 @@ const gate=(()=>{
 })();
 if(APP){
   document.documentElement.classList.add('in-app');
-  // Links: the logo stays in the app; anything that leaves the app goes through the grown-ups gate, then opens in Safari.
+  // Links: the logo stays in the app; About us, How it works, FAQ and Privacy open inside the app (they're bundled
+  // in pages/ by mobile/scripts/build-www.mjs), so no gate. Anything that leaves the app goes through the grown-ups
+  // gate, then opens in Safari.
   document.addEventListener('click',async e=>{
     const a=e.target.closest&&e.target.closest('a[href]'); if(!a) return;
     const href=a.getAttribute('href');
     if(href==='/'||href==='./'){ e.preventDefault(); if(window.bloppitHome) window.bloppitHome(); return; }
-    if(/^(https?:|mailto:|tel:)/i.test(href)){ e.preventDefault(); if(await gate.ask('This opens a web page in Safari.')) window.open(href,'_blank'); }
+    const page=sitePage(href);
+    if(page){ e.preventDefault(); reader.open(page); return; }
+    if(/^(https?:|mailto:|tel:)/i.test(href)){ e.preventDefault(); leaveApp(href); }
   },true);
 }
+async function leaveApp(href){ if(await gate.ask('This opens a web page in Safari.')) window.open(href,'_blank'); }
+// "/faq/", "https://bloppit.com/faq/" or "faq.html" (a link inside a bundled page) → "faq"
+function sitePage(href){
+  const m=/^(?:https:\/\/(?:www\.)?bloppit\.com)?\/?(about|how-it-works|faq|privacy)(?:\/|\.html)?(?:#.*)?$/i.exec(href||'');
+  return m?m[1].toLowerCase():null;
+}
+// The in-app reader: a full-screen sheet showing a bundled page, with Done to come back to the game.
+const reader=(()=>{
+  const d=()=>document.getElementById('pageDlg'), f=()=>document.getElementById('pageFrame');
+  function open(page){
+    if(!APP) return;
+    f().src='pages/'+page+'.html';
+    if(!d().open) d().showModal();
+  }
+  function close(){ if(d().open) d().close(); f().src='about:blank'; }
+  if(APP){
+    document.getElementById('pageClose').onclick=close;
+    // Links inside the page: other site pages stay in the reader, "Play now" and the logo come back to the game,
+    // and anything outside Bloppit (socials, email) goes through the grown-ups gate.
+    f().addEventListener('load',()=>{
+      let doc; try{ doc=f().contentDocument; }catch(err){ return; }
+      if(!doc) return;
+      doc.addEventListener('click',e=>{
+        const a=e.target.closest&&e.target.closest('a[href]'); if(!a) return;
+        const href=a.getAttribute('href');
+        if(href.startsWith('#')) return;
+        e.preventDefault();
+        const page=sitePage(href);
+        if(page) open(page);
+        else if(/^(https?:|mailto:|tel:)/i.test(href)) leaveApp(href);
+        else close();   // /build/, the logo, anything else of the game's
+      },true);
+    });
+  }
+  return {open,close};
+})();
 
 /* ---------- Players (profiles on this device) ---------- */
 // Each player has their own name, age, game scores, math setting and build in progress.

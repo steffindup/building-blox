@@ -22,8 +22,11 @@ the main script in `public/build/index.html` ("App Store app"):
 - **Works offline.** three.js and the fonts are bundled from `node_modules` instead of loaded from a CDN.
   Only Play together needs the internet; it talks to `https://bloppit.com/api/room` (the room server allows
   the app's `capacitor://localhost` origin through CORS in `netlify/functions/room/room.mts`).
-- **Grown-ups gate.** Any link out of the app and sharing a room invite first ask for a number written in
-  words to be typed in digits. Bloppit isn't in the Kids category, so this is our own safety choice, not an Apple rule.
+- **About us, How it works, FAQ and Privacy open inside the app.** `build-www.mjs` bundles those website pages
+  into `www/pages/`, and the footer links show them in a full-screen reader with a Done button: no gate, works offline.
+- **Grown-ups gate.** Any link out of the app (socials, email, other websites) and sharing a room invite first ask
+  for a number written in words to be typed in digits. Bloppit isn't in the Kids category, so this is our own safety
+  choice, not an Apple rule.
 - **No chat and no voice** (switched off October 2026). Rooms are for placing bricks together; the old room
   actions answer 410 and the microphone permission has been removed from `Info.plist`.
 - **Haptics** on brick snaps, wrong spots, finished steps and finished models (`@capacitor/haptics`).

@@ -531,6 +531,20 @@ test('How to play in the app: the tall cut on an iPhone held upright, the wide a
   assert.deepEqual(await src(t), ['/video/how-to-play.mp4', false]); assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('Footer links in the app: About us, How it works, FAQ and Privacy open in the in-app reader with no grown-ups gate', { skip: skip() }, async () => {
+  const app = { fn: () => { window.BLOPPIT_APP = true; } };
+  const t = await open('?nosplash=1&welcome=0', { init: app, viewport: { width: 393, height: 852 }, touch: true });
+  const tap = (sel) => t.page.evaluate((sel) => { document.querySelector(sel).click(); return [document.getElementById('pageDlg').open, document.getElementById('gateDlg').open, document.getElementById('pageFrame').getAttribute('src')]; }, sel);
+  assert.deepEqual(await tap('.appfoot a[href*="/faq/"]'), [true, false, 'pages/faq.html']);
+  assert.deepEqual(await tap('.appfoot a[href*="/privacy/"]'), [true, false, 'pages/privacy.html']);
+  await t.page.click('#pageClose');
+  assert.equal(await t.page.evaluate(() => document.getElementById('pageDlg').open), false);
+  // A link that really leaves the app still asks a grown-up
+  await t.page.evaluate(() => { const a = document.createElement('a'); a.href = 'https://x.com/playbloppit'; a.id = 'outLink'; document.body.append(a); a.click(); });
+  assert.equal(await t.page.evaluate(() => document.getElementById('gateDlg').open), true);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('Brain Trail math: age 9 in October is 4th grade, later levels stay in 4th grade, and puzzles step up a grade only after a long run', { skip: skip() }, async () => {
   const kid = { fn: () => { localStorage.setItem('bloppit-players-v1', JSON.stringify({ cur: 'p1', n: 1, list: [{ id: 'p1', name: 'Alex', age: 9, color: '#D2352B' }] })); localStorage.setItem('bloppit-trail', 'brain'); } };
   const t = await open('?nosplash=1&welcome=0', { init: kid, at: '2026-10-14T15:00:00Z' });
