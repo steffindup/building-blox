@@ -1125,6 +1125,23 @@ test('Chapter 2: the ten mystery chapters end with the Galaxy ship; then lufu’
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('Moonstone Isle once reached: always night, one rowboat (plus the Galaxy ship), no red roof, the moon crystal inside the lighthouse lamp', { skip: skip() }, async () => {
+  const M = [['Rowboat', 10], ['Old map', 15], ['Lookout tower', 17], ['Little bridge', 12], ['Moon gate', 11], ['Constellation cube', 16], ['Lantern', 8], ['Moonstone Lighthouse', 23], ['Moon crystal', 15], ['Galaxy ship', 28]];
+  const seed = { arg: M, fn: (M) => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; M.forEach(([n, z], i) => { const k = `m:${n}:${z}`; builds[k] = { n: z, s: 2, t: 1e12 + i, c: 1 }; log.push(k); });
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, films: [], pick: 'tree' })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); } };
+  const t = await open('?nosplash=1&hour=11&mystery=1#island', { init: seed });
+  const r = await t.page.evaluate(() => { const I = window.bloppitIsland3(), T = window.THREE, g = I.isles.moonstone.g; let boats = 0, sails = 0, red = 0;
+    g.traverse((x) => { if (x.isMesh && x.visible && x.geometry.type === 'CylinderGeometry' && x.geometry.parameters.radialSegments === 6 && x.geometry.parameters.height < .4) boats++;
+      }); const red3 = new T.Color('#C91A09').convertSRGBToLinear().getHexString();
+    I.pieces['moonstone:0'].traverse((x) => { if (x.isMesh && x.visible && x.geometry.type === 'ShapeGeometry') sails++; });
+    for (const k of ['moonstone:1', 'moonstone:2']) I.pieces[k].traverse((x) => { if (x.isMesh && x.material?.color?.getHexString() === red3) red++; });
+    const lamp = I.pieces['moonstone:7'].children[0].children[5], lb = new T.Box3().setFromObject(lamp), cb = new T.Box3().setFromObject(I.pieces['moonstone:8']);
+    return { night: !!g.userData.night, boats, sails, red, inLamp: cb.getCenter(new T.Vector3()).y > lb.min.y && cb.getCenter(new T.Vector3()).y < lb.max.y, glass: !!lamp.material.transparent }; });
+  assert.ok(r.night, 'always night there'); assert.equal(r.boats, 1, 'one rowboat'); assert.equal(r.sails, 0, 'a rowboat has no sail');
+  assert.equal(r.red, 0, 'red is Bloppit\'s alone: not the map mark or the tower roof'); assert.ok(r.inLamp && r.glass, 'the moon crystal sits in the glass lamp room');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('Mystery Island label: "N islands to go!" and a bar that counts every piece built on the five islands', { skip: skip() }, async () => {
   // Frog Forest complete (15 of 15) and 6 Brain Trail levels: 1 island done, 21 of 73 pieces
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const k = 'm:Cottage:12';
