@@ -9525,23 +9525,22 @@ const PIECES={
     {at:7,name:'Scoreboard',make:g=>{ const s=new THREE.Group(); s.add(box3(.1,1.6,.1,'#3B3F46',-.6,0,0)); s.add(box3(.1,1.6,.1,'#3B3F46',.6,0,0)); s.add(box3(1.5,.8,.12,'#14202C',0,1.4,0)); s.add(mesh3(new THREE.PlaneGeometry(1.3,.6),glow3('#7FE3F2'),0,1.8,.07)); s.position.set(-2.2,TOP3,-2.8); s.rotation.y=.6; g.add(s); }},
     {at:8,name:'Floodlights',make:g=>[[3.6,-2.2],[-3.4,2.4],[3.4,2.6]].forEach(([x,z])=>{ g.add(box3(.1,2.6,.1,'#5B6778',x,TOP3,z)); g.add(mesh3(new THREE.BoxGeometry(.5,.3,.2),glow3('#FFFFFF'),x,TOP3+2.7,z)); })},
     {at:9,name:'Pit garages',make:g=>{ for(let i=0;i<3;i++){ g.add(box3(.8,.7,.7,'#ECE6DA',2.6+i*.0,TOP3,-1.2+i*.9)); g.add(box3(.6,.5,.04,['#0055BF','#F4BC22','#008F9B'][i],2.25,TOP3,-1.2+i*.9,{y:Math.PI/2})); } }},
-    {at:10,name:'Trophy tower',make:(g,n)=>{ const t=new THREE.Group(); t.add(cyl3(.35,.45,1.6,8,'#ECE6DA',0,0,0)); t.add(mesh3(new THREE.CylinderGeometry(.35,.15,.4,10),m3('#F4BC22',{metalness:.4,roughness:.4}),0,1.85,0)); for(let i=0;i<Math.min(n,15);i++){ const m=cyl3(.1,.1,.03,10,'#F4BC22',Math.cos(i)*.38,.2+i*.09,Math.sin(i)*.38,{x:Math.PI/2}); t.add(m); } t.position.set(-.2,TOP3,0); g.add(t); }},
+    {at:10,name:'Trophy tower',make:(g,n)=>{ const t=new THREE.Group(); t.add(cyl3(.35,.45,1.6,8,'#ECE6DA',0,0,0)); if(n<16) t.add(mesh3(new THREE.CylinderGeometry(.35,.15,.4,10),m3('#F4BC22',{metalness:.4,roughness:.4}),0,1.85,0));   /* the Grand Prix cup takes its place */ for(let i=0;i<Math.min(n,15);i++){ const m=cyl3(.1,.1,.03,10,'#F4BC22',Math.cos(i)*.38,.2+i*.09,Math.sin(i)*.38,{x:Math.PI/2}); t.add(m); } t.position.set(-.2,TOP3,0); g.add(t); }},
     {at:11,name:'Third grandstand',make:g=>g.add(stand3(0,3.4,Math.PI,'#008F9B'))},
     {at:12,name:'Balloon arch',make:g=>{ for(let i=0;i<11;i++){ const a=Math.PI*i/10; g.add(mesh3(new THREE.SphereGeometry(.2,8,6),m3(['#0055BF','#F4BC22','#FFFFFF'][i%3]),3.1,TOP3+Math.sin(a)*1.6,Math.cos(a)*1.3)); } }},
     {at:13,name:'Race cars',make:g=>[0,Math.PI].forEach((p,i)=>{ const c=car3(['#0055BF','#F4BC22'][i]); c.userData.race=p; g.add(c); })},
     {at:14,name:'Fireworks pads',make:g=>[[-3.2,-2.2],[3.4,-3.0],[-3.0,3.0]].forEach(([x,z])=>{ g.add(cyl3(.12,.12,.4,6,'#81007B',x,TOP3,z)); })},
     {at:15,name:'The Grand Bloppit Stadium',make:g=>{ const r=new THREE.Mesh(new THREE.TorusGeometry(3.9,.18,6,36),m3('#FFFFFF')); r.rotation.x=Math.PI/2; r.scale.set(1.2,1,1); r.position.y=TOP3+2.2; r.castShadow=true; g.add(r);
       for(let i=0;i<10;i++){ const a=i*Math.PI/5; g.add(box3(.1,2.2,.1,'#ECE6DA',Math.cos(a)*3.9*1.2,TOP3,Math.sin(a)*3.9)); } const sign=new THREE.Group(); sign.add(box3(2.4,.6,.1,'#0055BF',0,0,0)); sign.add(mesh3(new THREE.PlaneGeometry(2.2,.4),glow3('#FFE27A'),0,.3,.06)); sign.position.set(0,TOP3+2.4,-4.0); g.add(sign); 
-      // the giant trophy on the trophy tower, and fireworks over the stadium
-      const gold=m3('#F4BC22',{metalness:.55,roughness:.3}), tr=new THREE.Group(); tr.add(mesh3(new THREE.BoxGeometry(.9,.25,.9),m3('#14202C'),0,.12,0)); tr.add(mesh3(new THREE.CylinderGeometry(.12,.3,.55,10),gold,0,.52,0));
-      tr.add(mesh3(new THREE.CylinderGeometry(.75,.22,1.0,16),gold,0,1.3,0)); for(const sx of [-1,1]){ const hd=new THREE.Mesh(new THREE.TorusGeometry(.32,.07,6,14,Math.PI),gold); hd.position.set(sx*.72,1.35,0); hd.rotation.z=sx*-Math.PI/2; tr.add(hd); }
-      const st=mesh3(new THREE.OctahedronGeometry(.28,0),glow3('#FFE27A'),0,2.2,0); st.userData.roty=1.2; tr.add(st); tr.position.set(-.2,TOP3+2.25,0); tr.userData.roty=.25; g.add(tr);
+      // fireworks over the stadium (the Grand Prix cup crowns the trophy tower: race 16)
       [[-3.0,6.4,-2.6,'#F29A8A'],[3.2,7.0,-2.2,'#7FE3F2'],[0,8.0,-3.6,'#FFE27A'],[-1.6,7.2,2.4,'#A5CA18'],[2.4,6.6,2.6,'#FF698F']].forEach(([x,y,z,c],i)=>{ const bm=new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:0,depthWrite:false}), fb=new THREE.Group();
         for(let j=0;j<16;j++){ const u=(j+.5)/16, ph=Math.acos(1-2*u), th=j*2.4; fb.add(new THREE.Mesh(ISL3.sparkGeo||(ISL3.sparkGeo=new THREE.SphereGeometry(.09,5,4)),bm).translateX(Math.sin(ph)*Math.cos(th)).translateY(Math.cos(ph)).translateZ(Math.sin(ph)*Math.sin(th))); }
         fb.position.set(x,y,z); fb.userData.burst=i; fb.userData.bm=bm; g.add(fb); });
     }},
-    {at:16,name:'The Grand Prix cup',make:g=>{ const gold=m3('#F4BC22',{metalness:.55,roughness:.3}), c=new THREE.Group(); c.add(box3(.9,.5,.9,'#14202C',0,0,0)); c.add(mesh3(new THREE.CylinderGeometry(.1,.26,.5,10),gold,0,.75,0)); c.add(mesh3(new THREE.CylinderGeometry(.5,.18,.7,14),gold,0,1.35,0));
-      for(const sx of [-1,1]){ const h=new THREE.Mesh(new THREE.TorusGeometry(.2,.05,6,12),gold); h.position.set(sx*.55,1.4,0); c.add(h); } const st=mesh3(new THREE.OctahedronGeometry(.18,0),glow3('#FFE27A'),0,1.95,0); st.userData.roty=1.2; c.add(st); c.position.set(0,TOP3,0); g.add(c); }},
+    {at:16,name:'The Grand Prix cup',make:g=>{   // race 16: the giant cup crowns the trophy tower, in place of its little cup
+      const gold=m3('#F4BC22',{metalness:.55,roughness:.3}), tr=new THREE.Group(); tr.add(mesh3(new THREE.BoxGeometry(.9,.25,.9),m3('#14202C'),0,.12,0)); tr.add(mesh3(new THREE.CylinderGeometry(.12,.3,.55,10),gold,0,.52,0));
+      tr.add(mesh3(new THREE.CylinderGeometry(.75,.22,1.0,16),gold,0,1.3,0)); for(const sx of [-1,1]){ const hd=new THREE.Mesh(new THREE.TorusGeometry(.32,.07,6,14,Math.PI),gold); hd.position.set(sx*.72,1.35,0); hd.rotation.z=sx*-Math.PI/2; tr.add(hd); }
+      const st=mesh3(new THREE.OctahedronGeometry(.28,0),glow3('#FFE27A'),0,2.2,0); st.userData.roty=1.2; tr.add(st); tr.position.set(-.2,TOP3+1.6,0); tr.userData.roty=.25; g.add(tr); }},
   ],
   brickworks:[
     {at:1,name:'Brick piles',make:g=>{ const C=['#0055BF','#F4BC22','#237841','#FE8A18','#FFFFFF']; for(let i=0;i<9;i++) g.add(box3(.5,.22,.26,C[i%5],-2.2+(i%3)*.52,TOP3+Math.floor(i/3)*.22,2.2,{y:(i%2)*.1})); }},
