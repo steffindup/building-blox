@@ -1034,7 +1034,7 @@ test('Build page: a tile asks Play on the island or Quick play; Quick play has n
   assert.equal(await t.page.evaluate(() => window.bloppitFilmOn()), null, 'no film'); assert.equal(await t.page.evaluate(() => window.bloppitQuickPlay()), true);
   // Frog Trail, Quick play: every level open, the bar says Quick play, a finished level keeps nothing
   await t.page.evaluate(() => window.bloppitHome()); await t.page.waitForTimeout(400);
-  await t.page.evaluate(() => { document.querySelector('#view-home [data-go="otter"]').click(); document.getElementById('qpQuick').click(); }); await t.page.waitForTimeout(800);
+  await t.page.evaluate(() => { document.querySelector('#view-home [data-go="otter"]').click(); document.getElementById('qpPick').click(); }); await t.page.waitForTimeout(800);
   assert.equal(await t.page.evaluate(() => document.getElementById('view-game').dataset.sub), 'otter');
   assert.equal(await t.page.evaluate(() => [...document.querySelectorAll('#gmLevels .lvl')].filter((b) => b.disabled).length), 0, 'any level');
   assert.match(await t.text('#gmIntro'), /Quick play/);
@@ -1049,6 +1049,40 @@ test('Build page: a tile asks Play on the island or Quick play; Quick play has n
   assert.equal(await t.page.evaluate(() => window.bloppitQuickPlay()), false);
   await t.page.evaluate(() => { window.bloppitHome(); document.querySelector('#view-home [data-go="quick"]').click(); document.getElementById('qpIsle').click(); });
   await t.page.waitForFunction(() => window.bloppitFilmOn() === 'brickworks-arrival', null, { timeout: 15000, polling: 200 });
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('Build page: the difficulty slider picks a puzzle to match, and Build it starts it (Quick Build, the Trails, vs Swoop, Pippa)', { skip: skip() }, async () => {
+  const seed = { fn: () => { const k = 'm:Toadstool:12';
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 10, bonus: 0, builds: { [k]: { n: 12, s: 2, t: 1e12, c: 1, k: 'welcome' } }, log: [k], decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1 }));
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); } };
+  const t = await open('?nosplash=1&films=1', { init: seed });
+  const tile = async (go) => { await t.page.evaluate(() => window.bloppitHome()); await t.page.waitForTimeout(300); await t.page.evaluate((go) => document.querySelector(`#view-home [data-go="${go}"]`).click(), go); await t.page.waitForTimeout(300); };
+  const slide = (d) => t.page.evaluate((d) => { const r = document.getElementById('qpDiff'); r.value = d; r.dispatchEvent(new Event('input', { bubbles: true })); return window.bloppitQP(); }, d);
+  // Frog Trail: Tiny is one of its first levels, Super tricky one of its last; Build this one starts that level, no film
+  await tile('otter');
+  let q = await slide(1); assert.ok(q.i <= 2, `tiny: ${q.name}`); assert.match(await t.text('#qpDiffT'), /Tiny/); assert.match(await t.text('#qpPzInfo'), /Level \d+ · \d+ bricks/);
+  q = await slide(5); assert.ok(q.i >= 12, `super tricky: ${q.name}`);
+  const before = q.i; await t.page.evaluate(() => document.getElementById('qpShuffle').click()); assert.notEqual((await t.page.evaluate(() => window.bloppitQP())).i, before, '🔀 another one');
+  q = await slide(3); await t.page.evaluate(() => document.getElementById('qpQuick').click()); await t.page.waitForTimeout(1500);
+  assert.equal(await t.page.evaluate(() => window.bloppitFilmOn()), null, 'no Frog Forest film'); assert.equal(await t.view(), 'view-build');
+  assert.equal(await t.text('#gbName'), q.name); assert.match(await t.text('#gbWhere'), /Quick play/);
+  // the slider is kept for that tile
+  await tile('otter'); assert.equal((await t.page.evaluate(() => window.bloppitQP())).d, 3); await t.page.evaluate(() => document.getElementById('qpX').click());
+  // Quick Build: a library puzzle, small and simple at Tiny, big at Super tricky
+  await tile('quick'); const tiny = await slide(1); const big = await slide(5);
+  const nTiny = await t.page.evaluate((name) => window.bloppitLevels.count({ name, sample: name, size: 6, shape: 'flat', thick: .5, colors: 2 }), big.name);
+  const nBig = await t.page.evaluate((name) => window.bloppitLevels.count({ name, sample: name, size: 16, shape: 'puffed', thick: 1, colors: 8 }), big.name);
+  assert.ok(nBig > nTiny * 2, `${big.name}: ${nTiny} → ${nBig}`); assert.ok(tiny.pool.length > 10, 'the whole library');
+  await t.page.evaluate(() => document.getElementById('qpQuick').click()); await t.page.waitForTimeout(1500);
+  assert.equal(await t.view(), 'view-build'); assert.equal(await t.page.evaluate(() => window.bloppitQuickPlay()), true);
+  // vs Swoop: the race and Swoop's speed come with the slider
+  await tile('cpu'); q = await slide(1); await t.page.evaluate(() => document.getElementById('qpQuick').click()); await t.page.waitForTimeout(800);
+  assert.equal(await t.view(), 'view-blitz'); assert.equal(await t.page.evaluate(() => document.getElementById('bzModel').value), 'p' + q.i);
+  assert.equal(await t.page.evaluate(() => document.querySelector('input[name=bzLevel]:checked').value), 'easy');
+  // Pippa's Puzzles: no island choice, the puzzle starts as a mirror build (not Quick play: it still earns)
+  await tile('flip'); q = await slide(2); await t.page.evaluate(() => document.getElementById('qpQuick').click()); await t.page.waitForTimeout(1500);
+  assert.equal(await t.view(), 'view-build'); assert.equal(await t.text('#gbName'), q.name); assert.equal(await t.page.evaluate(() => window.bloppitQuickPlay()), false);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
@@ -1191,7 +1225,10 @@ test('Solo: Pippa’s Puzzles on the menu are her own mirror set, all open in an
   const L = await t.page.evaluate(() => ({ flip: window.bloppitLevels.flip.map((l) => l.sample), sea: window.bloppitLevels.sea.map((l) => l.sample) }));
   assert.equal(L.flip.length, 12); assert.deepEqual(L.flip.filter((n) => L.sea.includes(n)), [], 'none of Flipper Beach’s puzzles');
   assert.match(await t.text('#hmSeaSub'), /12 mirror puzzles/); assert.doesNotMatch(await t.text('#hmSeaSub'), /%/);
-  await t.page.evaluate(() => document.querySelector('#view-home [data-go="flip"]').click()); await t.page.waitForTimeout(800);
+  await t.page.evaluate(() => document.querySelector('#view-home [data-go="flip"]').click()); await t.page.waitForTimeout(300);
+  assert.equal(await t.page.evaluate(() => document.getElementById('qpDlg').open), true, 'the difficulty choice first');
+  assert.equal(await t.page.evaluate(() => getComputedStyle(document.getElementById('qpIsle')).display), 'none', 'no island behind it');
+  await t.page.evaluate(() => document.getElementById('qpPick').click()); await t.page.waitForTimeout(800);
   assert.equal(await t.page.evaluate(() => document.getElementById('view-game').dataset.sub), 'flip');
   assert.match(await t.text('#gmTitle'), /Mirror Puzzles/); assert.doesNotMatch(await t.text('#gmLevels'), /ashore/);
   assert.equal(await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="0"]').disabled), false, 'the first is open with nothing built');
