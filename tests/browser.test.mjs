@@ -190,7 +190,7 @@ test('a finger on the brick in hand slides the brick, and the view stays still',
 
 test('phone build page: no arrows or Place (tap the brick, Rotate turns it), the build gets the room; yellow and blue table edges mark the same sides in the booklet and the build', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0', { viewport: { width: 390, height: 664 }, touch: true });
-  await t.page.evaluate(() => document.querySelector('[data-go="otter"]').click()); await t.page.waitForTimeout(400);
+  await t.page.evaluate(() => { document.querySelector('[data-go="otter"]').click(); document.getElementById('qpIsle').click(); }); await t.page.waitForTimeout(400);
   await t.page.evaluate(() => [...document.querySelectorAll('#view-game button')].find((x) => /Heart/.test(x.textContent) && x.offsetParent).click()); await t.page.waitForTimeout(800);
   await t.page.evaluate(() => [...document.querySelectorAll('button')].find((x) => /^(Play|Start|Build)/.test(x.textContent.trim()) && x.offsetParent)?.click()); await t.page.waitForTimeout(800);
   await autoPlace(t.page, 3);
@@ -239,7 +239,7 @@ test('a world with builds that never saw the arrival gets the boat and the arriv
 
 test('phone parts box: one screen, the booklet page on top, the parts board filling the rest, the tools a ribbon', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0', { viewport: { width: 390, height: 664 }, touch: true });
-  await t.page.evaluate(() => document.querySelector('[data-go="otter"]').click()); await t.page.waitForTimeout(400);
+  await t.page.evaluate(() => { document.querySelector('[data-go="otter"]').click(); document.getElementById('qpIsle').click(); }); await t.page.waitForTimeout(400);
   await t.page.evaluate(() => [...document.querySelectorAll('#view-game button')].find((x) => /Heart/.test(x.textContent) && x.offsetParent).click()); await t.page.waitForTimeout(800);
   await t.page.evaluate(() => [...document.querySelectorAll('button')].find((x) => /^(Play|Start|Build)/.test(x.textContent.trim()) && x.offsetParent)?.click()); await t.page.waitForTimeout(800);
   await t.page.evaluate(() => document.getElementById('openBox').click()); await t.page.waitForTimeout(1000);
@@ -267,7 +267,7 @@ test('a Pippa puzzle still out at sea can be tapped: it says how many builds bri
 
 test('a Trail level finish shows the stars strip and counts a build', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0');
-  await t.page.evaluate(() => document.querySelector('[data-go="otter"]').click()); await t.page.waitForTimeout(400);
+  await t.page.evaluate(() => { document.querySelector('[data-go="otter"]').click(); document.getElementById('qpIsle').click(); }); await t.page.waitForTimeout(400);
   await t.page.evaluate(() => [...document.querySelectorAll('#view-game button')].find((x) => /Heart/.test(x.textContent) && x.offsetParent).click()); await t.page.waitForTimeout(800);
   await t.page.evaluate(() => [...document.querySelectorAll('button')].find((x) => /^(Play|Start|Build)/.test(x.textContent.trim()) && x.offsetParent)?.click()); await t.page.waitForTimeout(800);
   for (let i = 0; i < 40; i++) { await autoPlace(t.page, 1); if (await t.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; }
@@ -333,7 +333,7 @@ test('Nora is a real 3D model (v1) with her nine clips', { skip: skip() }, async
 
 test('a finished race against Swoop lets go: the banner offers Back to Bloppitopia, and a Trail (Pippa) opens straight away; the parts box says when it is your last brick', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0');
-  await t.page.evaluate(() => document.querySelector('[data-go="cpu"]').click()); await t.page.waitForTimeout(400);
+  await t.page.evaluate(() => { document.querySelector('[data-go="cpu"]').click(); document.getElementById('qpIsle').click(); }); await t.page.waitForTimeout(400);
   await t.page.evaluate(() => { document.getElementById('bzEasy').click(); document.getElementById('bzName').value = 'Tester'; document.getElementById('bzCpuGo').click(); });
   await t.page.waitForSelector('#buildStage .go-gate .go-btn', { timeout: 20000 }); await t.page.evaluate(() => document.querySelector('#buildStage .go-btn').click()); await t.page.waitForTimeout(4200);
   let sawLast = false, sawGate = '', sawBoard = '', rushed = false;
@@ -366,7 +366,7 @@ test('a finished race against Swoop lets go: the banner offers Back to Bloppitop
 
 test('a race against Swoop starts and shows him in the banner on his turn', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0');
-  await t.page.evaluate(() => document.querySelector('[data-go="cpu"]').click()); await t.page.waitForTimeout(400);
+  await t.page.evaluate(() => { document.querySelector('[data-go="cpu"]').click(); document.getElementById('qpIsle').click(); }); await t.page.waitForTimeout(400);
   await t.page.evaluate(() => { document.getElementById('bzHard').click(); document.getElementById('bzName').value = 'Tester'; document.getElementById('bzCpuGo').click(); });
   // the clock waits for Let's go! (it used to count down straight away)
   await t.page.waitForSelector('#buildStage .go-gate .go-btn', { timeout: 20000 }); await t.page.waitForTimeout(2500);
@@ -696,7 +696,7 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   await a.page.evaluate(() => document.querySelector('[data-crew-ok]').click()); await a.page.waitForTimeout(1500);
   assert.equal(await a.page.evaluate(() => document.querySelectorAll('#crewOpen .crew-members span').length), 2);
   // B finishes a Trail level: bricks go to the lighthouse
-  await b.page.evaluate(() => window.bloppitHome()); await b.page.evaluate(() => document.querySelector('[data-go="otter"]').click()); await b.page.waitForTimeout(500);
+  await b.page.evaluate(() => window.bloppitHome()); await b.page.evaluate(() => { document.querySelector('[data-go="otter"]').click(); document.getElementById('qpIsle').click(); }); await b.page.waitForTimeout(500);
   await b.page.evaluate(() => [...document.querySelectorAll('#view-game button')].find((x) => /Heart/.test(x.textContent) && x.offsetParent).click()); await b.page.waitForTimeout(800);
   await b.page.evaluate(() => [...document.querySelectorAll('button')].find((x) => /^(Play|Start|Build)/.test(x.textContent.trim()) && x.offsetParent)?.click()); await b.page.waitForTimeout(800);
   for (let i = 0; i < 40; i++) { await autoPlace(b.page, 1); if (await b.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; }
@@ -993,17 +993,48 @@ test('island arrival films from the menu: vs Swoop plays Blitz Bay’s first, Qu
     assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), new RegExp(`/video/${file}\\.mp4(\\?v=\\w+)?$`));
     await t.page.waitForFunction(() => document.querySelector('.is3-film video').currentTime > .3, null, { timeout: 15000 });
     await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click()); await t.page.waitForTimeout(1200); };
-  await t.page.evaluate(() => document.querySelector('#view-home [data-go="cpu"]').click());
+  await t.page.evaluate(() => { document.querySelector('#view-home [data-go="cpu"]').click(); document.getElementById('qpIsle').click(); });
   await film('blitzbay-arrival', 'blitz-bay-arrival');
   assert.equal(await t.view(), 'view-blitz');
   await t.page.evaluate(() => window.bloppitHome()); await t.page.waitForTimeout(500);
-  await t.page.evaluate(() => document.querySelector('#view-home [data-go="quick"]').click());
+  await t.page.evaluate(() => { document.querySelector('#view-home [data-go="quick"]').click(); document.getElementById('qpIsle').click(); });
   await film('brickworks-arrival', 'brickworks-arrival');
   // seen: not again
   await t.page.evaluate(() => window.bloppitHome()); await t.page.waitForTimeout(500);
-  await t.page.evaluate(() => document.querySelector('#view-home [data-go="cpu"]').click()); await t.page.waitForTimeout(1500);
+  await t.page.evaluate(() => { document.querySelector('#view-home [data-go="cpu"]').click(); document.getElementById('qpIsle').click(); }); await t.page.waitForTimeout(1500);
   assert.equal(await t.page.evaluate(() => window.bloppitFilmOn()), null); assert.equal(await t.view(), 'view-blitz');
   assert.deepEqual(await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1')).films), ['blitzbay-arrival', 'brickworks-arrival']);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('Build page: a tile asks Play on the island or Quick play; Quick play has no film and adds nothing to Bloppitopia', { skip: skip() }, async () => {
+  const seed = { fn: () => { const k = 'm:Toadstool:12';
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 10, bonus: 0, builds: { [k]: { n: 12, s: 2, t: 1e12, c: 1, k: 'welcome' } }, log: [k], decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1 }));
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); } };
+  const t = await open('?nosplash=1&films=1', { init: seed });
+  // Quick Build: the choice, then Quick play goes straight to the puzzles, no Brickyard Cove film
+  await t.page.evaluate(() => document.querySelector('#view-home [data-go="quick"]').click()); await t.page.waitForTimeout(300);
+  assert.equal(await t.page.evaluate(() => document.getElementById('qpDlg').open), true);
+  assert.match(await t.text('#qpIsleT'), /Play on Brickyard Cove/);
+  await t.page.evaluate(() => document.getElementById('qpQuick').click()); await t.page.waitForTimeout(1500);
+  assert.equal(await t.page.evaluate(() => window.bloppitFilmOn()), null, 'no film'); assert.equal(await t.page.evaluate(() => window.bloppitQuickPlay()), true);
+  // Frog Trail, Quick play: every level open, the bar says Quick play, a finished level keeps nothing
+  await t.page.evaluate(() => window.bloppitHome()); await t.page.waitForTimeout(400);
+  await t.page.evaluate(() => { document.querySelector('#view-home [data-go="otter"]').click(); document.getElementById('qpQuick').click(); }); await t.page.waitForTimeout(800);
+  assert.equal(await t.page.evaluate(() => document.getElementById('view-game').dataset.sub), 'otter');
+  assert.equal(await t.page.evaluate(() => [...document.querySelectorAll('#gmLevels .lvl')].filter((b) => b.disabled).length), 0, 'any level');
+  assert.match(await t.text('#gmIntro'), /Quick play/);
+  await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="0"]').click()); await t.page.waitForTimeout(1500);
+  assert.equal(await t.page.evaluate(() => window.bloppitFilmOn()), null, 'no Frog Forest film'); assert.match(await t.text('#gbWhere'), /Quick play/);
+  for (let i = 0; i < 200; i++) { if (await t.page.evaluate(() => document.getElementById('winDlg').open)) break; await t.page.evaluate(() => window.bloppitPlaceRight()); await t.page.waitForTimeout(150); }
+  await t.page.waitForFunction(() => document.getElementById('winDlg').open, null, { timeout: 30000 });
+  const w = await t.page.evaluate(() => ({ log: JSON.parse(localStorage.getItem('bloppit-world-v1')).log.length, g: JSON.parse(Object.entries(localStorage).find(([k]) => k.includes('building-blox-game-v1'))?.[1] || '{}') }));
+  assert.equal(w.log, 1, 'nothing added to the island'); assert.equal(Object.keys(w.g.best || {}).length, 0, 'the trail keeps nothing');
+  // back to Bloppitopia ends Quick play; the other choice plays the island as before (its film first)
+  await t.page.evaluate(() => { document.getElementById('winDlg').close(); document.getElementById('winIsland').click(); }); await t.page.waitForTimeout(800);
+  assert.equal(await t.page.evaluate(() => window.bloppitQuickPlay()), false);
+  await t.page.evaluate(() => { window.bloppitHome(); document.querySelector('#view-home [data-go="quick"]').click(); document.getElementById('qpIsle').click(); });
+  await t.page.waitForFunction(() => window.bloppitFilmOn() === 'brickworks-arrival', null, { timeout: 15000, polling: 200 });
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
@@ -1036,7 +1067,7 @@ test('living characters: on the island (dressed pup, the friends, tap for a reac
   assert.deepEqual(t.errors, []); await t.ctx.close();
   // a race against Swoop (full throttle): the buddy is Bloppit, and Swoop himself when it's his turn
   t = await open('?nosplash=1&welcome=0', { init: seed });
-  await t.page.evaluate(() => document.querySelector('[data-go="cpu"]').click()); await t.page.waitForTimeout(400);
+  await t.page.evaluate(() => { document.querySelector('[data-go="cpu"]').click(); document.getElementById('qpIsle').click(); }); await t.page.waitForTimeout(400);
   await t.page.evaluate(() => { document.getElementById('bzHard').click(); document.getElementById('bzName').value = 'Tester'; document.getElementById('bzCpuGo').click(); });
   await t.page.waitForSelector('#buildStage .go-gate .go-btn', { timeout: 20000 }); await t.page.evaluate(() => document.querySelector('#buildStage .go-btn').click());
   await t.page.waitForFunction(() => window.bloppitChars3d().views.includes('bud-art'), null, { timeout: 60000, polling: 500 });
@@ -1095,7 +1126,7 @@ test('Mystery Island label: "N islands to go!" and a bar that counts every piece
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('Solo: Pippa’s Puzzles on the menu are her own mirror set, open from the start; Flipper Beach keeps its tide', { skip: skip() }, async () => {
+test('Solo: Pippa’s Puzzles on the menu are her own mirror set, all open in any order; Flipper Beach keeps its tide', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0&films=0');
   const L = await t.page.evaluate(() => ({ flip: window.bloppitLevels.flip.map((l) => l.sample), sea: window.bloppitLevels.sea.map((l) => l.sample) }));
   assert.equal(L.flip.length, 12); assert.deepEqual(L.flip.filter((n) => L.sea.includes(n)), [], 'none of Flipper Beach’s puzzles');
@@ -1104,7 +1135,7 @@ test('Solo: Pippa’s Puzzles on the menu are her own mirror set, open from the 
   assert.equal(await t.page.evaluate(() => document.getElementById('view-game').dataset.sub), 'flip');
   assert.match(await t.text('#gmTitle'), /Mirror Puzzles/); assert.doesNotMatch(await t.text('#gmLevels'), /ashore/);
   assert.equal(await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="0"]').disabled), false, 'the first is open with nothing built');
-  assert.equal(await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="1"]').disabled), true, 'one after another');
+  assert.equal(await t.page.evaluate(() => [...document.querySelectorAll('#gmLevels .lvl')].filter((b) => b.disabled).length), 0, 'any of them, in any order');
   assert.equal(await t.page.evaluate(() => getComputedStyle(document.getElementById('bottleCard')).display), 'none');
   // every one is a true mirror build
   const sym = await t.page.evaluate(() => window.bloppitLevels.flip.map((L, i) => { window.bloppitLevel('flip', i); const M = window.bloppitMirror(); if (!M) return `${L.name}: not a mirror build`;
