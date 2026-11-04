@@ -10529,7 +10529,7 @@ function isl3Ring(o,then){
     brick.style.transform=`translate(${b.left+b.width/2-(a.left+a.width/2)}px,${b.top+b.height*.3-(a.top+a.height/2)}px) scale(${Math.max(.3,b.width*.85/a.width)})`;
     ov.querySelector('.rg-tip').classList.add('off'); say.classList.remove('on');
     setTimeout(()=>{ brick.hidden=true; stage.classList.add('lit'); sfx.chime(); setTimeout(()=>sfx.chime(),260); setTimeout(()=>sfx.chime(),520); },reduceMotion?0:650);
-    setTimeout(()=>{ say.querySelector('span').innerHTML='<b>Bloppit</b>'+escapeHTML(`You did it, ${nm}! The lighthouse is ours.`); say.classList.add('on'); },reduceMotion?200:1300);
+    setTimeout(()=>{ say.querySelector('span').innerHTML='<b>Bloppit</b>'+escapeHTML(`You did it, ${nm}! The lighthouse is open!`); say.classList.add('on'); },reduceMotion?200:1300);
     setTimeout(()=>end('placed'),reduceMotion?2600:4200); };
   slot.onclick=place; ov.querySelector('.cn-skip').onclick=()=>end('skipped');
   // drag the brick in (a tap on it sets it too)

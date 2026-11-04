@@ -972,7 +972,7 @@ test('island arrival films from the menu: vs Swoop plays Blitz Bay’s first, Qu
   const t = await open('?nosplash=1&films=1', { init: seed });
   const film = async (id, file) => {
     await t.page.waitForFunction((id) => window.bloppitFilmOn() === id, id, { timeout: 15000, polling: 200 });
-    assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), new RegExp(`/video/${file}\\.mp4$`));
+    assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), new RegExp(`/video/${file}\\.mp4(\\?v=\\w+)?$`));
     await t.page.waitForFunction(() => document.querySelector('.is3-film video').currentTime > .3, null, { timeout: 15000 });
     await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click()); await t.page.waitForTimeout(1200); };
   await t.page.evaluate(() => document.querySelector('#view-home [data-go="cpu"]').click());
