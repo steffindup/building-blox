@@ -3358,7 +3358,7 @@ function tabsSync(t){ const sec=sectionOf(t===undefined?tab:t), tr=typeof trail!
     // the Weekly Bloppit is Bibi's: the Brickyard Cove tab
     b.setAttribute('aria-selected',on); }); }
 function sectionOf(t){
-  if(t==='build'||t==='box'||t==='booklet'){ if(game) return 'game'; if(mp) return trialOn()&&mp.state.calm?'daily':mpHomeTab(); return 'create'; }
+  if(t==='build'||t==='box'||t==='booklet'){ if(game) return 'game'; if(typeof mysOn==='function'&&mysOn()) return 'island'; if(mp) return trialOn()&&mp.state.calm?'daily':mpHomeTab(); return 'create'; }
   return t==='home'?'':t;
 }
 function syncSub(t){
@@ -4294,7 +4294,7 @@ function firstSpotTick(now){ const b=firstSpotBrick(), key=b?[b.x,b.z,b.sx,b.sz,
 function renderHints(){
   hintGroup.clear(); $('#hintBtn').setAttribute('aria-pressed',hintOn);
   if(!hintOn||!model||cur>=model.steps.length) return;
-  run.hints.add(cur); run.memory=false;
+  run.hints.add(cur); run.memory=false; if(!game&&mysOn()) updateGameBar();
   { const g=game||mp; if(g&&!g.hintSteps.includes(cur)){ g.hintSteps.push(cur);
       if(mpBlitz()){ mpPost({action:'hint'}).then(j=>mpApply(j.state)).catch(()=>{}); if(!mp.state.calm) mpFlash('+5s'); }
       else charge('hint',5); } }
@@ -4369,7 +4369,7 @@ function tryPlace(){
   const o=curOff(), u=usedSet();
   const turned=sel.sx!==sel.sz&&s.bricks.some(b=>!u.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o||Math.abs(b.x+o.x-ax)<=2&&Math.abs(b.z+o.z-az)<=2));
   const wrong=wrongBrickMsg();
-  if(!autoBusy){ run.miss++; if(game&&!mp) updateGameBar(); }
+  if(!autoBusy){ run.miss++; if((game||mysOn())&&!mp) updateGameBar(); }
   setStatus(wrong||(turned?turnTip():'Not quite. Compare with the picture in the booklet.'),'err');
   sfx.bonk();
   const g=ghostGroup.children[0]; if(g){g.material=errMat; setTimeout(()=>{if(g.parent) g.material=ghostMat(sel?sel.c:0);},380);}
@@ -4435,7 +4435,7 @@ function autoPlace(){
   const prev=held, prevSel=sel?{...sel}:null, n0=placedN;
   sel={sx:t.sx,sz:t.sz,c:t.c}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2};
   autoBusy=true; tryPlace(); autoBusy=false;
-  if(placedN>n0){ run.auto++; run.memory=false; }
+  if(placedN>n0){ run.auto++; run.memory=false; if(!game&&mysOn()) updateGameBar(); }
   if((game||mp)&&placedN>n0) charge('auto',10);
   lastAnchor=null; ghostGroup.visible=false;
   if(prev&&hand.includes(prev)){ held=prev; sel=prevSel; setGhost(); }
@@ -6089,8 +6089,16 @@ function charge(kind,n){
   const f=$('#mpFlash'); f.textContent='−'+n; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go');
 }
 function updateGameBar(){
-  const on=!!game;
+  const mys=!game&&typeof mysOn==='function'&&mysOn(), on=!!game||mys;
   $('#gameBar').hidden=!(on&&(tab==='build'||tab==='box'));
+  $('#gbNum').parentNode.firstChild.nodeValue=mys?'Chapter ':'Level ';
+  $('#gbMap').textContent=mys?'Moonstone Isle':'Level map';
+  if(mys){ const m=MYSTERY[mysCh], who={Everyone:'bloppit'}[m.who]||m.who.toLowerCase(), pic=['bloppit','pippa','swoop','tiny','bibi','nora','lufu'].includes(who)&&who!=='lufu'?who:'';   // lufu stays unseen
+    $('#gbWhere').innerHTML=`${pic?`<img src="/art/head-${pic}.png" alt="">`:''}<div><strong>The mystery</strong><small>🏝️ Moonstone Isle</small></div>`;
+    $('#gbBadge').textContent=mysCh+1; $('#gbNum').textContent=`${mysCh+1} of ${MYSTERY.length}`; $('#gbName').textContent=m.name;
+    const help=run.hints.size+run.auto, st=1+(help?0:1)+(!help&&!run.miss?1:0); $('#gbPts').innerHTML=starHTML(st); $('#gbOf').textContent='';
+    const bits=[]; if(run.hints.size) bits.push(`Hints ${run.hints.size}`); if(run.auto) bits.push(`Placed for you ${run.auto}`); if(run.miss) bits.push(`Wrong bricks ${run.miss}`);
+    $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>'; return; }
   $('#hintBtn').textContent=(mp&&mp.state&&mp.state.mode==='blitz')?(mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'):mp?'Hint (−5)':'Hint';
   $('#autoBtn').innerHTML=mp?'Place one<span class="lg"> for me</span> (−10)':'Place one<span class="lg"> for me</span>';
   if(!on) return;
@@ -6238,7 +6246,7 @@ $('#winDlg').addEventListener('close',()=>endReveal());
 $('#winReplay').onclick=()=>{ $('#winDlg').close(); startLevel(winLvl); };
 $('#winMap').onclick=()=>{ $('#winDlg').close(); setTab('game'); };
 $('#winIsland').onclick=()=>{ track('finish_next:island'); $('#winDlg').close(); setTab('island'); };   // the recommended way on: see the island grow
-$('#gbMap').onclick=()=>{ if(game) setTrail(gameTrail()); setTab('game'); };
+$('#gbMap').onclick=()=>{ if(!game&&mysOn()){ setTab('island'); return; } if(game) setTrail(gameTrail()); setTab('game'); };
 function renderGameMap(){
   const g=gameStore(), B=bestOf(g,trail), done=Object.keys(B).map(Number), unlocked=done.length?Math.max(...done)+1:0;
   const total=Object.values(B).reduce((a,b)=>a+b,0), T=TRAILS[trail];
@@ -9457,10 +9465,14 @@ const mysteryOpen=()=>{ const o=worldStore(); return fiveDone(o)===FIVE_ISLES.le
 const mysteryHas=(m,ks)=>[m.name,...(m.was||[])].some(n=>ks.some(k=>k.startsWith(`m:${n}:`)));
 const mysteryDone=o=>{ o=o||worldStore(); const ks=Object.keys(o.builds||{}); return MYSTERY.filter(m=>mysteryHas(m,ks)).length; };
 const mysteryNext=o=>{ o=o||worldStore(); const ks=Object.keys(o.builds||{}); return MYSTERY.findIndex(m=>!mysteryHas(m,ks)); };
+// A Moonstone chapter on the table (its models are hidden from the library, so they only come from the mystery):
+// it shows in the game bar like a trail level, with the Bloppitopia tab lit, also after a reload.
+var mysCh=-1;
+function mysOn(){ if(game||mp||!photos[0]||!photos[0].sample) return false; try{ mysCh=MYSTERY.findIndex(m=>m.name===photos[0].name); }catch(e){ mysCh=-1; } return mysCh>=0; }   // (early in page load MYSTERY isn't there yet)
 function mysteryStart(i){
   const m=MYSTERY[i]; if(!m) return; const k=SAMPLES.findIndex(x=>x.name===m.name); if(k<0) return;
   if(mp) mpLeave(); if(game) endGame(); setControls({kind:'model',shape:m.shape,thick:m.thick,tol:48,maxColors:m.colors,gray:true,size:m.size,pw:48,pcol:24});
-  loadSample(k); clearTimeout(timer); rebuild(); setTab('build'); setStatus(`Chapter ${i+1} of ${MYSTERY.length}, with ${m.who}: ${m.story}`);
+  loadSample(k); clearTimeout(timer); rebuild(); setTab('build'); updateGameBar(); setStatus(`Chapter ${i+1} of ${MYSTERY.length}, with ${m.who}: ${m.story}`);
 }
 function mysteryGo(){ if(!mysteryOpen()){ setTab('daily'); return; } const i=mysteryNext(); if(i>=0) mysteryStart(i); else setTab('island'); }
 const MYST_S=.66;   // how big Mystery Island looks until it's reached
@@ -11240,7 +11252,7 @@ function nextBuild(){
   const best=C.slice().sort((a,b)=>(isleFrac(a.isle,o)-isleFrac(b.isle,o))||(turn(a)-turn(b)))[0];
   const go=best.go; return {...best,go:()=>{ quickPlaySet(false); nextMark(best.kind); go(); }};
 }
-window.bloppitNext={next:()=>{ const n=nextBuild(); return n&&{t:n.t,kind:n.kind}; },cands:()=>nextCandidates().map(c=>c.kind),mark:k=>nextMark(k),complete:()=>islesComplete(worldStore()),mysteryOpen:()=>mysteryOpen(),unlocked:()=>worldUnlocked(worldStore()),seen:()=>seenGet(),reveal:ids=>isl3Reveal(ids,worldStore()),go:()=>{ const n=nextBuild(); if(n) n.go(); },count:id=>isleCount(id,worldStore()),wardrobe:()=>wardrobeOpen()};   // for tests
+window.bloppitNext={next:()=>{ const n=nextBuild(); return n&&{t:n.t,kind:n.kind}; },cands:()=>nextCandidates().map(c=>c.kind),mark:k=>nextMark(k),complete:()=>islesComplete(worldStore()),mysteryOpen:()=>mysteryOpen(),unlocked:()=>worldUnlocked(worldStore()),seen:()=>seenGet(),reveal:ids=>isl3Reveal(ids,worldStore()),go:()=>{ const n=nextBuild(); if(n) n.go(); },count:id=>isleCount(id,worldStore()),wardrobe:()=>wardrobeOpen(),chapter:i=>mysteryStart(i)};   // for tests
 // Start a Blitz race straight from Play next: the race page with the puzzle and the Longtail picked, then Go
 // Blitz Bay through Bloppitopia: the next race on the ladder, shown as one card with one button (no puzzle, speed or
 // name to choose; that's all on the Blitz page for races outside the story)

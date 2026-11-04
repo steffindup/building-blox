@@ -1142,6 +1142,18 @@ test('Moonstone Isle once reached: always night, one rowboat (plus the Galaxy sh
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('a Moonstone chapter has the game bar like the trails: Moonstone Isle, chapter N of 10, its name and ★; the Bloppitopia tab is lit; the button goes back to the island', { skip: skip() }, async () => {
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; [['Rowboat', 10], ['Old map', 15]].forEach(([n, z], i) => { const k = `m:${n}:${z}`; builds[k] = { n: z, s: 2, t: 1e12 + i, c: 1 }; log.push(k); });
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, films: [] })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); } };
+  const t = await open('?nosplash=1&films=0&mystery=1#island', { init: seed });
+  await t.page.evaluate(() => window.bloppitNext.chapter(2)); await t.page.waitForTimeout(1500);
+  const r = await t.page.evaluate(() => ({ bar: !document.getElementById('gameBar').hidden, txt: document.getElementById('gameBar').innerText.replace(/\s+/g, ' '), tab: document.querySelector('.tab[aria-selected="true"]')?.dataset.tab }));
+  assert.ok(r.bar, 'the game bar shows'); assert.match(r.txt, /Moonstone Isle/); assert.match(r.txt, /Chapter 3 of 10/i); assert.match(r.txt, /Lookout tower/); assert.equal(r.tab, 'island');
+  await t.page.evaluate(() => document.getElementById('gbMap').click()); await t.page.waitForTimeout(800);
+  assert.equal(await t.page.evaluate(() => document.getElementById('view-island').hidden), false, 'back on the island');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('Mystery Island label: "N islands to go!" and a bar that counts every piece built on the five islands', { skip: skip() }, async () => {
   // Frog Forest complete (15 of 15) and 6 Brain Trail levels: 1 island done, 21 of 73 pieces
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const k = 'm:Cottage:12';
