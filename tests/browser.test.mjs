@@ -1159,7 +1159,7 @@ test('the next Moonstone chapter goes by the island first: the last chapter’s 
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, films: [] })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); } };
   const t = await open('?nosplash=1&films=0&mystery=1#build', { init: seed });
   await t.page.evaluate(() => { const s = window.bloppitNext.unlocked().filter((i) => i !== 'moonstone:3'); localStorage.setItem('bloppit-seen3-v1', JSON.stringify(s)); });
-  assert.ok((await t.page.evaluate(() => window.bloppitNext.goals())).includes('Next chapter: the moon gate'));
+  assert.ok((await t.page.evaluate(() => window.bloppitNext.goals())).includes('Next chapter: The Moon Gate'));
   assert.ok((await t.page.evaluate(() => window.bloppitNext.titles())).includes('🌙 Moonstone Isle, Chapter 5: The Moon Gate'));
   await t.page.evaluate(() => window.bloppitNext.via(4)); await t.page.waitForTimeout(600);
   assert.equal(await t.page.evaluate(() => document.getElementById('view-island').hidden), false, 'the island first');
