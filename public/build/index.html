@@ -2176,7 +2176,7 @@ body.film-on{overflow:hidden}
   <div class="lh-list">
     <button type="button" data-lh="film" class="lh-film"><span>🎬</span><b>Watch the whole Moonstone story</b><small>Chapter 1’s ending as one film, from the light in the mist to lufu’s world (5½ minutes)</small></button>
     <button type="button" data-lh="build"><span>🔨</span><b>Build anything here</b><small>Free builds stand on lufu’s world</small></button>
-    <button type="button" data-lh="sail"><span>⛵</span><b>Sail back to Bloppitopia</b><small>The Galaxy ship takes you between the two, any time</small></button>
+    <button type="button" data-lh="sail"><span>⛵</span><b>Sail back to Bloppitopia</b><small>The Galaxy Ship takes you between the two, any time</small></button>
     <button type="button" data-lh="pup"><span>🦦</span><b>Start a new game</b><small>A new player with a new pup, from the very beginning</small></button>
     <button type="button" data-lh="builds"><span>🧱</span><b>Browse the builds</b><small>Photos, drawings and the whole library to build from</small></button>
   </div>
@@ -3327,6 +3327,7 @@ function rebuild(){
 }
 // Photo file names from phones are often codes (IMG_1234, 4D15-9BE2-…); show a friendly name instead
 function niceName(n){ const b=String(n||'').replace(/\.[^.]+$/,'').trim();
+  try{ const M=MYSTERY.find(m=>m.name===b||(m.was||[]).includes(b)); if(M) return mysteryTitle(M); }catch(e){}   // a Moonstone chapter is a title: "The Moon Gate"
   return !b||/^(img|image|photo|pxl|dsc|screenshot)[\s_-]?\d/i.test(b)||/^[0-9a-f]{4,}(-[0-9a-f]{2,})+/i.test(b)||/^\d+$/.test(b)?'photo':b; }
 // Trails, Blitz and Together each have a hub page ('hub') and a page per game. setTab(t) keeps the page the
 // section was last on; setTab(t,'hub') or setTab('blitz','cpu') picks one.
@@ -3767,21 +3768,21 @@ const FILMS=[
       {id:isle+'-complete',no:c,name:'Complete',place,file:file+'-complete',at:'done:'+isle,open:o=>isleComplete(isle,o),hint:hc,
         say:[{t:tc,who,text:'We did it, {name}!'}]}]),
   // Moonstone Isle: one film for each chapter, played when its piece rises (series bible, films 12–22)
-  ...[['12','Into the Mist','into-the-mist',0,'Build the rowboat',{t:7,who:'bloppit',text:'Look, {name}! A light in the mist. Let’s row out to it!'}],
-      ['13','The Old Map','the-old-map',1,'Build Moonstone chapter 2',{t:13,who:'pippa',text:'I have a map! And the light is marked right here!'}],
-      ['14','The Lookout Tower','the-lookout-tower',2,'Build Moonstone chapter 3',{t:17,who:'swoop',text:'There it is again! Follow me, {name}!'}],
-      ['15','The Petal Bridge','the-petal-bridge',3,'Build Moonstone chapter 4',{t:20,who:'tiny',text:'A bridge of petals! Hop across, {name}!'}],
-      ['16','The Moon Gate','the-moon-gate',4,'Build Moonstone chapter 5',{t:20,who:'bibi',text:'A dab of moon paint… and the gate glows! Through we go, {name}!'}],
-      ['17','The Constellation Cube','the-constellation-cube',5,'Build Moonstone chapter 6',{t:21,who:'nora',text:'The stars point the way: to the lighthouse, {name}!'}],
-      ['18','The Answering Light','the-answering-light',6,'Build Moonstone chapter 7',null],   // just you and the light: nobody speaks
-      ['19','The Moonstone Lighthouse','the-moonstone-lighthouse',7,'Build Moonstone chapter 8',[{t:31,who:'swoop',text:'Teamwork!',d:4},{t:39,who:'bloppit',text:'Go on, {name}. This part is yours.'}]],
+  ...[['12','Into the Mist','into-the-mist',0,'Build Chapter 1: The Rowboat',{t:7,who:'bloppit',text:'Look, {name}! A light in the mist. Let’s row out to it!'}],
+      ['13','The Old Map','the-old-map',1,'Build Moonstone Isle, Chapter 2',{t:13,who:'pippa',text:'I have a map! And the light is marked right here!'}],
+      ['14','The Lookout Tower','the-lookout-tower',2,'Build Moonstone Isle, Chapter 3',{t:17,who:'swoop',text:'There it is again! Follow me, {name}!'}],
+      ['15','The Petal Bridge','the-petal-bridge',3,'Build Moonstone Isle, Chapter 4',{t:20,who:'tiny',text:'A bridge of petals! Hop across, {name}!'}],
+      ['16','The Moon Gate','the-moon-gate',4,'Build Moonstone Isle, Chapter 5',{t:20,who:'bibi',text:'A dab of moon paint… and the gate glows! Through we go, {name}!'}],
+      ['17','The Constellation Cube','the-constellation-cube',5,'Build Moonstone Isle, Chapter 6',{t:21,who:'nora',text:'The stars point the way: to the lighthouse, {name}!'}],
+      ['18','The Answering Light','the-answering-light',6,'Build Moonstone Isle, Chapter 7',null],   // just you and the light: nobody speaks
+      ['19','The Moonstone Lighthouse','the-moonstone-lighthouse',7,'Build Moonstone Isle, Chapter 8',[{t:31,who:'swoop',text:'Teamwork!',d:4},{t:39,who:'bloppit',text:'Go on, {name}. This part is yours.'}]],
       ['20','The Moon Crystal','the-moon-crystal',8,'Set your brick in the lighthouse ring',{t:21,who:'lufu',text:'We have found each other.',d:7}],   // lufu never speaks: the words are the game's, as the series bible says
-      ['21','The Galaxy Ship','the-galaxy-ship',9,'Build the Galaxy ship',{t:21,who:'bloppit',text:'All aboard, {name}! Wherever lufu goes, we go too.'}]]
+      ['21','The Galaxy Ship','the-galaxy-ship',9,'Build Chapter 10: The Galaxy Ship',{t:21,who:'bloppit',text:'All aboard, {name}! Wherever lufu goes, we go too.'}]]
     .map(([no,name,file,i,hint,say])=>({id:'moon-'+no,no,name,place:'Moonstone Isle',file:'moonstone-'+file,at:no==='20'?'ring:moonstone':'moonstone:'+i,open:o=>filmSeen('moon-'+no,o)||mysteryDone(o)>(no==='20'?7:i),hint,say:!say?[]:Array.isArray(say)?say:[say]})),   // film 20 follows the ring ceremony (isl3Ring), not a build
   {id:'moon-22',no:'22',name:'The New Horizon',place:'lufu’s world',file:'moonstone-the-new-horizon',at:'realm:lufu',open:o=>filmSeen('moon-22',o)||mysteryDone(o)>=10,hint:'Sail to lufu’s world',
     say:[{t:16,who:'nora',text:'A whole new world… this is where lufu comes from!'}]},
   // The whole of Chapter 1's Moonstone story, films 12–22 cut together: opens once the Galaxy ship is built (and from lufu's welcome)
-  {id:'moonstone-feature',no:'★',name:'The Moonstone Story',place:'Chapter 1’s ending, in one film',file:'moonstone-feature',hint:'Build the Galaxy ship',open:o=>filmSeen('moonstone-feature',o)||mysteryDone(o)>=10},   // plays the first time the Galaxy ship sails there, then lufu's world and its welcome
+  {id:'moonstone-feature',no:'★',name:'The Moonstone Story',place:'Chapter 1’s ending, in one film',file:'moonstone-feature',hint:'Build Chapter 10: The Galaxy Ship',open:o=>filmSeen('moonstone-feature',o)||mysteryDone(o)>=10},   // plays the first time the Galaxy ship sails there, then lufu's world and its welcome
 ];
 // What the characters say over a film: a speech bubble with the speaker's face and name, shown for 5.5 s from its time
 // ({name} is the otter's name, or "pup" while it has none)
@@ -7818,7 +7819,7 @@ loadSample(0); setTab('create'); clearTimeout(timer); rebuild(); requestAnimatio
   const o=storeGet();
   if(o&&o.v===1&&(o.placedN>0||o.laidOut)){
     pendingSave=o;
-    $('#resumeTxt').textContent=o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`You’re partway through ${TRAILS[trailOk(o.game.trail)].name} level ${o.game.lvl+1} (${levelsOf(o.game&&o.game.trail)[o.game.lvl].name}): ${o.placedN} of ${o.nBricks} bricks placed.`:`You have a ${niceName(o.name)} build in progress: ${o.placedN} of ${o.nBricks} bricks placed.`;
+    $('#resumeTxt').textContent=o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`You’re partway through ${TRAILS[trailOk(o.game.trail)].name} level ${o.game.lvl+1} (${levelsOf(o.game&&o.game.trail)[o.game.lvl].name}): ${o.placedN} of ${o.nBricks} bricks placed.`:`You have ${/^The /.test(niceName(o.name))?niceName(o.name):`a ${niceName(o.name)} build`} in progress: ${o.placedN} of ${o.nBricks} bricks placed.`;
     $('#resume').hidden=false;
   } else saveOn=true;
 }
@@ -8371,7 +8372,7 @@ function islandInfo(id,o){
       return {title:d.name,hint:gift?'A gift for a Weekly Bloppit':`Bought for ${gbN(d.cost)}`,rows:[...(!d.water?[['Move it',ISL3.ok?'Hold it and drag it anywhere on the island':'Drag it anywhere on the sand']]:[]),['How you got it',gift?'A gift for finishing a Weekly Bloppit':`Bought with ${gbN(d.cost)}`],['Decorations',`${decorOut(o).length} of ${DECOR.length} on Bloppitopia`]],actions:[{label:'Put it away',fn:()=>decorPut(arg,false)}]}; }
     case 'dest': { const m={ferry:'sunrise',workshop:'brickworks',brain:'brainpeak',speedway:'blitzbay',harbour:'otterwood'}[arg]; if(m) return islandInfo('isle:'+m,o); break; }
     case 'isle': { const I=ISLES[arg]; if(!I) break; const c=isleCount(arg,o), P=PIECES[arg], total=P[P.length-1].at, built=P.filter(x=>c>=x.at), next=P.find(x=>c<x.at);
-      if(!c&&I.mystery) return {title:'Mystery Island',hint:mysteryHint(),bar:{pct:mysteryOpen()?100:Math.max(4,Math.round(100*mysteryProgress(o))),label:mysteryOpen()?'Ready to sail!':`${Math.round(100*mysteryProgress(o))}% of the way there`},rows:[['What’s there','Far out at sea, where it’s always night, a faint light glows in a swirl of mist. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Complete all five islands, every piece built (${fiveDone(o)} of ${FIVE_ISLES.length} so far)`],...(mysteryOpen()?[]:[['Still to finish',FIVE_ISLES.filter(id=>!isleComplete(id,o)).map(id=>isleCount(id,o)?`${ISLES[id].name} (${Math.min(isleCount(id,o),PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at})`:`${ISLES[id].name} (still in the mist)`).join(', ')]])],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'🏝️ Back to Bloppitopia',fn:()=>{ islandTipHide(true); isl3GoView(0); try{ sfx.swoosh(-1); }catch(e){} },primary:true}]};   // not open yet: back to the map, no surprise trip elsewhere
+      if(!c&&I.mystery) return {title:'Mystery Island',hint:mysteryHint(),bar:{pct:mysteryOpen()?100:Math.max(4,Math.round(100*mysteryProgress(o))),label:mysteryOpen()?'Ready to sail!':`${Math.round(100*mysteryProgress(o))}% of the way there`},rows:[['What’s there','Far out at sea, where it’s always night, a faint light glows in a swirl of mist. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build Chapter 1: The Rowboat':`Complete all five islands, every piece built (${fiveDone(o)} of ${FIVE_ISLES.length} so far)`],...(mysteryOpen()?[]:[['Still to finish',FIVE_ISLES.filter(id=>!isleComplete(id,o)).map(id=>isleCount(id,o)?`${ISLES[id].name} (${Math.min(isleCount(id,o),PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at})`:`${ISLES[id].name} (still in the mist)`).join(', ')]])],actions:mysteryOpen()?[{label:'▶ Build Chapter 1: The Rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'🏝️ Back to Bloppitopia',fn:()=>{ islandTipHide(true); isl3GoView(0); try{ sfx.swoosh(-1); }catch(e){} },primary:true}]};   // not open yet: back to the map, no surprise trip elsewhere
       if(!c&&arg==='sunrise'&&!seaWashed(0,o)) return {title:'A misty island',hint:`Pippa’s first puzzle washes ashore at ${seaPct(0)}%`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',(()=>{ const nb=seaBuildsTo(0,o); return `Reach ${seaPct(0)}% of Bloppitopia (you’re at ${progressPct(o)}%): ${nb} more build${nb===1?'':'s'} on Frog Forest, Brainpeak, Blitz Bay or Brickyard Cove, then build Pippa’s first puzzle`; })()]],actions:[{label:'🏝️ Back to Bloppitopia',fn:()=>{ islandTipHide(true); isl3GoView(0); try{ sfx.swoosh(-1); }catch(e){} },primary:true}]};   // nothing to play here yet, so no surprise trip elsewhere
       if(!c) return {title:'A misty island',hint:`Play ${I.game} to discover it`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Finish your first ${I.unit}`]],actions:[{label:I.play,fn:I.go,primary:true}]};
       return {title:I.name,hint:`${I.game} · ${isleProg(arg,c,total)}`,rows:[['Grows with',I.grows],['Built',`${built.length} of ${P.length} pieces`],...(next?[['Next piece',I.mystery?`${next.name}: next chapter`:`${next.name}: ${next.at-c} more ${I.unit}${next.at-c===1?'':'s'}`]]:[]),['Milestone',c>=total?`${I.milestone} ✓`:`${I.milestone} at ${total}`]],
@@ -9503,7 +9504,7 @@ const ISLES={
     go:()=>{ pickPuzzle('quick','top'); }},   // Quick Build's first screen: a photo, a drawing or the library
   moonstone:{name:'Moonstone Isle',game:'Chapters',get play(){ const i=mysteryNext(); return i>=0?`▶ Build Chapter ${i+1}: ${mysteryTitle(MYSTERY[i])}`:'Explore Moonstone Isle'; },unit:'chapter',get x(){ return isl3TallNow()?-22.5:23.5; },get z(){ return isl3TallNow()?-11.5:-23.5; },r:4.0,   // far out at sea, in the top corner of the view (upright phones see the world from the side)
    seed:7.7,ground:['#6FB7A4','#4E8F7E'],sand:true,mystery:true,
-    milestone:'The Galaxy ship',grows:'Every chapter you build',go:()=>mysteryGo()},
+    milestone:'The Galaxy Ship',grows:'Every chapter you build',go:()=>mysteryGo()},
 };
 const ISLE_TOTAL=Object.keys(ISLES).length;
 // An island is complete when its last piece is built; each one is worth 5 Galaxy Blocks, and the whole world 10 more
@@ -9514,7 +9515,7 @@ const worldComplete=o=>islesComplete(o).length===ISLE_TOTAL;
 const isleEnd=id=>PIECES[id][PIECES[id].length-1].at;
 const mysteryProgress=o=>{ o=o||worldStore(); let got=0, all=0; for(const id of FIVE_ISLES){ const n=isleEnd(id); all+=n; got+=isleComplete(id,o)?n:Math.min(n,isleCount(id,o)); } return all?got/all:0; };
 const islesToGo=o=>{ const n=FIVE_ISLES.length-fiveDone(o); return n===1?'1 island to go!':`${n} islands to go!`; };
-function mysteryHint(){ return mysteryOpen()?'Ready to explore: build the rowboat':`Opens when all five islands are complete (${fiveDone()} of ${FIVE_ISLES.length} so far)`; }
+function mysteryHint(){ return mysteryOpen()?'Ready to explore: build Chapter 1, The Rowboat':`Opens when all five islands are complete (${fiveDone()} of ${FIVE_ISLES.length} so far)`; }
 // How far each island has grown
 function isleCount(id,o){
   o=o||worldStore(); const B=Object.entries(o.builds);
@@ -9678,23 +9679,23 @@ const PIECES={
   ],
   // Moonstone Isle: one piece per chapter of the mystery
   moonstone:[
-    {at:1,name:'The rowboat',make:g=>{ const b=boat3('#A95500',.9); b.traverse(x=>{ if(x.isMesh&&(x.geometry.type==='ShapeGeometry'||x.geometry.type==='BoxGeometry'||(x.geometry.parameters||{}).radiusTop<.05)) x.visible=false; });   /* a rowboat: no cabin, sail or mast */
+    {at:1,name:'The Rowboat',make:g=>{ const b=boat3('#A95500',.9); b.traverse(x=>{ if(x.isMesh&&(x.geometry.type==='ShapeGeometry'||x.geometry.type==='BoxGeometry'||(x.geometry.parameters||{}).radiusTop<.05)) x.visible=false; });   /* a rowboat: no cabin, sail or mast */
       const I=ISLES.moonstone, t=Math.atan2(-I.z,-I.x), c=Math.cos(t), sn=Math.sin(t);   // on the water at the shore facing home: the boat you came in (Bloppit's old rowboat)
       b.position.set(c*I.r*1.12,0,sn*I.r*1.12); b.rotation.y=-t+Math.PI/2; g.add(b); for(let i=0;i<3;i++){ const d=I.r*(.62+i*.13); g.add(box3(.5,.08,.4,'#8A5A3B',c*d,TOP3,sn*d,{y:-t})); } }},
-    {at:2,name:'The map stone',make:g=>{ g.add(box3(1.1,.7,.18,'#E4CD9E',-1.6,TOP3,2.4,{y:.4})); g.add(mesh3(new THREE.SphereGeometry(.08,6,4),glow3('#C9B6F2'),-1.5,TOP3+.45,2.52)); }},   // the map marks the lavender light
-    {at:3,name:'The lookout tower',make:g=>{ const t=new THREE.Group(); for(const [a,b] of [[-.3,-.3],[.3,-.3],[-.3,.3],[.3,.3]]) t.add(box3(.08,2.0,.08,'#7A4E2E',a,0,b)); t.add(box3(.9,.08,.9,'#A86E48',0,2.0,0)); t.add(mesh3(new THREE.ConeGeometry(.7,.5,4),m3('#3E4A7A'),0,2.55,0,{y:Math.PI/4})); t.add(flag3('#0055BF',0,2.8,0)); t.position.set(1.9,TOP3,-1.9); g.add(t); }},
-    {at:4,name:'The little bridge',make:g=>{ g.add(cyl3(.75,.75,.04,14,'#36AEBF',-2.3,TOP3+.01,-1.0)); g.add(ropeBridge3([-3.0,TOP3+.1,-1.3],[-1.6,TOP3+.1,-.7])); for(const [x,z] of [[-2.1,-1.5],[-2.6,-.6]]) g.add(cyl3(.18,.18,.03,8,'#4B9F4A',x,TOP3+.04,z)); }},
-    {at:5,name:'The moon gate',make:g=>{ const a=new THREE.Mesh(new THREE.TorusGeometry(.9,.18,8,24,Math.PI),m3('#F4F4F4')); a.position.set(-.6,TOP3,-2.7); a.rotation.y=.3; a.castShadow=true; g.add(a); for(const sx of [-1,1]) g.add(box3(.36,.12,.36,'#F4F4F4',-.6+sx*.86,TOP3,-2.7+sx*.26)); ['#C91A09','#F2CD37','#0055BF','#4B9F4A','#FE8A18','#AC78BA','#C91A09'].forEach((c,i)=>{ const t=Math.PI*(i+.5)/7, d=mesh3(new THREE.SphereGeometry(.09,6,4),m3(c),0,0,0); d.position.set(-.6+Math.cos(t)*.9*Math.cos(.3),TOP3+Math.sin(t)*.9,-2.7-Math.cos(t)*.9*Math.sin(.3)); g.add(d); }); }},
-    {at:6,name:'The constellation cube',make:g=>{ const cb=mesh3(new THREE.BoxGeometry(.7,.7,.7),m3('#1B2A4A'),.4,TOP3+.95,2.6); cb.userData.roty=1; g.add(cb);
+    {at:2,name:'The Old Map',make:g=>{ g.add(box3(1.1,.7,.18,'#E4CD9E',-1.6,TOP3,2.4,{y:.4})); g.add(mesh3(new THREE.SphereGeometry(.08,6,4),glow3('#C9B6F2'),-1.5,TOP3+.45,2.52)); }},   // the map marks the lavender light
+    {at:3,name:'The Lookout Tower',make:g=>{ const t=new THREE.Group(); for(const [a,b] of [[-.3,-.3],[.3,-.3],[-.3,.3],[.3,.3]]) t.add(box3(.08,2.0,.08,'#7A4E2E',a,0,b)); t.add(box3(.9,.08,.9,'#A86E48',0,2.0,0)); t.add(mesh3(new THREE.ConeGeometry(.7,.5,4),m3('#3E4A7A'),0,2.55,0,{y:Math.PI/4})); t.add(flag3('#0055BF',0,2.8,0)); t.position.set(1.9,TOP3,-1.9); g.add(t); }},
+    {at:4,name:'The Little Bridge',make:g=>{ g.add(cyl3(.75,.75,.04,14,'#36AEBF',-2.3,TOP3+.01,-1.0)); g.add(ropeBridge3([-3.0,TOP3+.1,-1.3],[-1.6,TOP3+.1,-.7])); for(const [x,z] of [[-2.1,-1.5],[-2.6,-.6]]) g.add(cyl3(.18,.18,.03,8,'#4B9F4A',x,TOP3+.04,z)); }},
+    {at:5,name:'The Moon Gate',make:g=>{ const a=new THREE.Mesh(new THREE.TorusGeometry(.9,.18,8,24,Math.PI),m3('#F4F4F4')); a.position.set(-.6,TOP3,-2.7); a.rotation.y=.3; a.castShadow=true; g.add(a); for(const sx of [-1,1]) g.add(box3(.36,.12,.36,'#F4F4F4',-.6+sx*.86,TOP3,-2.7+sx*.26)); ['#C91A09','#F2CD37','#0055BF','#4B9F4A','#FE8A18','#AC78BA','#C91A09'].forEach((c,i)=>{ const t=Math.PI*(i+.5)/7, d=mesh3(new THREE.SphereGeometry(.09,6,4),m3(c),0,0,0); d.position.set(-.6+Math.cos(t)*.9*Math.cos(.3),TOP3+Math.sin(t)*.9,-2.7-Math.cos(t)*.9*Math.sin(.3)); g.add(d); }); }},
+    {at:6,name:'The Constellation Cube',make:g=>{ const cb=mesh3(new THREE.BoxGeometry(.7,.7,.7),m3('#1B2A4A'),.4,TOP3+.95,2.6); cb.userData.roty=1; g.add(cb);
       for(let i=0;i<7;i++){ const st=mesh3(new THREE.OctahedronGeometry(.07,0),glow3(i===6?'#E9DFFF':'#FFF03A'),.4+Math.cos(i*.9)*.5,TOP3+.95+Math.sin(i*1.7)*.42,2.6+Math.sin(i*.9)*.5); st.castShadow=false; st.userData.spin=1; g.add(st); } }},
-    {at:7,name:'The lantern',make:g=>{ const p=cyl3(.04,.05,1.1,6,'#6B4229',-1.9,TOP3,-.4); g.add(p); g.add(box3(.26,.3,.26,'#2A2254',-1.9,TOP3+1.1,-.4)); const lg=mesh3(new THREE.BoxGeometry(.16,.2,.16),glow3('#D9C8FF'),-1.9,TOP3+1.25,-.4); lg.castShadow=false; g.add(lg); g.add(sparkle3(-1.9,TOP3+1.7,-.4)); }},
+    {at:7,name:'The Lantern',make:g=>{ const p=cyl3(.04,.05,1.1,6,'#6B4229',-1.9,TOP3,-.4); g.add(p); g.add(box3(.26,.3,.26,'#2A2254',-1.9,TOP3+1.1,-.4)); const lg=mesh3(new THREE.BoxGeometry(.16,.2,.16),glow3('#D9C8FF'),-1.9,TOP3+1.25,-.4); lg.castShadow=false; g.add(lg); g.add(sparkle3(-1.9,TOP3+1.7,-.4)); }},
     {at:8,name:'The Moonstone Lighthouse',make:(g,c)=>{ const l=lighthouse3('#5A93DB'); l.scale.setScalar(1.25); l.position.set(0,TOP3,0); g.add(l);
       if(c>=9){ const lr=l.children[5]; lr.material=new THREE.MeshBasicMaterial({color:0xB9A6F0,transparent:true,opacity:.22,depthWrite:false}); lr.scale.y=1.9; lr.position.y=2.88; l.children[6].position.y+=.38; }   // the lamp room turns to tall glass round the moon crystal (it sits under an overhanging roof)
       ['#C91A09','#A5CA18','#0055BF','#F4BC22','#2E8FE0','#FE8A18'].forEach((c,i)=>{ const a=i/6*Math.PI*2; g.add(box3(.3,.18,.18,c,Math.cos(a)*.95,TOP3,Math.sin(a)*.95,{y:-a})); });   // the six friends' bricks stay in the ring
       const beam=new THREE.Mesh(new THREE.ConeGeometry(1.1,14,12,1,true),new THREE.MeshBasicMaterial({color:0xFFF3B0,transparent:true,opacity:.18,depthWrite:false,side:THREE.DoubleSide})); beam.rotation.z=Math.PI/2; beam.geometry.translate(0,7,0); beam.position.set(0,3.4,0); beam.userData.beam=1; if(c>=9) beam.material.color.set(0xD9C8FF); g.add(beam); }},
-    {at:9,name:'The moon crystal',make:g=>{ const y=TOP3+3.6;   // at the lighthouse's heart: inside the lamp room (centre 2.88 up, ×1.25), which turns to glass
+    {at:9,name:'The Moon Crystal',make:g=>{ const y=TOP3+3.6;   // at the lighthouse's heart: inside the lamp room (centre 2.88 up, ×1.25), which turns to glass
       [['#B898FF',0,0,.5],['#9A5FC0',.17,.09,.3],['#9A5FC0',-.16,.11,.28],['#7FA4E6',.06,-.17,.24]].forEach(([c,x,z,h])=>{ const k=mesh3(new THREE.OctahedronGeometry(.16,0),new THREE.MeshBasicMaterial({color:new THREE.Color(c).convertSRGBToLinear()}),x,y-.22+h*.42,z); k.scale.set(.9,h*3.2,.9); k.castShadow=false; g.add(k); }); }},
-    {at:10,name:'The Galaxy ship',make:g=>{ const sh=galaxyShip3(); sh.scale.setScalar(.42);
+    {at:10,name:'The Galaxy Ship',make:g=>{ const sh=galaxyShip3(); sh.scale.setScalar(.42);
       const I=ISLES.moonstone, t=Math.atan2(-I.z,-I.x), bx=Math.cos(t)*I.r*1.12, bz=Math.sin(t)*I.r*1.12;   // on the front shore away from the rowboat
       const [x,z,ry]=[[-1.2,3.3,.35],[2.5,2.4,-.55]].sort((p,q)=>Math.hypot(q[0]-bx,q[1]-bz)-Math.hypot(p[0]-bx,p[1]-bz))[0];
       sh.position.set(x,TOP3-.05,z); sh.rotation.y=ry; g.add(sh); }},
@@ -9823,8 +9824,8 @@ function worldNextGoal(o){ return worldGoals(o)[0]||null; }
 function worldGoals(o){ const n=worldCount(o), out=[];
   const hp=HOME_PIECES.find(p=>!p.hide&&p.id!=='pick'&&p.at>n); if(hp){ const prev=Math.max(0,...HOME_PIECES.filter(p=>!p.hide&&p.at<=n).map(p=>p.at)); out.push({left:hp.at-n,text:`${hp.at-n} more build${hp.at-n===1?'':'s'} and Home Island gets ${/^(the|your) /i.test(hp.name)?'its '+hp.name.replace(/^(the|your) /i,''):hp.name}`,frac:(n-prev)/Math.max(1,hp.at-prev)}); }
   for(const id of Object.keys(ISLES)){ const I=ISLES[id], c=isleCount(id,o), p=PIECES[id].find(q=>q.at>c); if(!p) continue; const prev=Math.max(0,...PIECES[id].filter(q=>q.at<=c).map(q=>q.at)), k=p.at-c;
-    if(I.mystery&&!c){ if(mysteryOpen()) out.push({left:.5,text:'Mystery Island is ready: build the rowboat',frac:0}); continue; }
-    if(I.mystery){ out.push({left:k,text:`Next chapter: ${p.name.replace(/^The /,'the ')}`,frac:(c-prev)/Math.max(1,p.at-prev)}); continue; }   // one piece per chapter: "1 more chapter: The moon gate" read oddly
+    if(I.mystery&&!c){ if(mysteryOpen()) out.push({left:.5,text:'Mystery Island is ready: build Chapter 1, The Rowboat',frac:0}); continue; }
+    if(I.mystery){ out.push({left:k,text:`Next chapter: ${p.name}`,frac:(c-prev)/Math.max(1,p.at-prev)}); continue; }   // one piece per chapter: "1 more chapter: The moon gate" read oddly
     out.push({left:k+(c?0:.5),text:c?`${k} more ${I.unit}${k===1?'':'s'}: ${p.name} on ${I.name}`:`Your first ${I.unit} finds ${I.name} in the mist`,frac:(c-prev)/Math.max(1,p.at-prev)}); }
   out.sort((a,b)=>a.left-b.left); return out; }
 const islandsOpen=o=>Object.keys(ISLES).filter(id=>isleCount(id,o)>0);
@@ -9884,7 +9885,7 @@ function isl3BuildBloppitopia(o,W,add){
     else { g.traverse(x=>{ if(x.isMesh) x.material=m3('#C9D3DC'); }); g.add(mist3(I.r)); g.userData.misty=1; }
     W.add(g);
     const L=Math.hypot(I.x,I.z), ux=I.x/L, uz=I.z/L, done=c>=PIECES[id][PIECES[id].length-1].at;
-    ISL3.labels.push({id:'isle:'+id,...(!c&&I.mystery?{myst:1,bar:mysteryOpen()?1:mysteryProgress(o)}:{}),name:c>0?I.name:I.mystery?'Mystery Island':'???',sub:!c&&I.mystery?(mysteryOpen()?'Ready: build the rowboat':islesToGo(o)):c>0?(done?'Complete ★':isleProg(id,c,PIECES[id][PIECES[id].length-1].at)):'In the mist',...(!c&&I.mystery?(()=>{ const d=CAM_DIR3(); return {x:I.x+d.x/Math.hypot(d.x,d.z)*I.r*MYST_S*1.2,z:I.z+d.z/Math.hypot(d.x,d.z)*I.r*MYST_S*1.2,y:-1.2}; })():{x:I.x+ux*I.r*.95,z:I.z+uz*I.r*1.05,y:-1.2}),x2:I.x,y2:I.mystery&&!c?5:4.2,z2:I.z}); }
+    ISL3.labels.push({id:'isle:'+id,...(!c&&I.mystery?{myst:1,bar:mysteryOpen()?1:mysteryProgress(o)}:{}),name:c>0?I.name:I.mystery?'Mystery Island':'???',sub:!c&&I.mystery?(mysteryOpen()?'Ready: build Chapter 1':islesToGo(o)):c>0?(done?'Complete ★':isleProg(id,c,PIECES[id][PIECES[id].length-1].at)):'In the mist',...(!c&&I.mystery?(()=>{ const d=CAM_DIR3(); return {x:I.x+d.x/Math.hypot(d.x,d.z)*I.r*MYST_S*1.2,z:I.z+d.z/Math.hypot(d.x,d.z)*I.r*MYST_S*1.2,y:-1.2}; })():{x:I.x+ux*I.r*.95,z:I.z+uz*I.r*1.05,y:-1.2}),x2:I.x,y2:I.mystery&&!c?5:4.2,z2:I.z}); }
   ISL3.labels.push({id:'land:beach',name:'Home Island',sub:pupName(o)?`${pupName(o)}’s home`:'Your home',x:0,z:HOME_R*.55,y:.9,home:1});
   // sky things: a few clouds, stars for the night
   // the island friends: each stands on the shore of their island facing Home Island (in the mist too, waving you over)
@@ -10036,7 +10037,7 @@ const LUFU_HI_KEY='bloppit-lufu-hi';
 function lufuHiSeen(){ try{ return localStorage.getItem(pkey(LUFU_HI_KEY))==='1'; }catch(e){ return false; } }
 function lufuHi(){ try{ localStorage.setItem(pkey(LUFU_HI_KEY),'1'); }catch(e){} track('lufu_welcome');
   const o=worldStore(), nm=pupName(o)||'your otter', d=$('#lufuHiDlg');
-  $('#lhTxt').innerHTML=`You did it! <b>Chapter 1 is complete.</b> Every island of Bloppitopia is built, the Moonstone light shines again, and the Galaxy ship has carried ${escapeHTML(nm)}, Bloppit and all your friends home with lufu. This moonlit world is where lufu comes from, and it’s waiting to be rebuilt. <b>Chapter 2: Bloppit builds lufu’s world</b> is being made right now, with new builds, new places and new adventures.`;
+  $('#lhTxt').innerHTML=`You did it! <b>Chapter 1 is complete.</b> Every island of Bloppitopia is built, the Moonstone light shines again, and the Galaxy Ship has carried ${escapeHTML(nm)}, Bloppit and all your friends home with lufu. This moonlit world is where lufu comes from, and it’s waiting to be rebuilt. <b>Chapter 2: Bloppit builds lufu’s world</b> is being made right now, with new builds, new places and new adventures.`;
   if(!d.open) d.showModal(); }
 $('#lufuHiDlg').addEventListener('click',e=>{ const b=e.target.closest('[data-lh]'); if(!b) return; const a=b.dataset.lh; $('#lufuHiDlg').close(); track('lufu_welcome:'+a);
   if(a==='film') filmsShow('moonstone-feature'); else if(a==='build') pickPuzzle('quick','top'); else if(a==='sail') realmGo('bloppitopia'); else if(a==='pup') openWho(); else if(a==='builds') homeGo('quick'); });
@@ -10121,10 +10122,10 @@ function lufuBuild(o,W,add){ ISL3.lufu=1;
   // the sky: a galaxy band and a huge moon, low behind the cliffs
   W.add(lufuSky3());
   ISL3.labels.push({id:'land:lufu',name:'lufu’s world',sub:'Chapter 2 · coming soon',x:-7.5,z:6.2,y:.9,home:1});
-  ISL3.labels.push({id:'ship',name:'The Galaxy ship',sub:'Back to Bloppitopia',x:sx+1.5,z:sz+1.2,y:3.2});
+  ISL3.labels.push({id:'ship',name:'The Galaxy Ship',sub:'Back to Bloppitopia',x:sx+1.5,z:sz+1.2,y:3.2});
 }
 // The views of lufu's world: the whole shore, the ship, the old arch
-function lufuViews(){ const v=[{id:'world',name:'lufu’s world'},{id:'ship',name:'The Galaxy ship',x:LUFU_AT.ship[0]-.5,z:LUFU_AT.ship[1]-1,y:1.4,R:6.4},{id:'friends',name:(pupName(worldStore())||'Your otter')+' & lufu',x:LUFU_AT.pup[0],z:LUFU_AT.pup[1],y:TOP3+1.1,R:3.6},{id:'ruin',name:'The old moon arch',x:LUFU_AT.arch[0],z:LUFU_AT.arch[1],y:1.6,R:5}];
+function lufuViews(){ const v=[{id:'world',name:'lufu’s world'},{id:'ship',name:'The Galaxy Ship',x:LUFU_AT.ship[0]-.5,z:LUFU_AT.ship[1]-1,y:1.4,R:6.4},{id:'friends',name:(pupName(worldStore())||'Your otter')+' & lufu',x:LUFU_AT.pup[0],z:LUFU_AT.pup[1],y:TOP3+1.1,R:3.6},{id:'ruin',name:'The old moon arch',x:LUFU_AT.arch[0],z:LUFU_AT.arch[1],y:1.6,R:5}];
   const cam=ISL3.cam, vf=cam?THREE.MathUtils.degToRad(cam.fov)/2:.5, hf=cam?Math.atan(Math.tan(vf)*cam.aspect):.6; for(const x of v) if(x.R) x.d=Math.max(7,x.R/Math.tan(Math.min(vf,hf))*1.05); return v; }
 function lufuSky3(){ const g=new THREE.Group();
   const moon=new THREE.Mesh(new THREE.SphereGeometry(4.2,24,16),new THREE.MeshBasicMaterial({color:0xF3EEFF})); moon.position.set(-22,34,-62); moon.scale.setScalar(1.4); g.add(moon);
@@ -10353,7 +10354,7 @@ function finaleCard(id){
     blitzbay:()=>`${B.filter(([,b])=>b.k==='blitz').length} Blitz wins, and the Grand Prix against Swoop`,
     brickworks:()=>`${isleCount('brickworks',o)} creations: your own, the library and the Weekly Bloppit`,
     moonstone:()=>`The mystery solved: all ${MYSTERY.length} chapters, and lufu found`}[isle];
-  trialDialog({icon:isle==='moonstone'?'⛵':'🏆',title:isle==='moonstone'?'The Galaxy ship sets sail!':`${N.name} is complete!`,quick:true,rows:`<div><span>${escapeHTML(line?line():'')}</span><span></span></div><div><span>${escapeHTML(N.milestone)}</span><span>✓</span></div><div class="tot"><span>Bonus Galaxy Blocks</span><span>+5 ${gbIc()}</span></div>`,
+  trialDialog({icon:isle==='moonstone'?'⛵':'🏆',title:isle==='moonstone'?'The Galaxy Ship sets sail!':`${N.name} is complete!`,quick:true,rows:`<div><span>${escapeHTML(line?line():'')}</span><span></span></div><div><span>${escapeHTML(N.milestone)}</span><span>✓</span></div><div class="tot"><span>Bonus Galaxy Blocks</span><span>+5 ${gbIc()}</span></div>`,
     note:(isle==='moonstone'?`All eight of you are aboard: ${pupName(o)||'your otter'} and lufu at the bow, Bloppit and the friends behind. The ship sails for lufu’s own world. `:'')+(islesComplete(o).length<ISLE_TOTAL?`${islesComplete(o).length} of ${ISLE_TOTAL} islands complete. ${ISLE_TOTAL-islesComplete(o).length===1?'One to go!':'Keep going!'}`:'Every island is complete!')});
 }
 function revealText(id,o){ const [k,a,b]=id.split(':');
@@ -11379,7 +11380,7 @@ function homeContinue(){
   if(mp) return {t:mp.state&&mp.state.calm?'Back to this week’s Bloppit':mp.cpu?'Back to your race':'Back to your room',s:mp.state&&mp.state.solo?`Your ${mp.state.label} is still going`:mp.cpu?`Your Blitz race against ${mp.state&&mp.state.cpuLevel?CPU_LEVELS[mp.state.cpuLevel].name:'Swoop'} is still going`:mpBlitz()?'Your Bloppit Blitz game is still going':'Your Play together game is still going',p:-1,go:()=>setTab(mp.state&&mp.state.started?'build':mpHomeTab())};
   if(pendingSave){ const o=pendingSave;
     return {t:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`Continue ${TRAILS[trailOk(o.game.trail)].name} level ${o.game.lvl+1}`:'Continue building',
-      s:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`${levelsOf(o.game&&o.game.trail)[o.game.lvl].name}: ${o.placedN} of ${o.nBricks} bricks placed`:`Your ${niceName(o.name)}: ${o.placedN} of ${o.nBricks} bricks placed`,
+      s:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`${levelsOf(o.game&&o.game.trail)[o.game.lvl].name}: ${o.placedN} of ${o.nBricks} bricks placed`:`${/^The /.test(niceName(o.name))?niceName(o.name):'Your '+niceName(o.name)}: ${o.placedN} of ${o.nBricks} bricks placed`,
       p:bar(o.placedN,o.nBricks),go:()=>$('#resumeGo').click()}; }
   if(model&&placedN>0&&placedN<model.bricks.length) return {t:'Continue building',s:`${placedN} of ${model.bricks.length} bricks placed`,p:bar(placedN,model.bricks.length),go:()=>setTab('build')};
   if(welcomeDue()) return {t:'Start here: meet your otter',s:'A little boat is on its way to Home Island.',p:-1,first:true,go:()=>{ track('welcome_from_menu'); if(isl3Init()){ setTab('island'); return; } if(!welcomeStart()) homeGo('library'); }};
