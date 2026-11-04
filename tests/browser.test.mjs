@@ -926,6 +926,20 @@ test('Moonstone films: building a chapter plays its film as its piece rises (Int
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('a film started with sound off: the sound button unmutes the film, and the island music stays quiet until it ends', { skip: skip() }, async () => {
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const k = 'm:Rowboat:10';
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds: { [k]: { n: 10, s: 2, t: 1e12, c: 1 } }, log: [k], decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, films: [] })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 }));
+    localStorage.setItem('bloppit-seen3-v1', JSON.stringify(['home:home1'])); localStorage.setItem('bloppit-sound', 'off'); } };
+  const t = await open('?nosplash=1&hour=11&films=1#island', { init: seed });
+  await t.page.waitForFunction(() => window.bloppitFilmOn() === 'moon-12', null, { timeout: 40000, polling: 200 });
+  await t.page.waitForFunction(() => { const v = document.querySelector('.is3-film video'); return v && !v.paused; }, null, { timeout: 15000 });
+  assert.equal(await t.page.evaluate(() => document.querySelector('.is3-film video').muted), true, 'starts on mute');
+  await t.page.evaluate(() => document.getElementById('sndTop').click()); await t.page.waitForTimeout(1600);
+  assert.equal(await t.page.evaluate(() => document.querySelector('.is3-film video').muted), false, 'the film has its sound now');
+  assert.equal(await t.page.evaluate(() => window.bloppitMusic ? window.bloppitMusic() : null) || 0, 0, 'no island music over the film');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('Frog Forest films: its arrival film plays when it rises from the mist, its completion film when it is complete, then both are in My films', { skip: skip() }, async () => {
   // every Frog Trail level done, and the island not yet revealed: both moments are new
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; for (let i = 0; i < 3; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1 }; log.push(k); }
