@@ -1154,6 +1154,22 @@ test('a Moonstone chapter has the game bar like the trails: Moonstone Isle, chap
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('the next Moonstone chapter goes by the island first: the last chapter’s piece (and film) rises, then the chapter starts; the finish line says "Next chapter: the moon gate"', { skip: skip() }, async () => {
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; [['Rowboat', 10], ['Old map', 15], ['Lookout tower', 17], ['Little bridge', 12]].forEach(([n, z], i) => { const k = `m:${n}:${z}`; builds[k] = { n: z, s: 2, t: 1e12 + i, c: 1 }; log.push(k); });
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, films: [] })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); } };
+  const t = await open('?nosplash=1&films=0&mystery=1#build', { init: seed });
+  await t.page.evaluate(() => { const s = window.bloppitNext.unlocked().filter((i) => i !== 'moonstone:3'); localStorage.setItem('bloppit-seen3-v1', JSON.stringify(s)); });
+  assert.ok((await t.page.evaluate(() => window.bloppitNext.goals())).includes('Next chapter: the moon gate'));
+  await t.page.evaluate(() => window.bloppitNext.via(4)); await t.page.waitForTimeout(600);
+  assert.equal(await t.page.evaluate(() => document.getElementById('view-island').hidden), false, 'the island first');
+  await t.page.waitForFunction(() => /Chapter 5 of 10/i.test(document.getElementById('gameBar').innerText) && !document.getElementById('gameBar').hidden, null, { timeout: 30000 });
+  assert.ok(await t.page.evaluate(() => window.bloppitNext.seen().includes('moonstone:3')), 'the little bridge was revealed');
+  // Nothing left to reveal: straight to the chapter
+  await t.page.evaluate(() => window.bloppitNext.via(5)); await t.page.waitForTimeout(800);
+  assert.match(await t.page.evaluate(() => document.getElementById('gameBar').innerText), /Chapter 6 of 10/i);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('Mystery Island label: "N islands to go!" and a bar that counts every piece built on the five islands', { skip: skip() }, async () => {
   // Frog Forest complete (15 of 15) and 6 Brain Trail levels: 1 island done, 21 of 73 pieces
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const k = 'm:Cottage:12';
