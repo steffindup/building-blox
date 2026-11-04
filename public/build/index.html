@@ -451,6 +451,12 @@ body.on-build .appfoot{display:none}
 .win-chars{display:block;width:210px;height:150px;margin:-4px auto 0}
 /* Blitz Bay's ladder (from Bloppitopia): the next race, nothing to set up */
 .ladderdlg{text-align:center}.ld-tag{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.qp-opts{display:grid;gap:10px;margin:12px 0 4px}
+.qp-opt{display:grid;grid-template-columns:52px minmax(0,1fr);gap:4px 12px;align-items:center;text-align:left;padding:12px 14px;border-radius:16px;border:2px solid var(--line,#D9E1EA);background:var(--card,#fff);color:inherit;font:inherit;cursor:pointer}
+.qp-opt:hover,.qp-opt:focus-visible{border-color:var(--hi,#F2CD37)}
+.qp-opt img,.qp-opt .qp-ic{grid-row:span 2;width:52px;height:52px;border-radius:12px;object-fit:contain;display:grid;place-items:center;font-size:30px;background:color-mix(in srgb,var(--hi,#F2CD37) 22%,transparent)}
+.qp-opt b{font-size:1.05rem}.qp-opt span{font-size:.88rem;opacity:.8}
+.qp-opt.isle{border-color:color-mix(in srgb,#2FB8DC 55%,transparent)}
 .ld-pz{display:flex;gap:12px;align-items:center;justify-content:center;margin:10px auto;text-align:left}.ld-pz img{width:64px;height:64px;border-radius:12px;background:#fff;object-fit:contain}
 .ld-pz b{display:block;font-family:var(--f-display);font-weight:400;font-size:20px}.ld-pz span{font-size:13px;font-weight:700;color:var(--muted)}
 .ld-strip{display:flex;gap:4px;justify-content:center;align-items:center;flex-wrap:wrap;margin:6px auto 2px;max-width:340px}
@@ -2185,6 +2191,14 @@ body.film-on{overflow:hidden}
   <p class="win-best" id="ldNote"></p>
   <div class="win-btns"><button class="primary sm" id="ldGo" type="button" autofocus>▶ Start the race</button><button class="ghost" id="ldLater" type="button">Not now</button></div>
 </dialog>
+<dialog class="windlg qpdlg" id="qpDlg" aria-labelledby="qpT">
+  <h2 id="qpT">Quick Build</h2>
+  <div class="qp-opts">
+    <button class="qp-opt isle" id="qpIsle" type="button"><img id="qpImg" src="/art/head-bibi.png" alt=""><b id="qpIsleT">🏝️ Play on Brickyard Cove</b><span>In Bloppitopia: every build grows the island and earns ★, XP and Galaxy Blocks.</span></button>
+    <button class="qp-opt" id="qpQuick" type="button"><span class="qp-ic" aria-hidden="true">⚡</span><b>Quick play</b><span>Just build, any puzzle. Nothing is added to Bloppitopia.</span></button>
+  </div>
+  <div class="win-btns"><button class="ghost" id="qpX" type="button">Not now</button></div>
+</dialog>
 <dialog class="windlg" id="mpEndDlg" aria-label="Game finished">
   <div class="win-stars">🏆</div>
   <span class="win-chars" id="mpEndChars" hidden></span>
@@ -3363,7 +3377,7 @@ function syncSub(t){
 // A finished race against Swoop (or a finished timed build) is over: going anywhere else leaves it. It used to hold on,
 // so "Play Pippa's puzzle" (or any Trail) landed on the race page asking you to leave a race that had already ended.
 function mpDoneLeave(){ if(mp&&mp.cpu&&mp.state&&mp.state.finished){ mpLeave(); return true; } return false; }
-function setTab(t,sub){ if(t!=='build'&&t!==mpHomeTab0()) mpDoneLeave(); if(t==='build') document.body.classList.remove('bz-jump');
+function setTab(t,sub){ if(t==='island'&&typeof quickPlaySet==='function') quickPlaySet(false); if(t!=='build'&&t!==mpHomeTab0()) mpDoneLeave(); if(t==='build') document.body.classList.remove('bz-jump');
   if(t!=='island'&&ISL3&&ISL3.on) isl3Hide();
   if(typeof islandTipHide==='function'){ islandTipHide(); const h=document.getElementById('isHover'); if(h) h.hidden=true; }
   if(t!=='build'&&reveal) endReveal(true);
@@ -3443,7 +3457,7 @@ window.addEventListener('popstate',()=>{
   const want=navHash(tab)?'#'+navHash(tab):'';
   if((location.hash==='#home'?'':location.hash)!==want) try{ history.replaceState({bloppit:tab},'',location.pathname+location.search+want); }catch(e){}
 });
-document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{ if(b.dataset.tab!=='build') mpDoneLeave();
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{ quickPlaySet(false); if(b.dataset.tab!=='build') mpDoneLeave();
   if(b.dataset.tab==='create'&&mp){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus(`You’re in ${mpWhat()}. Tap Quick Build again to leave it.`,'err'); else showToastLeave(); return; } mpLeave(); }
   if(b.dataset.tab==='game'&&mp){ setTab(mpHomeTab()); mpMsg(`Leave ${mpWhat()} first to play the levels on your own.`); return; }
   if(b.dataset.tab==='create'&&game){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus('You’re in a Trail level. Tap Quick Build again to leave it.','err'); else showToastLeave(); return; } endGame(); }
@@ -3788,7 +3802,7 @@ const filmSeen=(id,o)=>((o||worldStore()).films||[]).includes(id);
 function filmSeenAdd(id){ const o=worldStore(); if(filmSeen(id,o)) return; o.films=[...(o.films||[]),id]; worldSet(o); }
 // Setting off for an island you haven't found yet (Play next, or its trail's level map): its arrival film plays first
 const TRAIL_ISLE={otter:'otterwood',brain:'brainpeak',sea:'sunrise'};
-function islandSetOff(isle,go){ const f=isle&&FILMS.find(f=>f.at==='isle:'+isle);
+function islandSetOff(isle,go){ if(quickPlay){ go(); return; } const f=isle&&FILMS.find(f=>f.at==='isle:'+isle);
   if(f&&!filmSeen(f.id)&&isleCount(isle)===0) isl3Film(f,go); else go(); }
 function startLevelFilm(tr,i){ islandSetOff(TRAIL_ISLE[tr],()=>startLevel(i)); }
 // From an island's card: an island still in the mist sets off straight away (its arrival film, then the trail's first
@@ -5962,7 +5976,7 @@ const SEA_LEVELS=[   // mirror builds (Oct 2026): Pippa builds one half, you bui
  {name:'Festival Clock',  sample:'Festival Clock',  size:21, shape:'puffed', thick:.8, colors:8, pts:1200, boss:true, mirror:true, paint:true},   // the finale: you mirror Pippa as always, in your own colourss, Pippa mirrors you
 ];
 // Pippa's mirror puzzles for Solo (Steff, 4 Nov 2026): a set of its own, different from Flipper Beach's, open from the
-// start (no tide to wait for), one after another like the Trails. They don't grow any island. Scores are kept in g.fbest.
+// start (no tide to wait for), in any order (Steff, 4 Nov 2026). They don't grow any island. Scores are kept in g.fbest.
 const FLIP_LEVELS=[   // every picture is (near enough) the same on both sides, so the reflection looks right
  {name:'Soccer ball',     sample:'Soccer ball',     size:8,  shape:'flat',   thick:.6, colors:2, pts:100, mirror:true},
  {name:'Headphones',      sample:'Headphones',      size:11, shape:'flat',   thick:.6, colors:3, pts:130, mirror:true},
@@ -6081,7 +6095,7 @@ function updateGameBar(){
   // Where you are: the trail (with its friend) and the island it grows
   { const tr=gameTrail(), T=TRAILS[tr]||{name:'Trail'}, isle={otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr], who={otter:'tiny',brain:'nora',sea:'pippa',flip:'pippa'}[tr];
     let iname=''; try{ iname=ISLES[isle].name; }catch(e){}
-    $('#gbWhere').innerHTML=`${who?`<img src="/art/head-${who}.png" alt="">`:''}<div><strong>${escapeHTML(T.name)}</strong>${iname?`<small>🏝️ ${escapeHTML(iname)}</small>`:''}</div>`; }
+    $('#gbWhere').innerHTML=`${who?`<img src="/art/head-${who}.png" alt="">`:''}<div><strong>${escapeHTML(T.name)}</strong>${quickPlay?'<small>⚡ Quick play</small>':iname?`<small>🏝️ ${escapeHTML(iname)}</small>`:''}</div>`; }
   $('#gbBadge').textContent=game.lvl+1; $('#gbNum').textContent=`${game.lvl+1} of ${LV.length}`; $('#gbName').textContent=L.name;
   { const st=runStars(); $('#gbPts').innerHTML=starHTML(st); $('#gbOf').textContent=''; if(game.lastSt&&st<game.lastSt){ const f=$('#gbFlash'); f.textContent='−★'; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); } game.lastSt=st; }
   const bits=[]; if(p.hint) bits.push(`Hints ${p.hint}`); if(p.auto) bits.push(`Placed for you ${p.auto}`); if(run&&run.miss) bits.push(`Wrong bricks ${run.miss}`);
@@ -6198,7 +6212,7 @@ function winLevel(){
   if(!game) return;
   const LV=levelsOf(gameTrail()), i=game.lvl, L=LV[i], p=game.pen, sc=levelScore(), tr=gameTrail(), W=worldLast&&worldLast.key&&worldLast.key.startsWith('t:')?worldLast:null;
   const noHelp=W?W.noHint:p.hint+p.auto===0, clean=W?W.clean:noHelp&&!run.miss, st=W?W.stars:1+(noHelp?1:0)+(clean?1:0);
-  const g=gameStore(), B=bestOf(g,tr), prev=B[i]||0; if(sc>prev) B[i]=sc; gameStoreSet(g);
+  const g=gameStore(), B=bestOf(g,tr), prev=B[i]||0; if(sc>prev&&!(quickPlay&&tr!=='flip')){ B[i]=sc; gameStoreSet(g); }   // Quick play keeps nothing
   setTrail(tr); winLvl=i;
   $('#winStars').innerHTML=starHTML(st); worldSound();
   { const pic=reveal&&reveal.url; $('#winPic').hidden=!pic; if(pic){ $('#winPic').src=pic; $('#winPic').alt=`The real ${L.name}`; } }
@@ -6229,11 +6243,11 @@ function renderGameMap(){
   $('#trOtter').setAttribute('aria-selected',trail==='otter'); $('#trBrain').setAttribute('aria-selected',trail==='brain'); $('#trSea').setAttribute('aria-selected',trail==='sea');
   $('#gmTitle').textContent=`${T.icon} ${T.name}`;
   const pct=trail==='sea'?progressPct(worldStore()):0;
-  $('#gmIntro').textContent=trail==='flip'?'Pippa builds one half of each puzzle, and you build the other half, flipped like a reflection. Twelve to try, one after another, any time. (Flipper Beach in Bloppitopia has its own set.)':trail==='brain'?'A different set of puzzles, with Bloppit’s math puzzles locking some booklet pages. Solve them to keep building.':trail==='sea'?`Pippa’s seaside puzzles wash ashore as Bloppitopia grows: a new one about every 8% (you’re at ${pct}%). Each one you build grows Flipper Beach.`:'Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, and Tiny cheers you all the way.';
+  $('#gmIntro').textContent=quickPlay&&trail!=='flip'&&trail!=='sea'?`⚡ Quick play: any level, in any order. Nothing is added to Bloppitopia. To grow ${ISLES[TRAIL_ISLE[trail]].name}, play it from the island.`:trail==='flip'?'Pippa builds one half of each puzzle, and you build the other half, flipped like a reflection. Twelve to try, in any order. (Flipper Beach in Bloppitopia has its own set.)':trail==='brain'?'A different set of puzzles, with Bloppit’s math puzzles locking some booklet pages. Solve them to keep building.':trail==='sea'?`Pippa’s seaside puzzles wash ashore as Bloppitopia grows: a new one about every 8% (you’re at ${pct}%). Each one you build grows Flipper Beach.`:'Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, and Tiny cheers you all the way.';
   { const ts=trailStars(trail); $('#gmTotal').textContent=`${ts} ★`; $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} stars`; $('#gmDone').dataset.of=`${levelsOf(trail).length*3}`; } syncMathUI();
   $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} ${trail==='sea'||trail==='flip'?'puzzles built':'levels done'}`;
   $('#gmLevels').innerHTML=levelsOf(trail).map((L,i)=>{
-    const best=B[i], ashore=trail!=='sea'||seaWashed(i), open=i<=unlocked&&(ashore||!!best), cur_=game&&game.lvl===i&&gameTrail()===trail;
+    const best=B[i], ashore=trail!=='sea'||seaWashed(i), open=trail==='flip'||quickPlay&&trail!=='sea'||i<=unlocked&&(ashore||!!best), cur_=game&&game.lvl===i&&gameTrail()===trail;
     const st=best?levelStars(trail,i,null,best):0, wait=!best&&!ashore, k=wait?seaBuildsTo(i):0;   // a Pippa puzzle still out at sea: tap it to hear how to bring it in
     return `<button class="lvl${i===unlocked&&!best&&!wait?' next':''}${wait?' wait':''}" type="button" data-i="${i}" ${wait?'data-wait="1"':''} ${open||wait?'':'disabled'}>
       <span class="ln">${i+1}</span>${cur_?'<span class="tagnew">Playing</span>':(i===unlocked&&!best?(wait?`<span class="tagnew tide">🌊 ${k} more build${k===1?'':'s'}</span>`:'<span class="tagnew">Next</span>'):'')}
@@ -6638,9 +6652,12 @@ function buildStarted(kind){
   if((o.finished||0)===1&&!o.second) { o.second=true; evStoreSet(o); track('second_build_started_by_choice'); }
 }
 // Called when a build is finished (every build, any mode)
+// Quick play keeps nothing for builds that would grow an island: Quick Build, a Trail level, a race against Swoop.
+// The Weekly, challenges, relays and Pippa's own mirror puzzles count as always.
+function quickKeepsNothing(kind){ return !!quickPlay&&!welcomeOn()&&(kind==='quick'||kind==='blitz'||(kind==='trail'&&!!game&&gameTrail()!=='flip')); }
 function buildFinished(kind){
   const o=evStore(); o.finished=(o.finished||0)+1; evStoreSet(o);
-  try{ worldLast=worldFinish(welcomeOn()?'welcome':kind); worldStrips(); if(model) crewContribute(model.bricks.length); }catch(e){ console.warn('world',e); }
+  try{ worldLast=quickKeepsNothing(kind)?null:worldFinish(welcomeOn()?'welcome':kind); worldStrips(); if(model) crewContribute(model.bricks.length); }catch(e){ console.warn('world',e); }
   track('build_completed','build_completed:'+kind);
   if(o.finished===1) track('first_build_completed','activation'+evChannel());
 }
@@ -7701,7 +7718,7 @@ function snapshot(){
     pieces:pieces.map(p=>({a:p.a,l:p.l,c:p.c,x:Math.round(p.x),y:Math.round(p.y),r:p.r,z:p.z,bin:p.bin})),
     bins:bins.map(b=>({...b})),
     hand:hand.map(p=>pi.get(p)), held:held?pi.get(held):-1, sel:sel?{...sel}:null,
-    noBook:$('.build-grid').classList.contains('no-book'),
+    noBook:$('.build-grid').classList.contains('no-book'), quick:quickPlay||undefined,
     game:game?{lvl:game.lvl,trail:gameTrail(),pen:{...game.pen},hintSteps:[...game.hintSteps],math:game.math?{v:game.math.v,tier:game.math.tier,grade:game.math.grade,locks:game.math.locks,solved:game.math.solved,pts:game.math.pts}:null}:null
   };
 }
@@ -7728,7 +7745,7 @@ function setControls(s){
   clearTimeout(timer);
 }
 async function restoreSave(o){
-  restoring=true;
+  restoring=true; quickPlaySet(!!o.quick);
   try{
     const ds=await Promise.all(o.photos.map(p=>loadPng(p.png)));
     photos=o.photos.map((p,i)=>({id:++pid,name:p.name,view:p.view,sample:p.sample,d:ds[i],png:p.png,m:null}));
@@ -7797,6 +7814,7 @@ loadSample(0); setTab('create'); clearTimeout(timer); rebuild(); requestAnimatio
    and under the pup on the server (the world field); nothing in it is typed by a child: the pup's name is an
    index into a fixed list, and a photo build is keyed by a hash of its file name. */
 var WORLD_KEY='bloppit-world-v1', worldLast=null;
+var quickPlay=false;   // Quick play from the Build page: see playAsk()
 var PUP_NAMES=['Pebble','Kelp','Sandy','Bubbles','Coral','Finn','Misty','Shelly','Ripple','Dash','Mango','Tide'];
 // Splash at 25 builds, Legend at 65 (of about 71 core builds), so Legend comes near the end of the core content.
 var PUP_STAGES=[{name:'Pup',at:0,lvl:1},{name:'Splash',at:25,lvl:4},{name:'Legend',at:65,lvl:8}];
@@ -7974,7 +7992,7 @@ function worldToast(){
 }
 // After a Quick Build's reveal: the stars, and on the first ever finish the pup
 function worldAfterQuick(){ pupMaybe(()=>{ const o=worldStore(), g=ISL3.ok&&typeof worldNextGoal==='function'?worldNextGoal(o):null;
-  trialDialog({icon:'🧱',title:'You built it!',note:g?'Next on Bloppitopia: '+g.text+'.':'',next:true,quick:true}); }); }
+  trialDialog({icon:'🧱',title:'You built it!',note:quickPlay?'⚡ Quick play: this one isn’t added to Bloppitopia.':g?'Next on Bloppitopia: '+g.text+'.':'',next:true,quick:true}); }); }
 function pupMaybe(then){ const o=worldStore(); if(pupName(o)||worldCount(o)!==1||o.pupAsked){ if(then) then(); return; } o.pupAsked=true; worldSet(o); pupOpen(then); }
 // Meet your pup: its brick colour, then a name. Typing one is the main way; the list and "later" are there too.
 // After the first time, Bloppitopia is introduced (unless something else is already waiting: then()).
@@ -11196,7 +11214,7 @@ function nextBuild(){
   const open=all.filter(c=>isleFrac(c.isle,o)<1), C=open.length?open:all;
   const at=NEXT_RING.indexOf(ringOf(nextLast())), turn=c=>{ const i=NEXT_RING.indexOf(ringOf(c.kind)); return (i-at-1+2*NEXT_RING.length)%NEXT_RING.length; };
   const best=C.slice().sort((a,b)=>(isleFrac(a.isle,o)-isleFrac(b.isle,o))||(turn(a)-turn(b)))[0];
-  const go=best.go; return {...best,go:()=>{ nextMark(best.kind); go(); }};
+  const go=best.go; return {...best,go:()=>{ quickPlaySet(false); nextMark(best.kind); go(); }};
 }
 window.bloppitNext={next:()=>{ const n=nextBuild(); return n&&{t:n.t,kind:n.kind}; },cands:()=>nextCandidates().map(c=>c.kind),mark:k=>nextMark(k),complete:()=>islesComplete(worldStore()),mysteryOpen:()=>mysteryOpen(),unlocked:()=>worldUnlocked(worldStore()),seen:()=>seenGet(),reveal:ids=>isl3Reveal(ids,worldStore()),go:()=>{ const n=nextBuild(); if(n) n.go(); },count:id=>isleCount(id,worldStore()),wardrobe:()=>wardrobeOpen()};   // for tests
 // Start a Blitz race straight from Play next: the race page with the puzzle and the Longtail picked, then Go
@@ -11348,7 +11366,26 @@ function homeGo(where){ mpDoneLeave();
   // Photo or library: start something new, so leave a level or room first
   islandSetOff('brickworks',()=>pickPuzzle('quick',where==='photo'?'photo':'library'));
 }
-document.querySelectorAll('#view-home [data-go]').forEach(b=>b.addEventListener('click',()=>homeGo(b.dataset.go)));
+// Build page vs Bloppitopia (Steff, 4 Nov 2026): a Build page tile with an island behind it asks first.
+// "Play on <island>" is Bloppitopia as before (its arrival film the first time, the build grows the island);
+// "Quick play" just builds: no film, and nothing is added to Bloppitopia (no island, ★ record, XP or Galaxy Blocks).
+// Quick play lasts until the player goes back to Bloppitopia (the island, a top tab, or the other choice).
+const QP_TILES={quick:{isle:'brickworks',who:'bibi',t:'Quick Build'},otter:{isle:'otterwood',who:'tiny',t:'Frog Trail'},brain:{isle:'brainpeak',who:'nora',t:'Brain Trail'},cpu:{isle:'blitzbay',who:'swoop',t:'Blitz vs Swoop'}};
+function quickPlaySet(on){ quickPlay=!!on; document.body.classList.toggle('quick-play',quickPlay); }
+function quickGo(where){ quickPlaySet(true); track('quick_play:'+where);
+  if(where==='quick'){ if(game) endGame(); pickPuzzle('quick','top'); return; }
+  if(where==='cpu'){ setTab('blitz','cpu'); scrollTo(0,0); return; }
+  setTab('game',where); }
+function playAsk(where){ const T=QP_TILES[where]; if(!T||mp){ homeGo(where); return; }
+  let iname=''; try{ iname=ISLES[T.isle].name; }catch(e){}
+  $('#qpT').textContent=T.t; $('#qpImg').src=`/art/head-${T.who}.png`; $('#qpIsleT').textContent=`🏝️ Play on ${iname||'Bloppitopia'}`;
+  const d=$('#qpDlg');
+  $('#qpIsle').onclick=()=>{ d.close(); quickPlaySet(false); track('quick_play_no:'+where); homeGo(where); };
+  $('#qpQuick').onclick=()=>{ d.close(); quickGo(where); };
+  $('#qpX').onclick=()=>d.close();
+  d.showModal(); }
+document.querySelectorAll('#view-home [data-go]').forEach(b=>b.addEventListener('click',()=>playAsk(b.dataset.go)));
+window.bloppitQuickPlay=()=>quickPlay;   // for tests
 window.bloppitHome=()=>setTab('home');
 setTimeout(()=>{ try{ ch3Warm(); }catch(e){} },1200);
 new MutationObserver(()=>buddy3()).observe($('#buddy'),{attributes:true,attributeFilter:['class','hidden']});

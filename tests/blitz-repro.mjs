@@ -17,7 +17,7 @@ for (let r = 0; r < +races; r++) {
     q.continue(); });
   const page = await ctx.newPage(); const errors = []; page.on('pageerror', (e) => errors.push(e.message));
   await page.goto(`http://localhost:${PORT}/build/?nosplash=1&welcome=0&lite3d=1`, { waitUntil: 'load' }); await page.waitForTimeout(2500);
-  await page.evaluate(() => document.querySelector('[data-go="cpu"]').click());
+  await page.evaluate(() => { document.querySelector('[data-go="cpu"]').click(); document.getElementById('qpIsle').click(); });
   await page.waitForFunction((m) => [...document.getElementById('bzModel').options].some((o) => o.text.startsWith(m)), modelName, { timeout: 15000 });
   await page.evaluate(([m, lv]) => { const s = document.getElementById('bzModel'); const o = [...s.options].find((o) => o.text.startsWith(m)); s.value = o.value; s.dispatchEvent(new Event('change'));
     document.getElementById(lv).click(); document.getElementById('bzName').value = 'Tester'; document.getElementById('bzCpuGo').click(); }, [modelName, level]);
