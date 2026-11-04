@@ -1724,7 +1724,7 @@ body.film-on{overflow:hidden}
     <button class="hm-tile t-quick" data-go="quick" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span><b>Quick Build</b><span>Any puzzle, at your own pace</span></button>
     <button class="hm-tile t-game" data-go="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Frog Trail</b><span id="hmOtterSub">Levels from tiny to tricky</span></button>
     <button class="hm-tile t-brain" data-go="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Brain Trail</b><span id="hmBrainSub">Levels with math puzzles</span></button>
-    <button class="hm-tile t-sea" data-go="sea" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span><b>Pippa’s Puzzles</b><span id="hmSeaSub">Seaside puzzles that wash ashore</span></button>
+    <button class="hm-tile t-sea" data-go="flip" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span><b>Pippa’s Puzzles</b><span id="hmSeaSub">Mirror puzzles, any time</span></button>
   </div>
   <h3 class="hm-sec">Blitz</h3>
   <div class="hm-grid">
@@ -3317,7 +3317,7 @@ function niceName(n){ const b=String(n||'').replace(/\.[^.]+$/,'').trim();
 // Trails, Blitz and Together each have a hub page ('hub') and a page per game. setTab(t) keeps the page the
 // section was last on; setTab(t,'hub') or setTab('blitz','cpu') picks one.
 var subOf={game:'hub',blitz:'hub',mp:'hub'};
-const SUB_OK={game:['hub','otter','brain','sea'],blitz:['hub','cpu','friend'],mp:['hub','start','join']};
+const SUB_OK={game:['hub','otter','brain','sea','flip'],blitz:['hub','cpu','friend'],mp:['hub','start','join']};
 // Which top-bar game a page belongs to (the build screen belongs to whatever you're playing)
 // The top bar: one tab per character. Frog Trail and Brain Trail are both the Trails page (their own level maps), and
 // Pippa's tab is her seaside puzzles (and her daily message in a bottle); the Weekly Bloppit is Bibi's, under Quick Build.
@@ -3358,7 +3358,7 @@ function syncSub(t){
   if(t==='game'&&s==='hub'){ const st=playerStats(players.cur);
     $('#hubOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
     $('#hubBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} new levels, with math puzzles`;
-    $('#hubSeaSub').textContent=st.slv?`${st.slv} of ${SEA_LEVELS.length} puzzles built`:seaWashed(0)?'A puzzle has washed ashore!':`The first washes ashore at ${seaPct(0)}%`; }
+    { const h=$('#hubSeaSub'); if(h) h.textContent=st.flv?`${st.flv} of ${FLIP_LEVELS.length} puzzles built`:`${FLIP_LEVELS.length} mirror puzzles, any time`; } }
 }
 // A finished race against Swoop (or a finished timed build) is over: going anywhere else leaves it. It used to hold on,
 // so "Play Pippa's puzzle" (or any Trail) landed on the race page asking you to leave a race that had already ended.
@@ -5961,6 +5961,22 @@ const SEA_LEVELS=[   // mirror builds (Oct 2026): Pippa builds one half, you bui
  // The last one: the Festival Clock. Building it completes Flipper Beach and starts Pippa's festival.
  {name:'Festival Clock',  sample:'Festival Clock',  size:21, shape:'puffed', thick:.8, colors:8, pts:1200, boss:true, mirror:true, paint:true},   // the finale: you mirror Pippa as always, in your own colourss, Pippa mirrors you
 ];
+// Pippa's mirror puzzles for Solo (Steff, 4 Nov 2026): a set of its own, different from Flipper Beach's, open from the
+// start (no tide to wait for), one after another like the Trails. They don't grow any island. Scores are kept in g.fbest.
+const FLIP_LEVELS=[   // every picture is (near enough) the same on both sides, so the reflection looks right
+ {name:'Soccer ball',     sample:'Soccer ball',     size:8,  shape:'flat',   thick:.6, colors:2, pts:100, mirror:true},
+ {name:'Headphones',      sample:'Headphones',      size:11, shape:'flat',   thick:.6, colors:3, pts:130, mirror:true},
+ {name:'Planet',          sample:'Planet',          size:10, shape:'flat',   thick:.6, colors:4, pts:160, mirror:true},
+ {name:'Moongate',        sample:'Moongate',        size:12, shape:'flat',   thick:.6, colors:4, pts:200, mirror:true},
+ {name:'Pterodactyl',     sample:'Pterodactyl',     size:13, shape:'flat',   thick:.6, colors:4, pts:250, mirror:true},
+ {name:'Bat',             sample:'Bat',             size:12, shape:'flat',   thick:.5, colors:3, pts:300, mirror:true},
+ {name:'UFO',             sample:'UFO',             size:12, shape:'puffed', thick:.6, colors:5, pts:360, mirror:true},
+ {name:'Drum',            sample:'Drum',            size:11, shape:'puffed', thick:.7, colors:5, pts:430, mirror:true},
+ {name:'Panda',           sample:'Panda',           size:12, shape:'puffed', thick:.7, colors:4, pts:520, mirror:true},
+ {name:'Fox',             sample:'Fox',             size:13, shape:'puffed', thick:.7, colors:5, pts:640, mirror:true},
+ {name:'Game controller', sample:'Game controller', size:12, shape:'puffed', thick:.5, colors:5, pts:800, mirror:true},
+ {name:'Burger',          sample:'Burger',          size:11, shape:'puffed', thick:.7, colors:6, pts:1000, mirror:true},
+];
 const PROGRESS_ISLES=['otterwood','brainpeak','blitzbay','brickworks'];
 // How far through Bloppitopia the child is, 0 to 1: the pieces built on the four islands, out of all of them
 function gameProgress(o){ let a=0,t=0; for(const id of PROGRESS_ISLES){ const P=PIECES[id], n=P[P.length-1].at; a+=Math.min(isleCount(id,o),n); t+=n; } return t?a/t:0; }
@@ -5969,7 +5985,7 @@ const seaPct=i=>Math.ceil((i+1)*100/SEA_LEVELS.length-1e-9);   // rounded up, so
 function seaBuildsTo(i,o){ let a=0,t=0; for(const id of PROGRESS_ISLES){ const P=PIECES[id], n=P[P.length-1].at; a+=Math.min(isleCount(id,o),n); t+=n; } return Math.max(0,Math.ceil(t*(i+1)/SEA_LEVELS.length-1e-9)-a); }
 const seaWashed=(i,o)=>gameProgress(o)+1e-9>=(i+1)/SEA_LEVELS.length;      // has puzzle i washed ashore yet?
 const progressPct=o=>Math.floor(gameProgress(o)*100);
-const levelsOf=tr=>tr==='brain'?BRAIN_LEVELS:tr==='sea'?SEA_LEVELS:OTTER_LEVELS;
+const levelsOf=tr=>tr==='brain'?BRAIN_LEVELS:tr==='sea'?SEA_LEVELS:tr==='flip'?FLIP_LEVELS:OTTER_LEVELS;
 // Ready-made Blitz races, small enough to be quick (Blitz keeps races to 30 bricks or fewer). Blitz Bay has its own
 // puzzles: none of these is a Frog Trail, Brain Trail, Pippa or mystery build. Brick counts: 9/11/12, 18/19/21, 26/28/30.
 // The Blitz races, in Blitz Bay's order (Oct 2026): fifteen, smallest first, and Swoop faster every five (lv: Warm-up,
@@ -6022,11 +6038,11 @@ const GAME_KEY='building-blox-game-v1';
 let game=null, autoBusy=false, freeS=null, winLvl=0;
 // Two trails, each with its own levels: Frog Trail (id otter) (just building) and Brain Trail (math puzzles lock some pages).
 // Each keeps its own scores: Frog Trail in g.best (where the levels have always been saved), Brain Trail in g.bbest.
-const TRAILS={otter:{name:'Frog Trail',icon:'🐸'},brain:{name:'Brain Trail',icon:'🧠'},sea:{name:'Pippa’s Puzzles',icon:'🐧'}};
-const trailOk=t=>t==='brain'||t==='sea'?t:'otter';
+const TRAILS={otter:{name:'Frog Trail',icon:'🐸'},brain:{name:'Brain Trail',icon:'🧠'},sea:{name:'Pippa’s Puzzles',icon:'🐧'},flip:{name:'Pippa’s Mirror Puzzles',icon:'🪞'}};
+const trailOk=t=>t==='brain'||t==='sea'||t==='flip'?t:'otter';
 let trail=(()=>{ try{ return trailOk(localStorage.getItem('bloppit-trail')); }catch(e){ return 'otter'; } })();
 function setTrail(t){ trail=trailOk(t); try{ localStorage.setItem('bloppit-trail',trail); }catch(e){} }
-const bestOf=(g,tr)=>tr==='brain'?(g.bbest||(g.bbest={})):tr==='sea'?(g.sbest||(g.sbest={})):(g.best||(g.best={}));
+const bestOf=(g,tr)=>tr==='brain'?(g.bbest||(g.bbest={})):tr==='sea'?(g.sbest||(g.sbest={})):tr==='flip'?(g.fbest||(g.fbest={})):(g.best||(g.best={}));
 const gameTrail=()=>game?trailOk(game.trail):'otter';
 function gameStore(id){ try{ return JSON.parse(localStorage.getItem(keyFor(id||players.cur,GAME_KEY)))||{best:{}}; }catch(e){ return {best:{}}; } }
 function gameStoreSet(g){ if(leavingPlayer) return; try{ localStorage.setItem(pkey(GAME_KEY),JSON.stringify(g)); }catch(e){} pupPush(); }
@@ -6063,7 +6079,7 @@ function updateGameBar(){
   if(!on) return;
   const LV=levelsOf(gameTrail()), L=LV[game.lvl], p=game.pen;
   // Where you are: the trail (with its friend) and the island it grows
-  { const tr=gameTrail(), T=TRAILS[tr]||{name:'Trail'}, isle={otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr], who={otter:'tiny',brain:'nora',sea:'pippa'}[tr];
+  { const tr=gameTrail(), T=TRAILS[tr]||{name:'Trail'}, isle={otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr], who={otter:'tiny',brain:'nora',sea:'pippa',flip:'pippa'}[tr];
     let iname=''; try{ iname=ISLES[isle].name; }catch(e){}
     $('#gbWhere').innerHTML=`${who?`<img src="/art/head-${who}.png" alt="">`:''}<div><strong>${escapeHTML(T.name)}</strong>${iname?`<small>🏝️ ${escapeHTML(iname)}</small>`:''}</div>`; }
   $('#gbBadge').textContent=game.lvl+1; $('#gbNum').textContent=`${game.lvl+1} of ${LV.length}`; $('#gbName').textContent=L.name;
@@ -6072,7 +6088,7 @@ function updateGameBar(){
   if(game.math) bits.push(`Math ${game.math.solved.length} of ${game.math.locks.length} pages`);
   $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>';
 }
-window.bloppitLevels={otter:OTTER_LEVELS,brain:BRAIN_LEVELS,sea:SEA_LEVELS,blitz:BLITZ_PICKS,mystery:()=>MYSTERY,progress:()=>gameProgress(worldStore()),lib:()=>SAMPLES.filter(released).map(s=>s.name),weekly:w=>weeklyPuzzle(w),count:L=>{ delete L.count; return levelCount(L); },pic:n=>{ const S=SAMPLES.find(x=>x.name===n); return S?S.make()[0][1].toDataURL():null; },thumb:L=>levelThumb(L)};   // for tests and tuning
+window.bloppitLevels={otter:OTTER_LEVELS,brain:BRAIN_LEVELS,sea:SEA_LEVELS,flip:FLIP_LEVELS,blitz:BLITZ_PICKS,mystery:()=>MYSTERY,progress:()=>gameProgress(worldStore()),lib:()=>SAMPLES.filter(released).map(s=>s.name),weekly:w=>weeklyPuzzle(w),count:L=>{ delete L.count; return levelCount(L); },pic:n=>{ const S=SAMPLES.find(x=>x.name===n); return S?S.make()[0][1].toDataURL():null; },thumb:L=>levelThumb(L)};   // for tests and tuning
 window.bloppitLevel=(t,i)=>{ trail=t; startLevel(i); return model?{n:model.bricks.length,colors:[...new Set(model.bricks.map(b=>PALETTE[b.c][0]))]}:null; };   // for tests
 function startLevel(i){
   const L=levelsOf(trail)[i]; if(!L) return;
@@ -6186,7 +6202,7 @@ function winLevel(){
   setTrail(tr); winLvl=i;
   $('#winStars').innerHTML=starHTML(st); worldSound();
   { const pic=reveal&&reveal.url; $('#winPic').hidden=!pic; if(pic){ $('#winPic').src=pic; $('#winPic').alt=`The real ${L.name}`; } }
-  { const o=worldStore(), el=$('#winChars'), fid={otter:'tiny',brain:'nora',sea:'pippa'}[tr], tiny=!!fid&&ch3Ready(fid), tc=L.boss?'cheer':fid==='nora'?'aha':fid==='pippa'?'excited':'whistle';   // the trail's friend joins in: Tiny whistles you up Frog Trail, Nora has an "aha!" on Brain Trail (both cheer for their boss build)
+  { const o=worldStore(), el=$('#winChars'), fid={otter:'tiny',brain:'nora',sea:'pippa',flip:'pippa'}[tr], tiny=!!fid&&ch3Ready(fid), tc=L.boss?'cheer':fid==='nora'?'aha':fid==='pippa'?'excited':'whistle';   // the trail's friend joins in: Tiny whistles you up Frog Trail, Nora has an "aha!" on Brain Trail (both cheer for their boss build)
     el.classList.toggle('three',tiny&&hasPup(o));
     if(reveal&&reveal.url) el.hidden=true; else if(hasPup(o)) cheer3(el,tiny?['bloppit','pup',fid]:['bloppit','pup'],tiny?['cheer','happy_hop',tc]:['cheer','happy_hop']); else cheer3(el,tiny?['bloppit',fid]:'bloppit',tiny?['cheer',tc]:'cheer'); }
   $('#winTitle').textContent=`${TRAILS[tr].icon} Level ${i+1} complete!`;
@@ -6209,13 +6225,13 @@ $('#gbMap').onclick=()=>{ if(game) setTrail(gameTrail()); setTab('game'); };
 function renderGameMap(){
   const g=gameStore(), B=bestOf(g,trail), done=Object.keys(B).map(Number), unlocked=done.length?Math.max(...done)+1:0;
   const total=Object.values(B).reduce((a,b)=>a+b,0), T=TRAILS[trail];
-  $('#view-game').classList.toggle('brain',trail==='brain'); $('#view-game').classList.toggle('sea',trail==='sea');
+  $('#view-game').classList.toggle('brain',trail==='brain'); $('#view-game').classList.toggle('sea',trail==='sea'||trail==='flip');
   $('#trOtter').setAttribute('aria-selected',trail==='otter'); $('#trBrain').setAttribute('aria-selected',trail==='brain'); $('#trSea').setAttribute('aria-selected',trail==='sea');
   $('#gmTitle').textContent=`${T.icon} ${T.name}`;
   const pct=trail==='sea'?progressPct(worldStore()):0;
-  $('#gmIntro').textContent=trail==='brain'?'A different set of puzzles, with Bloppit’s math puzzles locking some booklet pages. Solve them to keep building.':trail==='sea'?`Pippa’s seaside puzzles wash ashore as Bloppitopia grows: a new one about every 8% (you’re at ${pct}%). Each one you build grows Flipper Beach.`:'Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, and Tiny cheers you all the way.';
+  $('#gmIntro').textContent=trail==='flip'?'Pippa builds one half of each puzzle, and you build the other half, flipped like a reflection. Twelve to try, one after another, any time. (Flipper Beach in Bloppitopia has its own set.)':trail==='brain'?'A different set of puzzles, with Bloppit’s math puzzles locking some booklet pages. Solve them to keep building.':trail==='sea'?`Pippa’s seaside puzzles wash ashore as Bloppitopia grows: a new one about every 8% (you’re at ${pct}%). Each one you build grows Flipper Beach.`:'Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, and Tiny cheers you all the way.';
   { const ts=trailStars(trail); $('#gmTotal').textContent=`${ts} ★`; $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} stars`; $('#gmDone').dataset.of=`${levelsOf(trail).length*3}`; } syncMathUI();
-  $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} ${trail==='sea'?'puzzles built':'levels done'}`;
+  $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} ${trail==='sea'||trail==='flip'?'puzzles built':'levels done'}`;
   $('#gmLevels').innerHTML=levelsOf(trail).map((L,i)=>{
     const best=B[i], ashore=trail!=='sea'||seaWashed(i), open=i<=unlocked&&(ashore||!!best), cur_=game&&game.lvl===i&&gameTrail()===trail;
     const st=best?levelStars(trail,i,null,best):0, wait=!best&&!ashore, k=wait?seaBuildsTo(i):0;   // a Pippa puzzle still out at sea: tap it to hear how to bring it in
@@ -6240,7 +6256,7 @@ function tideShow(i){ const L=SEA_LEVELS[i], o=worldStore(), k=seaBuildsTo(i,o),
 window.bloppitTide=tideShow;   // for tests
 $('#gmSwitch').onclick=openWho;
 $('#gmReset').onclick=()=>{ const b=$('#gmReset'); if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent=`Tap again to wipe your ${TRAILS[trail].name} scores`; setTimeout(()=>{delete b.dataset.confirm; b.textContent='Reset game progress';},3000); return; }
-  delete b.dataset.confirm; b.textContent='Reset game progress'; const g=gameStore(); if(trail==='brain') g.bbest={}; else if(trail==='sea') g.sbest={}; else g.best={}; gameStoreSet(g); renderGameMap(); };
+  delete b.dataset.confirm; b.textContent='Reset game progress'; const g=gameStore(); if(trail==='brain') g.bbest={}; else if(trail==='sea') g.sbest={}; else if(trail==='flip') g.fbest={}; else g.best={}; gameStoreSet(g); renderGameMap(); };
 
 /* ---------- Math challenge (Play the Game) ---------- */
 // Some booklet pages are locked behind a math puzzle; higher levels lock more pages.
@@ -6451,7 +6467,7 @@ $('#whoAge').innerHTML+=AGE_OPTS;
 const initial=n=>escapeHTML((n.trim()[0]||'?').toUpperCase());
 function playerRating(id){ try{ const o=JSON.parse(localStorage.getItem(keyFor(id,WORLD_KEY))||'null'); return o&&o.builds?worldRating(o):0; }catch(e){ return 0; } }
 function playerStats(id){ const g=gameStore(id), sum=o=>Object.values(o||{}).reduce((a,b)=>a+b,0);
-  return {pts:sum(g.best)+sum(g.bbest)+sum(g.sbest), lv:Object.keys(g.best||{}).length, blv:Object.keys(g.bbest||{}).length, slv:Object.keys(g.sbest||{}).length}; }
+  return {pts:sum(g.best)+sum(g.bbest)+sum(g.sbest)+sum(g.fbest), lv:Object.keys(g.best||{}).length, blv:Object.keys(g.bbest||{}).length, slv:Object.keys(g.sbest||{}).length, flv:Object.keys(g.fbest||{}).length}; }
 function renderWho(){
   const p=curPlayer(); $('#whoAv').textContent=(p.name.trim()[0]||'?').toUpperCase(); $('#whoAv').style.background=p.color; $('#whoName').textContent=p.name;
 }
@@ -6526,7 +6542,7 @@ function pupApply(id,d){
   if(d.world) d={...d,world:worldMerge(worldStore(),d.world)};  // what this device did since the push wins
   for(const k of PUP_FIELDS){ if(d[k]) try{ localStorage.setItem(keyFor(id||players.cur,{game:GAME_KEY,daily:DAILY_KEY,weekly:WEEKLY_KEY,world:WORLD_KEY}[k]),JSON.stringify(d[k])); }catch(e){} }
 }
-function pupHasProgress(d){ if(d.world&&d.world.builds&&Object.keys(d.world.builds).length) return true; return !!((d.game&&((d.game.best&&Object.keys(d.game.best).length)||(d.game.bbest&&Object.keys(d.game.bbest).length)||(d.game.sbest&&Object.keys(d.game.sbest).length)))||(d.daily&&Object.keys(d.daily.days||{}).length)||(d.weekly&&Object.keys(d.weekly.days||{}).length)); }
+function pupHasProgress(d){ if(d.world&&d.world.builds&&Object.keys(d.world.builds).length) return true; return !!((d.game&&((d.game.best&&Object.keys(d.game.best).length)||(d.game.bbest&&Object.keys(d.game.bbest).length)||(d.game.sbest&&Object.keys(d.game.sbest).length)||(d.game.fbest&&Object.keys(d.game.fbest).length)))||(d.daily&&Object.keys(d.daily.days||{}).length)||(d.weekly&&Object.keys(d.weekly.days||{}).length)); }
 // Push this device's record; the server merges it with what it holds and sends the merged record back.
 function pupPush(){ if(leavingPlayer) return; clearTimeout(pupTimer); pupTimer=setTimeout(pupSync,1500); }
 async function pupSync(){
@@ -11312,7 +11328,7 @@ function renderHome(){
   const st=playerStats(players.cur);
   $('#hmOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
   $('#hmBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} new levels, with math puzzles`;
-  $('#hmSeaSub').textContent=st.slv?`${st.slv} of ${SEA_LEVELS.length} puzzles built`:seaWashed(0)?'A puzzle has washed ashore!':`The first washes ashore at ${seaPct(0)}%`;
+  $('#hmSeaSub').textContent=st.flv?`${st.flv} of ${FLIP_LEVELS.length} puzzles built`:`${FLIP_LEVELS.length} mirror puzzles, any time`;
   try{ const week=weekOf(), o=weeklyPuzzle(week), me=weeklyStore().weeks[week], k=weeklyStreak();
     $('#hmDailyImg').src=o.thumb; $('#hmDailyT').textContent=me?`${o.name}: ${me.clean?'clean ✓':'done ✓'}`:`This week: ${o.name}`;
     renderHomeWeekly();
@@ -11320,7 +11336,7 @@ function renderHome(){
 }
 $('#hmCont').onclick=()=>{ if(homeCont) homeCont.go(); };
 function homeGo(where){ mpDoneLeave();
-  if(where==='otter'||where==='brain'||where==='sea'||where==='game'){ if(mp){ setTab(mpHomeTab()); mpMsg(`Leave ${mpWhat()} first to play the Trails on your own.`); return; } setTab('game',where==='game'?'hub':where); return; }
+  if(where==='otter'||where==='brain'||where==='sea'||where==='flip'||where==='game'){ if(mp){ setTab(mpHomeTab()); mpMsg(`Leave ${mpWhat()} first to play the Trails on your own.`); return; } setTab('game',where==='game'?'hub':where); return; }
   if(where==='quick'){ islandSetOff('brickworks',()=>pickPuzzle('quick','top')); return; }  // the puzzle page has both: add a photo at the top, the library below
   if(where==='daily'){ setTab('daily'); return; }
   if(where==='island'){ setTab('island'); return; }
