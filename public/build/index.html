@@ -1428,6 +1428,31 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 /* The first arrival, told like the opening of a film */
 #view-island.cine .is-foot,#view-island.cine .is-btns,#view-island.cine #isBuildsGo,#view-island.cine .is3-labels,#view-island.cine .is3-views,#view-island.cine .is3-say,#view-island.cine .is3-play,#view-island.cine .is3-alt{opacity:0!important;pointer-events:none!important;transition:opacity .6s}
 .is3-cine{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:3}
+.is3-ring{position:absolute;inset:0;z-index:4;background:#05101a;display:grid;place-items:center;container-type:size;opacity:0;transition:opacity .6s}
+.is3-ring.on{opacity:1}.is3-ring.page{position:fixed;z-index:60}
+.rg-stage{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100cqw,177.78cqh);aspect-ratio:16/9}
+.rg-bg{display:block;width:100%;height:100%;object-fit:cover;transition:filter 1.6s ease}
+.rg-stage.lit .rg-bg{filter:brightness(1.18) saturate(1.1)}
+.rg-slot{position:absolute;left:var(--sx);top:var(--sy);width:var(--sw);height:var(--sh);transform:translate(-50%,-50%);border:0;padding:0;background:transparent;border-radius:6px;cursor:pointer;box-shadow:0 0 0 3px rgba(222,200,255,.95),0 0 22px 8px rgba(165,115,255,.85);animation:rgPulse 1.3s ease-in-out infinite}
+.rg-slot.near{box-shadow:0 0 0 4px #fff,0 0 34px 14px rgba(190,150,255,1)}
+.rg-stage.lit .rg-slot{animation:none;box-shadow:none;pointer-events:none}
+@keyframes rgPulse{50%{box-shadow:0 0 0 3px rgba(222,200,255,.6),0 0 34px 14px rgba(165,115,255,.55)}}
+.rg-set{position:absolute;z-index:2;left:var(--sx);top:calc(var(--sy) - var(--sh)*.55);width:calc(var(--sw)*.8);height:calc(var(--sh)*1.25);transform:translate(-50%,-50%) translateY(-60%);opacity:0;border-radius:4px;background:var(--c);box-shadow:inset 0 -5px 0 rgba(0,0,0,.25),0 0 18px 6px rgba(190,150,255,.7)}
+.rg-set i{position:absolute;top:-28%;width:24%;height:32%;border-radius:4px 4px 1px 1px;background:var(--c);box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}.rg-set i:first-child{left:14%}.rg-set i:last-child{right:14%}
+.rg-stage.lit .rg-set{opacity:1;transform:translate(-50%,-50%);transition:transform .35s cubic-bezier(.3,1.6,.5,1),opacity .2s}
+.rg-glow{position:absolute;left:0;right:0;top:52%;bottom:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse 60% 55% at var(--sx) 60%,rgba(200,165,255,.75),rgba(150,100,255,.25) 45%,transparent 70%);mix-blend-mode:screen}
+.rg-stage.lit .rg-glow{animation:rgLit 2.6s ease-out forwards}
+@keyframes rgLit{0%{opacity:0}18%{opacity:1}100%{opacity:.45}}
+.rg-brick{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);width:96px;height:44px;margin-left:-48px;border:0;padding:0;border-radius:7px;background:var(--c);cursor:grab;touch-action:none;box-shadow:inset 0 -8px 0 rgba(0,0,0,.25),0 0 0 3px #fff,0 0 26px 8px rgba(190,150,255,.75);animation:rgBob 1.6s ease-in-out infinite;z-index:4}
+.rg-brick i{position:absolute;top:-11px;width:26px;height:13px;border-radius:6px 6px 2px 2px;background:var(--c);box-shadow:inset 0 -3px 0 rgba(0,0,0,.2),0 -2px 0 2px #fff}.rg-brick i:first-child{left:15px}.rg-brick i:last-child{right:15px}
+.rg-brick.drag{animation:none;cursor:grabbing;transition:none}
+.rg-brick.fly{animation:none;transition:transform .6s cubic-bezier(.5,0,.3,1)}
+@keyframes rgBob{50%{translate:0 -6px}}
+.is3-ring .film-say{top:calc(env(safe-area-inset-top,0px) + 50px);bottom:auto}
+.rg-tip{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 14px);margin:0;text-align:center;color:#fff;font-weight:800;font-size:15px;padding:0 88px;text-shadow:0 1px 6px rgba(0,0,0,.7);transition:opacity .4s}.rg-tip.off{opacity:0}
+.is3-ring .cn-skip{position:absolute;z-index:5;right:calc(env(safe-area-inset-right,0px) + 12px);top:calc(env(safe-area-inset-top,0px) + 10px);font:inherit;font-weight:800;font-size:14px;padding:7px 14px;border-radius:999px;border:0;background:rgba(5,16,26,.55);color:#fff;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.rg-slot,.rg-brick{animation:none}.rg-brick.fly{transition:none}}
+@media (max-height:500px){.rg-brick{left:auto;margin-left:0;right:calc(env(safe-area-inset-right,0px) + 28px);bottom:calc(env(safe-area-inset-bottom,0px) + 24px)}}   /* phones held sideways: the brick waits in the corner, off the slot */
 .is3-cine.page{position:fixed;z-index:60;background:#05101a;transition:opacity .6s}   /* a film over the whole page: setting off for an island, and every film on a phone */
 .is3-cine.page:not(.on){opacity:0}
 .is3-cine.page.on{pointer-events:auto}   /* the film is on top: taps don't reach the menu bar under it */
@@ -3685,9 +3710,9 @@ const FILMS=[
       ['17','The Constellation Cube','the-constellation-cube',5,'Build Moonstone chapter 6',{t:21,who:'nora',text:'The stars point the way: to the lighthouse, {name}!'}],
       ['18','The Answering Light','the-answering-light',6,'Build Moonstone chapter 7',null],   // just you and the light: nobody speaks
       ['19','The Moonstone Lighthouse','the-moonstone-lighthouse',7,'Build Moonstone chapter 8',[{t:31,who:'swoop',text:'Teamwork!',d:4},{t:39,who:'bloppit',text:'Go on, {name}. This part is yours.'}]],
-      ['20','The Moon Crystal','the-moon-crystal',8,'Build Moonstone chapter 9',{t:21,who:'lufu',text:'We have found each other.',d:7}],   // lufu never speaks: the words are the game's, as the series bible says
+      ['20','The Moon Crystal','the-moon-crystal',8,'Set your brick in the lighthouse ring',{t:21,who:'lufu',text:'We have found each other.',d:7}],   // lufu never speaks: the words are the game's, as the series bible says
       ['21','The Galaxy Ship','the-galaxy-ship',9,'Build the Galaxy ship',{t:21,who:'bloppit',text:'All aboard, {name}! Wherever lufu goes, we go too.'}]]
-    .map(([no,name,file,i,hint,say])=>({id:'moon-'+no,no,name,place:'Moonstone Isle',file:'moonstone-'+file,at:'moonstone:'+i,open:o=>filmSeen('moon-'+no,o)||mysteryDone(o)>i,hint,say:!say?[]:Array.isArray(say)?say:[say]})),
+    .map(([no,name,file,i,hint,say])=>({id:'moon-'+no,no,name,place:'Moonstone Isle',file:'moonstone-'+file,at:no==='20'?'ring:moonstone':'moonstone:'+i,open:o=>filmSeen('moon-'+no,o)||mysteryDone(o)>(no==='20'?7:i),hint,say:!say?[]:Array.isArray(say)?say:[say]})),   // film 20 follows the ring ceremony (isl3Ring), not a build
   {id:'moon-22',no:'22',name:'The New Horizon',place:'lufu’s world',file:'moonstone-the-new-horizon',at:'realm:lufu',open:o=>filmSeen('moon-22',o)||mysteryDone(o)>=10,hint:'Sail to lufu’s world',
     say:[{t:16,who:'nora',text:'A whole new world… this is where lufu comes from!'}]},
   // The whole of Chapter 1's Moonstone story, films 12–22 cut together: opens once the Galaxy ship is built (and from lufu's welcome)
@@ -8236,7 +8261,7 @@ function islandInfo(id,o){
         rows:[['Level',`${st} of 3: ${ISLAND_STAGES[st].name}`],['Builds finished',String(n)],['Models standing',`${shown.list.length} of ${shown.cap} stands`],['Decorations',`${decorOut(o).length} of ${DECOR.length}`],['Next',nx?`The ${nx.name.toLowerCase()} at ${nx.at} builds`:'Everything is built']],
         bar:nx?bar(ISLAND_STAGES[st].at,nx.at):null, actions:n?[{label:'✨ Decorate',fn:()=>$('#isDecor').click()}]:[]};
       if(arg==='meadow') return {...place(3,'The meadow','Where the village grows'),title:'The meadow',hint:n>=10?'The village stands here':'The village grows here at 10 builds'};
-      if(arg==='sea') return {title:'The sea',hint:'Six islands around Home Island: tap one',rows:destinations().map(d=>[d.n?d.name:ISLES[d.id].mystery?'Mystery Island':d.name,d.n?(d.st===3?`${d.milestone} ✓`:`${Math.min(d.n,d.total)} of ${d.total}${d.next?` · next: ${d.next}`:''}`):ISLES[d.id].mystery?mysteryHint():`In the mist · play ${ISLES[d.id].game} to find it`])};
+      if(arg==='sea') return {title:'The sea',hint:'Six islands around Home Island: tap one',rows:destinations().map(d=>[d.n?d.name:ISLES[d.id].mystery?'Mystery Island':d.name,d.n?(d.st===3?`${d.milestone} ✓`:`${isleProg(d.id,d.n,d.total)}${d.next?` · next: ${d.next}`:''}`):ISLES[d.id].mystery?mysteryHint():`In the mist · play ${ISLES[d.id].game} to find it`])};
       if(arg==='rocks') return {title:'The rocks',hint:'Crabs like it here',rows:[['Good for','Crabs and rock pools (in the decorations)']],actions:n?[{label:'✨ Decorate',fn:()=>$('#isDecor').click()}]:[]};
       if(arg==='lighthouse') return {title:'The lighthouse',hint:'It lights the way home',rows:[['Stands on','A rock off Bloppitopia'],['Job','Lighting the way home for every boat']]};
       if(arg==='sky') return {title:'The sky',hint:(o.decor||[]).includes('kite')?'Your kite is flying':'Kites fly here',rows:[['Up here',(o.decor||[]).includes('kite')?'Your kite':'A kite, one day (5 Galaxy Blocks)']]};
@@ -8248,7 +8273,7 @@ function islandInfo(id,o){
       if(!c&&I.mystery) return {title:'Mystery Island',hint:mysteryHint(),bar:{pct:mysteryOpen()?100:Math.max(4,Math.round(100*mysteryProgress(o))),label:mysteryOpen()?'Ready to sail!':`${Math.round(100*mysteryProgress(o))}% of the way there`},rows:[['What’s there','Far out at sea, where it’s always night, a faint light glows in a swirl of mist. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Complete all five islands, every piece built (${fiveDone(o)} of ${FIVE_ISLES.length} so far)`],...(mysteryOpen()?[]:[['Still to finish',FIVE_ISLES.filter(id=>!isleComplete(id,o)).map(id=>isleCount(id,o)?`${ISLES[id].name} (${Math.min(isleCount(id,o),PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at})`:`${ISLES[id].name} (still in the mist)`).join(', ')]])],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'🏝️ Back to Bloppitopia',fn:()=>{ islandTipHide(true); isl3GoView(0); try{ sfx.swoosh(-1); }catch(e){} },primary:true}]};   // not open yet: back to the map, no surprise trip elsewhere
       if(!c&&arg==='sunrise'&&!seaWashed(0,o)) return {title:'A misty island',hint:`Pippa’s first puzzle washes ashore at ${seaPct(0)}%`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',(()=>{ const nb=seaBuildsTo(0,o); return `Reach ${seaPct(0)}% of Bloppitopia (you’re at ${progressPct(o)}%): ${nb} more build${nb===1?'':'s'} on Frog Forest, Brainpeak, Blitz Bay or Brickyard Cove, then build Pippa’s first puzzle`; })()]],actions:[{label:'🏝️ Back to Bloppitopia',fn:()=>{ islandTipHide(true); isl3GoView(0); try{ sfx.swoosh(-1); }catch(e){} },primary:true}]};   // nothing to play here yet, so no surprise trip elsewhere
       if(!c) return {title:'A misty island',hint:`Play ${I.game} to discover it`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Finish your first ${I.unit}`]],actions:[{label:I.play,fn:I.go,primary:true}]};
-      return {title:I.name,hint:`${I.game} · ${Math.min(c,total)} of ${total}`,rows:[['Grows with',I.grows],['Built',`${built.length} of ${P.length} pieces`],...(next?[['Next piece',`${next.name}: ${next.at-c} more ${I.unit}${next.at-c===1?'':'s'}`]]:[]),['Milestone',c>=total?`${I.milestone} ✓`:`${I.milestone} at ${total}`]],
+      return {title:I.name,hint:`${I.game} · ${isleProg(arg,c,total)}`,rows:[['Grows with',I.grows],['Built',`${built.length} of ${P.length} pieces`],...(next?[['Next piece',`${next.name}: ${next.at-c} more ${I.unit}${next.at-c===1?'':'s'}`]]:[]),['Milestone',c>=total?`${I.milestone} ✓`:`${I.milestone} at ${total}`]],
         chips:P.map(x=>[x.name,c>=x.at]),bar:{pct:Math.max(4,Math.min(100,Math.round(100*c/total))),label:c>=total?'Complete!':`${total-c} more to ${I.milestone}`},actions:[...(arg==='moonstone'&&worldComplete(o)?[{label:'🌙 Watch the ending',fn:()=>{ theEnd(); },primary:true}]:[]),{label:I.play,fn:I.go,primary:!(arg==='moonstone'&&worldComplete(o))}]}; }
     case 'piece': { const [isle,i]=arg.split(':'), I=ISLES[isle], P=PIECES[isle]&&PIECES[isle][+i]; if(!P) break; const last=+i===PIECES[isle].length-1;
       return {title:P.name,hint:`${I.name}${last?' · the milestone':''}`,rows:[['Built at',`${P.at} ${I.unit}${P.at===1?'':'s'}`],['Island',`${I.name}: ${Math.min(isleCount(isle,o),PIECES[isle][PIECES[isle].length-1].at)} of ${PIECES[isle][PIECES[isle].length-1].at}`]],actions:[{label:I.play,fn:I.go}]}; }
@@ -8331,6 +8356,8 @@ function destSVG(id,st){
 }
 // The five adventure islands, as a short list (the drawn island without WebGL, the sea's card). Same counts as 3D.
 const ISLE_ART={otterwood:'otterwood',brainpeak:'brain',sunrise:'ferry',blitzbay:'speedway',brickworks:'workshop'};
+// How far along an island is, in words. Blitz Bay counts its 15 races (as Play next does), then the Grand Prix
+function isleProg(id,c,total){ if(id==='blitzbay'&&c<total) return c>=LADDER_N?'Grand Prix next':`${c} of ${LADDER_N} races`; return `${Math.min(c,total)} of ${total}`; }
 function destinations(){
   const o=worldStore();
   return Object.keys(ISLES).map(id=>{ const I=ISLES[id], P=PIECES[id], total=P[P.length-1].at, c=isleCount(id,o), nxP=P.find(x=>x.at>c);
@@ -9737,7 +9764,7 @@ function isl3BuildBloppitopia(o,W,add){
     else { g.traverse(x=>{ if(x.isMesh) x.material=m3('#C9D3DC'); }); g.add(mist3(I.r)); g.userData.misty=1; }
     W.add(g);
     const L=Math.hypot(I.x,I.z), ux=I.x/L, uz=I.z/L, done=c>=PIECES[id][PIECES[id].length-1].at;
-    ISL3.labels.push({id:'isle:'+id,...(!c&&I.mystery?{myst:1,bar:mysteryOpen()?1:mysteryProgress(o)}:{}),name:c>0?I.name:I.mystery?'Mystery Island':'???',sub:!c&&I.mystery?(mysteryOpen()?'Ready: build the rowboat':islesToGo(o)):c>0?(done?'Complete ★':`${Math.min(c,PIECES[id].length&&PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at}`):'In the mist',...(!c&&I.mystery?(()=>{ const d=CAM_DIR3(); return {x:I.x+d.x/Math.hypot(d.x,d.z)*I.r*MYST_S*1.2,z:I.z+d.z/Math.hypot(d.x,d.z)*I.r*MYST_S*1.2,y:-1.2}; })():{x:I.x+ux*I.r*.95,z:I.z+uz*I.r*1.05,y:-1.2}),x2:I.x,y2:I.mystery&&!c?5:4.2,z2:I.z}); }
+    ISL3.labels.push({id:'isle:'+id,...(!c&&I.mystery?{myst:1,bar:mysteryOpen()?1:mysteryProgress(o)}:{}),name:c>0?I.name:I.mystery?'Mystery Island':'???',sub:!c&&I.mystery?(mysteryOpen()?'Ready: build the rowboat':islesToGo(o)):c>0?(done?'Complete ★':isleProg(id,c,PIECES[id][PIECES[id].length-1].at)):'In the mist',...(!c&&I.mystery?(()=>{ const d=CAM_DIR3(); return {x:I.x+d.x/Math.hypot(d.x,d.z)*I.r*MYST_S*1.2,z:I.z+d.z/Math.hypot(d.x,d.z)*I.r*MYST_S*1.2,y:-1.2}; })():{x:I.x+ux*I.r*.95,z:I.z+uz*I.r*1.05,y:-1.2}),x2:I.x,y2:I.mystery&&!c?5:4.2,z2:I.z}); }
   ISL3.labels.push({id:'land:beach',name:'Home Island',sub:pupName(o)?`${pupName(o)}’s home`:'Your home',x:0,z:HOME_R*.55,y:.9,home:1});
   // sky things: a few clouds, stars for the night
   // the island friends: each stands on the shore of their island facing Home Island (in the mist too, waving you over)
@@ -10100,6 +10127,9 @@ function isl3Reveal(ids,o){
   const step=(i)=>{ if(i>=items.length||!ISL3.on){ ISL3.revealing=false; if(ISL3.ctl) ISL3.ctl.enabled=true; isl3Banner(''); isl3FlyHome(); isl3Chrome(); setTimeout(()=>isl3AfterReveal(o),900); return; }
     const id=items[i], [kind,isle]=id.split(':');
     { const f=FILMS.find(f=>f.at===id); if(f&&!ISL3.filmDone[id]&&!filmSeen(f.id,o)){ ISL3.filmDone[id]=1; isl3Film(f,()=>step(i)); return; } }
+    // After film 19 (or, for a world already past it, before the Moon crystal rises): the child sets their brick in the ring, then film 20
+    if((id==='moonstone:7'||id==='moonstone:8')&&!ISL3.filmDone.ring&&!filmSeen('ring',o)){ ISL3.filmDone.ring=1;
+      isl3Ring(o,()=>{ const f=FILMS.find(f=>f.id==='moon-20'); if(f&&!filmSeen(f.id,o)) isl3Film(f,()=>step(i)); else step(i); }); return; }
     if(kind==='done'){ isl3IsleFinale(isle,()=>step(i+1)); return; }
     if(kind==='final'){ isl3WorldFinale(()=>step(i+1)); return; }
     const I=(kind==='isle'?ISL3.isles[isle]:kind==='home'?ISL3.isles.home:ISL3.isles[kind])||ISL3.isles.home;
@@ -10471,6 +10501,48 @@ function arr3Film(A){ const v=A.film; A.ov.classList.add('film'); let started=fa
   go(); }
 // An island's film (Frog Forest's arrival and completion, and the films to come): over the island, with its own sound,
 // Skip at any time. Same fit as the arrival film, centred. Skipped with reduced motion or ?film=0, or if it can't start in 9 s.
+// The ring ceremony (Steff, 3 Nov 2026). Film 19 ends on the stone ring at the Moonstone Lighthouse: the six friends' bricks in
+// their slots and one empty slot in front. The game holds that last frame, the slot glows, and the child sets their pup's
+// brick in it (tap the slot, tap the brick, or drag it in). The ring lights up, then film 20 plays. Once per world
+// ('ring' joins the films seen, so it syncs like they do); ?films=0 skips it, like the films.
+const RING_SLOT={x:48.7,y:81.7,w:10.7,h:6};   // the empty slot, in % of the film frame (moonstone-ring.jpg is its last frame)
+function isl3Ring(o,then){
+  if(/[?&]films?=0\b/.test(location.search)){ then(); return; }
+  const nm=pupName(o)||'pup', col=PUP_COLORS[pupColorOf(o)].c;
+  const ov=document.createElement('div'); ov.className='is3-ring page';   // always the whole window: the slot must be in view
+  ov.style.setProperty('--c',col); ov.style.setProperty('--sx',RING_SLOT.x+'%'); ov.style.setProperty('--sy',RING_SLOT.y+'%'); ov.style.setProperty('--sw',RING_SLOT.w+'%'); ov.style.setProperty('--sh',RING_SLOT.h+'%');
+  ov.innerHTML=`<div class="rg-stage"><img class="rg-bg" src="${vidUrl('moonstone-ring','jpg')}" alt="The stone ring at the Moonstone Lighthouse: six friends' bricks in their slots, and one empty slot in front">
+      <button class="rg-slot" type="button" aria-label="Set your brick in the empty slot"></button><span class="rg-set" aria-hidden="true"><i></i><i></i></span><span class="rg-glow" aria-hidden="true"></span></div>
+    <div class="film-say on" style="--who:${FILM_WHO.bloppit[1]}" aria-live="polite"><img src="/art/head-bloppit.png" alt="" width="256" height="256"><span><b>Bloppit</b>Your brick, ${escapeHTML(nm)}. Right in the middle.</span></div>
+    <button class="rg-brick" type="button" aria-label="Your brick: set it in the ring"><i></i><i></i></button>
+    <p class="rg-tip">Tap the glowing slot, or drag your brick in</p>
+    <button class="cn-skip on" type="button">Skip ›</button>`;
+  document.body.appendChild(ov); document.body.classList.add('film-on');
+  requestAnimationFrame(()=>ov.classList.add('on')); ISL3.ringOn=true; track('ring_shown');
+  const brick=ov.querySelector('.rg-brick'), slot=ov.querySelector('.rg-slot'), stage=ov.querySelector('.rg-stage'), say=ov.querySelector('.film-say');
+  let done=false, set=false;
+  const end=why=>{ if(done) return; done=true; filmSeenAdd('ring'); ISL3.ringOn=false; if(why) track('ring_'+why);
+    ov.classList.remove('on'); setTimeout(()=>{ ov.remove(); if(!document.querySelector('.is3-cine.page,.is3-ring.page')) document.body.classList.remove('film-on'); then(); },700); };
+  const place=()=>{ if(set||done) return; set=true; filmSeenAdd('ring');
+    const a=brick.getBoundingClientRect(), b=slot.getBoundingClientRect();
+    brick.classList.remove('drag'); brick.classList.add('fly');
+    brick.style.transform=`translate(${b.left+b.width/2-(a.left+a.width/2)}px,${b.top+b.height*.3-(a.top+a.height/2)}px) scale(${Math.max(.3,b.width*.85/a.width)})`;
+    ov.querySelector('.rg-tip').classList.add('off'); say.classList.remove('on');
+    setTimeout(()=>{ brick.hidden=true; stage.classList.add('lit'); sfx.chime(); setTimeout(()=>sfx.chime(),260); setTimeout(()=>sfx.chime(),520); },reduceMotion?0:650);
+    setTimeout(()=>{ say.querySelector('span').innerHTML='<b>Bloppit</b>'+escapeHTML(`You did it, ${nm}! The lighthouse is open!`); say.classList.add('on'); },reduceMotion?200:1300);
+    setTimeout(()=>end('placed'),reduceMotion?2600:4200); };
+  slot.onclick=place; ov.querySelector('.cn-skip').onclick=()=>end('skipped');
+  // drag the brick in (a tap on it sets it too)
+  let d=null;
+  brick.addEventListener('pointerdown',e=>{ if(set) return; d={x:e.clientX,y:e.clientY,moved:false}; try{ brick.setPointerCapture(e.pointerId); }catch(x){} brick.classList.add('drag'); e.preventDefault(); });
+  brick.addEventListener('pointermove',e=>{ if(!d) return; const dx=e.clientX-d.x, dy=e.clientY-d.y; if(Math.hypot(dx,dy)>6) d.moved=true; brick.style.transform=`translate(${dx}px,${dy}px)`;
+    const b=slot.getBoundingClientRect(); slot.classList.toggle('near',Math.abs(e.clientX-(b.left+b.width/2))<b.width*1.2&&Math.abs(e.clientY-(b.top+b.height/2))<b.height*2.5); });
+  const up=e=>{ if(!d) return; const moved=d.moved; d=null; brick.classList.remove('drag');
+    if(!moved||slot.classList.contains('near')){ slot.classList.remove('near'); place(); return; }
+    brick.style.transform=''; };
+  brick.addEventListener('pointerup',up); brick.addEventListener('pointercancel',()=>{ d=null; brick.classList.remove('drag'); brick.style.transform=''; });
+}
+window.bloppitRing=()=>{ const r=document.querySelector('.is3-ring'); return r?{lit:r.querySelector('.rg-stage').classList.contains('lit'),say:r.querySelector('.film-say').textContent}:null; };   // for tests
 function isl3Film(f,then){
   let done=false; const end=why=>{ if(done) return; done=true; clearTimeout(T); try{ v&&v.pause(); }catch(e){}
     if(ov){ ov.classList.remove('on'); ov.querySelectorAll('.cn-skip,.cn-film,.cn-turn,.cn-full').forEach(e=>e.classList.remove('on')); setTimeout(()=>ov.remove(),800); }
