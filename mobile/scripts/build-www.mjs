@@ -37,6 +37,24 @@ for (const [family, pkg, w] of fonts) {
 }
 writeFileSync(join(www, 'vendor', 'fonts.css'), css);
 
+// The website's About us, How it works, FAQ and Privacy pages, bundled so the app shows them in its own reader
+// (no grown-ups gate, works offline). Website-only head bits and the site header go; links point at the bundled copies.
+// The app's link handler (see "App Store app" in public/build/index.html) routes the links inside them.
+const PAGES = ['about', 'how-it-works', 'faq', 'privacy'];
+mkdirSync(join(www, 'pages'), { recursive: true });
+copyFileSync(join(root, 'public', 'site.css'), join(www, 'pages', 'site.css'));
+for (const page of PAGES) {
+  let p = readFileSync(join(root, 'public', page, 'index.html'), 'utf8');
+  p = p.replace(/<link rel="(canonical|icon|apple-touch-icon|manifest|preconnect)"[^>]*>\n/g, '')
+    .replace(/<meta (property|name)="(og|twitter):[^>]*>\n/g, '')
+    .replace(/<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.com[^>]*>/, '<link rel="stylesheet" href="../vendor/fonts.css">')
+    .replace('<link rel="stylesheet" href="/site.css">', '<link rel="stylesheet" href="site.css">\n<style>.skip,body>header{display:none}</style>')
+    .replace(/(src|poster)="\/(art|video)\//g, '$1="../$2/')
+    .replace(new RegExp(`href="/(${PAGES.join('|')})/"`, 'g'), 'href="$1.html"');
+  if (/https:\/\/(cdn|fonts)\./.test(p) || /(href|src)="\/(site\.css|art|video)/.test(p)) throw new Error(`build-www: pages/${page}.html still points at the website`);
+  writeFileSync(join(www, 'pages', `${page}.html`), p);
+}
+
 let html = readFileSync(join(root, 'public', 'build', 'index.html'), 'utf8');
 const swap = (from, to) => {
   if (!html.includes(from)) throw new Error(`build-www: couldn't find ${from.slice(0, 80)} in public/build/index.html`);
