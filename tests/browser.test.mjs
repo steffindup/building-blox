@@ -1126,7 +1126,7 @@ test('Chapter 2: the ten mystery chapters end with the Galaxy ship; then lufu’
 });
 
 test('Moonstone Isle once reached: always night, one rowboat (plus the Galaxy ship), no red roof, the moon crystal inside the lighthouse lamp', { skip: skip() }, async () => {
-  const M = [['Rowboat', 10], ['Old map', 15], ['Lookout tower', 17], ['Little bridge', 12], ['Moon gate', 11], ['Constellation cube', 16], ['Lantern', 8], ['Moonstone Lighthouse', 23], ['Moon crystal', 15], ['Galaxy ship', 28]];
+  const M = [['Rowboat', 10], ['Old map', 15], ['Lookout tower', 17], ['Little bridge', 12], ['Moon gate', 14], ['Constellation cube', 16], ['Lantern', 8], ['Moonstone Lighthouse', 23], ['Moon crystal', 15], ['Galaxy ship', 28]];
   const seed = { arg: M, fn: (M) => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; M.forEach(([n, z], i) => { const k = `m:${n}:${z}`; builds[k] = { n: z, s: 2, t: 1e12 + i, c: 1 }; log.push(k); });
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, films: [], pick: 'tree' })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); } };
   const t = await open('?nosplash=1&hour=11&mystery=1#island', { init: seed });
@@ -1148,7 +1148,7 @@ test('a Moonstone chapter has the game bar like the trails: Moonstone Isle, chap
   const t = await open('?nosplash=1&films=0&mystery=1#island', { init: seed });
   await t.page.evaluate(() => window.bloppitNext.chapter(2)); await t.page.waitForTimeout(1500);
   const r = await t.page.evaluate(() => ({ bar: !document.getElementById('gameBar').hidden, txt: document.getElementById('gameBar').innerText.replace(/\s+/g, ' '), tab: document.querySelector('.tab[aria-selected="true"]')?.dataset.tab }));
-  assert.ok(r.bar, 'the game bar shows'); assert.match(r.txt, /Moonstone Isle/); assert.match(r.txt, /Chapter 3 of 10/i); assert.match(r.txt, /Lookout tower/); assert.equal(r.tab, 'island');
+  assert.ok(r.bar, 'the game bar shows'); assert.match(r.txt, /Moonstone Isle/); assert.match(r.txt, /Chapter 3 of 10/i); assert.match(r.txt, /The Lookout Tower/); assert.match(r.txt, /With Swoop/); assert.equal(r.tab, 'island');
   await t.page.evaluate(() => document.getElementById('gbMap').click()); await t.page.waitForTimeout(800);
   assert.equal(await t.page.evaluate(() => document.getElementById('view-island').hidden), false, 'back on the island');
   assert.deepEqual(t.errors, []); await t.ctx.close();
@@ -1160,6 +1160,7 @@ test('the next Moonstone chapter goes by the island first: the last chapter’s 
   const t = await open('?nosplash=1&films=0&mystery=1#build', { init: seed });
   await t.page.evaluate(() => { const s = window.bloppitNext.unlocked().filter((i) => i !== 'moonstone:3'); localStorage.setItem('bloppit-seen3-v1', JSON.stringify(s)); });
   assert.ok((await t.page.evaluate(() => window.bloppitNext.goals())).includes('Next chapter: the moon gate'));
+  assert.ok((await t.page.evaluate(() => window.bloppitNext.titles())).includes('🌙 Moonstone Isle, Chapter 5: The Moon Gate'));
   await t.page.evaluate(() => window.bloppitNext.via(4)); await t.page.waitForTimeout(600);
   assert.equal(await t.page.evaluate(() => document.getElementById('view-island').hidden), false, 'the island first');
   await t.page.waitForFunction(() => /Chapter 5 of 10/i.test(document.getElementById('gameBar').innerText) && !document.getElementById('gameBar').hidden, null, { timeout: 30000 });

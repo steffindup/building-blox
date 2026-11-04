@@ -5692,13 +5692,18 @@ const SAMPLES=[
    for(const [a,b] of [[100,140],[170,150]]){ x.oval(a,b,16,6,0,'#4B9F4A'); }
    for(const [a,b] of [[214,104],[230,100],[246,104]]) x.oval(a,b,4,6,0,'#FFF03A');
    return [['front',c]]; }},
- {name:'Moon gate',theme:'Bermuda',hidden:true,make(){ const [c,x]=sheet(240,240,'#ffffff');
-   x.fillStyle='#A0A5A9'; x.fillRect(10,210,220,30);
-   x.fillStyle='#F4F4F4'; x.beginPath(); x.arc(120,120,104,Math.PI,0); x.lineTo(224,212); x.lineTo(16,212); x.closePath(); x.fill();
-   x.fillStyle='#36AEBF'; x.beginPath(); x.arc(120,128,66,0,Math.PI*2); x.fill(); x.fillRect(54,128,132,84);
-   x.dot(120,92,24,'#FFF03A'); x.dot(132,84,22,'#36AEBF');
-   for(let i=0;i<7;i++){ const a=Math.PI+i*Math.PI/6; x.dot(120+Math.cos(a)*86,120+Math.sin(a)*86,7,['#C91A09','#F2CD37','#0055BF','#4B9F4A','#FE8A18','#AC78BA','#C91A09'][i]); }
-   x.oval(40,212,24,10,0,'#4B9F4A'); x.oval(200,212,24,10,0,'#4B9F4A');
+ {name:'Moon gate',theme:'Bermuda',hidden:true,make(){ const [c,x]=sheet(260,240,'#ffffff');   // a Bermuda moon gate: a ring of pale stone you walk through, the middle open
+   x.fillStyle='#A0A5A9'; x.fillRect(0,214,260,26);                                  // the path
+   x.fillStyle='#E4CD9E'; x.fillRect(4,150,52,66); x.fillRect(204,150,52,66);        // low walls either side
+   x.fillStyle='#958A73'; x.fillRect(0,140,60,12); x.fillRect(200,140,60,12);        // their caps
+   x.fillStyle='#E4CD9E'; x.beginPath(); x.arc(130,112,100,0,Math.PI*2); x.fill();    // the ring…
+   x.fillRect(46,150,168,66);                                                         // …standing on its footing
+   x.fillStyle='#958A73'; x.fillRect(40,206,180,10);
+   x.fillStyle='#ffffff'; x.beginPath(); x.arc(130,112,64,0,Math.PI*2); x.fill();     // …and open in the middle
+   x.fillRect(96,150,68,66);
+   for(let i=0;i<9;i++){ const a=Math.PI+i*Math.PI/8; x.fillStyle='#958A73'; x.save(); x.translate(130+Math.cos(a)*82,112+Math.sin(a)*82); x.rotate(a); x.fillRect(-2,-18,4,36); x.restore(); }   // stone joints
+   x.dot(130,14,12,'#C9B6F2');                                                        // a little moonstone at the top
+   x.oval(30,216,22,9,0,'#4B9F4A'); x.oval(230,216,22,9,0,'#4B9F4A');
    return [['front',c]]; }},
  {name:'Jar of stars',theme:'Space',hidden:true,make(){ const [c,x]=sheet(200,250,'#ffffff');
    x.fillStyle='#A95500'; x.rr(58,6,84,28,6); x.fillStyle='#6B4229'; x.fillRect(58,24,84,8);
@@ -6094,8 +6099,8 @@ function updateGameBar(){
   $('#gbNum').parentNode.firstChild.nodeValue=mys?'Chapter ':'Level ';
   $('#gbMap').textContent=mys?'Moonstone Isle':'Level map';
   if(mys){ const m=MYSTERY[mysCh], who={Everyone:'bloppit'}[m.who]||m.who.toLowerCase(), pic=['bloppit','pippa','swoop','tiny','bibi','nora','lufu'].includes(who)&&who!=='lufu'?who:'';   // lufu stays unseen
-    $('#gbWhere').innerHTML=`${pic?`<img src="/art/head-${pic}.png" alt="">`:''}<div><strong>The mystery</strong><small>🏝️ Moonstone Isle</small></div>`;
-    $('#gbBadge').textContent=mysCh+1; $('#gbNum').textContent=`${mysCh+1} of ${MYSTERY.length}`; $('#gbName').textContent=m.name;
+    $('#gbWhere').innerHTML=`${pic?`<img src="/art/head-${pic}.png" alt="">`:''}<div><strong>Moonstone Isle</strong><small>${m.who==='you'?'Just you':m.who==='Everyone'?'With everyone':'With '+m.who}</small></div>`;
+    $('#gbBadge').textContent=mysCh+1; $('#gbNum').textContent=`${mysCh+1} of ${MYSTERY.length}`; $('#gbName').textContent=mysteryTitle(m);
     const help=run.hints.size+run.auto, st=1+(help?0:1)+(!help&&!run.miss?1:0); $('#gbPts').innerHTML=starHTML(st); $('#gbOf').textContent='';
     const bits=[]; if(run.hints.size) bits.push(`Hints ${run.hints.size}`); if(run.auto) bits.push(`Placed for you ${run.auto}`); if(run.miss) bits.push(`Wrong bricks ${run.miss}`);
     $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>'; return; }
@@ -8369,7 +8374,7 @@ function islandInfo(id,o){
       if(!c&&I.mystery) return {title:'Mystery Island',hint:mysteryHint(),bar:{pct:mysteryOpen()?100:Math.max(4,Math.round(100*mysteryProgress(o))),label:mysteryOpen()?'Ready to sail!':`${Math.round(100*mysteryProgress(o))}% of the way there`},rows:[['What’s there','Far out at sea, where it’s always night, a faint light glows in a swirl of mist. Nobody knows what it is…'],['To reach it',mysteryOpen()?'Build the first chapter: a rowboat':`Complete all five islands, every piece built (${fiveDone(o)} of ${FIVE_ISLES.length} so far)`],...(mysteryOpen()?[]:[['Still to finish',FIVE_ISLES.filter(id=>!isleComplete(id,o)).map(id=>isleCount(id,o)?`${ISLES[id].name} (${Math.min(isleCount(id,o),PIECES[id][PIECES[id].length-1].at)} of ${PIECES[id][PIECES[id].length-1].at})`:`${ISLES[id].name} (still in the mist)`).join(', ')]])],actions:mysteryOpen()?[{label:'🚣 Build the rowboat',fn:()=>mysteryStart(0),primary:true}]:[{label:'🏝️ Back to Bloppitopia',fn:()=>{ islandTipHide(true); isl3GoView(0); try{ sfx.swoosh(-1); }catch(e){} },primary:true}]};   // not open yet: back to the map, no surprise trip elsewhere
       if(!c&&arg==='sunrise'&&!seaWashed(0,o)) return {title:'A misty island',hint:`Pippa’s first puzzle washes ashore at ${seaPct(0)}%`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',(()=>{ const nb=seaBuildsTo(0,o); return `Reach ${seaPct(0)}% of Bloppitopia (you’re at ${progressPct(o)}%): ${nb} more build${nb===1?'':'s'} on Frog Forest, Brainpeak, Blitz Bay or Brickyard Cove, then build Pippa’s first puzzle`; })()]],actions:[{label:'🏝️ Back to Bloppitopia',fn:()=>{ islandTipHide(true); isl3GoView(0); try{ sfx.swoosh(-1); }catch(e){} },primary:true}]};   // nothing to play here yet, so no surprise trip elsewhere
       if(!c) return {title:'A misty island',hint:`Play ${I.game} to discover it`,rows:[['What’s there','Nobody knows yet. It’s hidden in the mist.'],['To discover it',`Finish your first ${I.unit}`]],actions:[{label:I.play,fn:I.go,primary:true}]};
-      return {title:I.name,hint:`${I.game} · ${isleProg(arg,c,total)}`,rows:[['Grows with',I.grows],['Built',`${built.length} of ${P.length} pieces`],...(next?[['Next piece',`${next.name}: ${next.at-c} more ${I.unit}${next.at-c===1?'':'s'}`]]:[]),['Milestone',c>=total?`${I.milestone} ✓`:`${I.milestone} at ${total}`]],
+      return {title:I.name,hint:`${I.game} · ${isleProg(arg,c,total)}`,rows:[['Grows with',I.grows],['Built',`${built.length} of ${P.length} pieces`],...(next?[['Next piece',I.mystery?`${next.name}: next chapter`:`${next.name}: ${next.at-c} more ${I.unit}${next.at-c===1?'':'s'}`]]:[]),['Milestone',c>=total?`${I.milestone} ✓`:`${I.milestone} at ${total}`]],
         chips:P.map(x=>[x.name,c>=x.at]),bar:{pct:Math.max(4,Math.min(100,Math.round(100*c/total))),label:c>=total?'Complete!':`${total-c} more to ${I.milestone}`},actions:[...(arg==='moonstone'&&worldComplete(o)?[{label:'🌙 Watch the ending',fn:()=>{ theEnd(); },primary:true}]:[]),{label:I.play,fn:I.go,primary:!(arg==='moonstone'&&worldComplete(o))}]}; }
     case 'piece': { const [isle,i]=arg.split(':'), I=ISLES[isle], P=PIECES[isle]&&PIECES[isle][+i]; if(!P) break; const last=+i===PIECES[isle].length-1;
       return {title:P.name,hint:`${I.name}${last?' · the milestone':''}`,rows:[['Built at',`${P.at} ${I.unit}${P.at===1?'':'s'}`],['Island',`${I.name}: ${Math.min(isleCount(isle,o),PIECES[isle][PIECES[isle].length-1].at)} of ${PIECES[isle][PIECES[isle].length-1].at}`]],actions:[{label:I.play,fn:I.go}]}; }
@@ -9449,13 +9454,15 @@ const MYSTERY=[   // one friend per chapter (the Moonstone chapter lock, 30 Oct 
   {name:'Old map',size:15,shape:'flat',thick:1,colors:6,who:'Pippa',film:'The Old Map',story:'The mist sends you round and round in circles. Then Pippa swims up with a bottle that just washed ashore, with something rolled up inside. Build it and see where it leads!'},
   {name:'Lookout tower',size:17,shape:'puffed',thick:.6,colors:6,who:'Swoop',was:['Tree frog'],film:'The Lookout Tower',story:'You land on Moonstone Isle, but the trees are too tall to see over. Build a lookout tower so Swoop can fly to the top and take a better look!'},
   {name:'Little bridge',size:12,shape:'puffed',thick:.8,colors:7,who:'Tiny',was:['Longtail nest'],film:'The Petal Bridge',story:'A stream blocks the way, and on the far side… tiny glowing footprints! Tiny has gathered broad leaves and big petals. Build a little bridge to get across.'},
-  {name:'Moon gate',size:11,shape:'puffed',thick:.7,colors:8,who:'Bibi',was:['Brick chest'],film:'The Moon Gate',story:'An old moon gate lies in pieces across the path. Help Bibi put it back together. What happens when it’s whole?'},
+  {name:'Moon gate',size:14,shape:'puffed',thick:.7,colors:8,who:'Bibi',was:['Brick chest'],film:'The Moon Gate',story:'An old moon gate lies in pieces across the path. Help Bibi put it back together. What happens when it’s whole?'},
   {name:'Constellation cube',size:16,shape:'puffed',thick:.7,colors:6,who:'Nora',was:['Jar of stars','Stone arch'],film:'The Constellation Cube',story:'Beyond the gate, a turning cube of stars hides the way. Nora knows star patterns from Brainpeak. Build the cube, and help her work out its secret.'},
   {name:'Lantern',size:8,shape:'puffed',thick:.6,colors:5,who:'you',film:'The Answering Light',story:'Just you, for a moment. The lavender light is very close now, pulsing softly, two beats at a time. Build a small lantern and hold it out…'},
   {name:'Moonstone Lighthouse',size:23,shape:'puffed',thick:1,colors:7,who:'Everyone',film:'The Moonstone Lighthouse',story:'All six friends arrive, each carrying a brick in their own colour. Before you stands an old lighthouse, dark for a very long time. Build it together!'},
   {name:'Moon crystal',size:15,shape:'puffed',thick:.7,colors:7,who:'lufu',film:'The Moon Crystal',story:'You step inside the lighthouse alone. At its heart, an empty space glows faintly, waiting. Build the moon crystal to fill it.'},
   {name:'Galaxy ship',size:28,shape:'puffed',thick:.7,colors:6,who:'Everyone',film:'The Galaxy Ship',story:'A ship waits on the shore, and its hull is made of Galaxy Blocks: the very ones you’ve been earning. Build it, and get ready to climb aboard…'},
 ];
+// A chapter's title: "The Moon Gate" (the build's name in title case; the film titles stay for the films)
+const mysteryTitle=m=>'The '+m.name.replace(/\b\w/g,c=>c.toUpperCase());
 const MYSTERY_NAMES=new Set(MYSTERY.flatMap(m=>[m.name,...(m.was||[])]));
 const MYSTERY_FILMS=['Into the Mist','The Old Map','The Lookout Tower','The Petal Bridge','The Moon Gate','The Constellation Cube','The Answering Light','The Moonstone Lighthouse','The Moon Crystal','The Galaxy Ship','The New Horizon'];   // films 12–22; the last two play together after the ship
 const FIVE_ISLES=['otterwood','brainpeak','sunrise','blitzbay','brickworks'];
@@ -9494,9 +9501,9 @@ const ISLES={
   brickworks:{name:'Brickyard Cove',game:'Creative builds',unit:'creation',x:12.4,z:9.6,r:4.3,seed:6.6,ground:['#7CC45E','#4E9E3A'],
     milestone:'The Grand Creation Gallery',grows:'Every build from your own photo or drawing, from the library, and every Weekly Bloppit',play:'Make your own',
     go:()=>{ pickPuzzle('quick','top'); }},   // Quick Build's first screen: a photo, a drawing or the library
-  moonstone:{name:'Moonstone Isle',game:'The mystery',unit:'chapter',get x(){ return isl3TallNow()?-22.5:23.5; },get z(){ return isl3TallNow()?-11.5:-23.5; },r:4.0,   // far out at sea, in the top corner of the view (upright phones see the world from the side)
+  moonstone:{name:'Moonstone Isle',game:'Chapters',get play(){ const i=mysteryNext(); return i>=0?`▶ Build Chapter ${i+1}: ${mysteryTitle(MYSTERY[i])}`:'Explore Moonstone Isle'; },unit:'chapter',get x(){ return isl3TallNow()?-22.5:23.5; },get z(){ return isl3TallNow()?-11.5:-23.5; },r:4.0,   // far out at sea, in the top corner of the view (upright phones see the world from the side)
    seed:7.7,ground:['#6FB7A4','#4E8F7E'],sand:true,mystery:true,
-    milestone:'The Galaxy ship',grows:'Every chapter of the mystery you build',play:'Explore Moonstone Isle',go:()=>mysteryGo()},
+    milestone:'The Galaxy ship',grows:'Every chapter you build',go:()=>mysteryGo()},
 };
 const ISLE_TOTAL=Object.keys(ISLES).length;
 // An island is complete when its last piece is built; each one is worth 5 Galaxy Blocks, and the whole world 10 more
@@ -10388,7 +10395,7 @@ function isleAnyway(isle){ if(isle==='otterwood') trailGo('otter'); else if(isle
   else if(isle==='blitzbay') homeGo('cpu'); else if(isle==='moonstone') mysteryStart(0); else homeGo('quick'); }
 function isl3AfterReveal(o){ o=worldStore();
   if(ISL3.finales&&ISL3.finales.length){ const f=ISL3.finales.shift(); finaleCard(f); return; }
-  if(ISL3.thenChapter!=null){ const i=ISL3.thenChapter; ISL3.thenChapter=null; if(ISL3.on&&!ISL3.revealing){ setTimeout(()=>mysteryStart(i),600); return; } }   // came from "The mystery, chapter N": on to it
+  if(ISL3.thenChapter!=null){ const i=ISL3.thenChapter; ISL3.thenChapter=null; if(ISL3.on&&!ISL3.revealing){ setTimeout(()=>mysteryStart(i),600); return; } }   // came from "Moonstone Isle, Chapter N": on to it
   if(ISL3.pending_acc&&ISL3.pending_acc.length){ const a=ISL3.pending_acc.shift(); accOffer(a); return; }
   if(worldCount(o)>=10&&!o.pick&&!ISL3.askedPick){ ISL3.askedPick=true; pickOpen(); } }
 
@@ -11244,7 +11251,7 @@ function nextCandidates(){
     if(smp){ if(!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png'); const i=SAMPLES.indexOf(smp);
       out.push({kind:'library',isle:'brickworks',t:`From the library: ${smp.name}`,s:'',thumb:smp.thumb,go:()=>{ if(mp) mpLeave(); if(game) endGame(); libDefaults(); loadSample(i); clearTimeout(timer); rebuild(); setTab('build'); }}); } }
   if(mysteryOpen()){ const i=mysteryNext(o); if(i>=0){ const m=MYSTERY[i], smp=SAMPLES.find(x=>x.name===m.name); if(smp&&!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png');
-    out.push({kind:'mystery',isle:'moonstone',t:`🌙 The mystery, chapter ${i+1}: ${m.name}`,s:'',thumb:smp?smp.thumb:'',go:()=>mysteryVia(i)}); } }
+    out.push({kind:'mystery',isle:'moonstone',t:`🌙 Moonstone Isle, Chapter ${i+1}: ${mysteryTitle(m)}`,s:'',thumb:smp?smp.thumb:'',go:()=>mysteryVia(i)}); } }
   for(const c of out){ const go=c.go; c.go=()=>islandSetOff(c.isle,go); }   // an island not found yet: its arrival film first
   return out;
 }
@@ -11260,7 +11267,7 @@ function nextBuild(){
   const best=C.slice().sort((a,b)=>(isleFrac(a.isle,o)-isleFrac(b.isle,o))||(turn(a)-turn(b)))[0];
   const go=best.go; return {...best,go:()=>{ quickPlaySet(false); nextMark(best.kind); go(); }};
 }
-window.bloppitNext={next:()=>{ const n=nextBuild(); return n&&{t:n.t,kind:n.kind}; },cands:()=>nextCandidates().map(c=>c.kind),mark:k=>nextMark(k),complete:()=>islesComplete(worldStore()),mysteryOpen:()=>mysteryOpen(),unlocked:()=>worldUnlocked(worldStore()),seen:()=>seenGet(),reveal:ids=>isl3Reveal(ids,worldStore()),go:()=>{ const n=nextBuild(); if(n) n.go(); },count:id=>isleCount(id,worldStore()),wardrobe:()=>wardrobeOpen(),chapter:i=>mysteryStart(i),via:i=>mysteryVia(i),goals:()=>worldGoals(worldStore()).map(g=>g.text)};   // for tests
+window.bloppitNext={next:()=>{ const n=nextBuild(); return n&&{t:n.t,kind:n.kind}; },cands:()=>nextCandidates().map(c=>c.kind),mark:k=>nextMark(k),complete:()=>islesComplete(worldStore()),mysteryOpen:()=>mysteryOpen(),unlocked:()=>worldUnlocked(worldStore()),seen:()=>seenGet(),reveal:ids=>isl3Reveal(ids,worldStore()),go:()=>{ const n=nextBuild(); if(n) n.go(); },count:id=>isleCount(id,worldStore()),wardrobe:()=>wardrobeOpen(),chapter:i=>mysteryStart(i),via:i=>mysteryVia(i),goals:()=>worldGoals(worldStore()).map(g=>g.text),titles:()=>nextCandidates().map(c=>c.t)};   // for tests
 // Start a Blitz race straight from Play next: the race page with the puzzle and the Longtail picked, then Go
 // Blitz Bay through Bloppitopia: the next race on the ladder, shown as one card with one button (no puzzle, speed or
 // name to choose; that's all on the Blitz page for races outside the story)
