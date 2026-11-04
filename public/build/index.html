@@ -3978,7 +3978,7 @@ const sfx=(()=>{
     if(Math.random()<.035) glass(c,t+S16*.5,hz(SCALE[5+Math.floor(Math.random()*5)]+24),.02,.6);   // a firefly
   }
   function musicTick(){ const c=ac; if(!c||!M.playing) return; while(M.next<c.currentTime+.3){ musicNote(c,M.next,M.i); M.i++; M.next+=S16; } }
-  const videoOn=()=>[...document.querySelectorAll('video')].some(v=>!v.paused&&!v.ended&&!v.muted);
+  const videoOn=()=>[...document.querySelectorAll('video')].some(v=>!v.paused&&!v.ended);   // a film on mute still keeps the music away
   const onIsland=()=>{ try{ return tab==='island'; }catch(e){ return false; } };   // the music belongs to Bloppitopia: every game itself is quiet
   function musicLevel(){ if(!ac||!mbus) return; const want=on&&musicOn&&onIsland()&&!document.hidden&&!M.duck&&!videoOn()?.22:0, n=ac.currentTime;
     mbus.gain.cancelScheduledValues(n); mbus.gain.setValueAtTime(mbus.gain.value,n); mbus.gain.linearRampToValueAtTime(want,n+(want?1.2:.35));
@@ -3995,9 +3995,12 @@ const sfx=(()=>{
   return {
     get on(){ return on; },
     get musicOn(){ return musicOn; },
-    set(v){ on=!!v; try{ localStorage.setItem('bloppit-sound',on?'on':'off'); }catch(e){} if(on) ctx(); musicLevel(); },
+    set(v){ on=!!v; try{ localStorage.setItem('bloppit-sound',on?'on':'off'); }catch(e){} if(on) ctx();
+      document.querySelectorAll('video').forEach(x=>{ try{ x.muted=!on; }catch(e){} });   // a film already playing follows the sound button
+      musicLevel(); },
     music(v){ musicOn=!!v; try{ localStorage.setItem('bloppit-music',musicOn?'on':'off'); }catch(e){} if(musicOn&&on) ctx(); musicLevel(); },
     duck(v){ M.duck=!!v; musicLevel(); },
+    get musicGain(){ return mbus?+mbus.gain.value.toFixed(3):0; },
     place(){ musicLevel(); },   // the page changed: music in Bloppitopia, quiet everywhere else
     // A brick snapping in: a crisp plastic click, then a marimba note a step higher than the last one
     snap(delay=0){ haptic('light',delay); const c=ok('snap',.04); if(!c) return; const t=c.currentTime+delay;
@@ -10648,6 +10651,7 @@ function isl3Film(f,then){
   const go=()=>{ let p; try{ p=v.play(); }catch(e){ return end('fallback'); } if(p&&p.catch) p.catch(e=>{ if(done) return; if(e&&e.name==='NotAllowedError'&&!v.muted){ v.muted=true; go(); } else if(!(e&&e.name==='AbortError')) end('fallback'); }); };
   go(); track('film_start:'+f.id); }
 window.bloppitFilmOn=()=>ISL3.filmOn||null;   // for tests
+window.bloppitMusic=()=>sfx.musicGain;   // for tests: the island music's volume now (0 = quiet)
 function arr3Cap(A,txt){ const c=A.ov.querySelector('.cn-cap'); if(!txt){ c.classList.remove('on'); return; } c.textContent=txt; c.classList.add('on'); }
 // One frame of the film
 function isl3CineStep(now){ const A=ISL3.cine; if(!A||A.film) return; const t=A.t=(now-A.t0)/1000, D=A.did, once=k=>D[k]?false:(D[k]=1,true), [jx,jz]=HOME_AT.jetty;
