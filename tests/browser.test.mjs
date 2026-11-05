@@ -1055,6 +1055,24 @@ test('Build page: a tile asks Play on the island or Quick play; Quick play has n
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('the menu order: Quick play, Bloppitopia, the Weekly, Continue, How to play; Solo opens with Quick Build, Race a friend is in Together (phone)', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1', { viewport: { width: 402, height: 874 }, touch: true, init: { fn: () => { localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); } } });
+  await t.page.waitForTimeout(2500); assert.equal(await t.view(), 'view-home');
+  const r = await t.page.evaluate(() => { const y = (s) => { const e = document.querySelector(s); return e && !e.hidden ? Math.round(e.getBoundingClientRect().top) : null; }, h = (s) => Math.round(document.querySelector(s).getBoundingClientRect().height);
+    return { quick: y('#hmQuick'), world: y('#hmWorld'), daily: y('.hm-daily'), how: y('#hmHow'), qh: h('#hmQuick'), wh: h('#hmWorld'), dh: h('.hm-daily'),
+      films: !!document.querySelector('#hmWorld #hmFilms'), streak: !!document.querySelector('.hm-daily #hdStreak'),
+      secs: [...document.querySelectorAll('.hm-sec')].map((e) => e.textContent.trim()),
+      solo: [...document.querySelectorAll('#hmSolo + .hm-grid .hm-tile')].map((b) => b.dataset.go), wide: document.querySelector('#hmSolo + .hm-grid .hm-tile').classList.contains('wide'),
+      together: [...document.querySelectorAll('.hm-sec')].pop().nextElementSibling.textContent }; });
+  assert.ok(r.quick < r.world && r.world < r.daily && r.daily < r.how, JSON.stringify(r));
+  assert.ok(Math.abs(r.wh - 263) <= 2 && Math.abs(r.dh - 158) <= 2 && r.qh >= 68 && r.qh <= 74, JSON.stringify(r));
+  assert.ok(r.films && r.streak);
+  assert.deepEqual(r.secs, ['Solo', 'Together']);
+  assert.deepEqual(r.solo, ['quick', 'otter', 'brain', 'flip', 'cpu']); assert.ok(r.wide);
+  assert.match(r.together, /Build together.*Race a friend.*Join a game/s);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('menu Quick play: the button and bloppit.com’s /build/#solo bring the Solo tiles into view (phone)', { skip: skip() }, async () => {
   const t = await open('?nosplash=1', { viewport: { width: 390, height: 844 } });
   const top = () => t.page.evaluate(() => Math.round(document.getElementById('hmSolo').getBoundingClientRect().top));
