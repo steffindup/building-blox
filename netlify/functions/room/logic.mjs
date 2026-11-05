@@ -266,7 +266,7 @@ export async function handle(method, query, body, store) {
     }, pid);
   }
 
-  // Bloppit Blitz: a hint adds 5 seconds to the player whose turn it is (one charge per step, counted by the app)
+  // Bloppit Blitz: a hint adds 2 seconds to the player whose turn it is (one charge per step, counted by the app)
   if (a === 'hint') {
     return update(store, code, (s) => {
       const i = mine(s);

@@ -17,7 +17,7 @@ export const WEEKLY_KEEP_WEEKS = 8;             // weekly counts are kept for 8 
 const MAX_RUNS = 12;                            // players per challenge
 const MAX_MODEL_CHARS = 2_500_000;
 const MISS_MS = 1000;                           // each miss adds 1 second (same as Blitz)
-const HINT_MS = 5000;                           // each hint adds 5 seconds (same as Blitz)
+const HINT_MS = 2000;                           // each hint adds 2 seconds (same as Blitz)
 const MIN_MS_PER_BRICK = 300;                   // faster than this per brick isn't a real build
 const MAX_MS = 3 * 3600_000;
 

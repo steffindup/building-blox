@@ -1266,7 +1266,7 @@ body.on-home .tabs{visibility:hidden}
 .hub-grid{max-width:720px;margin-top:6px}
 .crumb{justify-self:start;border:0;background:none;color:var(--muted);font:inherit;font-weight:700;font-size:14px;padding:2px 0;cursor:pointer}
 .crumb:hover{color:var(--ink)}
-.view[data-sub="hub"]>:not(.hub){display:none!important}
+.view[data-sub="hub"]>:not(.hub):not(.char-hero){display:none!important}   /* the character stays on top of every page of its tab (Steff, 5 Nov 2026) */
 .view:not([data-sub="hub"])>.hub{display:none}
 .view.in-room>.crumb{display:none}
 #view-blitz[data-sub="cpu"]:not(.in-room) #bzFriendCard,#view-blitz[data-sub="cpu"] #chPreview,#view-blitz[data-sub="cpu"] #chMine{display:none!important}
@@ -2004,9 +2004,8 @@ body.film-on{overflow:hidden}
 </section>
 
 <section class="view" id="view-mp" hidden>
+<div class="char-hero" data-hero="mp" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
   <div class="hub" data-hub>
-    <div class="char-hero" data-hero="mp" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
-    
     <div class="hm-grid hub-grid">
       <button class="hm-tile t-together" data-sub="start" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="0" y="16" width="66" height="58"/><use href="#bh2" x="58" y="28" width="58" height="51"/><rect x="34" y="80" width="52" height="28" rx="5" fill="#D2352B"/><rect x="40" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="66" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="34" y="100" width="52" height="8" rx="4" fill="#B32A22"/><ellipse cx="34" cy="90" rx="8" ry="7" fill="#8A5A3B"/><ellipse cx="86" cy="90" rx="8" ry="7" fill="#C08A5E"/></svg></span><b>Build together</b><span>One puzzle, taking turns with friends</span></button>
       <button class="hm-tile t-join" data-sub="join" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a game</b><span>Got a code? Type it in to play</span></button>
@@ -2081,16 +2080,15 @@ body.film-on{overflow:hidden}
 </section>
 
 <section class="view" id="view-blitz" hidden>
+<div class="char-hero" data-hero="blitz" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
   <div class="hub" data-hub>
-    <div class="char-hero" data-hero="blitz" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
-    
     <div class="hm-grid hub-grid">
       <button class="hm-tile t-blitz" data-sub="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>vs Swoop</b><span>Race the speediest Longtail</span></button>
       <button class="hm-tile t-friend" data-sub="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><ellipse cx="31.6" cy="65.2" rx="10" ry="11" fill="#8A5A3B"/><path d="M24 66 q7.5 6 15 0" stroke="#1B1410" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>vs Friend</b><span>Send a challenge code, or race live</span></button>
     </div>
   </div>
   <button class="crumb" data-up type="button">‹ Blitz</button>
-  <div class="gm-head sub-head"><div><h2 id="bzHeadT">⚡ Bloppit Blitz</h2><p class="note">A race against the clock. A hint adds 5 seconds, and each brick in the wrong spot adds 1 second. Shortest time wins.</p></div></div>
+  <div class="gm-head sub-head"><div><h2 id="bzHeadT">⚡ Bloppit Blitz</h2><p class="note">A race against the clock. A hint adds 2 seconds, and each brick in the wrong spot adds 1 second. Shortest time wins.</p></div></div>
   <div id="bzForms" style="display:grid;gap:16px">
     <div class="card bz-setup">
       <p class="note bz-as" id="bzAs" hidden>Racing as <b id="bzAsN"></b> <button class="ghost sm-link" id="bzAsCh" type="button">Change</button></p>
@@ -2162,7 +2160,6 @@ body.film-on{overflow:hidden}
 </section>
 <section class="view" id="view-daily" hidden>
   <div class="char-hero" data-hero="daily" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
-  <div class="gm-head"><div><h2>🎨 This week’s Weekly Bloppit</h2><p class="note">One puzzle a week, the same for everybody. Build it clean: no misses, no hints. A new one arrives every Monday morning.</p></div></div>
   <div class="card daily-card">
     <img class="daily-img" id="dyImg" alt="">
     <div class="daily-txt">
@@ -2232,7 +2229,7 @@ body.film-on{overflow:hidden}
       <button class="ghost sm" id="qpPick" type="button">Or pick one yourself</button>
     </div>
   </div>
-  <div class="win-btns"><button class="ghost" id="qpOther" type="button" hidden>🎲 Play a different game</button><button class="ghost" id="qpX" type="button">Not now</button></div>
+  <div class="win-btns"><button class="ghost" id="qpOther" type="button" hidden>🎲 Play a different game</button><button class="ghost" id="qpX" type="button">Go back</button></div>
 </dialog>
 <dialog class="windlg" id="mpEndDlg" aria-label="Game finished">
   <div class="win-stars">🏆</div>
@@ -3373,11 +3370,11 @@ const SUB_OK={game:['hub','otter','brain','sea','flip'],blitz:['hub','cpu','frie
 // Pippa's tab is her seaside puzzles (and her daily message in a bottle); the Weekly Bloppit is Bibi's, under Quick Bricks.
 // Each page has its character at the top: who lives there, their island, their line and what the page is for
 const HERO={
-  daily:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Bibi’s Weekly Bloppit',line:'Fresh paint! This week’s one is ready.',desc:'Every Monday Bibi paints a new Weekly Bloppit for the Grand Creation Gallery. Everybody builds the same one, and each one you build adds to Brickyard Cove.',c:['#FFAA55','#DD5F1C']},
+  daily:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Bibi’s Weekly Bloppit',line:'Fresh paint! This week’s one is ready.',desc:'Every Monday Bibi paints a new one, and everybody builds the same puzzle. Build it clean: no misses, no hints. Each one you build adds to Brickyard Cove.',c:['#FFAA55','#DD5F1C']},
   sea:{who:'pippa',art:'/art/char-pippa.png',isle:'Flipper Beach',title:'Pippa’s Puzzles',line:'Ooh, that one’s clean!',desc:'Twelve mirror puzzles wash ashore as Bloppitopia grows: Pippa builds one half, and you flip it to build the other. Each one adds to Flipper Beach, all the way to the Festival Clock in your own colours. And every day the tide brings a message in a bottle.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
   otter:{who:'tiny',art:'/art/char-tiny.png',isle:'Frog Forest',title:'Frog Trail',line:'Small frog, big forest!',desc:'Hop up the trail with Tiny, one level at a time. The levels start tiny and get bigger, and the last is his Lily-pad Palace.',c:['#A6D93A','#3F8F33']},
   brain:{who:'nora',art:'/art/char-nora.png',isle:'Brainpeak',title:'Brain Trail',line:'A clever mind shines in the dark.',desc:'Nora tucks math puzzles into the booklet: solve one to open its page. The last build is her Great Telescope.',c:['#4A6FC0','#1C2B57']},
-  create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Quick Bricks',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way, and every Monday there’s a new Weekly Bloppit.',c:['#FFAA55','#DD5F1C']},
+  create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Quick Bricks',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
   blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Bloppit Blitz',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Fastest clean build wins.',c:['#5DB4F2','#1F6FC4']},
   mp:{who:'pup',art:'/art/pup.png',isle:'Friendship Harbour',title:'Build Together',line:'Every build is better with a friend!',desc:'Take turns building one model with friends on their own phones, tablets or computers.',c:['#B9A2F7','#6E4FD6']}};
 function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[data-hero="${t}"]`); if(!el) return;
@@ -6318,7 +6315,8 @@ function renderGameMap(){
   $('#trOtter').setAttribute('aria-selected',trail==='otter'); $('#trBrain').setAttribute('aria-selected',trail==='brain'); $('#trSea').setAttribute('aria-selected',trail==='sea');
   $('#gmTitle').textContent=`${T.icon} ${T.name}`;
   const pct=trail==='sea'?progressPct(worldStore()):0;
-  $('#gmIntro').textContent=quickPlay&&trail!=='flip'&&trail!=='sea'?`⚡ Quick play: any level, in any order. Nothing is added to Bloppitopia. To grow ${ISLES[TRAIL_ISLE[trail]].name}, play it from the island.`:trail==='flip'?'Pippa builds one half of each puzzle, and you build the other half, flipped like a reflection. Twelve to try, in any order. (Flipper Beach in Bloppitopia has its own set.)':trail==='brain'?'A different set of puzzles, with Bloppit’s math puzzles locking some booklet pages. Solve them to keep building.':trail==='sea'?`Pippa’s seaside puzzles wash ashore as Bloppitopia grows: a new one about every 8% (you’re at ${pct}%). Each one you build grows Flipper Beach.`:'Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, and Tiny cheers you all the way.';
+  { const tip=quickPlay&&trail!=='flip'&&trail!=='sea'?`⚡ Quick play: any level, in any order. Nothing is added to Bloppitopia. To grow ${ISLES[TRAIL_ISLE[trail]].name}, play it from the island.`:trail==='flip'?'Pippa builds one half of each puzzle, and you build the other half, flipped like a reflection. Twelve to try, in any order. (Flipper Beach in Bloppitopia has its own set.)':trail==='sea'?`You’re ${pct}% of the way through Bloppitopia. A new puzzle washes ashore about every 8%.`:'';   // the hero says the rest (no repeats, Steff 5 Nov 2026)
+    $('#gmIntro').textContent=tip; $('#gmIntro').hidden=!tip; }
   { const ts=trailStars(trail); $('#gmTotal').textContent=`${ts} ★`; $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} stars`; $('#gmDone').dataset.of=`${levelsOf(trail).length*3}`; } syncMathUI();
   $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} ${trail==='sea'||trail==='flip'?'puzzles built':'levels done'}`;
   $('#gmLevels').innerHTML=levelsOf(trail).map((L,i)=>{
@@ -6775,7 +6773,7 @@ const mpBlitz=()=>!!(mp&&mp.state&&mp.state.mode==='blitz');
 // Which page a game's lobby lives on, and how to talk about it
 const mpHomeTab=()=>mp&&(mp.cpu||mpBlitz())?'blitz':'mp';
 const mpWhat=()=>mp&&mp.state&&mp.state.solo?'your timed build':mp&&mp.cpu?'your race against Swoop':mpBlitz()?'your Blitz room':'your Play together room';
-const MISS_MS=1000, HINT_MS=5000;  // Blitz: a wrong brick adds 1 second, a hint adds 5 seconds
+const MISS_MS=1000, HINT_MS=2000;  // Blitz: a wrong brick adds 1 second, a hint adds 2 seconds (Steff, 5 Nov 2026; was 5)
 // Blitz times: the server's total so far, plus the turn that's running now (using the server's clock)
 function mpTime(s,i){ const p=s.players[i]; let t=(p.ms||0)+(p.miss||0)*MISS_MS+(p.hint||0)*HINT_MS;
   if(s.started&&!s.finished&&s.turn===i&&mp) t+=Math.max(0,Date.now()+(mp.skew||0)-s.turnStart); return t; }
@@ -7071,9 +7069,9 @@ async function renderMpView(){
   $('#mpWhere').textContent=bz?'⚡ Blitz':'🧩 Together';
   const p0=photos[0]; if(p0) $('#mpThumb').src=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png'));
   $('#mpModelName').textContent=s.title;
-  $('#mpModelInfo').innerHTML=s.solo?`<span class="blitz-tag">${escapeHTML(s.label)}</span>${s.nBricks} bricks, all yours. Your clock runs until the last brick is in. A hint adds 5 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
-    :cpuOn?`<span class="blitz-tag">⚡ vs Swoop · ${CPU_LEVELS[s.cpuLevel].speed}</span>${s.nBricks} bricks · you each place ${s.quota} · 1 to 3 bricks a turn. A hint adds 5 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
-    :bz?`<span class="blitz-tag">⚡ Bloppit Blitz</span>${s.nBricks} bricks · ${s.quota?`everyone places ${s.quota}`:`split evenly between ${s.players.length} player${s.players.length===1?'':'s'}: ${Math.floor(s.nBricks/s.players.length)} each`} · 1 to 3 bricks a turn, against the clock. A hint adds 5 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
+  $('#mpModelInfo').innerHTML=s.solo?`<span class="blitz-tag">${escapeHTML(s.label)}</span>${s.nBricks} bricks, all yours. Your clock runs until the last brick is in. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
+    :cpuOn?`<span class="blitz-tag">⚡ vs Swoop · ${CPU_LEVELS[s.cpuLevel].speed}</span>${s.nBricks} bricks · you each place ${s.quota} · 1 to 3 bricks a turn. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
+    :bz?`<span class="blitz-tag">⚡ Bloppit Blitz</span>${s.nBricks} bricks · ${s.quota?`everyone places ${s.quota}`:`split evenly between ${s.players.length} player${s.players.length===1?'':'s'}: ${Math.floor(s.nBricks/s.players.length)} each`} · 1 to 3 bricks a turn, against the clock. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
     :`${s.nBricks} bricks · ${s.perTurn} brick${s.perTurn>1?'s':''} per turn${s.started?` · ${s.moves.length} placed so far`:''}`;
   $('#mpList').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.stale?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.i===s.host&&!cpuOn?' · made the room':''}${s.started?(bz?` <b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>`:` <b>${p.score}</b>`):''}</span>`).join('');
   const host=mp.me===s.host;
@@ -7106,7 +7104,7 @@ function mpShowBlitzEnd(){
     else $('#mpEndNew').textContent='Race again'; }
   $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span><b>${fmtTime(p.ms)}</b> · ${p.own} brick${p.own===1?'':'s'} · ${p.miss} miss${p.miss===1?'':'es'}${p.hint?` · ${p.hint} hint${p.hint===1?'':'s'}`:''}</span></div>`).join('');
   const extra=s.moves.filter(m=>m.p<0).length;
-  $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and Swoop put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, every miss added 1 second and every hint 5 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Swoop at full throttle. Amazing!':' Ready to race Swoop at a faster speed?'):' Practice makes perfect. Try again?'):''}`;
+  $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and Swoop put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, every miss added 1 second and every hint 2 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Swoop at full throttle. Amazing!':' Ready to race Swoop at a faster speed?'):' Practice makes perfect. Try again?'):''}`;
   { const o=worldStore(), won=w.i===mp.me; if(mp.cpu) cheer3($('#mpEndChars'),hasPup(o)?['pup',LT3[s.cpuLevel]||'swoop']:['bloppit',LT3[s.cpuLevel]||'swoop'],won?['cheer','surprised_jump']:['look_at_you','cheer']);
     else cheer3($('#mpEndChars'),'bloppit','cheer'); }
   $('#mpEndDlg').showModal(); $('#mpEndIsland').focus();
@@ -7516,7 +7514,7 @@ async function trialEnd(){
   buildFinished(info.kind==='weekly'?'weekly':'challenge'); if(info.kind==='weekly'){ const rr=trialResult(); track('weekly_completed'); if(rr.miss===0&&rr.hint===0) track('weekly_completed_clean'); }
   const r=trialResult(), t=totalMs(r), name=mp.state.players[0].name, timeRow=`<div class="tot"><span>Your time</span><span>${fmtTime(t)}</span></div>`;
   const missRow=(r.miss?`<div class="neg"><span>Misses (${r.miss} × 1 second)</span><span>+${r.miss}s</span></div>`:'')
-    +(r.hint?`<div class="neg"><span>Hints (${r.hint} × 5 seconds)</span><span>+${r.hint*5}s</span></div>`:'');
+    +(r.hint?`<div class="neg"><span>Hints (${r.hint} × 2 seconds)</span><span>+${r.hint*HINT_MS/1000}s</span></div>`:'');
   const send=async()=>{
     if(info.kind==='make'){
       trialDialog({icon:'📨',title:'Making your challenge…',rows:missRow+timeRow,note:'Sending your time and puzzle to Bloppit.'});
@@ -7589,7 +7587,7 @@ async function chOpen(code){
     box.hidden=false;
     box.innerHTML=`<div class="ch-top"><img alt="" src="${photos[0].png}"><div><span class="tag">Challenge ${c.code}</span><h2>${escapeHTML(maker.name)} challenged you!</h2><p class="note" style="margin:0">${escapeHTML(c.title)} · ${c.nBricks} bricks · build the whole puzzle as fast as you can</p></div></div>
       <div class="win-rows">${chRows(c)}</div>
-      <p class="note" style="margin:0">Time to beat: <b>${fmtTime(totalMs(best))}</b>. A hint adds 5 seconds, and each miss adds 1 second.</p>
+      <p class="note" style="margin:0">Time to beat: <b>${fmtTime(totalMs(best))}</b>. A hint adds 2 seconds, and each miss adds 1 second.</p>
       <div class="win-btns" style="justify-content:flex-start">${c.full?'<span class="note">This challenge is full (12 players).</span>':'<button class="primary" id="chGo" type="button">Race it! ⚡</button>'}<button class="ghost" id="chShareBtn" type="button">Share</button><button class="ghost" id="chClose" type="button">Close</button></div>`;
     box.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'});
     $('#chClose').onclick=()=>{ box.hidden=true; };
