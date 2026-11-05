@@ -893,7 +893,7 @@ test('island: a new build always shows, even when older models were dragged into
 });
 
 test('The New Horizon plays the first time the Galaxy ship sails to lufu\'s world, then the welcome', { skip: skip() }, async () => {
-  const done = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; for (const n of ['Rowboat', 'Old map', 'Lookout tower', 'Little bridge', 'Moon gate', 'Constellation cube', 'Lantern', 'Moonstone Lighthouse', 'Moon crystal', 'Galaxy ship']) { const k = `m:${n}:12`; builds[k] = { n: 12, s: 2, t: 1e12, c: 1 }; log.push(k); }
+  const done = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; for (const n of ['Rowboat', 'Old map', 'Lookout tower', 'Little bridge', 'Moon gate', 'Constellation cube', 'Moonstone Lighthouse', 'Well', 'Moon crystal', 'Galaxy ship']) { const k = `m:${n}:12`; builds[k] = { n: 12, s: 2, t: 1e12, c: 1 }; log.push(k); }
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 50, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, pick: 'treehouse', isle: 1, arrived: 1, films: ['moon-12', 'moon-13', 'moon-14', 'moon-15', 'moon-16', 'moon-17', 'moon-18', 'moon-19', 'moon-21'] })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 5, finished: 5, welcome: 1 })); } };
   const t = await open('?nosplash=1&films=1#island', { init: done });
   await t.page.waitForFunction(() => window.bloppitIsland3().ctl && !document.querySelector('.is3-film'), null, { timeout: 90000 });
@@ -906,15 +906,13 @@ test('The New Horizon plays the first time the Galaxy ship sails to lufu\'s worl
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('the ring ceremony: film 19 ends, the child sets their brick in the empty slot (drag or tap), the ring lights, then film 20 straight away (no cut to the island)', { skip: skip() }, async () => {
-  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; for (const n of ['Rowboat', 'Old map', 'Lookout tower', 'Little bridge', 'Moon gate', 'Constellation cube', 'Lantern', 'Moonstone Lighthouse']) { const k = `m:${n}:12`; builds[k] = { n: 12, s: 2, t: 1e12, c: 1 }; log.push(k); }
-    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 50, bonus: 0, builds, log, decor: [], pupName: 3, pupColor: 3, pupAsked: true, isle: 1, arrived: 1, films: ['moon-12', 'moon-13', 'moon-14', 'moon-15', 'moon-16', 'moon-17', 'moon-18'] })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 5, finished: 5, welcome: 1 })); } };
+test('the ring ceremony: once the Moon crystal is built (Chapter 9), the child sets their brick in the empty slot (drag or tap), the ring lights, then film 20 straight away (no cut to the island)', { skip: skip() }, async () => {
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; for (const n of ['Rowboat', 'Old map', 'Lookout tower', 'Little bridge', 'Moon gate', 'Constellation cube', 'Moonstone Lighthouse', 'Well', 'Moon crystal']) { const k = `m:${n}:12`; builds[k] = { n: 12, s: 2, t: 1e12, c: 1 }; log.push(k); }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 50, bonus: 0, builds, log, decor: [], pupName: 3, pupColor: 3, pupAsked: true, isle: 1, arrived: 1, films: ['moon-12', 'moon-13', 'moon-14', 'moon-15', 'moon-16', 'moon-17', 'moon-18', 'moon-19'] })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 5, finished: 5, welcome: 1 })); } };
   const t = await open('?nosplash=1&films=1#island', { init: seed });
   await t.page.waitForFunction(() => window.bloppitIsland3().ctl && !document.querySelector('.is3-film'), null, { timeout: 90000 });
   await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close()));
-  await t.page.evaluate(() => window.bloppitNext.reveal(['moonstone:7']));
-  await t.page.waitForFunction(() => window.bloppitFilmOn() === 'moon-19', null, { timeout: 30000, polling: 200 });
-  await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click());
+  await t.page.evaluate(() => window.bloppitNext.reveal(['moonstone:8']));
   await t.page.waitForFunction(() => window.bloppitRing(), null, { timeout: 10000, polling: 100 });
   assert.equal(await t.page.evaluate(() => window.bloppitFilmOn()), null, 'film 20 waits for the brick');
   assert.match((await t.page.evaluate(() => window.bloppitRing())).say, /Your brick, .+\. Right in the middle\./);
@@ -1190,13 +1188,13 @@ test('living characters: on the island (dressed pup, the friends, tap for a reac
 });
 
 test('Chapter 2: the ten mystery chapters end with the Galaxy ship; then lufu’s world opens (everyone there, the ship beached, builds on its stands) and the ship sails back and forth', { skip: skip() }, async () => {
-  const done = { fn: () => { const builds = {}, log = []; for (const n of ['Rowboat', 'Old map', 'Lookout tower', 'Little bridge', 'Moon gate', 'Constellation cube', 'Lantern', 'Moonstone Lighthouse', 'Moon crystal', 'Galaxy ship']) { const k = `m:${n}:12`; builds[k] = { n: 12, s: 3, t: 1e12, c: 1 }; log.push(k); }
+  const done = { fn: () => { const builds = {}, log = []; for (const n of ['Rowboat', 'Old map', 'Lookout tower', 'Little bridge', 'Moon gate', 'Constellation cube', 'Moonstone Lighthouse', 'Well', 'Moon crystal', 'Galaxy ship']) { const k = `m:${n}:12`; builds[k] = { n: 12, s: 3, t: 1e12, c: 1 }; log.push(k); }
     builds['m:Here:9'] = { n: 9, s: 2, t: 1e12 + 1, c: 1, realm: 'lufu' }; log.push('m:Here:9'); builds['m:Home:9'] = { n: 9, s: 2, t: 1e12 + 2, c: 1 }; log.push('m:Home:9');
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 50, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, pick: 'treehouse', isle: 1, arrived: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 5, finished: 5, welcome: 1 })); } };
   const t = await open('?nosplash=1#island', { init: done });
   await t.page.waitForFunction(() => window.bloppitIsland3().ctl, null, { timeout: 90000 });
   const chapters = await t.page.evaluate(() => window.bloppitLevels.mystery().map((m) => m.name));
-  assert.deepEqual(chapters, ['Rowboat', 'Old map', 'Lookout tower', 'Little bridge', 'Moon gate', 'Constellation cube', 'Lantern', 'Moonstone Lighthouse', 'Moon crystal', 'Galaxy ship']);
+  assert.deepEqual(chapters, ['Rowboat', 'Old map', 'Lookout tower', 'Little bridge', 'Moon gate', 'Constellation cube', 'Moonstone Lighthouse', 'Well', 'Moon crystal', 'Galaxy ship']);
   // Bloppitopia first: lufu is not on Home Island any more (it lives in its own world), the realm button offers the voyage, the lufu build is not on the island
   let r = await t.page.evaluate(() => { const I = window.bloppitIsland3(); return { lufu: I.lufu, cast: Object.keys(I.cast), btn: document.querySelector('.is3-realm').textContent, hidden: document.querySelector('.is3-realm').hidden, models: I.shown.list.map((m) => m.key) }; });
   assert.equal(r.lufu, 0); assert.ok(!r.cast.includes('lufu')); assert.equal(r.hidden, false); assert.match(r.btn, /Sail to lufu’s world/); assert.ok(r.models.includes('m:Home:9') && !r.models.includes('m:Here:9'));
@@ -1220,7 +1218,7 @@ test('Chapter 2: the ten mystery chapters end with the Galaxy ship; then lufu’
 });
 
 test('Moonstone Isle once reached: always night, one rowboat (plus the Galaxy ship), no red roof, the moon crystal inside the lighthouse lamp', { skip: skip() }, async () => {
-  const M = [['Rowboat', 10], ['Old map', 15], ['Lookout tower', 17], ['Little bridge', 12], ['Moon gate', 14], ['Constellation cube', 9], ['Lantern', 8], ['Moonstone Lighthouse', 23], ['Moon crystal', 14], ['Galaxy ship', 28]];
+  const M = [['Rowboat', 10], ['Old map', 15], ['Lookout tower', 17], ['Little bridge', 12], ['Moon gate', 14], ['Constellation cube', 9], ['Moonstone Lighthouse', 23], ['Well', 12], ['Moon crystal', 14], ['Galaxy ship', 28]];
   const seed = { arg: M, fn: (M) => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; M.forEach(([n, z], i) => { const k = `m:${n}:${z}`; builds[k] = { n: z, s: 2, t: 1e12 + i, c: 1 }; log.push(k); });
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, films: [], pick: 'tree' })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); } };
   const t = await open('?nosplash=1&hour=11&mystery=1#island', { init: seed });
@@ -1229,7 +1227,7 @@ test('Moonstone Isle once reached: always night, one rowboat (plus the Galaxy sh
       }); const red3 = new T.Color('#C91A09').convertSRGBToLinear().getHexString();
     I.pieces['moonstone:0'].traverse((x) => { if (x.isMesh && x.visible && x.geometry.type === 'ShapeGeometry') sails++; });
     for (const k of ['moonstone:1', 'moonstone:2']) I.pieces[k].traverse((x) => { if (x.isMesh && x.material?.color?.getHexString() === red3) red++; });
-    const lamp = I.pieces['moonstone:7'].children[0].children[5], lb = new T.Box3().setFromObject(lamp), cb = new T.Box3().setFromObject(I.pieces['moonstone:8']);
+    const lamp = I.pieces['moonstone:6'].children[0].children[5], lb = new T.Box3().setFromObject(lamp), cb = new T.Box3().setFromObject(I.pieces['moonstone:8']);
     return { night: !!g.userData.night, boats, sails, red, inLamp: cb.getCenter(new T.Vector3()).y > lb.min.y && cb.getCenter(new T.Vector3()).y < lb.max.y, glass: !!lamp.material.transparent }; });
   assert.ok(r.night, 'always night there'); assert.equal(r.boats, 1, 'one rowboat'); assert.equal(r.sails, 0, 'a rowboat has no sail');
   assert.equal(r.red, 0, 'red is Bloppit\'s alone: not the map mark or the tower roof'); assert.ok(r.inLamp && r.glass, 'the moon crystal sits in the glass lamp room');
