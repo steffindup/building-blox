@@ -8991,7 +8991,7 @@ const CAST={
   bibi:{name:'Bibi',kind:'the Lion Cub',isle:'brickworks',brick:'orange',h:1.85,aspect:241/360,tag:'Build it bold!',
     who:'The maker of Brickyard Cove',story:'Bibi runs the workshop and paints everything in sight. Every Monday he paints a new Weekly Bloppit, and whatever you make, he puts it on show and roars with pride.',
     loves:'Big ideas, bright paint, and the crane',secret:'His roar is more of a squeak. He knows, and he roars anyway.',lines:['Build it bold!','If you can dream it, brick it!','ROAR! That’s brilliant!']},
-  lufu:{name:'lufu',kind:'',isle:'moonstone',brick:'moonstone',h:1.2,aspect:237/360,tag:'We have found each other.',
+  lufu:{name:'lufu',kind:'',isle:'moonstone',brick:'moonstone',h:1.5,aspect:237/360,tag:'We have found each other.',
     who:'A small, shy spirit of light',story:'lufu lived alone on Moonstone Isle for so long that its glow, and the stars above it, almost went out. Then you came, and built the crystal that made it shine again.',
     loves:'The stars, quiet company, and you',secret:'lufu has spoken only once: “We have found each other.”',lines:['✨','(lufu glows softly)','(a happy little wisp curls up)']},
 };
@@ -10250,7 +10250,9 @@ function galaxyShip3(){ const g=new THREE.Group(), L=7.2, GAL=['#5B2A9E','#3B2C9
   for(let i=0;i<7;i++){ const o=cyl3(.04,.05,2.6,5,'#A8743C',-2.6+i*.95,.8,1.1); o.rotation.x=-1.05; o.rotation.z=.12; g.add(o); }   // down the seaward side (the group stands on the other)
   g.userData.ship=1; return g; }
 // Where everyone stands in lufu's world: by the ship on the shore, the pup and lufu in front
-const LUFU_AT={ship:[6.2,7.4],lufu:[-2.3,5.0],pup:[-1.0,4.6],bloppit:[.6,4.2],tiny:[-4.6,2.6],nora:[2.6,2.4],pippa:[-3.6,1.1],swoop:[2.0,.6],bibi:[-.7,1.1],arch:[0,-5.2]};
+// lufu and the pup at the front, Bloppit beside them, the six friends just behind (5 Nov 2026: one step back, not three, so the
+// camera's perspective doesn't shrink them: Nora, the tallest friend, looked smaller than Bloppit)
+const LUFU_AT={ship:[6.2,7.4],lufu:[-1.9,4.6],pup:[-.7,4.5],bloppit:[.7,4.3],tiny:[-3.7,3.6],pippa:[-2.7,3.0],bibi:[-1.4,3.2],nora:[2.1,3.0],swoop:[3.3,3.4],arch:[0,-5.2]};
 const LUFU_STANDS=[[-5.2,-2.4],[5.4,-2.6],[-6.4,.6],[6.6,.4],[-4.2,-5.4],[4.4,-5.6],[-7.2,-3.4],[7.4,-3.6],[-2.2,-7.2],[2.4,-7.4],[-6.2,-6.4],[6.4,-6.6]];
 function lufuBuild(o,W,add){ ISL3.lufu=1;
   add(lufuBody3(),'land:lufu'); ISL3.isles.home={x:0,z:0,r:LUFU_R};
@@ -10280,7 +10282,7 @@ function lufuBuild(o,W,add){ ISL3.lufu=1;
   ISL3.labels.push({id:'ship',name:'⛵ Sail to Bloppitopia',sub:'on the Galaxy Ship',x:sx+1.5,z:sz+1.2,y:3.2,act:()=>realmGo('bloppitopia')});
 }
 // The views of lufu's world: the whole shore, the ship, the old arch
-function lufuViews(){ const v=[{id:'world',name:'lufu’s world'},{id:'ship',name:'The Galaxy Ship',x:LUFU_AT.ship[0]-.5,z:LUFU_AT.ship[1]-1,y:1.4,R:6.4},{id:'friends',name:(pupName(worldStore())||'Your otter')+' & lufu',x:LUFU_AT.pup[0],z:LUFU_AT.pup[1],y:TOP3+1.1,R:3.6},{id:'ruin',name:'The old moon arch',x:LUFU_AT.arch[0],z:LUFU_AT.arch[1],y:1.6,R:5}];
+function lufuViews(){ const v=[{id:'world',name:'lufu’s world'},{id:'ship',name:'The Galaxy Ship',x:LUFU_AT.ship[0]-.5,z:LUFU_AT.ship[1]-1,y:1.4,R:6.4},{id:'friends',name:(pupName(worldStore())||'Your otter')+' & lufu',x:-.2,z:LUFU_AT.pup[1]-.4,y:TOP3+1.1,R:4.6},{id:'ruin',name:'The old moon arch',x:LUFU_AT.arch[0],z:LUFU_AT.arch[1],y:1.6,R:5}];
   const cam=ISL3.cam, vf=cam?THREE.MathUtils.degToRad(cam.fov)/2:.5, hf=cam?Math.atan(Math.tan(vf)*cam.aspect):.6; for(const x of v) if(x.R) x.d=Math.max(7,x.R/Math.tan(Math.min(vf,hf))*1.05); return v; }
 function lufuSky3(){ const g=new THREE.Group();
   const moon=new THREE.Mesh(new THREE.SphereGeometry(4.2,24,16),new THREE.MeshBasicMaterial({color:0xF3EEFF})); moon.position.set(-22,34,-62); moon.scale.setScalar(1.4); g.add(moon);
