@@ -9519,6 +9519,8 @@ var mysCh=-1;
 function mysOn(){ if(game||mp||!photos[0]||!photos[0].sample) return false; try{ mysCh=MYSTERY.findIndex(m=>m.name===photos[0].name); }catch(e){ mysCh=-1; } return mysCh>=0; }   // (early in page load MYSTERY isn't there yet)
 function mysteryStart(i){
   const m=MYSTERY[i]; if(!m) return; const k=SAMPLES.findIndex(x=>x.name===m.name); if(k<0) return;
+  // Back from the island (the game bar's Moonstone Isle button) to a chapter already on the table: carry on, don't start over (Steff, 5 Nov 2026)
+  if(mysOn()&&mysCh===i&&model&&!model.error&&model.bricks&&placedN>0&&placedN<model.bricks.length){ setTab('build'); updateGameBar(); return; }
   if(mp) mpLeave(); if(game) endGame(); setControls({kind:'model',shape:m.shape,thick:m.thick,tol:48,maxColors:m.colors,gray:true,size:m.size,pw:48,pcol:24});
   loadSample(k); clearTimeout(timer); rebuild(); setTab('build'); updateGameBar(); setStatus(`Chapter ${i+1} of ${MYSTERY.length}, with ${m.who}: ${m.story}`);
 }
