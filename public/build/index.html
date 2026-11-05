@@ -662,6 +662,9 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 @media (max-width:900px){.box-grid{grid-template-columns:minmax(0,1fr)}#boxBook .pg-view{aspect-ratio:16/9}}
 #boxBook .bookpane{top:calc(env(safe-area-inset-top,0px) + 84px)}
 .box-actions .sm{display:none}
+/* Little ‹ › arrows on a ribbon that scrolls sideways (Steff, 5 Nov 2026) */
+.sa-wrap{display:contents}.sa-arr{display:none;position:absolute;top:50%;z-index:2;width:22px;height:26px;margin-top:-13px;padding:0 0 2px;border:1px solid var(--line);border-radius:999px;background:var(--page);color:var(--ink);font:800 17px/1 var(--f-body);cursor:pointer;box-shadow:0 2px 6px var(--shadow);place-items:center}
+.sa-arr.l{left:-6px}.sa-arr.r{right:-6px}.sa-wrap.can-l>.sa-arr.l,.sa-wrap.can-r>.sa-arr.r{display:grid}
 /* Phones: the parts box fits one screen. The booklet page sits on top, the parts board fills the rest, and the tools are
    one ribbon of small buttons (--boxTop: where the page starts, from buildFit). */
 @media (max-width:700px),(max-height:500px) and (min-width:560px){
@@ -674,6 +677,11 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
   body.on-box #boxInfo{margin:0;font-size:12px;font-weight:800;white-space:nowrap;padding:3px 9px;border-radius:999px;background:var(--callout);color:var(--ink)}
   body.on-box .box-actions{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:4px;min-width:0;margin-left:auto}
   body.on-box .box-actions::-webkit-scrollbar{display:none}
+  body.on-box .sa-wrap{display:flex;position:relative;min-width:0;margin-left:auto}
+  body.on-box .sa-wrap>.box-actions{margin-left:0}
+  .sa-wrap.can-l>.box-actions{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 26px);mask-image:linear-gradient(90deg,transparent 0,#000 26px)}
+  .sa-wrap.can-r>.box-actions{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
+  .sa-wrap.can-l.can-r>.box-actions{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 26px,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(90deg,transparent 0,#000 26px,#000 calc(100% - 26px),transparent)}
   body.on-box .box-actions .ghost{flex:none;padding:4px 7px;font-size:11.5px;min-height:0;white-space:nowrap}
   body.on-box .box-actions kbd,body.on-box .box-actions .lg{display:none}
   body.on-box .box-actions .sm{display:inline}
@@ -2085,7 +2093,8 @@ body.film-on{overflow:hidden}
   <div class="gm-head sub-head"><div><h2 id="bzHeadT">⚡ Bloppit Blitz</h2><p class="note">A race against the clock. A hint adds 5 seconds, and each brick in the wrong spot adds 1 second. Shortest time wins.</p></div></div>
   <div id="bzForms" style="display:grid;gap:16px">
     <div class="card bz-setup">
-      <div class="field"><label for="bzName">Your name</label><input class="inp" id="bzName" maxlength="16" autocomplete="nickname" placeholder="e.g. Elmar"></div>
+      <p class="note bz-as" id="bzAs" hidden>Racing as <b id="bzAsN"></b> <button class="ghost sm-link" id="bzAsCh" type="button">Change</button></p>
+      <div class="field" id="bzNameF"><label for="bzName">Your name in the race</label><input class="inp" id="bzName" maxlength="16" autocomplete="nickname" placeholder="e.g. Elmar"></div>
       <div class="field bz-puzzle"><span class="lbl">Puzzle</span>
         <div class="bzp"><img id="bzThumb" alt=""><div class="bzp-txt"><b id="bzPzName"></b><span class="note" id="bzPzInfo"></span></div></div>
         <div class="bzp-btns"><button class="ghost" id="bzLib" type="button">📚 Library</button><button class="ghost" id="bzPhoto" type="button">📸 Your photo</button>
@@ -3523,6 +3532,16 @@ if('IntersectionObserver' in window) new IntersectionObserver(es=>{ startSeen=es
   if('ResizeObserver' in window) new ResizeObserver(sync).observe(bar);
   w.querySelectorAll('.tabs-arr').forEach(b=>b.addEventListener('click',()=>bar.scrollBy({left:(b.classList.contains('l')?-1:1)*bar.clientWidth*.7,behavior:'smooth'})));
   sync(); window.bloppitTabsArrows=()=>({l:w.classList.contains('can-l'),r:w.classList.contains('can-r')}); }
+// The same little arrows on any other ribbon that scrolls sideways (the phone parts box)
+function scrollArrows(el){ if(!el||el.parentNode.classList.contains('sa-wrap')) return; const w=document.createElement('div'); w.className='sa-wrap'; el.replaceWith(w);
+  const arr=d=>{ const b=document.createElement('button'); b.type='button'; b.className='sa-arr '+d; b.tabIndex=-1; b.setAttribute('aria-hidden','true'); b.textContent=d==='l'?'‹':'›';
+    b.addEventListener('click',()=>el.scrollBy({left:(d==='l'?-1:1)*el.clientWidth*.7,behavior:'smooth'})); return b; };
+  w.append(arr('l'),el,arr('r'));
+  const sync=()=>{ const max=el.scrollWidth-el.clientWidth; w.classList.toggle('can-l',max>2&&el.scrollLeft>4); w.classList.toggle('can-r',max>2&&el.scrollLeft<max-4); };
+  el.addEventListener('scroll',sync,{passive:true}); addEventListener('resize',sync); if('ResizeObserver' in window) new ResizeObserver(sync).observe(el); sync(); return w; }
+scrollArrows(document.querySelector('#view-box .box-actions'));
+$('#bzAsCh').addEventListener('click',()=>{ bzNameEdit=true; bzNameSync(); $('#bzName').focus(); $('#bzName').select(); });
+window.bloppitBoxArrows=()=>{ const w=document.querySelector('#view-box .sa-wrap'); return w&&{l:w.classList.contains('can-l'),r:w.classList.contains('can-r')}; };   // for tests
 // Where the build page starts (below the header and any banner), so it can take exactly the rest of the screen
 function buildFit(){ const b=$('#view-box'); if(b&&!b.hidden) document.documentElement.style.setProperty('--boxTop',Math.round(b.getBoundingClientRect().top+scrollY)+'px');
   const v=$('#view-build'); if(!v||v.hidden) return;
@@ -6745,6 +6764,11 @@ function mpMsg(t,kind){ const el=$('#mpMsg'); el.hidden=!t; el.textContent=t||''
 function mpStored(){ try{ return JSON.parse(localStorage.getItem(MP_KEY))||null; }catch(e){ return null; } }
 function mpStore(o){ try{ o?localStorage.setItem(MP_KEY,JSON.stringify(o)):localStorage.removeItem(MP_KEY); }catch(e){} }
 function mpRememberName(n){ try{ localStorage.setItem('building-blox-name',n); }catch(e){} }
+// A race needs a name to show the other racers. It comes from the player (or their otter), so there's no name to type;
+// "Change" opens the field for a different one (Steff, 5 Nov 2026: "the game already has a name").
+let bzNameEdit=false;
+function bzOtterName(){ try{ return pupName(worldStore())||''; }catch(e){ return ''; } }
+function bzNameSync(){ const v=$('#bzName').value.trim(); $('#bzNameF').hidden=!!v&&!bzNameEdit; $('#bzAs').hidden=!v||bzNameEdit; $('#bzAsN').textContent=v; }
 function mpName(){ const p=curPlayer(); if(p&&!/^Player \d+$/.test(p.name)) return p.name; try{ return localStorage.getItem('building-blox-name')||''; }catch(e){ return ''; } }
 async function mpCheck(){ if(mpAvailable!==null) return mpAvailable; try{ const j=await mpApi('GET',null,'?ping=1'); mpAvailable=!!(j&&j.ok); }catch(e){ mpAvailable=false; } return mpAvailable; }
 const mpBlitz=()=>!!(mp&&mp.state&&mp.state.mode==='blitz');
@@ -7028,7 +7052,7 @@ async function renderMpView(){
   F.hidden=!!mp; $('#mpRoom').hidden=!mp;
   if(!mp){
     const nm=mpName();
-    if(bzv){ mpModelOptions('#bzModel'); if(nm&&!$('#bzName').value) $('#bzName').value=nm; bzLevelNote(); renderBzPuzzle(); if(ok) renderChMine(); return; }
+    if(bzv){ mpModelOptions('#bzModel'); const n2=nm||bzOtterName(); if(n2&&!$('#bzName').value) $('#bzName').value=n2.slice(0,16); bzNameSync(); bzLevelNote(); renderBzPuzzle(); if(ok) renderChMine(); return; }
     mpModelOptions();
     // Start on a ready-made puzzle, unless you've just picked your own (or had one picked already)
     if(mpKeepPick){ mpKeepPick=false; $('#mpModel').value='cur'; } else if(!usePicked&&$('#mpModel').value==='cur') $('#mpModel').value=TOGETHER_DEFAULT_PICK;
@@ -7142,7 +7166,7 @@ document.addEventListener('visibilitychange',()=>{ if(mp&&document.visibilitySta
 
 /* ---------- Bloppit Blitz page ---------- */
 $('#bzMake').onclick=async()=>{
-  const name=$('#bzName').value.trim(); if(!name){ mpMsg('Type your name first.','err'); $('#bzName').focus(); return; }
+  const name=$('#bzName').value.trim(); if(!name){ mpMsg('Type your name first.','err'); bzNameEdit=true; bzNameSync(); $('#bzName').focus(); return; }
   const btn=$('#bzMake'); btn.disabled=true; mpMsg('');
   try{ await mpMake('blitz',name,$('#bzModel').value); }
   catch(e){ mpMsg(e.message,'err'); }
@@ -7152,7 +7176,7 @@ $('#bzJoin').onclick=async()=>{
   const code=$('#bzCodeIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''), name=$('#bzName').value.trim();
   if(code.length===6){ chOpen(code); return; }
   if(code.length!==5){ mpMsg('Codes have 6 letters and numbers (a challenge) or 5 (a live room).','err'); $('#bzCodeIn').focus(); return; }
-  if(!name){ mpMsg('Type your name first.','err'); $('#bzName').focus(); return; }
+  if(!name){ mpMsg('Type your name first.','err'); bzNameEdit=true; bzNameSync(); $('#bzName').focus(); return; }
   const btn=$('#bzJoin'); btn.disabled=true; mpMsg('Joining…');
   try{ const st=mpStored(); mpRememberName(name); await mpJoin(code,name,st&&st.code===code?st.playerId:undefined); mpMsg(''); renderMpView(); }
   catch(e){ mpMsg(e.message,'err'); }
@@ -7379,7 +7403,7 @@ function cpuCountdown(){
   setTimeout(show,250);
 }
 $('#bzCpuGo').onclick=async()=>{
-  const name=$('#bzName').value.trim(); if(!name){ mpMsg('Type your name first.','err'); $('#bzName').focus(); return; }
+  const name=$('#bzName').value.trim(); if(!name){ mpMsg('Type your name first.','err'); bzNameEdit=true; bzNameSync(); $('#bzName').focus(); return; }
   const btn=$('#bzCpuGo'); btn.disabled=true; mpMsg('');
   try{
     if(mp) mpLeave();
@@ -7542,7 +7566,7 @@ $('#trDone').onclick=()=>{ if(trialDone&&trialDone.quick){ $('#trialDlg').close(
 
 // Make a challenge: build the chosen puzzle against the clock, then get a code
 $('#bzChMake').onclick=async()=>{
-  const name=$('#bzName').value.trim(); if(!name){ mpMsg('Type your name first.','err'); $('#bzName').focus(); return; }
+  const name=$('#bzName').value.trim(); if(!name){ mpMsg('Type your name first.','err'); bzNameEdit=true; bzNameSync(); $('#bzName').focus(); return; }
   const btn=$('#bzChMake'); btn.disabled=true; mpMsg('');
   try{ const title=mpUseModel($('#bzModel').value); mpRememberName(name);
     await trialStart({kind:'make',label:'📨 Your challenge',title:niceName(title)},name); }
@@ -7571,7 +7595,7 @@ async function chOpen(code){
     $('#chClose').onclick=()=>{ box.hidden=true; };
     $('#chShareBtn').onclick=()=>chShare(c.code);
     const go=$('#chGo'); if(go) go.onclick=async()=>{
-      const name=$('#bzName').value.trim(); if(!name){ mpMsg('Type your name first.','err'); $('#bzName').focus(); return; }
+      const name=$('#bzName').value.trim(); if(!name){ mpMsg('Type your name first.','err'); bzNameEdit=true; bzNameSync(); $('#bzName').focus(); return; }
       go.disabled=true; mpRememberName(name);
       try{ await trialStart({kind:'run',code:c.code,label:`⏱ Challenge ${c.code}`,title:c.title},name); }
       catch(e){ if(trialOn()) mpLeave(); cpuEnd(); mpMsg(e.message,'err'); go.disabled=false; }
