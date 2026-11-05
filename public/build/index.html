@@ -1661,12 +1661,13 @@ body.film-on{overflow:hidden}
 .char-hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 20px;align-items:center;border-radius:20px;padding:14px 24px 14px 14px;background:linear-gradient(115deg,var(--h1),var(--h2));color:var(--hink,#fff);box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer;min-width:0;overflow:hidden}
 #view-create>.char-hero{grid-column:1/-1}
 .char-hero .ch-art,.char-hero .c3-wrap{width:120px;height:132px;object-fit:contain;display:block;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}
+.char-hero[data-hero="mp"] .ch-art,.char-hero[data-hero="mp"] .c3-wrap{width:176px}   /* Build Together: two otters, your otter and Bloppit (Steff, 5 Nov 2026) */
 .char-hero .ch-txt{display:grid;gap:2px;min-width:0}
 .char-hero .ch-isle{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
 .char-hero .ch-title{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(26px,3.2vw,36px);line-height:1.05;text-wrap:balance}
 .char-hero .ch-line{font-family:var(--f-display);font-size:18px;opacity:.95}
 .char-hero .ch-desc{margin:4px 0 0;font-size:14px;font-weight:700;opacity:.9;max-width:62ch;line-height:1.4}
-@media (max-width:560px){.char-hero{padding:10px 14px 10px 8px;gap:4px 12px;border-radius:16px}.char-hero .ch-art,.char-hero .c3-wrap{width:78px;height:88px}.char-hero .ch-line{font-size:15px}.char-hero .ch-desc{font-size:12.5px}}
+@media (max-width:560px){.char-hero{padding:10px 14px 10px 8px;gap:4px 12px;border-radius:16px}.char-hero .ch-art,.char-hero .c3-wrap{width:78px;height:88px}.char-hero[data-hero="mp"] .ch-art,.char-hero[data-hero="mp"] .c3-wrap{width:116px}.char-hero .ch-line{font-size:15px}.char-hero .ch-desc{font-size:12.5px}}
 #view-game:not([data-sub="hub"]) #gmTitle,#view-game:not([data-sub="hub"])>.crumb[data-up]{display:none}
 .qb-weekly{margin-bottom:10px}.qb-weekly[hidden]{display:none}.qb-weekly img{border-radius:10px;object-fit:cover;background:#fff}
 .dy-up{justify-self:start}
@@ -3376,7 +3377,7 @@ const HERO={
   brain:{who:'nora',art:'/art/char-nora.png',isle:'Brainpeak',title:'Brain Trail',line:'A clever mind shines in the dark.',desc:'Nora tucks math puzzles into the booklet: solve one to open its page. The last build is her Great Telescope.',c:['#4A6FC0','#1C2B57']},
   create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Quick Bricks',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
   blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Bloppit Blitz',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Fastest clean build wins.',c:['#5DB4F2','#1F6FC4']},
-  mp:{who:'pup',art:'/art/pup.png',isle:'Friendship Harbour',title:'Build Together',line:'Every build is better with a friend!',desc:'Take turns building one model with friends on their own phones, tablets or computers.',c:['#B9A2F7','#6E4FD6']}};
+  mp:{who:['pup','pup'],art:'/art/hero-together.png',isle:'Friendship Harbour',title:'Build Together',line:'Every build is better with a friend!',desc:'Take turns building one model with friends on their own phones, tablets or computers.',c:['#B9A2F7','#6E4FD6']}};
 function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[data-hero="${t}"]`); if(!el) return;
   const key=t==='game'?subOf.game:t, H=HERO[key]; el.hidden=!H; if(!H) return;
   if(el.dataset.k===key) return; el.dataset.k=key;
@@ -3384,7 +3385,7 @@ function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[d
   el.querySelector('.ch-isle').textContent='🏝️ '+H.isle; el.querySelector('.ch-title').textContent=H.title; el.querySelector('.ch-line').textContent=H.line; el.querySelector('.ch-desc').textContent=H.desc;
   const im=new Image(); im.className='ch-art'; im.alt=''; im.src=H.art; el.firstElementChild.replaceWith(im);   // a fresh picture each time (the 3D view draws over it)
   try{ if(ch3On()) cv3Img(im,{who:H.who,frame:'full'}); }catch(e){} }
-document.addEventListener('click',e=>{ const h=e.target.closest('.char-hero'); if(!h) return; const w=h.querySelector('.c3-wrap'); if(w) cv3Play(w,'poke'); try{ const k=h.dataset.k, who=HERO[k]&&HERO[k].who; sfx.voice(who==='swoop'?'longtail':who); }catch(x){} });
+document.addEventListener('click',e=>{ const h=e.target.closest('.char-hero'); if(!h) return; const w=h.querySelector('.c3-wrap'); if(w) cv3Play(w,'poke'); try{ const k=h.dataset.k, who=HERO[k]&&[].concat(HERO[k].who)[0]; sfx.voice(who==='swoop'?'longtail':who); }catch(x){} });
 function tabsSync(t){ const sec=sectionOf(t===undefined?tab:t), tr=typeof trail!=='undefined'?trail:'otter'; if(typeof bottleSync==='function') bottleSync();
   document.querySelectorAll('.tab').forEach(b=>{ let on=b.dataset.tab===sec;
     if(sec==='game'){ const sub=(t==='game'&&subOf.game)||tr; on=!!b.dataset.sub&&b.dataset.tab==='game'&&b.dataset.sub===sub; }
