@@ -1073,23 +1073,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .world-toast{cursor:pointer}.world-toast .ws-go{color:#F4BC22;margin-left:4px}
 .world-toast .ws-stars{font-size:22px;letter-spacing:3px;color:#F4BC22;line-height:1}
 .world-toast .ws-stars i{font-style:normal;color:rgba(255,255,255,.3)}
-.hm-world{display:grid;grid-template-columns:auto 1fr;gap:12px 14px;align-items:center;padding:12px 14px;border-radius:16px;background:var(--page);border:1px solid var(--line);box-shadow:0 2px 0 var(--shadow);width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}
-.hm-world:hover{border-color:var(--ink)}
-.hm-world .pup{display:block;width:64px;height:64px;border-radius:50%;overflow:hidden;background:#E8F1F8;border:3px solid #fff;box-shadow:0 2px 0 var(--shadow)}.hm-world .pup svg{width:100%;height:100%;display:block}
-.hm-world .hw-isle{grid-column:1/-1;display:block;margin:-12px -14px 0;border-radius:16px 16px 0 0;overflow:hidden;background:#A9D8F2;position:relative}.hm-world .hw-isle svg,.hm-world .hw-isle img{display:block;width:100%;height:auto}
-.hm-world .hw-isle .hw-tag{position:absolute;left:10px;top:10px;padding:4px 12px;border-radius:999px;background:rgba(20,32,44,.82);color:#fff;font-family:var(--f-display);font-size:18px}
 .hm-world.lead{border:3px solid #008F9B}
-.hm-world .pup.ps-splash{width:76px;height:76px}.hm-world .pup.ps-legend{width:88px;height:88px;border-color:#F4BC22}
-.hm-world .hw-card{grid-column:1/-1;justify-self:end;display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:999px;border:1px solid var(--line);background:var(--page);font-weight:800;font-size:14px;box-shadow:0 2px 0 var(--shadow)}.hm-world .hw-card:hover{border-color:var(--ink)}
-.hm-world .wt{display:grid;gap:3px;min-width:0}
-.hm-world .wt b{font-family:var(--f-display);font-weight:400;font-size:22px;line-height:1.1}
-.hm-world .wt .sub{font-size:13px;font-weight:700;color:var(--muted)}
-.hm-world .wt .bar{height:8px;border-radius:4px;background:var(--bg);overflow:hidden}.hm-world .wt .bar i{display:block;height:100%;background:#008F9B;border-radius:4px}
-.hm-world .wn{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.hm-world .wn div{display:grid;justify-items:center;padding:6px;border-radius:12px;background:var(--bg)}
-.hm-world .wn b{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.1;color:var(--ink)}.hm-world .wn b.st{color:#E9A800}
-.hm-world .wn span{font-size:11px;font-weight:700;color:var(--muted)}
-.hm-world .wname{font-family:var(--f-display);font-size:22px;color:inherit;cursor:pointer;border-bottom:2px dashed var(--line);width:max-content}
 .wc-btns{flex-direction:column;align-items:stretch}.wc-btns button{width:100%}
 .win-stars{font-size:46px;letter-spacing:6px;color:var(--hi);line-height:1}
 .win-pic{display:block;margin:0 auto 6px;max-width:150px;max-height:110px;object-fit:contain;filter:drop-shadow(0 6px 10px rgba(0,0,0,.3));animation:rvBob 2.4s ease-in-out infinite}
@@ -1184,12 +1168,54 @@ body.on-home .tabs{visibility:hidden}
 .howdlg .how-x:hover{background:rgba(20,32,44,.9)}.howdlg .how-x:focus-visible{outline:3px solid var(--hi)}
 /* My films: the story films a player has unlocked, to watch again */
 .hm-quick{border:3px solid #F4BC22}.hm-quick .pl{background:#F4BC22;color:#14202C;font-size:22px}.hm-quick>span:nth-child(2){flex:1}.hm-quick .go{font-size:18px;color:var(--muted)}
-.hm-world .hw-films{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:12px;background:var(--bg);cursor:pointer}.hm-world .hw-films[hidden]{display:none}
-.hm-world .hw-films:hover{outline:1px solid var(--ink)}.hm-world .hw-films .pl{flex:none;width:36px;height:36px;border-radius:50%;background:#0b4f6c;color:#fff;display:grid;place-items:center;font-size:17px}
-.hm-world .hw-films>span:nth-child(2){flex:1;display:grid}.hm-world .hw-films b{font-family:var(--f-display);font-weight:400;font-size:18px;line-height:1.1}.hm-world .hw-films small{font-size:12px;font-weight:700;color:var(--muted)}.hm-world .hw-films .go{color:var(--muted)}
 #hmSolo{scroll-margin-top:84px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+/* The menu (Steff, 5 Nov 2026): Quick play, Bloppitopia, the Weekly, Continue, How to play. Quick play, Continue and
+   How to play are one size (70px); Bloppitopia is 3¾ of that (263px), the Weekly 2¼ (158px). Before the otter has
+   arrived, "Start here" (Continue's first form) takes Bloppitopia's place. */
+.hm-hello{order:1}#hmQuick{order:2}#hmWorld,.hm-cont.first{order:3}.hm-daily{order:4}.hm-cont{order:5}#hmHow{order:6}
+#hmQuick,#hmHow{min-height:70px}
+.hm-world{display:grid;grid-template-rows:minmax(0,1fr) auto;height:263px;width:100%;padding:0;overflow:hidden;border-radius:16px;background:var(--page);border:1px solid var(--line);box-shadow:0 2px 0 var(--shadow);text-align:left;font:inherit;color:inherit;cursor:pointer}
+.hm-world:hover{border-color:var(--ink)}
+.hm-world.lead{border:3px solid #008F9B}
+.hm-world .hw-isle{position:relative;display:block;min-height:0;overflow:hidden;background:#A9D8F2}
+.hm-world .hw-isle>img,.hm-world .hw-isle>svg{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
+.hm-world .hw-tag{position:absolute;left:10px;top:10px;max-width:calc(100% - 20px);padding:4px 12px;border-radius:999px;background:rgba(20,32,44,.82);color:#fff;font-family:var(--f-display);font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hm-world .hw-chips{position:absolute;right:10px;bottom:10px;display:flex;gap:6px}
+.hm-world .hw-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:var(--page);color:var(--ink);font-weight:800;font-size:13px;line-height:1.2;box-shadow:0 2px 0 rgba(20,32,44,.18);cursor:pointer}
+.hm-world .hw-chip[hidden]{display:none}.hm-world .hw-chip:hover{outline:2px solid var(--ink)}.hm-world .hw-chip:focus-visible{outline:3px solid var(--hi)}
+.hm-world .hw-chip .n{font-style:normal;min-width:20px;padding:0 6px;border-radius:999px;background:#0b4f6c;color:#fff;font-size:12px;text-align:center;font-variant-numeric:tabular-nums}
+.hm-world .hw-strip{display:flex;align-items:center;gap:10px;padding:8px 12px;min-width:0}
+.hm-world .pup{flex:none;display:block;width:40px;height:40px;border-radius:50%;overflow:hidden;background:#E8F1F8;border:2px solid #fff;box-shadow:0 1px 0 var(--shadow)}.hm-world .pup svg{width:100%;height:100%;display:block}
+.hm-world .pup.ps-legend{border-color:#F4BC22}
+.hm-world .wt{flex:1;display:grid;gap:4px;min-width:0}
+.hm-world .wt b,.hm-world .wname{font-family:var(--f-display);font-weight:400;font-size:17px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hm-world .wt b .sub{font-family:var(--f-body);font-size:13px;font-weight:800;color:var(--muted)}
+.hm-world .wname{cursor:pointer;color:inherit;text-decoration:underline dashed var(--line);text-underline-offset:4px}
+.hm-world .wt .bar{display:block;height:6px;border-radius:3px;background:var(--bg);overflow:hidden}.hm-world .wt .bar i{display:block;height:100%;background:#008F9B;border-radius:3px}
+.hm-world .wn{flex:none;display:flex;gap:10px;font-weight:800;font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.hm-world .wn small{font-size:12px;font-weight:700;color:var(--muted)}
+.hm-world .wn .st{display:inline-flex;align-items:center;gap:3px}
+.hm-world .wn .st svg{width:18px;height:auto}
+.hm-daily{display:grid;grid-template-columns:88px minmax(0,1fr) 44px;grid-template-rows:minmax(0,1fr) auto;gap:8px 12px;height:158px;width:100%;padding:14px 14px 16px;text-align:left;border:0;border-radius:16px;background:#008F9B;color:#fff;cursor:pointer;font:inherit;box-shadow:inset 0 -5px 0 rgba(0,0,0,.18)}
+.hm-daily:active{transform:translateY(3px);box-shadow:inset 0 -2px 0 rgba(0,0,0,.18)}
+.hm-daily:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.hm-daily img{grid-row:1 / span 2;width:88px;height:100%;min-height:0;border-radius:14px;background:#fff;object-fit:contain;padding:6px}
+.hm-daily .hd-txt{grid-row:1;display:grid;align-content:center;gap:2px;min-width:0}
+.hm-daily .tag{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.85)}
+.hm-daily .hd-txt b{font-family:var(--f-display);font-weight:400;font-size:20px;line-height:1.1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hm-daily .hd-txt>span:last-child{font-size:13px;font-weight:600;line-height:1.3;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hm-daily .go{grid-row:1;grid-column:3;align-self:center;width:44px;height:44px;border-radius:50%;background:#F4BC22;color:#14202C;display:grid;place-items:center;font-size:18px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
+.hm-daily .hd-pills{grid-row:2;grid-column:2 / -1;display:flex;flex-wrap:wrap;gap:6px 8px;min-width:0}
+.hm-daily .hd-pills>span{padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.18);font-weight:800;font-size:12px;line-height:1.2;white-space:nowrap;font-variant-numeric:tabular-nums}
+.hm-daily .hd-pills b{font:inherit}
+.hm-cont:not(.first){height:70px;grid-template-columns:minmax(0,1fr) auto;row-gap:3px;padding:8px 14px 12px 16px;align-content:center}
+.hm-cont:not(.first) b{font-size:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hm-cont:not(.first) .sub{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hm-cont:not(.first) .bar{height:7px}
+.hm-cont:not(.first) .go{width:44px;height:44px;font-size:18px}
 @keyframes hmHop{0%,100%{transform:none}30%{transform:translateY(-6px)}60%{transform:translateY(2px)}}
-.hm-grid.hop .hm-tile{animation:hmHop .6s ease 2}.hm-grid.hop .hm-tile:nth-child(2){animation-delay:.08s}.hm-grid.hop .hm-tile:nth-child(3){animation-delay:.16s}.hm-grid.hop .hm-tile:nth-child(4){animation-delay:.24s}
+.hm-grid.hop .hm-tile{animation:hmHop .6s ease 2}.hm-grid.hop .hm-tile:nth-child(2){animation-delay:.08s}.hm-grid.hop .hm-tile:nth-child(3){animation-delay:.16s}.hm-grid.hop .hm-tile:nth-child(4){animation-delay:.24s}.hm-grid.hop .hm-tile:nth-child(5){animation-delay:.32s}
 .filmsdlg h2{margin:2px 56px 10px 4px;font-family:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;font-weight:400;font-size:26px;line-height:1.1}
 .filmsdlg .how-x{top:12px;right:12px}
 .film-box{position:relative}.film-box video{display:block;width:100%}
@@ -1552,31 +1578,14 @@ body.film-on{overflow:hidden}
 .hm-tile.t-friend{--c:#923978}
 .hm-tile.t-together{--c:#6A3FB5}
 .hm-tile.t-join{--c:#1B2A34}
-.hm-daily{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;width:100%;text-align:left;border:0;border-radius:16px;padding:12px 16px 14px 12px;background:#008F9B;color:#fff;cursor:pointer;font:inherit;box-shadow:inset 0 -5px 0 rgba(0,0,0,.18)}
-.hm-daily:active{transform:translateY(3px);box-shadow:inset 0 -2px 0 rgba(0,0,0,.18)}
-.hm-daily:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
-.hm-daily img{width:72px;height:72px;border-radius:12px;background:#fff;object-fit:contain;padding:4px}
-.hm-daily .hd-txt{display:grid;gap:2px}
-.hm-daily .tag{color:rgba(255,255,255,.85)}
-.hm-daily b{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.1}
-.hm-daily .hd-txt>span:last-child{font-size:14px;font-weight:600;opacity:.9}
 .hm-side,.hm-main{display:grid;gap:18px;align-content:start;min-width:0}
-/* Weekly stats under the Weekly card on the menu */
-.hm-dstats{display:grid;gap:12px;padding:14px 16px;border-radius:16px;background:var(--page);border:1px solid var(--line)}
 #mpBar.calm .clk{display:none}
-.hd-nums{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.hd-nums div{display:grid;justify-items:center;gap:0;padding:8px;border-radius:12px;background:var(--bg)}
-.hd-nums b{font-family:var(--f-display);font-weight:400;font-size:30px;line-height:1.1;color:#008F9B}
-.hd-nums span{font-size:12px;font-weight:700;color:var(--muted)}
 /* Laptops and big tablets: the menu spreads out like a game launcher. Hello, Continue and this week's Weekly
    on the left; the Solo, Blitz and Together tiles fill the rest of the screen. */
 @media (min-width:1000px){
   .home{max-width:1180px;grid-template-columns:minmax(300px,360px) minmax(0,1fr);column-gap:36px;align-items:start;padding-top:18px}
   .hm-side{position:sticky;top:84px}
   .hm-foot{grid-column:1 / -1}
-  .hm-daily{grid-template-columns:1fr auto;align-items:end;padding:16px 16px 18px}
-  .hm-daily img{grid-column:1 / -1;width:100%;height:auto;aspect-ratio:4/3;padding:14px;border-radius:14px}
-  .hm-daily b{font-size:28px}
   .hm-sec{font-size:24px}
   .hm-tile{min-height:168px;padding:18px}
   .hm-tile b{font-size:26px}
@@ -1584,7 +1593,6 @@ body.film-on{overflow:hidden}
   .hm-tile:hover{transform:translateY(-3px)}
   .hm-tile:active{transform:translateY(3px)}
 }
-.hm-daily .go{width:46px;height:46px;border-radius:50%;background:#F4BC22;color:#14202C;display:grid;place-items:center;font-size:20px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
 .hm-more{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .pick-banner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;background:#F4BC22;color:#14202C;border-radius:14px;padding:10px 14px;font-weight:700;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}
 .trail-pick{justify-self:start;width:max-content;max-width:100%;display:inline-grid;grid-template-columns:1fr 1fr 1fr;gap:4px;padding:4px;border-radius:999px;background:var(--page);border:2px solid var(--line);margin-bottom:12px}
@@ -1732,33 +1740,26 @@ body.film-on{overflow:hidden}
     <img src="/art/bloppit-avatar.png" alt="" width="256" height="256">
     <div class="hm-bubble"><h2 id="hmHi">Hi there!</h2><p>What shall we build today?</p></div>
   </div>
-  <button class="hm-how" id="hmHow" type="button"><span class="pl" aria-hidden="true">▶</span><span><b>How to play</b><small>A one-minute video</small></span></button>
   <button class="hm-how hm-quick" id="hmQuick" type="button"><span class="pl" aria-hidden="true">⚡</span><span><b>Quick play</b><small>Jump straight into a puzzle</small></span><span class="go" aria-hidden="true">▶</span></button>
   <button class="hm-world" id="hmWorld" data-go="island" type="button" hidden></button>
+  <button class="hm-daily" data-go="daily" type="button"><img id="hmDailyImg" alt=""><span class="hd-txt"><span class="tag">Bibi’s Weekly Bloppit</span><b id="hmDailyT">This week’s puzzle</b><span id="hmDailyS">The same puzzle for everyone</span></span><span class="go" aria-hidden="true">▶</span><span class="hd-pills"><span>🔥 <b id="hdStreak">0</b> week streak</span><span><b id="hdTotal">0</b> built</span></span></button>
   <button class="hm-cont" id="hmCont" type="button" hidden><img class="hc-pic" src="/art/bud-offer.png" alt="" width="300" height="398"><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span><span class="go" aria-hidden="true">▶</span></button>
-  <button class="hm-daily" data-go="daily" type="button"><img id="hmDailyImg" alt=""><span class="hd-txt"><span class="tag">📅 Weekly Bloppit</span><b id="hmDailyT">This week’s puzzle</b><span id="hmDailyS">One puzzle, the same for everyone</span></span><span class="go" aria-hidden="true">▶</span></button>
-  <div class="hm-dstats" id="hmDstats">
-    <div class="hd-nums"><div><b id="hdStreak">0</b><span>week streak 🔥</span></div><div><b id="hdTotal">0</b><span>Weeklies built</span></div></div>
-    <p class="note" id="hdClean" style="margin:0"></p>
-  </div>
+  <button class="hm-how" id="hmHow" type="button"><span class="pl" aria-hidden="true">▶</span><span><b>How to play</b><small>A one-minute video</small></span></button>
 </div>
 <div class="hm-main">
   <h3 class="hm-sec" id="hmSolo">Solo</h3>
   <div class="hm-grid four">
-    <button class="hm-tile t-quick" data-go="quick" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span><b>Quick Build</b><span>Any puzzle, at your own pace</span></button>
+    <button class="hm-tile t-quick wide" data-go="quick" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span><b>Quick Build</b><span>Any puzzle, at your own pace</span></button>
     <button class="hm-tile t-game" data-go="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Frog Trail</b><span id="hmOtterSub">Levels from tiny to tricky</span></button>
     <button class="hm-tile t-brain" data-go="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Brain Trail</b><span id="hmBrainSub">Levels with math puzzles</span></button>
     <button class="hm-tile t-sea" data-go="flip" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span><b>Pippa’s Puzzles</b><span id="hmSeaSub">Mirror puzzles, any time</span></button>
-  </div>
-  <h3 class="hm-sec">Blitz</h3>
-  <div class="hm-grid">
     <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>vs Swoop</b><span>Race the speediest Longtail</span></button>
-    <button class="hm-tile t-friend" data-go="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><ellipse cx="31.6" cy="65.2" rx="10" ry="11" fill="#8A5A3B"/><path d="M24 66 q7.5 6 15 0" stroke="#1B1410" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>vs Friend</b><span>Send a challenge code, or race live</span></button>
   </div>
   <h3 class="hm-sec">Together</h3>
   <div class="hm-grid">
     <button class="hm-tile t-together" data-go="mp" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="0" y="16" width="66" height="58"/><use href="#bh2" x="58" y="28" width="58" height="51"/><rect x="34" y="80" width="52" height="28" rx="5" fill="#D2352B"/><rect x="40" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="66" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="34" y="100" width="52" height="8" rx="4" fill="#B32A22"/><ellipse cx="34" cy="90" rx="8" ry="7" fill="#8A5A3B"/><ellipse cx="86" cy="90" rx="8" ry="7" fill="#C08A5E"/></svg></span><b>Build together</b><span>One puzzle, taking turns with friends</span></button>
-    <button class="hm-tile t-join" data-go="code" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a game</b><span>Got a code? Type it in to play</span></button>
+    <button class="hm-tile t-friend" data-go="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><ellipse cx="31.6" cy="65.2" rx="10" ry="11" fill="#8A5A3B"/><path d="M24 66 q7.5 6 15 0" stroke="#1B1410" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>Race a friend</b><span>Send a challenge code, or race live</span></button>
+    <button class="hm-tile t-join wide" data-go="code" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a game</b><span>Got a code? Type it in to play</span></button>
   </div>
 </div>
 </section>
@@ -3836,7 +3837,7 @@ function startLevelFilm(tr,i){ islandSetOff(TRAIL_ISLE[tr],()=>startLevel(i)); }
 function trailGo(tr){ const isle=TRAIL_ISLE[tr]; if(mp||isleCount(isle)>0){ homeGo(tr); return; }
   const B=bestOf(gameStore(),tr), i=Math.min(levelsOf(tr).length-1,Object.keys(B).length); setTrail(tr); startLevelFilm(tr,i); }
 const filmsOpen=o=>FILMS.filter(f=>{ try{ return f.open(o); }catch(e){ return false; } });
-function renderFilmsTile(){ const n=filmsOpen(worldStore()).length, el=$('#hmFilms'); if(!el) return; el.hidden=!n; if(n) $('#hmFilmsS').textContent=n===1?'1 film to watch again':`${n} films to watch again`; }
+function renderFilmsTile(){ const n=filmsOpen(worldStore()).length, el=$('#hmFilms'); if(!el) return; el.hidden=!n; if(n){ $('#hmFilmsS').textContent=n===1?'1 film to watch again':`${n} films to watch again`; const c=$('#hmFilmsN'); if(c) c.textContent=n; } }
 let filmCur=null;
 function filmShow(f,play){ const v=$('#filmVid'); filmCur=f.id; filmSay($('#filmBox'),f,-1); v.setAttribute('poster',vidUrl(f.file,'jpg')); v.src=vidUrl(f.file,'mp4');
   $('#filmNow').innerHTML=`${f.no} · ${escapeHTML(f.name)} <small>· ${escapeHTML(f.place)}</small>`;
@@ -7644,9 +7645,9 @@ async function weeklyFetch(){ const week=weekOf(); const j=await chApi('GET',nul
 const cleanLine=(j,me)=>!j||!j.n?'':me&&me.clean?(j.clean<=1?'You’re the first clean build this week!':`You and ${j.pct}% of this week’s builders finished clean.`):!j.clean?`${j.n} built it this week · no clean builds yet`:`${j.n} built it this week · ${j.pct}% clean`;
 async function renderHomeWeekly(){
   $('#hdStreak').textContent=weeklyStreak(); $('#hdTotal').textContent=weeklyTotal();
-  const el=$('#hdClean'), week=weekOf(), me=weeklyStore().weeks[week];
-  if(weeklyPeek&&weeklyPeek.week===week) el.textContent=cleanLine(weeklyPeek,me);
-  try{ el.textContent=cleanLine(await weeklyFetch(),me); }catch(e){}
+  const el=$('#hdClean'), week=weekOf(), me=weeklyStore().weeks[week];   // the clean-builds line left the menu on 5 Nov 2026
+  if(el&&weeklyPeek&&weeklyPeek.week===week) el.textContent=cleanLine(weeklyPeek,me);
+  try{ const j=await weeklyFetch(); if(el) el.textContent=cleanLine(j,me); }catch(e){}
 }
 async function renderDaily(){
   renderBoard();
@@ -8137,14 +8138,12 @@ function renderHomeWorld(){
   const pic=isl3Init()?isl3Still(o,900,620):'', isle=pic?`<img src="${pic}" alt="">`:islandSVG(o,{uid:'hm'});
   el.hidden=false; el.classList.add('lead');
   el.setAttribute('aria-label',`Bloppitopia. ${nm||'Your otter'}, level ${otterLevel(o)} ${PUP_STAGES[ps].name}, ${n} build${n===1?'':'s'}, ${islandsOpen(o).length} of ${ISLE_TOTAL} islands.`);
-  el.innerHTML=`<span class="hw-isle">${isle}<span class="hw-tag">🏝️ Bloppitopia · ${ISL3.ok?islandsOpen(o).length+' of '+ISLE_TOTAL+' islands':ISLAND_STAGES[is].name}</span></span>
-    <span class="pup ps-${PUP_STAGES[ps].name.toLowerCase()}">${pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'})}</span>
-    <div class="wt">${nm?`<b>${escapeHTML(nm)} <span class="sub">· Level ${otterLevel(o)} ${PUP_STAGES[ps].name}</span></b>`:`<span class="wname" id="wName" role="button" tabindex="0">Name your otter</span>`}
-      <span class="sub">${next?`Grows into a ${next.name} at Level ${next.lvl} (another stud on its brick)`:'Legend of Bloppitopia'}</span><span class="bar"><i style="width:${Math.max(4,pct)}%"></i></span></div>
-    <div class="wn"><div><b>${n}</b><span>build${n===1?'':'s'}</span></div><div><b class="st">${gbIc()} ${worldStars(o)}</b><span>Galaxy Blocks</span></div><div><b>${worldXP(o)}</b><span>XP</span></div></div>
-    <span class="hw-films" id="hmFilms" role="button" tabindex="0" hidden><span class="pl" aria-hidden="true">🎬</span><span><b>My films</b><small id="hmFilmsS">Watch your films again</small></span><span class="go" aria-hidden="true">▶</span></span>
-    ${(()=>{ const g=ISL3.ok&&typeof worldNextGoal==='function'?worldNextGoal(o):null; if(g) return `<span class="sub" style="grid-column:1/-1">Next: ${escapeHTML(g.text)}</span>`; return inext?`<span class="sub" style="grid-column:1/-1;font-size:13px;font-weight:700;color:var(--muted)">${inext.at-n} more build${inext.at-n===1?'':'s'} to the ${inext.name}</span>`:''; })()}
-    ${is>=3?'<span class="hw-card" id="hwCard" role="button" tabindex="0">📮 Postcard</span>':''}`;
+  // A compact tile (Steff, 5 Nov 2026): the island fills it, one strip for the otter, chips for My films and the postcard
+  el.innerHTML=`<span class="hw-isle">${isle}<span class="hw-tag">🏝️ Bloppitopia · ${ISL3.ok?islandsOpen(o).length+' of '+ISLE_TOTAL+' islands':ISLAND_STAGES[is].name}</span>
+      <span class="hw-chips">${is>=3?'<span class="hw-chip" id="hwCard" role="button" tabindex="0">📮 Postcard</span>':''}<span class="hw-chip" id="hmFilms" role="button" tabindex="0" hidden>🎬 My films <i class="n" id="hmFilmsN"></i><small class="sr-only" id="hmFilmsS">Watch your films again</small></span></span></span>
+    <span class="hw-strip"><span class="pup ps-${PUP_STAGES[ps].name.toLowerCase()}">${pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'})}</span>
+      <span class="wt">${nm?`<b>${escapeHTML(nm)} <span class="sub">· Level ${otterLevel(o)}</span></b>`:`<span class="wname" id="wName" role="button" tabindex="0">Name your otter</span>`}<span class="bar" title="${next?`Grows into a ${next.name} at Level ${next.lvl}`:'Legend of Bloppitopia'}"><i style="width:${Math.max(4,pct)}%"></i></span></span>
+      <span class="wn"><span>${n} <small>build${n===1?'':'s'}</small></span><span class="st">${gbIc()} ${worldStars(o)}</span><span>${worldXP(o)} <small>XP</small></span></span></span>`;
   const hc=$('#hwCard'); if(hc){ const go=e=>{ e.stopPropagation(); e.preventDefault(); $('#isCard').onclick(); }; hc.onclick=go; hc.onkeydown=e=>{ if(e.key==='Enter'||e.key===' ') go(e); }; }   // the postcard, straight from the menu
   const w=$('#wName'); if(w){ w.onclick=e=>{ e.stopPropagation(); pupOpen(); }; w.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); e.stopPropagation(); pupOpen(); } }; }
   const fm=$('#hmFilms'); if(fm){ const go=e=>{ e.stopPropagation(); e.preventDefault(); filmsShow(); }; fm.onclick=go; fm.onkeydown=e=>{ if(e.key==='Enter'||e.key===' ') go(e); }; }   // My films, inside the Bloppitopia tile (Steff, 4 Nov 2026)
@@ -11434,7 +11433,7 @@ function renderHome(){
   try{ const week=weekOf(), o=weeklyPuzzle(week), me=weeklyStore().weeks[week], k=weeklyStreak();
     $('#hmDailyImg').src=o.thumb; $('#hmDailyT').textContent=me?`${o.name}: ${me.clean?'clean ✓':'done ✓'}`:`This week: ${o.name}`;
     renderHomeWeekly();
-    $('#hmDailyS').textContent=me?`${me.clean?'Clean build':'Build it again for a clean one'}${k?` · ${k} week streak 🔥`:''}`:`${o.n} bricks · the same puzzle for everyone this week${k?` · ${k} week streak 🔥`:''}`; }catch(e){}
+    $('#hmDailyS').textContent=me?(me.clean?'Clean build':'Build it again for a clean one'):`${o.n} bricks · the same for everyone`; }catch(e){}
 }
 $('#hmCont').onclick=()=>{ if(homeCont) homeCont.go(); };
 function homeGo(where){ mpDoneLeave();
