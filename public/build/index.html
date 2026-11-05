@@ -10339,11 +10339,11 @@ function isl3Reveal(ids,o){
     { const f=FILMS.find(f=>f.at===id); if(f&&!ISL3.filmDone[id]&&!filmSeen(f.id,o)){ ISL3.filmDone[id]=1; isl3Film(f,()=>step(i)); return; } }
     // After film 19 (or, for a world already past it, before the Moon crystal rises): the child sets their brick in the ring, then film 20
     if((id==='moonstone:7'||id==='moonstone:8')&&!ISL3.filmDone.ring&&!filmSeen('ring',o)){ ISL3.filmDone.ring=1;
-      isl3Ring(o,()=>{ const f=FILMS.find(f=>f.id==='moon-20'); if(f&&!filmSeen(f.id,o)) isl3Film(f,()=>step(i)); else step(i); }); return; }
+      isl3Ring(o,()=>{ const f=FILMS.find(f=>f.id==='moon-20'); if(f&&!filmSeen(f.id,o)) isl3Film(f,()=>step(i),{page:true}); else step(i); }); return; }
     if(kind==='done'){ isl3IsleFinale(isle,()=>step(i+1)); return; }
     if(kind==='final'){ isl3WorldFinale(()=>step(i+1)); return; }
     const I=(kind==='isle'?ISL3.isles[isle]:kind==='home'?ISL3.isles.home:ISL3.isles[kind])||ISL3.isles.home;
-    const obj=kind==='isle'?I.g:ISL3.pieces[id]; const where=obj?new THREE.Box3().setFromObject(obj).getCenter(new THREE.Vector3()):new THREE.Vector3(I.x,1,I.z);
+    const obj=kind==='isle'?I.g:ISL3.pieces[id]; const where=obj?isl3Centre(obj):new THREE.Vector3(I.x,1,I.z);
     const text=revealText(id,o), big=/milestone|complete|home:home1/.test(text.kind);
     isl3FlyTo(where.x,Math.max(.8,where.y*.6),where.z,kind==='isle'?18:13,1100);
     ISL3.fly.done=()=>{ if(kind==='isle') isl3Pop(obj,'rise'); else isl3Pop(obj); sfx.chime(); setTimeout(()=>isl3Confetti(where.x,where.y+1,where.z,big?90:40,big),kind==='isle'?1300:350);
@@ -10352,6 +10352,11 @@ function isl3Reveal(ids,o){
   };
   step(0);
 }
+// The middle of a piece, leaving out light beams (the Moonstone Lighthouse's beam is 14 long and pulled the camera off to one side;
+// Steff, 5 Nov 2026)
+function isl3Centre(obj){ const b=new THREE.Box3(); obj.updateWorldMatrix(true,true);
+  obj.traverse(x=>{ if(x.isMesh&&!x.userData.beam){ let p=x.parent, skip=false; while(p&&p!==obj){ if(p.userData&&p.userData.beam) skip=true; p=p.parent; } if(!skip) b.expandByObject(x,false); } });
+  return (b.isEmpty()?new THREE.Box3().setFromObject(obj):b).getCenter(new THREE.Vector3()); }
 // An island finished: fly round it while fireworks go up all over it, its name in lights
 function isl3IsleFinale(id,next){
   const I=ISL3.isles[id], N=ISLES[id]; if(!I||!N){ next(); return; }
@@ -10733,7 +10738,8 @@ function isl3Ring(o,then){
   const brick=ov.querySelector('.rg-brick'), slot=ov.querySelector('.rg-slot'), stage=ov.querySelector('.rg-stage'), say=ov.querySelector('.film-say');
   let done=false, set=false;
   const end=why=>{ if(done) return; done=true; filmSeenAdd('ring'); ISL3.ringOn=false; if(why) track('ring_'+why);
-    ov.classList.remove('on'); setTimeout(()=>{ ov.remove(); if(!document.querySelector('.is3-cine.page,.is3-ring.page')) document.body.classList.remove('film-on'); then(); },700); };
+    // what comes next (the Moon Crystal film) starts under the ring at once, and the ring fades away on top of it: no cut to the island in between
+    then(); ov.style.zIndex='61'; ov.classList.remove('on'); setTimeout(()=>{ ov.remove(); if(!document.querySelector('.is3-cine.page,.is3-ring.page')) document.body.classList.remove('film-on'); },900); };
   const place=()=>{ if(set||done) return; set=true; filmSeenAdd('ring');
     const a=brick.getBoundingClientRect(), b=slot.getBoundingClientRect();
     brick.classList.remove('drag'); brick.classList.add('fly');
@@ -10754,12 +10760,12 @@ function isl3Ring(o,then){
   brick.addEventListener('pointerup',up); brick.addEventListener('pointercancel',()=>{ d=null; brick.classList.remove('drag'); brick.style.transform=''; });
 }
 window.bloppitRing=()=>{ const r=document.querySelector('.is3-ring'); return r?{lit:r.querySelector('.rg-stage').classList.contains('lit'),say:r.querySelector('.film-say').textContent}:null; };   // for tests
-function isl3Film(f,then){
+function isl3Film(f,then,opt){
   let done=false; const end=why=>{ if(done) return; done=true; clearTimeout(T); try{ v&&v.pause(); }catch(e){}
     if(ov){ ov.classList.remove('on'); ov.querySelectorAll('.cn-skip,.cn-film,.cn-turn,.cn-full').forEach(e=>e.classList.remove('on')); setTimeout(()=>ov.remove(),800); }
     $('#view-island').classList.remove('cine'); filmUnfull(); ISL3.filmOn=null; if(why) track('film_'+why+':'+f.id); setTimeout(then,ov?700:0); };
   if(reduceMotion||/[?&]films?=0\b/.test(location.search)){ then(); return; }
-  const onIsle=!!(ISL3.on&&ISL3.box&&tab==='island'), ov=document.createElement('div'); ov.className='is3-cine film is3-film'+(onIsle?'':' page');
+  const onIsle=!!(ISL3.on&&ISL3.box&&tab==='island')&&!(opt&&opt.page), ov=document.createElement('div'); ov.className='is3-cine film is3-film'+(onIsle?'':' page');
   ov.innerHTML=`<div class="cn-veil off"></div><video class="cn-film" playsinline webkit-playsinline preload="auto" aria-label="${escapeHTML(f.place+': '+f.name)}"></video><div class="cn-turn" aria-hidden="true"><i>📱</i>Turn sideways, or tap ⛶ Full screen</div><button class="cn-skip" type="button">Skip ▸</button>`;
   if(onIsle){ ISL3.box.appendChild(ov); $('#view-island').classList.add('cine'); filmBig(ov); } else { document.body.appendChild(ov); document.body.classList.add('film-on'); }
   requestAnimationFrame(()=>ov.classList.add('on'));
