@@ -11383,6 +11383,23 @@ function nextBuild(){
   const go=best.go; return {...best,go:()=>{ quickPlaySet(false); nextMark(best.kind); go(); }};
 }
 window.bloppitNext={next:()=>{ const n=nextBuild(); return n&&{t:n.t,kind:n.kind}; },cands:()=>nextCandidates().map(c=>c.kind),mark:k=>nextMark(k),complete:()=>islesComplete(worldStore()),mysteryOpen:()=>mysteryOpen(),unlocked:()=>worldUnlocked(worldStore()),seen:()=>seenGet(),reveal:ids=>isl3Reveal(ids,worldStore()),go:()=>{ const n=nextBuild(); if(n) n.go(); },count:id=>isleCount(id,worldStore()),wardrobe:()=>wardrobeOpen(),chapter:i=>mysteryStart(i),via:i=>mysteryVia(i),goals:()=>worldGoals(worldStore()).map(g=>g.text),titles:()=>nextCandidates().map(c=>c.t)};   // for tests
+// ?rewind=moonstone (Steff, 5 Nov 2026): takes this player's world back to just after Moonstone Chapter 6, so Chapters 7–10 can be played
+// again in the new order (Lighthouse, the Well, Moon crystal and the ring, Galaxy ship). Chapters 1–6, every other build, decor and the
+// trails stay as they are. Drops those chapters' builds (and the old Lantern), their films and the ring, the pieces' reveals, the trip to
+// lufu's world and its welcome, and any half-built chapter. Runs once: the link takes itself out of the address bar.
+function moonstoneRewind(){ const o=worldStore(), names=['Lantern',...MYSTERY.slice(6).flatMap(m=>[m.name,...(m.was||[])])];
+  const gone=k=>names.some(n=>k.startsWith(`m:${n}:`));
+  const ks=Object.keys(o.builds).filter(gone); ks.forEach(k=>delete o.builds[k]); o.log=(o.log||[]).filter(k=>!gone(k));
+  o.films=(o.films||[]).filter(f=>!(f==='ring'||/^moon-(1[89]|2\d)$/.test(f)));
+  worldSet(o);
+  const now=worldUnlocked(o), seen=seenGet(); if(seen) seenSet(seen.filter(id=>now.includes(id)));
+  try{ for(const k of [REALM_KEY,LUFU_HI_KEY,MYS_SAVE_KEY]) localStorage.removeItem(pkey(k)); }catch(e){}
+  return ks.length; }
+try{ const u=new URL(location.href); if(u.searchParams.get('rewind')==='moonstone'){ const n=moonstoneRewind(); u.searchParams.delete('rewind'); history.replaceState(null,'',u.pathname+u.search+u.hash);
+  track('rewind:moonstone'); const m=document.createElement('div'); m.className='rewind-note'; m.setAttribute('role','status');
+  m.textContent=`Moonstone Isle is back to Chapter 7, The Moonstone Lighthouse${n?` (${n} build${n===1?'':'s'} taken off the island)`:''}. Everything else is as it was.`;
+  Object.assign(m.style,{position:'fixed',left:'50%',bottom:'24px',transform:'translateX(-50%)',zIndex:200,background:'#1B2A34',color:'#fff',padding:'12px 18px',borderRadius:'14px',font:'700 15px Nunito,system-ui,sans-serif',maxWidth:'min(92vw,520px)',textAlign:'center',boxShadow:'0 6px 24px rgba(0,0,0,.25)',transition:'opacity .6s'});
+  window.bloppitRewindNote=m.textContent; document.body.appendChild(m); setTimeout(()=>{ m.style.opacity='0'; setTimeout(()=>m.remove(),700); },7000); } }catch(e){}
 // Start a Blitz race straight from Play next: the race page with the puzzle and the Longtail picked, then Go
 // Blitz Bay through Bloppitopia: the next race on the ladder, shown as one card with one button (no puzzle, speed or
 // name to choose; that's all on the Blitz page for races outside the story)
