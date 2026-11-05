@@ -262,6 +262,10 @@ test('phone parts box: one screen, the booklet page on top, the parts board fill
     return { scroll: document.documentElement.scrollHeight - innerHeight, board: b.height, bookAbove: k.bottom <= b.top + 1, boardBottom: b.bottom <= innerHeight, take: tk.right <= innerWidth && tk.width > 0, ribbon: getComputedStyle(document.querySelector('.box-actions')).flexWrap }; });
   assert.equal(m.scroll <= 2, true, 'no scrolling'); assert.ok(m.board >= 664 * 0.38, `the board is the big part (${m.board})`);
   assert.ok(m.bookAbove && m.boardBottom, 'booklet on top, board below, all on screen'); assert.ok(m.take, 'Take to build fits'); assert.equal(m.ribbon, 'nowrap');
+  // the ribbon scrolls sideways, so a little › says there's more; scrolled to the end, a ‹ says there's more back
+  let ar = await t.page.evaluate(() => window.bloppitBoxArrows()); assert.ok(ar && ar.r && !ar.l, JSON.stringify(ar));
+  await t.page.evaluate(() => { const e = document.querySelector('#view-box .box-actions'); e.scrollLeft = e.scrollWidth; }); await t.page.waitForTimeout(200);
+  ar = await t.page.evaluate(() => window.bloppitBoxArrows()); assert.ok(ar.l && !ar.r, JSON.stringify(ar));
   await t.page.evaluate(() => document.getElementById('takeBtn').click()); await t.page.waitForTimeout(800);
   assert.equal(await t.view(), 'view-build');
   assert.deepEqual(t.errors, []); await t.ctx.close();
