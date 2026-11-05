@@ -3843,10 +3843,19 @@ function filmShow(f,play){ const v=$('#filmVid'); filmCur=f.id; filmSay($('#film
   $('#filmNow').innerHTML=`${f.no} · ${escapeHTML(f.name)} <small>· ${escapeHTML(f.place)}</small>`;
   $('#filmList').querySelectorAll('button[data-film]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.film===f.id?'true':'false'));
   if(play){ try{ v.muted=!sfx.on; const p=v.play(); if(p&&p.catch) p.catch(()=>{}); }catch(e){} track('film_play:'+f.id); } }
+// How many builds a locked film still needs (fewest = the one My films shows as the next to unlock; Steff, 3 Nov 2026)
+function filmToGo(f,o){ const at=f.at||'', far=50, mo=()=>{ try{ return mysteryOpen(); }catch(e){ return false; } };
+  try{
+    if(at.startsWith('isle:')){ const id=at.slice(5); if(id==='sunrise'&&!seaWashed(0,o)) return 20; return 1; }   // finding an island: its first level, race or build
+    if(at.startsWith('done:')){ const id=at.slice(5), P=PIECES[id]; return Math.max(1,P[P.length-1].at-isleCount(id,o)); }
+    const md=mysteryDone(o), need=at.startsWith('moonstone:')?+at.slice(10)+1:at==='ring:moonstone'?8:10;   // Moonstone: chapters built
+    if(at.startsWith('moonstone:')||at==='ring:moonstone'||at==='realm:lufu'||f.id==='moonstone-feature') return md>0||mo()?Math.max(1,need-md):far+need;
+  }catch(e){}
+  return far*2; }
 function filmsShow(pick){ const d=$('#filmsDlg'); if(d.open) return; const o=worldStore(), open=filmsOpen(o); if(!open.length) return;
-  const locked=FILMS.filter(f=>!open.includes(f));
+  const locked=FILMS.filter(f=>!open.includes(f)).map((f,i)=>({f,i,n:filmToGo(f,o)})).sort((a,b)=>a.n-b.n||a.i-b.i).map(x=>Object.assign(Object.create(x.f),{toGo:x.n}));   // the closest first
   $('#filmList').innerHTML=open.map(f=>`<button type="button" data-film="${f.id}" aria-pressed="false"><img src="${vidUrl(f.file,'jpg')}" alt="" loading="lazy"><b>${f.no} · ${escapeHTML(f.name)}</b><small>${escapeHTML(f.place)}</small></button>`).join('')
-    +locked.slice(0,1).map(f=>`<button type="button" disabled><span class="lock" aria-hidden="true">🔒</span><b>${f.no} · ???</b><small>${escapeHTML(f.hint||'Keep building to unlock')}</small></button>`).join('');
+    +locked.slice(0,1).map(f=>`<button type="button" disabled><span class="lock" aria-hidden="true">🔒</span><b>${f.no} · ???</b><small>${escapeHTML(f.hint||'Keep building to unlock')}${f.toGo>1&&f.toGo<20?` · ${f.toGo} more`:''}</small></button>`).join('');
   $('#filmList').querySelectorAll('button[data-film]').forEach(b=>b.onclick=()=>filmShow(FILMS.find(f=>f.id===b.dataset.film),true));
   const pf=pick&&open.find(f=>f.id===pick); $('#filmMore').hidden=false; filmShow(pf||open[open.length-1],!!pf); d.showModal(); track('films_open'); }   // pick: open on that film, playing
 function filmsClose(){ const d=$('#filmsDlg'); try{ $('#filmVid').pause(); }catch(e){} if(d.open) d.close(); }

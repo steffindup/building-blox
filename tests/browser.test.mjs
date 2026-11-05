@@ -73,6 +73,17 @@ test('films on a phone cover the whole page (above the menu bar) and offer ⛶ F
   }
 });
 
+test('My films: the locked film shown is the one closest to unlocking (15 Blitz races won: the Grand Prix film, not Frog Forest\'s)', { skip: skip() }, async () => {
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; for (let i = 0; i < 15; i++) { const k = `m:Race${i}:10`; builds[k] = { n: 10, s: 2, t: 1e12 + i, c: 1, k: 'blitz', lv: 2 }; log.push(k); }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 50, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, films: ['frog-arrival', 'brainpeak-arrival', 'sunrise-arrival', 'blitzbay-arrival', 'brickworks-arrival'] }));
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 5, finished: 5, welcome: 1 })); } };
+  const t = await open('?nosplash=1&welcome=0', { init: seed });
+  await t.page.evaluate(() => document.getElementById('hmFilms').click()); await t.page.waitForTimeout(400);
+  const lock = await t.text('#filmList button[disabled]');
+  assert.match(lock, /09 · \?\?\?.*Win the Grand Prix/);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('My films: hidden until the arrival film is unlocked, then plays it again from the menu', { skip: skip() }, async () => {
   const t = await open('?nosplash=1');
   assert.equal(await t.page.evaluate(() => document.getElementById('hmFilms')?.hidden ?? true), true);
