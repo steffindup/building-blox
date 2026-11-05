@@ -1367,9 +1367,9 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .ip-short{display:none}
 /* Phones: a slim corner card (name, one line of what's next, the progress bar) so the island stays in view */
 @media (max-width:699px){
-  #view-island.immersive .is-foot{top:8px;left:8px;padding:6px 10px 7px;border-radius:12px;max-width:calc(100% - 140px);gap:1px}
+  #view-island.immersive .is-foot{top:8px;left:8px;padding:6px 22px 7px 10px;border-radius:12px;max-width:calc(100% - 140px);gap:1px}
   #view-island.immersive .is-stage{font-size:14px}
-  #view-island.immersive .is-next{font-size:11px;gap:6px;min-width:0}#view-island.immersive .is-next>span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}#view-island.immersive .is-next .bar{display:none}
+  #view-island.immersive .is-next{font-size:11px;gap:6px;min-width:0}#view-island.immersive .is-next>span:first-child{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-width:0;line-height:1.25}#view-island.immersive .is-next .bar{display:none}
   #view-island.immersive .is-prog{min-width:0;font-size:11px;gap:3px;margin-top:2px}.ip-long{display:none}.ip-short{display:inline}
   #view-island.immersive .ip-bar{height:5px}#view-island.immersive .ip-bar em{width:2px;height:8px;top:-1.5px;margin-left:-1px}
   #view-island.immersive .is-btns{top:8px;right:8px;gap:5px}#view-island.immersive .is-btns button{font-size:12px;padding:5px 10px}}
@@ -10808,9 +10808,9 @@ let islandShown=-1;
 // with a tick wherever one of Pippa's puzzles washes ashore, so "the next puzzle at 8%" has something to point at
 function isProgRender(o){ const el=$('#isProg'); if(!el) return; const pct=progressPct(o), P=gameProgress(o);
   const SB=bestOf(gameStore(),'sea'), ready=SEA_LEVELS.findIndex((_,i)=>!SB[i]&&seaWashed(i,o)), nx=SEA_LEVELS.findIndex((_,i)=>!seaWashed(i,o)), nb=nx>=0?seaBuildsTo(nx,o):0;   // a puzzle already washed ashore comes first
-  const note=ready>=0?`🐧 Pippa’s puzzle ${ready+1} is ready to build!`:pct>=100?'every piece built':nx>=0?`Pippa’s next puzzle at ${seaPct(nx)}% (${nb} more build${nb===1?'':'s'})`:'';
+  const note=ready>=0?`Pippa’s puzzle ${ready+1} is ready to build!`:pct>=100?'every piece built':nx>=0?`Pippa’s next puzzle at ${seaPct(nx)}% (${nb} more build${nb===1?'':'s'})`:'';
   el.hidden=false; el.setAttribute('role','progressbar'); el.setAttribute('aria-label','Bloppitopia built'); el.setAttribute('aria-valuenow',pct); el.setAttribute('aria-valuemin',0); el.setAttribute('aria-valuemax',100);
-  el.innerHTML=`<span class="ip-t"><b>Bloppitopia ${pct}%</b>${note?`<span class="ip-long"> · ${note}</span>`:''}${ready>=0?'<span class="ip-short"> · 🐧 puzzle ready!</span>':nx>=0&&pct<100?`<span class="ip-short"> · 🐧 next at ${seaPct(nx)}%</span>`:''}</span><span class="ip-bar"><i style="width:${Math.max(2,P*100).toFixed(1)}%"></i>${SEA_LEVELS.map((_,i)=>`<em class="${seaWashed(i,o)?'on':''}" style="left:${((i+1)*100/SEA_LEVELS.length).toFixed(2)}%"></em>`).join('')}</span>`; }
+  el.innerHTML=`<span class="ip-t"><b>Bloppitopia ${pct}%</b>${note?`<span class="ip-long"> · ${note}</span>`:''}${ready>=0?'<span class="ip-short"> · Pippa’s puzzle is ready!</span>':nx>=0&&pct<100?`<span class="ip-short"> · Pippa’s next puzzle at ${seaPct(nx)}%</span>`:''}</span><span class="ip-bar"><i style="width:${Math.max(2,P*100).toFixed(1)}%"></i>${SEA_LEVELS.map((_,i)=>`<em class="${seaWashed(i,o)?'on':''}" style="left:${((i+1)*100/SEA_LEVELS.length).toFixed(2)}%"></em>`).join('')}</span>`; }
 function renderIsland(){
   const o=worldStore(), stage=islandStage(o), n=worldCount(o), next=ISLAND_STAGES[stage+1];
   const pop=islandShown>=0&&islandShown<n; islandShown=n;
