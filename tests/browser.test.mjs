@@ -1073,16 +1073,23 @@ test('the menu order: Quick play, Bloppitopia, the Weekly, Continue, How to play
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('menu Quick play: the button and bloppit.com’s /build/#solo bring the Solo tiles into view (phone)', { skip: skip() }, async () => {
+test('menu Quick play: opens one of the five Solo games at random with its choice; Play a different game draws another; bloppit.com’s /build/#solo does the same (phone)', { skip: skip() }, async () => {
   const t = await open('?nosplash=1', { viewport: { width: 390, height: 844 } });
-  const top = () => t.page.evaluate(() => Math.round(document.getElementById('hmSolo').getBoundingClientRect().top));
-  assert.ok(await top() > 600, 'Solo starts below the fold');
-  await t.page.evaluate(() => document.getElementById('hmQuick').click()); await t.page.waitForTimeout(1200);
-  assert.ok(Math.abs(await top() - 84) < 30, `Solo at the top: ${await top()}`);
+  const dlg = () => t.page.evaluate(() => ({ open: document.getElementById('qpDlg').open, where: window.bloppitQP()?.where, other: !document.getElementById('qpOther').hidden, just: document.getElementById('qpQuickT').textContent }));
+  await t.page.evaluate(() => document.getElementById('hmQuick').click()); await t.page.waitForTimeout(500);
+  let d = await dlg(); assert.ok(d.open && ['quick', 'otter', 'brain', 'flip', 'cpu'].includes(d.where) && d.other, JSON.stringify(d));
+  assert.match(d.just, /Just Play|Pick how tricky/);
+  const seen = new Set([d.where]);
+  for (let i = 0; i < 12; i++) { const was = d.where; await t.page.evaluate(() => document.getElementById('qpOther').click()); await t.page.waitForTimeout(150); d = await dlg();
+    assert.ok(d.open && d.where !== was, `a different game: ${was} → ${d.where}`); seen.add(d.where); }
+  assert.ok(seen.size >= 3, [...seen].join());
+  // a tile tapped directly asks the same question but has no "different game"
+  await t.page.evaluate(() => { document.getElementById('qpDlg').close(); document.querySelector('#view-home [data-go="otter"]').click(); }); await t.page.waitForTimeout(300);
+  d = await dlg(); assert.ok(d.open && d.where === 'otter' && !d.other, JSON.stringify(d));
   assert.equal(await t.view(), 'view-home'); await t.ctx.close();
-  const u = await open('?nosplash=1#solo', { viewport: { width: 390, height: 844 } }); await u.page.waitForTimeout(800);
+  const u = await open('?nosplash=1#solo', { viewport: { width: 390, height: 844 } }); await u.page.waitForTimeout(1200);
   assert.equal(await u.view(), 'view-home');
-  assert.ok(Math.abs(await u.page.evaluate(() => Math.round(document.getElementById('hmSolo').getBoundingClientRect().top)) - 84) < 30);
+  assert.ok(await u.page.evaluate(() => document.getElementById('qpDlg').open && !document.getElementById('qpOther').hidden));
   assert.deepEqual([...t.errors, ...u.errors], []); await u.ctx.close();
 });
 

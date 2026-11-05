@@ -2214,7 +2214,7 @@ body.film-on{overflow:hidden}
   <h2 id="qpT">Quick Build</h2>
   <div class="qp-opts">
     <button class="qp-opt isle" id="qpIsle" type="button"><img id="qpImg" src="/art/head-bibi.png" alt=""><b id="qpIsleT">🏝️ Play on Brickyard Cove</b><span>In Bloppitopia: every build grows the island and earns ★, XP and Galaxy Blocks.</span></button>
-    <div class="qp-opt qp-quick" id="qpQuickCard"><span class="qp-ic" id="qpQuickIc" aria-hidden="true">⚡</span><b id="qpQuickT">Quick play</b><span id="qpQuickS">Just build. Nothing is added to Bloppitopia.</span>
+    <div class="qp-opt qp-quick" id="qpQuickCard"><span class="qp-ic" id="qpQuickIc" aria-hidden="true">⚡</span><b id="qpQuickT">Just Play</b><span id="qpQuickS">Just build. Nothing is added to Bloppitopia.</span>
       <div class="qp-diff"><label for="qpDiff">How tricky? <b id="qpDiffT">🙂 Easy</b></label>
         <input type="range" id="qpDiff" min="1" max="5" step="1" value="2">
         <div class="qp-ends" aria-hidden="true"><span>🐣 Tiny</span><span>🔥 Super tricky</span></div></div>
@@ -2223,7 +2223,7 @@ body.film-on{overflow:hidden}
       <button class="ghost sm" id="qpPick" type="button">Or pick one yourself</button>
     </div>
   </div>
-  <div class="win-btns"><button class="ghost" id="qpX" type="button">Not now</button></div>
+  <div class="win-btns"><button class="ghost" id="qpOther" type="button" hidden>🎲 Play a different game</button><button class="ghost" id="qpX" type="button">Not now</button></div>
 </dialog>
 <dialog class="windlg" id="mpEndDlg" aria-label="Game finished">
   <div class="win-stars">🏆</div>
@@ -3854,7 +3854,7 @@ function filmsClose(){ const d=$('#filmsDlg'); try{ $('#filmVid').pause(); }catc
 // Quick play brings the Solo tiles into view (on phones they're further down) and gives them a little hop.
 function hmSoloGo(){ const h=$('#hmSolo'); if(!h) return; h.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});
   const g=h.nextElementSibling; if(g&&!reduceMotion){ g.classList.remove('hop'); void g.offsetWidth; g.classList.add('hop'); setTimeout(()=>g.classList.remove('hop'),1400); } track('menu_quick_play'); }
-$('#hmQuick').onclick=hmSoloGo;
+$('#hmQuick').onclick=()=>quickRandom();
 $('#filmsX').onclick=$('#filmsClose').onclick=()=>filmsClose();
 $('#filmVid').addEventListener('timeupdate',()=>{ const f=FILMS.find(f=>f.id===filmCur); filmSay($('#filmBox'),f,$('#filmVid').currentTime||0); });
 $('#filmsDlg').addEventListener('close',()=>{ try{ $('#filmVid').pause(); }catch(e){} });
@@ -11501,11 +11501,17 @@ function qpStart(where,P){ if(!P) return; quickPlaySet(where!=='flip'); track(`q
     const lv=P.L.boss?'hard':P.L.lv, r=document.querySelector(`input[name=bzLevel][value="${lv}"]`); if(r){ r.checked=true; r.dispatchEvent(new Event('change',{bubbles:true})); }
     scrollTo(0,0); return; }
   setTrail(where); startLevelFilm(where,P.i); }
-function playAsk(where){ const T=QP_TILES[where]; if(!T||mp){ homeGo(where); return; }
+// Quick play on the menu (Steff, 5 Nov 2026): one of the five Solo games at random, opened with the same choice
+// (Play on the island, or Just Play); "Play a different game" draws another one.
+const QP_SOLO=['quick','otter','brain','flip','cpu'];
+function quickRandom(avoid){ const pool=QP_SOLO.filter(w=>w!==avoid), w=pool[Math.floor(Math.random()*pool.length)];
+  track('menu_quick_play:'+w); const d=$('#qpDlg'); if(d.open) d.close(); playAsk(w,{random:true}); }
+function playAsk(where,opt){ const T=QP_TILES[where]; if(!T||mp){ homeGo(where); return; }
+  $('#qpOther').hidden=!(opt&&opt.random); $('#qpOther').onclick=()=>quickRandom(where);
   let iname=''; try{ iname=ISLES[T.isle].name; }catch(e){}
   $('#qpT').textContent=T.t; $('#qpImg').src=`/art/head-${T.who}.png`; $('#qpIsleT').textContent=`🏝️ Play on ${iname||'Bloppitopia'}`;
   const d=$('#qpDlg'); d.classList.toggle('solo',!!T.solo);
-  $('#qpQuickT').textContent=T.solo?'Pick how tricky':'Quick play'; $('#qpQuickIc').textContent=T.solo?'🪞':'⚡';
+  $('#qpQuickT').textContent=T.solo?'Pick how tricky':'Just Play'; $('#qpQuickIc').textContent=T.solo?'🪞':'⚡';
   $('#qpQuickS').textContent=T.solo?'Pippa finds a mirror puzzle to match.':where==='cpu'?'Just race. Nothing is added to Bloppitopia.':'Just build. Nothing is added to Bloppitopia.';
   qpCur={where,d:qpDiffs()[where]||2,pick:null}; qpSet(qpCur.d);
   $('#qpIsle').onclick=()=>{ d.close(); quickPlaySet(false); track('quick_play_no:'+where); homeGo(where); };
@@ -11542,7 +11548,7 @@ function homeRoute(){
   else if(h==='library') homeGo('library');
   else if(h==='otter'||h==='brain') homeGo(h);
   else if(h==='pippa') homeGo('sea');
-  else if(h==='solo'||h==='quick-play'){ setTab('home'); setTimeout(hmSoloGo,350); }
+  else if(h==='solo'||h==='quick-play'){ setTab('home'); setTimeout(()=>quickRandom(),350); }   // bloppit.com's Quick play button
   else if(!h&&new URLSearchParams(location.search).get('welcome')==='1'&&welcomeStart()) {}
   else { const [t,sub]=hashPage(h); if(t==='build'||t==='booklet'||t==='create') setTab('home'); else setTab(t,sub); }
 }
