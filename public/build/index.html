@@ -3823,7 +3823,7 @@ const FILMS=[
       ['16','The Moon Gate','the-moon-gate',4,'Build Moonstone Isle, Chapter 5',{t:20,who:'bibi',text:'A dab of moon paint… and the gate glows! Through we go, {name}!'}],
       ['17','The Constellation Cube','the-constellation-cube',5,'Build Moonstone Isle, Chapter 6',{t:21,who:'nora',text:'The stars point the way: to the lighthouse, {name}!'}],
       ['18','The Answering Light','the-answering-light',6,'Build Moonstone Isle, Chapter 7',null],   // just you and the light: nobody speaks
-      ['19','The Moonstone Lighthouse','the-moonstone-lighthouse',7,'Build Moonstone Isle, Chapter 8',[{t:31,who:'swoop',text:'Teamwork!',d:4},{t:39,who:'bloppit',text:'Go on, {name}. This part is yours.'}]],
+      ['19','The Moonstone Lighthouse','the-moonstone-lighthouse',7,'Build Moonstone Isle, Chapter 8',[{t:31,who:'swoop',text:'Teamwork!',d:4},{t:39,who:'tiny',text:'Go on, {name}. This part is yours.'}]],
       ['20','The Moon Crystal','the-moon-crystal',8,'Set your brick in the lighthouse ring',{t:21,who:'lufu',text:'We have found each other.',d:7}],   // lufu never speaks: the words are the game's, as the series bible says
       ['21','The Galaxy Ship','the-galaxy-ship',9,'Build Chapter 10: The Galaxy Ship',{t:21,who:'bloppit',text:'All aboard, {name}! Wherever lufu goes, we go too.'}]]
     .map(([no,name,file,i,hint,say])=>({id:'moon-'+no,no,name,place:'Moonstone Isle',file:'moonstone-'+file,at:no==='20'?'ring:moonstone':'moonstone:'+i,open:o=>filmSeen('moon-'+no,o)||mysteryDone(o)>(no==='20'?7:i),hint,say:!say?[]:Array.isArray(say)?say:[say]})),   // film 20 follows the ring ceremony (isl3Ring), not a build
