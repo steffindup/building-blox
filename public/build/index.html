@@ -3194,6 +3194,11 @@ function bookAim(L){
 bookControls.addEventListener('end',()=>bookAim());
 document.querySelectorAll('.pg-zoom [data-z]').forEach(b=>b.addEventListener('click',e=>{ e.stopPropagation(); bookZoom(b.dataset.z==='in'?1.35:1/1.35); }));
 $('#bpBig').addEventListener('click',e=>{ e.stopPropagation(); if(model&&!isLocked(viewPage)) openLightbox(viewPage); });
+// How to zoom, in the words for this device: a computer with a mouse scrolls (Bloppitopia) or uses + and − (the booklet);
+// a phone or tablet pinches (Steff, 5 Nov 2026: a computer was told to pinch)
+function mouseOnly(){ try{ return matchMedia('(hover:hover) and (pointer:fine)').matches; }catch(e){ return false; } }
+function zoomWord(){ return mouseOnly()?'scroll to zoom':'pinch to zoom'; }
+document.querySelectorAll('.pg-turn').forEach(e=>{ e.textContent='Drag to turn · '+(mouseOnly()?'+ and − to zoom':'pinch to zoom'); });
 // A plain mouse wheel over the small booklet scrolls the page; a trackpad pinch (ctrl+wheel) zooms
 $('#bpView').addEventListener('wheel',e=>{ if(!e.ctrlKey) e.stopPropagation(); },{capture:true});
 // Picture charts: wheel and two-finger pinch
@@ -8756,7 +8761,7 @@ function isl3Init(){
     const sea=new THREE.Mesh(new THREE.PlaneGeometry(400,400),new THREE.MeshStandardMaterial({color:new THREE.Color('#22B4EE').convertSRGBToLinear(),roughness:.5}));
     sea.rotation.x=-Math.PI/2; sea.position.y=-1.3; sea.receiveShadow=true; sea.userData.info='land:sea'; sc.add(sea);
     ISL3.r=r; ISL3.sc=sc; ISL3.cam=camera; ISL3.ok=true; ISL3.sun=sunL; ISL3.hemi=hemi; ISL3.sea=sea;
-    r.domElement.className='is3-canvas'; r.domElement.setAttribute('role','img'); r.domElement.setAttribute('aria-label','Bloppitopia: Home Island and the five islands around it. Drag to turn, pinch to zoom, tap anything to see what it is.');
+    r.domElement.className='is3-canvas'; r.domElement.setAttribute('role','img'); r.domElement.setAttribute('aria-label','Bloppitopia: Home Island and the five islands around it. Drag to turn, '+zoomWord()+', tap anything to see what it is.');
     isl3Events(r.domElement);
     const ctl=new THREE.OrbitControls(camera,r.domElement); ctl.enableDamping=true; ctl.dampingFactor=.09; ctl.enableRotate=true; ctl.enablePan=false;   // guided: arrows between views, drag to turn, pinch to look closer
     ctl.minDistance=9; ctl.maxDistance=70; ctl.minPolarAngle=.12; ctl.maxPolarAngle=1.42; ctl.rotateSpeed=.7; ctl.target.set(0,0,-1.5);
@@ -8838,7 +8843,7 @@ function isl3Focus(info,h){ const vi=isl3ViewOf(info); if(vi>=0){ if(ISL3.viewI=
 // In a chosen view (an island, Home Island, Bloppit and your otter) the camera is free: drag to look around and
 // up or down, pinch or scroll to zoom. The whole world stays guided: swipe between views, nothing to get lost in.
 function isl3FreeLook(on){ const c=ISL3.ctl; if(!c) return; c.enableRotate=on; c.minPolarAngle=on?.12:.35; c.maxPolarAngle=on?1.42:1.12; c.rotateSpeed=.7;
-  if(on&&!ISL3.lookTold){ ISL3.lookTold=1; clearTimeout(ISL3.lookT); ISL3.lookT=setTimeout(()=>{ if(!ISL3.revealing&&!ISL3.arrive){ isl3Banner('Drag to look around · pinch to zoom'); ISL3.lookT=setTimeout(()=>isl3Banner(''),2600); } },1000); } }
+  if(on&&!ISL3.lookTold){ ISL3.lookTold=1; clearTimeout(ISL3.lookT); ISL3.lookT=setTimeout(()=>{ if(!ISL3.revealing&&!ISL3.arrive){ isl3Banner('Drag to look around · '+zoomWord()); ISL3.lookT=setTimeout(()=>isl3Banner(''),2600); } },1000); } }
 // The guided camera: a few set views to swipe between (all of Bloppitopia, Home Island, Bloppit and your otter, each island)
 function isl3Views(){ if(ISL3.lufu) return lufuViews();
   const v=[{id:'world',name:'Bloppitopia'},{id:'home',name:'Home Island',x:0,z:.4,R:HOME_R*1.08},{id:'friends',name:'Bloppit & '+(pupName(worldStore())||'your otter'),R:3.6,y:TOP3+1.25}];
@@ -10848,7 +10853,7 @@ function renderIsland(){
     $('#isNext').innerHTML=g?`<span>${escapeHTML(g.text)}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*g.frac))}%"></i></span>`:'<span>Every island is complete. What a world!</span>'; }
   else $('#isStage').innerHTML=`${ISLAND_STAGES[stage].name}<small>${n} build${n===1?'':'s'} finished · ${gbN(worldStars(o))} to spend</small>`;
   if(!ISL3.ok) $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>Your village is built. Now grow the five islands around it.</span>';
-  $('#isNote').textContent=n?`${pupName(o)||'Your otter'} and Bloppit are home. Tap anything to see what it is${n>1?`, and drag a model anywhere on the ${ISL3.ok?'grass':'sand'}`:''}${ISL3.ok?'. Swipe to move between views, pinch to look closer, and tap anyone to say hello':''}.`:ISL3.ok?`${pupName(o)?pupName(o)+'’s':'Your'} home is waiting to be built. Tap anything to see what it is.`:'Finish any build and the first hut rises from the sand. Tap anything to see what it is.';
+  $('#isNote').textContent=n?`${pupName(o)||'Your otter'} and Bloppit are home. Tap anything to see what it is${n>1?`, and drag a model anywhere on the ${ISL3.ok?'grass':'sand'}`:''}${ISL3.ok?'. Use the arrows to move between views, '+(mouseOnly()?'scroll':'pinch')+' to look closer, and tap anyone to say hello':''}.`:ISL3.ok?`${pupName(o)?pupName(o)+'’s':'Your'} home is waiting to be built. Tap anything to see what it is.`:'Finish any build and the first hut rises from the sand. Tap anything to see what it is.';
   { const d=$('#isdCard'); if(d) d.hidden=stage<3; $('#isCard').hidden=stage<3||!!d; } $('#isDecor').hidden=!n||!!$('#isDrawer');   // with the Customise button, Decorate lives in its drawer
   renderDecorShop(); renderBuilds(); isGbSync();
 }
