@@ -5925,13 +5925,16 @@ const SAMPLES=[
    x.fillStyle='#6C6E68'; for(let i=0;i<7;i++){ const a=Math.PI+i*Math.PI/6; x.fillRect(120+Math.cos(a)*86-5,120+Math.sin(a)*86-5,10,10); }
    x.oval(40,206,24,10,0,'#4B9F4A'); x.oval(200,206,24,10,0,'#4B9F4A');
    return [['front',c]]; }},
- {name:'Moon crystal',theme:'Space',hidden:true,make(){ const [c,x]=sheet(220,240,'#ffffff');
-   x.oval(110,222,86,14,0,'#6C6E68');
-   x.poly([[110,10],[150,80],[136,214],[84,214],[70,80]],'#9FC3E9'); x.poly([[110,10],[150,80],[110,92]],'#F4F4F4'); x.poly([[110,92],[136,214],[110,214]],'#5A93DB');
-   x.poly([[46,92],[70,130],[64,214],[30,214],[24,128]],'#AC78BA'); x.poly([[46,92],[70,130],[48,138]],'#E4ADC8');
-   x.poly([[176,110],[198,146],[192,214],[158,214],[156,146]],'#AC78BA'); x.poly([[176,110],[198,146],[176,152]],'#E4ADC8');
-   x.dot(110,120,10,'#FFF03A');
-   return [['front',c]]; }},
+ {name:'Moon crystal',theme:'Space',hidden:true,make(){   // lufu's: one tall moonstone gem on its stone setting, front, side and back, so it builds round
+   // (Steff, 5 Nov 2026: the old drawing came out a skyline of blocks). Drawn on the stud grid (14 rows; 11 across, 9 deep), white margin
+   // so it lines up: pearly white on one face, soft lavender in the middle, deeper lavender on the shaded face, a glowing core
+   const gem=[1,3,5,5,7,7,7,7,7,5,3], base=[5,7,9];
+   const face=(cols,cl,cm,cr)=>{ const [c,x]=sheet(cols*20+20,356,'#ffffff'), cell=(i,j,k)=>{ x.fillStyle=k; x.fillRect(10+i*20,10+j*24,20.5,24.5); }, mid=(cols-1)/2;
+     gem.forEach((w,j)=>{ for(let i=mid-(w-1)/2;i<=mid+(w-1)/2;i++) cell(i,j,i<mid-1?cl:i>mid+1?cr:cm); });
+     cell(mid,4,'#E9DFFF'); cell(mid,5,'#E9DFFF'); cell(mid,6,'#E9DFFF');   // the glow at its heart
+     base.forEach((w,k)=>{ for(let i=mid-(w-1)/2;i<=mid+(w-1)/2;i++) cell(i,11+k,k===2?'#6C6E68':'#A0A5A9'); });
+     return c; };
+   return [['front',face(11,'#F4F4F4','#C9B6F2','#AC78BA')],['side',face(9,'#C9B6F2','#AC78BA','#8A6FD1')],['back',face(11,'#AC78BA','#C9B6F2','#F4F4F4')]]; }},
  {name:'Moonstone Lighthouse',theme:'Bermuda',hidden:true,make(){ const [c,x]=sheet(200,280,'#BFE3F5');
    x.fillStyle='#6C6E68'; x.rr(20,240,160,36,10);
    x.fillStyle='#F4F4F4'; x.beginPath(); x.moveTo(62,244); x.lineTo(78,82); x.lineTo(122,82); x.lineTo(138,244); x.closePath(); x.fill();
@@ -6166,7 +6169,7 @@ function updateGameBar(){
   $('#gameBar').hidden=!(on&&(tab==='build'||tab==='box'));
   $('#gbNum').parentNode.firstChild.nodeValue=mys?'Chapter ':'Level ';
   $('#gbMap').textContent=mys?'Moonstone Isle':'Level map';
-  if(mys){ const m=MYSTERY[mysCh], who={Everyone:'bloppit'}[m.who]||m.who.toLowerCase(), pic=['bloppit','pippa','swoop','tiny','bibi','nora','lufu'].includes(who)&&who!=='lufu'?who:'';   // lufu stays unseen
+  if(mys){ const m=MYSTERY[mysCh], who={Everyone:'bloppit'}[m.who]||m.who.toLowerCase(), pic=['bloppit','pippa','swoop','tiny','bibi','nora','lufu'].includes(who)?who:'';   // lufu too: by Chapter 9 lufu has been seen, in film 20 (Steff, 5 Nov 2026)
     $('#gbWhere').innerHTML=`${pic?`<img src="/art/head-${pic}.png" alt="">`:''}<div><strong>Moonstone Isle</strong><small>${m.who==='you'?'Just you':m.who==='Everyone'?'With everyone':'With '+m.who}</small></div>`;
     $('#gbBadge').textContent=mysCh+1; $('#gbNum').textContent=`${mysCh+1} of ${MYSTERY.length}`; $('#gbName').textContent=mysteryTitle(m);
     const help=run.hints.size+run.auto, st=1+(help?0:1)+(!help&&!run.miss?1:0); $('#gbPts').innerHTML=starHTML(st); $('#gbOf').textContent='';
@@ -9533,7 +9536,7 @@ const MYSTERY=[   // one friend per chapter (the Moonstone chapter lock, 30 Oct 
   {name:'Constellation cube',size:9,shape:'puffed',thick:.7,colors:6,who:'Nora',was:['Jar of stars','Stone arch'],film:'The Constellation Cube',story:'Beyond the gate, a turning cube of stars hides the way. Nora knows star patterns from Brainpeak. Build the cube, and help her work out its secret.'},
   {name:'Lantern',size:8,shape:'puffed',thick:.6,colors:5,who:'you',film:'The Answering Light',story:'Just you, for a moment. The lavender light is very close now, pulsing softly, two beats at a time. Build a small lantern and hold it out…'},
   {name:'Moonstone Lighthouse',size:23,shape:'puffed',thick:1,colors:7,who:'Everyone',film:'The Moonstone Lighthouse',story:'All six friends arrive, each carrying a brick in their own colour. Before you stands an old lighthouse, dark for a very long time. Build it together!'},
-  {name:'Moon crystal',size:15,shape:'puffed',thick:.7,colors:7,who:'lufu',film:'The Moon Crystal',story:'You step inside the lighthouse alone. At its heart, an empty space glows faintly, waiting. Build the moon crystal to fill it.'},
+  {name:'Moon crystal',size:14,shape:'puffed',thick:.7,colors:7,who:'lufu',film:'The Moon Crystal',story:'You step inside the lighthouse alone. At its heart, an empty space glows faintly, waiting. Build the moon crystal to fill it.'},
   {name:'Galaxy ship',size:28,shape:'puffed',thick:.7,colors:6,who:'Everyone',film:'The Galaxy Ship',story:'A ship waits on the shore, and its hull is made of Galaxy Blocks: the very ones you’ve been earning. Build it, and get ready to climb aboard…'},
 ];
 // A chapter's title: "The Moon Gate" (the build's name in title case; the film titles stay for the films)
