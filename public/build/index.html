@@ -3822,9 +3822,9 @@ const FILMS=[
       ['15','The Petal Bridge','the-petal-bridge',3,'Build Moonstone Isle, Chapter 4',{t:20,who:'tiny',text:'A bridge of petals! Hop across, {name}!'}],
       ['16','The Moon Gate','the-moon-gate',4,'Build Moonstone Isle, Chapter 5',{t:20,who:'bibi',text:'A dab of moon paint… and the gate glows! Through we go, {name}!'}],
       ['17','The Constellation Cube','the-constellation-cube',5,'Build Moonstone Isle, Chapter 6',{t:21,who:'nora',text:'The stars point the way: to the lighthouse, {name}!'}],
-      ['18','The Answering Light','the-answering-light',6,'Build Moonstone Isle, Chapter 7',null],   // just you and the light: nobody speaks
-      ['19','The Moonstone Lighthouse','the-moonstone-lighthouse',7,'Build Moonstone Isle, Chapter 8',[{t:31,who:'swoop',text:'Teamwork!',d:4},{t:39,who:'bloppit',text:'Go on, {name}. This part is yours.'}]],
-      ['20','The Moon Crystal','the-moon-crystal',8,'Set your brick in the lighthouse ring',{t:21,who:'lufu',text:'We have found each other.',d:7}],   // lufu never speaks: the words are the game's, as the series bible says
+      ['18','The Moonstone Lighthouse','the-answering-light',6,'Build Moonstone Isle, Chapter 7',null],   // just you and the light: nobody speaks
+      ['19','The Well','the-moonstone-lighthouse',7,'Build Moonstone Isle, Chapter 8',[{t:31,who:'swoop',text:'Teamwork!',d:4},{t:39,who:'tiny',text:'Go on, {name}. This part is yours.'}]],
+      ['20','The Moon Crystal','the-moon-crystal',8,'Build Chapter 9: The Moon Crystal',{t:21,who:'lufu',text:'We have found each other.',d:7}],   // lufu never speaks: the words are the game's, as the series bible says
       ['21','The Galaxy Ship','the-galaxy-ship',9,'Build Chapter 10: The Galaxy Ship',{t:21,who:'bloppit',text:'All aboard, {name}! Wherever lufu goes, we go too.'}]]
     .map(([no,name,file,i,hint,say])=>({id:'moon-'+no,no,name,place:'Moonstone Isle',file:'moonstone-'+file,at:no==='20'?'ring:moonstone':'moonstone:'+i,open:o=>filmSeen('moon-'+no,o)||mysteryDone(o)>(no==='20'?7:i),hint,say:!say?[]:Array.isArray(say)?say:[say]})),   // film 20 follows the ring ceremony (isl3Ring), not a build
   {id:'moon-22',no:'22',name:'The New Horizon',place:'lufu’s world',file:'moonstone-the-new-horizon',at:'realm:lufu',open:o=>filmSeen('moon-22',o)||mysteryDone(o)>=10,hint:'Sail to lufu’s world',
@@ -5925,13 +5925,26 @@ const SAMPLES=[
    x.fillStyle='#6C6E68'; for(let i=0;i<7;i++){ const a=Math.PI+i*Math.PI/6; x.fillRect(120+Math.cos(a)*86-5,120+Math.sin(a)*86-5,10,10); }
    x.oval(40,206,24,10,0,'#4B9F4A'); x.oval(200,206,24,10,0,'#4B9F4A');
    return [['front',c]]; }},
- {name:'Moon crystal',theme:'Space',hidden:true,make(){ const [c,x]=sheet(220,240,'#ffffff');
-   x.oval(110,222,86,14,0,'#6C6E68');
-   x.poly([[110,10],[150,80],[136,214],[84,214],[70,80]],'#9FC3E9'); x.poly([[110,10],[150,80],[110,92]],'#F4F4F4'); x.poly([[110,92],[136,214],[110,214]],'#5A93DB');
-   x.poly([[46,92],[70,130],[64,214],[30,214],[24,128]],'#AC78BA'); x.poly([[46,92],[70,130],[48,138]],'#E4ADC8');
-   x.poly([[176,110],[198,146],[192,214],[158,214],[156,146]],'#AC78BA'); x.poly([[176,110],[198,146],[176,152]],'#E4ADC8');
-   x.dot(110,120,10,'#FFF03A');
-   return [['front',c]]; }},
+ {name:'Moon crystal',theme:'Space',hidden:true,make(){   // lufu's: one tall moonstone gem on its stone setting, front, side and back, so it builds round
+   // (Steff, 5 Nov 2026: the old drawing came out a skyline of blocks). Drawn on the stud grid (14 rows; 11 across, 9 deep), white margin
+   // so it lines up: pearly white on one face, soft lavender in the middle, deeper lavender on the shaded face, a glowing core
+   const gem=[1,3,5,5,7,7,7,7,7,5,3], base=[5,7,9];
+   const face=(cols,cl,cm,cr)=>{ const [c,x]=sheet(cols*20+20,356,'#ffffff'), cell=(i,j,k)=>{ x.fillStyle=k; x.fillRect(10+i*20,10+j*24,20.5,24.5); }, mid=(cols-1)/2;
+     gem.forEach((w,j)=>{ for(let i=mid-(w-1)/2;i<=mid+(w-1)/2;i++) cell(i,j,i<mid-1?cl:i>mid+1?cr:cm); });
+     cell(mid,4,'#E9DFFF'); cell(mid,5,'#E9DFFF'); cell(mid,6,'#E9DFFF');   // the glow at its heart
+     base.forEach((w,k)=>{ for(let i=mid-(w-1)/2;i<=mid+(w-1)/2;i++) cell(i,11+k,k===2?'#6C6E68':'#A0A5A9'); });
+     return c; };
+   return [['front',face(11,'#F4F4F4','#C9B6F2','#AC78BA')],['side',face(9,'#C9B6F2','#AC78BA','#8A6FD1')],['back',face(11,'#AC78BA','#C9B6F2','#F4F4F4')]]; }},
+ {name:'Well',theme:'Space',hidden:true,make(){   // everyone's: an old moonstone well at the lighthouse's foot (Steff, 5 Nov 2026): a gabled wooden roof on two posts,
+   // a bucket on its rope, a stone wall with a pale rim, and the water glowing lavender on top (the top of the wall takes the rim row's colour)
+   const face=(post)=>{ const [c,x]=sheet(240,308,'#ffffff'), cell=(i,j,k)=>{ x.fillStyle=k; x.fillRect(10+i*20,10+j*24,20.5,24.5); };
+     [[4,6],[2,8],[1,9]].forEach(([a,b],j)=>{ for(let i=a;i<=b;i++) cell(i,j,j===2?'#6B4229':'#A95500'); });              // the roof
+     for(let j=3;j<=6;j++) for(const i of post) cell(i,j,'#6B4229');                                                       // posts
+     cell(5,3,'#958A73'); cell(5,4,'#958A73'); cell(5,5,'#A0A5A9');                                                        // rope and bucket
+     for(let i=1;i<=9;i++) cell(i,7,i>=3&&i<=7?'#C9B6F2':'#E4CD9E');                                                       // the rim, glowing water in the middle
+     for(let j=8;j<=11;j++) for(let i=1;i<=9;i++) cell(i,j,(i+(j%2?1:0))%3===0?'#6C6E68':'#A0A5A9');                     // the stone wall, its joints staggered
+     return c; };
+   return [['front',face([2,8])],['side',face([5])],['back',face([2,8])]]; }},
  {name:'Moonstone Lighthouse',theme:'Bermuda',hidden:true,make(){ const [c,x]=sheet(200,280,'#BFE3F5');
    x.fillStyle='#6C6E68'; x.rr(20,240,160,36,10);
    x.fillStyle='#F4F4F4'; x.beginPath(); x.moveTo(62,244); x.lineTo(78,82); x.lineTo(122,82); x.lineTo(138,244); x.closePath(); x.fill();
@@ -6166,7 +6179,7 @@ function updateGameBar(){
   $('#gameBar').hidden=!(on&&(tab==='build'||tab==='box'));
   $('#gbNum').parentNode.firstChild.nodeValue=mys?'Chapter ':'Level ';
   $('#gbMap').textContent=mys?'Moonstone Isle':'Level map';
-  if(mys){ const m=MYSTERY[mysCh], who={Everyone:'bloppit'}[m.who]||m.who.toLowerCase(), pic=['bloppit','pippa','swoop','tiny','bibi','nora','lufu'].includes(who)&&who!=='lufu'?who:'';   // lufu stays unseen
+  if(mys){ const m=MYSTERY[mysCh], who={Everyone:'bloppit'}[m.who]||m.who.toLowerCase(), pic=['bloppit','pippa','swoop','tiny','bibi','nora','lufu'].includes(who)?who:'';   // lufu too: by Chapter 9 lufu has been seen, in film 20 (Steff, 5 Nov 2026)
     $('#gbWhere').innerHTML=`${pic?`<img src="/art/head-${pic}.png" alt="">`:''}<div><strong>Moonstone Isle</strong><small>${m.who==='you'?'Just you':m.who==='Everyone'?'With everyone':'With '+m.who}</small></div>`;
     $('#gbBadge').textContent=mysCh+1; $('#gbNum').textContent=`${mysCh+1} of ${MYSTERY.length}`; $('#gbName').textContent=mysteryTitle(m);
     const help=run.hints.size+run.auto, st=1+(help?0:1)+(!help&&!run.miss?1:0); $('#gbPts').innerHTML=starHTML(st); $('#gbOf').textContent='';
@@ -7812,11 +7825,17 @@ function snapshot(){
     game:game?{lvl:game.lvl,trail:gameTrail(),pen:{...game.pen},hintSteps:[...game.hintSteps],math:game.math?{v:game.math.v,tier:game.math.tier,grade:game.math.grade,locks:game.math.locks,solved:game.math.solved,pts:game.math.pts}:null}:null
   };
 }
+// A Moonstone chapter keeps its own save as well, so leaving it for anything else (Quick Bricks, a trail…) and coming back
+// carries on where you left off: the main save holds only the build on the table (Steff, 5 Nov 2026)
+const MYS_SAVE_KEY='bloppit-mys-save-v1';
+function mysSaveGet(i){ try{ const o=JSON.parse(localStorage.getItem(pkey(MYS_SAVE_KEY))||'null'); return o&&o.ch===i&&o.snap&&o.snap.placedN>0?o.snap:null; }catch(e){ return null; } }
+function mysSaveSet(o){ if(leavingPlayer) return; try{ if(o) localStorage.setItem(pkey(MYS_SAVE_KEY),JSON.stringify(o)); else localStorage.removeItem(pkey(MYS_SAVE_KEY)); }catch(e){} }
 function saveNow(){
   clearTimeout(saveTimer); if(!saveOn||restoring||mp) return;
-  if(model&&cur>=model.steps.length){ storeClear(); $('#saveNote').textContent=''; return; }
+  const mys=typeof mysOn==='function'&&mysOn();
+  if(model&&cur>=model.steps.length){ storeClear(); if(mys) mysSaveSet(null); $('#saveNote').textContent=''; return; }
   const o=snapshot(); if(!o) return;
-  const ok=storeSet(o);
+  const ok=storeSet(o); if(mys&&o.placedN>0) mysSaveSet({ch:mysCh,snap:o});
   $('#saveNote').textContent=ok?'Saved on this device':'Couldn’t save on this device';
 }
 addEventListener('pagehide',saveNow);
@@ -9531,15 +9550,17 @@ const MYSTERY=[   // one friend per chapter (the Moonstone chapter lock, 30 Oct 
   {name:'Little bridge',size:12,shape:'puffed',thick:.8,colors:7,who:'Tiny',was:['Longtail nest'],film:'The Petal Bridge',story:'A stream blocks the way, and on the far side… tiny glowing footprints! Tiny has gathered broad leaves and big petals. Build a little bridge to get across.'},
   {name:'Moon gate',size:14,shape:'puffed',thick:.7,colors:8,who:'Bibi',was:['Brick chest'],film:'The Moon Gate',story:'An old moon gate lies in pieces across the path. Help Bibi put it back together. What happens when it’s whole?'},
   {name:'Constellation cube',size:9,shape:'puffed',thick:.7,colors:6,who:'Nora',was:['Jar of stars','Stone arch'],film:'The Constellation Cube',story:'Beyond the gate, a turning cube of stars hides the way. Nora knows star patterns from Brainpeak. Build the cube, and help her work out its secret.'},
-  {name:'Lantern',size:8,shape:'puffed',thick:.6,colors:5,who:'you',film:'The Answering Light',story:'Just you, for a moment. The lavender light is very close now, pulsing softly, two beats at a time. Build a small lantern and hold it out…'},
-  {name:'Moonstone Lighthouse',size:23,shape:'puffed',thick:1,colors:7,who:'Everyone',film:'The Moonstone Lighthouse',story:'All six friends arrive, each carrying a brick in their own colour. Before you stands an old lighthouse, dark for a very long time. Build it together!'},
-  {name:'Moon crystal',size:15,shape:'puffed',thick:.7,colors:7,who:'lufu',film:'The Moon Crystal',story:'You step inside the lighthouse alone. At its heart, an empty space glows faintly, waiting. Build the moon crystal to fill it.'},
-  {name:'Galaxy ship',size:28,shape:'puffed',thick:.7,colors:6,who:'Everyone',film:'The Galaxy Ship',story:'A ship waits on the shore, and its hull is made of Galaxy Blocks: the very ones you’ve been earning. Build it, and get ready to climb aboard…'},
+  // Chapters 7–10 re-ordered (Steff, 5 Nov 2026): every chapter builds the thing its film then shows. The Lantern is gone
+  // (a lantern build no longer counts), the friends arrive at the Well, and the ring comes after the Moon crystal
+  {name:'Moonstone Lighthouse',size:23,shape:'puffed',thick:1,colors:7,who:'you',film:'The Moonstone Lighthouse',story:'Just you, for a moment. The lavender light is very close now, pulsing softly, two beats at a time. It comes from an old lighthouse, dark for a very long time. Build it…'},
+  {name:'Well',size:12,shape:'puffed',thick:.7,colors:7,who:'Everyone',film:'The Well',story:'All six friends arrive, each carrying a brick in their own colour. At the foot of the lighthouse stands an old well, its water glowing faintly. Build it together!'},
+  {name:'Moon crystal',size:14,shape:'puffed',thick:.7,colors:7,who:'you',film:'The Moon Crystal',story:'You step inside the lighthouse alone. At its heart, an empty space glows faintly, waiting. Build the moon crystal to fill it.'},
+  {name:'Galaxy ship',size:28,shape:'puffed',thick:.7,colors:6,who:'lufu',film:'The Galaxy Ship',story:'A ship waits on the shore, and its hull is made of Galaxy Blocks: the very ones you’ve been earning. Build it with lufu, and get ready to climb aboard…'}
 ];
 // A chapter's title: "The Moon Gate" (the build's name in title case; the film titles stay for the films)
 const mysteryTitle=m=>'The '+m.name.replace(/\b\w/g,c=>c.toUpperCase());
 const MYSTERY_NAMES=new Set(MYSTERY.flatMap(m=>[m.name,...(m.was||[])]));
-const MYSTERY_FILMS=['Into the Mist','The Old Map','The Lookout Tower','The Petal Bridge','The Moon Gate','The Constellation Cube','The Answering Light','The Moonstone Lighthouse','The Moon Crystal','The Galaxy Ship','The New Horizon'];   // films 12–22; the last two play together after the ship
+const MYSTERY_FILMS=['Into the Mist','The Old Map','The Lookout Tower','The Petal Bridge','The Moon Gate','The Constellation Cube','The Moonstone Lighthouse','The Well','The Moon Crystal','The Galaxy Ship','The New Horizon'];   // films 12–22; the last two play together after the ship
 const FIVE_ISLES=['otterwood','brainpeak','sunrise','blitzbay','brickworks'];
 const fiveDone=o=>FIVE_ISLES.filter(id=>isleComplete(id,o||worldStore())).length;
 // The mystery opens once the other five islands are complete. A child who had already started it keeps going.
@@ -9555,6 +9576,10 @@ function mysteryStart(i){
   const m=MYSTERY[i]; if(!m) return; const k=SAMPLES.findIndex(x=>x.name===m.name); if(k<0) return;
   // Back from the island (the game bar's Moonstone Isle button) to a chapter already on the table: carry on, don't start over (Steff, 5 Nov 2026)
   if(mysOn()&&mysCh===i&&model&&!model.error&&model.bricks&&placedN>0&&placedN<model.bricks.length){ setTab('build'); updateGameBar(); return; }
+  // Left for something else in between: the chapter's own save brings its bricks back
+  const sv=mysSaveGet(i); if(sv&&!mp){ if(game) endGame();
+    restoreSave(sv).then(ok=>{ if(ok&&mysOn()&&mysCh===i){ saveOn=true; setTab('build'); updateGameBar(); updateBuildUI(); frameBuild(false); setStatus(`Welcome back to Chapter ${i+1}! ${placedN} of ${model.bricks.length} bricks placed.`,'ok'); saveNow(); }
+      else { mysSaveSet(null); mysteryStart(i); } }); return; }
   if(mp) mpLeave(); if(game) endGame(); setControls({kind:'model',shape:m.shape,thick:m.thick,tol:48,maxColors:m.colors,gray:true,size:m.size,pw:48,pcol:24});
   loadSample(k); clearTimeout(timer); rebuild(); setTab('build'); updateGameBar(); setStatus(`Chapter ${i+1} of ${MYSTERY.length}, with ${m.who}: ${m.story}`);
 }
@@ -9764,11 +9789,16 @@ const PIECES={
     {at:5,name:'The Moon Gate',make:g=>{ const a=new THREE.Mesh(new THREE.TorusGeometry(.9,.18,8,24,Math.PI),m3('#F4F4F4')); a.position.set(-.6,TOP3,-2.7); a.rotation.y=.3; a.castShadow=true; g.add(a); for(const sx of [-1,1]) g.add(box3(.36,.12,.36,'#F4F4F4',-.6+sx*.86,TOP3,-2.7+sx*.26)); ['#C91A09','#F2CD37','#0055BF','#4B9F4A','#FE8A18','#AC78BA','#C91A09'].forEach((c,i)=>{ const t=Math.PI*(i+.5)/7, d=mesh3(new THREE.SphereGeometry(.09,6,4),m3(c),0,0,0); d.position.set(-.6+Math.cos(t)*.9*Math.cos(.3),TOP3+Math.sin(t)*.9,-2.7-Math.cos(t)*.9*Math.sin(.3)); g.add(d); }); }},
     {at:6,name:'The Constellation Cube',make:g=>{ const cb=mesh3(new THREE.BoxGeometry(.7,.7,.7),m3('#1B2A4A'),.4,TOP3+.95,2.6); cb.userData.roty=1; g.add(cb);
       for(let i=0;i<7;i++){ const st=mesh3(new THREE.OctahedronGeometry(.07,0),glow3(i===6?'#E9DFFF':'#FFF03A'),.4+Math.cos(i*.9)*.5,TOP3+.95+Math.sin(i*1.7)*.42,2.6+Math.sin(i*.9)*.5); st.castShadow=false; st.userData.spin=1; g.add(st); } }},
-    {at:7,name:'The Lantern',make:g=>{ const p=cyl3(.04,.05,1.1,6,'#6B4229',-1.9,TOP3,-.4); g.add(p); g.add(box3(.26,.3,.26,'#2A2254',-1.9,TOP3+1.1,-.4)); const lg=mesh3(new THREE.BoxGeometry(.16,.2,.16),glow3('#D9C8FF'),-1.9,TOP3+1.25,-.4); lg.castShadow=false; g.add(lg); g.add(sparkle3(-1.9,TOP3+1.7,-.4)); }},
-    {at:8,name:'The Moonstone Lighthouse',make:(g,c)=>{ const l=lighthouse3('#5A93DB'); l.scale.setScalar(1.25); l.position.set(0,TOP3,0); g.add(l);
+    {at:7,name:'The Moonstone Lighthouse',make:(g,c)=>{ const l=lighthouse3('#5A93DB'); l.scale.setScalar(1.25); l.position.set(0,TOP3,0); g.add(l);
       if(c>=9){ const lr=l.children[5]; lr.material=new THREE.MeshBasicMaterial({color:0xB9A6F0,transparent:true,opacity:.22,depthWrite:false}); lr.scale.y=1.9; lr.position.y=2.88; l.children[6].position.y+=.38; }   // the lamp room turns to tall glass round the moon crystal (it sits under an overhanging roof)
-      ['#C91A09','#A5CA18','#0055BF','#F4BC22','#2E8FE0','#FE8A18'].forEach((c,i)=>{ const a=i/6*Math.PI*2; g.add(box3(.3,.18,.18,c,Math.cos(a)*.95,TOP3,Math.sin(a)*.95,{y:-a})); });   // the six friends' bricks stay in the ring
+      if(c>=8) ['#C91A09','#A5CA18','#0055BF','#F4BC22','#2E8FE0','#FE8A18'].forEach((cl,i)=>{ const a=i/6*Math.PI*2; g.add(box3(.3,.18,.18,cl,Math.cos(a)*.95,TOP3,Math.sin(a)*.95,{y:-a})); });   // the six friends' bricks in the ring, once they've arrived (Chapter 8)
       const beam=new THREE.Mesh(new THREE.ConeGeometry(1.1,14,12,1,true),new THREE.MeshBasicMaterial({color:0xFFF3B0,transparent:true,opacity:.18,depthWrite:false,side:THREE.DoubleSide})); beam.rotation.z=Math.PI/2; beam.geometry.translate(0,7,0); beam.position.set(0,3.4,0); beam.userData.beam=1; if(c>=9) beam.material.color.set(0xD9C8FF); g.add(beam); }},
+    {at:8,name:'The Well',make:g=>{ const x=-1.9, z=-.4;   // at the lighthouse's foot: a round stone well with glowing water, two posts and a little roof
+      g.add(cyl3(.42,.46,.42,14,'#A0A5A9',x,TOP3,z)); g.add(cyl3(.44,.44,.06,14,'#E4CD9E',x,TOP3+.42,z));
+      const w=mesh3(new THREE.CylinderGeometry(.33,.33,.02,14),glow3('#C9B6F2'),x,TOP3+.44,z); w.castShadow=false; w.userData.pulse=1; g.add(w);
+      for(const s of [-1,1]) g.add(box3(.07,.75,.07,'#6B4229',x+s*.36,TOP3+.42,z));
+      const r=mesh3(new THREE.ConeGeometry(.6,.38,4),m3('#6B4229'),x,TOP3+1.36,z); r.rotation.y=Math.PI/4; g.add(r);
+      g.add(box3(.06,.22,.06,'#958A73',x,TOP3+.92,z)); g.add(box3(.16,.14,.16,'#A0A5A9',x,TOP3+.78,z)); }},
     {at:9,name:'The Moon Crystal',make:g=>{ const y=TOP3+3.6;   // at the lighthouse's heart: inside the lamp room (centre 2.88 up, ×1.25), which turns to glass
       [['#B898FF',0,0,.5],['#9A5FC0',.17,.09,.3],['#9A5FC0',-.16,.11,.28],['#7FA4E6',.06,-.17,.24]].forEach(([c,x,z,h])=>{ const k=mesh3(new THREE.OctahedronGeometry(.16,0),new THREE.MeshBasicMaterial({color:new THREE.Color(c).convertSRGBToLinear()}),x,y-.22+h*.42,z); k.scale.set(.9,h*3.2,.9); k.castShadow=false; g.add(k); }); }},
     {at:10,name:'The Galaxy Ship',make:g=>{ const sh=galaxyShip3(); sh.scale.setScalar(.42);
@@ -10337,13 +10367,13 @@ function isl3Reveal(ids,o){
   const step=(i)=>{ if(i>=items.length||!ISL3.on){ ISL3.revealing=false; if(ISL3.ctl) ISL3.ctl.enabled=true; isl3Banner(''); isl3FlyHome(); isl3Chrome(); setTimeout(()=>isl3AfterReveal(o),900); return; }
     const id=items[i], [kind,isle]=id.split(':');
     { const f=FILMS.find(f=>f.at===id); if(f&&!ISL3.filmDone[id]&&!filmSeen(f.id,o)){ ISL3.filmDone[id]=1; isl3Film(f,()=>step(i)); return; } }
-    // After film 19 (or, for a world already past it, before the Moon crystal rises): the child sets their brick in the ring, then film 20
-    if((id==='moonstone:7'||id==='moonstone:8')&&!ISL3.filmDone.ring&&!filmSeen('ring',o)){ ISL3.filmDone.ring=1;
-      isl3Ring(o,()=>{ const f=FILMS.find(f=>f.id==='moon-20'); if(f&&!filmSeen(f.id,o)) isl3Film(f,()=>step(i)); else step(i); }); return; }
+    // When the Moon crystal rises (Chapter 9): the child sets their brick in the ring, then film 20 (order since 5 Nov 2026)
+    if(id==='moonstone:8'&&!ISL3.filmDone.ring&&!filmSeen('ring',o)){ ISL3.filmDone.ring=1;
+      isl3Ring(o,()=>{ const f=FILMS.find(f=>f.id==='moon-20'); if(f&&!filmSeen(f.id,o)) isl3Film(f,()=>step(i),{page:true}); else step(i); }); return; }
     if(kind==='done'){ isl3IsleFinale(isle,()=>step(i+1)); return; }
     if(kind==='final'){ isl3WorldFinale(()=>step(i+1)); return; }
     const I=(kind==='isle'?ISL3.isles[isle]:kind==='home'?ISL3.isles.home:ISL3.isles[kind])||ISL3.isles.home;
-    const obj=kind==='isle'?I.g:ISL3.pieces[id]; const where=obj?new THREE.Box3().setFromObject(obj).getCenter(new THREE.Vector3()):new THREE.Vector3(I.x,1,I.z);
+    const obj=kind==='isle'?I.g:ISL3.pieces[id]; const where=obj?isl3Centre(obj):new THREE.Vector3(I.x,1,I.z);
     const text=revealText(id,o), big=/milestone|complete|home:home1/.test(text.kind);
     isl3FlyTo(where.x,Math.max(.8,where.y*.6),where.z,kind==='isle'?18:13,1100);
     ISL3.fly.done=()=>{ if(kind==='isle') isl3Pop(obj,'rise'); else isl3Pop(obj); sfx.chime(); setTimeout(()=>isl3Confetti(where.x,where.y+1,where.z,big?90:40,big),kind==='isle'?1300:350);
@@ -10352,6 +10382,11 @@ function isl3Reveal(ids,o){
   };
   step(0);
 }
+// The middle of a piece, leaving out light beams (the Moonstone Lighthouse's beam is 14 long and pulled the camera off to one side;
+// Steff, 5 Nov 2026)
+function isl3Centre(obj){ const b=new THREE.Box3(); obj.updateWorldMatrix(true,true);
+  obj.traverse(x=>{ if(x.isMesh&&!x.userData.beam){ let p=x.parent, skip=false; while(p&&p!==obj){ if(p.userData&&p.userData.beam) skip=true; p=p.parent; } if(!skip) b.expandByObject(x,false); } });
+  return (b.isEmpty()?new THREE.Box3().setFromObject(obj):b).getCenter(new THREE.Vector3()); }
 // An island finished: fly round it while fireworks go up all over it, its name in lights
 function isl3IsleFinale(id,next){
   const I=ISL3.isles[id], N=ISLES[id]; if(!I||!N){ next(); return; }
@@ -10733,7 +10768,8 @@ function isl3Ring(o,then){
   const brick=ov.querySelector('.rg-brick'), slot=ov.querySelector('.rg-slot'), stage=ov.querySelector('.rg-stage'), say=ov.querySelector('.film-say');
   let done=false, set=false;
   const end=why=>{ if(done) return; done=true; filmSeenAdd('ring'); ISL3.ringOn=false; if(why) track('ring_'+why);
-    ov.classList.remove('on'); setTimeout(()=>{ ov.remove(); if(!document.querySelector('.is3-cine.page,.is3-ring.page')) document.body.classList.remove('film-on'); then(); },700); };
+    // what comes next (the Moon Crystal film) starts under the ring at once, and the ring fades away on top of it: no cut to the island in between
+    then(); ov.style.zIndex='61'; ov.classList.remove('on'); setTimeout(()=>{ ov.remove(); if(!document.querySelector('.is3-cine.page,.is3-ring.page')) document.body.classList.remove('film-on'); },900); };
   const place=()=>{ if(set||done) return; set=true; filmSeenAdd('ring');
     const a=brick.getBoundingClientRect(), b=slot.getBoundingClientRect();
     brick.classList.remove('drag'); brick.classList.add('fly');
@@ -10754,12 +10790,12 @@ function isl3Ring(o,then){
   brick.addEventListener('pointerup',up); brick.addEventListener('pointercancel',()=>{ d=null; brick.classList.remove('drag'); brick.style.transform=''; });
 }
 window.bloppitRing=()=>{ const r=document.querySelector('.is3-ring'); return r?{lit:r.querySelector('.rg-stage').classList.contains('lit'),say:r.querySelector('.film-say').textContent}:null; };   // for tests
-function isl3Film(f,then){
+function isl3Film(f,then,opt){
   let done=false; const end=why=>{ if(done) return; done=true; clearTimeout(T); try{ v&&v.pause(); }catch(e){}
     if(ov){ ov.classList.remove('on'); ov.querySelectorAll('.cn-skip,.cn-film,.cn-turn,.cn-full').forEach(e=>e.classList.remove('on')); setTimeout(()=>ov.remove(),800); }
     $('#view-island').classList.remove('cine'); filmUnfull(); ISL3.filmOn=null; if(why) track('film_'+why+':'+f.id); setTimeout(then,ov?700:0); };
   if(reduceMotion||/[?&]films?=0\b/.test(location.search)){ then(); return; }
-  const onIsle=!!(ISL3.on&&ISL3.box&&tab==='island'), ov=document.createElement('div'); ov.className='is3-cine film is3-film'+(onIsle?'':' page');
+  const onIsle=!!(ISL3.on&&ISL3.box&&tab==='island')&&!(opt&&opt.page), ov=document.createElement('div'); ov.className='is3-cine film is3-film'+(onIsle?'':' page');
   ov.innerHTML=`<div class="cn-veil off"></div><video class="cn-film" playsinline webkit-playsinline preload="auto" aria-label="${escapeHTML(f.place+': '+f.name)}"></video><div class="cn-turn" aria-hidden="true"><i>📱</i>Turn sideways, or tap ⛶ Full screen</div><button class="cn-skip" type="button">Skip ▸</button>`;
   if(onIsle){ ISL3.box.appendChild(ov); $('#view-island').classList.add('cine'); filmBig(ov); } else { document.body.appendChild(ov); document.body.classList.add('film-on'); }
   requestAnimationFrame(()=>ov.classList.add('on'));
