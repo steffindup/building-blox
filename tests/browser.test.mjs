@@ -1434,3 +1434,20 @@ test('launch screen: the boys say "Bloppit" as Bloppit winks, and not when the s
     await ctx.close();
   }
 });
+
+test('?rewind=moonstone takes a finished world back to Chapter 7 (the Lighthouse): chapters 1–6 and other builds stay; the later chapters, their films, the ring and lufu’s world go; the link runs once', { skip: skip() }, async () => {
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = [];
+    for (const n of ['Rowboat', 'Old map', 'Lookout tower', 'Little bridge', 'Moon gate', 'Constellation cube', 'Lantern', 'Moonstone Lighthouse', 'Moon crystal', 'Galaxy ship', 'Home']) { const k = `m:${n}:12`; builds[k] = { n: 12, s: 2, t: 1e12, c: 1 }; log.push(k); }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 50, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, films: ['moon-12', 'moon-17', 'moon-18', 'moon-19', 'ring', 'moon-20', 'moon-21', 'moon-22'] }));
+    localStorage.setItem('bloppit-realm', 'lufu'); localStorage.setItem('bloppit-lufu-hi', '1'); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 5, finished: 5, welcome: 1 })); } };
+  const t = await open('?nosplash=1&films=0&rewind=moonstone#island', { init: seed });
+  await t.page.waitForFunction(() => window.bloppitIsland3().ctl, null, { timeout: 90000 });
+  const r = await t.page.evaluate(() => { const o = JSON.parse(localStorage.getItem('bloppit-world-v1'));
+    return { builds: Object.keys(o.builds).map((k) => k.split(':')[1]), films: o.films, realm: localStorage.getItem('bloppit-realm'), hi: localStorage.getItem('bloppit-lufu-hi'), url: location.search, note: window.bloppitRewindNote, seen: window.bloppitNext.seen() }; });
+  assert.deepEqual(r.builds, ['Rowboat', 'Old map', 'Lookout tower', 'Little bridge', 'Moon gate', 'Constellation cube', 'Home']);
+  assert.deepEqual(r.films, ['moon-12', 'moon-17']); assert.equal(r.realm, null); assert.equal(r.hi, null);
+  assert.ok(!/rewind/.test(r.url), 'the link takes itself out of the address bar'); assert.match(r.note, /back to Chapter 7, The Moonstone Lighthouse \(4 builds/);
+  assert.ok(!(r.seen || []).some((id) => /^moonstone:[6-9]$/.test(id)), 'the later pieces will rise again');
+  assert.equal(await t.page.evaluate(() => window.bloppitIsland3().lufu), 0, 'back in Bloppitopia');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
