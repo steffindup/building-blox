@@ -10250,9 +10250,11 @@ function galaxyShip3(){ const g=new THREE.Group(), L=7.2, GAL=['#5B2A9E','#3B2C9
   for(let i=0;i<7;i++){ const o=cyl3(.04,.05,2.6,5,'#A8743C',-2.6+i*.95,.8,1.1); o.rotation.x=-1.05; o.rotation.z=.12; g.add(o); }   // down the seaward side (the group stands on the other)
   g.userData.ship=1; return g; }
 // Where everyone stands in lufu's world: by the ship on the shore, the pup and lufu in front
-// lufu and the pup at the front, Bloppit beside them, the six friends just behind (5 Nov 2026: one step back, not three, so the
-// camera's perspective doesn't shrink them: Nora, the tallest friend, looked smaller than Bloppit)
-const LUFU_AT={ship:[6.2,7.4],lufu:[-1.9,4.6],pup:[-.7,4.5],bloppit:[.7,4.3],tiny:[-3.7,3.6],pippa:[-2.7,3.0],bibi:[-1.4,3.2],nora:[2.1,3.0],swoop:[3.3,3.4],arch:[0,-5.2]};
+// It is still Bloppit and the pup's story (Steff, 5 Nov 2026): the two of them at the front, the six friends one step behind (one,
+// not three, so the camera's perspective doesn't shrink them). lufu is not one of the group: it floats apart, a little bigger,
+// on a glowing moonstone before the old moon arch, the world's quiet mystery. Chapter 2 is about helping lufu, but lufu stays lufu
+const LUFU_AT={ship:[6.2,7.4],lufu:[0,-3.5],pup:[-.6,4.5],bloppit:[.7,4.3],tiny:[-3.4,3.5],pippa:[-2.4,3.0],bibi:[-1.2,3.2],nora:[2.1,3.0],swoop:[3.3,3.4],arch:[0,-5.2]};
+const LUFU_BIG=1.25;   // lufu's size in its own world, against its size elsewhere
 const LUFU_STANDS=[[-5.2,-2.4],[5.4,-2.6],[-6.4,.6],[6.6,.4],[-4.2,-5.4],[4.4,-5.6],[-7.2,-3.4],[7.4,-3.6],[-2.2,-7.2],[2.4,-7.4],[-6.2,-6.4],[6.4,-6.6]];
 function lufuBuild(o,W,add){ ISL3.lufu=1;
   add(lufuBody3(),'land:lufu'); ISL3.isles.home={x:0,z:0,r:LUFU_R};
@@ -10272,8 +10274,16 @@ function lufuBuild(o,W,add){ ISL3.lufu=1;
   { const ps=pupStage(o), pg=new THREE.Group(), p3=ch3Isle(ch3PupId(o),pg,TOP3,[1.1,1.5,1.8][ps]); ISL3.p3=p3; if(p3){ ch3Dress(p3,o); p3.ctl.setMode(0); }
     else { const p=new THREE.Sprite(new THREE.SpriteMaterial({map:pupTex3(o),transparent:true,alphaTest:.15})); const h=[1.3,1.5,1.7][ps]*346/300; p.scale.set(h*239/346,h,1); p.center.set(.5,0); p.position.y=TOP3; pg.add(p); pg.userData.bob=2; } tag3(pg,'pup'); ISL3.pupG=pg; place('pup',pg,LUFU_AT.pup); }
   const hitBox=(g,h)=>{ const w=Math.max(1.1,h*.6), tb=new THREE.Mesh(new THREE.BoxGeometry(w,h*1.05,w),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); tb.visible=false; tb.position.y=TOP3+h/2; g.add(tb); };
-  for(const id of ['lufu','tiny','nora','pippa','bibi']){ const C=CAST[id], g=new THREE.Group(), i3=ch3Isle(id,g,TOP3,0), sp=i3?null:sprite3(`/art/char-${id}.png`,C.h,C.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } hitBox(g,C.h);
+  for(const id of ['tiny','nora','pippa','bibi']){ const C=CAST[id], g=new THREE.Group(), i3=ch3Isle(id,g,TOP3,0), sp=i3?null:sprite3(`/art/char-${id}.png`,C.h,C.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } hitBox(g,C.h);
     g.userData.cast=id; if(sp) g.userData.bob=2; ISL3.cast[id]={g,sp,i3}; tag3(g,'char:'+id); place(id,g,LUFU_AT[id]); }
+  // lufu, apart: floating gently over a glowing moonstone before the old arch, with a soft lavender halo on the ground
+  { const C=CAST.lufu, [x,z]=LUFU_AT.lufu, st=new THREE.Group();
+    st.add(mesh3(new THREE.CylinderGeometry(.55,.7,.22,7),m3('#E9E4F7',{emissive:new THREE.Color('#9C86D8'),emissiveIntensity:.35}),0,TOP3+.11,0));
+    const halo=mesh3(new THREE.CircleGeometry(1.6,40),new THREE.MeshBasicMaterial({color:'#B9A3F0',transparent:true,opacity:.22,depthWrite:false}),0,TOP3+.02,0); halo.rotation.x=-Math.PI/2; halo.castShadow=halo.receiveShadow=false; st.add(halo);
+    st.position.set(x,0,z); tag3(st,'char:lufu'); W.add(st);
+    const g=new THREE.Group(), i3=ch3Isle('lufu',g,TOP3,0), sp=i3?null:sprite3('/art/char-lufu.png',C.h,C.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } hitBox(g,C.h);
+    g.scale.setScalar(LUFU_BIG); g.userData.cast='lufu'; ISL3.cast.lufu={g,sp,i3}; tag3(g,'char:lufu');
+    g.position.set(x,.3,z); g.userData.bob=1; W.add(g); }
   { const lv=longtailNow(), art=LONGTAIL_ART[lv], g=new THREE.Group(), l3=ch3Isle(LT3[lv],g,TOP3,0), sp=l3?null:sprite3(`/art/longtail-${art.id}.png`,2.1,art.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } ISL3.l3=l3; hitBox(g,1.9); ISL3.ltNight=false;
     g.userData.longtail=1; ISL3.longtail=g; ISL3.longtailSprite=sp; tag3(g,'longtail:'+lv); place('swoop',g,LUFU_AT.swoop); }
   // the sky: a galaxy band and a huge moon, low behind the cliffs
@@ -10282,7 +10292,7 @@ function lufuBuild(o,W,add){ ISL3.lufu=1;
   ISL3.labels.push({id:'ship',name:'⛵ Sail to Bloppitopia',sub:'on the Galaxy Ship',x:sx+1.5,z:sz+1.2,y:3.2,act:()=>realmGo('bloppitopia')});
 }
 // The views of lufu's world: the whole shore, the ship, the old arch
-function lufuViews(){ const v=[{id:'world',name:'lufu’s world'},{id:'ship',name:'The Galaxy Ship',x:LUFU_AT.ship[0]-.5,z:LUFU_AT.ship[1]-1,y:1.4,R:6.4},{id:'friends',name:(pupName(worldStore())||'Your otter')+' & lufu',x:-.2,z:LUFU_AT.pup[1]-.4,y:TOP3+1.1,R:4.6},{id:'ruin',name:'The old moon arch',x:LUFU_AT.arch[0],z:LUFU_AT.arch[1],y:1.6,R:5}];
+function lufuViews(){ const v=[{id:'world',name:'lufu’s world'},{id:'ship',name:'The Galaxy Ship',x:LUFU_AT.ship[0]-.5,z:LUFU_AT.ship[1]-1,y:1.4,R:6.4},{id:'friends',name:'Bloppit & '+(pupName(worldStore())||'your otter'),x:0,z:LUFU_AT.pup[1]-.4,y:TOP3+1.1,R:4.6},{id:'ruin',name:'The old moon arch',x:LUFU_AT.arch[0],z:LUFU_AT.arch[1],y:1.6,R:5}];
   const cam=ISL3.cam, vf=cam?THREE.MathUtils.degToRad(cam.fov)/2:.5, hf=cam?Math.atan(Math.tan(vf)*cam.aspect):.6; for(const x of v) if(x.R) x.d=Math.max(7,x.R/Math.tan(Math.min(vf,hf))*1.05); return v; }
 function lufuSky3(){ const g=new THREE.Group();
   const moon=new THREE.Mesh(new THREE.SphereGeometry(4.2,24,16),new THREE.MeshBasicMaterial({color:0xF3EEFF})); moon.position.set(-22,34,-62); moon.scale.setScalar(1.4); g.add(moon);
