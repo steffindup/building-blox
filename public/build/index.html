@@ -5774,12 +5774,18 @@ const SAMPLES=[
      x.poly([[a,b-r*1.6],[a+r*.45,b-r*.45],[a+r*1.6,b],[a+r*.45,b+r*.45],[a,b+r*1.6],[a-r*.45,b+r*.45],[a-r*1.6,b],[a-r*.45,b-r*.45]],k); }
    x.fillStyle='#F4F4F4'; x.fillRect(48,70,8,120);
    return [['front',c]]; }},
- {name:'Constellation cube',theme:'Space',hidden:true,make(){ const [c,x]=sheet(240,240,'#ffffff');   // Nora's: a galaxy cube, star trails on its faces
-   x.poly([[120,30],[214,78],[120,126],[26,78]],'#1B2A34'); x.poly([[26,78],[120,126],[120,222],[26,174]],'#0D3C7A'); x.poly([[214,78],[120,126],[120,222],[214,174]],'#20346A');
-   for(const [a,b] of [[70,70],[120,50],[160,66],[100,96],[150,100],[60,120],[80,160],[66,190],[150,140],[180,170],[166,200],[200,130]]) x.dot(a,b,4,'#FFF03A');
-   x.lineWidth=3; x.strokeStyle='#F2CD37'; for(const seg of [[[70,70],[100,96],[150,100],[160,66]],[[60,120],[80,160],[66,190]],[[150,140],[180,170],[166,200]]]){ x.beginPath(); seg.forEach(([a,b],i)=>i?x.lineTo(a,b):x.moveTo(a,b)); x.stroke(); }
-   x.dot(120,50,5,'#AC78BA'); x.dot(100,170,7,'#E9DFFF');   // and one lavender point, on its own
-   return [['front',c]]; }},
+ {name:'Constellation cube',theme:'Space',hidden:true,make(){   // Nora's: a real cube of night sky (front, side and back faces, so it builds as a cube),
+   // each face a constellation drawn on the stud grid (11 × 9 cells): stars in yellow, the lines between them in pale blue, a dark frame
+   // for the cube's edges, and on one side lufu's lavender point on its own (Steff, 5 Nov 2026: the puffed drawing came out a blob)
+   const face=(bg,stars,lines,extra)=>{ const [c,x]=sheet(240,240,'#ffffff'), cw=20, ch=220/9, cell=(i,j,k)=>{ x.fillStyle=k; x.fillRect(10+i*cw,10+j*ch,cw+.5,ch+.5); };   // a white margin, so the corners read as background and the face lines up with the studs
+     for(let j=0;j<9;j++) for(let i=0;i<11;i++) cell(i,j,(i===0||i===10||j===0||j===8)?'#1B2A34':bg);
+     for(const [i,j] of lines) cell(i,j,'#9FC3E9'); for(const [i,j] of stars) cell(i,j,'#FFF03A'); if(extra) cell(extra[0],extra[1],'#AC78BA');
+     return c; };
+   const tw=(i,j)=>[[i,j-1],[i-1,j],[i,j],[i+1,j],[i,j+1]];   // a big twinkle: a plus of five studs
+   const front=face('#0D3C7A',[...tw(3,2),...tw(7,5),[8,1],[1,6],[5,7],[1,1]],[[5,3],[6,4]]);   // two big stars joined by a dotted line, small ones around
+   const side=face('#20346A',[...tw(5,3),[2,6],[8,6],[2,1],[5,7]],[[3,5],[7,5]],[8,1]);         // one big star, and lufu's lavender light off by itself
+   const back=face('#0D3C7A',[...tw(3,4),...tw(7,2),[8,6],[5,7],[1,1]],[[5,3]]);
+   return [['front',front],['side',side],['back',back]]; }},
  {name:'Lantern',theme:'Space',hidden:true,make(){ const [c,x]=sheet(170,240,'#ffffff');   // the pup's: a small lantern to hold out to the light
    x.fillStyle='#352100'; x.rr(60,6,50,18,6); x.fillRect(80,22,10,16);
    x.fillStyle='#6B4229'; x.rr(34,36,102,22,6); x.rr(34,190,102,24,6);
@@ -9524,7 +9530,7 @@ const MYSTERY=[   // one friend per chapter (the Moonstone chapter lock, 30 Oct 
   {name:'Lookout tower',size:17,shape:'puffed',thick:.6,colors:6,who:'Swoop',was:['Tree frog'],film:'The Lookout Tower',story:'You land on Moonstone Isle, but the trees are too tall to see over. Build a lookout tower so Swoop can fly to the top and take a better look!'},
   {name:'Little bridge',size:12,shape:'puffed',thick:.8,colors:7,who:'Tiny',was:['Longtail nest'],film:'The Petal Bridge',story:'A stream blocks the way, and on the far side… tiny glowing footprints! Tiny has gathered broad leaves and big petals. Build a little bridge to get across.'},
   {name:'Moon gate',size:14,shape:'puffed',thick:.7,colors:8,who:'Bibi',was:['Brick chest'],film:'The Moon Gate',story:'An old moon gate lies in pieces across the path. Help Bibi put it back together. What happens when it’s whole?'},
-  {name:'Constellation cube',size:16,shape:'puffed',thick:.7,colors:6,who:'Nora',was:['Jar of stars','Stone arch'],film:'The Constellation Cube',story:'Beyond the gate, a turning cube of stars hides the way. Nora knows star patterns from Brainpeak. Build the cube, and help her work out its secret.'},
+  {name:'Constellation cube',size:9,shape:'puffed',thick:.7,colors:6,who:'Nora',was:['Jar of stars','Stone arch'],film:'The Constellation Cube',story:'Beyond the gate, a turning cube of stars hides the way. Nora knows star patterns from Brainpeak. Build the cube, and help her work out its secret.'},
   {name:'Lantern',size:8,shape:'puffed',thick:.6,colors:5,who:'you',film:'The Answering Light',story:'Just you, for a moment. The lavender light is very close now, pulsing softly, two beats at a time. Build a small lantern and hold it out…'},
   {name:'Moonstone Lighthouse',size:23,shape:'puffed',thick:1,colors:7,who:'Everyone',film:'The Moonstone Lighthouse',story:'All six friends arrive, each carrying a brick in their own colour. Before you stands an old lighthouse, dark for a very long time. Build it together!'},
   {name:'Moon crystal',size:15,shape:'puffed',thick:.7,colors:7,who:'lufu',film:'The Moon Crystal',story:'You step inside the lighthouse alone. At its heart, an empty space glows faintly, waiting. Build the moon crystal to fill it.'},
