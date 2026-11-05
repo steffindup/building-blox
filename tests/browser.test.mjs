@@ -1216,7 +1216,7 @@ test('Chapter 2: the ten mystery chapters end with the Galaxy ship; then lufu’
 });
 
 test('Moonstone Isle once reached: always night, one rowboat (plus the Galaxy ship), no red roof, the moon crystal inside the lighthouse lamp', { skip: skip() }, async () => {
-  const M = [['Rowboat', 10], ['Old map', 15], ['Lookout tower', 17], ['Little bridge', 12], ['Moon gate', 14], ['Constellation cube', 9], ['Lantern', 8], ['Moonstone Lighthouse', 23], ['Moon crystal', 15], ['Galaxy ship', 28]];
+  const M = [['Rowboat', 10], ['Old map', 15], ['Lookout tower', 17], ['Little bridge', 12], ['Moon gate', 14], ['Constellation cube', 9], ['Lantern', 8], ['Moonstone Lighthouse', 23], ['Moon crystal', 14], ['Galaxy ship', 28]];
   const seed = { arg: M, fn: (M) => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; M.forEach(([n, z], i) => { const k = `m:${n}:${z}`; builds[k] = { n: z, s: 2, t: 1e12 + i, c: 1 }; log.push(k); });
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, films: [], pick: 'tree' })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); } };
   const t = await open('?nosplash=1&hour=11&mystery=1#island', { init: seed });
