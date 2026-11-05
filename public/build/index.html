@@ -7812,11 +7812,17 @@ function snapshot(){
     game:game?{lvl:game.lvl,trail:gameTrail(),pen:{...game.pen},hintSteps:[...game.hintSteps],math:game.math?{v:game.math.v,tier:game.math.tier,grade:game.math.grade,locks:game.math.locks,solved:game.math.solved,pts:game.math.pts}:null}:null
   };
 }
+// A Moonstone chapter keeps its own save as well, so leaving it for anything else (Quick Bricks, a trail…) and coming back
+// carries on where you left off: the main save holds only the build on the table (Steff, 5 Nov 2026)
+const MYS_SAVE_KEY='bloppit-mys-save-v1';
+function mysSaveGet(i){ try{ const o=JSON.parse(localStorage.getItem(pkey(MYS_SAVE_KEY))||'null'); return o&&o.ch===i&&o.snap&&o.snap.placedN>0?o.snap:null; }catch(e){ return null; } }
+function mysSaveSet(o){ if(leavingPlayer) return; try{ if(o) localStorage.setItem(pkey(MYS_SAVE_KEY),JSON.stringify(o)); else localStorage.removeItem(pkey(MYS_SAVE_KEY)); }catch(e){} }
 function saveNow(){
   clearTimeout(saveTimer); if(!saveOn||restoring||mp) return;
-  if(model&&cur>=model.steps.length){ storeClear(); $('#saveNote').textContent=''; return; }
+  const mys=typeof mysOn==='function'&&mysOn();
+  if(model&&cur>=model.steps.length){ storeClear(); if(mys) mysSaveSet(null); $('#saveNote').textContent=''; return; }
   const o=snapshot(); if(!o) return;
-  const ok=storeSet(o);
+  const ok=storeSet(o); if(mys&&o.placedN>0) mysSaveSet({ch:mysCh,snap:o});
   $('#saveNote').textContent=ok?'Saved on this device':'Couldn’t save on this device';
 }
 addEventListener('pagehide',saveNow);
@@ -9555,6 +9561,10 @@ function mysteryStart(i){
   const m=MYSTERY[i]; if(!m) return; const k=SAMPLES.findIndex(x=>x.name===m.name); if(k<0) return;
   // Back from the island (the game bar's Moonstone Isle button) to a chapter already on the table: carry on, don't start over (Steff, 5 Nov 2026)
   if(mysOn()&&mysCh===i&&model&&!model.error&&model.bricks&&placedN>0&&placedN<model.bricks.length){ setTab('build'); updateGameBar(); return; }
+  // Left for something else in between: the chapter's own save brings its bricks back
+  const sv=mysSaveGet(i); if(sv&&!mp){ if(game) endGame();
+    restoreSave(sv).then(ok=>{ if(ok&&mysOn()&&mysCh===i){ saveOn=true; setTab('build'); updateGameBar(); updateBuildUI(); frameBuild(false); setStatus(`Welcome back to Chapter ${i+1}! ${placedN} of ${model.bricks.length} bricks placed.`,'ok'); saveNow(); }
+      else { mysSaveSet(null); mysteryStart(i); } }); return; }
   if(mp) mpLeave(); if(game) endGame(); setControls({kind:'model',shape:m.shape,thick:m.thick,tol:48,maxColors:m.colors,gray:true,size:m.size,pw:48,pcol:24});
   loadSample(k); clearTimeout(timer); rebuild(); setTab('build'); updateGameBar(); setStatus(`Chapter ${i+1} of ${MYSTERY.length}, with ${m.who}: ${m.story}`);
 }
