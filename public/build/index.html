@@ -174,7 +174,7 @@ main{max-width:1640px;margin:0 auto;padding-block:20px 0}
 #view-create{grid-template-columns:minmax(0,370px) minmax(0,1fr);align-items:start}
 @media (max-width:860px){#view-create{grid-template-columns:minmax(0,1fr)}}
 .panel{display:grid;gap:16px;min-width:0;align-content:start}
-/* Quick Build: three ways in as tiles, each with its own screen; the current selection and model settings stay on the first one */
+/* Quick Bricks: three ways in as tiles, each with its own screen; the current selection and model settings stay on the first one */
 .qb-tiles{display:grid;gap:10px}
 .qb-tile{display:grid;grid-template-columns:44px minmax(0,1fr);grid-template-rows:auto auto;column-gap:12px;align-items:center;text-align:left;border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--page);color:var(--ink);cursor:pointer;font:inherit;transition:border-color .15s,transform .1s}
 .qb-tile:hover{border-color:var(--accent)}.qb-tile:active{transform:translateY(1px)}
@@ -1706,7 +1706,7 @@ body.film-on{overflow:hidden}
     <button class="tab play4" role="tab" id="tab-sea" data-tab="game" data-sub="sea" aria-selected="false"><span class="n"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span>Flipper Beach</button>
     <button class="tab play3" role="tab" id="tab-blitz" data-tab="blitz" aria-selected="false"><span class="n"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span>Blitz Bay</button>
     <button class="tab play4" role="tab" id="tab-cove" data-tab="daily" aria-selected="false"><span class="n"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span>Brickyard Cove</button>
-    <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span>Quick Build</button>
+    <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span>Quick Bricks</button>
     <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n n2"><img src="/art/head-bloppit.png" alt="" width="256" height="256"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span>Together</button>
   </nav><button class="tabs-arr r" type="button" tabindex="-1" aria-hidden="true">›</button></div>
   <button class="snd-top mus-top" id="musTop" type="button" aria-pressed="true" aria-label="Music" title="Music on or off"><span class="mus-ic" aria-hidden="true"></span></button>
@@ -1749,7 +1749,7 @@ body.film-on{overflow:hidden}
 <div class="hm-main">
   <h3 class="hm-sec" id="hmSolo">Solo</h3>
   <div class="hm-grid four">
-    <button class="hm-tile t-quick wide" data-go="quick" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span><b>Quick Build</b><span>Any puzzle, at your own pace</span></button>
+    <button class="hm-tile t-quick wide" data-go="quick" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span><b>Quick Bricks</b><span>Any puzzle, at your own pace</span></button>
     <button class="hm-tile t-game" data-go="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Frog Trail</b><span id="hmOtterSub">Levels from tiny to tricky</span></button>
     <button class="hm-tile t-brain" data-go="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Brain Trail</b><span id="hmBrainSub">Levels with math puzzles</span></button>
     <button class="hm-tile t-sea" data-go="flip" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span><b>Pippa’s Puzzles</b><span id="hmSeaSub">Mirror puzzles, any time</span></button>
@@ -2165,7 +2165,7 @@ body.film-on{overflow:hidden}
       <p class="msg" id="dyMsg" hidden></p>
     </div>
   </div>
-  <button class="crumb dy-up" id="dyUp" type="button">‹ Quick Build</button>
+  <button class="crumb dy-up" id="dyUp" type="button">‹ Quick Bricks</button>
   <div class="card" id="dyBoard" hidden><div class="gm-head sub-head"><div><h2>🏆 This week’s top 100</h2><p class="note">Clean builds first, then stars. Generated names only; no times. A grown-up can switch it off in the Grown-ups corner.</p></div></div><div class="board" id="dyBoardList"></div></div>
   <p class="note">Bloppit only counts how many people finished this week’s puzzle and how many finished it clean. No real names and no times. The top-100 board shows generated names and stars; a grown-up can switch it off. The counts are deleted after 8 weeks.</p>
 </section>
@@ -2211,7 +2211,7 @@ body.film-on{overflow:hidden}
   <div class="win-btns"><button class="primary sm" id="ldGo" type="button" autofocus>▶ Start the race</button><button class="ghost" id="ldLater" type="button">Not now</button></div>
 </dialog>
 <dialog class="windlg qpdlg" id="qpDlg" aria-labelledby="qpT">
-  <h2 id="qpT">Quick Build</h2>
+  <h2 id="qpT">Quick Bricks</h2>
   <div class="qp-opts">
     <button class="qp-opt isle" id="qpIsle" type="button"><img id="qpImg" src="/art/head-bibi.png" alt=""><b id="qpIsleT">🏝️ Play on Brickyard Cove</b><span>In Bloppitopia: every build grows the island and earns ★, XP and Galaxy Blocks.</span></button>
     <div class="qp-opt qp-quick" id="qpQuickCard"><span class="qp-ic" id="qpQuickIc" aria-hidden="true">⚡</span><b id="qpQuickT">Just Play</b><span id="qpQuickS">Just build. Nothing is added to Bloppitopia.</span>
@@ -3361,14 +3361,14 @@ var subOf={game:'hub',blitz:'hub',mp:'hub'};
 const SUB_OK={game:['hub','otter','brain','sea','flip'],blitz:['hub','cpu','friend'],mp:['hub','start','join']};
 // Which top-bar game a page belongs to (the build screen belongs to whatever you're playing)
 // The top bar: one tab per character. Frog Trail and Brain Trail are both the Trails page (their own level maps), and
-// Pippa's tab is her seaside puzzles (and her daily message in a bottle); the Weekly Bloppit is Bibi's, under Quick Build.
+// Pippa's tab is her seaside puzzles (and her daily message in a bottle); the Weekly Bloppit is Bibi's, under Quick Bricks.
 // Each page has its character at the top: who lives there, their island, their line and what the page is for
 const HERO={
   daily:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Bibi’s Weekly Bloppit',line:'Fresh paint! This week’s one is ready.',desc:'Every Monday Bibi paints a new Weekly Bloppit for the Grand Creation Gallery. Everybody builds the same one, and each one you build adds to Brickyard Cove.',c:['#FFAA55','#DD5F1C']},
   sea:{who:'pippa',art:'/art/char-pippa.png',isle:'Flipper Beach',title:'Pippa’s Puzzles',line:'Ooh, that one’s clean!',desc:'Twelve mirror puzzles wash ashore as Bloppitopia grows: Pippa builds one half, and you flip it to build the other. Each one adds to Flipper Beach, all the way to the Festival Clock in your own colours. And every day the tide brings a message in a bottle.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
   otter:{who:'tiny',art:'/art/char-tiny.png',isle:'Frog Forest',title:'Frog Trail',line:'Small frog, big forest!',desc:'Hop up the trail with Tiny, one level at a time. The levels start tiny and get bigger, and the last is his Lily-pad Palace.',c:['#A6D93A','#3F8F33']},
   brain:{who:'nora',art:'/art/char-nora.png',isle:'Brainpeak',title:'Brain Trail',line:'A clever mind shines in the dark.',desc:'Nora tucks math puzzles into the booklet: solve one to open its page. The last build is her Great Telescope.',c:['#4A6FC0','#1C2B57']},
-  create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Quick Build',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way, and every Monday there’s a new Weekly Bloppit.',c:['#FFAA55','#DD5F1C']},
+  create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Quick Bricks',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way, and every Monday there’s a new Weekly Bloppit.',c:['#FFAA55','#DD5F1C']},
   blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Bloppit Blitz',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Fastest clean build wins.',c:['#5DB4F2','#1F6FC4']},
   mp:{who:'pup',art:'/art/pup.png',isle:'Friendship Harbour',title:'Build Together',line:'Every build is better with a friend!',desc:'Take turns building one model with friends on their own phones, tablets or computers.',c:['#B9A2F7','#6E4FD6']}};
 function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[data-hero="${t}"]`); if(!el) return;
@@ -3485,9 +3485,9 @@ window.addEventListener('popstate',()=>{
   if((location.hash==='#home'?'':location.hash)!==want) try{ history.replaceState({bloppit:tab},'',location.pathname+location.search+want); }catch(e){}
 });
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{ quickPlaySet(false); if(b.dataset.tab!=='build') mpDoneLeave();
-  if(b.dataset.tab==='create'&&mp){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus(`You’re in ${mpWhat()}. Tap Quick Build again to leave it.`,'err'); else showToastLeave(); return; } mpLeave(); }
+  if(b.dataset.tab==='create'&&mp){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus(`You’re in ${mpWhat()}. Tap Quick Bricks again to leave it.`,'err'); else showToastLeave(); return; } mpLeave(); }
   if(b.dataset.tab==='game'&&mp){ setTab(mpHomeTab()); mpMsg(`Leave ${mpWhat()} first to play the levels on your own.`); return; }
-  if(b.dataset.tab==='create'&&game){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus('You’re in a Trail level. Tap Quick Build again to leave it.','err'); else showToastLeave(); return; } endGame(); }
+  if(b.dataset.tab==='create'&&game){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus('You’re in a Trail level. Tap Quick Bricks again to leave it.','err'); else showToastLeave(); return; } endGame(); }
   setTab(b.dataset.tab,b.dataset.sub&&!(mp||mpw)?b.dataset.sub:SUB_OK[b.dataset.tab]&&!(mp||mpw)?'hub':undefined);}));
 // Hub tiles and the "‹ Blitz" links
 document.querySelectorAll('.view .hub [data-sub]').forEach(b=>b.addEventListener('click',()=>{ const t=b.closest('.view').id.slice(5); mpDoneLeave();
@@ -3531,7 +3531,7 @@ addEventListener('resize',buildFit); addEventListener('orientationchange',()=>se
 if('ResizeObserver' in window){ const r=new ResizeObserver(()=>buildFit()); ['#resume','#mpBar','#gameBar'].forEach(q=>{ const e=$(q); if(e) r.observe(e); }); }
 { const top=$('.top'), setH=()=>{ document.documentElement.style.setProperty('--topH',top.offsetHeight+'px'); buildFit(); }; setH();
   if('ResizeObserver' in window) new ResizeObserver(setH).observe(top); }
-// Quick Build's screens: 'home' (the three tiles, the current selection and model settings), 'photo', 'draw' or 'library'
+// Quick Bricks's screens: 'home' (the three tiles, the current selection and model settings), 'photo', 'draw' or 'library'
 const QB_T={photo:'Add a photo',draw:'Draw your own',library:'Pick from the library'};
 function qbShow(screen){ screen=QB_T[screen]?screen:'home';
   document.querySelectorAll('#view-create .panel [data-qb]').forEach(el=>{ el.hidden=el.dataset.qb!==screen; });
@@ -6320,7 +6320,7 @@ document.querySelector('.trail-pick').addEventListener('click',e=>{ const b=e.ta
 // A Pippa puzzle the tide hasn't brought in yet: what it's waiting for, and a button to the build that gets it there
 function tideShow(i){ const L=SEA_LEVELS[i], o=worldStore(), k=seaBuildsTo(i,o), B=bestOf(gameStore(),'sea'), first=SEA_LEVELS.findIndex((x,j)=>!(B[j]>0)), n=nextBuild();
   $('#tdTitle').textContent=`${L.name} is still out at sea`; $('#tdPic').src=levelThumb(L);
-  $('#tdTxt').innerHTML=`The tide brings it in when Bloppitopia reaches <b>${seaPct(i)}%</b> (you’re at ${progressPct(o)}%). That’s <b>${k} more build${k===1?'':'s'}</b> on the other islands: Frog Trail, Brain Trail, Blitz or Quick Build. Pippa’s own puzzles don’t move the tide.`+(first>=0&&first<i?` And build ${escapeHTML(SEA_LEVELS[first].name)} first.`:'');
+  $('#tdTxt').innerHTML=`The tide brings it in when Bloppitopia reaches <b>${seaPct(i)}%</b> (you’re at ${progressPct(o)}%). That’s <b>${k} more build${k===1?'':'s'}</b> on the other islands: Frog Trail, Brain Trail, Blitz or Quick Bricks. Pippa’s own puzzles don’t move the tide.`+(first>=0&&first<i?` And build ${escapeHTML(SEA_LEVELS[first].name)} first.`:'');
   const g=$('#tdGo'); g.hidden=!n; if(n) g.innerHTML=`▶ Play next<small>${escapeHTML(n.t)}</small>`;
   g.onclick=()=>{ $('#tideDlg').close(); if(n) n.go(); }; $('#tdOk').onclick=()=>$('#tideDlg').close(); $('#tideDlg').showModal(); }
 window.bloppitTide=tideShow;   // for tests
@@ -6708,7 +6708,7 @@ function buildStarted(kind){
   if((o.finished||0)===1&&!o.second) { o.second=true; evStoreSet(o); track('second_build_started_by_choice'); }
 }
 // Called when a build is finished (every build, any mode)
-// Quick play keeps nothing for builds that would grow an island: Quick Build, a Trail level, a race against Swoop.
+// Quick play keeps nothing for builds that would grow an island: Quick Bricks, a Trail level, a race against Swoop.
 // The Weekly, challenges, relays and Pippa's own mirror puzzles count as always.
 function quickKeepsNothing(kind){ return !!quickPlay&&!welcomeOn()&&(kind==='quick'||kind==='blitz'||(kind==='trail'&&!!game&&gameTrail()!=='flip')); }
 function buildFinished(kind){
@@ -7710,7 +7710,7 @@ $('#btOpen').onclick=()=>{ const o=worldStore(), day=dayKey(); if(bottleDays(o).
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden) bottleSync(); });
 window.bloppitWorld=()=>{ const o=worldStore(); return {level:otterLevel(o),stage:PUP_STAGES[pupStage(o)].name,galaxy:worldStars(o),stars:worldRating(o),xp:worldXP(o)}; };   // for tests
 window.bloppitBottle=()=>({day:dayKey(),days:bottleDays(worldStore()),xp:worldXP(worldStore()),dot:$('#tab-sea').classList.contains('bottle-on')});   // for tests
-// Bibi's Weekly card on the Quick Build page: this week's model and whether it's done
+// Bibi's Weekly card on the Quick Bricks page: this week's model and whether it's done
 function qbWeeklySync(){ try{ const week=weekOf(), o=weeklyPuzzle(week), me=weeklyStore().weeks[week];
   $('#qbWkImg').src=o.thumb||'/art/head-bibi.png';
   $('#qbWkSub').textContent=me?(me.clean?`${o.name}: built clean ✓ · a new one every Monday`:`${o.name}: built ✓ · try it again for a clean one`):`This week: ${o.name} · ${o.n} bricks`; }catch(e){} }
@@ -7725,7 +7725,7 @@ $('#dyGo').onclick=async()=>{
 };
 $('#dyBook').onclick=()=>{ const o=weeklyPuzzle(weekOf()); if(mp) mpLeave(); if(game) endGame(); weeklyLoad(o); setTab('booklet'); };
 
-/* ---------- Quick Build: pick a puzzle source ---------- */
+/* ---------- Quick Bricks: pick a puzzle source ---------- */
 
 /* ---------- Letting people in (host) ---------- */
 let knockSeen=new Set();
@@ -8046,7 +8046,7 @@ function worldToast(){
   const r=worldLast, el=$('#worldToast'); if(!r){ el.hidden=true; return; }
   el.innerHTML=worldStripHTML(r)+'<span class="ws-go">Island ▸</span>'; el.hidden=false; worldSound(); el.onclick=()=>{ el.hidden=true; setTab('island'); }; clearTimeout(worldToast.t); worldToast.t=setTimeout(()=>{ el.hidden=true; },7000);
 }
-// After a Quick Build's reveal: the stars, and on the first ever finish the pup
+// After a Quick Bricks's reveal: the stars, and on the first ever finish the pup
 function worldAfterQuick(){ pupMaybe(()=>{ const o=worldStore(), g=ISL3.ok&&typeof worldNextGoal==='function'?worldNextGoal(o):null;
   trialDialog({icon:'🧱',title:'You built it!',note:quickPlay?'⚡ Quick play: this one isn’t added to Bloppitopia.':g?(/^Next /.test(g.text)?g.text+' on Moonstone Isle.':'Next on Bloppitopia: '+g.text+'.'):'',next:true,quick:true}); }); }
 function pupMaybe(then){ const o=worldStore(); if(pupName(o)||worldCount(o)!==1||o.pupAsked){ if(then) then(); return; } o.pupAsked=true; worldSet(o); pupOpen(then); }
@@ -8374,7 +8374,7 @@ function modelFacts(k,o){
     again=()=>{ if(mp) mpLeave(); setTrail(tr); startLevel(i); }; }
   else if((m=/^w:(.+)$/.exec(k))){ let nm='Weekly Bloppit'; try{ nm=weeklyPuzzle(m[1]).name; }catch(e){} name=nm; from=`Weekly Bloppit · week of ${fmtDay(Date.parse(m[1]+'T12:00:00'))}`;
     if(m[1]===weekOf()) again=()=>setTab('daily'); }
-  else if((m=/^m:(.+):\d+$/.exec(k))){ name=m[1]; from={welcome:'Your very first build',blitz:'Blitz · a race you won',room:'Build together',challenge:'A challenge',relay:'A relay with a friend'}[b.k]||'Quick Build · the library';
+  else if((m=/^m:(.+):\d+$/.exec(k))){ name=m[1]; from={welcome:'Your very first build',blitz:'Blitz · a race you won',room:'Build together',challenge:'A challenge',relay:'A relay with a friend'}[b.k]||'Quick Bricks · the library';
     const i=SAMPLES.findIndex(x=>x.name===m[1]); if(i>=0&&released(SAMPLES[i])) again=()=>{ if(mp) mpLeave(); if(game) endGame(); loadSample(i); clearTimeout(timer); rebuild(); setTab('build'); }; }
   else if(/^r:/.test(k)){ name='Relay build'; from='A relay with a friend'; }
   return {b,name,from,again};
@@ -9541,7 +9541,7 @@ const ISLES={
     milestone:'The Grand Prix cup',grows:'Every Blitz race you win against Swoop (the 16th is the Grand Prix)',play:'Race Swoop',go:()=>ladderGo()},
   brickworks:{name:'Brickyard Cove',game:'Creative builds',unit:'creation',x:12.4,z:9.6,r:4.3,seed:6.6,ground:['#7CC45E','#4E9E3A'],
     milestone:'The Grand Creation Gallery',grows:'Every build from your own photo or drawing, from the library, and every Weekly Bloppit',play:'Make your own',
-    go:()=>{ pickPuzzle('quick','top'); }},   // Quick Build's first screen: a photo, a drawing or the library
+    go:()=>{ pickPuzzle('quick','top'); }},   // Quick Bricks's first screen: a photo, a drawing or the library
   moonstone:{name:'Moonstone Isle',game:'Chapters',get play(){ const i=mysteryNext(); return i>=0?`▶ Build Chapter ${i+1}: ${mysteryTitle(MYSTERY[i])}`:'Explore Moonstone Isle'; },unit:'chapter',get x(){ return isl3TallNow()?-22.5:23.5; },get z(){ return isl3TallNow()?-11.5:-23.5; },r:4.0,   // far out at sea, in the top corner of the view (upright phones see the world from the side)
    seed:7.7,ground:['#6FB7A4','#4E8F7E'],sand:true,mystery:true,
     milestone:'The Galaxy Ship',grows:'Every chapter you build',go:()=>mysteryGo()},
@@ -10056,7 +10056,7 @@ function isl3Characters(o,W){
    Galaxy ship lies beached; dark violet ground; glowing torch-coral colonies swaying as if underwater; moonstone shards drifting in the air; a ruined
    moonstone arch (the first thing to rebuild one day); dark cliffs behind. Everyone is here: lufu, the pup, Bloppit
    and the six friends, in a loose group by the ship. Builds the child makes while here go on stands on the ground,
-   so Quick Builds and library builds keep working. "Bloppitopia" and "lufu's world" are the two realms; the island
+   so Quick Bricks builds and library builds keep working. "Bloppitopia" and "lufu's world" are the two realms; the island
    view shows one at a time and a button swaps between them (realmGo). Its story is still to be written: "Bloppit
    Chapter 2: Bloppit builds lufu's world". */
 const LUFU_R=12.5, LUFUP=blob3(0,0,LUFU_R,4.7,44), LUFU_T3=new THREE.Vector3(0,3.0,-.6);   // where the camera looks: the group by the ship
@@ -11462,7 +11462,7 @@ function homeGo(where){ mpDoneLeave();
 // "Play on <island>" is Bloppitopia as before (its arrival film the first time, the build grows the island);
 // "Quick play" just builds: no film, and nothing is added to Bloppitopia (no island, ★ record, XP or Galaxy Blocks).
 // Quick play lasts until the player goes back to Bloppitopia (the island, a top tab, or the other choice).
-const QP_TILES={quick:{isle:'brickworks',who:'bibi',t:'Quick Build'},otter:{isle:'otterwood',who:'tiny',t:'Frog Trail'},brain:{isle:'brainpeak',who:'nora',t:'Brain Trail'},cpu:{isle:'blitzbay',who:'swoop',t:'Blitz vs Swoop'}};
+const QP_TILES={quick:{isle:'brickworks',who:'bibi',t:'Quick Bricks'},otter:{isle:'otterwood',who:'tiny',t:'Frog Trail'},brain:{isle:'brainpeak',who:'nora',t:'Brain Trail'},cpu:{isle:'blitzbay',who:'swoop',t:'Blitz vs Swoop'}};
 function quickPlaySet(on){ quickPlay=!!on; document.body.classList.toggle('quick-play',quickPlay); }
 function quickGo(where){ quickPlaySet(true); track('quick_play:'+where);
   if(where==='quick'){ if(game) endGame(); pickPuzzle('quick','top'); return; }
@@ -11471,7 +11471,7 @@ function quickGo(where){ quickPlaySet(true); track('quick_play:'+where);
 // The difficulty slider (Steff, 4 Nov 2026): Quick play (and Pippa's Puzzles, which has no island) has a "How tricky?"
 // slider from Tiny to Super tricky, and a puzzle to match is picked and shown, ready to build (🔀 for another one).
 // Trails and races: their puzzles are already in order from tiny to tricky, so the slider takes a fifth of the list.
-// Quick Build: any library puzzle, made smaller and simpler or bigger and more colourful (QP_LIB).
+// Quick Bricks: any library puzzle, made smaller and simpler or bigger and more colourful (QP_LIB).
 // vs Swoop: the race's own speed comes with it (Warm-up, Race, Full throttle). The slider is kept per tile.
 const QP_LV=['🐣 Tiny','🙂 Easy','🧱 Medium','🤔 Tricky','🔥 Super tricky'];
 const QP_LIB=[{size:6,shape:'flat',thick:.5,colors:2},{size:8,shape:'flat',thick:1,colors:3},{size:10,shape:'puffed',thick:1,colors:4},{size:13,shape:'puffed',thick:1,colors:6},{size:16,shape:'puffed',thick:1,colors:8}];

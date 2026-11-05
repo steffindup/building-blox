@@ -783,7 +783,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   // a model: where it came from, when, stars, best time; then put it away (the card's button)
   const key = (await models())[0];
   const c = await pt('model:' + key); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(400);
-  assert.match(await t.text('#isTip'), /From.*Quick Build.*First built.*Best time1:35.*Bricks/);
+  assert.match(await t.text('#isTip'), /From.*Quick Bricks.*First built.*Best time1:35.*Bricks/);
   await t.page.evaluate(() => [...document.querySelectorAll('#isTip [data-a]')].find((b) => /Put away/.test(b.textContent)).click()); await t.page.waitForTimeout(500);
   assert.equal((await models()).includes(key), false);
   await t.page.evaluate((k) => document.querySelector(`#buildsGrid [data-mkey="${k}"]`).click(), key); await t.page.waitForTimeout(300);
@@ -823,7 +823,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   assert.ok(await pt('decor:bench'), 'the bench is back');
   // the keyboard list has everything too
   assert.ok(await t.page.evaluate(() => document.querySelectorAll('#isA11y [data-info]').length > 15));
-  // the board on the Weekly page (Bibi's, through Quick Build)
+  // the board on the Weekly page (Bibi's, through Quick Bricks)
   await t.page.evaluate(() => { document.getElementById('tab-create').click(); document.getElementById('qbWeekly').click(); }); await t.page.waitForTimeout(1200);
   assert.equal(await t.page.evaluate(() => document.getElementById('dyBoard').hidden), false);
   assert.match(await t.text('#dyBoardList'), /Nobody on the board yet/);
@@ -857,7 +857,7 @@ test('family key: make, attach a player, bring the player to another device', { 
 
 test('draw your own: paint, build as a picture, save with the pup, send as a link', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0#photos');
-  await t.page.evaluate(() => document.querySelector('[data-qb-go="draw"]').click()); await t.page.waitForTimeout(300);   // Quick Build: the Draw your own tile opens its screen
+  await t.page.evaluate(() => document.querySelector('[data-qb-go="draw"]').click()); await t.page.waitForTimeout(300);   // Quick Bricks: the Draw your own tile opens its screen
   const cv = await t.page.$('#drawCv'); await cv.scrollIntoViewIfNeeded(); await t.page.waitForTimeout(300); const r = await cv.boundingBox();
   const cell = (cx, cy) => ({ x: r.x + (cx + .5) * r.width / 24, y: r.y + (cy + .5) * r.height / 24 });
   // a red square outline with a yellow middle: paint strokes, then fill
@@ -1011,7 +1011,7 @@ test('Frog Forest arrival film: Play next to Frog Trail level 1 plays it first, 
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('island arrival films from the menu: vs Swoop plays Blitz Bay’s first, Quick Build plays Brickyard Cove’s, each once', { skip: skip() }, async () => {
+test('island arrival films from the menu: vs Swoop plays Blitz Bay’s first, Quick Bricks plays Brickyard Cove’s, each once', { skip: skip() }, async () => {
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const k = 'm:Cottage:12';
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 10, bonus: 0, builds: { [k]: { n: 12, s: 2, t: 1e12, c: 1, k: 'welcome' } }, log: [k], decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1 }));
     localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); } };
@@ -1040,7 +1040,7 @@ test('Build page: a tile asks Play on the island or Quick play; Quick play has n
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 10, bonus: 0, builds: { [k]: { n: 12, s: 2, t: 1e12, c: 1, k: 'welcome' } }, log: [k], decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1 }));
     localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); } };
   const t = await open('?nosplash=1&films=1', { init: seed });
-  // Quick Build: the choice, then Quick play goes straight to the puzzles, no Brickyard Cove film
+  // Quick Bricks: the choice, then Quick play goes straight to the puzzles, no Brickyard Cove film
   await t.page.evaluate(() => document.querySelector('#view-home [data-go="quick"]').click()); await t.page.waitForTimeout(300);
   assert.equal(await t.page.evaluate(() => document.getElementById('qpDlg').open), true);
   assert.match(await t.text('#qpIsleT'), /Play on Brickyard Cove/);
@@ -1066,7 +1066,7 @@ test('Build page: a tile asks Play on the island or Quick play; Quick play has n
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('the menu order: Quick play, Bloppitopia, the Weekly, Continue, How to play; Solo opens with Quick Build, Race a friend is in Together (phone)', { skip: skip() }, async () => {
+test('the menu order: Quick play, Bloppitopia, the Weekly, Continue, How to play; Solo opens with Quick Bricks, Race a friend is in Together (phone)', { skip: skip() }, async () => {
   const t = await open('?nosplash=1', { viewport: { width: 402, height: 874 }, touch: true, init: { fn: () => { localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); } } });
   await t.page.waitForTimeout(2500); assert.equal(await t.view(), 'view-home');
   const r = await t.page.evaluate(() => { const y = (s) => { const e = document.querySelector(s); return e && !e.hidden ? Math.round(e.getBoundingClientRect().top) : null; }, h = (s) => Math.round(document.querySelector(s).getBoundingClientRect().height);
@@ -1104,7 +1104,7 @@ test('menu Quick play: opens one of the five Solo games at random with its choic
   assert.deepEqual([...t.errors, ...u.errors], []); await u.ctx.close();
 });
 
-test('Build page: the difficulty slider picks a puzzle to match, and Build it starts it (Quick Build, the Trails, vs Swoop, Pippa)', { skip: skip() }, async () => {
+test('Build page: the difficulty slider picks a puzzle to match, and Build it starts it (Quick Bricks, the Trails, vs Swoop, Pippa)', { skip: skip() }, async () => {
   const seed = { fn: () => { const k = 'm:Toadstool:12';
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 10, bonus: 0, builds: { [k]: { n: 12, s: 2, t: 1e12, c: 1, k: 'welcome' } }, log: [k], decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1 }));
     localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); } };
@@ -1121,7 +1121,7 @@ test('Build page: the difficulty slider picks a puzzle to match, and Build it st
   assert.equal(await t.text('#gbName'), q.name); assert.match(await t.text('#gbWhere'), /Quick play/);
   // the slider is kept for that tile
   await tile('otter'); assert.equal((await t.page.evaluate(() => window.bloppitQP())).d, 3); await t.page.evaluate(() => document.getElementById('qpX').click());
-  // Quick Build: a library puzzle, small and simple at Tiny, big at Super tricky
+  // Quick Bricks: a library puzzle, small and simple at Tiny, big at Super tricky
   await tile('quick'); const tiny = await slide(1); const big = await slide(5);
   const nTiny = await t.page.evaluate((name) => window.bloppitLevels.count({ name, sample: name, size: 6, shape: 'flat', thick: .5, colors: 2 }), big.name);
   const nBig = await t.page.evaluate((name) => window.bloppitLevels.count({ name, sample: name, size: 16, shape: 'puffed', thick: 1, colors: 8 }), big.name);
@@ -1302,7 +1302,7 @@ test('Solo: Pippa’s Puzzles on the menu are her own mirror set, all open in an
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('Pippa’s tab: her puzzles and a message in a bottle once a day (+5 XP); the Weekly is Bibi’s, under Quick Build', { skip: skip() }, async () => {
+test('Pippa’s tab: her puzzles and a message in a bottle once a day (+5 XP); the Weekly is Bibi’s, under Quick Bricks', { skip: skip() }, async () => {
   const seed = { fn: () => { localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 }));
     if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [], free: [] })); } };
   const t = await open('?nosplash=1#island', { init: seed });
@@ -1320,7 +1320,7 @@ test('Pippa’s tab: her puzzles and a message in a bottle once a day (+5 XP); t
   // the bottle is only on Pippa's page, not the Frog Trail
   await t.page.evaluate(() => document.getElementById('tab-game').click()); await t.page.waitForTimeout(500);
   assert.equal(await t.page.evaluate(() => getComputedStyle(document.getElementById('bottleCard')).display), 'none');
-  // Bibi's Weekly is on Quick Build too, and the Weekly page lights up the Brickyard Cove tab
+  // Bibi's Weekly is on Quick Bricks too, and the Weekly page lights up the Brickyard Cove tab
   await t.page.evaluate(() => document.getElementById('tab-create').click()); await t.page.waitForTimeout(500);
   assert.match(await t.text('#qbWeekly'), /Bibi’s Weekly Bloppit/);
   await t.page.evaluate(() => document.getElementById('qbWeekly').click()); await t.page.waitForTimeout(800);
