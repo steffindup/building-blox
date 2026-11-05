@@ -10441,7 +10441,6 @@ function isl3IsleFinale(id,next){
   const I=ISL3.isles[id], N=ISLES[id]; if(!I||!N){ next(); return; }
   isl3FlyTo(I.x,1.2,I.z,15,1300); track('world_finale:'+id);
   ISL3.fly.done=()=>{ isl3Banner(`🏆 ${N.name} is complete!`,true); sfx.chime(); setTimeout(()=>sfx.chime(),400); ISL3.jumpT=performance.now();
-    if(id==='moonstone') setTimeout(()=>{ isl3Banner('lufu: “We have found each other.”',true); sfx.chime(); },1500);   // the only words lufu ever says
     for(let k=0;k<6;k++) setTimeout(()=>{ const a=k*1.05; isl3Confetti(I.x+Math.cos(a)*I.r*.6,2.4+(k%3)*.8,I.z+Math.sin(a)*I.r*.6,70,true); },k*450);
     ISL3.revealT=setTimeout(()=>{ isl3FlyTo(I.x,1.0,I.z,11,1600); ISL3.fly.done=()=>{ ISL3.revealT=setTimeout(next,900); }; },2900); };
 }
