@@ -1656,7 +1656,7 @@ body.film-on{overflow:hidden}
 .tabs .tab[aria-selected="true"] .n{background:none}
 .tabs .tab[aria-selected="true"]::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:4px;border-radius:4px;background:var(--tc)}
 #tab-mp .n.n2{position:relative;width:40px!important}#tab-mp .n.n2 img{position:absolute;top:0;width:28px;height:28px}#tab-mp .n.n2 img:first-child{left:0}#tab-mp .n.n2 img:last-child{right:0;transform:scaleX(-1)}   /* Together: two Bloppits, facing each other */
-#tab-island{--tc:#2FB8DC}#tab-sea{--tc:#E8B20E}#tab-create{--tc:#E9772A}#tab-cove{--tc:#E9772A}#tab-game{--tc:#7DBE2E}
+#tab-island{--tc:#2FB8DC}#tab-sea{--tc:#E8B20E}#tab-quick{--tc:#F4BC22}#tab-cove{--tc:#E9772A}#tab-game{--tc:#7DBE2E}
 /* The character at the top of each page */
 .char-hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 20px;align-items:center;border-radius:20px;padding:14px 24px 14px 14px;background:linear-gradient(115deg,var(--h1),var(--h2));color:var(--hink,#fff);box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer;min-width:0;overflow:hidden}
 #view-create>.char-hero{grid-column:1/-1}
@@ -1714,8 +1714,8 @@ body.film-on{overflow:hidden}
     <button class="tab play" role="tab" id="tab-brain" data-tab="game" data-sub="brain" aria-selected="false"><span class="n"><img src="/art/head-nora.png" alt="" width="256" height="256"></span>Brainpeak</button>
     <button class="tab play4" role="tab" id="tab-sea" data-tab="game" data-sub="sea" aria-selected="false"><span class="n"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span>Flipper Beach</button>
     <button class="tab play3" role="tab" id="tab-blitz" data-tab="blitz" aria-selected="false"><span class="n"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span>Blitz Bay</button>
-    <button class="tab play4" role="tab" id="tab-cove" data-tab="daily" aria-selected="false"><span class="n"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span>Brickyard Cove</button>
-    <button class="tab" role="tab" id="tab-create" data-tab="create" aria-selected="true"><span class="n"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span>Quick Bricks</button>
+    <button class="tab play4" role="tab" id="tab-cove" data-tab="create" data-also="daily" aria-selected="false"><span class="n"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span>Brickyard Cove</button>
+    <button class="tab" type="button" id="tab-quick" aria-selected="false"><span class="n"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="48" fill="#F4BC22"/><path d="M56 14 26 56h20l-6 30 34-44H52z" fill="#14202C"/></svg></span>Quick Play</button>
     <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n n2"><img src="/art/head-bloppit.png" alt="" width="256" height="256"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span>Together</button>
   </nav><button class="tabs-arr r" type="button" tabindex="-1" aria-hidden="true">›</button></div>
   <button class="snd-top mus-top" id="musTop" type="button" aria-pressed="true" aria-label="Music" title="Music on or off"><span class="mus-ic" aria-hidden="true"></span></button>
@@ -3392,7 +3392,7 @@ function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[d
   try{ if(ch3On()) cv3Img(im,{who:H.who,frame:'full'}); }catch(e){} }
 document.addEventListener('click',e=>{ const h=e.target.closest('.char-hero'); if(!h) return; const w=h.querySelector('.c3-wrap'); if(w) cv3Play(w,'poke'); try{ const k=h.dataset.k, who=HERO[k]&&[].concat(HERO[k].who)[0]; sfx.voice(who==='swoop'?'longtail':who); }catch(x){} });
 function tabsSync(t){ const sec=sectionOf(t===undefined?tab:t), tr=typeof trail!=='undefined'?trail:'otter'; if(typeof bottleSync==='function') bottleSync();
-  document.querySelectorAll('.tab').forEach(b=>{ let on=b.dataset.tab===sec;
+  document.querySelectorAll('.tab').forEach(b=>{ let on=!!b.dataset.tab&&(b.dataset.tab===sec||(b.dataset.also||'').split(' ').includes(sec));
     if(sec==='game'){ const sub=(t==='game'&&subOf.game)||tr; on=!!b.dataset.sub&&b.dataset.tab==='game'&&b.dataset.sub===sub; }
     // the Weekly Bloppit is Bibi's: the Brickyard Cove tab
     b.setAttribute('aria-selected',on); }); }
@@ -3496,10 +3496,10 @@ window.addEventListener('popstate',()=>{
   const want=navHash(tab)?'#'+navHash(tab):'';
   if((location.hash==='#home'?'':location.hash)!==want) try{ history.replaceState({bloppit:tab},'',location.pathname+location.search+want); }catch(e){}
 });
-document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{ quickPlaySet(false); if(b.dataset.tab!=='build') mpDoneLeave();
-  if(b.dataset.tab==='create'&&mp){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus(`You’re in ${mpWhat()}. Tap Quick Bricks again to leave it.`,'err'); else showToastLeave(); return; } mpLeave(); }
+document.querySelectorAll('.tab[data-tab]').forEach(b=>b.addEventListener('click',()=>{ quickPlaySet(false); if(b.dataset.tab!=='build') mpDoneLeave();
+  if(b.dataset.tab==='create'&&mp){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus(`You’re in ${mpWhat()}. Tap Brickyard Cove again to leave it.`,'err'); else showToastLeave(); return; } mpLeave(); }
   if(b.dataset.tab==='game'&&mp){ setTab(mpHomeTab()); mpMsg(`Leave ${mpWhat()} first to play the levels on your own.`); return; }
-  if(b.dataset.tab==='create'&&game){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus('You’re in a Trail level. Tap Quick Bricks again to leave it.','err'); else showToastLeave(); return; } endGame(); }
+  if(b.dataset.tab==='create'&&game){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus('You’re in a Trail level. Tap Brickyard Cove again to leave it.','err'); else showToastLeave(); return; } endGame(); }
   setTab(b.dataset.tab,b.dataset.sub&&!(mp||mpw)?b.dataset.sub:SUB_OK[b.dataset.tab]&&!(mp||mpw)?'hub':undefined);}));
 // Hub tiles and the "‹ Blitz" links
 document.querySelectorAll('.view .hub [data-sub]').forEach(b=>b.addEventListener('click',()=>{ const t=b.closest('.view').id.slice(5); mpDoneLeave();
@@ -3507,7 +3507,7 @@ document.querySelectorAll('.view .hub [data-sub]').forEach(b=>b.addEventListener
   setTab(t,b.dataset.sub); if(t==='mp'&&b.dataset.sub==='join') requestAnimationFrame(()=>{ const i=$('#mpCodeIn'); if(i) i.focus(); }); }));
 document.querySelectorAll('.view>.crumb[data-up]').forEach(b=>b.addEventListener('click',()=>setTab(b.closest('.view').id.slice(5),'hub')));
 let leaveArmed=false;
-function showToastLeave(){ const t=$('#tab-create'); const o=t.innerHTML; t.innerHTML=t.querySelector('.n').outerHTML+'Tap again to leave'; setTimeout(()=>{t.innerHTML=o;},3000); }
+function showToastLeave(){ const t=$('#tab-cove'); const o=t.innerHTML; t.innerHTML=t.querySelector('.n').outerHTML+'Tap again to leave'; setTimeout(()=>{t.innerHTML=o;},3000); }
 // Choosing a puzzle for Blitz: the Puzzle page shows a banner, and its main button hands the puzzle back to Blitz
 var pickFor=null;
 function syncPick(){ const on=!!pickFor&&pickFor!=='quick'&&tab==='create'; $('#pickBanner').hidden=!on;
@@ -3562,7 +3562,8 @@ function qbShow(screen){ screen=QB_T[screen]?screen:'home';
   try{ if(tab==='create') scrollTo({top:0,behavior:'auto'}); }catch(e){} }
 document.querySelectorAll('[data-qb-go]').forEach(b=>b.addEventListener('click',()=>{ qbShow(b.dataset.qbGo); if(b.dataset.qbGo==='photo') $('#file').click(); }));
 $('#qbBack').onclick=()=>qbShow('home');
-$('#tab-create').addEventListener('click',()=>qbShow('home'));
+$('#tab-cove').addEventListener('click',()=>qbShow('home'));   // Brickyard Cove = Bibi's Quick Bricks (with her Weekly at the top)
+$('#tab-quick').addEventListener('click',()=>quickRandom());   // Quick Play: a random Solo game, like the menu's button (Steff, 5 Nov 2026)
 $('#dyUp').onclick=()=>setTab('create');
 qbShow('home');
 function pickPuzzle(forWhat,src){

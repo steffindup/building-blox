@@ -435,8 +435,8 @@ test('the Weekly is calm: no Blitz tag, no stopwatch, no seconds for a miss; the
   await t.page.evaluate(() => document.getElementById('dyGo').click()); await t.page.waitForTimeout(5000);
   assert.equal(await t.view(), 'view-build');
   const ui = await t.page.evaluate(() => ({ tag: !!document.querySelector('#mpTitle .blitz-tag'), race: document.getElementById('mpRoomBtn').hidden, banner: document.getElementById('turnBanner').hidden,
-    tab: document.querySelector('.tab[aria-selected="true"]')?.dataset.tab }));
-  assert.deepEqual(ui, { tag: false, race: true, banner: true, tab: 'daily' });   // the Weekly is Bibi's: the Brickyard Cove tab
+    tab: document.querySelector('.tab[aria-selected="true"]')?.id }));
+  assert.deepEqual(ui, { tag: false, race: true, banner: true, tab: 'tab-cove' });   // the Weekly is Bibi's: the Brickyard Cove tab
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
@@ -828,7 +828,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   // the keyboard list has everything too
   assert.ok(await t.page.evaluate(() => document.querySelectorAll('#isA11y [data-info]').length > 15));
   // the board on the Weekly page (Bibi's, through Quick Bricks)
-  await t.page.evaluate(() => { document.getElementById('tab-create').click(); document.getElementById('qbWeekly').click(); }); await t.page.waitForTimeout(1200);
+  await t.page.evaluate(() => { document.getElementById('tab-cove').click(); document.getElementById('qbWeekly').click(); }); await t.page.waitForTimeout(1200);
   assert.equal(await t.page.evaluate(() => document.getElementById('dyBoard').hidden), false);
   assert.match(await t.text('#dyBoardList'), /Nobody on the board yet/);
   // the grown-up switch turns it off (and it stays off)
@@ -1339,7 +1339,7 @@ test('Pippa’s tab: her puzzles and a message in a bottle once a day (+5 XP); t
   await t.page.evaluate(() => document.getElementById('tab-game').click()); await t.page.waitForTimeout(500);
   assert.equal(await t.page.evaluate(() => getComputedStyle(document.getElementById('bottleCard')).display), 'none');
   // Bibi's Weekly is on Quick Bricks too, and the Weekly page lights up the Brickyard Cove tab
-  await t.page.evaluate(() => document.getElementById('tab-create').click()); await t.page.waitForTimeout(500);
+  await t.page.evaluate(() => document.getElementById('tab-cove').click()); await t.page.waitForTimeout(500);
   assert.match(await t.text('#qbWeekly'), /Bibi’s Weekly Bloppit/);
   await t.page.evaluate(() => document.getElementById('qbWeekly').click()); await t.page.waitForTimeout(800);
   assert.equal(await t.view(), 'view-daily'); assert.equal(await t.page.evaluate(() => document.querySelector('.tab[aria-selected="true"]').id), 'tab-cove');
