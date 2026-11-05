@@ -29,3 +29,12 @@ of 0.6/255 per pixel in every clip checked.
 The game loads them with three's GLTFLoader plus `public/3d/meshopt_decoder.js` (meshoptimizer 0.22, MIT).
 A compressed model's URL version in `MODEL3` ends in `c` (`v:'2c'`); bump it whenever a file changes, because
 `netlify.toml` tells browsers to keep `/3d/*` for a year.
+
+## lufu in 3D (approved v2, 5 Nov 2026)
+
+`lufu-3d-v2/` holds the approved, locked master (`lufu.glb`, 14 MB) with its `controller.js`, integration notes, approval
+record and previews. The editable Blender file and the review page stay with Steff's delivery (`approved-v2.zip`). The game
+ships a compressed copy at `public/3d/lufu.glb` (1.3 MB, the same steps as the others: `resize 1024 → webp 85 → quantize → meshopt`).
+In the game it is driven by `Lufu3Ctl`, a port of the delivered controller: idle loops; curiosity, awe, reverence, sorrow,
+cheer and offer play once; it blinks while resting; and its eyes, pendant and wisp shift towards the mood colour while a feeling
+plays. A tap cycles curiosity, awe, cheer, reverence and offer (never sorrow). It holds the two-stud galaxy stone throughout.

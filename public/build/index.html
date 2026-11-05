@@ -9239,6 +9239,12 @@ const MODEL3={
   // Your otter (approved v2, 29 Oct 2026): Pup, Splash (25 builds) and Legend (65), one model per age, each holding its
   // 1-, 2- or 3-stud brick in the child's colour, with the wardrobe drawn for that age. Textures at 1024 px for phones;
   // the approved masters (2048 px) are kept outside the game.
+  // lufu (approved v2, 5 Nov 2026): the small moonstone spirit holding its two-stud galaxy stone, with its own rig and eight
+  // clips; driven by Lufu3Ctl below (a port of the delivered controller.js), which also tints its eyes, pendant and wisp by mood.
+  // lufu drifts and never performs, so a tap brings a feeling (curiosity, awe, reverence, a little cheer, the offered stone), not a trick
+  lufu:{glb:'/3d/lufu.glb',v:'2c',own:'lufu',loops:['idle'],night:'idle',reactions:['curiosity','awe','cheer','reverence','offer'],
+    map:{greeting:'curiosity',wave:'curiosity',look_at_you:'curiosity',wake:'curiosity',grumpy_wake:'curiosity',hop:'cheer',happy_hop:'cheer',giggle_wiggle:'cheer',spin:'cheer',
+      cheeky_taunt:'cheer',fly_in_land:'curiosity',surprised_jump:'awe',oops:'awe',show_brick:'offer',focused:'reverence',thinking:'reverence',aha:'awe'}},
   pup0:{glb:'/3d/pup.glb',v:'v2c',...PUP3},
   pup1:{glb:'/3d/pup-growing.glb',v:'v2c',...PUP3},
   pup2:{glb:'/3d/pup-older.glb',v:'v2c',...PUP3}};
@@ -9332,6 +9338,46 @@ class Model3Ctl{
     this.P.mixer.update(dt); this.blink(dt); }
   dispose(){ this.P.dispose(); }
 }
+// lufu's controller, ported from its approved package (design/characters/lufu-3d-v2/controller.js) to the global three and the
+// game's character calls (play, then, poke, wake, setRest, update). Idle loops; curiosity, awe, reverence, sorrow, cheer and offer
+// play once and drift back to idle; a blink now and then while resting. While a feeling plays, the amber light (eyes, pendant,
+// wisp) shifts towards its colour and back: curiosity amber, awe gold, reverence teal, sorrow violet (the series bible).
+const LUFU_MOOD={curiosity:[1.0,.37,.045],reverence:[.07,.82,.69],sorrow:[.53,.20,.92],awe:[1.0,.64,.12]};
+class Lufu3Ctl{
+  constructor(P){ this.P=P; this.C=MODEL3.lufu; this.reactions=this.C.reactions; this.react=Math.floor(Math.random()*this.reactions.length); this.rest='idle'; this.cur=null; this.queued=null; this.a=null; this.nb=3+Math.random()*3;
+    this.lights=[]; const clones=new Map();
+    const light=src=>{ if(!['lufu_amber_light','Wisp_Gold','lufu_wisp_halo'].includes(src.name)) return src; if(clones.has(src)) return clones.get(src);
+      const mt=src.clone(), tint={value:new THREE.Color(1,1,1)}, mix={value:0};
+      if(src.name==='lufu_amber_light'){ mt.onBeforeCompile=sh=>{ sh.uniforms.lufuTint=tint; sh.uniforms.lufuMix=mix; sh.fragmentShader='uniform vec3 lufuTint; uniform float lufuMix;\n'+sh.fragmentShader;
+          sh.fragmentShader=sh.fragmentShader.replace('#include <emissivemap_fragment>',['#include <emissivemap_fragment>','float lufuGlow = max(max(totalEmissiveRadiance.r,totalEmissiveRadiance.g),totalEmissiveRadiance.b);',
+            'float lufuWeight = smoothstep(0.015,0.14,lufuGlow)*lufuMix;','float lufuLuma = dot(diffuseColor.rgb, vec3(.30,.59,.11));','diffuseColor.rgb=mix(diffuseColor.rgb,lufuTint*lufuLuma*1.45,lufuWeight);',
+            'totalEmissiveRadiance=mix(totalEmissiveRadiance,lufuTint*lufuGlow,lufuWeight);'].join('\n')); }; mt.customProgramCacheKey=()=>'lufu-light-v1'; } else ch3Filmic(mt);
+      this.lights.push({mt,src,tint,mix}); clones.set(src,mt); return mt; };
+    P.obj.traverse(n=>{ if(n.isMesh) n.material=Array.isArray(n.material)?n.material.map(light):light(n.material); });
+    this.to('idle',false,0); P.mixer.update(Math.random()*3); }
+  get current(){ const n=this.cur; return n?{getClip:()=>({name:n})}:null; }
+  get activeBase(){ return this.cur?null:{getClip:()=>({name:this.rest})}; }
+  clip(n){ n=this.C.map[n]||n; return this.P.acts[n]?n:null; }
+  has(n){ return !!this.clip(n); }
+  to(n,once,fade){ const A=this.P.acts[n], old=this.a; if(!A||(A===old&&!once)) return;
+    A.reset(); A.setLoop(once?THREE.LoopOnce:THREE.LoopRepeat,once?1:Infinity); A.clampWhenFinished=!!once; A.enabled=true; A.setEffectiveTimeScale(1); A.setEffectiveWeight(1); A.play();
+    if(old&&old!==A){ if(fade) A.crossFadeFrom(old,fade,false); else old.stop(); } this.a=A; }
+  base(){ this.cur=null; this.queued=null; this.to(this.rest,false,.35); }
+  setRest(n){ if(n===this.rest||!this.P.acts[n]) return; this.rest=n; if(!this.cur) this.to(n,false,.5); }
+  play(name){ if(name==='idle'){ this.base(); return true; } const n=this.clip(name); if(!n) return false;
+    this.queued=null; this.cur=n; this.left=this.P.acts[n].getClip().duration; this.to(n,true,n==='blink'?.12:.3); return true; }
+  then(name,next){ if(this.play(name)) this.queued=next; }
+  setMode(){}
+  poke(){ this.react=(this.react+1)%this.reactions.length; this.play(this.reactions[this.react]); }
+  wake(){ this.play('curiosity'); }
+  light(){ const n=this.cur, pal=LUFU_MOOD[n], A=this.a, d=A&&A.getClip().duration, ph=pal&&d?Math.sin(Math.PI*Math.min(1,A.time/d))**2:0;
+    for(const L of this.lights){ L.mix.value=ph; if(pal) L.tint.value.setRGB(...pal);
+      if(L.src.name!=='lufu_amber_light'){ L.mt.color.copy(L.src.color).lerp(L.tint.value,ph); L.mt.emissive.copy(L.src.emissive).lerp(L.tint.value,ph); } } }
+  update(dt){ if(this.cur){ this.left-=dt; if(this.left<=.15){ const q=this.queued; this.queued=null; this.cur=null; if(!(q&&this.play(q))) this.to(this.rest,false,.35); } }
+    else { this.nb-=dt; if(this.nb<=0){ this.nb=3+Math.random()*4; this.play('blink'); } }
+    this.P.mixer.update(dt); this.light(); }
+  dispose(){ for(const L of this.lights) L.mt.dispose(); this.P.dispose(); }
+}
 // Bloppit's controller, ported from the approved package's controller.js (global three r128 instead of a module).
 // Same calls as the drawing's Ch3Ctl: modes 0-5 (idle, garden, fish, read, campfire, doze), a tap cycles five reactions
 // after a look at you, wake, wave, cheer, and any of his clips by name. Props switch discretely (never a tiny watering
@@ -9408,7 +9454,7 @@ class Blop3Ctl{
       for(const [k,v] of [['Half',half],['Closed',closed]]) if(d[k]!=null){ const base=own?a[d[k]]:0; a[d[k]]=base*(1-b)+v*b; } } }
   dispose(){ this.mixer.removeEventListener('finished',this.fin); this.P.dispose(); }
 }
-function ch3Make(id){ if(!CH3.gltf[id]) return null; if(ch3Has3d(id)){ const P=new Model3(id); return {id,root:P.root,P,ctl:MODEL3[id].own?new Blop3Ctl(P):new Model3Ctl(P)}; } const P=new Puppet3(id); return {id,root:P.root,P,ctl:new Ch3Ctl(P)}; }
+function ch3Make(id){ if(!CH3.gltf[id]) return null; if(ch3Has3d(id)){ const P=new Model3(id); return {id,root:P.root,P,ctl:MODEL3[id].own==='lufu'?new Lufu3Ctl(P):MODEL3[id].own?new Blop3Ctl(P):new Model3Ctl(P)}; } const P=new Puppet3(id); return {id,root:P.root,P,ctl:new Ch3Ctl(P)}; }
 // Dressing your otter: its brick colour and what it's wearing (drawn onto it)
 // The otter already standing on the island takes a new brick colour or outfit straight away
 // (it used to keep the old one until the island was next opened)
@@ -11636,6 +11682,10 @@ window.bloppitGrip=async()=>{ await ch3Get('bloppit'); await ch3Model('bloppit')
 window.bloppitCharShot=async(id,frame,px,opt)=>{ opt=opt||{}; await ch3Get(id); if(opt.model) await ch3Model(id); if(opt.exp) M3.exp.value=opt.exp; const r=cv3R(), sc=new THREE.Scene(), cam=new THREE.PerspectiveCamera(24,1,.05,60), i=ch3Make(id); sc.add(i.root); cv3Lights(sc);
   ch3Dress(i,{log:[]},{ci:opt.ci!=null?opt.ci:0,wear:opt.wear||{}}); i.ctl.update(.6); if(opt.clip){ i.ctl.play(opt.clip); i.ctl.update(0); i.ctl.update(opt.t||0); }
   cv3Aim(cam,[id],frame||'full',1,-.25); r.setScissorTest(false); r.setSize(px||420,px||420,false); r.setViewport(0,0,px||420,px||420); r.clear(); r.render(sc,cam); const u=r.domElement.toDataURL('image/png'); i.ctl.dispose(); return u; };
+// for tests: lufu's 3D model and its controller (a feeling, its light, back to idle)
+window.bloppitLufu3=async()=>{ await ch3Get('lufu'); await ch3Model('lufu'); const i=ch3Make('lufu'), c=i.ctl, out={kind:i.P.kind,ctl:c.constructor.name,clips:Object.keys(i.P.acts).sort(),lights:c.lights.length};
+  c.play('surprised_jump'); out.mapped=c.cur; c.play('curiosity'); c.update(1.4); out.mid=c.lights[0].mix.value; out.tint=c.lights[0].tint.value.getHexString(); out.want=new THREE.Color(1.0,.37,.045).getHexString();
+  for(let k=0;k<40;k++) c.update(.1); out.after=c.cur; out.rest=c.a===i.P.acts.idle||c.a===i.P.acts.blink; out.calm=c.lights[0].mix.value; c.dispose(); return out; };
 // for tests: load a 3D pup, dress it, and say which bricks, outfits and extras show
 window.bloppitPup3=async(id,ci,wear)=>{ await ch3Get(id); await ch3Model(id); const i=ch3Make(id); ch3Dress(i,{log:[]},{ci,wear}); const on={bricks:[],outfits:new Set(),extras:new Set(),hex:''};
   i.P.obj.traverse(n=>{ const u=n.userData||{}; if(u.brickVariant&&n.visible){ on.bricks.push(u.brickVariant); n.traverse(m=>{ if(!m.isMesh) return; const top=[].concat(m.material).find(x=>/Top/.test(x.name)); if(top) on.hex=top.color.clone().convertLinearToSRGB().getHexString(); }); }
