@@ -8991,7 +8991,7 @@ const CAST={
   bibi:{name:'Bibi',kind:'the Lion Cub',isle:'brickworks',brick:'orange',h:1.85,aspect:241/360,tag:'Build it bold!',
     who:'The maker of Brickyard Cove',story:'Bibi runs the workshop and paints everything in sight. Every Monday he paints a new Weekly Bloppit, and whatever you make, he puts it on show and roars with pride.',
     loves:'Big ideas, bright paint, and the crane',secret:'His roar is more of a squeak. He knows, and he roars anyway.',lines:['Build it bold!','If you can dream it, brick it!','ROAR! That’s brilliant!']},
-  lufu:{name:'lufu',kind:'',isle:'moonstone',brick:'moonstone',h:1.2,aspect:237/360,tag:'We have found each other.',
+  lufu:{name:'lufu',kind:'',isle:'moonstone',brick:'moonstone',h:1.5,aspect:237/360,tag:'We have found each other.',
     who:'A small, shy spirit of light',story:'lufu lived alone on Moonstone Isle for so long that its glow, and the stars above it, almost went out. Then you came, and built the crystal that made it shine again.',
     loves:'The stars, quiet company, and you',secret:'lufu has spoken only once: “We have found each other.”',lines:['✨','(lufu glows softly)','(a happy little wisp curls up)']},
 };
@@ -9239,6 +9239,12 @@ const MODEL3={
   // Your otter (approved v2, 29 Oct 2026): Pup, Splash (25 builds) and Legend (65), one model per age, each holding its
   // 1-, 2- or 3-stud brick in the child's colour, with the wardrobe drawn for that age. Textures at 1024 px for phones;
   // the approved masters (2048 px) are kept outside the game.
+  // lufu (approved v2, 5 Nov 2026): the small moonstone spirit holding its two-stud galaxy stone, with its own rig and eight
+  // clips; driven by Lufu3Ctl below (a port of the delivered controller.js), which also tints its eyes, pendant and wisp by mood.
+  // lufu drifts and never performs, so a tap brings a feeling (curiosity, awe, reverence, a little cheer, the offered stone), not a trick
+  lufu:{glb:'/3d/lufu.glb',v:'2c',own:'lufu',loops:['idle'],night:'idle',reactions:['curiosity','awe','cheer','reverence','offer'],
+    map:{greeting:'curiosity',wave:'curiosity',look_at_you:'curiosity',wake:'curiosity',grumpy_wake:'curiosity',hop:'cheer',happy_hop:'cheer',giggle_wiggle:'cheer',spin:'cheer',
+      cheeky_taunt:'cheer',fly_in_land:'curiosity',surprised_jump:'awe',oops:'awe',show_brick:'offer',focused:'reverence',thinking:'reverence',aha:'awe'}},
   pup0:{glb:'/3d/pup.glb',v:'v2c',...PUP3},
   pup1:{glb:'/3d/pup-growing.glb',v:'v2c',...PUP3},
   pup2:{glb:'/3d/pup-older.glb',v:'v2c',...PUP3}};
@@ -9332,6 +9338,46 @@ class Model3Ctl{
     this.P.mixer.update(dt); this.blink(dt); }
   dispose(){ this.P.dispose(); }
 }
+// lufu's controller, ported from its approved package (design/characters/lufu-3d-v2/controller.js) to the global three and the
+// game's character calls (play, then, poke, wake, setRest, update). Idle loops; curiosity, awe, reverence, sorrow, cheer and offer
+// play once and drift back to idle; a blink now and then while resting. While a feeling plays, the amber light (eyes, pendant,
+// wisp) shifts towards its colour and back: curiosity amber, awe gold, reverence teal, sorrow violet (the series bible).
+const LUFU_MOOD={curiosity:[1.0,.37,.045],reverence:[.07,.82,.69],sorrow:[.53,.20,.92],awe:[1.0,.64,.12]};
+class Lufu3Ctl{
+  constructor(P){ this.P=P; this.C=MODEL3.lufu; this.reactions=this.C.reactions; this.react=Math.floor(Math.random()*this.reactions.length); this.rest='idle'; this.cur=null; this.queued=null; this.a=null; this.nb=3+Math.random()*3;
+    this.lights=[]; const clones=new Map();
+    const light=src=>{ if(!['lufu_amber_light','Wisp_Gold','lufu_wisp_halo'].includes(src.name)) return src; if(clones.has(src)) return clones.get(src);
+      const mt=src.clone(), tint={value:new THREE.Color(1,1,1)}, mix={value:0};
+      if(src.name==='lufu_amber_light'){ mt.onBeforeCompile=sh=>{ sh.uniforms.lufuTint=tint; sh.uniforms.lufuMix=mix; sh.fragmentShader='uniform vec3 lufuTint; uniform float lufuMix;\n'+sh.fragmentShader;
+          sh.fragmentShader=sh.fragmentShader.replace('#include <emissivemap_fragment>',['#include <emissivemap_fragment>','float lufuGlow = max(max(totalEmissiveRadiance.r,totalEmissiveRadiance.g),totalEmissiveRadiance.b);',
+            'float lufuWeight = smoothstep(0.015,0.14,lufuGlow)*lufuMix;','float lufuLuma = dot(diffuseColor.rgb, vec3(.30,.59,.11));','diffuseColor.rgb=mix(diffuseColor.rgb,lufuTint*lufuLuma*1.45,lufuWeight);',
+            'totalEmissiveRadiance=mix(totalEmissiveRadiance,lufuTint*lufuGlow,lufuWeight);'].join('\n')); }; mt.customProgramCacheKey=()=>'lufu-light-v1'; } else ch3Filmic(mt);
+      this.lights.push({mt,src,tint,mix}); clones.set(src,mt); return mt; };
+    P.obj.traverse(n=>{ if(n.isMesh) n.material=Array.isArray(n.material)?n.material.map(light):light(n.material); });
+    this.to('idle',false,0); P.mixer.update(Math.random()*3); }
+  get current(){ const n=this.cur; return n?{getClip:()=>({name:n})}:null; }
+  get activeBase(){ return this.cur?null:{getClip:()=>({name:this.rest})}; }
+  clip(n){ n=this.C.map[n]||n; return this.P.acts[n]?n:null; }
+  has(n){ return !!this.clip(n); }
+  to(n,once,fade){ const A=this.P.acts[n], old=this.a; if(!A||(A===old&&!once)) return;
+    A.reset(); A.setLoop(once?THREE.LoopOnce:THREE.LoopRepeat,once?1:Infinity); A.clampWhenFinished=!!once; A.enabled=true; A.setEffectiveTimeScale(1); A.setEffectiveWeight(1); A.play();
+    if(old&&old!==A){ if(fade) A.crossFadeFrom(old,fade,false); else old.stop(); } this.a=A; }
+  base(){ this.cur=null; this.queued=null; this.to(this.rest,false,.35); }
+  setRest(n){ if(n===this.rest||!this.P.acts[n]) return; this.rest=n; if(!this.cur) this.to(n,false,.5); }
+  play(name){ if(name==='idle'){ this.base(); return true; } const n=this.clip(name); if(!n) return false;
+    this.queued=null; this.cur=n; this.left=this.P.acts[n].getClip().duration; this.to(n,true,n==='blink'?.12:.3); return true; }
+  then(name,next){ if(this.play(name)) this.queued=next; }
+  setMode(){}
+  poke(){ this.react=(this.react+1)%this.reactions.length; this.play(this.reactions[this.react]); }
+  wake(){ this.play('curiosity'); }
+  light(){ const n=this.cur, pal=LUFU_MOOD[n], A=this.a, d=A&&A.getClip().duration, ph=pal&&d?Math.sin(Math.PI*Math.min(1,A.time/d))**2:0;
+    for(const L of this.lights){ L.mix.value=ph; if(pal) L.tint.value.setRGB(...pal);
+      if(L.src.name!=='lufu_amber_light'){ L.mt.color.copy(L.src.color).lerp(L.tint.value,ph); L.mt.emissive.copy(L.src.emissive).lerp(L.tint.value,ph); } } }
+  update(dt){ if(this.cur){ this.left-=dt; if(this.left<=.15){ const q=this.queued; this.queued=null; this.cur=null; if(!(q&&this.play(q))) this.to(this.rest,false,.35); } }
+    else { this.nb-=dt; if(this.nb<=0){ this.nb=3+Math.random()*4; this.play('blink'); } }
+    this.P.mixer.update(dt); this.light(); }
+  dispose(){ for(const L of this.lights) L.mt.dispose(); this.P.dispose(); }
+}
 // Bloppit's controller, ported from the approved package's controller.js (global three r128 instead of a module).
 // Same calls as the drawing's Ch3Ctl: modes 0-5 (idle, garden, fish, read, campfire, doze), a tap cycles five reactions
 // after a look at you, wake, wave, cheer, and any of his clips by name. Props switch discretely (never a tiny watering
@@ -9408,7 +9454,7 @@ class Blop3Ctl{
       for(const [k,v] of [['Half',half],['Closed',closed]]) if(d[k]!=null){ const base=own?a[d[k]]:0; a[d[k]]=base*(1-b)+v*b; } } }
   dispose(){ this.mixer.removeEventListener('finished',this.fin); this.P.dispose(); }
 }
-function ch3Make(id){ if(!CH3.gltf[id]) return null; if(ch3Has3d(id)){ const P=new Model3(id); return {id,root:P.root,P,ctl:MODEL3[id].own?new Blop3Ctl(P):new Model3Ctl(P)}; } const P=new Puppet3(id); return {id,root:P.root,P,ctl:new Ch3Ctl(P)}; }
+function ch3Make(id){ if(!CH3.gltf[id]) return null; if(ch3Has3d(id)){ const P=new Model3(id); return {id,root:P.root,P,ctl:MODEL3[id].own==='lufu'?new Lufu3Ctl(P):MODEL3[id].own?new Blop3Ctl(P):new Model3Ctl(P)}; } const P=new Puppet3(id); return {id,root:P.root,P,ctl:new Ch3Ctl(P)}; }
 // Dressing your otter: its brick colour and what it's wearing (drawn onto it)
 // The otter already standing on the island takes a new brick colour or outfit straight away
 // (it used to keep the old one until the island was next opened)
@@ -10204,7 +10250,11 @@ function galaxyShip3(){ const g=new THREE.Group(), L=7.2, GAL=['#5B2A9E','#3B2C9
   for(let i=0;i<7;i++){ const o=cyl3(.04,.05,2.6,5,'#A8743C',-2.6+i*.95,.8,1.1); o.rotation.x=-1.05; o.rotation.z=.12; g.add(o); }   // down the seaward side (the group stands on the other)
   g.userData.ship=1; return g; }
 // Where everyone stands in lufu's world: by the ship on the shore, the pup and lufu in front
-const LUFU_AT={ship:[6.2,7.4],lufu:[-2.3,5.0],pup:[-1.0,4.6],bloppit:[.6,4.2],tiny:[-4.6,2.6],nora:[2.6,2.4],pippa:[-3.6,1.1],swoop:[2.0,.6],bibi:[-.7,1.1],arch:[0,-5.2]};
+// It is still Bloppit and the pup's story (Steff, 5 Nov 2026): the two of them at the front, the six friends one step behind (one,
+// not three, so the camera's perspective doesn't shrink them). lufu is not one of the group: it floats apart, a little bigger,
+// on a glowing moonstone before the old moon arch, the world's quiet mystery. Chapter 2 is about helping lufu, but lufu stays lufu
+const LUFU_AT={ship:[6.2,7.4],lufu:[0,-3.5],pup:[-.6,4.5],bloppit:[.7,4.3],tiny:[-3.4,3.5],pippa:[-2.4,3.0],bibi:[-1.2,3.2],nora:[2.1,3.0],swoop:[3.3,3.4],arch:[0,-5.2]};
+const LUFU_BIG=1.25;   // lufu's size in its own world, against its size elsewhere
 const LUFU_STANDS=[[-5.2,-2.4],[5.4,-2.6],[-6.4,.6],[6.6,.4],[-4.2,-5.4],[4.4,-5.6],[-7.2,-3.4],[7.4,-3.6],[-2.2,-7.2],[2.4,-7.4],[-6.2,-6.4],[6.4,-6.6]];
 function lufuBuild(o,W,add){ ISL3.lufu=1;
   add(lufuBody3(),'land:lufu'); ISL3.isles.home={x:0,z:0,r:LUFU_R};
@@ -10224,8 +10274,16 @@ function lufuBuild(o,W,add){ ISL3.lufu=1;
   { const ps=pupStage(o), pg=new THREE.Group(), p3=ch3Isle(ch3PupId(o),pg,TOP3,[1.1,1.5,1.8][ps]); ISL3.p3=p3; if(p3){ ch3Dress(p3,o); p3.ctl.setMode(0); }
     else { const p=new THREE.Sprite(new THREE.SpriteMaterial({map:pupTex3(o),transparent:true,alphaTest:.15})); const h=[1.3,1.5,1.7][ps]*346/300; p.scale.set(h*239/346,h,1); p.center.set(.5,0); p.position.y=TOP3; pg.add(p); pg.userData.bob=2; } tag3(pg,'pup'); ISL3.pupG=pg; place('pup',pg,LUFU_AT.pup); }
   const hitBox=(g,h)=>{ const w=Math.max(1.1,h*.6), tb=new THREE.Mesh(new THREE.BoxGeometry(w,h*1.05,w),ISL3.hitMat||(ISL3.hitMat=new THREE.MeshBasicMaterial())); tb.visible=false; tb.position.y=TOP3+h/2; g.add(tb); };
-  for(const id of ['lufu','tiny','nora','pippa','bibi']){ const C=CAST[id], g=new THREE.Group(), i3=ch3Isle(id,g,TOP3,0), sp=i3?null:sprite3(`/art/char-${id}.png`,C.h,C.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } hitBox(g,C.h);
+  for(const id of ['tiny','nora','pippa','bibi']){ const C=CAST[id], g=new THREE.Group(), i3=ch3Isle(id,g,TOP3,0), sp=i3?null:sprite3(`/art/char-${id}.png`,C.h,C.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } hitBox(g,C.h);
     g.userData.cast=id; if(sp) g.userData.bob=2; ISL3.cast[id]={g,sp,i3}; tag3(g,'char:'+id); place(id,g,LUFU_AT[id]); }
+  // lufu, apart: floating gently over a glowing moonstone before the old arch, with a soft lavender halo on the ground
+  { const C=CAST.lufu, [x,z]=LUFU_AT.lufu, st=new THREE.Group();
+    st.add(mesh3(new THREE.CylinderGeometry(.55,.7,.22,7),m3('#E9E4F7',{emissive:new THREE.Color('#9C86D8'),emissiveIntensity:.35}),0,TOP3+.11,0));
+    const halo=mesh3(new THREE.CircleGeometry(1.6,40),new THREE.MeshBasicMaterial({color:'#B9A3F0',transparent:true,opacity:.22,depthWrite:false}),0,TOP3+.02,0); halo.rotation.x=-Math.PI/2; halo.castShadow=halo.receiveShadow=false; st.add(halo);
+    st.position.set(x,0,z); tag3(st,'char:lufu'); W.add(st);
+    const g=new THREE.Group(), i3=ch3Isle('lufu',g,TOP3,0), sp=i3?null:sprite3('/art/char-lufu.png',C.h,C.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } hitBox(g,C.h);
+    g.scale.setScalar(LUFU_BIG); g.userData.cast='lufu'; ISL3.cast.lufu={g,sp,i3}; tag3(g,'char:lufu');
+    g.position.set(x,.3,z); g.userData.bob=1; W.add(g); }
   { const lv=longtailNow(), art=LONGTAIL_ART[lv], g=new THREE.Group(), l3=ch3Isle(LT3[lv],g,TOP3,0), sp=l3?null:sprite3(`/art/longtail-${art.id}.png`,2.1,art.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } ISL3.l3=l3; hitBox(g,1.9); ISL3.ltNight=false;
     g.userData.longtail=1; ISL3.longtail=g; ISL3.longtailSprite=sp; tag3(g,'longtail:'+lv); place('swoop',g,LUFU_AT.swoop); }
   // the sky: a galaxy band and a huge moon, low behind the cliffs
@@ -10234,7 +10292,7 @@ function lufuBuild(o,W,add){ ISL3.lufu=1;
   ISL3.labels.push({id:'ship',name:'⛵ Sail to Bloppitopia',sub:'on the Galaxy Ship',x:sx+1.5,z:sz+1.2,y:3.2,act:()=>realmGo('bloppitopia')});
 }
 // The views of lufu's world: the whole shore, the ship, the old arch
-function lufuViews(){ const v=[{id:'world',name:'lufu’s world'},{id:'ship',name:'The Galaxy Ship',x:LUFU_AT.ship[0]-.5,z:LUFU_AT.ship[1]-1,y:1.4,R:6.4},{id:'friends',name:(pupName(worldStore())||'Your otter')+' & lufu',x:LUFU_AT.pup[0],z:LUFU_AT.pup[1],y:TOP3+1.1,R:3.6},{id:'ruin',name:'The old moon arch',x:LUFU_AT.arch[0],z:LUFU_AT.arch[1],y:1.6,R:5}];
+function lufuViews(){ const v=[{id:'world',name:'lufu’s world'},{id:'ship',name:'The Galaxy Ship',x:LUFU_AT.ship[0]-.5,z:LUFU_AT.ship[1]-1,y:1.4,R:6.4},{id:'friends',name:'Bloppit & '+(pupName(worldStore())||'your otter'),x:0,z:LUFU_AT.pup[1]-.4,y:TOP3+1.1,R:4.6},{id:'ruin',name:'The old moon arch',x:LUFU_AT.arch[0],z:LUFU_AT.arch[1],y:1.6,R:5}];
   const cam=ISL3.cam, vf=cam?THREE.MathUtils.degToRad(cam.fov)/2:.5, hf=cam?Math.atan(Math.tan(vf)*cam.aspect):.6; for(const x of v) if(x.R) x.d=Math.max(7,x.R/Math.tan(Math.min(vf,hf))*1.05); return v; }
 function lufuSky3(){ const g=new THREE.Group();
   const moon=new THREE.Mesh(new THREE.SphereGeometry(4.2,24,16),new THREE.MeshBasicMaterial({color:0xF3EEFF})); moon.position.set(-22,34,-62); moon.scale.setScalar(1.4); g.add(moon);
@@ -10395,7 +10453,6 @@ function isl3IsleFinale(id,next){
   const I=ISL3.isles[id], N=ISLES[id]; if(!I||!N){ next(); return; }
   isl3FlyTo(I.x,1.2,I.z,15,1300); track('world_finale:'+id);
   ISL3.fly.done=()=>{ isl3Banner(`🏆 ${N.name} is complete!`,true); sfx.chime(); setTimeout(()=>sfx.chime(),400); ISL3.jumpT=performance.now();
-    if(id==='moonstone') setTimeout(()=>{ isl3Banner('lufu: “We have found each other.”',true); sfx.chime(); },1500);   // the only words lufu ever says
     for(let k=0;k<6;k++) setTimeout(()=>{ const a=k*1.05; isl3Confetti(I.x+Math.cos(a)*I.r*.6,2.4+(k%3)*.8,I.z+Math.sin(a)*I.r*.6,70,true); },k*450);
     ISL3.revealT=setTimeout(()=>{ isl3FlyTo(I.x,1.0,I.z,11,1600); ISL3.fly.done=()=>{ ISL3.revealT=setTimeout(next,900); }; },2900); };
 }
@@ -11636,6 +11693,10 @@ window.bloppitGrip=async()=>{ await ch3Get('bloppit'); await ch3Model('bloppit')
 window.bloppitCharShot=async(id,frame,px,opt)=>{ opt=opt||{}; await ch3Get(id); if(opt.model) await ch3Model(id); if(opt.exp) M3.exp.value=opt.exp; const r=cv3R(), sc=new THREE.Scene(), cam=new THREE.PerspectiveCamera(24,1,.05,60), i=ch3Make(id); sc.add(i.root); cv3Lights(sc);
   ch3Dress(i,{log:[]},{ci:opt.ci!=null?opt.ci:0,wear:opt.wear||{}}); i.ctl.update(.6); if(opt.clip){ i.ctl.play(opt.clip); i.ctl.update(0); i.ctl.update(opt.t||0); }
   cv3Aim(cam,[id],frame||'full',1,-.25); r.setScissorTest(false); r.setSize(px||420,px||420,false); r.setViewport(0,0,px||420,px||420); r.clear(); r.render(sc,cam); const u=r.domElement.toDataURL('image/png'); i.ctl.dispose(); return u; };
+// for tests: lufu's 3D model and its controller (a feeling, its light, back to idle)
+window.bloppitLufu3=async()=>{ await ch3Get('lufu'); await ch3Model('lufu'); const i=ch3Make('lufu'), c=i.ctl, out={kind:i.P.kind,ctl:c.constructor.name,clips:Object.keys(i.P.acts).sort(),lights:c.lights.length};
+  c.play('surprised_jump'); out.mapped=c.cur; c.play('curiosity'); c.update(1.4); out.mid=c.lights[0].mix.value; out.tint=c.lights[0].tint.value.getHexString(); out.want=new THREE.Color(1.0,.37,.045).getHexString();
+  for(let k=0;k<40;k++) c.update(.1); out.after=c.cur; out.rest=c.a===i.P.acts.idle||c.a===i.P.acts.blink; out.calm=c.lights[0].mix.value; c.dispose(); return out; };
 // for tests: load a 3D pup, dress it, and say which bricks, outfits and extras show
 window.bloppitPup3=async(id,ci,wear)=>{ await ch3Get(id); await ch3Model(id); const i=ch3Make(id); ch3Dress(i,{log:[]},{ci,wear}); const on={bricks:[],outfits:new Set(),extras:new Set(),hex:''};
   i.P.obj.traverse(n=>{ const u=n.userData||{}; if(u.brickVariant&&n.visible){ on.bricks.push(u.brickVariant); n.traverse(m=>{ if(!m.isMesh) return; const top=[].concat(m.material).find(x=>/Top/.test(x.name)); if(top) on.hex=top.color.clone().convertLinearToSRGB().getHexString(); }); }

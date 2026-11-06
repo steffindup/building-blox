@@ -1488,3 +1488,14 @@ test('the last build: Moonstone complete, the Moonstone crown, then The End; sai
   assert.equal(await t.page.evaluate(() => window.bloppitIsland3().lufu), 0, 'back in Bloppitopia');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
+
+test('lufu in 3D (approved v2): eight clips, its own controller; a feeling plays once, tints its light towards the mood colour and drifts back to idle', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&films=0');
+  await t.page.waitForFunction(() => typeof window.bloppitLufu3 === 'function', null, { timeout: 30000 });
+  const r = await t.page.evaluate(() => window.bloppitLufu3());
+  assert.equal(r.kind, 'model'); assert.equal(r.ctl, 'Lufu3Ctl'); assert.deepEqual(r.clips, ['awe', 'blink', 'cheer', 'curiosity', 'idle', 'offer', 'reverence', 'sorrow']);
+  assert.ok(r.lights >= 3, 'eyes, pendant and wisp'); assert.equal(r.mapped, 'awe', 'a drawing’s surprise is lufu’s awe');
+  assert.ok(r.mid > .5, 'mid-feeling, the light has turned'); assert.equal(r.tint, r.want, 'curiosity is amber');
+  assert.ok(r.after === null || r.after === 'blink'); assert.ok(r.rest); assert.ok(r.calm < .05, 'back to its own gold');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
