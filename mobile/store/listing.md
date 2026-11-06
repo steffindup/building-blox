@@ -138,21 +138,25 @@ Bloppitopia comes to life!
 
 ## App Review notes
 
+Paste as is: one paragraph per topic, no line breaks inside a paragraph.
+
 Bloppit is a brick-building puzzle game for families and anyone who loves bricks. No account or login is needed.
-To try it quickly: on the menu tap the Start here card. Pick the otter's colour and name it (type a
-name or tap Pick a name), then tap Set sail, or just tap Pick later. A short film shows the otter arriving by boat (Skip at the top right ends it). Tap Build Our First
-Home and tap the faded brick to place each piece of the 12-brick house; the home then appears on the island. Then on the
-menu tap vs Swoop (under Solo), then Play on Blitz Bay (its short film can be skipped) and Start the race (works offline).
-Films: Bloppit's films are short clips built into the app (no streaming, except the full-length Moonstone Story, which
-plays from bloppit.com). Each can be skipped, and the unlocked ones are in My films on the Bloppitopia card.
-Challenges: on the Blitz page tap Make a challenge, build the puzzle, and you get a 6-letter code; type that code
-into Got a code? on another device (the website bloppit.com/build works too) to race the same puzzle.
-Weekly Bloppit: tap the Weekly Bloppit banner on the menu. Only a finish and whether it was clean are counted (two counts per week, no name); the time and misses are sent only to check it's a real finish and aren't kept. Counts are deleted after 8 weeks.
+
+To try it quickly: on the menu tap the Start here card. Pick the otter's colour and name it (type a name or tap Pick a name), then tap Set sail, or just tap Pick later. A short film shows the otter arriving by boat (Skip at the top right ends it). Tap Build Our First Home and tap the faded brick to place each piece of the 12-brick house; the home then appears on the island. Then on the menu tap vs Swoop (under Solo), then Play on Blitz Bay (its short film can be skipped) and Start the race (works offline).
+
+Films: Bloppit's films are short clips built into the app (no streaming, except the full-length Moonstone Story, which plays from bloppit.com). Each can be skipped, and the unlocked ones are in My films on the Bloppitopia card.
+
+Challenges: on the menu tap Race a friend (under Together), then Make a challenge, build the puzzle, and you get a 6-letter code; type that code into Join a game (Got a code?) on another device (the website bloppit.com/build works too) to race the same puzzle.
+
+Weekly Bloppit: tap Bibi's Weekly Bloppit on the menu. Only a finish and whether it was clean are counted (two counts per week, no name); the time and misses are sent only to check it's a real finish and aren't kept. Counts are deleted after 8 weeks.
+
 Progress (scores, finished models, stars, outfits, the otter's name as a number from a fixed list) is saved under an anonymous progress code minted by our server. A name the player types for the otter stays on the device and is never sent. Grown-ups corner (behind the parental gate) shows the transfer code and the Family Link QR, and can delete the record.
+
 Usage counts: the app adds one to a daily count for a few events (a build started or finished, the arrival seen) with the country from the request and whether it was the app or the website. There is no identifier for the player or the device, and nothing is shared with anyone.
+
 Rooms (Build together, live Blitz): friends join with a 5-letter code and the host lets them in. Players appear under generated labels ("Brave Otter 214"); typed names never leave the device. Relays: one friend builds half a model, the other finishes it from a code. Crews (Together page): a shared lighthouse goal for an approved group; the maker lets each member in; the board only takes fixed phrases and stickers under generated names; report on every post; parents can remove a player from any crew in the Grown-ups corner.
-There is no chat and no voice: players in a room only place bricks.
-Links out of the app and sharing an invite are behind a parental gate (type a number written in words as digits).
+
+There is no chat and no voice: players in a room only place bricks. Links out of the app and sharing an invite are behind a parental gate (type a number written in words as digits).
 
 ## Age rating questionnaire
 
