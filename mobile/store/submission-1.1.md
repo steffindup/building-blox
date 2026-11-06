@@ -7,7 +7,7 @@ Bay, Galaxy Blocks, the new menu and Quick play. Everything to paste is in `list
 ## Before submitting
 
 - [x] App version is 1.1 (`MARKETING_VERSION`, since #89); every push to main that changes the app builds 1.1 (N) to TestFlight.
-- [x] The build to submit: **1.1 (177)** (Codemagic #229, 6 Nov 13:18), the first with all five Midway films (#197).
+- [ ] The build to submit: the first 1.1 build after #198 (new name, How to play end cards); 1.1 (177) was the first with the Midway films.
       A later app change makes a newer build: submit the newest one.
 - [ ] Play that build on an iPhone and an iPad from TestFlight: first visit (name → arrival film → first home), a Trail
       level, a race against Swoop, My films.
@@ -27,7 +27,7 @@ Bay, Galaxy Blocks, the new menu and Quick play. Everything to paste is in `list
 - [ ] App previews: upload both; poster frame about 7 s in (Bloppit with his red brick on the jetty).
 - [ ] App Review notes: from `listing.md` (the 1.1 first visit: name first, then the film).
 - [ ] Age rating and App Privacy: unchanged from 1.0 (nothing new is collected). Check they still read as in `listing.md`.
-- [ ] Build: 1.1 (177), or newer if the app changes again. Export compliance as before (`ITSAppUsesNonExemptEncryption` = NO).
+- [ ] Build: the newest 1.1 (the one after #198). Export compliance as before (`ITSAppUsesNonExemptEncryption` = NO).
 - [ ] Release: **manually**, so the launch posts and the landing page go out on the same day.
 - [ ] Submit for review.
 
