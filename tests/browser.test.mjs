@@ -406,6 +406,36 @@ test('a finished race against Swoop lets go: the banner offers Back to Bloppitop
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('a decided race against Swoop fast-forwards: once you are done and he cannot catch up, his last bricks play at ×4 and his clock runs 4 seconds a second', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0');
+  await t.page.evaluate(() => { document.querySelector('[data-go="cpu"]').click(); document.getElementById('qpIsle').click(); }); await t.page.waitForTimeout(400);
+  await t.page.evaluate(() => { document.getElementById('bzEasy').click(); document.getElementById('bzName').value = 'Tester'; document.getElementById('bzCpuGo').click(); });
+  await t.page.waitForSelector('#buildStage .go-gate .go-btn', { timeout: 20000 }); await t.page.evaluate(() => document.querySelector('#buildStage .go-btn').click()); await t.page.waitForTimeout(4200);
+  let ff = '';
+  for (let i = 0; i < 600 && !ff; i++) {
+    if (await t.page.evaluate(() => /Finished/.test(document.getElementById('mpTurn').textContent))) break;
+    if (await t.page.evaluate(() => !!document.querySelector('#buildStage .turn-gate .go-btn'))) { await t.page.evaluate(() => document.querySelector('#buildStage .turn-gate .go-btn').click()); await t.page.waitForTimeout(200); continue; }
+    const tb = await t.page.evaluate(() => document.getElementById('turnBanner').hidden ? '' : document.getElementById('turnBanner').textContent);
+    if (/Fast-forward ×4/.test(tb)) { ff = tb; break; }
+    if (/Your turn/.test(tb) && !await t.page.evaluate(() => !!document.querySelector('#buildStage .go-gate'))) {
+      for (let k = 0; k < 3; k++) { if (!await t.page.evaluate(() => /Your turn/.test(document.getElementById('turnBanner').textContent))) break; await t.page.evaluate(() => window.bloppitPlaceRight()); await t.page.waitForTimeout(150); }   // three a turn: you finish first
+      if (await t.page.evaluate(() => { const b = document.getElementById('mpEndTurn'); return !b.hidden && !b.disabled; })) await t.page.evaluate(() => document.getElementById('mpEndTurn').click());
+    }
+    await t.page.waitForTimeout(250);
+  }
+  assert.match(ff, /You win! ⏩ Fast-forward ×4/, 'the turn bar says it is fast-forwarding: ' + JSON.stringify(await t.page.evaluate(() => window.bloppitRaceFF())));
+  const clk = () => t.page.evaluate(() => { const [m, r] = document.querySelector('#turnBanner .clk[data-clk="1"]').textContent.split(':'); return +m * 60 + parseFloat(r); });
+  const a = await clk(); await t.page.waitForTimeout(1000); const b = await clk();
+  assert.ok(b - a > 2.5 && b - a < 5.5, `his clock runs about 4 s a second (${(b - a).toFixed(1)} s)`);
+  const t0 = Date.now(); let fin = false;
+  for (let i = 0; i < 120 && !fin; i++) { fin = await t.page.evaluate(() => /Finished/.test(document.getElementById('mpTurn').textContent) || !!document.querySelector('#mpEndDlg[open]'));
+    if (!fin && await t.page.evaluate(() => !!document.querySelector('#buildStage .turn-gate .go-btn'))) await t.page.evaluate(() => document.querySelector('#buildStage .turn-gate .go-btn').click());
+    await t.page.waitForTimeout(500); }
+  assert.ok(fin, 'the race finishes: ' + JSON.stringify(await t.page.evaluate(() => window.bloppitRaceFF())) + ' ' + await t.page.evaluate(() => document.getElementById('turnBanner').textContent));
+  console.log('finished', ((Date.now() - t0) / 1000).toFixed(1), 's after fast-forward began');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('a race against Swoop starts and shows him in the banner on his turn', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0');
   await t.page.evaluate(() => { document.querySelector('[data-go="cpu"]').click(); document.getElementById('qpIsle').click(); }); await t.page.waitForTimeout(400);
