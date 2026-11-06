@@ -62,8 +62,10 @@ Formerly called Building Blox; the browser save keys still use the old `building
   `#together`, `#photos`, `#build`, `#booklet`) so the browser's Back button steps back through Bloppit (`navNote()`).
 - **Share links** are `bloppit.com/join/CODE`: `netlify.toml` sends them to `/build/?code=CODE`, which opens the room
   (5 characters) or challenge (6 characters) straight away. The older `/build/?room=CODE` and `?ch=CODE` still work.
-- The brand (Bloppit the otter, catchphrase "Brick. Build. Bloppit.", colours) is on the
-  "Bloppit brand & landing page" design canvas in Claude.
+- The brand (Bloppit the otter, colours) is on the "Bloppit brand & landing page" design canvas in Claude. Words, one
+  job each (6 Nov 2026): name **Bloppit: World of Bricks** (titles, link previews, App Store name), line **Build it. Grow
+  your world.** (headline, footers, App Store subtitle), sign-off **Brick. Build. Bloppit.** (end cards, videos,
+  posts; never beside the name). See `mobile/store/listing.md`.
 - `netlify/functions/room/` is the Play together room server: a Netlify Function at `/api/room`
   that keeps each room in Netlify Blobs (store `building-blox-rooms`). Game rules are in `logic.mjs`.
 - The word filter in `logic.mjs` (`isBad`, `cleanName`) now only guards the player name shown in a room.

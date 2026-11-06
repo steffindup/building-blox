@@ -19,6 +19,8 @@ Bay, Galaxy Blocks, the new menu and Quick play. Everything to paste is in `list
 ## App Store Connect
 
 - [ ] **+ Version** (iOS) → 1.1.
+- [ ] App Information → Name: **Bloppit: World of Bricks** (the name changes with this version). Subtitle stays "Build it. Grow your world."
+- [ ] Keywords: the new list in `listing.md` ("game" in, "bricks" and "world" out, as the name now carries them).
 - [ ] What's New: from `listing.md`.
 - [ ] Promotional text, description, keywords: from `listing.md` (promotional text can also change any time without review).
 - [ ] Screenshots: replace all seven on both devices (6.9" iPhone, 13" iPad).
@@ -35,3 +37,4 @@ Bay, Galaxy Blocks, the new menu and Quick play. Everything to paste is in `list
 - [ ] Landing page: "Get the app" for iOS visitors, with "or play in your browser" beneath (`public/index.html`, hero actions).
 - [ ] `mobile/README.md` and `listing.md`: note the live version and date.
 - [ ] Launch posts with bloppit.com/go/… links.
+- [ ] Social profiles (TikTok, Instagram, X, YouTube, Facebook): display name or bio to "Bloppit: World of Bricks" with the line "Build it. Grow your world."

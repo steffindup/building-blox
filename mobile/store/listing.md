@@ -7,7 +7,7 @@ Never mention LEGO or other toy brands anywhere in the listing (Apple rejects ot
 
 | Field | Value |
 |---|---|
-| Name (30) | Bloppit: Brick Building Game |
+| Name (30) | Bloppit: World of Bricks (from 1.1; 1.0 was "Bloppit: Brick Building Game") |
 | Subtitle (30) | Build it. Grow your world. |
 | Bundle ID | com.bloppit.app |
 | SKU | bloppit-ios-1 |
@@ -19,6 +19,18 @@ Never mention LEGO or other toy brands anywhere in the listing (Apple rejects ot
 | Marketing URL | https://bloppit.com/ |
 | Copyright | 2026 Bloppit |
 | Price | Free |
+
+## The brand: one name, one line, one sign-off (6 Nov 2026)
+
+Use each in its own place, the same everywhere:
+
+| Role | Words | Where |
+|---|---|---|
+| Name | **Bloppit: World of Bricks** | App Store name, website titles and link previews, social profile names and bios |
+| Line | **Build it. Grow your world.** | App Store subtitle, the front page's headline, footers, the share image under the name |
+| Sign-off | **Brick. Build. Bloppit.** | End cards, videos, social posts; never right beside the name |
+
+The home-screen name stays **Bloppit**.
 
 **Kids category:** Bloppit is **not** in the Kids category. Leave "Made for Kids" off; the age rating comes from the questionnaire below.
 No child-audience words ("kids", "children") in the listing text itself: the landing page says 8–13, the listing says "for families".
@@ -84,7 +96,10 @@ Bloppit is an independent project and is not affiliated with any toy brick brand
 
 ## Keywords (100)
 
-blocks,building,bricks,construction,puzzle,family,pup,race,island,world,adventure,otter
+Words already in the name or subtitle (bricks, world, build) count without being repeated here, so the field carries
+"building" and "game" that the 1.0 name had.
+
+blocks,building,game,construction,puzzle,family,pup,race,island,adventure,otter,story,creative
 
 ## Screenshots
 
