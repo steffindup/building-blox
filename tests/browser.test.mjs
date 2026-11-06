@@ -1539,3 +1539,16 @@ test('story beats in the middle of Chapter 1: the lavender light at 10 builds, a
   const visit = await beat(/dinosaur/); assert.ok(visit, 'a friend talks about the dinosaur');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
+
+test('Brain Trail asks the child’s age before its first level when none is set, and the maths follows it', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0');
+  await t.page.evaluate(() => window.bloppitLevel('brain', 0, true)); await t.page.waitForTimeout(500);
+  assert.equal(await t.page.evaluate(() => document.getElementById('ageDlg')?.open), true, 'the age question first');
+  await t.page.evaluate(() => document.querySelector('#ageDlg [data-age="10"]').click()); await t.page.waitForTimeout(800);
+  const r = await t.page.evaluate(() => ({ open: document.getElementById('ageDlg').open, age: JSON.parse(localStorage.getItem('bloppit-players-v1')).list[0].age, math: !!window.bloppitMath.state() }));
+  assert.equal(r.open, false); assert.equal(r.age, 10); assert.ok(r.math, 'then the level starts, with its maths');
+  // asked once: the next level goes straight in
+  await t.page.evaluate(() => window.bloppitLevel('brain', 1, true)); await t.page.waitForTimeout(500);
+  assert.equal(await t.page.evaluate(() => document.getElementById('ageDlg').open), false);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
