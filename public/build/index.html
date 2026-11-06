@@ -3848,6 +3848,7 @@ const FILMS=[
   // at: the island moment that plays it (see isl3Reveal): an island rising from the mist, or an island complete
   {id:'frog-arrival',no:'02',name:'Arrival',place:'Frog Forest',file:'frog-forest-arrival',at:'isle:otterwood',open:o=>filmSeen('frog-arrival',o)||isleCount('otterwood',o)>0,hint:'Set off for Frog Forest',
     say:[{t:12,who:'tiny',text:'Welcome to Frog Forest, {name}!'}]},
+  {id:'frog-mid',no:'2½',name:'Midway',place:'Frog Forest',file:'frog-forest-mid',mid:'otterwood',open:o=>filmSeen('frog-mid',o)||(seenGet()||[]).includes('mid:otterwood'),hint:'Keep building on Frog Forest',say:[]},
   {id:'frog-complete',no:'03',name:'Complete',place:'Frog Forest',file:'frog-forest-complete',at:'done:otterwood',open:o=>isleComplete('otterwood',o),hint:'Finish every Frog Trail level',
     say:[{t:11,who:'tiny',text:'We did it, {name}!'}]},
   // [arrival no, complete no, island id, place, file, hints, who speaks, when in the arrival film, when in the completion film]
@@ -3858,6 +3859,7 @@ const FILMS=[
     .flatMap(([a,c,isle,place,file,ha,hc,who,ta,tc])=>[
       {id:isle+'-arrival',no:a,name:'Arrival',place,file:file+'-arrival',at:'isle:'+isle,open:o=>filmSeen(isle+'-arrival',o)||isleCount(isle,o)>0,hint:ha,
         say:[{t:ta,who,text:`Welcome to ${place}, {name}!`}]},
+      {id:isle+'-mid',no:a.replace(/^0/,'')+'½',name:'Midway',place,file:file+'-mid',mid:isle,open:o=>filmSeen(isle+'-mid',o)||(seenGet()||[]).includes('mid:'+isle),hint:`Keep building on ${place}`,say:[]},
       {id:isle+'-complete',no:c,name:'Complete',place,file:file+'-complete',at:'done:'+isle,open:o=>isleComplete(isle,o),hint:hc,
         say:[{t:tc,who,text:'We did it, {name}!'}]}]),
   // Moonstone Isle: one film for each chapter, played when its piece rises (series bible, films 12–22)
@@ -3877,6 +3879,10 @@ const FILMS=[
   // The whole of Chapter 1's Moonstone story, films 12–22 cut together: opens once the Galaxy ship is built (and from lufu's welcome)
   {id:'moonstone-feature',no:'★',name:'The Moonstone Story',place:'Chapter 1’s ending, in one film',file:'moonstone-feature',hint:'Build Chapter 10: The Galaxy Ship',open:o=>filmSeen('moonstone-feature',o)||mysteryDone(o)>=10},   // plays the first time the Galaxy ship sails there, then lufu's world and its welcome
 ];
+// Mid-island films (Steff, 6 Nov 2026) are made one by one: each is in the game (and in My films) once its file is added
+// to public/video and its fingerprint to FILM_V above. Until then its island gets the same moment without the film.
+const filmReady=f=>!f.mid||!!FILM_V[f.file];
+for(let i=FILMS.length-1;i>=0;i--) if(!filmReady(FILMS[i])) FILMS.splice(i,1);
 // What the characters say over a film: a speech bubble with the speaker's face and name, shown for 5.5 s from its time
 // ({name} is the otter's name, or "pup" while it has none)
 const FILM_WHO={lufu:['lufu','#8A6FD1'],bloppit:['Bloppit','#D8342C'],tiny:['Tiny','#7DBE2E'],nora:['Nora','#24407A'],pippa:['Pippa','#C9920A'],swoop:['Swoop','#2F7FD0'],bibi:['Bibi','#E9772A']};
@@ -3913,6 +3919,7 @@ function filmShow(f,play){ const v=$('#filmVid'); filmCur=f.id; filmSay($('#film
 // How many builds a locked film still needs (fewest = the one My films shows as the next to unlock; Steff, 3 Nov 2026)
 function filmToGo(f,o){ const at=f.at||'', far=50, mo=()=>{ try{ return mysteryOpen(); }catch(e){ return false; } };
   try{
+    if(f.mid){ const done=MID_ISLES.filter(i=>(seenGet()||[]).includes('mid:'+i)).length; return Math.max(1,MID_EVERY*(done+1)-worldCount(o)); }   // the next mid-island film slot
     if(at.startsWith('isle:')){ const id=at.slice(5); if(id==='sunrise'&&!seaWashed(0,o)) return 20; return 1; }   // finding an island: its first level, race or build
     if(at.startsWith('done:')){ const id=at.slice(5), P=PIECES[id]; return Math.max(1,P[P.length-1].at-isleCount(id,o)); }
     const md=mysteryDone(o), need=at.startsWith('moonstone:')?+at.slice(10)+1:at==='ring:moonstone'?8:10;   // Moonstone: chapters built
@@ -10711,6 +10718,13 @@ function isl3AfterReveal(o){ o=worldStore(); if(ISL3.revealing||ISL3.ending) ret
    3. A visit: every 5th build (when neither of the others is due), a friend you've met walks over to Home Island and
       says something about the thing you just built.
    Each happens once (kept as seen ids), holds Play next while it plays (~6 seconds), and never over a film or a card. */
+// Mid-island films (Steff, 6 Nov 2026): one every MID_EVERY builds, each followed by its friend's line (written to follow the film)
+const MID_EVERY=15, MID={
+  otterwood:{who:'tiny',line:'Did you see the lanterns? Every level you build lights another one, {pup}.'},
+  blitzbay:{who:'swoop',line:'That was my practice lap. Don’t get comfy, {pup}. I’m only getting faster!'},
+  brickworks:{who:'bibi',line:'The sculpture’s finally orange! Next, I’m painting one of yours. ROAR! (A happy one.)'},
+  brainpeak:{who:'nora',line:'The gear turns now. Every puzzle you solve turns it a little further, {pup}.'},
+  sunrise:{who:'pippa',line:'Both halves matched! You and me, {pup}: best mirror builders on the beach.'}}, MID_ISLES=Object.keys(MID);
 const BEAT_HALF={otterwood:['tiny','Half the forest is glowing, {pup}! The frogs are singing about you already.'],
   brainpeak:['nora','Halfway up Brainpeak. The view gets clearer with every level, {pup}. So do you.'],
   sunrise:['pippa','Half my puzzles flipped! Flipper Beach has never looked so… symmetrical!'],
@@ -10767,12 +10781,23 @@ function beatName(k){ const p=k.split(':'); if(p[0]==='m') return p[1].toLowerCa
 function beatSay(t,o,b){ return t.replace(/\{pup\}/g,pupName(o)||'little one').replace(/\{b\}/g,b||'build'); }
 function isl3Beat(o){ const seen=new Set(seenGet()||[]), n=worldCount(o), mark=id=>{ const s=seenGet()||[]; s.push(id); seenSet(s); };
   const grpOf=id=>id==='swoop'?ISL3.longtail:(ISL3.cast[id]||{}).g;
-  const run=(x,z,d,say,ms,night)=>{ ISL3.hold=true; isl3Chrome(); if(night){ ISL3.hourOverride=21.5; isl3Tod(true); }
-    isl3FlyTo(x,1.2,z,d,1300); ISL3.fly.done=()=>{ say(); clearTimeout(ISL3.beatT); ISL3.beatT=setTimeout(()=>{ isl3Banner(''); if(night){ ISL3.hourOverride=null; isl3Tod(true); } isl3FlyHome(1200);
-      ISL3.hold=false; isl3Chrome(); setTimeout(()=>isl3AfterReveal(worldStore()),900); },ms); }; return true; };
-  // 1. halfway on an island (just reached: the middle piece, or one past it)
+  // stay: the camera stays on that island afterwards (its Play button offers its next step), instead of flying home
+  const run=(x,z,d,say,ms,night,stay)=>{ ISL3.hold=true; isl3Chrome(); if(night){ ISL3.hourOverride=21.5; isl3Tod(true); }
+    isl3FlyTo(x,1.2,z,d,1300); ISL3.fly.done=()=>{ say(); clearTimeout(ISL3.beatT); ISL3.beatT=setTimeout(()=>{ isl3Banner(''); if(night){ ISL3.hourOverride=null; isl3Tod(true); }
+      ISL3.hold=false; const vi=stay?isl3ViewOf('isle:'+stay):-1; if(vi>=0) isl3GoView(vi,900); else isl3FlyHome(1200);
+      isl3Chrome(); setTimeout(()=>isl3AfterReveal(worldStore()),900); },ms); }; return true; };
+  // 0. a mid-island film: a slot opens every MID_EVERY builds, and the next build on an island that hasn't had its
+  //    mid film plays it (after its arrival, before it's complete); then its friend's line, and the camera stays there
+  const slots=Math.floor(n/MID_EVERY), had=MID_ISLES.filter(i=>seen.has('mid:'+i)).length, last=(o.log||[]).at(-1)||'', at=last?beatIsle(last,o):'home';
+  if(slots>had&&MID[at]&&!seen.has('mid:'+at)&&isleCount(at,o)>0&&!isleComplete(at,o)&&ISL3.isles[at]){
+    const M=MID[at], I=ISL3.isles[at], g=grpOf(M.who); mark('mid:'+at); track('beat_mid:'+at);
+    const moment=()=>{ if(!ISL3.on) return; run(I.x,I.z,12,()=>{ if(g) isl3Say(g,beatSay(M.line,o),5200); sfx.chime&&sfx.chime(); },5600,false,at); };
+    const f=FILMS.find(x=>x.mid===at);
+    if(f&&!filmSeen(f.id,o)){ ISL3.hold=true; isl3Chrome(); isl3Film(f,moment); } else moment();
+    return true; }
+  // 1. halfway on an island: once it reaches its middle (any build after, if something else came first)
   for(const [isle,[who,line]] of Object.entries(BEAT_HALF)){ const end=isleEnd(isle), c=isleCount(isle,o), half=Math.ceil(end/2), I=ISL3.isles[isle], g=grpOf(who);
-    if(c>=half&&c<=half+1&&c<end&&!seen.has('half:'+isle)&&I&&g){ mark('half:'+isle); track('beat_half:'+isle);
+    if(c>=half&&c<end&&!seen.has('half:'+isle)&&I&&g){ mark('half:'+isle); track('beat_half:'+isle);
       return run(I.x,I.z,12,()=>{ isl3Say(g,beatSay(line,o),5200); sfx.chime&&sfx.chime(); },5600); } }
   // 2. the light, every 10 builds until Moonstone Isle opens
   const k=Math.floor(n/10), M=ISL3.isles.moonstone;
@@ -10787,6 +10812,7 @@ function isl3Beat(o){ const seen=new Set(seenGet()||[]), n=worldCount(o), mark=i
     ISL3.visit={id,tap:beatSay(L[1],o,b)};   // a tap on the visitor gives the second line, until the next build
     return run(B.position.x+.7,B.position.z+.4,9,()=>{ isl3Say(g,beatSay(L[0],o,b),5200); },5600); }
   return false; }
+window.bloppitMidWhy=()=>{ const o=worldStore(), n=worldCount(o), seen=new Set(seenGet()||[]), last=(o.log||[]).at(-1)||'', at=last?beatIsle(last,o):'home'; return {n,slots:Math.floor(n/MID_EVERY),had:MID_ISLES.filter(i=>seen.has('mid:'+i)).length,last,at,count:isleCount(at,o),complete:isleComplete(at,o),isle:!!ISL3.isles[at]}; };   // for tests
 window.bloppitBeat=()=>({hold:!!ISL3.hold,say:(ISL3.box&&ISL3.box.querySelector('.is3-say:not([hidden])')||{}).textContent||'',banner:(ISL3.box&&ISL3.box.querySelector('.is3-banner:not([hidden])')||{}).textContent||''});   // for tests
 
 /* ---------- My Bloppit: your otter's level and outfit ----------

@@ -1556,6 +1556,32 @@ test('lufu in 3D (approved v2): eight clips, its own controller; a feeling plays
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('mid-island films: every 15 builds a slot opens, and the next build on an island that has not had its mid film plays it (here the in-game moment, as films are off), then its friend speaks and the camera stays on that island; a visit it bumped comes next build', { skip: skip() }, async () => {
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = [];
+    for (let i = 0; i < 13; i++) { const k = `m:Model${i}:10`; builds[k] = { n: 10, s: 2, t: 1e12 + i, c: 1, k: 'quick' }; log.push(k); }
+    builds['t:otter:0:Heart'] = { n: 10, s: 3, t: 1e12 + 20, c: 1, k: 'trail' }; log.push('t:otter:0:Heart');
+    const seen = ['half:brickworks', 'light:1', 'visit:1', 'visit:2'];
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 80, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, pick: 'tree', films: ['frog-arrival', 'brainpeak-arrival', 'sunrise-arrival', 'blitzbay-arrival', 'brickworks-arrival'] }));
+    localStorage.setItem('building-blox-game-v1', JSON.stringify({ best: { 0: 3 }, sbest: {} }));
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 5, finished: 5, welcome: 1 })); } };
+  const t = await open('?nosplash=1&films=0&hour=11#island', { init: seed });
+  await t.page.waitForFunction(() => window.bloppitIsland3().ctl, null, { timeout: 90000 }); await t.page.waitForTimeout(3000);
+  await t.page.evaluate(() => { const k = Object.keys(localStorage).find((x) => /seen3/.test(x)); if (k) { const s = JSON.parse(localStorage.getItem(k)); s.push('half:brickworks', 'light:1', 'visit:1', 'visit:2'); localStorage.setItem(k, JSON.stringify(s)); } });
+  const add = (k) => t.page.evaluate((k) => { const o = JSON.parse(localStorage.getItem('bloppit-world-v1')); o.builds[k] = { n: 10, s: 2, t: Date.now(), c: 1, k: k.startsWith('m:') ? 'quick' : 'trail' }; o.log.push(k); localStorage.setItem('bloppit-world-v1', JSON.stringify(o));
+    const m = k.match(/^t:otter:(\d+):/); if (m) { const g = JSON.parse(localStorage.getItem('building-blox-game-v1')); g.best[m[1]] = 3; localStorage.setItem('building-blox-game-v1', JSON.stringify(g)); } }, k);
+  const away = async () => { await t.page.evaluate(() => document.getElementById('tab-game').click()); await t.page.waitForTimeout(500); await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close())); await t.page.evaluate(() => document.getElementById('tab-island').click()); };
+  const beat = async (re) => { let got = ''; for (let i = 0; i < 100 && !got; i++) { await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close())); const b = await t.page.evaluate(() => window.bloppitBeat()); if (b.hold && re.test(b.say + ' ' + b.banner)) got = b.say + b.banner; await t.page.waitForTimeout(300); } return got; };
+  // build 15, on Frog Forest: its mid moment (Tiny), not the visit that 15 would bring
+  await add('t:otter:1:Duck'); await away();
+  assert.ok(await beat(/Did you see the lanterns\?/), 'Tiny’s mid-island line at build 15');
+  await t.page.waitForFunction(() => !window.bloppitBeat().hold, null, { timeout: 20000 }); await t.page.waitForTimeout(1500);
+  assert.match(await t.page.evaluate(() => document.querySelector('.is3-view-name, #isWorld .is3-play')?.textContent || ''), /Frog|Trail/, 'the camera stays on Frog Forest, its next level offered');
+  // build 16: the friend visit bumped from 15
+  await add('m:Robot:10'); await away();
+  assert.ok(await beat(/robot/i), 'the bumped visit comes the next build');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('story beats in the middle of Chapter 1: the lavender light at 10 builds, a friend visiting Home Island at 15, halfway on Frog Forest; each once, Play next held while it plays', { skip: skip() }, async () => {
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = [];
     for (let i = 0; i < 9; i++) { const k = `m:Model${i}:10`; builds[k] = { n: 10, s: 2, t: 1e12 + i, c: 1, k: 'quick' }; log.push(k); }
@@ -1563,6 +1589,8 @@ test('story beats in the middle of Chapter 1: the lavender light at 10 builds, a
     localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 5, finished: 5, welcome: 1 })); } };
   const t = await open('?nosplash=1&films=0&hour=11#island', { init: seed });
   await t.page.waitForFunction(() => window.bloppitIsland3().ctl, null, { timeout: 90000 }); await t.page.waitForTimeout(3000);
+  // Brickyard Cove is past its middle already (9 builds of 15): its halfway moment has been, so it doesn't come first here
+  await t.page.evaluate(() => { const k = Object.keys(localStorage).find((x) => /seen3/.test(x)); if (k) { const s = JSON.parse(localStorage.getItem(k)); s.push('half:brickworks'); localStorage.setItem(k, JSON.stringify(s)); } });
   const add = (name, extra) => t.page.evaluate(([name, extra]) => { const o = JSON.parse(localStorage.getItem('bloppit-world-v1')); const k = `m:${name}:10`; o.builds[k] = { n: 10, s: 2, t: Date.now(), c: 1, k: 'quick', ...extra }; o.log.push(k); localStorage.setItem('bloppit-world-v1', JSON.stringify(o)); }, [name, extra || {}]);
   const away = async () => { await t.page.evaluate(() => document.getElementById('tab-game').click()); await t.page.waitForTimeout(500); await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close())); await t.page.evaluate(() => document.getElementById('tab-island').click()); };
   const beat = async (re) => { let got = ''; for (let i = 0; i < 100 && !got; i++) { await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close())); const b = await t.page.evaluate(() => window.bloppitBeat()); if (b.hold && re.test(b.say + ' ' + b.banner)) got = b.say + b.banner; await t.page.waitForTimeout(300); } return got; };
@@ -1575,6 +1603,7 @@ test('story beats in the middle of Chapter 1: the lavender light at 10 builds, a
   await away(); await t.page.waitForTimeout(4000); assert.equal((await t.page.evaluate(() => window.bloppitBeat())).hold, false);
   // build 15: a friend you've met (Bibi: Brickyard Cove has builds) visits and talks about your Dinosaur
   for (let i = 11; i < 15; i++) await add('Filler' + i); await away(); await t.page.waitForTimeout(3000); await t.page.waitForFunction(() => !window.bloppitBeat().hold, null, { timeout: 20000 });
+  // build 15 opens a mid-island slot, but Brickyard Cove is now complete (15 of 15), so no mid film: the visit comes instead
   await add('Dinosaur'); await away();
   const visit = await beat(/dinosaur/); assert.ok(visit, 'a friend talks about the dinosaur');
   assert.deepEqual(t.errors, []); await t.ctx.close();
