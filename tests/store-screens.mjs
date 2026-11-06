@@ -58,16 +58,24 @@ for (const [tag, vp, dsf] of [['iphone',{width:440,height:956},3],['ipad',{width
     for (const k of Object.keys(localStorage)) if (k.startsWith('bloppit-seen3')) localStorage.removeItem(k);   // no reveal parade for the still
     o.decor=['flag','campfire','bench','lantern','palm','kite']; o.free=['flag','campfire','bench','lantern','palm','kite']; localStorage.setItem('bloppit-world-v1',JSON.stringify(o)); localStorage.setItem('bloppit-thumbs-v1',JSON.stringify(t));
     for (const k of Object.keys(localStorage)) if (k.includes('building-blox-game-v1')) { const g=JSON.parse(localStorage.getItem(k)); const b=Object.values(g.best||{})[0]; if(b){ g.bbest={0:b,1:b,2:b}; } localStorage.setItem(k,JSON.stringify(g)); }
-    for (const k of Object.keys(localStorage)) if (k.includes('bloppit-weekly-v1')) { const w=JSON.parse(localStorage.getItem(k)); w.total=4; localStorage.setItem(k,JSON.stringify(w)); }
-    if (!Object.keys(localStorage).some(k=>k.includes('bloppit-weekly-v1'))) localStorage.setItem('bloppit-weekly-v1',JSON.stringify({weeks:{},total:4})); });
+    // three Weeklies built in the weeks before this one (a 3-week streak), this week's still to build
+    const wk=(n)=>{ const d=new Date(); d.setUTCDate(d.getUTCDate()-((d.getUTCDay()+6)%7)-7*n); return d.toISOString().slice(0,10); };
+    const weeks={}; for (let n=1;n<=3;n++) weeks[wk(n)]={best:84000+n*3000,first:Date.now()-n*6048e5,at:Date.now()-n*6048e5,clean:true};
+    const wkey=Object.keys(localStorage).find(k=>k.includes('bloppit-weekly-v1'))||'bloppit-weekly-v1', w=JSON.parse(localStorage.getItem(wkey)||'{}');
+    w.weeks={...(w.weeks||{}),...weeks}; w.total=Math.max(w.total||0,4); localStorage.setItem(wkey,JSON.stringify(w)); });
   await page.reload({ waitUntil: 'load' }); await page.waitForTimeout(3500);
   await page.evaluate(() => document.getElementById('tab-island').click()); await page.waitForTimeout(3500);
   await page.screenshot({ path: `${OUT}${tag}-island.png` });
   await page.evaluate(() => (document.getElementById('tab-cove').click(), document.getElementById('qbWeekly').click())); await page.waitForTimeout(1200); await page.screenshot({ path: `${OUT}${tag}-weekly.png` });
   await page.evaluate(() => { window.bloppitHome(); }); await page.waitForTimeout(400); await page.evaluate(() => { document.querySelector('[data-go="cpu"]').click(); document.getElementById('qpIsle').click(); }); await page.waitForTimeout(600);
-  await page.evaluate(() => { document.getElementById('bzHard').click(); document.getElementById('bzName').value='Pebble'; document.getElementById('bzCpuGo').click(); }); await page.waitForTimeout(4500);
+  await page.evaluate(() => { document.getElementById('bzHard')?.click(); const n=document.getElementById('bzName'); if(n) n.value='Pebble'; document.getElementById('bzCpuGo').click(); }); await page.waitForTimeout(1500);
+  // past the "Ready to race Swoop?" card, then a few bricks in, with Swoop racing alongside
+  await page.waitForSelector('.go-btn', { timeout: 15000 }).then(() => page.evaluate(() => document.querySelector('.go-btn').click()), () => {}); await page.waitForTimeout(1200);
+  await clean(page,3); await page.waitForTimeout(1500);
   await page.screenshot({ path: `${OUT}${tag}-blitz.png` });
-  await page.evaluate(() => { window.bloppitHome(); }); await page.waitForTimeout(600); await page.screenshot({ path: `${OUT}${tag}-menu.png` });
+  // leave the race properly (a second tap confirms), so the menu has no "Back to your race"
+  for (let i=0;i<2;i++){ await page.evaluate(() => document.getElementById('mpRoomBtn')?.click()); await page.waitForTimeout(400); }
+  await page.evaluate(() => { document.querySelectorAll('dialog[open]').forEach(d=>d.close()); window.bloppitHome(); }); await page.waitForTimeout(1200); await page.screenshot({ path: `${OUT}${tag}-menu.png` });
   await ctx.close(); console.log(tag,'done');
 }
 await b.close();

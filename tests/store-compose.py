@@ -1,7 +1,7 @@
 # Composes the App Store screenshots: a raw capture from tests/store-screens.mjs, framed on Bloppit blue with a caption
 # in Lilita One. Run after the capture:  python3 tests/store-compose.py
 # Needs Pillow and fontTools (to read the @fontsource woff). Output: mobile/store/screenshots/{iphone,ipad}-N-name.png
-import os, io
+import os, io, subprocess, tempfile
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from fontTools.ttLib import TTFont
 
@@ -16,7 +16,7 @@ SHOTS = [('island', 'Every build you finish grows Bloppitopia.'),
          ('build', 'Snap bricks into place, page by page.'),
          ('finish', 'Finish clean. Earn three stars.'),
          ('weekly', 'A new puzzle every week. See how many built it clean.'),
-         ('blitz', 'Race the Longtails in Blitz.'),
+         ('blitz', 'Race Swoop in Blitz.'),
          ('menu', 'Your otter grows with every build.')]
 # canvas, frame left edge, frame top, caption size, caption width: measured from the first set
 DEV = {'iphone': dict(size=(1320, 2868), left=136, top=520, font=104, width=1120, radius=48),
@@ -26,6 +26,16 @@ def font(px):
     f = TTFont(os.path.join(ROOT, 'node_modules/@fontsource/lilita-one/files/lilita-one-latin-400-normal.woff'))
     f.flavor = None; b = io.BytesIO(); f.save(b); b.seek(0)
     return ImageFont.truetype(b, px)
+
+# The arrival: a frame of the arrival film (9 s, Bloppit with his red brick on the jetty), cut to the device's screen
+# shape around Bloppit. Upright phones letterbox the film in the app, which makes a poor still; the app previews are cut
+# the same way.
+SCREEN = {'iphone': 440 / 956, 'ipad': 1032 / 1376}
+def film_frame(dev, t=9, cx=1040):
+    tmp = os.path.join(tempfile.gettempdir(), f'bloppit-arrival-{dev}.png')
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', str(t), '-i', os.path.join(ROOT, 'public/video/arrival.mp4'), '-frames:v', '1', tmp], check=True)
+    im = Image.open(tmp).convert('RGB'); w = round(im.height * SCREEN[dev]); x = max(0, min(im.width - w, cx - w // 2))
+    im.crop((x, 0, x + w, im.height)).save(tmp); return tmp
 
 def wrap(draw, text, fnt, width):
     lines, cur = [], ''
@@ -39,6 +49,7 @@ for dev, d in DEV.items():
     W, H = d['size']; fnt = font(d['font'])
     for i, (name, cap) in enumerate(SHOTS, 1):
         src = os.path.join(RAW, f'{dev}-{name}.png')
+        if name == 'arrival': src = film_frame(dev)
         if not os.path.exists(src): print('missing', src); continue
         shot = Image.open(src).convert('RGB'); fw = W - 2 * d['left']; fh = round(shot.height * fw / shot.width)
         shot = shot.resize((fw, fh), Image.LANCZOS)
