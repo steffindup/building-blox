@@ -212,10 +212,10 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 .splash .sp-face{display:block;width:150px;height:150px;border-radius:34px;background:#0369BD url(/art/bloppit-wink.jpg) 0 0/900% 100% no-repeat;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:sp-pop .5s cubic-bezier(.3,1.6,.5,1) both,sp-wink 1.04s step-end .5s both}
 .splash .sp-word{font-size:52px;line-height:1;letter-spacing:.01em;text-shadow:0 4px 0 rgba(0,0,0,.18);animation:sp-up .35s ease .1s both}
 .splash .sp-tag{display:flex;gap:8px;margin-top:10px}
-.splash .sp-tag span{font-size:17px;padding:6px 11px 8px;border-radius:9px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18);animation:sp-pop .3s cubic-bezier(.3,1.6,.5,1) both}
-.splash .sp-tag span:nth-child(1){background:var(--yellow);color:var(--ink);animation-delay:.25s}
-.splash .sp-tag span:nth-child(2){background:var(--white);color:#0055BF;animation-delay:.4s}
-.splash .sp-tag span:nth-child(3){background:var(--red);animation-delay:.55s}
+.splash .sp-tag span{font-family:"Nunito",system-ui,sans-serif;font-weight:800;font-size:17px;padding:6px 11px 8px;border-radius:9px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18);animation:sp-pop .3s cubic-bezier(.3,1.6,.5,1) both}
+.splash .sp-tag span:nth-child(1){background:#F4BC22;color:#142022;animation-delay:.25s}
+.splash .sp-tag span:nth-child(2){background:#fff;color:#0369BD;animation-delay:.4s}
+.splash .sp-tag span:nth-child(3){background:#D62F2A;color:#fff;animation-delay:.55s}
 .splash.out{opacity:0;transform:scale(1.04);transition:opacity .3s ease,transform .3s ease;pointer-events:none}
 @keyframes sp-pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
 @keyframes sp-up{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
@@ -237,7 +237,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 <div class="splash" id="splash" aria-hidden="true">
   <span class="sp-head"><i class="sp-face"></i></span>
   <div class="sp-word">Bloppit</div>
-  <div class="sp-tag"><span>Brick.</span><span>Build.</span><span>Bloppit.</span></div>
+  <div class="sp-tag" aria-label="World of Bricks"><span>World</span><span>of</span><span>Bricks</span></div>
 </div>
 <script>
 (function(){ var s=document.getElementById('splash'), h=document.documentElement;
