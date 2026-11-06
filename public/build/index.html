@@ -9562,12 +9562,12 @@ const REACT_LINES={
 const REACT_POSES=['/art/bud-happy.png','/art/bud-reach.png','/art/bud-offer.png','/art/bud-oops.png','/art/bud-hug.png'];
 function charReact(info){ const now=performance.now(), kinds=['jump','wiggle','spin','squash'], pick=a=>a[Math.floor(Math.random()*a.length)];
   if(info.startsWith('char:')){ const id=info.slice(5), K=ISL3.cast&&ISL3.cast[id]; if(!K||!CAST[id]) return; const sp=K.sp, grp=K.g;
-    if(K.i3) K.i3.ctl.poke(); else { if(!sp.userData.s0) sp.userData.s0=[Math.abs(sp.scale.x),sp.scale.y]; ISL3.react={sp,grp,kind:pick(id==='lufu'?['wiggle','squash']:kinds),t0:now}; } isl3Say(grp,pick(CAST[id].lines)); try{ sfx.voice(id); }catch(e){}
+    if(K.i3) K.i3.ctl.poke(); else { if(!sp.userData.s0) sp.userData.s0=[Math.abs(sp.scale.x),sp.scale.y]; ISL3.react={sp,grp,kind:pick(id==='lufu'?['wiggle','squash']:kinds),t0:now}; } isl3Say(grp,ISL3.visit&&ISL3.visit.id===id?ISL3.visit.tap:pick(CAST[id].lines)); try{ sfx.voice(id); }catch(e){}
     if(Math.random()<.35||id==='lufu'){ const p=grp.position; isl3Confetti(p.x,TOP3+1.4,p.z,id==='lufu'?18:12); } track('char_poke:'+id); isl3Kick(); return; }
   const i3=info==='bloppit'?ISL3.b3:info==='pup'?ISL3.p3:ISL3.l3;
   if(i3){ const who=info==='bloppit'?'bloppit':info==='pup'?'pup':'longtail', grp=info==='bloppit'?ISL3.bloppit:info==='pup'?ISL3.pupG:ISL3.longtail;
     i3.ctl.poke(); if(who==='longtail'&&ISL3.ltNight){ longtailSquawk(); return; }
-    isl3Say(grp,who==='pup'&&Math.random()<.4&&pupName(worldStore())?`I’m ${pupName(worldStore())}!`:pick(REACT_LINES[who]));
+    isl3Say(grp,who==='longtail'&&ISL3.visit&&ISL3.visit.id==='swoop'?ISL3.visit.tap:who==='pup'&&Math.random()<.4&&pupName(worldStore())?`I’m ${pupName(worldStore())}!`:pick(REACT_LINES[who]));
     try{ sfx.voice(who); }catch(e){}
     if(Math.random()<.35){ const p=grp.position; isl3Confetti(p.x,TOP3+1.6,p.z,12); } track('char_poke:'+who); isl3Kick(); return; }
   let sp=null, grp=null, who='bloppit';
@@ -10616,11 +10616,43 @@ const BEAT_LIGHT=['See that, out past the mist? A little lavender light. Funny�
   'The light’s brighter tonight. I think it’s getting closer… or we are.',
   'Every island we finish, that light shines a little stronger. I wonder who’s out there.',
   'The mist is thinning, {pup}. Whoever is out there, I think they’re waiting for us.'];
-const BEAT_VISIT={tiny:['Ribbit! I told the whole forest about your {b}.','Your {b} is great, {pup}! Can I hop on top of it?'],
-  nora:['Hoo! Your {b} is very well balanced. I counted every brick.','A {b}! I’d like to study that one, {pup}.'],
-  pippa:['Ooh, a {b}! It would look even better with its twin beside it.','That {b} makes me want to dance, {pup}!'],
-  swoop:['Nice {b}! Bet I could build one faster. Rematch?','Whoa, a {b}! That’s race-winning work, {pup}.'],
-  bibi:['Your {b} needs a paint job. Orange, maybe?','ROAR! (a squeak) That {b} belongs in my gallery, {pup}.']};
+// a visiting friend's line about your latest build, by where it was built (home = anything else); a tap on them gives the second
+const BEAT_VISIT={
+  tiny:{home:['Ribbit! I told the whole forest about your {b}.','Your {b} is great, {pup}! Can I hop on top of it?'],
+    otterwood:['Ribbit! Your {b} looks right at home in my forest.','I’m going to show it to every frog on the pond.'],
+    brainpeak:['You built a {b} up on Brainpeak? Nora says you solved every puzzle!','Was it scary up that high? I’d have held on tight.'],
+    sunrise:['A {b} from Flipper Beach! Pippa says you matched her half perfectly.','I tried a mirror build once. My reflection won.'],
+    blitzbay:['You raced Swoop for that {b}? Brave, {pup}!','Next time I’ll whistle for you from the finish line.'],
+    brickworks:['Your {b} is so colourful! Did Bibi help with the paint?','Can I sit on it? I’m very small. It won’t notice.']},
+  nora:{home:['Hoo! Your {b} is very well balanced. I counted every brick.','A {b}! I’d like to study that one, {pup}.'],
+    otterwood:['Hoo. A {b} from Frog Forest. Tiny talks about you all the time.','Every brick sits just where it should. Well done.'],
+    brainpeak:['Your {b}, {pup}. You worked out every puzzle on the way. I noticed.','Shall I find you a harder one next time? Hoo.'],
+    sunrise:['A mirror build. Both halves of your {b} match exactly. I checked.','Symmetry is a kind of puzzle too, you know.'],
+    blitzbay:['A race {b}. Fast and careful. That’s rare, {pup}.','Swoop won’t admit it, but he was impressed.'],
+    brickworks:['Your own {b}. I’d like to study how you built it.','Building your own idea is the cleverest thing of all.']},
+  pippa:{home:['Ooh, a {b}! It would look even better with its twin beside it.','That {b} makes me want to dance, {pup}!'],
+    otterwood:['Ooh, a {b} from the forest! Tiny’s been hopping about it all day!','It’s lovely. Want me to build its twin?'],
+    brainpeak:['A {b} from Brainpeak! Clever AND good at building!','Nora says you’re a natural. I say you’re a star!'],
+    sunrise:['Our {b}! My half and your half, together!','Best mirror partner on the whole beach, {pup}!'],
+    blitzbay:['You raced for that {b}? I’d still be wobbling at the start!','Swoop’s been practising ever since. Ha!'],
+    brickworks:['A {b} straight from Bibi’s gallery! It makes me want to dance!','Can we put it by the bandstand one day?']},
+  swoop:{home:['Nice {b}! Bet I could build one faster. Rematch?','Whoa, a {b}! That’s race-winning work, {pup}.'],
+    otterwood:['A {b} from Frog Forest? Not bad. Not race speed, but not bad.','Okay, okay. It’s pretty great.'],
+    brainpeak:['A {b} with maths in it? Brains AND bricks. Show-off. (I like it.)','Don’t tell Nora I said that.'],
+    sunrise:['Pippa’s mirror {b}? You built the hard half, right?','Bet I could flip one faster. Rematch at the beach?'],
+    blitzbay:['Our race {b}! You were quick, {pup}. Really quick.','Rematch? I’ve been practising my turns.'],
+    brickworks:['You built that {b} with no clock ticking? Brave.','Fine, it’s beautiful. Happy now?']},
+  bibi:{home:['Your {b} needs a paint job. Orange, maybe?','ROAR! (a squeak) That {b} belongs in my gallery, {pup}.'],
+    otterwood:['A forest {b}! All those greens. ROAR! (a squeak)','I’d paint the leaves a little brighter. Just a little.'],
+    brainpeak:['Your {b} from Brainpeak needs a dash of orange. Everything does.','Nora says paint isn’t maths. Nora is wrong.'],
+    sunrise:['A {b} that matches on both sides! Very tidy. Very Pippa.','Next time, let one side be wild!'],
+    blitzbay:['A racing {b}! Built so fast the paint’s still wet!','ROAR! That was a race roar.'],
+    brickworks:['Your {b} belongs in my gallery, {pup}. Front row.','I’ll hang a little sign: “by {pup}”.']}};
+function beatIsle(k,o){ const p=k.split(':'), b=(o.builds||{})[k]||{};
+  if(p[0]==='t') return {otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[p[1]]||'home';
+  if(b.k==='blitz') return 'blitzbay';
+  if(p[0]==='p'||p[0]==='w'||(p[0]==='m'&&(b.k==='quick'||!b.k)&&!MYSTERY_NAMES.has(p[1]))) return 'brickworks';
+  return 'home'; }
 const BEAT_HOME={tiny:'otterwood',nora:'brainpeak',pippa:'sunrise',swoop:'blitzbay',bibi:'brickworks'};
 function beatName(k){ const p=k.split(':'); if(p[0]==='m') return p[1].toLowerCase();
   if(p[0]==='t'){ const L=levelsOf(p[1])[+p[2]]; return L?L.name.toLowerCase():'build'; } return 'build'; }
@@ -10643,8 +10675,9 @@ function isl3Beat(o){ const seen=new Set(seenGet()||[]), n=worldCount(o), mark=i
   if(v>=1&&n%5<=1&&met.length&&!seen.has('visit:'+v)){ mark('visit:'+v); const id=met[v%met.length], g=grpOf(id), B=ISL3.bloppit, last=(o.log||[]).at(-1)||'';
     if(!B) return false; track('beat_visit:'+id);
     g.position.set(B.position.x+1.5,0,B.position.z+.9);   // over to Home Island, beside Bloppit (back home when the island is next built)
-    const lines=BEAT_VISIT[id];
-    return run(B.position.x+.7,B.position.z+.4,9,()=>{ isl3Say(g,beatSay(lines[v%lines.length],o,beatName(last)),5200); },5600); }
+    const L=BEAT_VISIT[id][beatIsle(last,o)]||BEAT_VISIT[id].home, b=beatName(last);
+    ISL3.visit={id,tap:beatSay(L[1],o,b)};   // a tap on the visitor gives the second line, until the next build
+    return run(B.position.x+.7,B.position.z+.4,9,()=>{ isl3Say(g,beatSay(L[0],o,b),5200); },5600); }
   return false; }
 window.bloppitBeat=()=>({hold:!!ISL3.hold,say:(ISL3.box&&ISL3.box.querySelector('.is3-say:not([hidden])')||{}).textContent||'',banner:(ISL3.box&&ISL3.box.querySelector('.is3-banner:not([hidden])')||{}).textContent||''});   // for tests
 
@@ -10753,7 +10786,7 @@ function isl3Show(box,o){ isl3Immersive(); isl3WakeCheck(); isl3CharsLoad(o);
   ISL3.box=box; if(!box.contains(ISL3.r.domElement)){ box.innerHTML=''; box.appendChild(ISL3.r.domElement); box.classList.add('is3'); }
   // A world that already has builds but never saw the arrival (it went straight to a Trail, or started before the arrival
   // existed) still gets the boat once: the arrival film is where the story starts. It lands on the island as it stands.
-  const n=worldCount(o); if(ISL3.beatN!=null&&n>ISL3.beatN) ISL3.beatOk=true; ISL3.beatN=n;   // a new build since the last visit: a story beat may follow
+  const n=worldCount(o); if(ISL3.beatN!=null&&n>ISL3.beatN){ ISL3.beatOk=true; ISL3.visit=null; } ISL3.beatN=n;   // a new build since the last visit: a story beat may follow
   ISL3.arrival=n===0?(!pupName(o)&&!o.pupAsked&&!o.arrived?(ISL3.arrival==='home'?'home':'boat'):'home'):(!o.arrived&&!mp?'boat':null);
   isl3Build(o); isl3Size(); ISL3.on=true; ISL3.settle=30; isl3Chrome(); isl3Kick(); if(!ISL3.moved) ISL3.viewI=0; isl3WholeBtn();
   if(!ISL3.ro){ ISL3.ro=new ResizeObserver(()=>{ if(ISL3.on){ isl3Size(); isl3Kick(); } }); ISL3.ro.observe(box); }

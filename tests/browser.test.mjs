@@ -1508,8 +1508,8 @@ test('story beats in the middle of Chapter 1: the lavender light at 10 builds, a
   const t = await open('?nosplash=1&films=0&hour=11#island', { init: seed });
   await t.page.waitForFunction(() => window.bloppitIsland3().ctl, null, { timeout: 90000 }); await t.page.waitForTimeout(3000);
   const add = (name, extra) => t.page.evaluate(([name, extra]) => { const o = JSON.parse(localStorage.getItem('bloppit-world-v1')); const k = `m:${name}:10`; o.builds[k] = { n: 10, s: 2, t: Date.now(), c: 1, k: 'quick', ...extra }; o.log.push(k); localStorage.setItem('bloppit-world-v1', JSON.stringify(o)); }, [name, extra || {}]);
-  const away = async () => { await t.page.evaluate(() => document.getElementById('tab-create').click()); await t.page.waitForTimeout(500); await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close())); await t.page.evaluate(() => document.getElementById('tab-island').click()); };
-  const beat = async (re) => { let got = ''; for (let i = 0; i < 40 && !got; i++) { await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close())); const b = await t.page.evaluate(() => window.bloppitBeat()); if (b.hold && re.test(b.say + ' ' + b.banner)) got = b.say + b.banner; await t.page.waitForTimeout(300); } return got; };
+  const away = async () => { await t.page.evaluate(() => document.getElementById('tab-game').click()); await t.page.waitForTimeout(500); await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close())); await t.page.evaluate(() => document.getElementById('tab-island').click()); };
+  const beat = async (re) => { let got = ''; for (let i = 0; i < 100 && !got; i++) { await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close())); const b = await t.page.evaluate(() => window.bloppitBeat()); if (b.hold && re.test(b.say + ' ' + b.banner)) got = b.say + b.banner; await t.page.waitForTimeout(300); } return got; };
   // build 10: the light
   await add('Robot'); await away();
   const light = await beat(/Bloppit: .*lavender light/); assert.ok(light, 'the light at 10 builds');
