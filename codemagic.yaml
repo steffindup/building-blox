@@ -31,6 +31,7 @@ workflows:
         excludes:
           - '**/*.md'
           - 'mobile/store/'
+          - 'mobile/android/'
     integrations:
       app_store_connect: Bloppit ASC
     environment:
@@ -64,6 +65,73 @@ workflows:
       app_store_connect:
         auth: integration
         submit_to_testflight: true
+      email:
+        recipients:
+          - steffindup@gmail.com
+        notify:
+          success: true
+          failure: true
+
+  # Android: builds a signed .aab (Android App Bundle) for Google Play.
+  # One-time setup (see mobile/store/google-play.md):
+  #  1. Codemagic > Team settings > codemagic.yaml settings > Code signing identities > Android keystores:
+  #     upload bloppit-upload.jks with its passwords and alias, reference name "bloppit_upload".
+  #  2. Start "Android for Google Play" once by hand. The email has the .aab to download: upload that first one to
+  #     Play Console yourself (Google requires the first upload by hand).
+  #  3. Later, to send builds to Google Play automatically: make a Google Cloud service account with access to the
+  #     app in Play Console, put its JSON key in an environment group "google_play" as GCLOUD_SERVICE_ACCOUNT_CREDENTIALS,
+  #     then switch on the two commented blocks below (triggering and google_play publishing).
+  android-play:
+    name: Android for Google Play
+    instance_type: linux_x2
+    max_build_duration: 45
+    # triggering:                # switch on once Google Play publishing works (same rules as iOS)
+    #   events:
+    #     - push
+    #   branch_patterns:
+    #     - pattern: main
+    #       include: true
+    #       source: true
+    #   cancel_previous_builds: true
+    # when:
+    #   changeset:
+    #     includes:
+    #       - 'public/build/'
+    #       - 'mobile/'
+    #     excludes:
+    #       - '**/*.md'
+    #       - 'mobile/store/'
+    #       - 'mobile/ios/'
+    environment:
+      android_signing:
+        - bloppit_upload
+      # groups:
+      #   - google_play            # GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+      vars:
+        PACKAGE_NAME: com.bloppit.app
+        VERSION_NAME: "1.1"      # keep in step with the iOS MARKETING_VERSION
+      node: 22
+      java: 21
+    scripts:
+      - name: Install and package the web app into the Android project
+        script: |
+          cd mobile
+          npm ci
+          npm run sync:android
+      - name: Build the signed .aab
+        script: |
+          cd mobile/android
+          chmod +x gradlew
+          # versionCode must rise with every upload: Codemagic's build number does
+          ./gradlew bundleRelease -PversionCode=$BUILD_NUMBER -PversionName=$VERSION_NAME
+    artifacts:
+      - mobile/android/app/build/outputs/bundle/release/*.aab
+      - mobile/android/app/build/outputs/mapping/release/mapping.txt
+    publishing:
+      # google_play:
+      #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+      #   track: alpha               # closed testing (the 12-tester fortnight); "production" once it's done
+      #   submit_as_draft: true      # while the app is still a draft in Play Console
       email:
         recipients:
           - steffindup@gmail.com

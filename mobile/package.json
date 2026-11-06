@@ -6,9 +6,13 @@
   "scripts": {
     "build": "node scripts/build-www.mjs",
     "sync": "npm run build && npx cap sync ios",
-    "icons": "npx capacitor-assets generate --ios"
+    "icons": "npx capacitor-assets generate --ios",
+    "sync:android": "npm run build && npx cap sync android",
+    "icons:android": "npx capacitor-assets generate --android --iconBackgroundColor '#0369BD' --iconBackgroundColorDark '#0369BD' --splashBackgroundColor '#0369BD' --splashBackgroundColorDark '#0369BD' && python3 scripts/android-icons.py"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.1.2",
     "@capacitor/core": "^8.5.3",
     "@capacitor/haptics": "^8.0.2",
     "@capacitor/ios": "^8.5.3",
