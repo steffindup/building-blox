@@ -522,7 +522,7 @@ test('Pippa\'s puzzles are mirror builds: every model is symmetrical, Pippa buil
   await t.page.waitForFunction(() => document.getElementById('winDlg').open, null, { timeout: 30000 });
   // the finale: Pippa builds first in her colours, as always; your mirrored half is in any colour you like
   await t.page.evaluate(() => document.getElementById('winDlg').close());
-  await t.page.evaluate(() => window.bloppitLevel('sea', 11)); await t.page.waitForTimeout(300);
+  await t.page.evaluate(() => window.bloppitLevel('sea', window.bloppitLevels.sea.length - 1)); await t.page.waitForTimeout(300);
   assert.equal(await t.page.evaluate(() => window.bloppitMirror().steps[0]), 'P');
   for (let k = 0; k < 4; k++) { await t.page.waitForFunction(() => { const M = window.bloppitMirror(); return M.steps[M.cur] === 'K'; }, null, { timeout: 20000 }); await t.page.evaluate(() => window.bloppitPlaceRight(4)); await t.page.waitForTimeout(150); }
   const fin = await t.page.evaluate(() => { const M = window.bloppitMirror(), m = new Map(M.paint), byKey = new Map(M.bricks.map((b) => [b.slice(0, 5).join(','), b[5]])); let pairs = 0, ok = 0, mine = 0;
