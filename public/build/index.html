@@ -6207,10 +6207,10 @@ function updateGameBar(){
   $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>';
 }
 window.bloppitLevels={otter:OTTER_LEVELS,brain:BRAIN_LEVELS,sea:SEA_LEVELS,flip:FLIP_LEVELS,blitz:BLITZ_PICKS,mystery:()=>MYSTERY,progress:()=>gameProgress(worldStore()),lib:()=>SAMPLES.filter(released).map(s=>s.name),weekly:w=>weeklyPuzzle(w),count:L=>{ delete L.count; return levelCount(L); },pic:n=>{ const S=SAMPLES.find(x=>x.name===n); return S?S.make()[0][1].toDataURL():null; },thumb:L=>levelThumb(L)};   // for tests and tuning
-window.bloppitLevel=(t,i)=>{ trail=t; startLevel(i); return model?{n:model.bricks.length,colors:[...new Set(model.bricks.map(b=>PALETTE[b.c][0]))]}:null; };   // for tests
-function startLevel(i){
+window.bloppitLevel=(t,i,ask)=>{ trail=t; startLevel(i,!ask); return model?{n:model.bricks.length,colors:[...new Set(model.bricks.map(b=>PALETTE[b.c][0]))]}:null; };   // for tests
+function startLevel(i,noAsk){
   const L=levelsOf(trail)[i]; if(!L) return;
-  if(trail==='brain'&&!curPlayer().age){ ageAsk(()=>startLevel(i)); return; }   // Brainpeak's maths follows the child's age: ask before the first page (Steff, 5 Nov 2026)
+  if(trail==='brain'&&!curPlayer().age&&!noAsk){ ageAsk(()=>startLevel(i)); return; }   // Brainpeak's maths follows the child's age: ask before the first page (Steff, 5 Nov 2026)
   if(!game) freeS={...S};
   dismissResume();
   photos=levelPhotos(L); setControls(levelSettings(L)); photos.forEach(p=>p.m=computeMask(p.d,S.tol));
