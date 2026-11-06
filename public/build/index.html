@@ -6085,12 +6085,15 @@ const SEA_LEVELS=[   // mirror builds (Oct 2026): Pippa builds one half, you bui
  {name:'Scallop shell',   sample:'Scallop shell',   size:12, shape:'flat',   thick:.5, colors:2, pts:100, mirror:true},
  {name:'Beach ball',      sample:'Beach ball',      size:8,  shape:'flat',   thick:.6, colors:5, pts:130, mirror:true},
  {name:'Starfish',        sample:'Starfish',        size:12, shape:'flat',   thick:.6, colors:2, pts:160, mirror:true},
+ {name:'Surfboard',       sample:'Surfboard',       size:12, shape:'flat',   thick:.5, colors:3, pts:180, mirror:true},   // new (Steff, 5 Nov 2026)
  {name:'Jellyfish',       sample:'Jellyfish',       size:10, shape:'puffed', thick:.5, colors:4, pts:200, mirror:true},
  {name:'Anchor',          sample:'Anchor',          size:14, shape:'flat',   thick:.6, colors:2, pts:250, mirror:true},
+ {name:'Beach umbrella',  sample:'Beach umbrella',  size:11, shape:'flat',   thick:.6, colors:5, pts:275, mirror:true},   // new
  {name:'Octopus',         sample:'Octopus',         size:9,  shape:'puffed', thick:.6, colors:5, pts:300, mirror:true},
  {name:'Beach hut',       sample:'Beach hut',       size:10, shape:'puffed', thick:.6, colors:6, pts:360, mirror:true},
  {name:'Ice-cream cone',  sample:'Ice-cream cone',  size:15, shape:'puffed', thick:.6, colors:4, pts:430, mirror:true},
  {name:'Sandcastle',      sample:'Sandcastle',      size:11, shape:'puffed', thick:.8, colors:6, pts:520, mirror:true},
+ {name:'Pufferfish',      sample:'Pufferfish',      size:11, shape:'puffed', thick:.6, colors:4, pts:580, mirror:true},   // new
  {name:'Lighthouse',      sample:'Striped lighthouse', size:14, shape:'puffed', thick:.6, colors:5, pts:640, mirror:true},
  {name:'Pippa',           sample:'Pippa',           size:14, shape:'puffed', thick:.7, colors:6, pts:800, mirror:true},
  // The last one: the Festival Clock. Building it completes Flipper Beach and starts Pippa's festival.
@@ -6128,12 +6131,16 @@ const levelsOf=tr=>tr==='brain'?BRAIN_LEVELS:tr==='sea'?SEA_LEVELS:tr==='flip'?F
 const BLITZ_PICKS=[
  {name:'Wizard hat',     sample:'Wizard hat',      size:6,  shape:'flat',   thick:.5, colors:4, diff:'Easy',   lv:'easy'},
  {name:'Astronaut',      sample:'Astronaut',       size:6,  shape:'flat',   thick:.5, colors:4, diff:'Easy',   lv:'easy'},
+ {name:'Ice lolly',      sample:'Ice lolly',       size:7,  shape:'flat',   thick:.5, colors:4, diff:'Easy',   lv:'easy'},     // new (Steff, 5 Nov 2026)
  {name:'Trophy',         sample:'Trophy',          size:6,  shape:'flat',   thick:.5, colors:3, diff:'Easy',   lv:'easy'},
  {name:'Alien',          sample:'Alien',           size:6,  shape:'flat',   thick:.5, colors:4, diff:'Easy',   lv:'easy'},
+ {name:'Cactus',         sample:'Cactus',          size:7,  shape:'flat',   thick:1,  colors:4, diff:'Easy',   lv:'easy'},     // new
  {name:'Basketball',     sample:'Basketball',      size:6,  shape:'flat',   thick:.5, colors:3, diff:'Easy',   lv:'easy'},
  {name:'Cupcake',        sample:'Cupcake',         size:8,  shape:'flat',   thick:1,  colors:4, diff:'Medium', lv:'medium'},
  {name:'Donut',          sample:'Donut',           size:6,  shape:'flat',   thick:.5, colors:4, diff:'Medium', lv:'medium'},
+ {name:'Kite',           sample:'Kite',            size:9,  shape:'flat',   thick:.5, colors:6, diff:'Medium', lv:'medium'},   // new
  {name:'Watermelon',     sample:'Watermelon',      size:5,  shape:'flat',   thick:.5, colors:3, diff:'Medium', lv:'medium'},
+ {name:'Rainbow',        sample:'Rainbow',         size:4,  shape:'flat',   thick:.5, colors:3, diff:'Medium', lv:'medium'},   // new
  {name:'Pizza slice',    sample:'Pizza slice',     size:8,  shape:'flat',   thick:1,  colors:4, diff:'Medium', lv:'medium'},
  {name:'Scooter',        sample:'Scooter',         size:7,  shape:'flat',   thick:1,  colors:4, diff:'Medium', lv:'medium'},
  {name:'Crown',          sample:'Crown',           size:6,  shape:'flat',   thick:.5, colors:4, diff:'Hard',   lv:'hard'},
@@ -6147,7 +6154,7 @@ const BLITZ_DEFAULT_PICK='p'+BLITZ_PICKS.findIndex(x=>x.name==='Watermelon');  /
 const GRAND_PRIX={name:'Grand Prix: Race car', sample:'Race car', size:7, shape:'puffed', thick:.4, colors:4, diff:'Grand Prix', boss:true};   // 39 bricks: longer than a normal race
 BLITZ_PICKS.push(GRAND_PRIX);
 const GP_PICK='p'+(BLITZ_PICKS.length-1);
-const LADDER_N=BLITZ_PICKS.length-1;   // the fifteen races before the Grand Prix
+const LADDER_N=BLITZ_PICKS.length-1;   // the races before the Grand Prix (nineteen since 5 Nov 2026)
 const BLITZ_RACES=LADDER_N+1;   // what the child sees: 16 races, the 16th the Grand Prix (Steff, 3 Nov 2026)
 const ladderWon=(i,o)=>{ const L=BLITZ_PICKS[i]; return Object.entries((o||worldStore()).builds||{}).some(([k,b])=>b&&b.k==='blitz'&&k.startsWith(`m:${L.name}:`)); };
 // The next race on Blitz Bay's ladder: the first not yet won, then the Grand Prix; -1 once that's won too
@@ -6179,7 +6186,18 @@ let trail=(()=>{ try{ return trailOk(localStorage.getItem('bloppit-trail')); }ca
 function setTrail(t){ trail=trailOk(t); try{ localStorage.setItem('bloppit-trail',trail); }catch(e){} }
 const bestOf=(g,tr)=>tr==='brain'?(g.bbest||(g.bbest={})):tr==='sea'?(g.sbest||(g.sbest={})):tr==='flip'?(g.fbest||(g.fbest={})):(g.best||(g.best={}));
 const gameTrail=()=>game?trailOk(game.trail):'otter';
-function gameStore(id){ try{ return JSON.parse(localStorage.getItem(keyFor(id||players.cur,GAME_KEY)))||{best:{}}; }catch(e){ return {best:{}}; } }
+function gameStore(id){ try{ return seaMigrateG(JSON.parse(localStorage.getItem(keyFor(id||players.cur,GAME_KEY)))||{best:{}}); }catch(e){ return {best:{}}; } }
+// Pippa's puzzles went from 12 to 15 (Steff, 5 Nov 2026): three new ones slot in, so a save from before has its puzzles
+// moved to their new places (kept with the save as seaV:2, so it happens once). Finished Flipper Beach stays finished:
+// the new three count as built for anyone who had already built the Festival Clock.
+const SEA_V2_MAP=[0,1,2,4,5,7,8,9,10,12,13,14], SEA_V2_NEW=[3,6,11];
+function seaMigrateG(g){ if(!g||g.seaV>=2) return g; const b=g.sbest;
+  if(b&&Object.keys(b).length){ const nb={}; for(const [k,v] of Object.entries(b)){ if(/^\d+$/.test(k)) { const j=SEA_V2_MAP[+k]; if(j!=null) nb[j]=v; } else nb[k]=v; }
+    if(b[11]>0) for(const i of SEA_V2_NEW) if(!nb[i]) nb[i]=1; g.sbest=nb; }
+  g.seaV=2; return g; }
+function seaMigrateW(o){ if(o.seaV>=2) return; const fix=k=>{ const m=/^t:sea:(\d+):(.*)$/.exec(k); if(!m) return k; const j=SEA_LEVELS.findIndex(L=>L.name===m[2]); return j>=0?`t:sea:${j}:${m[2]}`:k; };
+  if(Object.keys(o.builds).some(k=>k.startsWith('t:sea:'))){ const nb={}; for(const [k,v] of Object.entries(o.builds)) nb[fix(k)]=v; o.builds=nb; o.log=o.log.map(fix); }
+  o.seaV=2; }
 function gameStoreSet(g){ if(leavingPlayer) return; try{ localStorage.setItem(pkey(GAME_KEY),JSON.stringify(g)); }catch(e){} pupPush(); }
 function levelMake(L){ return L.art?levelArt(L.art):SAMPLES.find(s=>s.name===L.sample).make(); }
 function levelThumb(L){ if(!L.thumb) L.thumb=levelMake(L)[0][1].toDataURL('image/png'); return L.thumb; }
@@ -8007,7 +8025,7 @@ var DECOR=[{id:'flag',name:'Flag',cost:3},{id:'campfire',name:'Campfire',cost:3}
   {id:'rainbow',name:'Rainbow',cost:35,tier:'show'},{id:'balloon',name:'Hot-air balloon',cost:40,tier:'show'},{id:'pirateship',name:'Pirate ship',cost:50,tier:'show',water:1}];
 // An island's set opens once that island is found
 const decorOpen=(d,o)=>!d.isle||(()=>{ try{ return isleCount(d.isle,o)>0; }catch(e){ return false; } })();
-function worldStore(){ try{ const o=JSON.parse(localStorage.getItem(pkey(WORLD_KEY))); if(o&&o.builds&&typeof o.builds==='object'){ for(const k of ['log','decor','free']) if(!Array.isArray(o[k])) o[k]=[]; if(typeof o.xp!=='number') o.xp=0; if(typeof o.bonus!=='number') o.bonus=0; return o; } }catch(e){} return {xp:0,bonus:0,builds:{},log:[],decor:[],free:[],pupName:-1,pupColor:-1}; }
+function worldStore(){ try{ const o=JSON.parse(localStorage.getItem(pkey(WORLD_KEY))); if(o&&o.builds&&typeof o.builds==='object'){ for(const k of ['log','decor','free']) if(!Array.isArray(o[k])) o[k]=[]; if(typeof o.xp!=='number') o.xp=0; if(typeof o.bonus!=='number') o.bonus=0; seaMigrateW(o); return o; } }catch(e){} return {xp:0,bonus:0,builds:{},log:[],decor:[],free:[],pupName:-1,pupColor:-1}; }
 // Join two world records (same rules as the server): best stars per model, higher XP, decorations and the name kept.
 function worldMerge(a,b){
   a=a||{}; b=b||{}; const builds={...(a.builds||{})};
@@ -9707,7 +9725,7 @@ function isleCount(id,o){
   o=o||worldStore(); const B=Object.entries(o.builds);
   { const tr={otterwood:'otter',brainpeak:'brain',sunrise:'sea'}[id];   // levels finished (that still exist)
     if(tr){ const b=bestOf(gameStore(),tr), L=levelsOf(tr).length; return Object.keys(b).filter(k=>/^\d+$/.test(k)&&+k<L&&b[k]>0).length; } }
-  if(id==='blitzbay'){ const w=B.filter(([,b])=>b.k==='blitz'); return Math.min(15,w.length)+(w.some(([,b])=>b.boss)?1:0); }   // 15 wins, then the Grand Prix
+  if(id==='blitzbay'){ const w=B.filter(([,b])=>b.k==='blitz'); return w.some(([,b])=>b.boss)?LADDER_N+1:Math.min(LADDER_N,w.length); }   // the ladder's wins, then the Grand Prix (which completes it, even for a save from before the four new races)
   if(id==='brickworks') return (o.draw||[]).length+B.filter(([k,b])=>k.startsWith('p:')||k.startsWith('w:')||(k.startsWith('m:')&&(b.k==='quick'||!b.k)&&!MYSTERY_NAMES.has(k.split(':')[1]))).length;
   if(id==='moonstone') return mysteryDone(o);
   return 0;
@@ -9790,16 +9808,16 @@ const PIECES={
   sunrise:[
     {at:1,name:'Flower bed',make:g=>g.add(flowers3(1.9,1.6,1.0,18,0))},
     {at:2,name:'Seaside bench',make:g=>g.add(bench3(-1.8,2.2,.3))},
-    {at:3,name:'Ice-cream stall',make:g=>g.add(stall3(2.4,-.8,'#F29A8A',-1.2))},
-    {at:4,name:'Second flower bed',make:g=>g.add(flowers3(-2.2,.2,.9,16,3))},
-    {at:5,name:'Visitors',make:g=>[[0,2.6],[.6,2.9],[-.6,2.7]].forEach(([x,z],i)=>{ const d=duck3(); d.position.set(x,TOP3,z); d.rotation.y=i; d.userData.waddle=i; g.add(d); })},
-    {at:6,name:'Fruit stall',make:g=>g.add(stall3(-2.4,-1.6,'#A5CA18',.9))},
-    {at:7,name:'Fountain',make:g=>{ g.add(cyl3(.8,.85,.3,12,'#ECE6DA',1.0,TOP3,2.0)); g.add(cyl3(.68,.68,.05,12,'#6FB7E8',1.0,TOP3+.27,2.0)); g.add(cyl3(.1,.12,.7,6,'#ECE6DA',1.0,TOP3+.3,2.0)); const w=mesh3(new THREE.ConeGeometry(.3,.4,8,1,true),new THREE.MeshBasicMaterial({color:0x9ED3F2,transparent:true,opacity:.6}),1.0,TOP3+1.2,2.0); w.rotation.x=Math.PI; w.userData.fount=1; g.add(w); }},
-    {at:8,name:'Street lamps',make:g=>[[-1.0,1.2],[2.3,-1.9],[-2.6,-2.7]].forEach(([x,z])=>g.add(lamp3(x,z)))},
-    {at:9,name:'The clock face',make:g=>{ const c=clockFace3(); c.scale.setScalar(.9); c.position.set(0,TOP3+2.05,.515); g.add(c); }},   // on the tower's face, under its cap (it overlapped the cap and the edge)
-    {at:10,name:'Bunting',make:g=>g.add(bunting3([[-2.4,1.6,-1.6],[0,2.9,.4],[2.4,1.6,-.8]]))},
-    {at:11,name:'Bandstand',make:g=>{ const b=new THREE.Group(); b.add(cyl3(1.0,1.0,.16,8,'#ECE6DA',0,0,0)); for(let i=0;i<6;i++){ const a=i*Math.PI/3; b.add(cyl3(.05,.05,1.1,5,'#FFFFFF',Math.cos(a)*.85,.16,Math.sin(a)*.85)); } b.add(mesh3(new THREE.ConeGeometry(1.15,.6,8),m3('#008F9B'),0,1.55,0)); b.position.set(-1.4,TOP3,-.4); g.add(b); }},
-    {at:12,name:'The Festival Clock',make:g=>{ g.add(mesh3(new THREE.ConeGeometry(.75,.9,4),m3('#F4BC22'),0,4.1,0,{y:Math.PI/4})); const s=mesh3(new THREE.OctahedronGeometry(.22,0),glow3('#FFE27A'),0,4.75,0); s.userData.spin=1; g.add(s);
+    {at:4,name:'Ice-cream stall',make:g=>g.add(stall3(2.4,-.8,'#F29A8A',-1.2))},
+    {at:5,name:'Second flower bed',make:g=>g.add(flowers3(-2.2,.2,.9,16,3))},
+    {at:6,name:'Visitors',make:g=>[[0,2.6],[.6,2.9],[-.6,2.7]].forEach(([x,z],i)=>{ const d=duck3(); d.position.set(x,TOP3,z); d.rotation.y=i; d.userData.waddle=i; g.add(d); })},
+    {at:8,name:'Fruit stall',make:g=>g.add(stall3(-2.4,-1.6,'#A5CA18',.9))},
+    {at:9,name:'Fountain',make:g=>{ g.add(cyl3(.8,.85,.3,12,'#ECE6DA',1.0,TOP3,2.0)); g.add(cyl3(.68,.68,.05,12,'#6FB7E8',1.0,TOP3+.27,2.0)); g.add(cyl3(.1,.12,.7,6,'#ECE6DA',1.0,TOP3+.3,2.0)); const w=mesh3(new THREE.ConeGeometry(.3,.4,8,1,true),new THREE.MeshBasicMaterial({color:0x9ED3F2,transparent:true,opacity:.6}),1.0,TOP3+1.2,2.0); w.rotation.x=Math.PI; w.userData.fount=1; g.add(w); }},
+    {at:10,name:'Street lamps',make:g=>[[-1.0,1.2],[2.3,-1.9],[-2.6,-2.7]].forEach(([x,z])=>g.add(lamp3(x,z)))},
+    {at:11,name:'The clock face',make:g=>{ const c=clockFace3(); c.scale.setScalar(.9); c.position.set(0,TOP3+2.05,.515); g.add(c); }},   // on the tower's face, under its cap (it overlapped the cap and the edge)
+    {at:12,name:'Bunting',make:g=>g.add(bunting3([[-2.4,1.6,-1.6],[0,2.9,.4],[2.4,1.6,-.8]]))},
+    {at:14,name:'Bandstand',make:g=>{ const b=new THREE.Group(); b.add(cyl3(1.0,1.0,.16,8,'#ECE6DA',0,0,0)); for(let i=0;i<6;i++){ const a=i*Math.PI/3; b.add(cyl3(.05,.05,1.1,5,'#FFFFFF',Math.cos(a)*.85,.16,Math.sin(a)*.85)); } b.add(mesh3(new THREE.ConeGeometry(1.15,.6,8),m3('#008F9B'),0,1.55,0)); b.position.set(-1.4,TOP3,-.4); g.add(b); }},
+    {at:15,name:'The Festival Clock',make:g=>{ g.add(mesh3(new THREE.ConeGeometry(.75,.9,4),m3('#F4BC22'),0,4.1,0,{y:Math.PI/4})); const s=mesh3(new THREE.OctahedronGeometry(.22,0),glow3('#FFE27A'),0,4.75,0); s.userData.spin=1; g.add(s);
       for(let i=0;i<4;i++){ const b=mesh3(new THREE.SphereGeometry(.22,10,8),m3(['#0055BF','#F4BC22','#008F9B','#FE8A18'][i]),Math.cos(i*1.6)*1.4,3.6+i*.25,Math.sin(i*1.6)*1.4); b.userData.bob=1; g.add(b); }
       // the festival's Ferris wheel
       const fw=new THREE.Group(), hub=2.45, R=1.85, C=['#0055BF','#F4BC22','#008F9B','#FE8A18','#F29A8A','#A5CA18'];
@@ -9816,26 +9834,26 @@ const PIECES={
   blitzbay:[
     {at:1,name:'Starting line',make:g=>g.add(startGate3(2.3,0,0))},
     {at:2,name:'Track flags',make:g=>{ for(let i=0;i<6;i++){ const a=i*Math.PI/3+.3; g.add(flag3(['#0055BF','#F4BC22','#008F9B'][i%3],Math.cos(a)*3.0*1.2,TOP3,Math.sin(a)*3.0)); } }},
-    {at:3,name:'First grandstand',make:g=>g.add(stand3(0,-3.1,0,'#0055BF'))},
-    {at:4,name:'Smooth track',make:g=>{ g.add(ring3(1.55,2.35,'#5B6778',TOP3+.025)); g.add(ring3(1.93,1.97,'#FFFFFF',TOP3+.035)); }},
-    {at:5,name:'Cheering crabs',make:g=>[[-1.0,2.9],[0,3.2],[1.0,2.9]].forEach(([x,z],i)=>{ const c=crab3(); c.position.set(x,TOP3,z); c.userData.cheer=i; g.add(c); })},
-    {at:6,name:'Second grandstand',make:g=>g.add(stand3(-3.6,0,Math.PI/2,'#F4BC22'))},
-    {at:7,name:'Scoreboard',make:g=>{ const s=new THREE.Group(); s.add(box3(.1,1.6,.1,'#3B3F46',-.6,0,0)); s.add(box3(.1,1.6,.1,'#3B3F46',.6,0,0)); s.add(box3(1.5,.8,.12,'#14202C',0,1.4,0)); s.add(mesh3(new THREE.PlaneGeometry(1.3,.6),glow3('#7FE3F2'),0,1.8,.07)); s.position.set(-2.2,TOP3,-2.8); s.rotation.y=.6; g.add(s); }},
-    {at:8,name:'Floodlights',make:g=>[[3.6,-2.2],[-3.4,2.4],[3.4,2.6]].forEach(([x,z])=>{ g.add(box3(.1,2.6,.1,'#5B6778',x,TOP3,z)); g.add(mesh3(new THREE.BoxGeometry(.5,.3,.2),glow3('#FFFFFF'),x,TOP3+2.7,z)); })},
-    {at:9,name:'Pit garages',make:g=>{ for(let i=0;i<3;i++){ g.add(box3(.8,.7,.7,'#ECE6DA',2.6+i*.0,TOP3,-1.2+i*.9)); g.add(box3(.6,.5,.04,['#0055BF','#F4BC22','#008F9B'][i],2.25,TOP3,-1.2+i*.9,{y:Math.PI/2})); } }},
-    {at:10,name:'Trophy tower',make:(g,n)=>{ const t=new THREE.Group(); t.add(cyl3(.35,.45,1.6,8,'#ECE6DA',0,0,0)); if(n<16) t.add(mesh3(new THREE.CylinderGeometry(.35,.15,.4,10),m3('#F4BC22',{metalness:.4,roughness:.4}),0,1.85,0));   /* the Grand Prix cup takes its place */ for(let i=0;i<Math.min(n,15);i++){ const m=cyl3(.1,.1,.03,10,'#F4BC22',Math.cos(i)*.38,.2+i*.09,Math.sin(i)*.38,{x:Math.PI/2}); t.add(m); } t.position.set(-.2,TOP3,0); g.add(t); }},
-    {at:11,name:'Third grandstand',make:g=>g.add(stand3(0,3.4,Math.PI,'#008F9B'))},
-    {at:12,name:'Balloon arch',make:g=>{ for(let i=0;i<11;i++){ const a=Math.PI*i/10; g.add(mesh3(new THREE.SphereGeometry(.2,8,6),m3(['#0055BF','#F4BC22','#FFFFFF'][i%3]),3.1,TOP3+Math.sin(a)*1.6,Math.cos(a)*1.3)); } }},
-    {at:13,name:'Race cars',make:g=>[0,Math.PI].forEach((p,i)=>{ const c=car3(['#0055BF','#F4BC22'][i]); c.userData.race=p; g.add(c); })},
-    {at:14,name:'Fireworks pads',make:g=>[[-3.2,-2.2],[3.4,-3.0],[-3.0,3.0]].forEach(([x,z])=>{ g.add(cyl3(.12,.12,.4,6,'#81007B',x,TOP3,z)); })},
-    {at:15,name:'The Grand Bloppit Stadium',make:g=>{ const r=new THREE.Mesh(new THREE.TorusGeometry(3.9,.18,6,36),m3('#FFFFFF')); r.rotation.x=Math.PI/2; r.scale.set(1.2,1,1); r.position.y=TOP3+2.2; r.castShadow=true; g.add(r);
+    {at:4,name:'First grandstand',make:g=>g.add(stand3(0,-3.1,0,'#0055BF'))},
+    {at:5,name:'Smooth track',make:g=>{ g.add(ring3(1.55,2.35,'#5B6778',TOP3+.025)); g.add(ring3(1.93,1.97,'#FFFFFF',TOP3+.035)); }},
+    {at:6,name:'Cheering crabs',make:g=>[[-1.0,2.9],[0,3.2],[1.0,2.9]].forEach(([x,z],i)=>{ const c=crab3(); c.position.set(x,TOP3,z); c.userData.cheer=i; g.add(c); })},
+    {at:8,name:'Second grandstand',make:g=>g.add(stand3(-3.6,0,Math.PI/2,'#F4BC22'))},
+    {at:9,name:'Scoreboard',make:g=>{ const s=new THREE.Group(); s.add(box3(.1,1.6,.1,'#3B3F46',-.6,0,0)); s.add(box3(.1,1.6,.1,'#3B3F46',.6,0,0)); s.add(box3(1.5,.8,.12,'#14202C',0,1.4,0)); s.add(mesh3(new THREE.PlaneGeometry(1.3,.6),glow3('#7FE3F2'),0,1.8,.07)); s.position.set(-2.2,TOP3,-2.8); s.rotation.y=.6; g.add(s); }},
+    {at:10,name:'Floodlights',make:g=>[[3.6,-2.2],[-3.4,2.4],[3.4,2.6]].forEach(([x,z])=>{ g.add(box3(.1,2.6,.1,'#5B6778',x,TOP3,z)); g.add(mesh3(new THREE.BoxGeometry(.5,.3,.2),glow3('#FFFFFF'),x,TOP3+2.7,z)); })},
+    {at:11,name:'Pit garages',make:g=>{ for(let i=0;i<3;i++){ g.add(box3(.8,.7,.7,'#ECE6DA',2.6+i*.0,TOP3,-1.2+i*.9)); g.add(box3(.6,.5,.04,['#0055BF','#F4BC22','#008F9B'][i],2.25,TOP3,-1.2+i*.9,{y:Math.PI/2})); } }},
+    {at:12,name:'Trophy tower',make:(g,n)=>{ const t=new THREE.Group(); t.add(cyl3(.35,.45,1.6,8,'#ECE6DA',0,0,0)); if(n<16) t.add(mesh3(new THREE.CylinderGeometry(.35,.15,.4,10),m3('#F4BC22',{metalness:.4,roughness:.4}),0,1.85,0));   /* the Grand Prix cup takes its place */ for(let i=0;i<Math.min(n,15);i++){ const m=cyl3(.1,.1,.03,10,'#F4BC22',Math.cos(i)*.38,.2+i*.09,Math.sin(i)*.38,{x:Math.PI/2}); t.add(m); } t.position.set(-.2,TOP3,0); g.add(t); }},
+    {at:14,name:'Third grandstand',make:g=>g.add(stand3(0,3.4,Math.PI,'#008F9B'))},
+    {at:15,name:'Balloon arch',make:g=>{ for(let i=0;i<11;i++){ const a=Math.PI*i/10; g.add(mesh3(new THREE.SphereGeometry(.2,8,6),m3(['#0055BF','#F4BC22','#FFFFFF'][i%3]),3.1,TOP3+Math.sin(a)*1.6,Math.cos(a)*1.3)); } }},
+    {at:16,name:'Race cars',make:g=>[0,Math.PI].forEach((p,i)=>{ const c=car3(['#0055BF','#F4BC22'][i]); c.userData.race=p; g.add(c); })},
+    {at:18,name:'Fireworks pads',make:g=>[[-3.2,-2.2],[3.4,-3.0],[-3.0,3.0]].forEach(([x,z])=>{ g.add(cyl3(.12,.12,.4,6,'#81007B',x,TOP3,z)); })},
+    {at:19,name:'The Grand Bloppit Stadium',make:g=>{ const r=new THREE.Mesh(new THREE.TorusGeometry(3.9,.18,6,36),m3('#FFFFFF')); r.rotation.x=Math.PI/2; r.scale.set(1.2,1,1); r.position.y=TOP3+2.2; r.castShadow=true; g.add(r);
       for(let i=0;i<10;i++){ const a=i*Math.PI/5; g.add(box3(.1,2.2,.1,'#ECE6DA',Math.cos(a)*3.9*1.2,TOP3,Math.sin(a)*3.9)); } const sign=new THREE.Group(); sign.add(box3(2.4,.6,.1,'#0055BF',0,0,0)); sign.add(mesh3(new THREE.PlaneGeometry(2.2,.4),glow3('#FFE27A'),0,.3,.06)); sign.position.set(0,TOP3+2.4,-4.0); g.add(sign); 
       // fireworks over the stadium (the Grand Prix cup crowns the trophy tower: race 16)
       [[-3.0,6.4,-2.6,'#F29A8A'],[3.2,7.0,-2.2,'#7FE3F2'],[0,8.0,-3.6,'#FFE27A'],[-1.6,7.2,2.4,'#A5CA18'],[2.4,6.6,2.6,'#FF698F']].forEach(([x,y,z,c],i)=>{ const bm=new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:0,depthWrite:false}), fb=new THREE.Group();
         for(let j=0;j<16;j++){ const u=(j+.5)/16, ph=Math.acos(1-2*u), th=j*2.4; fb.add(new THREE.Mesh(ISL3.sparkGeo||(ISL3.sparkGeo=new THREE.SphereGeometry(.09,5,4)),bm).translateX(Math.sin(ph)*Math.cos(th)).translateY(Math.cos(ph)).translateZ(Math.sin(ph)*Math.sin(th))); }
         fb.position.set(x,y,z); fb.userData.burst=i; fb.userData.bm=bm; g.add(fb); });
     }},
-    {at:16,name:'The Grand Prix cup',make:g=>{   // race 16: the giant cup crowns the trophy tower, in place of its little cup
+    {at:20,name:'The Grand Prix cup',make:g=>{   // race 16: the giant cup crowns the trophy tower, in place of its little cup
       const gold=m3('#F4BC22',{metalness:.55,roughness:.3}), tr=new THREE.Group(); tr.add(mesh3(new THREE.BoxGeometry(.9,.25,.9),m3('#14202C'),0,.12,0)); tr.add(mesh3(new THREE.CylinderGeometry(.12,.3,.55,10),gold,0,.52,0));
       tr.add(mesh3(new THREE.CylinderGeometry(.75,.22,1.0,16),gold,0,1.3,0)); for(const sx of [-1,1]){ const hd=new THREE.Mesh(new THREE.TorusGeometry(.32,.07,6,14,Math.PI),gold); hd.position.set(sx*.72,1.35,0); hd.rotation.z=sx*-Math.PI/2; tr.add(hd); }
       const st=mesh3(new THREE.OctahedronGeometry(.28,0),glow3('#FFE27A'),0,2.2,0); st.userData.roty=1.2; tr.add(st); tr.position.set(-.2,TOP3+1.6,0); tr.userData.roty=.25; g.add(tr); }},
@@ -11520,7 +11538,7 @@ function ladderGo(){ const o=worldStore(), i=ladderStep(o); if(i<0){ homeGo('cpu
   $('#ldT').textContent=gp?`🏆 Race ${BLITZ_RACES} of ${BLITZ_RACES}: the Grand Prix`:`⚡ Race ${i+1} of ${BLITZ_RACES}`;
   $('#ldImg').src=levelThumb(L); $('#ldName').textContent=gp?'Race car':L.name; $('#ldInfo').textContent=`${n} bricks · ${each} each`;
   $('#ldStrip').innerHTML=BLITZ_PICKS.slice(0,LADDER_N).map((_,k)=>`${k&&k%5===0?'<span class="gap"></span>':''}<i class="${ladderWon(k,o)?'done':k===i?'now':''}"></i>`).join('')+`<span class="gap"></span><span class="gp${gp?' now':grandPrixWon(o)?' done':''}">🏆</span>`;
-  $('#ldNote').textContent=gp?'You’ve won the first fifteen races. Race sixteen is the Grand Prix: beat Swoop at full throttle on the biggest race of all to complete Blitz Bay!':`Take turns placing 1 to 3 bricks, then tap Done. Your clock only runs on your turn. Shortest time wins. ${i%5===4&&i<LADDER_N-1?'Win this one and Swoop gets faster!':''}`.trim();
+  $('#ldNote').textContent=gp?`You’ve won the first ${LADDER_N} races. Race ${LADDER_N+1} is the Grand Prix: beat Swoop at full throttle on the biggest race of all to complete Blitz Bay!`:`Take turns placing 1 to 3 bricks, then tap Done. Your clock only runs on your turn. Shortest time wins. ${i%5===4&&i<LADDER_N-1?'Win this one and Swoop gets faster!':''}`.trim();
   cheer3($('#ldChars'),LT3[lvl]||'swoop','cheeky_taunt');
   $('#ldGo').onclick=()=>{ d.close(); track('ladder_go:'+i); islandSetOff('blitzbay',()=>nextBlitz('p'+i,lvl,i)); };
   if(!d.open) d.showModal(); }
