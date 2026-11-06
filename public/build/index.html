@@ -4585,6 +4585,9 @@ $('#hintBtn').onclick=()=>{
 $('#autoBtn').onclick=autoPlace;
 // For tests and store screenshots: place the next brick the way a player tapping the right spot would (nothing counts as help)
 window.bloppitPickWhy=()=>({cap:pickCap(),why:pickCapWhy().why,note:$('#pickNote').textContent});   // for tests
+// for previews and tests: build a level's puzzle as the level would (its sample, size, colours, mirror) and count its bricks
+window.bloppitPreview=L=>{ if(mp) mpLeave(); if(game) endGame(); photos=levelPhotos(L); setControls(levelSettings(L)); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild(); setTab('build');
+  const smp=SAMPLES.find(x=>x.name===(L.sample||L.name)); return model?{bricks:model.bricks.length,steps:model.steps.length,mirror:!!model.mirror,kid:model.mirror?model.steps.filter(s=>s.kid).reduce((a,s)=>a+s.bricks.length,0):null,img:smp?smp.make()[0][1].toDataURL('image/png'):null}:null; };
 window.bloppitPlaceRight=(pc)=>{ if(busy||!model||cur>=model.steps.length) return false; const s=model.steps[cur]; let o,t;
   if(off){ o=off; t=s.bricks.find(b=>!placed.has(b)); } else if(cands.length){ o=cands[0]; t=s.bricks.find(b=>!o.used.has(b)); } else { o={x:0,z:0}; t=s.bricks[0]; }
   if(!t) return false; const n0=placedN; sel={sx:t.sx,sz:t.sz,c:pc!=null&&model.paint?pc:t.c}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2}; tryPlace(); lastAnchor=null; ghostGroup.visible=false;
@@ -4972,6 +4975,10 @@ $('#pages').addEventListener('click',e=>{
 });
 
 /* ---------- Sample models, drawn as photos ---------- */
+// A drawing laid out on the stud grid (Steff's puzzles, 5 Nov 2026): one letter per cell, '.' empty, cells 20×24 with a white
+// margin, so each cell becomes a brick-sized block and nothing blurs (the way the Well and the Constellation Cube are drawn)
+function cellSheet(rows,pal){ const w=rows[0].length, [c,x]=sheet(20+w*20,20+rows.length*24,'#ffffff');
+  rows.forEach((r,j)=>[...r].forEach((k,i)=>{ if(pal[k]){ x.fillStyle=pal[k]; x.fillRect(10+i*20,10+j*24,20.5,24.5); } })); return c; }
 function sheet(w,h,bg){const c=document.createElement('canvas'); c.width=w; c.height=h; const x=c.getContext('2d'); x.fillStyle=bg; x.fillRect(0,0,w,h);
   x.rr=(X,Y,W,H,r)=>{x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+W,Y,X+W,Y+H,r);x.arcTo(X+W,Y+H,X,Y+H,r);x.arcTo(X,Y+H,X,Y,r);x.arcTo(X,Y,X+W,Y,r);x.closePath();x.fill();};
   x.poly=(pts,f)=>{x.fillStyle=f;x.beginPath();pts.forEach(([a,b],i)=>i?x.lineTo(a,b):x.moveTo(a,b));x.closePath();x.fill();};
@@ -5817,6 +5824,22 @@ const SAMPLES=[
    for(let k=0;k<5;k++){ const pts=[[cx,cy]]; for(let j=0;j<=10;j++){ const u=j/10, a=Math.PI*(1+(k+u)/5), r=R*(.84+.16*Math.sin(Math.PI*u)); pts.push([cx+Math.cos(a)*r,cy+Math.sin(a)*r]); }
      x.poly(pts,k%2?'#FE8A18':'#F2CD37'); }
    x.poly([[46,136],[174,136],[154,166],[66,166]],'#FE8A18');
+   return [['front',c]]; }},
+ // New puzzles (Steff, 5 Nov 2026): three more of Pippa's mirror builds (symmetrical, so Pippa builds one half), and four
+ // more Blitz races, two at Warm-up and two at Race speed
+ {name:'Surfboard',theme:'Ocean',hidden:true,make(){ return [['front',cellSheet(['..Y..','.YBY.','.YBY.','OOBOO','YYBYY','YYBYY','YYBYY','YYBYY','OOBOO','.YBY.','.YBY.','..Y..'],{Y:'#F2CD37',B:'#0055BF',O:'#FE8A18'})]]; }},
+ {name:'Beach umbrella',theme:'Ocean',hidden:true,make(){ return [['front',cellSheet(['.....W.....','....BBB....','..YYBBBYY..','.OYYBBBYYO.','OOYYBBBYYOO','O..Y.B.Y..O','.....W.....','.....W.....','.....W.....','.....W.....','..SSSSSSS..'],{O:'#FE8A18',Y:'#F2CD37',B:'#0055BF',W:'#582A12',S:'#E4CD9E'})]]; }},
+ {name:'Pufferfish',theme:'Ocean',hidden:true,make(){ return [['front',cellSheet(['....O.O.O....','..O.YYYYY.O..','...YYYYYYY...','.OYYKYYYKYYO.','FYYYYYYYYYYYF','FFYYYYYYYYYFF','FYYLLLLLLLYYF','.OYLLLOLLLYO.','..YYLLLLLYY..','...YYYYYYY...','..O..O.O..O..'],{O:'#FE8A18',F:'#FE8A18',Y:'#F2CD37',L:'#FFF03A',K:'#1B2A34'})]]; }},
+ {name:'Ice lolly',theme:'Food',hidden:true,make(){ const [c,x]=sheet(150,270,'#ffffff');
+   x.fillStyle='#E4CD9E'; x.rr(63,180,24,72,8);
+   x.fillStyle='#FC97AC'; x.rr(30,18,90,70,40); x.fillRect(30,60,90,30); x.fillStyle='#FE8A18'; x.fillRect(30,88,90,50); x.fillStyle='#F2CD37'; x.rr(30,136,90,56,10); x.fillRect(30,136,90,30);
+   return [['front',c]]; }},
+ {name:'Rainbow',theme:'Nature',hidden:true,make(){ return [['front',cellSheet(['.RRRRR.','ROOOOOR','ROYYYOR','ROY.YOR'],{R:'#C91A09',O:'#FE8A18',Y:'#F2CD37'})]]; }},
+ {name:'Kite',theme:'Toys',hidden:true,make(){ return [['front',cellSheet(['....W....','...BWY...','..BBWYY..','.BBBWYYY.','WWWWWWWWW','.GGGWOOO.','..GGWOO..','...GWO...','....W....','...PWP...','....W....'],{B:'#0055BF',Y:'#F2CD37',G:'#4B9F4A',O:'#FE8A18',W:'#582A12',P:'#FC97AC'})]]; }},
+ {name:'Cactus',theme:'Nature',hidden:true,make(){ const [c,x]=sheet(210,270,'#ffffff');
+   x.fillStyle='#4B9F4A'; x.rr(82,30,46,180,22); x.rr(38,92,30,70,14); x.rr(38,138,60,24,10); x.rr(142,66,30,70,14); x.rr(112,112,60,24,10);
+   x.dot(105,30,12,'#FC97AC');
+   x.fillStyle='#A95500'; x.beginPath(); x.moveTo(52,200); x.lineTo(158,200); x.lineTo(144,262); x.lineTo(66,262); x.closePath(); x.fill(); x.fillStyle='#C8701A'; x.fillRect(46,196,118,16);
    return [['front',c]]; }},
  {name:'Beach ball',theme:'Ocean',hidden:true,make(){ const [c,x]=sheet(200,200,'#BFE3F5');
    const C=['#0055BF','#F4F4F4','#F2CD37','#F4F4F4','#4B9F4A','#F4F4F4'];
