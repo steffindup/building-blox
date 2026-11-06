@@ -435,6 +435,7 @@ body.on-build .appfoot{display:none}
    gets slimmer so the build has more room. The page buttons sit inside the booklet either side of the layer line, See final
    build is a 🏁 under the zoom buttons, the hand is one row with the progress under it, and a race is one strip. */
 .zfin,.hand-prog,.mini-restart{display:none}
+#boxBook .zfin,body:not(.on-build) .zfin{display:none!important}   /* the parts box keeps its own See final build */
 @media (max-width:700px){
   body.on-build .build-grid .bookpane{position:relative;top:auto}
   body.on-build .build-grid .bp-nav{position:absolute;left:calc(54% + 12px);right:6px;bottom:5px;margin:0;justify-content:space-between;flex-wrap:nowrap;gap:4px;pointer-events:none}
@@ -449,7 +450,7 @@ body.on-build .appfoot{display:none}
   body.on-build #handNote,body.on-build .tray-foot{display:none}
   body.on-build .hand-prog{display:block;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-top:2px}
   body.on-build .hand-prog:empty{display:none}
-  body.on-build .playcol .hand-btns{display:flex;flex-direction:row;align-items:center;gap:6px}
+  body.on-build .playcol .hand-btns:has(#putBack[hidden]){display:flex;flex-direction:row;align-items:center;gap:6px}
   body.on-build .playcol .hand-btns .mini-restart{display:inline-block;padding:6px 9px;font-size:15px;line-height:1;min-height:0}
   body.on-build .playcol .hand-btns .mini-restart.confirm{font-size:12px;padding:6px 8px;border-color:var(--red,#D2352B);color:var(--red,#D2352B)}
   body.on-build .playcol .card:has(#restart[hidden]) .mini-restart,body.on-build .playcol .card:has(#putBack:not([hidden])) .mini-restart{display:none}
@@ -1199,7 +1200,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 body.on-home .tabs{visibility:hidden}
 .home{max-width:760px;margin:0 auto;display:grid;gap:18px;padding-block:6px 28px}
 .hm-hello{display:flex;align-items:center;gap:14px}
-/* How to play: a one-minute video, on the menu and on the build page for a player's first builds */
+/* How to play: a 45-second video (remade 5 Nov 2026, at phone size), on the menu and on the build page for a player's first builds */
 .hm-how{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid var(--line);border-radius:16px;padding:10px 14px;background:var(--page);color:var(--ink);cursor:pointer;font:inherit;box-shadow:0 2px 0 var(--shadow)}
 .hm-how .pl{flex:none;width:44px;height:44px;border-radius:50%;background:#D2352B;color:#fff;display:grid;place-items:center;font-size:18px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
 .hm-how b{display:block;font-family:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;font-weight:400;font-size:20px;line-height:1.1}
@@ -1218,7 +1219,7 @@ body.on-home .tabs{visibility:hidden}
 /* The menu (Steff, 5 Nov 2026): Quick play, Bloppitopia, the Weekly, Continue, How to play. Quick play, Continue and
    How to play are one size (70px); Bloppitopia is 3¾ of that (263px), the Weekly 2¼ (158px). Before the otter has
    arrived, "Start here" (Continue's first form) takes Bloppitopia's place. */
-.hm-hello{order:1}#hmQuick{order:2}#hmWorld,.hm-cont.first{order:3}.hm-daily{order:4}.hm-cont{order:5}#hmHow{order:6}
+.hm-hello{order:1}#hmQuick{order:2}#hmWorld{order:3}.hm-cont.first{order:2}.hm-daily{order:4}.hm-cont{order:5}#hmHow{order:6}
 #hmQuick,#hmHow{min-height:70px}
 .hm-world{display:grid;grid-template-rows:minmax(0,1fr) auto;height:263px;width:100%;padding:0;overflow:hidden;border-radius:16px;background:var(--page);border:1px solid var(--line);box-shadow:0 2px 0 var(--shadow);text-align:left;font:inherit;color:inherit;cursor:pointer}
 .hm-world:hover{border-color:var(--ink)}
@@ -1791,7 +1792,7 @@ body.film-on{overflow:hidden}
   <button class="hm-world" id="hmWorld" data-go="island" type="button" hidden></button>
   <button class="hm-daily" data-go="daily" type="button"><img id="hmDailyImg" alt=""><span class="hd-txt"><span class="tag">Bibi’s Weekly Bloppit</span><b id="hmDailyT">This week’s puzzle</b><span id="hmDailyS">The same puzzle for everyone</span></span><span class="go" aria-hidden="true">▶</span><span class="hd-pills"><span>🔥 <b id="hdStreak">0</b> week streak</span><span><b id="hdTotal">0</b> built</span></span></button>
   <button class="hm-cont" id="hmCont" type="button" hidden><img class="hc-pic" src="/art/bud-offer.png" alt="" width="300" height="398"><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span><span class="go" aria-hidden="true">▶</span></button>
-  <button class="hm-how" id="hmHow" type="button"><span class="pl" aria-hidden="true">▶</span><span><b>How to play</b><small>A one-minute video</small></span></button>
+  <button class="hm-how" id="hmHow" type="button"><span class="pl" aria-hidden="true">▶</span><span><b>How to play</b><small>A 45-second video</small></span></button>
 </div>
 <div class="hm-main">
   <h3 class="hm-sec" id="hmSolo">Solo</h3>
