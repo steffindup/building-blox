@@ -79,6 +79,11 @@ test('My films: the locked film shown is the one closest to unlocking (15 Blitz 
     localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 5, finished: 5, welcome: 1 })); } };
   const t = await open('?nosplash=1&welcome=0', { init: seed });
   await t.page.evaluate(() => document.getElementById('hmFilms').click()); await t.page.waitForTimeout(400);
+  // 15 races open a mid-island slot, and Blitz Bay is the only island built on: its Midway film is the next to come
+  assert.match(await t.text('#filmList button[disabled]'), /8½ · \?\?\?.*Keep building on Blitz Bay/);
+  await t.page.evaluate(() => { document.getElementById('filmsDlg').close(); localStorage.setItem('bloppit-seen3-v1', JSON.stringify([...(JSON.parse(localStorage.getItem('bloppit-seen3-v1') || '[]')), 'mid:blitzbay'])); });
+  // once it has played: the Grand Prix film, not Frog Forest's (never built on)
+  await t.page.evaluate(() => document.getElementById('hmFilms').click()); await t.page.waitForTimeout(400);
   const lock = await t.text('#filmList button[disabled]');
   assert.match(lock, /09 · \?\?\?.*Win the Grand Prix/);
   assert.deepEqual(t.errors, []); await t.ctx.close();
@@ -1579,6 +1584,30 @@ test('mid-island films: every 15 builds a slot opens, and the next build on an i
   // build 16: the friend visit bumped from 15
   await add('m:Robot:10'); await away();
   assert.ok(await beat(/robot/i), 'the bumped visit comes the next build');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('mid-island films with films on: build 15 on Frog Forest plays its Midway film (frog-forest-mid.mp4), then Tiny speaks, and it joins My films', { skip: skip() }, async () => {
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = [];
+    for (let i = 0; i < 13; i++) { const k = `m:Model${i}:10`; builds[k] = { n: 10, s: 2, t: 1e12 + i, c: 1, k: 'quick' }; log.push(k); }
+    builds['t:otter:0:Heart'] = { n: 10, s: 3, t: 1e12 + 20, c: 1, k: 'trail' }; log.push('t:otter:0:Heart');
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 80, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, pick: 'tree', films: ['frog-arrival', 'brainpeak-arrival', 'sunrise-arrival', 'blitzbay-arrival', 'brickworks-arrival'] }));
+    localStorage.setItem('building-blox-game-v1', JSON.stringify({ best: { 0: 3 }, sbest: {} }));
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 5, finished: 5, welcome: 1 })); } };
+  const t = await open('?nosplash=1&films=1&hour=11#island', { init: seed });
+  await t.page.waitForFunction(() => window.bloppitIsland3().ctl, null, { timeout: 90000 }); await t.page.waitForTimeout(3000);
+  await t.page.evaluate(() => { const k = Object.keys(localStorage).find((x) => /seen3/.test(x)); if (k) { const s = JSON.parse(localStorage.getItem(k)); s.push('half:brickworks', 'light:1', 'visit:1', 'visit:2'); localStorage.setItem(k, JSON.stringify(s)); } });
+  await t.page.evaluate(() => { const o = JSON.parse(localStorage.getItem('bloppit-world-v1')); const k = 't:otter:1:Duck'; o.builds[k] = { n: 10, s: 2, t: Date.now(), c: 1, k: 'trail' }; o.log.push(k); localStorage.setItem('bloppit-world-v1', JSON.stringify(o));
+    const g = JSON.parse(localStorage.getItem('building-blox-game-v1')); g.best[1] = 3; localStorage.setItem('building-blox-game-v1', JSON.stringify(g)); });
+  await t.page.evaluate(() => document.getElementById('tab-game').click()); await t.page.waitForTimeout(500);
+  await t.page.evaluate(() => { document.querySelectorAll('dialog[open]').forEach((d) => d.close()); document.getElementById('tab-island').click(); });
+  await t.page.waitForFunction(() => window.bloppitFilmOn() === 'frog-mid', null, { timeout: 30000, polling: 200 });
+  assert.match(await t.page.evaluate(() => document.querySelector('.is3-film video').src), /\/video\/frog-forest-mid\.mp4(\?v=\w+)?$/);
+  await t.page.waitForFunction(() => document.querySelector('.is3-film video').currentTime > .3, null, { timeout: 15000 });
+  await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click());
+  let said = ''; for (let i = 0; i < 60 && !said; i++) { const b = await t.page.evaluate(() => window.bloppitBeat()); if (/Did you see the lanterns\?/.test(b.say)) said = b.say; await t.page.waitForTimeout(300); }
+  assert.ok(said, 'Tiny’s line follows the film');
+  assert.ok((await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1')).films)).includes('frog-mid'), 'the Midway film is in My films');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
