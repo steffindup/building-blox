@@ -9589,7 +9589,7 @@ function isl3ReactStep(now){ const R=ISL3.react; if(!R) return false; const k=(n
   if(R.kind==='squash'){ const q=Math.sin(k*Math.PI*3)*(1-k)*.25; sp.scale.set(sx*(1+q)*flip,sy*(1-q),1); }
   return true; }
 // A speech bubble over a character for a moment
-function isl3Say(grp,text){ const el=ISL3.box&&ISL3.box.querySelector('.is3-say'); if(!el) return; el.textContent=text; el.hidden=false; ISL3.say={grp,until:performance.now()+2000}; clearTimeout(ISL3.sayT); ISL3.sayT=setTimeout(()=>{ el.hidden=true; ISL3.say=null; },2000); }
+function isl3Say(grp,text,ms){ ms=ms||2000; const el=ISL3.box&&ISL3.box.querySelector('.is3-say'); if(!el) return; el.textContent=text; el.hidden=false; ISL3.say={grp,until:performance.now()+ms}; clearTimeout(ISL3.sayT); ISL3.sayT=setTimeout(()=>{ el.hidden=true; ISL3.say=null; },ms); }
 function isl3SayPlace(){ const S=ISL3.say, el=ISL3.box&&ISL3.box.querySelector('.is3-say'); if(!S||!el||el.hidden) return; const v=S.grp.position.clone(); v.y=TOP3+(S.grp===ISL3.bloppit?3.1:S.grp===ISL3.longtail?2.9:2.4); v.project(ISL3.cam);
   const r=ISL3.r.domElement, x=(v.x+1)/2*r.clientWidth, y=(1-v.y)/2*r.clientHeight; el.style.left=Math.max(70,Math.min(r.clientWidth-70,x))+'px'; el.style.top=Math.max(40,y)+'px'; }
 function bloppitCheer(){ if(ISL3.b3){ ISL3.b3.ctl.play('cheer'); try{ sfx.chirp(); }catch(e){} isl3Kick(); return; } ISL3.jumpT=performance.now(); sfx.chirp(); const s=ISL3.bloppitSprite; if(!s) return; const was=ISL3.bloppitPose; s.material.map=tex3('/art/bud-happy.png'); s.material.needsUpdate=true;
@@ -10436,7 +10436,7 @@ function isl3Reveal(ids,o){
   const fin=ids.filter(i=>/^(done|final):/.test(i)), items=[...ids.filter(i=>!/^(done|final):/.test(i)).slice(0,6),...fin.filter(i=>i.startsWith('done:')),...fin.filter(i=>i.startsWith('final:'))]; if(!items.length) return isl3AfterReveal(o);
   ISL3.finales=(ISL3.finales||[]).concat(fin);
   ISL3.revealing=true; ISL3.hold=true; isl3Chrome(); if(ISL3.ctl) ISL3.ctl.enabled=false;
-  const step=(i)=>{ if(i>=items.length||!ISL3.on){ ISL3.revealing=false; if(ISL3.ctl) ISL3.ctl.enabled=true; isl3Banner(''); isl3FlyHome(); isl3Chrome(); setTimeout(()=>isl3AfterReveal(o),900); return; }
+  const step=(i)=>{ if(i>=items.length||!ISL3.on){ ISL3.revealing=false; ISL3.beatOk=true; if(ISL3.ctl) ISL3.ctl.enabled=true; isl3Banner(''); isl3FlyHome(); isl3Chrome(); setTimeout(()=>isl3AfterReveal(o),900); return; }
     const id=items[i], [kind,isle]=id.split(':');
     { const f=FILMS.find(f=>f.at===id); if(f&&!ISL3.filmDone[id]&&!filmSeen(f.id,o)){ ISL3.filmDone[id]=1; isl3Film(f,()=>step(i)); return; } }
     // When the Moon crystal rises (Chapter 9): the child sets their brick in the ring, then film 20 (order since 5 Nov 2026)
@@ -10590,11 +10590,63 @@ function isl3AfterReveal(o){ o=worldStore(); if(ISL3.revealing||ISL3.ending) ret
   if(ISL3.finales&&ISL3.finales.length){ const f=ISL3.finales.shift(); finaleCard(f); return; }
   if(ISL3.hold&&!ISL3.ending){ ISL3.hold=false; isl3Chrome(); }
   if(ISL3.thenChapter!=null){ const i=ISL3.thenChapter; ISL3.thenChapter=null; if(ISL3.on&&!ISL3.revealing){ setTimeout(()=>mysteryStart(i),600); return; } }   // came from "Moonstone Isle, Chapter N": on to it
+  if(ISL3.beatOk&&tab==='island'&&!ISL3.lufu&&!isl3Holding()&&!ISL3.cine&&!document.querySelector('.is3-cine,.is3-ring,.the-end,dialog[open]')){ ISL3.beatOk=false; if(isl3Beat(o)) return; }
   const due=(ISL3.pending_acc&&ISL3.pending_acc.length)||(worldCount(o)>=10&&!o.pick&&!ISL3.askedPick);
   if(due){ if(tab!=='island') return;   // they wait for the island (the next visit picks them up)
     if(ISL3.cine||document.querySelector('.is3-cine,.is3-ring,.the-end,dialog[open]')){ clearTimeout(ISL3.afterT); ISL3.afterT=setTimeout(()=>isl3AfterReveal(worldStore()),1500); return; } }   // a film or a card is up: after it
   if(ISL3.pending_acc&&ISL3.pending_acc.length){ const a=ISL3.pending_acc.shift(); accOffer(a); return; }
   if(worldCount(o)>=10&&!o.pick&&!ISL3.askedPick){ ISL3.askedPick=true; pickOpen(); } }
+
+/* ---------- Story beats in the middle of Chapter 1 (Steff, 5 Nov 2026) ----------
+   Between the five arrival films and the island finales there were hours of building with no story. Play next keeps
+   its rotation; instead, right after a new build's reveal, at most one short in-game moment:
+   1. Halfway: an island reaches the middle of its trail, the camera flies there and its friend says a line.
+   2. The light: every 10 builds until Moonstone Isle opens, night falls for a moment and Bloppit sees the lavender light
+      out past the mist, a little closer each time (it leads into Chapter 1 of Moonstone Isle).
+   3. A visit: every 5th build (when neither of the others is due), a friend you've met walks over to Home Island and
+      says something about the thing you just built.
+   Each happens once (kept as seen ids), holds Play next while it plays (~6 seconds), and never over a film or a card. */
+const BEAT_HALF={otterwood:['tiny','Half the forest is glowing, {pup}! The frogs are singing about you already.'],
+  brainpeak:['nora','Halfway up Brainpeak. The view gets clearer with every level, {pup}. So do you.'],
+  sunrise:['pippa','Half my puzzles flipped! Flipper Beach has never looked so… symmetrical!'],
+  blitzbay:['swoop','Halfway through the races and you’re keeping up with me? Okay, {pup}, I’m impressed.'],
+  brickworks:['bibi','Half my gallery is full of your creations! ROAR! (That was a happy roar.)']};
+const BEAT_LIGHT=['See that, out past the mist? A little lavender light. Funny… it’s never been there before.',
+  'There it is again. Two soft blinks, then quiet. Like a heartbeat.',
+  'The light’s brighter tonight. I think it’s getting closer… or we are.',
+  'Every island we finish, that light shines a little stronger. I wonder who’s out there.',
+  'The mist is thinning, {pup}. Whoever is out there, I think they’re waiting for us.'];
+const BEAT_VISIT={tiny:['Ribbit! I told the whole forest about your {b}.','Your {b} is great, {pup}! Can I hop on top of it?'],
+  nora:['Hoo! Your {b} is very well balanced. I counted every brick.','A {b}! I’d like to study that one, {pup}.'],
+  pippa:['Ooh, a {b}! It would look even better with its twin beside it.','That {b} makes me want to dance, {pup}!'],
+  swoop:['Nice {b}! Bet I could build one faster. Rematch?','Whoa, a {b}! That’s race-winning work, {pup}.'],
+  bibi:['Your {b} needs a paint job. Orange, maybe?','ROAR! (a squeak) That {b} belongs in my gallery, {pup}.']};
+const BEAT_HOME={tiny:'otterwood',nora:'brainpeak',pippa:'sunrise',swoop:'blitzbay',bibi:'brickworks'};
+function beatName(k){ const p=k.split(':'); if(p[0]==='m') return p[1].toLowerCase();
+  if(p[0]==='t'){ const L=levelsOf(p[1])[+p[2]]; return L?L.name.toLowerCase():'build'; } return 'build'; }
+function beatSay(t,o,b){ return t.replace(/\{pup\}/g,pupName(o)||'little one').replace(/\{b\}/g,b||'build'); }
+function isl3Beat(o){ const seen=new Set(seenGet()||[]), n=worldCount(o), mark=id=>{ const s=seenGet()||[]; s.push(id); seenSet(s); };
+  const grpOf=id=>id==='swoop'?ISL3.longtail:(ISL3.cast[id]||{}).g;
+  const run=(x,z,d,say,ms,night)=>{ ISL3.hold=true; isl3Chrome(); if(night){ ISL3.hourOverride=21.5; isl3Tod(true); }
+    isl3FlyTo(x,1.2,z,d,1300); ISL3.fly.done=()=>{ say(); clearTimeout(ISL3.beatT); ISL3.beatT=setTimeout(()=>{ isl3Banner(''); if(night){ ISL3.hourOverride=null; isl3Tod(true); } isl3FlyHome(1200);
+      ISL3.hold=false; isl3Chrome(); setTimeout(()=>isl3AfterReveal(worldStore()),900); },ms); }; return true; };
+  // 1. halfway on an island (just reached: the middle piece, or one past it)
+  for(const [isle,[who,line]] of Object.entries(BEAT_HALF)){ const end=isleEnd(isle), c=isleCount(isle,o), half=Math.ceil(end/2), I=ISL3.isles[isle], g=grpOf(who);
+    if(c>=half&&c<=half+1&&c<end&&!seen.has('half:'+isle)&&I&&g){ mark('half:'+isle); track('beat_half:'+isle);
+      return run(I.x,I.z,12,()=>{ isl3Say(g,beatSay(line,o),5200); sfx.chime&&sfx.chime(); },5600); } }
+  // 2. the light, every 10 builds until Moonstone Isle opens
+  const k=Math.floor(n/10), M=ISL3.isles.moonstone;
+  if(k>=1&&!mysteryOpen()&&n%10<=1&&!seen.has('light:'+k)&&M){ mark('light:'+k); track('beat_light:'+k);
+    return run(M.x,M.z,16,()=>{ isl3Banner(`Bloppit: “${beatSay(BEAT_LIGHT[Math.min(k,BEAT_LIGHT.length)-1],o)}”`,true); },5600,true); }
+  // 3. a friend you've met visits Home Island, every 5th build
+  const v=Math.floor(n/5), met=Object.keys(BEAT_VISIT).filter(id=>isleCount(BEAT_HOME[id],o)>0&&grpOf(id));
+  if(v>=1&&n%5<=1&&met.length&&!seen.has('visit:'+v)){ mark('visit:'+v); const id=met[v%met.length], g=grpOf(id), B=ISL3.bloppit, last=(o.log||[]).at(-1)||'';
+    if(!B) return false; track('beat_visit:'+id);
+    g.position.set(B.position.x+1.5,0,B.position.z+.9);   // over to Home Island, beside Bloppit (back home when the island is next built)
+    const lines=BEAT_VISIT[id];
+    return run(B.position.x+.7,B.position.z+.4,9,()=>{ isl3Say(g,beatSay(lines[v%lines.length],o,beatName(last)),5200); },5600); }
+  return false; }
+window.bloppitBeat=()=>({hold:!!ISL3.hold,say:(ISL3.box&&ISL3.box.querySelector('.is3-say:not([hidden])')||{}).textContent||'',banner:(ISL3.box&&ISL3.box.querySelector('.is3-banner:not([hidden])')||{}).textContent||''});   // for tests
 
 /* ---------- My Bloppit: your otter's level and outfit ----------
    Otter Level comes from XP (every finished build). Outfits never change how puzzles play: a scarf and a beanie
@@ -10701,7 +10753,8 @@ function isl3Show(box,o){ isl3Immersive(); isl3WakeCheck(); isl3CharsLoad(o);
   ISL3.box=box; if(!box.contains(ISL3.r.domElement)){ box.innerHTML=''; box.appendChild(ISL3.r.domElement); box.classList.add('is3'); }
   // A world that already has builds but never saw the arrival (it went straight to a Trail, or started before the arrival
   // existed) still gets the boat once: the arrival film is where the story starts. It lands on the island as it stands.
-  const n=worldCount(o); ISL3.arrival=n===0?(!pupName(o)&&!o.pupAsked&&!o.arrived?(ISL3.arrival==='home'?'home':'boat'):'home'):(!o.arrived&&!mp?'boat':null);
+  const n=worldCount(o); if(ISL3.beatN!=null&&n>ISL3.beatN) ISL3.beatOk=true; ISL3.beatN=n;   // a new build since the last visit: a story beat may follow
+  ISL3.arrival=n===0?(!pupName(o)&&!o.pupAsked&&!o.arrived?(ISL3.arrival==='home'?'home':'boat'):'home'):(!o.arrived&&!mp?'boat':null);
   isl3Build(o); isl3Size(); ISL3.on=true; ISL3.settle=30; isl3Chrome(); isl3Kick(); if(!ISL3.moved) ISL3.viewI=0; isl3WholeBtn();
   if(!ISL3.ro){ ISL3.ro=new ResizeObserver(()=>{ if(ISL3.on){ isl3Size(); isl3Kick(); } }); ISL3.ro.observe(box); }
   isl3A11y(o);

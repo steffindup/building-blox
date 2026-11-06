@@ -1499,3 +1499,27 @@ test('lufu in 3D (approved v2): eight clips, its own controller; a feeling plays
   assert.ok(r.after === null || r.after === 'blink'); assert.ok(r.rest); assert.ok(r.calm < .05, 'back to its own gold');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
+
+test('story beats in the middle of Chapter 1: the lavender light at 10 builds, a friend visiting Home Island at 15, halfway on Frog Forest; each once, Play next held while it plays', { skip: skip() }, async () => {
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = [];
+    for (let i = 0; i < 9; i++) { const k = `m:Model${i}:10`; builds[k] = { n: 10, s: 2, t: 1e12 + i, c: 1, k: 'quick' }; log.push(k); }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 50, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, pick: 'tree', films: ['frog-arrival', 'brainpeak-arrival', 'sunrise-arrival', 'blitzbay-arrival', 'brickworks-arrival'] }));
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 5, finished: 5, welcome: 1 })); } };
+  const t = await open('?nosplash=1&films=0&hour=11#island', { init: seed });
+  await t.page.waitForFunction(() => window.bloppitIsland3().ctl, null, { timeout: 90000 }); await t.page.waitForTimeout(3000);
+  const add = (name, extra) => t.page.evaluate(([name, extra]) => { const o = JSON.parse(localStorage.getItem('bloppit-world-v1')); const k = `m:${name}:10`; o.builds[k] = { n: 10, s: 2, t: Date.now(), c: 1, k: 'quick', ...extra }; o.log.push(k); localStorage.setItem('bloppit-world-v1', JSON.stringify(o)); }, [name, extra || {}]);
+  const away = async () => { await t.page.evaluate(() => document.getElementById('tab-create').click()); await t.page.waitForTimeout(500); await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close())); await t.page.evaluate(() => document.getElementById('tab-island').click()); };
+  const beat = async (re) => { let got = ''; for (let i = 0; i < 40 && !got; i++) { await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close())); const b = await t.page.evaluate(() => window.bloppitBeat()); if (b.hold && re.test(b.say + ' ' + b.banner)) got = b.say + b.banner; await t.page.waitForTimeout(300); } return got; };
+  // build 10: the light
+  await add('Robot'); await away();
+  const light = await beat(/Bloppit: .*lavender light/); assert.ok(light, 'the light at 10 builds');
+  assert.equal(await t.page.evaluate(() => { const b = document.querySelector('.is3-play'); return !b || b.hidden; }), true, 'Play next waits');
+  await t.page.waitForFunction(() => !window.bloppitBeat().hold, null, { timeout: 20000 });
+  // the same visit again: nothing new
+  await away(); await t.page.waitForTimeout(4000); assert.equal((await t.page.evaluate(() => window.bloppitBeat())).hold, false);
+  // build 15: a friend you've met (Bibi: Brickyard Cove has builds) visits and talks about your Dinosaur
+  for (let i = 11; i < 15; i++) await add('Filler' + i); await away(); await t.page.waitForTimeout(3000); await t.page.waitForFunction(() => !window.bloppitBeat().hold, null, { timeout: 20000 });
+  await add('Dinosaur'); await away();
+  const visit = await beat(/dinosaur/); assert.ok(visit, 'a friend talks about the dinosaur');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
