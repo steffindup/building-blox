@@ -288,15 +288,23 @@ test('phone parts box: one screen, the booklet page on top, the parts board fill
 });
 
 test('a Pippa puzzle still out at sea can be tapped: it says how many builds bring it in and offers Play next', { skip: skip() }, async () => {
-  const t = await open('?nosplash=1&welcome=0&films=0', { init: { fn: () => { const sb = {}; for (let i = 0; i < 9; i++) sb[i] = 2; localStorage.setItem('building-blox-game-v1', JSON.stringify({ best: {}, sbest: sb })); } } });
+  const t = await open('?nosplash=1&welcome=0&films=0', { init: { fn: () => { const sb = {}; for (let i = 0; i < 9; i++) sb[i] = 2; localStorage.setItem('building-blox-game-v1', JSON.stringify({ best: {}, sbest: sb, seaV: 2 })); } } });
   await t.page.evaluate(() => [...document.querySelectorAll('.tab')].find((x) => /Flipper Beach/.test(x.textContent)).click()); await t.page.waitForTimeout(800);
   assert.match(await t.text('#gmLevels .lvl[data-i="9"] .tagnew'), /🌊 \d+ more builds?/);
   assert.equal(await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="9"]').disabled), false);
   await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="9"]').click()); await t.page.waitForTimeout(400);
   assert.equal(await t.page.evaluate(() => document.getElementById('tideDlg').open), true);
-  assert.match(await t.text('#tdTxt'), /84%.*more builds? on the other islands/);
+  assert.match(await t.text('#tdTxt'), /67%.*more builds? on the other islands/);   // puzzle 10 of 15
   assert.equal(await t.page.evaluate(() => document.getElementById('tdGo').hidden), false);
   assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('Pippa’s 15 puzzles: an older save’s puzzles move to their new places, and a finished Flipper Beach stays finished', { skip: skip() }, async () => {
+  for (const [n, want] of [[9, [0, 1, 2, 4, 5, 7, 8, 9, 10]], [12, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]]]) {
+    const t = await open('?nosplash=1&welcome=0&films=0', { init: { fn: (n) => { if (localStorage.getItem('building-blox-game-v1')) return; const sb = {}; for (let i = 0; i < n; i++) sb[i] = 3; localStorage.setItem('building-blox-game-v1', JSON.stringify({ best: {}, sbest: sb })); }, arg: n } });
+    const got = await t.page.evaluate(() => { const g = JSON.parse(localStorage.getItem('building-blox-game-v1')); return Object.keys(g.sbest).filter((k) => g.sbest[k] > 0).map(Number).sort((a, b) => a - b); });
+    assert.deepEqual(got, want, n + ' old puzzles'); assert.deepEqual(t.errors, []); await t.ctx.close();
+  }
 });
 
 test('a Trail level finish shows the stars strip and counts a build', { skip: skip() }, async () => {
