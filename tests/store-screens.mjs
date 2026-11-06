@@ -21,8 +21,11 @@ for (const [tag, vp, dsf] of [['iphone',{width:440,height:956},3],['ipad',{width
   const page = await ctx.newPage(); page.setDefaultTimeout(180000); page.on('pageerror', e => console.log('ERR', e.message));
   await page.goto('http://localhost:8788/build/?nosplash=1&hour=11',   // late morning, whatever the clock says
     { waitUntil: 'load' }); await page.waitForTimeout(3500);
-  // first visit: a little boat brings the otter to Home Island; pick a name (Pebble, blue brick)
+  // first visit: the otter gets its name first (Pebble, from the list), then the boat brings it to Home Island
   await page.evaluate(() => document.getElementById('hmCont').click());
+  await page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 20000 }); await page.waitForTimeout(600);
+  await page.screenshot({ path: `${OUT}${tag}-meet.png` });
+  await page.evaluate(() => { document.getElementById('pupPickT').click(); document.querySelector('#pupNames [data-pup="0"]').click(); document.getElementById('pupLater').click(); });
   // the arrival film: hold a frame of Bloppit on the jetty, take it, then Skip
   await page.waitForFunction(() => window.bloppitIsland3 && window.bloppitIsland3().cine, null, { timeout: 30000, polling: 50 });
   await page.waitForFunction(() => { const A = window.bloppitIsland3().cine; return !A.film || A.film.classList.contains('on'); }, null, { timeout: 30000 });
@@ -30,9 +33,7 @@ for (const [tag, vp, dsf] of [['iphone',{width:440,height:956},3],['ipad',{width
     else Object.defineProperty(A, 't0', { get: () => performance.now() - 7000, set() {}, configurable: true }); }); await page.waitForTimeout(2600);   // held at 7 s
   await page.screenshot({ path: `${OUT}${tag}-arrival.png` });
   await page.evaluate(() => document.querySelector('.is3-cine .cn-skip').click());
-  await page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 20000 }); await page.waitForTimeout(600);
-  await page.screenshot({ path: `${OUT}${tag}-meet.png` });
-  await page.evaluate(() => { document.getElementById('pupPickT').click(); document.querySelector('#pupNames [data-pup="0"]').click(); document.getElementById('pupLater').click(); }); await page.waitForTimeout(2500);
+  await page.waitForFunction(() => /Build Our First Home/.test(document.querySelector('#isWorld .is3-play')?.textContent || ''), null, { timeout: 20000 }); await page.waitForTimeout(1500);
   // Build Our First Home → the build → back home, where the cottage appears
   await page.evaluate(() => document.querySelector('#isWorld .is3-play').click()); await page.waitForTimeout(1500);
   await auto(page,5); await page.waitForTimeout(400); await page.screenshot({ path: `${OUT}${tag}-build.png` });
