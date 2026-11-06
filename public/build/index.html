@@ -11609,7 +11609,8 @@ function renderHome(){
   $('#hmHi').innerHTML=named?`Hi <button class="hm-who" id="hmWho" type="button">${escapeHTML(p.name.trim())}</button>!`:'Hi there!';
   const w=$('#hmWho'); if(w) w.onclick=()=>$('#whoBtn').click();
   homeCont=homeContinue(); $('#hmCont').hidden=!homeCont;
-  { const c=$('#hmCont'), q=$('#hmQuick'), h=$('#hmHow'), w=homeCont&&homeCont.first?q:h; if(c.nextElementSibling!==w) w.parentNode.insertBefore(c,w); }   // first visit: "Start here" leads, above Quick play renderHomeWorld(); renderFilmsTile();
+  { const c=$('#hmCont'), q=$('#hmQuick'), h=$('#hmHow'), w=homeCont&&homeCont.first?q:h; if(c.nextElementSibling!==w) w.parentNode.insertBefore(c,w); }   // first visit: "Start here" leads, above Quick play
+  renderHomeWorld(); renderFilmsTile();
   if(tab==='home') pupMaybe();  // the first finish anywhere (a Trail level, a race) meets the pup on the way back to the menu
   if(homeCont){ $('#hmContT').textContent=homeCont.t; $('#hmContS').textContent=homeCont.s;
     $('#hmContBar').hidden=homeCont.p<0; $('#hmContBar i').style.width=Math.max(4,homeCont.p)+'%'; $('#hmCont').classList.toggle('first',!!homeCont.first); }
