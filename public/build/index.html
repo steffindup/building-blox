@@ -6210,6 +6210,7 @@ window.bloppitLevels={otter:OTTER_LEVELS,brain:BRAIN_LEVELS,sea:SEA_LEVELS,flip:
 window.bloppitLevel=(t,i)=>{ trail=t; startLevel(i); return model?{n:model.bricks.length,colors:[...new Set(model.bricks.map(b=>PALETTE[b.c][0]))]}:null; };   // for tests
 function startLevel(i){
   const L=levelsOf(trail)[i]; if(!L) return;
+  if(trail==='brain'&&!curPlayer().age){ ageAsk(()=>startLevel(i)); return; }   // Brainpeak's maths follows the child's age: ask before the first page (Steff, 5 Nov 2026)
   if(!game) freeS={...S};
   dismissResume();
   photos=levelPhotos(L); setControls(levelSettings(L)); photos.forEach(p=>p.m=computeMask(p.d,S.tol));
@@ -8146,6 +8147,13 @@ function pupMixSet(final){ PUP_HEX=pupMixHex($('#pupHue').value,$('#pupShade').v
   if(final){ const o=worldStore(); o.pupColor=PUP_MIX; o.pupHex=PUP_HEX; o.pupAt=Date.now(); worldSet(o); track('pup_colour_mix'); sfx.chirp(); pupColsRender(); isl3PupRedress(); } }
 $('#pupAge').addEventListener('click',e=>{ const b=e.target.closest('[data-age]'); if(!b) return; const n=+b.dataset.age; curPlayer().age=n; playersSave(); try{ renderWho(); }catch(x){} track('age_set:'+n); sfx.chirp();
   document.querySelectorAll('#pupAge [data-age]').forEach(x=>x.setAttribute('aria-pressed',String(x===b))); });
+// "How old are you?" for a player with no age yet (Brain Trail needs it for its maths), once, before the level starts
+function ageAsk(then){ let d=$('#ageDlg'); if(!d){ d=document.createElement('dialog'); d.className='windlg agedlg'; d.id='ageDlg'; d.setAttribute('aria-labelledby','ageT');
+    d.innerHTML=`<img src="/art/head-nora.png" alt="" width="72" height="72" style="border-radius:50%"><h2 id="ageT">How old are you?</h2><p class="note">Nora picks your maths puzzles to suit you.</p><div class="pup-age"><div role="group" aria-label="Your age">${Array.from({length:9},(_,i)=>i+5).map(n=>`<button type="button" data-age="${n}">${n===13?'13+':n}</button>`).join('')}</div></div>`;
+    document.body.appendChild(d); }
+  d.querySelector('[role=group]').onclick=e=>{ const b=e.target.closest('[data-age]'); if(!b) return; curPlayer().age=+b.dataset.age; playersSave(); try{ renderWho(); syncMathUI(); }catch(x){} track('age_set:'+b.dataset.age); sfx.chirp(); d.close(); if(then) then(); };
+  d.oncancel=e=>e.preventDefault();   // a choice is needed: the maths depends on it
+  if(!d.open) d.showModal(); }
 $('#pupHue').addEventListener('input',()=>pupMixSet(false)); $('#pupShade').addEventListener('input',()=>pupMixSet(false));
 $('#pupHue').addEventListener('change',()=>pupMixSet(true)); $('#pupShade').addEventListener('change',()=>pupMixSet(true));
 $('#pupCols').addEventListener('click',e=>{ const b=e.target.closest('[data-col]'); if(!b) return;
