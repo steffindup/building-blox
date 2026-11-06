@@ -1483,6 +1483,10 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 /* The end: the closing sequence after the whole world is complete */
 .the-end{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:16px 16px 22px;cursor:pointer;background:linear-gradient(180deg,transparent 55%,rgba(8,14,24,.55))}
 #view-island:has(.the-end) :is(.is-btns,.is-foot,.is3-labels){visibility:hidden}
+/* The End fills the screen, like the films (Steff, 6 Nov 2026): the top bar no longer shows above it */
+.buddy.quiet .bud-say{display:none}   /* a race you've finished: the turn bar alone */
+body.end-on{overflow:hidden}body.end-on #isWorld{position:fixed!important;inset:0!important;z-index:60;width:auto!important;height:auto!important;max-height:none!important;margin:0!important;border-radius:0!important}
+body.end-on .the-end{padding-bottom:calc(22px + env(safe-area-inset-bottom,0px))}body.end-on .the-end .te-skip{bottom:calc(14px + env(safe-area-inset-bottom,0px))}
 .the-end .te-skip{position:absolute;bottom:14px;right:14px;border:0;border-radius:999px;padding:6px 14px;background:rgba(20,32,44,.7);color:#fff;font:inherit;font-size:14px;cursor:pointer}
 .the-end .te-card{display:flex;gap:14px;align-items:center;max-width:min(560px,100%);padding:12px 18px 12px 12px;border-radius:20px;background:rgba(20,32,44,.88);color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.3);animation:te-in .6s ease both}
 .the-end .te-card img{width:76px;height:76px;flex:none;object-fit:contain}
@@ -4277,7 +4281,7 @@ function buddyUpdate(){
     return;
   }
   if(budCheerT) return;  // let the cheer finish
-  if(cpuT&&cpu.say){ budSay(cpu.say.cls,cpu.say.html); return; }  // racing Bloppit: it's his turn
+  if(cpuT&&cpu.say){ if(mp&&mp.state&&(mp.state.players[mp.me]||{}).n>=mp.state.quota){ budSay('',''); $('#buddy').classList.add('quiet'); return; } $('#buddy').classList.remove('quiet'); budSay(cpu.say.cls,cpu.say.html); return; }  // racing Bloppit: it's his turn (once you're done, the turn bar alone says what's happening)
   if(cur>=N){ const n=!mp&&!game&&nextBuild(); budSay('', n?`All done! <button class="bud-next" type="button" id="budNext"><img src="${n.thumb}" alt="">Next: ${escapeHTML(n.t.replace(/^.*?: /,''))} ▸</button>`:'All done! Want to build it again, or try another model?'); const b=$('#budNext'); if(b) b.onclick=()=>{ track('play_next'); n.go(); }; return; }
   if(viewPage!==cur){
     budSay('point', viewPage<cur?`That’s a step you’ve done. You’re on step ${cur+1}.`:`That’s coming up later. You’re on step ${cur+1}.`);
@@ -6899,7 +6903,7 @@ function mpTick(){ const s=mp&&mp.state; if(!s||s.mode!=='blitz') return; docume
   if(!s.finished&&document.querySelector('#mpPlayers .rm-mini')){ const L=raceLead(s), k=L&&L.decided?'d'+L.lead.i:''; if(k!==(mp.rmKey||'')){ mp.rmKey=k; $('#mpPlayers').innerHTML=raceMeter(s); } } }   // a clock passing the winner's time decides the race
 const mpMyTurn=()=>!!(mp&&mp.state&&mp.state.started&&!mp.state.finished&&mp.state.turn===mp.me);
 function mpTurnText(){ const s=mp&&mp.state; if(!s||!s.started) return 'Waiting for the game to start.'; if(s.finished) return 'The model is finished!';
-  if(mp.cpu&&s.quota&&(s.players[mp.me]||{}).n>=s.quota) return `You’re all done! ${s.players[s.turn].name} is finishing his bricks.`; return `It’s ${s.players[s.turn].name}’s turn. Get your bricks ready in the parts box.`; }
+  if(mp.cpu&&s.quota&&(s.players[mp.me]||{}).n>=s.quota) return '';   /* the turn bar already says it (one line, Steff 6 Nov 2026) */ return `It’s ${s.players[s.turn].name}’s turn. Get your bricks ready in the parts box.`; }
 // The race-o-meter (Blitz with two or more players): a lane each, the runner moving along as their bricks go in, the
 // chequered flag at the end, and their clock (only running on their own turns) with misses and hints already added in.
 // The rule stays in view: everyone places the same number of bricks; the shortest time wins.
@@ -10593,10 +10597,10 @@ function theEnd(then){
     {at:'brickworks',img:'bibi',name:'Bibi',say:'Your creations fill my whole gallery. ROAR!',got:`${isleCount('brickworks',o)} creations of your own`},
     {at:'home',img:'bloppit',name:'Bloppit',say:'And you built the home it all started from.',got:`${nf(worldCount(o))} builds in all`},
     {roll:true},{nums:true},{fin:true}];
-  const el=document.createElement('div'); el.className='the-end'; ISL3.box.appendChild(el);
+  const el=document.createElement('div'); el.className='the-end'; ISL3.box.appendChild(el); document.body.classList.add('end-on'); requestAnimationFrame(()=>{ isl3Size(); isl3Kick(); });   // full-screen, like the films
   ISL3.revealing=true; isl3Banner(''); isl3Chrome(); if(ISL3.ctl) ISL3.ctl.enabled=false; ISL3.hourOverride=21.5; isl3Tod(true);
   let i=-1, timer=0; const fit=d=>{ const w=ISL3.box.clientWidth||1, h=ISL3.box.clientHeight||1; return d*Math.min(2.6,Math.max(1,1.35*h/w)); };
-  const done=()=>{ clearTimeout(timer); el.remove(); ISL3.revealing=false; ISL3.hourOverride=null; isl3Tod(true); if(ISL3.ctl) ISL3.ctl.enabled=true; isl3FlyHome(1400); isl3Chrome(); if(then) then(); };
+  const done=()=>{ clearTimeout(timer); el.remove(); document.body.classList.remove('end-on'); requestAnimationFrame(()=>{ isl3Size(); isl3Kick(); }); ISL3.revealing=false; ISL3.hourOverride=null; isl3Tod(true); if(ISL3.ctl) ISL3.ctl.enabled=true; isl3FlyHome(1400); isl3Chrome(); if(then) then(); };
   const go=k=>{ clearTimeout(timer); i=k; const S=steps[i]; if(!S) return done(); el.className='the-end'; el.innerHTML=S.fin?'':'<button class="te-skip" type="button">Skip ›</button>';
     const sk=el.querySelector('.te-skip'); if(sk) sk.onclick=e=>{ e.stopPropagation(); go(steps.length-1); };
     if(S.at){ const I=ISL3.isles[S.at]; if(I) isl3FlyTo(I.x,1.2,I.z,fit({home:11,brickworks:17,blitzbay:16}[S.at]||14),1500);
@@ -10850,7 +10854,12 @@ function accRender(all){ const o=worldStore(), D=ISL3.accDraft, prev={...o,wear:
   $('#accOff').hidden=!accOn(ACC.find(a=>a.id===D.id)||{slot:D.slot},accWear(o)); }
 function accSave(on){ const o=worldStore(), D=ISL3.accDraft, w=accWear(o); if(on) w[D.slot]=[D.id,D.ci]; else delete w[D.slot]; o.wear=w; o.wearAt=Date.now(); worldSet(o); track(on?'acc_wear:'+D.id:'acc_off'); sfx.chirp(); isl3PupRedress(); }
 // Ten builds: a choice that makes two children's worlds a little different
-function pickOpen(){ const d=$('#pickDlg'); if(!d.open){ d.showModal(); track('pick_offered'); } }
+// Never over a film, the ring or The End, and only on Bloppitopia (Steff, 6 Nov 2026): it waits and tries again.
+// Asked late (an older save, or a long gap), it doesn't say "Ten builds!".
+function pickOpen(){ const d=$('#pickDlg'); if(d.open) return;
+  if(tab!=='island'||ISL3.lufu||ISL3.cine||isl3Holding()||document.querySelector('.is3-cine,.is3-ring,.the-end,dialog[open]')){ clearTimeout(ISL3.pickT); ISL3.pickT=setTimeout(pickOpen,1500); return; }
+  $('#pickTitle').textContent=worldCount(worldStore())<=14?'Ten builds! What shall we build on Home Island?':'What shall we build on Home Island?';
+  d.showModal(); track('pick_offered'); }
 
 // Show Bloppitopia (the Island page): build it, then reveal whatever is new since the last visit
 function isl3Immersive(){ const v=$('#view-island'), card=v&&v.querySelector('.is-card'), btns=v&&v.querySelector('.is-btns'); if(!card||!btns) return;

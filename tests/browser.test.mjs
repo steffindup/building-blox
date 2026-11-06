@@ -1529,6 +1529,8 @@ test('the last build: Moonstone complete, the Moonstone crown, then The End; sai
   await t.page.evaluate(() => document.getElementById('accOn').click());
   await t.page.waitForFunction(() => document.querySelector('.the-end'), null, { timeout: 10000, polling: 200 });
   await t.page.waitForFunction(() => document.querySelector('.the-end .te-skip'), null, { timeout: 10000, polling: 200 });
+  { const r = await t.page.evaluate(() => { const b = document.getElementById('isWorld').getBoundingClientRect(), top = document.querySelector('header.top'), e = document.elementFromPoint(innerWidth / 2, 8); return { top: b.top, h: b.height, vh: innerHeight, header: !!top && top.contains(e) }; });
+    assert.ok(r.top <= 0 && r.h >= r.vh - 1 && !r.header, 'The End fills the screen, with no top bar over it: ' + JSON.stringify(r)); }
   await t.page.evaluate(() => document.querySelector('.the-end .te-skip').click());
   await t.page.waitForFunction(() => document.querySelector('.the-end [data-te="lufu"]'), null, { timeout: 15000, polling: 200 });
   await t.page.evaluate(() => document.querySelector('.the-end [data-te="lufu"]').click()); await t.page.waitForTimeout(2500);
