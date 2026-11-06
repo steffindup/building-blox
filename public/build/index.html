@@ -1342,6 +1342,7 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .is3-label b{font-family:var(--f-display);font-weight:400;font-size:12px}.is3-label small{font-size:9.5px;font-weight:700;opacity:.85}
 @media (min-width:700px){.is3-label b{font-size:15px}.is3-label small{font-size:11px}}
 .is3-label.is3-hl{background:#008F9B}
+.is3-label.is3-act{pointer-events:auto;cursor:pointer;border:0;font:inherit;background:var(--accent);color:var(--accent-ink);padding:6px 14px 7px;border-radius:14px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 4px 14px rgba(0,0,0,.3)}.is3-label.is3-act b{font-size:15px}@media (min-width:700px){.is3-label.is3-act b{font-size:18px}}
 .is3-label.is3-myst{background:rgba(40,32,78,.8)}.is3-label.is3-myst b{letter-spacing:.04em}.is3-label.is3-myst b,.is3-label.is3-myst small{font-size:inherit}.is3-label.is3-myst{font-size:10.5px}@media (min-width:700px){.is3-label.is3-myst{font-size:12px}}
 .is3-bar{display:block;width:100%;min-width:70px;height:4px;margin:3px 0 1px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden}.is3-bar>i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#AC78BA,#E9DFFF)}.is3-label.is3-hl b{font-size:18px}
 .is3-help{position:absolute;right:10px;bottom:10px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.85);font-size:12px;font-weight:800;color:#14202C;pointer-events:none}
@@ -8810,7 +8811,8 @@ function islandModels3(o){
 }
 // Labels over the islands (HTML, so they stay sharp), placed every frame
 function isl3Labels(){ const box=ISL3.box; if(!box) return; let L=box.querySelector('.is3-labels'); if(!L){ L=document.createElement('div'); L.className='is3-labels'; box.appendChild(L); }
-  L.innerHTML=ISL3.labels.map((l,i)=>`<span class="is3-label${l.home?' is3-hl':''}${l.myst?' is3-myst':''}" data-i="${i}"><b>${escapeHTML(l.name)}</b><small>${escapeHTML(l.sub)}</small>${l.bar!=null?`<i class="is3-bar" role="progressbar" aria-label="Progress to the mystery" aria-valuenow="${Math.round(l.bar*100)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${l.bar>0?Math.max(3,Math.round(l.bar*100)):0}%"></i></i>`:''}</span>`).join(''); }
+  L.innerHTML=ISL3.labels.map((l,i)=>`<${l.act?'button type="button"':'span'} class="is3-label${l.home?' is3-hl':''}${l.myst?' is3-myst':''}${l.act?' is3-act':''}" data-i="${i}"><b>${escapeHTML(l.name)}</b><small>${escapeHTML(l.sub)}</small>${l.bar!=null?`<i class="is3-bar" role="progressbar" aria-label="Progress to the mystery" aria-valuenow="${Math.round(l.bar*100)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${l.bar>0?Math.max(3,Math.round(l.bar*100)):0}%"></i></i>`:''}</${l.act?'button':'span'}>`).join('');
+  L.querySelectorAll('.is3-act').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const l=ISL3.labels[+b.dataset.i]; if(l&&l.act&&!ISL3.revealing) l.act(); }); }
 function isl3PlaceLabels(){ const box=ISL3.box; if(!box) return; const w=box.clientWidth, h=box.clientHeight, v=new THREE.Vector3();
   // labels never cover each other: Home Island and found islands first; a later one that would overlap moves above its island
   const els=[...box.querySelectorAll('.is3-label')], rank=el=>{ const l=ISL3.labels[+el.dataset.i]; return l.home?0:l.myst?2:1; }, placed=[];
@@ -10229,7 +10231,7 @@ function lufuBuild(o,W,add){ ISL3.lufu=1;
   // the sky: a galaxy band and a huge moon, low behind the cliffs
   W.add(lufuSky3());
   ISL3.labels.push({id:'land:lufu',name:'lufu’s world',sub:'Chapter 2 · coming soon',x:-7.5,z:6.2,y:.9,home:1});
-  ISL3.labels.push({id:'ship',name:'The Galaxy Ship',sub:'Back to Bloppitopia',x:sx+1.5,z:sz+1.2,y:3.2});
+  ISL3.labels.push({id:'ship',name:'⛵ Sail to Bloppitopia',sub:'on the Galaxy Ship',x:sx+1.5,z:sz+1.2,y:3.2,act:()=>realmGo('bloppitopia')});
 }
 // The views of lufu's world: the whole shore, the ship, the old arch
 function lufuViews(){ const v=[{id:'world',name:'lufu’s world'},{id:'ship',name:'The Galaxy Ship',x:LUFU_AT.ship[0]-.5,z:LUFU_AT.ship[1]-1,y:1.4,R:6.4},{id:'friends',name:(pupName(worldStore())||'Your otter')+' & lufu',x:LUFU_AT.pup[0],z:LUFU_AT.pup[1],y:TOP3+1.1,R:3.6},{id:'ruin',name:'The old moon arch',x:LUFU_AT.arch[0],z:LUFU_AT.arch[1],y:1.6,R:5}];
@@ -10441,9 +10443,8 @@ function theEnd(then){
     isl3FlyHome(2600);   // the whole of Bloppitopia at night, every island lit (a close-up of Home Island is too busy on a full island)
     el.className='the-end final';
     el.innerHTML=`<div class="te-fin"><h2>The end of Chapter 1.</h2><p>${escapeHTML(who)} and lufu have found each other.<br>Bloppitopia is yours. Keep building.</p><p class="te-next">Chapter 2: lufu’s world is waiting to be rebuilt. The Galaxy ship will take you there and back.</p><div class="row"><button class="primary" type="button" data-te="lufu">✨ Sail to lufu’s world</button><button class="ghost" type="button" data-te="keep">Stay in Bloppitopia</button></div></div>`;
-    el.querySelector('[data-te="lufu"]').onclick=e=>{ e.stopPropagation(); done(); realmGo('lufu'); };
+    el.querySelector('[data-te="lufu"]').onclick=e=>{ e.stopPropagation(); then=null; ISL3.finales=[]; done(); realmGo('lufu'); };
     el.querySelector('[data-te="keep"]').onclick=e=>{ e.stopPropagation(); done(); };
-    el.querySelector('[data-te="replay"]').onclick=e=>{ e.stopPropagation(); done(); setTab('game','hub'); };
   };
   el.onclick=e=>{ if(e.target.closest('button')||steps[i]&&steps[i].fin) return; go(i+1); };
   isl3FlyHome(1600); setTimeout(()=>go(0),reduceMotion?200:900);
@@ -10455,7 +10456,10 @@ function finaleCard(id){
   const endNow=id==='final:all'&&ISL3.on;
   if(!endNow) $('#trialDlg').addEventListener('close',()=>{ if(ISL3.on) setTimeout(()=>isl3AfterReveal(worldStore()),400); },{once:true});
   const o=worldStore(), B=Object.entries(o.builds), sum=f=>B.filter(([k,b])=>f(k,b)).reduce((a,[,b])=>a+(b.n||0),0), nf=n=>n.toLocaleString();
-  if(id==='final:all'&&ISL3.on){ theEnd(()=>setTimeout(()=>isl3AfterReveal(worldStore()),400)); return; }
+  if(id==='final:all'&&ISL3.on){ const end=()=>theEnd(()=>setTimeout(()=>isl3AfterReveal(worldStore()),400));
+    // lufu's Moonstone crown comes here, after the last build and the fireworks, before The End and the sail to lufu's world (Steff, 5 Nov 2026)
+    const crown=ACC.find(a=>a.id==='moon'); if(crown&&accOwned(crown,o)&&!(seenGet()||[]).includes('acc:moon')){ ISL3.pending_acc=(ISL3.pending_acc||[]).filter(a=>a.id!=='moon'); accOffer(crown,()=>setTimeout(end,500)); return; }
+    end(); return; }
   if(id==='final:all'){ const n=worldCount(o), bricks=B.reduce((a,[,b])=>a+(b.n||0),0);
     trialDialog({icon:'🌟',title:'You built a whole world!',quick:true,rows:`<div><span>Builds finished</span><span>${nf(n)}</span></div><div><span>Bricks placed</span><span>${nf(bricks)}</span></div><div><span>Islands complete</span><span>${ISLE_TOTAL} of ${ISLE_TOTAL}</span></div><div><span>Moonstone crown</span><span>👑</span></div><div class="tot"><span>Bonus Galaxy Blocks</span><span>+10 ${gbIc()}</span></div>`,
       note:`Every island in Bloppitopia is finished, and lufu has given ${pupName(o)||'your otter'} the Moonstone crown! A new Weekly Bloppit still comes every Monday, so keep building.`}); return; }
@@ -10561,10 +10565,10 @@ function accCanvas(x,o,where,st){ const w=accWear(o); if(st==null) st=o&&o.log?p
 
 // A new outfit piece: offer it with its colour choice (once)
 function accNew(o){ const seen=new Set(seenGet()||[]); return ACC.filter(a=>!(a.lvl===1)&&(!a.d3||ch3On())&&accOwned(a,o)&&!seen.has('acc:'+a.id)); }
-function accOffer(a){ const d=$('#accDlg'), o=worldStore(); ISL3.accDraft={id:a.id,slot:a.slot,ci:pupColorOf(o)};
+function accOffer(a,then){ const d=$('#accDlg'), o=worldStore(); ISL3.accDraft={id:a.id,slot:a.slot,ci:pupColorOf(o)};
   $('#accTitle').textContent=`${pupName(o)||'Your otter'} earned ${a.id==='glasses'||/s$/.test(accName(a,o))?'':'a '}${accName(a,o).toLowerCase()}!`; $('#accSub').textContent='Pick its colour.';
   accRender(); const s=seenGet()||[]; s.push('acc:'+a.id); seenSet(s); track('acc_earned:'+a.id);
-  d.onclose=()=>{ d.onclose=null; renderIsland(); }; if(!d.open){ d.showModal(); sfx.hatch(); } }
+  d.onclose=()=>{ d.onclose=null; renderIsland(); if(then) then(); }; if(!d.open){ d.showModal(); sfx.hatch(); } }
 function wardrobeOpen(){ const d=$('#accDlg'), o=worldStore(), w=accWear(o), first=ACC.find(a=>accOwned(a,o));
   const cur=Object.values(w).find(v=>v[0]!=='bare'); ISL3.accDraft={id:cur?cur[0]:first.id,slot:(ACC.find(a=>a.id===(cur?cur[0]:first.id))||first).slot,ci:cur?cur[1]:pupColorOf(o)};
   $('#accTitle').textContent=`${pupName(o)||'Your otter'}’s wardrobe`; $('#accSub').textContent=`Level ${otterLevel(o)} ${PUP_STAGES[pupStage(o)].name}. Tap one to try it on.`;

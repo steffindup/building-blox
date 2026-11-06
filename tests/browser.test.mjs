@@ -24,7 +24,7 @@ async function open(url, { viewport = { width: 1000, height: 800 }, init, at, to
     if (f && !u.includes('/vendor/')) return r.fulfill({ status: 302, headers: { location: `http://localhost:${PORT}/vendor/${f}` } });
     if (/fonts\.g/.test(u)) return r.fulfill({ status: 200, body: '', contentType: 'text/css' });
     r.continue(); });
-  const page = await ctx.newPage(); const errors = []; page.on('pageerror', (e) => errors.push(e.message));
+  const page = await ctx.newPage(); const errors = []; page.on('pageerror', (e) => { errors.push(e.message); if (process.env.STACKS) console.log('STACK', e.stack); });
   if (init) await page.addInitScript(init.fn, init.arg);
   if (at) await page.clock.setFixedTime(new Date(at));
   const u = url.replace(/^([^#]*)/, (m) => m + (m.includes('?') ? '&' : '?') + 'lite3d=1' + (/films=/.test(m) ? '' : '&films=0'));   // a light 3D world: the test machine has no GPU; the island films only in the tests about them
@@ -1448,6 +1448,43 @@ test('?rewind=moonstone takes a finished world back to Chapter 7 (the Lighthouse
   assert.deepEqual(r.films, ['moon-12', 'moon-17']); assert.equal(r.realm, null); assert.equal(r.hi, null);
   assert.ok(!/rewind/.test(r.url), 'the link takes itself out of the address bar'); assert.match(r.note, /back to Chapter 7, The Moonstone Lighthouse \(4 builds/);
   assert.ok(!(r.seen || []).some((id) => /^moonstone:[6-9]$/.test(id)), 'the later pieces will rise again');
+  assert.equal(await t.page.evaluate(() => window.bloppitIsland3().lufu), 0, 'back in Bloppitopia');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('the last build: Moonstone complete, the Moonstone crown, then The End; sailing from The End to lufu’s world brings nothing up over the voyage', { skip: skip() }, async () => {
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = [], add = (k, b) => { builds[k] = { n: 12, s: 2, t: 1e12 + log.length, c: 1, ...b }; log.push(k); };
+    for (const n of ['Rowboat', 'Old map', 'Lookout tower', 'Little bridge', 'Moon gate', 'Constellation cube', 'Moonstone Lighthouse', 'Well', 'Moon crystal']) add(`m:${n}:12`, {});
+    for (let i = 0; i < 16; i++) add(`b:${i}`, { k: 'blitz', boss: i === 15 });
+    for (let i = 0; i < 15; i++) add(`p:${i}`, {});
+    const lv = (n) => Object.fromEntries([...Array(n)].map((_, i) => [i, 3]));
+    localStorage.setItem('building-blox-game-v1', JSON.stringify({ best: lv(40), bbest: lv(40), sbest: lv(40) }));
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, pick: 'tree', films: [] }));
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 5, finished: 5, welcome: 1 })); } };
+  const t = await open('?nosplash=1&films=0#island', { init: seed });
+  await t.page.waitForFunction(() => window.bloppitIsland3().ctl, null, { timeout: 90000 }); await t.page.waitForTimeout(3000);
+  // the last chapter is built
+  await t.page.evaluate(() => { const o = JSON.parse(localStorage.getItem('bloppit-world-v1')); o.builds['m:Galaxy ship:28'] = { n: 28, s: 3, t: 2e12, c: 1 }; o.log.push('m:Galaxy ship:28'); localStorage.setItem('bloppit-world-v1', JSON.stringify(o)); document.querySelectorAll('dialog[open]').forEach((d) => d.close()); });
+  await t.page.reload({ waitUntil: 'load' });
+  await t.page.waitForFunction(() => window.bloppitIsland3 && window.bloppitIsland3().ctl, null, { timeout: 90000 });
+  // Moonstone's card, then the crown before The End
+  await t.page.waitForFunction(() => document.getElementById('trialDlg').open || document.getElementById('accDlg').open, null, { timeout: 60000, polling: 200 });
+  if (await t.page.evaluate(() => document.getElementById('trialDlg').open)) await t.page.evaluate(() => document.getElementById('trialDlg').close());
+  await t.page.waitForFunction(() => document.getElementById('accDlg').open, null, { timeout: 20000, polling: 200 });
+  assert.match(await t.text('#accTitle'), /moonstone crown/i); assert.equal(await t.page.evaluate(() => !!document.querySelector('.the-end')), false, 'The End waits for the crown');
+  await t.page.evaluate(() => document.getElementById('accOn').click());
+  await t.page.waitForFunction(() => document.querySelector('.the-end'), null, { timeout: 10000, polling: 200 });
+  await t.page.waitForFunction(() => document.querySelector('.the-end .te-skip'), null, { timeout: 10000, polling: 200 });
+  await t.page.evaluate(() => document.querySelector('.the-end .te-skip').click());
+  await t.page.waitForFunction(() => document.querySelector('.the-end [data-te="lufu"]'), null, { timeout: 15000, polling: 200 });
+  await t.page.evaluate(() => document.querySelector('.the-end [data-te="lufu"]').click()); await t.page.waitForTimeout(2500);
+  assert.equal(await t.page.evaluate(() => document.getElementById('accDlg').open || document.getElementById('trialDlg').open), false, 'nothing pops up over the voyage');
+  assert.equal(await t.page.evaluate(() => window.bloppitIsland3().lufu), 1, 'in lufu’s world');
+  // the Galaxy Ship's label there is a button that sails back
+  await t.page.waitForFunction(() => !window.bloppitIsland3().revealing && document.querySelector('.is3-label.is3-act'), null, { timeout: 15000, polling: 200 });
+  assert.match(await t.text('.is3-label.is3-act'), /Sail to Bloppitopia/);
+  await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close()));
+  await t.page.evaluate(() => document.querySelector('.is3-label.is3-act').click()); await t.page.waitForTimeout(1500);
   assert.equal(await t.page.evaluate(() => window.bloppitIsland3().lufu), 0, 'back in Bloppitopia');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
