@@ -21,8 +21,11 @@ for (const [tag, vp, dsf] of [['iphone',{width:440,height:956},3],['ipad',{width
   const page = await ctx.newPage(); page.setDefaultTimeout(180000); page.on('pageerror', e => console.log('ERR', e.message));
   await page.goto('http://localhost:8788/build/?nosplash=1&hour=11',   // late morning, whatever the clock says
     { waitUntil: 'load' }); await page.waitForTimeout(3500);
-  // first visit: a little boat brings the otter to Home Island; pick a name (Pebble, blue brick)
+  // first visit: the otter gets its name first (Pebble, from the list), then the boat brings it to Home Island
   await page.evaluate(() => document.getElementById('hmCont').click());
+  await page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 20000 }); await page.waitForTimeout(600);
+  await page.screenshot({ path: `${OUT}${tag}-meet.png` });
+  await page.evaluate(() => { document.getElementById('pupPickT').click(); document.querySelector('#pupNames [data-pup="0"]').click(); document.getElementById('pupLater').click(); });
   // the arrival film: hold a frame of Bloppit on the jetty, take it, then Skip
   await page.waitForFunction(() => window.bloppitIsland3 && window.bloppitIsland3().cine, null, { timeout: 30000, polling: 50 });
   await page.waitForFunction(() => { const A = window.bloppitIsland3().cine; return !A.film || A.film.classList.contains('on'); }, null, { timeout: 30000 });
@@ -30,9 +33,7 @@ for (const [tag, vp, dsf] of [['iphone',{width:440,height:956},3],['ipad',{width
     else Object.defineProperty(A, 't0', { get: () => performance.now() - 7000, set() {}, configurable: true }); }); await page.waitForTimeout(2600);   // held at 7 s
   await page.screenshot({ path: `${OUT}${tag}-arrival.png` });
   await page.evaluate(() => document.querySelector('.is3-cine .cn-skip').click());
-  await page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 20000 }); await page.waitForTimeout(600);
-  await page.screenshot({ path: `${OUT}${tag}-meet.png` });
-  await page.evaluate(() => { document.getElementById('pupPickT').click(); document.querySelector('#pupNames [data-pup="0"]').click(); document.getElementById('pupLater').click(); }); await page.waitForTimeout(2500);
+  await page.waitForFunction(() => /Build Our First Home/.test(document.querySelector('#isWorld .is3-play')?.textContent || ''), null, { timeout: 20000 }); await page.waitForTimeout(1500);
   // Build Our First Home → the build → back home, where the cottage appears
   await page.evaluate(() => document.querySelector('#isWorld .is3-play').click()); await page.waitForTimeout(1500);
   await auto(page,5); await page.waitForTimeout(400); await page.screenshot({ path: `${OUT}${tag}-build.png` });
@@ -57,16 +58,24 @@ for (const [tag, vp, dsf] of [['iphone',{width:440,height:956},3],['ipad',{width
     for (const k of Object.keys(localStorage)) if (k.startsWith('bloppit-seen3')) localStorage.removeItem(k);   // no reveal parade for the still
     o.decor=['flag','campfire','bench','lantern','palm','kite']; o.free=['flag','campfire','bench','lantern','palm','kite']; localStorage.setItem('bloppit-world-v1',JSON.stringify(o)); localStorage.setItem('bloppit-thumbs-v1',JSON.stringify(t));
     for (const k of Object.keys(localStorage)) if (k.includes('building-blox-game-v1')) { const g=JSON.parse(localStorage.getItem(k)); const b=Object.values(g.best||{})[0]; if(b){ g.bbest={0:b,1:b,2:b}; } localStorage.setItem(k,JSON.stringify(g)); }
-    for (const k of Object.keys(localStorage)) if (k.includes('bloppit-weekly-v1')) { const w=JSON.parse(localStorage.getItem(k)); w.total=4; localStorage.setItem(k,JSON.stringify(w)); }
-    if (!Object.keys(localStorage).some(k=>k.includes('bloppit-weekly-v1'))) localStorage.setItem('bloppit-weekly-v1',JSON.stringify({weeks:{},total:4})); });
+    // three Weeklies built in the weeks before this one (a 3-week streak), this week's still to build
+    const wk=(n)=>{ const d=new Date(); d.setUTCDate(d.getUTCDate()-((d.getUTCDay()+6)%7)-7*n); return d.toISOString().slice(0,10); };
+    const weeks={}; for (let n=1;n<=3;n++) weeks[wk(n)]={best:84000+n*3000,first:Date.now()-n*6048e5,at:Date.now()-n*6048e5,clean:true};
+    const wkey=Object.keys(localStorage).find(k=>k.includes('bloppit-weekly-v1'))||'bloppit-weekly-v1', w=JSON.parse(localStorage.getItem(wkey)||'{}');
+    w.weeks={...(w.weeks||{}),...weeks}; w.total=Math.max(w.total||0,4); localStorage.setItem(wkey,JSON.stringify(w)); });
   await page.reload({ waitUntil: 'load' }); await page.waitForTimeout(3500);
   await page.evaluate(() => document.getElementById('tab-island').click()); await page.waitForTimeout(3500);
   await page.screenshot({ path: `${OUT}${tag}-island.png` });
   await page.evaluate(() => (document.getElementById('tab-cove').click(), document.getElementById('qbWeekly').click())); await page.waitForTimeout(1200); await page.screenshot({ path: `${OUT}${tag}-weekly.png` });
   await page.evaluate(() => { window.bloppitHome(); }); await page.waitForTimeout(400); await page.evaluate(() => { document.querySelector('[data-go="cpu"]').click(); document.getElementById('qpIsle').click(); }); await page.waitForTimeout(600);
-  await page.evaluate(() => { document.getElementById('bzHard').click(); document.getElementById('bzName').value='Pebble'; document.getElementById('bzCpuGo').click(); }); await page.waitForTimeout(4500);
+  await page.evaluate(() => { document.getElementById('bzHard')?.click(); const n=document.getElementById('bzName'); if(n) n.value='Pebble'; document.getElementById('bzCpuGo').click(); }); await page.waitForTimeout(1500);
+  // past the "Ready to race Swoop?" card, then a few bricks in, with Swoop racing alongside
+  await page.waitForSelector('.go-btn', { timeout: 15000 }).then(() => page.evaluate(() => document.querySelector('.go-btn').click()), () => {}); await page.waitForTimeout(1200);
+  await clean(page,3); await page.waitForTimeout(1500);
   await page.screenshot({ path: `${OUT}${tag}-blitz.png` });
-  await page.evaluate(() => { window.bloppitHome(); }); await page.waitForTimeout(600); await page.screenshot({ path: `${OUT}${tag}-menu.png` });
+  // leave the race properly (a second tap confirms), so the menu has no "Back to your race"
+  for (let i=0;i<2;i++){ await page.evaluate(() => document.getElementById('mpRoomBtn')?.click()); await page.waitForTimeout(400); }
+  await page.evaluate(() => { document.querySelectorAll('dialog[open]').forEach(d=>d.close()); window.bloppitHome(); }); await page.waitForTimeout(1200); await page.screenshot({ path: `${OUT}${tag}-menu.png` });
   await ctx.close(); console.log(tag,'done');
 }
 await b.close();

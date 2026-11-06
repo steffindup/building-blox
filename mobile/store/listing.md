@@ -7,7 +7,7 @@ Never mention LEGO or other toy brands anywhere in the listing (Apple rejects ot
 
 | Field | Value |
 |---|---|
-| Name (30) | Bloppit: Brick Building Game |
+| Name (30) | Bloppit: World of Bricks (from 1.1; 1.0 was "Bloppit: Brick Building Game") |
 | Subtitle (30) | Build it. Grow your world. |
 | Bundle ID | com.bloppit.app |
 | SKU | bloppit-ios-1 |
@@ -20,12 +20,25 @@ Never mention LEGO or other toy brands anywhere in the listing (Apple rejects ot
 | Copyright | 2026 Bloppit |
 | Price | Free |
 
+## The brand: one name, one line, one sign-off (6 Nov 2026)
+
+Use each in its own place, the same everywhere:
+
+| Role | Words | Where |
+|---|---|---|
+| Name | **Bloppit: World of Bricks** | App Store name, website titles and link previews, social profile names and bios |
+| Line | **Build it. Grow your world.** | App Store subtitle, the front page's headline, footers, the share image under the name |
+| Sign-off | **Brick. Build. Bloppit.** | End cards, videos, social posts; never right beside the name |
+
+The home-screen name stays **Bloppit**.
+
 **Kids category:** Bloppit is **not** in the Kids category. Leave "Made for Kids" off; the age rating comes from the questionnaire below.
 No child-audience words ("kids", "children") in the listing text itself: the landing page says 8–13, the listing says "for families".
 The home-screen name stays **Bloppit** (set by `CFBundleDisplayName` in the iOS project).
 
-**1.0 is the full game, Bloppitopia included** (decided 18 Oct 2026). The old plan of a puzzle-only 1.0 followed by 1.1
-with the island is dropped: everything below is the one listing to paste.
+**1.0** (the full game, Bloppitopia included) went live on the App Store on 6 Nov 2026 as a quiet soft launch.
+**1.1** is the version to market: the films, the friends and the Moonstone story reach the app. Everything below is the
+1.1 listing; `submission-1.1.md` is the checklist.
 
 ## Promotional text (170)
 
@@ -44,6 +57,7 @@ YOUR WORLD: BLOPPITOPIA
 • Five islands rise from the mist as you play: Frog Forest (Frog Trail), Brainpeak (Brain Trail), Flipper Beach (15 of Pippa’s mirror puzzles), Blitz Bay (20 races against Swoop) and Brickyard Cove (your own creations and the Weekly Bloppit)
 • A friend on every island: Tiny the tree frog, Nora the night heron, Pippa the penguin, Swoop the Longtail and Bibi the lion cub
 • A story with an ending: finish all five islands and the mystery opens, ten chapters on Moonstone Isle and someone small waiting to be found; then the Galaxy Ship sails for a new world, where Chapter 2 is being built
+• A short film for the big moments: arriving on each island, halfway, finishing it, and every Moonstone chapter. Watch them again in My films
 • Your otter grows with you, Pup, Splash, Legend, and earns outfits; you pick the colours
 • Galaxy Blocks, earned with every star, buy decorations. Nothing is ever for sale, and nothing is ever lost
 
@@ -60,6 +74,7 @@ FINISH CLEAN, EARN STARS
 TRAILS
 • Frog Trail: 15 levels, from a tiny heart to Tiny’s Lily-pad Palace
 • Brain Trail: 15 different levels with math puzzles matched to the player's age
+• Pippa's Puzzles: 12 more mirror puzzles to play any time: Pippa builds one half, you build the reflection
 • Separate players on one device, each with their own progress
 
 THE LIBRARY
@@ -81,7 +96,10 @@ Bloppit is an independent project and is not affiliated with any toy brick brand
 
 ## Keywords (100)
 
-blocks,building,bricks,construction,puzzle,family,pup,race,island,world,adventure,otter
+Words already in the name or subtitle (bricks, world, build) count without being repeated here, so the field carries
+"building" and "game" that the 1.0 name had.
+
+blocks,building,game,construction,puzzle,family,pup,race,island,adventure,otter,story,creative
 
 ## Screenshots
 
@@ -91,7 +109,7 @@ In `screenshots/`: seven per device, captioned, ready to upload in this order. `
 | # | File | Caption | Screen |
 |---|---|---|---|
 | 1 | `*-1-island` | Every build you finish grows Bloppitopia. | Bloppitopia: Home Island with the otter, Bloppit and the islands found so far |
-| 2 | `*-2-arrival` | A little otter is coming home. | The arrival: the boat with the pup, Bloppit waiting on the jetty (1.1: a frame of the arrival film) |
+| 2 | `*-2-arrival` | A little otter is coming home. | A frame of the arrival film (9 s): the boat, Bloppit waiting on the jetty, cropped to fill the screen |
 | 3 | `*-3-build` | Snap bricks into place, page by page. | A build in progress with Bloppit |
 | 4 | `*-4-finish` | Finish clean. Earn three stars. | The finish card: stars, See Bloppitopia, Play next |
 | 5 | `*-5-weekly` | A new puzzle every week. See how many built it clean. | The Weekly page |
@@ -106,20 +124,27 @@ scale, then captions composed with Lilita One); retake them after any visual cha
 `previews/iphone-arrival.mp4` (886 × 1920) and `previews/ipad-arrival.mp4` (1200 × 1600): the arrival film (01, Home
 Island; `public/video/arrival.mp4`, the new cut of 27 Oct 2026), 26 s, 30 fps, H.264 with stereo AAC, cropped upright to
 follow Bloppit. Apple's limits: 15–30 s, at most 30 fps, footage from the app. The app plays this film from 1.1 (1.0 has
-the arrival made in the game), so upload these with 1.1. Set the poster frame to Bloppit holding his red brick on the
+the arrival made in the game): upload these with 1.1. Set the poster frame to Bloppit holding his red brick on the
 jetty (about 7 s in).
 
-## What's New
+## What's New (1.1)
 
-Not asked for on a first version. For the first update, write what changed in a line or two.
+Bloppitopia comes to life!
+• Films: your otter's arrival, every island's arrival, halfway and finish, and the whole Moonstone story. Watch them again in My films
+• A friend on every island: Tiny, Nora, Pippa, Swoop and Bibi, each with something to say
+• Moonstone Isle: ten chapters, someone small waiting to be found, and the Galaxy Ship
+• Pippa's mirror puzzles, 20 races against Swoop with the Grand Prix last, and Galaxy Blocks for decorations
+• Quick play from the menu, and a new look for the menu
 
 ## App Review notes
 
 Bloppit is a brick-building puzzle game for families and anyone who loves bricks. No account or login is needed.
-To try it quickly: on the menu tap the Start here card. A short film shows the otter arriving by boat (Skip at the top
-right ends it). Name the otter or pick a name, then tap Build Our First Home and tap the faded brick to place each piece of
-the 12-brick house; the home then appears on the island. Then on the menu tap Blitz → vs Swoop, type a name and tap
-Start the race (works offline).
+To try it quickly: on the menu tap the Start here card. Pick the otter's colour and name it (type a
+name or tap Pick a name), then tap Set sail, or just tap Pick later. A short film shows the otter arriving by boat (Skip at the top right ends it). Tap Build Our First
+Home and tap the faded brick to place each piece of the 12-brick house; the home then appears on the island. Then on the
+menu tap vs Swoop (under Solo), then Play on Blitz Bay (its short film can be skipped) and Start the race (works offline).
+Films: Bloppit's films are short clips built into the app (no streaming, except the full-length Moonstone Story, which
+plays from bloppit.com). Each can be skipped, and the unlocked ones are in My films on the Bloppitopia card.
 Challenges: on the Blitz page tap Make a challenge, build the puzzle, and you get a 6-letter code; type that code
 into Got a code? on another device (the website bloppit.com/build works too) to race the same puzzle.
 Weekly Bloppit: tap the Weekly Bloppit banner on the menu. Only a finish and whether it was clean are counted (two counts per week, no name); the time and misses are sent only to check it's a real finish and aren't kept. Counts are deleted after 8 weeks.
