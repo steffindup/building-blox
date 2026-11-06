@@ -3416,7 +3416,7 @@ const SUB_OK={game:['hub','otter','brain','sea','flip'],blitz:['hub','cpu','frie
 // Each page has its character at the top: who lives there, their island, their line and what the page is for
 const HERO={
   daily:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Bibi’s Weekly Bloppit',line:'Fresh paint! This week’s one is ready.',desc:'Every Monday Bibi paints a new one, and everybody builds the same puzzle. Build it clean: no misses, no hints. Each one you build adds to Brickyard Cove.',c:['#FFAA55','#DD5F1C']},
-  sea:{who:'pippa',art:'/art/char-pippa.png',isle:'Flipper Beach',title:'Pippa’s Puzzles',line:'Ooh, that one’s clean!',desc:'Twelve mirror puzzles wash ashore as Bloppitopia grows: Pippa builds one half, and you flip it to build the other. Each one adds to Flipper Beach, all the way to the Festival Clock in your own colours. And every day the tide brings a message in a bottle.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
+  sea:{who:'pippa',art:'/art/char-pippa.png',isle:'Flipper Beach',title:'Pippa’s Puzzles',line:'Ooh, that one’s clean!',desc:'Fifteen mirror puzzles wash ashore as Bloppitopia grows: Pippa builds one half, and you flip it to build the other. Each one adds to Flipper Beach, all the way to the Festival Clock in your own colours. And every day the tide brings a message in a bottle.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
   otter:{who:'tiny',art:'/art/char-tiny.png',isle:'Frog Forest',title:'Frog Trail',line:'Small frog, big forest!',desc:'Hop up the trail with Tiny, one level at a time. The levels start tiny and get bigger, and the last is his Lily-pad Palace.',c:['#A6D93A','#3F8F33']},
   brain:{who:'nora',art:'/art/char-nora.png',isle:'Brainpeak',title:'Brain Trail',line:'A clever mind shines in the dark.',desc:'Nora tucks math puzzles into the booklet: solve one to open its page. The last build is her Great Telescope.',c:['#4A6FC0','#1C2B57']},
   create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Quick Bricks',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
@@ -4398,7 +4398,7 @@ function renderHints(){
   if(!hintOn||!model||cur>=model.steps.length) return;
   run.hints.add(cur); run.memory=false; if(!game&&mysOn()) updateGameBar();
   { const g=game||mp; if(g&&!g.hintSteps.includes(cur)){ g.hintSteps.push(cur);
-      if(mpBlitz()){ mpPost({action:'hint'}).then(j=>mpApply(j.state)).catch(()=>{}); if(!mp.state.calm) mpFlash('+5s'); }
+      if(mpBlitz()){ mpPost({action:'hint'}).then(j=>mpApply(j.state)).catch(()=>{}); if(!mp.state.calm) mpFlash('+2s'); }
       else charge('hint',5); } }
   const o=curOff()||{x:0,z:0}, u=usedSet();
   for(const b of model.steps[cur].bricks){ if(u.has(b)) continue;
@@ -6115,7 +6115,7 @@ const BRAIN_LEVELS=[
  // The boss: Nora's Great Telescope, broken just when she needs it. Rebuilding it (math pages and all) completes Brainpeak.
  {name:'Great Telescope', sample:'Great Telescope', size:22, shape:'puffed', thick:.7,  colors:7, pts:1500, boss:true},
 ];
-// Pippa's Puzzles: twelve seaside builds that grow Flipper Beach. A new one washes ashore every twelfth of the way
+// Pippa's Puzzles: fifteen seaside builds (twelve until 5 Nov 2026) that grow Flipper Beach. A new one washes ashore every twelfth of the way
 // through Bloppitopia (Frog Forest, Brainpeak, Blitz Bay and Brickyard Cove together), and each also needs the one
 // before it. The last is the Festival Clock. Scores are kept in g.sbest.
 const SEA_LEVELS=[   // mirror builds (Oct 2026): Pippa builds one half, you build its reflection. Every one is symmetrical.
@@ -6272,7 +6272,7 @@ function updateGameBar(){
     const help=run.hints.size+run.auto, st=1+(help?0:1)+(!help&&!run.miss?1:0); $('#gbPts').innerHTML=starHTML(st); $('#gbOf').textContent='';
     const bits=[]; if(run.hints.size) bits.push(`Hints ${run.hints.size}`); if(run.auto) bits.push(`Placed for you ${run.auto}`); if(run.miss) bits.push(`Wrong bricks ${run.miss}`);
     $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>'; return; }
-  $('#hintBtn').textContent=(mp&&mp.state&&mp.state.mode==='blitz')?(mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'):mp?'Hint (−5)':'Hint';
+  $('#hintBtn').textContent=(mp&&mp.state&&mp.state.mode==='blitz')?(mp.hintSteps.includes(cur)?'Hint':'Hint (+2s)'):mp?'Hint (−5)':'Hint';
   $('#autoBtn').innerHTML=mp?'Place one<span class="lg"> for me</span> (−10)':'Place one<span class="lg"> for me</span>';
   if(!on) return;
   const LV=levelsOf(gameTrail()), L=LV[game.lvl], p=game.pen;
@@ -6913,7 +6913,7 @@ function raceMeter(s){ const sc=mpScores(s), best=sc.every(p=>p.done)?Math.min(.
     return `<div class="rm-lane${now?' now':''}${p.done?' done':''}" data-pl="${p.i}"><span class="rm-who">${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span>
       <span class="rm-track"><span class="rm-fill" style="width:${pct}%;background:${bot?'#2F7FD0':escapeHTML(p.color)}"></span><span class="rm-run" style="left:${pct}%">${face}</span><span class="rm-flag" aria-hidden="true"></span></span>
       <span class="rm-n">${p.done?'✓ done':`${p.n}/${s.quota}`}</span><b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${p.miss||p.hint?`<span class="rm-pen" title="Already in the time">+${p.miss+p.hint*5}s</span>`:''}</div>`; }).join('');
-  return `<div class="race-meter" role="group" aria-label="Race-o-meter"><div class="rm-head"><b>Race-o-meter</b> · ${s.quota} bricks each · shortest time wins · miss +1s · hint +5s</div>${lanes}</div>`; }
+  return `<div class="race-meter" role="group" aria-label="Race-o-meter"><div class="rm-head"><b>Race-o-meter</b> · ${s.quota} bricks each · shortest time wins · miss +1s · hint +2s</div>${lanes}</div>`; }
 // Each racer's time as each of their bricks went in (watched here, so it works for Swoop and for rooms alike)
 // a[k] is the clock while they had k bricks, up to the moment the next went in (so time spent before tapping Done counts)
 function raceSplits(s){ const sp=mp.splits=mp.splits||{}; s.players.forEach((p,i)=>{ const a=sp[i]=sp[i]||[], n=p.n||0, now=mpTime(s,i); if(a.length>n+1) a.length=n+1; for(let j=Math.max(0,a.length-1);j<=n;j++) a[j]=now; }); return sp; }
@@ -6942,7 +6942,7 @@ function raceHead(s,L){ if(!L) return '';
   return `<div class="rm-top ${me?'lead-me':'lead-them'}">${RM_CROWN} ${rmWho(L.lead)} +${(L.gap/1000).toFixed(1)}s <small>at ${L.k} brick${L.k===1?'':'s'} each</small></div>`; }
 function raceScoreboard(s){ const L=raceLead(s); if(!L) return '';
   const chips=L.sc.map(p=>`<span class="rm-chip${L.lead&&!L.even&&L.lead.i===p.i?' lead':''}${p.i===s.turn&&!s.finished?' now':''}" data-pl="${p.i}">${rmFace(s,p)}${rmBricks(s,p)}<b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${p.miss||p.hint?`<span class="rm-pen" title="Already in the time">+${p.miss+p.hint*5}s</span>`:''}</span>`).join('');
-  return `<div class="race-meter rm-mini" role="group" aria-label="Race scoreboard">${raceHead(s,L)}<div class="rm-chips">${chips}</div><span class="rm-rule">${s.quota} bricks each · shortest time wins · miss +1s · hint +5s</span></div>`; }
+  return `<div class="race-meter rm-mini" role="group" aria-label="Race scoreboard">${raceHead(s,L)}<div class="rm-chips">${chips}</div><span class="rm-rule">${s.quota} bricks each · shortest time wins · miss +1s · hint +2s</span></div>`; }
 function mpScores(s){
   return s.players.map((p,i)=>{ const own=s.moves.filter(m=>m.p===i&&!m.a).length, auto=s.moves.filter(m=>m.p===i&&m.a).length, pen=p.pen||{};
     if(s.mode==='blitz') return {i,name:p.name,color:p.color,own,miss:p.miss||0,hint:p.hint||0,stale:p.stale,ms:mpTime(s,i),n:p.n||0,done:!!s.quota&&(p.n||0)>=s.quota};
@@ -7033,7 +7033,7 @@ function updateMpBar(){
   const bz=s.mode==='blitz';
   ['hintBtn','autoBtn'].forEach(id=>{ $('#'+id).disabled=done||!mpMyTurn(); });
   $('#autoBtn').hidden=bz; $('#hintBtn').hidden=false;
-  if(bz){ $('#hintBtn').textContent=s.calm?'Hint':mp.hintSteps.includes(cur)?'Hint':'Hint (+5s)'; $('#hintBtn').disabled=done||(!mpMyTurn()&&!hintOn); }
+  if(bz){ $('#hintBtn').textContent=s.calm?'Hint':mp.hintSteps.includes(cur)?'Hint':'Hint (+2s)'; $('#hintBtn').disabled=done||(!mpMyTurn()&&!hintOn); }
   $('#mpBar').classList.toggle('calm',!!s.calm);
   $('#mpBar').classList.toggle('blitz',bz);
   { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?(cpu&&cpu.ladder!=null?(cpu.ladder>=LADDER_N?`Blitz Bay · Race ${BLITZ_RACES} of ${BLITZ_RACES}: the Grand Prix`:`Blitz Bay · Race ${cpu.ladder+1} of ${BLITZ_RACES} · ${CPU_LEVELS[s.cpuLevel].speed}`):`vs Swoop · ${CPU_LEVELS[s.cpuLevel].speed}`):'Room'; $('#mpRoomBtn').textContent=mp.cpu&&s.finished?'🏝️ Back to Bloppitopia':mp.cpu?($('#mpRoomBtn').dataset.confirm?'Tap again to leave':s.solo?'Leave':'Leave race'):'Room'; $('#mpRoomBtn').classList.toggle('primary',!!(mp.cpu&&s.finished)); $('#mpRoomBtn').classList.toggle('ghost',!(mp.cpu&&s.finished)); $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
@@ -8652,7 +8652,7 @@ function destSVG(id,st){
 }
 // The five adventure islands, as a short list (the drawn island without WebGL, the sea's card). Same counts as 3D.
 const ISLE_ART={otterwood:'otterwood',brainpeak:'brain',sunrise:'ferry',blitzbay:'speedway',brickworks:'workshop'};
-// How far along an island is, in words. Blitz Bay counts its 16 races (the 16th is the Grand Prix), as Play next does
+// How far along an island is, in words. Blitz Bay counts its 20 races (the 20th is the Grand Prix), as Play next does
 function isleProg(id,c,total){ if(id==='blitzbay'&&c<total) return `${c} of ${BLITZ_RACES} races`; return `${Math.min(c,total)} of ${total}`; }
 function destinations(){
   const o=worldStore();
@@ -9690,7 +9690,7 @@ function bloppitCheer(){ if(ISL3.b3){ ISL3.b3.ctl.play('cheer'); try{ sfx.chirp(
    the last one is the island's big milestone. Islands wait in the mist until the child first plays there.
    Nothing here is stored beyond the world record: what's built is worked out from the counts. */
 // Moonstone Isle: out in the mist from the start, reachable once 9 Weekly Bloppits are built (?mystery=1 to try).
-// Its eight chapters are hidden library drawings, built at fixed sizes, each bigger than the last.
+// Its ten chapters are hidden library drawings, built at fixed sizes, each bigger than the last.
 const MYSTERY=[   // one friend per chapter (the Moonstone chapter lock, 30 Oct 2026); `was` = older names, so saves made before still count
   {name:'Rowboat',size:10,shape:'puffed',thick:.6,colors:5,who:'Bloppit',film:'Into the Mist',story:'One night on the jetty, you and Bloppit spot a faint lavender light far out over the mist. Bloppit’s old rowboat could get you there, but first it needs fixing up!'},
   {name:'Old map',size:15,shape:'flat',thick:1,colors:6,who:'Pippa',film:'The Old Map',story:'The mist sends you round and round in circles. Then Pippa swims up with a bottle that just washed ashore, with something rolled up inside. Build it and see where it leads!'},

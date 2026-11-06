@@ -789,7 +789,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   assert.match(await tapChar('char:pippa'), /Pippa the Penguin.*Flipper Beach.*Secret.*A yellow two-stud brick.*still in the mist.*Play Pippa’s puzzle/);
   assert.match(await tapChar('pup'), /Bubbles.*Level \d+ Pup.*1 stud.*Otter level.*Wardrobe.*Name or colour/);
   assert.match(await tap('decor:flag'), /Flag/);
-  assert.match(await tap('isle:sunrise'), /A misty island.*Pippa’s first puzzle washes ashore at 9%.*Back to Bloppitopia/);
+  assert.match(await tap('isle:sunrise'), /A misty island.*Pippa’s first puzzle washes ashore at 7%.*Back to Bloppitopia/);
   assert.match(await tap('isle:blitzbay'), /A misty island.*Race Swoop/);
   { await still(); const c = await pt('isle:sunrise'); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(600); await still();
     assert.equal(await t.page.evaluate(() => { const I = window.bloppitIsland3(), s = I.isles.sunrise; return Math.hypot(I.ctl.target.x - s.x, I.ctl.target.z - s.z) < 1; }), true);   // flew there
@@ -1300,7 +1300,7 @@ test('the next Moonstone chapter goes by the island first: the last chapter’s 
 });
 
 test('Mystery Island label: "N islands to go!" and a bar that counts every piece built on the five islands', { skip: skip() }, async () => {
-  // Frog Forest complete (15 of 15) and 6 Brain Trail levels: 1 island done, 21 of 73 pieces
+  // Frog Forest complete (15 of 15) and 6 Brain Trail levels: 1 island done, 21 of 81 steps (15 + 15 + 15 Pippa + 20 races + 16)
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const k = 'm:Cottage:12';
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 200, bonus: 0, builds: { [k]: { n: 12, s: 2, t: 1e12, c: 1, k: 'welcome' } }, log: [k], decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, films: ['frog-arrival', 'frog-complete', 'brainpeak-arrival', 'brainpeak-complete'] }));
     localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 }));
@@ -1310,7 +1310,7 @@ test('Mystery Island label: "N islands to go!" and a bar that counts every piece
   const t = await open('?nosplash=1&hour=11#island', { init: seed });
   await t.page.waitForFunction(() => !!document.querySelector('.is3-myst'), null, { timeout: 30000 });
   const m = await t.page.evaluate(() => { const l = document.querySelector('.is3-myst'); return { sub: l.querySelector('small').textContent, now: +l.querySelector('[role=progressbar]').getAttribute('aria-valuenow') }; });
-  assert.equal(m.sub, '4 islands to go!'); assert.equal(m.now, Math.round(100 * 21 / 73));
+  assert.equal(m.sub, '4 islands to go!'); assert.equal(m.now, Math.round(100 * 21 / 81));
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
