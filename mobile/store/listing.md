@@ -41,11 +41,11 @@ A new puzzle every week, a library to explore, and Blitz races against Swoop the
 
 YOUR WORLD: BLOPPITOPIA
 • Home Island grows with every build: a cottage, a garden, a workshop, a museum of your best models, then a lively village
-• Five islands rise from the mist as you play: Frog Forest (Frog Trail), Brainpeak (Brain Trail), Flipper Beach (Pippa’s Puzzles), Blitz Bay (Blitz) and Brickyard Cove (your own creations and the Weekly Bloppit)
+• Five islands rise from the mist as you play: Frog Forest (Frog Trail), Brainpeak (Brain Trail), Flipper Beach (15 of Pippa’s mirror puzzles), Blitz Bay (20 races against Swoop) and Brickyard Cove (your own creations and the Weekly Bloppit)
 • A friend on every island: Tiny the tree frog, Nora the night heron, Pippa the penguin, Swoop the Longtail and Bibi the lion cub
-• A story with an ending: finish all five islands and the mystery opens, eight chapters, one friend each, and someone small waiting to be found
+• A story with an ending: finish all five islands and the mystery opens, ten chapters on Moonstone Isle and someone small waiting to be found; then the Galaxy Ship sails for a new world, where Chapter 2 is being built
 • Your otter grows with you, Pup, Splash, Legend, and earns outfits; you pick the colours
-• Build Stars buy decorations. Nothing is ever for sale, and nothing is ever lost
+• Galaxy Blocks, earned with every star, buy decorations. Nothing is ever for sale, and nothing is ever lost
 
 WEEKLY BLOPPIT
 • One new puzzle every Monday, the same for everyone
@@ -58,16 +58,16 @@ FINISH CLEAN, EARN STARS
 • Build from memory, with the booklet hidden, for a bonus star
 
 TRAILS
-• Frog Trail: 14 levels, from a tiny heart to a 364-brick otter
-• Brain Trail: 14 different levels with math puzzles matched to the player's age
+• Frog Trail: 15 levels, from a tiny heart to Tiny’s Lily-pad Palace
+• Brain Trail: 15 different levels with math puzzles matched to the player's age
 • Separate players on one device, each with their own progress
 
 THE LIBRARY
-• About 60 models in 10 themes, plus a new one every week, each with a step-by-step instruction booklet
+• 66 models in 11 themes, plus a new one every week, each with a step-by-step instruction booklet
 • Draw your own brick picture on a stud grid, or turn a photo on your device into one; the photo never leaves the device
 
 BLOPPIT BLITZ
-• Race Swoop the Longtail at three speeds: Warm-up, Race and Full throttle
+• Race Swoop the Longtail at three speeds, Warm-up, Race and Full throttle: 20 races, the last one the Grand Prix
 • Race a friend live, or send a 6-letter challenge code so they can try to beat your time later
 • Build one model together in a room: friends join with a code and the host lets each one in
 
