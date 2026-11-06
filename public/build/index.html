@@ -10424,7 +10424,7 @@ function isl3Pops(now){
 function isl3Reveal(ids,o){
   const fin=ids.filter(i=>/^(done|final):/.test(i)), items=[...ids.filter(i=>!/^(done|final):/.test(i)).slice(0,6),...fin.filter(i=>i.startsWith('done:')),...fin.filter(i=>i.startsWith('final:'))]; if(!items.length) return isl3AfterReveal(o);
   ISL3.finales=(ISL3.finales||[]).concat(fin);
-  ISL3.revealing=true; isl3Chrome(); if(ISL3.ctl) ISL3.ctl.enabled=false;
+  ISL3.revealing=true; ISL3.hold=true; isl3Chrome(); if(ISL3.ctl) ISL3.ctl.enabled=false;
   const step=(i)=>{ if(i>=items.length||!ISL3.on){ ISL3.revealing=false; if(ISL3.ctl) ISL3.ctl.enabled=true; isl3Banner(''); isl3FlyHome(); isl3Chrome(); setTimeout(()=>isl3AfterReveal(o),900); return; }
     const id=items[i], [kind,isle]=id.split(':');
     { const f=FILMS.find(f=>f.at===id); if(f&&!ISL3.filmDone[id]&&!filmSeen(f.id,o)){ ISL3.filmDone[id]=1; isl3Film(f,()=>step(i)); return; } }
@@ -10500,7 +10500,7 @@ function theEnd(then){
     isl3FlyHome(2600);   // the whole of Bloppitopia at night, every island lit (a close-up of Home Island is too busy on a full island)
     el.className='the-end final';
     el.innerHTML=`<div class="te-fin"><h2>The end of Chapter 1.</h2><p>${escapeHTML(who)} and lufu have found each other.<br>Bloppitopia is yours. Keep building.</p><p class="te-next">Chapter 2: lufu’s world is waiting to be rebuilt. The Galaxy ship will take you there and back.</p><div class="row"><button class="primary" type="button" data-te="lufu">✨ Sail to lufu’s world</button><button class="ghost" type="button" data-te="keep">Stay in Bloppitopia</button></div></div>`;
-    el.querySelector('[data-te="lufu"]').onclick=e=>{ e.stopPropagation(); then=null; ISL3.finales=[]; done(); realmGo('lufu'); };
+    el.querySelector('[data-te="lufu"]').onclick=e=>{ e.stopPropagation(); then=null; ISL3.finales=[]; ISL3.ending=false; ISL3.hold=false; done(); realmGo('lufu'); };
     el.querySelector('[data-te="keep"]').onclick=e=>{ e.stopPropagation(); done(); };
   };
   el.onclick=e=>{ if(e.target.closest('button')||steps[i]&&steps[i].fin) return; go(i+1); };
@@ -10513,14 +10513,15 @@ function finaleCard(id){
   const endNow=id==='final:all'&&ISL3.on;
   if(!endNow) $('#trialDlg').addEventListener('close',()=>{ if(ISL3.on) setTimeout(()=>isl3AfterReveal(worldStore()),400); },{once:true});
   const o=worldStore(), B=Object.entries(o.builds), sum=f=>B.filter(([k,b])=>f(k,b)).reduce((a,[,b])=>a+(b.n||0),0), nf=n=>n.toLocaleString();
-  if(id==='final:all'&&ISL3.on){ const end=()=>theEnd(()=>setTimeout(()=>isl3AfterReveal(worldStore()),400));
+  if(id==='final:all'&&ISL3.on&&tab!=='island'){ ISL3.endDue=true; ISL3.hold=false; return; }   // off the island: The End waits until it's back on screen
+  if(id==='final:all'&&ISL3.on){ ISL3.ending=true; const end=()=>theEnd(()=>{ ISL3.ending=false; ISL3.hold=false; isl3Chrome(); setTimeout(()=>isl3AfterReveal(worldStore()),400); });
     // lufu's Moonstone crown comes here, after the last build and the fireworks, before The End and the sail to lufu's world (Steff, 5 Nov 2026)
     const crown=ACC.find(a=>a.id==='moon'); if(crown&&accOwned(crown,o)&&!(seenGet()||[]).includes('acc:moon')){ ISL3.pending_acc=(ISL3.pending_acc||[]).filter(a=>a.id!=='moon'); accOffer(crown,()=>setTimeout(end,500)); return; }
     end(); return; }
   if(id==='final:all'){ const n=worldCount(o), bricks=B.reduce((a,[,b])=>a+(b.n||0),0);
     trialDialog({icon:'🌟',title:'You built a whole world!',quick:true,rows:`<div><span>Builds finished</span><span>${nf(n)}</span></div><div><span>Bricks placed</span><span>${nf(bricks)}</span></div><div><span>Islands complete</span><span>${ISLE_TOTAL} of ${ISLE_TOTAL}</span></div><div><span>Moonstone crown</span><span>👑</span></div><div class="tot"><span>Bonus Galaxy Blocks</span><span>+10 ${gbIc()}</span></div>`,
       note:`Every island in Bloppitopia is finished, and lufu has given ${pupName(o)||'your otter'} the Moonstone crown! A new Weekly Bloppit still comes every Monday, so keep building.`}); return; }
-  const isle=id.split(':')[1], N=ISLES[isle]; if(!N) return;
+  const isle=id.split(':')[1], N=ISLES[isle]; if(!N){ setTimeout(()=>isl3AfterReveal(worldStore()),0); return; }
   const line={otterwood:()=>`All ${OTTER_LEVELS.length} Frog Trail levels, boss and all: ${nf(sum(k=>k.startsWith('t:otter:')))} bricks`,
     brainpeak:()=>`All ${BRAIN_LEVELS.length} Brain Trail levels, math pages and all: ${nf(sum(k=>k.startsWith('t:brain:')))} bricks`,
     sunrise:()=>`All ${SEA_LEVELS.length} of Pippa’s seaside puzzles: ${nf(sum(k=>k.startsWith('t:sea:')))} bricks`,
@@ -10541,19 +10542,21 @@ function isl3Chrome(){ const box=ISL3.box; if(!box) return; let c=box.querySelec
     c.querySelector('.v-world').onclick=()=>{ isl3GoView(0); sfx.swoosh(); }; c.querySelector('.v-mid').onclick=()=>{ if(ISL3.viewI){ isl3GoView(0); sfx.swoosh(); } }; c.querySelector('.v-prev').onclick=()=>{ isl3GoView((ISL3.viewI||0)-1); sfx.swoosh(-1); }; c.querySelector('.v-next').onclick=()=>{ isl3GoView((ISL3.viewI||0)+1); sfx.swoosh(1); };
     c.querySelector('.is3-play').onclick=()=>{ const B=c.querySelector('.is3-play'), a=B.dataset.act, isle=B.dataset.isle; if(a==='home'){ track('first_home_start'); welcomeStart(); return; }
       if(a==='world'){ isl3GoView(0); sfx.swoosh(-1); return; }
+      if(a==='sail'){ track('play_next:sail'); realmGo('lufu'); return; }
       if(a==='lufu'){ track('lufu_build'); pickPuzzle('quick','top'); return; }
       if(a==='isle'){ const n=isleNext(isle); track('play_next:isle:'+isle); if(n){ nextMark(n.kind); n.go(); } else isleAnyway(isle); return; }
       const n=nextBuild(); track('play_next:island'); if(n) n.go(); else homeGo('quick'); };
     c.querySelector('.is3-alt').onclick=()=>{ const isle=c.querySelector('.is3-alt').dataset.isle; track('play_anyway:'+isle); isleAnyway(isle); };
     c.querySelector('.is3-realm').onclick=()=>realmGo(inLufu()?'bloppitopia':'lufu'); }
-  { const rb=c.querySelector('.is3-realm'), open=lufuWorldOpen(); rb.hidden=!open||!!(ISL3.arrival||ISL3.revealing); if(open) rb.innerHTML=inLufu()?'⛵ Sail to Bloppitopia':'✨ Sail to lufu’s world'; }
+  { const rb=c.querySelector('.is3-realm'), open=lufuWorldOpen(); rb.hidden=!open||!!(ISL3.arrival||isl3Holding()); if(open) rb.innerHTML=inLufu()?'⛵ Sail to Bloppitopia':'✨ Sail to lufu’s world'; }
   if(!ISL3.revealing&&!ISL3.arrival){ const bn=c.querySelector('.is3-banner'); if(ISL3.lufu){ bn.textContent='🌙 Chapter 2: Bloppit builds lufu’s world · coming soon'; bn.hidden=false; bn.classList.remove('big'); bn.classList.add('soon'); } else if(bn.classList.contains('soon')){ bn.classList.remove('soon'); bn.hidden=true; } }
   const b=c.querySelector('.is3-play'), alt=c.querySelector('.is3-alt'), o=worldStore(); alt.hidden=true; c.classList.remove('has-alt');
   if(ISL3.arrival==='home'){ b.dataset.act='home'; b.innerHTML='🔨 Build Our First Home'; b.hidden=false; }
-  else if(ISL3.arrival||ISL3.revealing){ b.hidden=true; }
+  else if(ISL3.arrival||isl3Holding()){ b.hidden=true; }
   else { const V=isl3Views(), v=V[ISL3.viewI||0], isle=v&&v.id.startsWith('isle:')?v.id.slice(5):null;
     b.hidden=false; b.dataset.isle=isle||'';
     if(ISL3.lufu){ b.dataset.act='lufu'; b.innerHTML='<span>🔨 Build here</span><small>Chapter 2 is coming soon · free building until then</small>'; return; }
+    if(!isle&&lufuWorldOpen(o)&&!lufuHiSeen()){ b.dataset.act='sail'; b.innerHTML='<span>✨ Sail to lufu’s world</span><small>Chapter 1 is complete. The Galaxy Ship is ready</small>'; return; }
     if(!isle){ const n=nextBuild(); b.dataset.act='next'; b.innerHTML=n?`<span>▶ Play next</span><small>${escapeHTML(n.t)}</small>`:'<span>▶ Build something</span>'; return; }
     // Looking at one island: its own next step (not the whole world's), or, once it's complete, back to Bloppitopia
     const nm=isleCount(isle,o)>0?ISLES[isle].name:v.name, n=isleNext(isle);
@@ -10567,8 +10570,14 @@ function isl3Chrome(){ const box=ISL3.box; if(!box) return; let c=box.querySelec
 function isleNext(isle){ return nextCandidates().find(c=>c.isle===isle)||null; }
 function isleAnyway(isle){ if(isle==='otterwood') trailGo('otter'); else if(isle==='brainpeak') trailGo('brain'); else if(isle==='sunrise') homeGo('sea');
   else if(isle==='blitzbay') homeGo('cpu'); else if(isle==='moonstone') mysteryStart(0); else homeGo('quick'); }
-function isl3AfterReveal(o){ o=worldStore();
+// Ending order (Steff, 5 Nov 2026): after a reveal, its cards come one by one (each island complete, the Galaxy Ship, the
+// Moonstone crown, The End), and Play next stays hidden until the last has shown, so a quick tap can't start another build
+// with the ending landing on top of it. Never mid-reveal: the reveal's own end calls this.
+const isl3Holding=()=>!!(ISL3.revealing||ISL3.hold||ISL3.ending);
+function isl3AfterReveal(o){ o=worldStore(); if(ISL3.revealing||ISL3.ending) return;   // The End calls this itself when it's over
+  if(ISL3.finales&&ISL3.finales.length&&tab!=='island') return;   // off the island: the cards wait until it's back on screen
   if(ISL3.finales&&ISL3.finales.length){ const f=ISL3.finales.shift(); finaleCard(f); return; }
+  if(ISL3.hold&&!ISL3.ending){ ISL3.hold=false; isl3Chrome(); }
   if(ISL3.thenChapter!=null){ const i=ISL3.thenChapter; ISL3.thenChapter=null; if(ISL3.on&&!ISL3.revealing){ setTimeout(()=>mysteryStart(i),600); return; } }   // came from "Moonstone Isle, Chapter N": on to it
   if(ISL3.pending_acc&&ISL3.pending_acc.length){ const a=ISL3.pending_acc.shift(); accOffer(a); return; }
   if(worldCount(o)>=10&&!o.pick&&!ISL3.askedPick){ ISL3.askedPick=true; pickOpen(); } }
@@ -10696,7 +10705,8 @@ function isl3Show(box,o){ isl3Immersive(); isl3WakeCheck(); isl3CharsLoad(o);
   else if(ISL3.dozing){ clearTimeout(ISL3.afterT); const bp=ISL3.bloppit.position;
     setTimeout(()=>{ if(!ISL3.dozing) return; isl3FlyTo(bp.x,.8,bp.z,11,1100); ISL3.moved=true; ISL3.fly.done=()=>setTimeout(()=>{ isl3Wake();
       setTimeout(()=>{ if(!ISL3.revealing&&!ISL3.down){ isl3FlyHome(1100); ISL3.fly.done=()=>{ ISL3.moved=false; isl3WholeBtn(); isl3AfterReveal(o); }; } },2700); },500); },300); }
-  else { clearTimeout(ISL3.afterT); ISL3.afterT=setTimeout(()=>isl3AfterReveal(o),500); }
+  else { if(ISL3.endDue){ ISL3.endDue=false; ISL3.finales=(ISL3.finales||[]).concat('final:all'); ISL3.hold=true; isl3Chrome(); }
+    clearTimeout(ISL3.afterT); ISL3.afterT=setTimeout(()=>isl3AfterReveal(o),500); }
 }
 /* The first visit opens with the arrival film (public/video/arrival.mp4, 26 s, its own sound; Skip at any time); the
    version below, made in the game, plays with reduced motion or when the film can't play.
