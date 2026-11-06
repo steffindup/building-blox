@@ -431,6 +431,39 @@ body.on-build .appfoot{display:none}
   body.on-build .playcol{gap:6px}
   body.on-build .playcol>#buildStage{min-height:220px}
 }
+/* phones held upright (6 Nov 2026): the whole booklet stays (its picture, step, bricks and layer); everything around it
+   gets slimmer so the build has more room. The page buttons sit inside the booklet either side of the layer line, See final
+   build is a 🏁 under the zoom buttons, the hand is one row with the progress under it, and a race is one strip. */
+.zfin,.hand-prog,.mini-restart{display:none}
+@media (max-width:700px){
+  body.on-build .build-grid .bookpane{position:relative;top:auto}
+  body.on-build .build-grid .bp-nav{position:absolute;left:calc(54% + 12px);right:6px;bottom:5px;margin:0;justify-content:space-between;flex-wrap:nowrap;gap:4px;pointer-events:none}
+  body.on-build .build-grid .bp-nav button{pointer-events:auto;padding:2px 9px!important;font-size:12px;min-height:0;line-height:1.3}
+  body.on-build .build-grid .bp-nav #bpPrev,body.on-build .build-grid .bp-nav #bpNext{font-size:0!important}
+  body.on-build .build-grid .bp-nav #bpPrev::before{content:"‹";font-size:16px} body.on-build .build-grid .bp-nav #bpNext::before{content:"›";font-size:16px}
+  body.on-build .build-grid .bp-nav #bpFinal{display:none}
+  body.on-build .build-grid #bpCard .pg-foot{text-align:center;padding:0 30px;min-height:22px;display:flex;align-items:center;justify-content:center}
+  body.on-build .build-grid .bookpane:has(#bpNow:not([hidden])) #bpCard .pg-foot{visibility:hidden}
+  body.on-build .build-grid #bpCard .pg-zoom .zfin{display:block;font-size:13px}
+  body.on-build .playcol>.card{padding:6px 8px}
+  body.on-build #handNote,body.on-build .tray-foot{display:none}
+  body.on-build .hand-prog{display:block;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+  body.on-build .hand-prog:empty{display:none}
+  body.on-build .playcol .hand-btns{display:flex;flex-direction:row;align-items:center;gap:6px}
+  body.on-build .playcol .hand-btns .mini-restart{display:inline-block;padding:6px 9px;font-size:15px;line-height:1;min-height:0}
+  body.on-build .playcol .hand-btns .mini-restart.confirm{font-size:12px;padding:6px 8px;border-color:var(--red,#D2352B);color:var(--red,#D2352B)}
+  body.on-build .playcol .card:has(#restart[hidden]) .mini-restart,body.on-build .playcol .card:has(#putBack:not([hidden])) .mini-restart{display:none}
+  /* a race: one strip with both clocks side by side; the rules are on the race card before you start */
+  body.on-build #mpBar,body.on-box #mpBar{position:relative;padding:6px 8px;margin-bottom:6px}
+  body.on-build #mpBar .rm-rule,body.on-build #mpBar .rm-bricks,body.on-box #mpBar .rm-rule,body.on-box #mpBar .rm-bricks{display:none!important}
+  body.on-build #mpBar .rm-top,body.on-box #mpBar .rm-top{font-size:15px}
+  body.on-build #mpBar .gb-lvl .tag:not(.blitz-tag),body.on-box #mpBar .gb-lvl .tag:not(.blitz-tag){display:none}
+  body.on-build #mpBar .rm-chips,body.on-box #mpBar .rm-chips{flex-wrap:nowrap;gap:6px}
+  body.on-build #mpBar .rm-chip,body.on-box #mpBar .rm-chip{flex:1 1 0;min-width:0;overflow:hidden}
+  body.on-build #mpBar #mpCodeBadge{width:30px;height:30px}
+  body.on-build #mpBar .gb-btns{position:absolute;right:8px;top:6px;margin:0}
+  body.on-build #mpBar .gb-btns button{padding:3px 10px;font-size:12px;min-height:0}
+}
 /* Rotate turns the brick in hand: it lights up while the brick can be turned */
 .stage-tools .tool.hot{border-color:var(--accent);color:var(--accent)}
 .bp-head,.bp-nav{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
@@ -1884,7 +1917,7 @@ body.film-on{overflow:hidden}
       <div class="bp-head"><span class="tag">Instruction booklet</span><span class="tag" id="bpPage"></span></div>
       <article class="page live" id="bpCard">
         <div class="pg-top"><div class="pg-step" id="bpStep">1</div><div class="callout" id="bpCallout"></div></div>
-        <div class="pg-view" id="bpView" role="img" aria-label="Booklet picture for this step. Drag to turn it, pinch to zoom."><div class="pg-zoom"><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">−</button><button type="button" class="zx" id="bpBig" aria-label="Open this page big" title="Open big">⤢</button></div><span class="pg-turn" aria-hidden="true">Drag to turn · pinch to zoom</span><canvas class="pg-chart" id="bpChart" hidden></canvas></div>
+        <div class="pg-view" id="bpView" role="img" aria-label="Booklet picture for this step. Drag to turn it, pinch to zoom."><div class="pg-zoom"><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">−</button><button type="button" class="zx" id="bpBig" aria-label="Open this page big" title="Open big">⤢</button><button type="button" class="zfin" id="bpFinalMini" aria-label="See final build" title="See final build">🏁</button></div><span class="pg-turn" aria-hidden="true">Drag to turn · pinch to zoom</span><canvas class="pg-chart" id="bpChart" hidden></canvas></div>
         <div class="pg-foot" id="bpFoot"></div>
         <div class="pg-lock" id="bpLock" hidden><div class="lk-ic" aria-hidden="true">🔒</div><b>This page is locked</b><span>Solve Bloppit’s math puzzle to open it.</span><button class="primary sm" id="bpUnlock" type="button">Solve the puzzle</button></div>
       </article>
@@ -1918,9 +1951,9 @@ body.film-on{overflow:hidden}
       <div class="card">
         <div class="hand-row">
           <div class="hand-slot" id="handSlot">Empty</div>
-          <div class="hand-txt"><h2 id="handTitle">Your hand is empty</h2><span class="note" id="handNote">Open the parts box and pick up some bricks.</span><div class="hand-more" id="handMore"></div><div class="paint-row" id="paintRow" hidden></div></div>
+          <div class="hand-txt"><h2 id="handTitle">Your hand is empty</h2><span class="note" id="handNote">Open the parts box and pick up some bricks.</span><span class="hand-prog" id="handProg"></span><div class="hand-more" id="handMore"></div><div class="paint-row" id="paintRow" hidden></div></div>
           <div class="hand-btns">
-            <button class="primary sm" id="openBox" type="button">Parts box<kbd>P</kbd></button>
+            <button class="ghost mini-restart" id="restartMini" type="button" aria-label="Start over" title="Start over">↺</button><button class="primary sm" id="openBox" type="button">Parts box<kbd>P</kbd></button>
             <button class="ghost" id="putBack" type="button" hidden>Put it back</button>
             <button class="ghost" id="putAll" type="button" hidden>Put all back</button>
           </div>
@@ -3905,7 +3938,7 @@ function updateBuildUI(){
   padSync();
   const N=model.steps.length, done=cur>=N, s=done?null:model.steps[cur];
   renderHand();
-  $('#progress').textContent=`${placedN} of ${model.bricks.length} placed`;
+  $('#progress').textContent=`${placedN} of ${model.bricks.length} placed`; $('#handProg').textContent=$('#progress').textContent;
   const o=curOff();
   layerGrid.visible=!done&&!!o; if(layerGrid.visible) layerGrid.position.set(o.x,s.layer*1.2+.004,o.z);
   placeSides(playSides,o||{x:0,z:0}); buildDirty=true;
@@ -4609,6 +4642,10 @@ $('#putBack').onclick=putBack;
 $('#putAll').onclick=putAllBack;
 $('#restart').onclick=()=>{ if($('#restart').dataset.confirm){ delete $('#restart').dataset.confirm; $('#restart').textContent='Start over'; resetBuild(); }
   else { $('#restart').dataset.confirm='1'; $('#restart').textContent='Tap again to clear your build'; setTimeout(()=>{delete $('#restart').dataset.confirm; $('#restart').textContent='Start over';},3000);} };
+// phones: the booklet's 🏁 and the small ↺ stand in for See final build and Start over
+$('#bpFinalMini').onclick=e=>{ e.stopPropagation(); $('#bpFinal').click(); };
+$('#restartMini').onclick=()=>{ $('#restart').click(); const m=$('#restartMini'), on=!!$('#restart').dataset.confirm; m.classList.toggle('confirm',on); m.textContent=on?'Clear build?':'↺';
+  clearTimeout(m._t); if(on) m._t=setTimeout(()=>{ m.classList.remove('confirm'); m.textContent='↺'; },3000); };
 document.addEventListener('keydown',e=>{ if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
   if(tab==='box'){
     if(e.key==='Escape'){ if(chosen.size){chosen.clear(); updatePick();} else setTab('build'); e.preventDefault(); }

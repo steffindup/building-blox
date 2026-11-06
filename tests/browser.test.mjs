@@ -251,6 +251,22 @@ test('a world with builds that never saw the arrival gets the boat and the arriv
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('phone build page keeps the whole booklet: its picture, step and layer, with the page arrows inside it and 🏁 for the final build; the hand is one row with the progress under it and a small ↺', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0&films=0', { viewport: { width: 402, height: 719 }, touch: true });
+  await t.page.evaluate(() => window.bloppitLevel('otter', 8)); await t.page.waitForTimeout(2000);
+  await autoPlace(t.page, 3); await t.page.waitForTimeout(800);
+  const m = await t.page.evaluate(() => { const R = (q) => document.querySelector(q).getBoundingClientRect(), vis = (q) => { const e = document.querySelector(q); return !!e && e.offsetParent !== null && getComputedStyle(e).display !== 'none'; };
+    const card = R('#bpCard'), nav = R('.bookpane .bp-nav');
+    return { view: vis('#bpView'), step: vis('#bpStep'), foot: document.getElementById('bpFoot').textContent, navIn: nav.top >= card.top && nav.bottom <= card.bottom + 1, fin: vis('#bpFinalMini'), finWide: vis('#bpFinal'),
+      prog: document.getElementById('handProg').textContent, progVis: vis('#handProg'), mini: vis('#restartMini'), foot2: vis('.tray-foot'), stage: Math.round(R('#buildStage').height), scroll: document.documentElement.scrollHeight - innerHeight }; });
+  assert.ok(m.view && m.step && /Layer \d+ of \d+/.test(m.foot), 'the booklet keeps its picture, step and layer: ' + JSON.stringify(m));
+  assert.ok(m.navIn, 'the page arrows sit inside the booklet'); assert.ok(m.fin && !m.finWide, '🏁 stands in for See final build');
+  assert.ok(m.progVis && /of 97 placed/.test(m.prog) && m.mini && !m.foot2, 'one hand row with the progress and ↺: ' + JSON.stringify(m));
+  assert.ok(m.stage >= 370, 'the build gets the room: ' + m.stage); assert.ok(m.scroll <= 2, 'no page scroll');
+  const fp = await t.page.evaluate(() => { document.getElementById('bpFinalMini').click(); return !document.getElementById('bpNow').hidden; }); assert.ok(fp, '🏁 shows the final build (Back to my step appears)');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('phone parts box: one screen, the booklet page on top, the parts board filling the rest, the tools a ribbon', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0', { viewport: { width: 390, height: 664 }, touch: true });
   await t.page.evaluate(() => { document.querySelector('[data-go="otter"]').click(); document.getElementById('qpIsle').click(); }); await t.page.waitForTimeout(400);
