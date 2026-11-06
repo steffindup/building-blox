@@ -251,6 +251,22 @@ test('a world with builds that never saw the arrival gets the boat and the arriv
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('phone build page keeps the whole booklet: its picture, step and layer, with the page arrows inside it and 🏁 for the final build; the hand is one row with the progress under it and a small ↺', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0&films=0', { viewport: { width: 402, height: 719 }, touch: true });
+  await t.page.evaluate(() => window.bloppitLevel('otter', 8)); await t.page.waitForTimeout(2000);
+  await autoPlace(t.page, 3); await t.page.waitForTimeout(800);
+  const m = await t.page.evaluate(() => { const R = (q) => document.querySelector(q).getBoundingClientRect(), vis = (q) => { const e = document.querySelector(q); return !!e && e.offsetParent !== null && getComputedStyle(e).display !== 'none'; };
+    const card = R('#bpCard'), nav = R('.bookpane .bp-nav');
+    return { view: vis('#bpView'), step: vis('#bpStep'), foot: document.getElementById('bpFoot').textContent, navIn: nav.top >= card.top && nav.bottom <= card.bottom + 1, fin: vis('#bpFinalMini'), finWide: vis('#bpFinal'),
+      prog: document.getElementById('handProg').textContent, progVis: vis('#handProg'), mini: vis('#restartMini'), foot2: vis('.tray-foot'), stage: Math.round(R('#buildStage').height), scroll: document.documentElement.scrollHeight - innerHeight }; });
+  assert.ok(m.view && m.step && /Layer \d+ of \d+/.test(m.foot), 'the booklet keeps its picture, step and layer: ' + JSON.stringify(m));
+  assert.ok(m.navIn, 'the page arrows sit inside the booklet'); assert.ok(m.fin && !m.finWide, '🏁 stands in for See final build');
+  assert.ok(m.progVis && /of 97 placed/.test(m.prog) && m.mini && !m.foot2, 'one hand row with the progress and ↺: ' + JSON.stringify(m));
+  assert.ok(m.stage >= 370, 'the build gets the room: ' + m.stage); assert.ok(m.scroll <= 2, 'no page scroll');
+  const fp = await t.page.evaluate(() => { document.getElementById('bpFinalMini').click(); return !document.getElementById('bpNow').hidden; }); assert.ok(fp, '🏁 shows the final build (Back to my step appears)');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('phone parts box: one screen, the booklet page on top, the parts board filling the rest, the tools a ribbon', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0', { viewport: { width: 390, height: 664 }, touch: true });
   await t.page.evaluate(() => { document.querySelector('[data-go="otter"]').click(); document.getElementById('qpIsle').click(); }); await t.page.waitForTimeout(400);
@@ -272,15 +288,23 @@ test('phone parts box: one screen, the booklet page on top, the parts board fill
 });
 
 test('a Pippa puzzle still out at sea can be tapped: it says how many builds bring it in and offers Play next', { skip: skip() }, async () => {
-  const t = await open('?nosplash=1&welcome=0&films=0', { init: { fn: () => { const sb = {}; for (let i = 0; i < 9; i++) sb[i] = 2; localStorage.setItem('building-blox-game-v1', JSON.stringify({ best: {}, sbest: sb })); } } });
+  const t = await open('?nosplash=1&welcome=0&films=0', { init: { fn: () => { const sb = {}; for (let i = 0; i < 9; i++) sb[i] = 2; localStorage.setItem('building-blox-game-v1', JSON.stringify({ best: {}, sbest: sb, seaV: 2 })); } } });
   await t.page.evaluate(() => [...document.querySelectorAll('.tab')].find((x) => /Flipper Beach/.test(x.textContent)).click()); await t.page.waitForTimeout(800);
   assert.match(await t.text('#gmLevels .lvl[data-i="9"] .tagnew'), /🌊 \d+ more builds?/);
   assert.equal(await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="9"]').disabled), false);
   await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="9"]').click()); await t.page.waitForTimeout(400);
   assert.equal(await t.page.evaluate(() => document.getElementById('tideDlg').open), true);
-  assert.match(await t.text('#tdTxt'), /84%.*more builds? on the other islands/);
+  assert.match(await t.text('#tdTxt'), /67%.*more builds? on the other islands/);   // puzzle 10 of 15
   assert.equal(await t.page.evaluate(() => document.getElementById('tdGo').hidden), false);
   assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('Pippa’s 15 puzzles: an older save’s puzzles move to their new places, and a finished Flipper Beach stays finished', { skip: skip() }, async () => {
+  for (const [n, want] of [[9, [0, 1, 2, 4, 5, 7, 8, 9, 10]], [12, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]]]) {
+    const t = await open('?nosplash=1&welcome=0&films=0', { init: { fn: (n) => { if (localStorage.getItem('building-blox-game-v1')) return; const sb = {}; for (let i = 0; i < n; i++) sb[i] = 3; localStorage.setItem('building-blox-game-v1', JSON.stringify({ best: {}, sbest: sb })); }, arg: n } });
+    const got = await t.page.evaluate(() => { const g = JSON.parse(localStorage.getItem('building-blox-game-v1')); return Object.keys(g.sbest).filter((k) => g.sbest[k] > 0).map(Number).sort((a, b) => a - b); });
+    assert.deepEqual(got, want, n + ' old puzzles'); assert.deepEqual(t.errors, []); await t.ctx.close();
+  }
 });
 
 test('a Trail level finish shows the stars strip and counts a build', { skip: skip() }, async () => {
@@ -498,7 +522,7 @@ test('Pippa\'s puzzles are mirror builds: every model is symmetrical, Pippa buil
   await t.page.waitForFunction(() => document.getElementById('winDlg').open, null, { timeout: 30000 });
   // the finale: Pippa builds first in her colours, as always; your mirrored half is in any colour you like
   await t.page.evaluate(() => document.getElementById('winDlg').close());
-  await t.page.evaluate(() => window.bloppitLevel('sea', 11)); await t.page.waitForTimeout(300);
+  await t.page.evaluate(() => window.bloppitLevel('sea', window.bloppitLevels.sea.length - 1)); await t.page.waitForTimeout(300);
   assert.equal(await t.page.evaluate(() => window.bloppitMirror().steps[0]), 'P');
   for (let k = 0; k < 4; k++) { await t.page.waitForFunction(() => { const M = window.bloppitMirror(); return M.steps[M.cur] === 'K'; }, null, { timeout: 20000 }); await t.page.evaluate(() => window.bloppitPlaceRight(4)); await t.page.waitForTimeout(150); }
   const fin = await t.page.evaluate(() => { const M = window.bloppitMirror(), m = new Map(M.paint), byKey = new Map(M.bricks.map((b) => [b.slice(0, 5).join(','), b[5]])); let pairs = 0, ok = 0, mine = 0;
@@ -761,7 +785,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   // places, Bloppit, the pup, a decoration, the islands nearby: each says what it is, its level and what's next
   assert.match(await tap('land:beach'), /Home Island.*Builds finished3.*Islands discovered/);
   assert.match(await tapChar('bloppit'), /Bloppit.*storm.*build buddy.*Secret.*red brick/);
-  assert.match(await tapChar('longtail:easy'), /Swoop the Longtail.*(Blitz Bay’s racer|Asleep on Blitz Bay).*goggles.*Secret.*Speeds beaten.*Did you know\?.*tropicbirds.*Race 1 of 16.*Choose your own race/);
+  assert.match(await tapChar('longtail:easy'), /Swoop the Longtail.*(Blitz Bay’s racer|Asleep on Blitz Bay).*goggles.*Secret.*Speeds beaten.*Did you know\?.*tropicbirds.*Race 1 of 20.*Choose your own race/);
   assert.match(await tapChar('char:pippa'), /Pippa the Penguin.*Flipper Beach.*Secret.*A yellow two-stud brick.*still in the mist.*Play Pippa’s puzzle/);
   assert.match(await tapChar('pup'), /Bubbles.*Level \d+ Pup.*1 stud.*Otter level.*Wardrobe.*Name or colour/);
   assert.match(await tap('decor:flag'), /Flag/);
@@ -1497,5 +1521,42 @@ test('lufu in 3D (approved v2): eight clips, its own controller; a feeling plays
   assert.ok(r.lights >= 3, 'eyes, pendant and wisp'); assert.equal(r.mapped, 'awe', 'a drawing’s surprise is lufu’s awe');
   assert.ok(r.mid > .5, 'mid-feeling, the light has turned'); assert.equal(r.tint, r.want, 'curiosity is amber');
   assert.ok(r.after === null || r.after === 'blink'); assert.ok(r.rest); assert.ok(r.calm < .05, 'back to its own gold');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('story beats in the middle of Chapter 1: the lavender light at 10 builds, a friend visiting Home Island at 15, halfway on Frog Forest; each once, Play next held while it plays', { skip: skip() }, async () => {
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = [];
+    for (let i = 0; i < 9; i++) { const k = `m:Model${i}:10`; builds[k] = { n: 10, s: 2, t: 1e12 + i, c: 1, k: 'quick' }; log.push(k); }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 50, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, pick: 'tree', films: ['frog-arrival', 'brainpeak-arrival', 'sunrise-arrival', 'blitzbay-arrival', 'brickworks-arrival'] }));
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 5, finished: 5, welcome: 1 })); } };
+  const t = await open('?nosplash=1&films=0&hour=11#island', { init: seed });
+  await t.page.waitForFunction(() => window.bloppitIsland3().ctl, null, { timeout: 90000 }); await t.page.waitForTimeout(3000);
+  const add = (name, extra) => t.page.evaluate(([name, extra]) => { const o = JSON.parse(localStorage.getItem('bloppit-world-v1')); const k = `m:${name}:10`; o.builds[k] = { n: 10, s: 2, t: Date.now(), c: 1, k: 'quick', ...extra }; o.log.push(k); localStorage.setItem('bloppit-world-v1', JSON.stringify(o)); }, [name, extra || {}]);
+  const away = async () => { await t.page.evaluate(() => document.getElementById('tab-game').click()); await t.page.waitForTimeout(500); await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close())); await t.page.evaluate(() => document.getElementById('tab-island').click()); };
+  const beat = async (re) => { let got = ''; for (let i = 0; i < 100 && !got; i++) { await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close())); const b = await t.page.evaluate(() => window.bloppitBeat()); if (b.hold && re.test(b.say + ' ' + b.banner)) got = b.say + b.banner; await t.page.waitForTimeout(300); } return got; };
+  // build 10: the light
+  await add('Robot'); await away();
+  const light = await beat(/Bloppit: .*lavender light/); assert.ok(light, 'the light at 10 builds');
+  assert.equal(await t.page.evaluate(() => { const b = document.querySelector('.is3-play'); return !b || b.hidden; }), true, 'Play next waits');
+  await t.page.waitForFunction(() => !window.bloppitBeat().hold, null, { timeout: 20000 });
+  // the same visit again: nothing new
+  await away(); await t.page.waitForTimeout(4000); assert.equal((await t.page.evaluate(() => window.bloppitBeat())).hold, false);
+  // build 15: a friend you've met (Bibi: Brickyard Cove has builds) visits and talks about your Dinosaur
+  for (let i = 11; i < 15; i++) await add('Filler' + i); await away(); await t.page.waitForTimeout(3000); await t.page.waitForFunction(() => !window.bloppitBeat().hold, null, { timeout: 20000 });
+  await add('Dinosaur'); await away();
+  const visit = await beat(/dinosaur/); assert.ok(visit, 'a friend talks about the dinosaur');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('Brain Trail asks the child’s age before its first level when none is set, and the maths follows it', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0');
+  await t.page.evaluate(() => window.bloppitLevel('brain', 0, true)); await t.page.waitForTimeout(500);
+  assert.equal(await t.page.evaluate(() => document.getElementById('ageDlg')?.open), true, 'the age question first');
+  await t.page.evaluate(() => document.querySelector('#ageDlg [data-age="10"]').click()); await t.page.waitForTimeout(800);
+  const r = await t.page.evaluate(() => ({ open: document.getElementById('ageDlg').open, age: JSON.parse(localStorage.getItem('bloppit-players-v1')).list[0].age, math: !!window.bloppitMath.state() }));
+  assert.equal(r.open, false); assert.equal(r.age, 10); assert.ok(r.math, 'then the level starts, with its maths');
+  // asked once: the next level goes straight in
+  await t.page.evaluate(() => window.bloppitLevel('brain', 1, true)); await t.page.waitForTimeout(500);
+  assert.equal(await t.page.evaluate(() => document.getElementById('ageDlg').open), false);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
