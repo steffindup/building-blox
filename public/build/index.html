@@ -1483,6 +1483,10 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 /* The end: the closing sequence after the whole world is complete */
 .the-end{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:16px 16px 22px;cursor:pointer;background:linear-gradient(180deg,transparent 55%,rgba(8,14,24,.55))}
 #view-island:has(.the-end) :is(.is-btns,.is-foot,.is3-labels){visibility:hidden}
+/* The End fills the screen, like the films (Steff, 6 Nov 2026): the top bar no longer shows above it */
+.buddy.quiet .bud-say{display:none}   /* a race you've finished: the turn bar alone */
+body.end-on{overflow:hidden}body.end-on #isWorld{position:fixed!important;inset:0!important;z-index:60;width:auto!important;height:auto!important;max-height:none!important;margin:0!important;border-radius:0!important}
+body.end-on .the-end{padding-bottom:calc(22px + env(safe-area-inset-bottom,0px))}body.end-on .the-end .te-skip{bottom:calc(14px + env(safe-area-inset-bottom,0px))}
 .the-end .te-skip{position:absolute;bottom:14px;right:14px;border:0;border-radius:999px;padding:6px 14px;background:rgba(20,32,44,.7);color:#fff;font:inherit;font-size:14px;cursor:pointer}
 .the-end .te-card{display:flex;gap:14px;align-items:center;max-width:min(560px,100%);padding:12px 18px 12px 12px;border-radius:20px;background:rgba(20,32,44,.88);color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.3);animation:te-in .6s ease both}
 .the-end .te-card img{width:76px;height:76px;flex:none;object-fit:contain}
@@ -4277,7 +4281,7 @@ function buddyUpdate(){
     return;
   }
   if(budCheerT) return;  // let the cheer finish
-  if(cpuT&&cpu.say){ budSay(cpu.say.cls,cpu.say.html); return; }  // racing Bloppit: it's his turn
+  if(cpuT&&cpu.say){ if(mp&&mp.state&&(mp.state.players[mp.me]||{}).n>=mp.state.quota){ budSay('',''); $('#buddy').classList.add('quiet'); return; } $('#buddy').classList.remove('quiet'); budSay(cpu.say.cls,cpu.say.html); return; }  // racing Bloppit: it's his turn (once you're done, the turn bar alone says what's happening)
   if(cur>=N){ const n=!mp&&!game&&nextBuild(); budSay('', n?`All done! <button class="bud-next" type="button" id="budNext"><img src="${n.thumb}" alt="">Next: ${escapeHTML(n.t.replace(/^.*?: /,''))} ▸</button>`:'All done! Want to build it again, or try another model?'); const b=$('#budNext'); if(b) b.onclick=()=>{ track('play_next'); n.go(); }; return; }
   if(viewPage!==cur){
     budSay('point', viewPage<cur?`That’s a step you’ve done. You’re on step ${cur+1}.`:`That’s coming up later. You’re on step ${cur+1}.`);
@@ -6890,7 +6894,7 @@ const mpWhat=()=>mp&&mp.state&&mp.state.solo?'your timed build':mp&&mp.cpu?'your
 const MISS_MS=1000, HINT_MS=2000;  // Blitz: a wrong brick adds 1 second, a hint adds 2 seconds (Steff, 5 Nov 2026; was 5)
 // Blitz times: the server's total so far, plus the turn that's running now (using the server's clock)
 function mpTime(s,i){ const p=s.players[i]; let t=(p.ms||0)+(p.miss||0)*MISS_MS+(p.hint||0)*HINT_MS;
-  if(s.started&&!s.finished&&s.turn===i&&mp) t+=Math.max(0,Date.now()+(mp.skew||0)-s.turnStart); return t; }
+  if(s.started&&!s.finished&&s.turn===i&&mp) t+=Math.max(0,Date.now()+(mp.skew||0)-s.turnStart)*(mp.cpu&&i===1&&s.ff||1); return t; }
 function fmtTime(ms){ const t=Math.max(0,Math.floor(ms/100)), m=Math.floor(t/600), sec=Math.floor(t/10)%60; return `${m}:${String(sec).padStart(2,'0')}.${t%10}`; }
 // Blitz: how many more bricks I may place this turn (my share caps it as well as the 3-a-turn limit)
 function mpLeft(s){ const me=s.players[mp.me]||{}, l=s.perTurn-s.turnPlaced; return s.mode==='blitz'&&s.quota?Math.min(l,s.quota-(me.n||0)):l; }
@@ -6899,7 +6903,7 @@ function mpTick(){ const s=mp&&mp.state; if(!s||s.mode!=='blitz') return; docume
   if(!s.finished&&document.querySelector('#mpPlayers .rm-mini')){ const L=raceLead(s), k=L&&L.decided?'d'+L.lead.i:''; if(k!==(mp.rmKey||'')){ mp.rmKey=k; $('#mpPlayers').innerHTML=raceMeter(s); } } }   // a clock passing the winner's time decides the race
 const mpMyTurn=()=>!!(mp&&mp.state&&mp.state.started&&!mp.state.finished&&mp.state.turn===mp.me);
 function mpTurnText(){ const s=mp&&mp.state; if(!s||!s.started) return 'Waiting for the game to start.'; if(s.finished) return 'The model is finished!';
-  if(mp.cpu&&s.quota&&(s.players[mp.me]||{}).n>=s.quota) return `You’re all done! ${s.players[s.turn].name} is finishing his bricks.`; return `It’s ${s.players[s.turn].name}’s turn. Get your bricks ready in the parts box.`; }
+  if(mp.cpu&&s.quota&&(s.players[mp.me]||{}).n>=s.quota) return '';   /* the turn bar already says it (one line, Steff 6 Nov 2026) */ return `It’s ${s.players[s.turn].name}’s turn. Get your bricks ready in the parts box.`; }
 // The race-o-meter (Blitz with two or more players): a lane each, the runner moving along as their bricks go in, the
 // chequered flag at the end, and their clock (only running on their own turns) with misses and hints already added in.
 // The rule stays in view: everyone places the same number of bricks; the shortest time wins.
@@ -7325,7 +7329,7 @@ window.bloppitBlitzFair={fair:BLITZ_FAIR,agePace:a=>agePace(a),pace:()=>blitzPac
 const gauss=()=>{ let u=0,v=0; while(!u) u=Math.random(); while(!v) v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); };
 // How long Swoop takes over his next brick: whatever keeps his total at (margin × form × the child's pace) per brick
 function cpuPaceWait(s){ const me=s.players[0], sw=s.players[1], p=(cpu.prior*.5+totalMs(me)/1000)/(.5+(me.n||0));
-  const target=cpu.f*cpu.r*p*((sw.n||0)+1), so=(totalMs(sw)+Math.max(0,Date.now()-s.turnStart))/1000;
+  const target=cpu.f*cpu.r*p*((sw.n||0)+1), so=(totalMs(sw)+Math.max(0,Date.now()-s.turnStart)*(s.ff||1))/1000;
   return Math.round(Math.min(20000,Math.max(1200,(target-so)*1000*rndIn(.85,1.15)))); }
 let cpu=null;
 const rndIn=(a,b)=>a+Math.random()*(b-a);
@@ -7365,10 +7369,10 @@ function turnBanner(s){
   const el=$('#turnBanner'), on=!!(s&&mp&&mp.cpu&&s.started&&!s.finished&&!s.calm);
   $('#buildStage').classList.toggle('cpu-turn',on&&s.turn===1); $('#mpBar').classList.toggle('cpu-turn',on&&s.turn===1);
   if(!on){ el.hidden=true; bannerKey=''; return; }
-  const bot=s.turn===1, p=s.players[s.turn], left=mpLeft(s), key=bot+'|'+s.turnPlaced;
+  const bot=s.turn===1, p=s.players[s.turn], left=mpLeft(s), key=bot+'|'+s.turnPlaced+'|'+(s.ff||1);
   el.hidden=false; el.className='turn-banner '+(bot?'cpu':'you');
   if(s.solo){ el.innerHTML=`<span class="tb-av"><i style="background:${escapeHTML(p.color)}"></i></span><span class="tb-txt">Go go go!<small>${p.n||0} of ${s.quota} placed</small></span><b class="clk" data-clk="0">${fmtTime(mpTime(s,0))}</b>`; bannerKey=key; return; }
-  el.innerHTML=bot?`<span class="tb-av">${GULL_HEAD(s.cpuLevel)}</span><span class="tb-txt">${escapeHTML(p.name)}’s turn<small>${(s.players[mp.me]||{}).n>=s.quota?'You’re done! Now he finishes his bricks. Fastest time wins.<button class="tb-skip" type="button" data-rush>Skip to the end ›</button>':s.turnPlaced?`${s.turnPlaced} placed. Get your next bricks ready!`:'He’s choosing. Get your next bricks ready!'}</small></span><b class="clk" data-clk="1">${fmtTime(mpTime(s,1))}</b>`
+  el.innerHTML=bot?`<span class="tb-av">${GULL_HEAD(s.cpuLevel)}</span><span class="tb-txt">${escapeHTML(p.name)}’s turn<small>${(s.players[mp.me]||{}).n>=s.quota?(s.ff>1?`You win! ⏩ Fast-forward ×${s.ff} while he finishes.`:'You’re done! Now he finishes his bricks. Fastest time wins.')+'<button class="tb-skip" type="button" data-rush>Skip to the end ›</button>':s.turnPlaced?`${s.turnPlaced} placed. Get your next bricks ready!`:'He’s choosing. Get your next bricks ready!'}</small></span><b class="clk" data-clk="1">${fmtTime(mpTime(s,1))}</b>`
     :`<span class="tb-av"><i style="background:${escapeHTML(p.color)}"></i></span><span class="tb-txt">Your turn!<small>${s.turnPlaced?(left>0?`${s.turnPlaced} placed. Place ${left===1?'1 more':`up to ${left} more`}, or tap Done`:'That’s all for this turn'):left<3?`Place up to ${left} (your last ${left===1?'one':'ones'})`:'Place 1, 2 or 3 bricks, then tap Done'}</small></span><b class="clk" data-clk="0">${fmtTime(mpTime(s,0))}</b>${s.turnPlaced>0&&left>0?'<button class="tb-done" id="tbDone" type="button" title="Give the turn to Bloppit">Done ✓</button>':''}`;
   if(bannerKey.split('|')[0]!==String(bot)&&!reduceMotion){ el.classList.add('pop'); if(bannerKey&&bot) sfx.voice('longtail'); }
   bannerKey=key;
@@ -7377,7 +7381,19 @@ $('#mpPlayers').addEventListener('click',e=>{ if(!e.target.closest('[data-rush]'
   const s=cpu.s; if(cpuTurnNow()&&cpu.timer){ clearTimeout(cpu.timer); cpu.timer=null; clearTimeout(cpu.aimT); cpuAimGroup.clear(); cpuStep(); } if(s.turn===1&&!s.finished&&!cpu.timer) cpuKick(); cpuSend(); });
 window.bloppitRaceSlow=ms=>{ if(cpu&&cpu.s){ cpu.s.players[mp.me].ms+=ms; cpuSend(); } };   // for tests: a slow racer, to see a decided race
 function cpuGateGone(){ document.querySelectorAll('#buildStage .go-gate').forEach(g=>g.remove()); }
-function cpuStopClock(){ const s=cpu.s, p=s.players[s.turn]; if(s.started&&p) p.ms+=Math.max(0,Date.now()-s.turnStart); }
+function cpuStopClock(){ const s=cpu.s, p=s.players[s.turn]; if(s.started&&p) p.ms+=Math.max(0,Date.now()-s.turnStart)*(s.turn===1&&s.ff||1); }
+// Fast-forward (Steff, 6 Nov 2026): once you've finished and Swoop can't catch up, his last bricks play at ×4. His clock still
+// shows his real pace (40 seconds on the clock), it just takes a quarter of the time to watch (10 seconds).
+const CPU_FF=4;
+function cpuFFCheck(){ const s=cpu&&cpu.s; if(!s||s.ff||s.finished||(s.players[0].n||0)<s.quota) return; const L=raceLead(s); if(!L||!L.decided||L.lead.i!==0) return;
+  if(s.turn===1&&s.started){ const p=s.players[1], now=Date.now(); if(now>s.turnStart){ p.ms+=now-s.turnStart; s.turnStart=now; } }
+  s.ff=CPU_FF; track('race_ff');
+  // the brick he's already reaching for comes ×4 sooner too
+  if(cpu.timer&&cpu.fire&&cpu.due){ clearTimeout(cpu.timer); clearTimeout(cpu.aimT); const rem=Math.max(0,cpu.due-Date.now())/CPU_FF; cpu.due=Date.now()+rem; cpu.timer=setTimeout(cpu.fire,rem);
+    if(cpu.aimM) cpu.aimT=setTimeout(()=>{ if(cpu&&cpu.s===s&&s.turn===1&&!s.finished) cpuAim(cpu.aimM,cpu.aimW); },Math.max(0,rem-300)); }
+  cpuSend(); }
+setInterval(()=>{ if(cpu&&cpu.s&&!cpu.s.finished&&!cpu.s.ff) cpuFFCheck(); },400);   // it can become decided mid-turn, as his clock runs past yours
+window.bloppitRaceFF=()=>{ const s=cpu&&cpu.s; if(!s) return null; const L=raceLead(s); return {ff:s.ff||1,due:cpu.due?Math.round(cpu.due-Date.now()):null,fire:!!cpu.fire,timer:!!cpu.timer,left:cpu.left,n:s.players[0].n,sw:s.players[1].n,quota:s.quota,turn:s.turn,gate:!!document.querySelector('#buildStage .turn-gate'),decided:!!(L&&L.decided),lead:L&&L.lead&&L.lead.i}; };   // for tests
 const cpuShareDone=i=>(cpu.s.players[i].n||0)>=cpu.s.quota;
 // What Swoop says as his turn ends: "your turn" only when it really is yours (once you've placed all yours, he carries on)
 function cpuHandOver(){ const s=cpu.s; if(s.finished) return; cpuSay('point',s.turn===mp.me?'Your turn. Go go go!':'You’re done! My turn again. Zoom!'); }
@@ -7481,21 +7497,21 @@ function cpuKick(){
 }
 function cpuStep(extra=0,retry=false){
   // after a dropped brick he grabs it straight back: never more than ~12 s without a brick going in
-  const s=cpu.s, L=CPU_LEVELS[s.cpuLevel], wait=cpu.rush?350:retry?rndIn(1500,2500):(cpu.f?cpuPaceWait(s):rndIn(L.ms[0],L.ms[1]))+extra;   // rush: the race is decided and you skipped to the end
+  cpuFFCheck(); const s=cpu.s, L=CPU_LEVELS[s.cpuLevel], ff=s.ff||1, wait=cpu.rush?350:Math.round((retry?rndIn(1500,2500):(cpu.f?cpuPaceWait(s):rndIn(L.ms[0],L.ms[1]))+extra)/ff);   // rush: the race is decided and you skipped to the end; ff: fast-forward, same clock
   const m=cpuPick(), miss=!!m&&!cpu.missed&&Math.random()<L.miss, wrong=miss?[{x:2,z:0},{x:-2,z:0},{x:0,z:2},{x:0,z:-2}][Math.floor(Math.random()*4)]:null;
   cpu.missed=false;
   if(!m) cpuSay('point','Hmm, nothing left for him to place.');
   else cpuSay('think',`${s.turnPlaced?'Next one.':`${CPU_LEVELS[s.cpuLevel].name}’s turn.`} He wants this<span class="bud-dots"></span><div class="callout">${calloutHTML([model.bricks[m.b]])}</div>`);
-  clearTimeout(cpu.aimT); cpu.aimT=setTimeout(()=>{ if(cpu&&cpu.s===s&&s.turn===1&&!s.finished) cpuAim(m,wrong); },Math.max(0,wait-1100));
-  cpu.timer=setTimeout(()=>{
-    if(!cpu||cpu.s!==s) return; cpu.timer=null;
+  clearTimeout(cpu.aimT); cpu.aimM=m; cpu.aimW=wrong; cpu.aimT=setTimeout(()=>{ if(cpu&&cpu.s===s&&s.turn===1&&!s.finished) cpuAim(m,wrong); },Math.max(0,wait-1100/ff));
+  cpu.due=Date.now()+wait; cpu.timer=setTimeout(cpu.fire=()=>{
+    if(!cpu||cpu.s!==s) return; cpu.timer=null; cpu.fire=null;
     if(!mp||!mp.cpu||s.finished||s.turn!==1){ cpuAimGroup.clear(); return; }
     if(miss){
       cpu.missed=true; cpu.lastAct=Date.now();   // never two drops in a row: a turn mustn't drag on
       s.players[1].miss++; cpuSend(); mpFlash('+1s'); if(tab==='build') sfx.bonk();
       const g=cpuAimGroup.children[0]; if(g) g.material=errMat;
       cpuSay('reach',`Ha! ${CPU_LEVELS[s.cpuLevel].name} dropped it. +1 second for him.`);
-      cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; cpuAimGroup.clear(); if(!s.finished&&s.turn===1) cpuStep(0,true); },1300);
+      cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; cpuAimGroup.clear(); if(!s.finished&&s.turn===1) cpuStep(0,true); },1300/(s.ff||1));
       return;
     }
     cpuAimGroup.clear();
@@ -7504,8 +7520,8 @@ function cpuStep(extra=0,retry=false){
     cpu.say={cls:'hop',html:['Click! Got it.','Snap! In it goes.','Yes! That one fits.'][s.players[1].n%3]};
     cpuSend();
     if(s.finished||s.turn!==1) return;     // the Longtail placed 3, or his last one
-    if(cpu.left>0){ cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(!s.finished&&s.turn===1) cpuStep(); },700); return; }
-    cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(s.finished||s.turn!==1) return; cpuNextTurn(); cpuHandOver(); cpuSend(); },rndIn(500,900));
+    if(cpu.left>0){ cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(!s.finished&&s.turn===1) cpuStep(); },700/(s.ff||1)); return; }
+    cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(s.finished||s.turn!==1) return; cpuNextTurn(); cpuHandOver(); cpuSend(); if(s.turn===1&&!s.finished) cpuKick(); },rndIn(500,900)/(s.ff||1));   // you've finished: his next turn starts now (it used to wait ~15 s for the watchdog)
   },wait);
 }
 function cpuCountdown(){
@@ -10581,10 +10597,10 @@ function theEnd(then){
     {at:'brickworks',img:'bibi',name:'Bibi',say:'Your creations fill my whole gallery. ROAR!',got:`${isleCount('brickworks',o)} creations of your own`},
     {at:'home',img:'bloppit',name:'Bloppit',say:'And you built the home it all started from.',got:`${nf(worldCount(o))} builds in all`},
     {roll:true},{nums:true},{fin:true}];
-  const el=document.createElement('div'); el.className='the-end'; ISL3.box.appendChild(el);
+  const el=document.createElement('div'); el.className='the-end'; ISL3.box.appendChild(el); document.body.classList.add('end-on'); requestAnimationFrame(()=>{ isl3Size(); isl3Kick(); });   // full-screen, like the films
   ISL3.revealing=true; isl3Banner(''); isl3Chrome(); if(ISL3.ctl) ISL3.ctl.enabled=false; ISL3.hourOverride=21.5; isl3Tod(true);
   let i=-1, timer=0; const fit=d=>{ const w=ISL3.box.clientWidth||1, h=ISL3.box.clientHeight||1; return d*Math.min(2.6,Math.max(1,1.35*h/w)); };
-  const done=()=>{ clearTimeout(timer); el.remove(); ISL3.revealing=false; ISL3.hourOverride=null; isl3Tod(true); if(ISL3.ctl) ISL3.ctl.enabled=true; isl3FlyHome(1400); isl3Chrome(); if(then) then(); };
+  const done=()=>{ clearTimeout(timer); el.remove(); document.body.classList.remove('end-on'); requestAnimationFrame(()=>{ isl3Size(); isl3Kick(); }); ISL3.revealing=false; ISL3.hourOverride=null; isl3Tod(true); if(ISL3.ctl) ISL3.ctl.enabled=true; isl3FlyHome(1400); isl3Chrome(); if(then) then(); };
   const go=k=>{ clearTimeout(timer); i=k; const S=steps[i]; if(!S) return done(); el.className='the-end'; el.innerHTML=S.fin?'':'<button class="te-skip" type="button">Skip ›</button>';
     const sk=el.querySelector('.te-skip'); if(sk) sk.onclick=e=>{ e.stopPropagation(); go(steps.length-1); };
     if(S.at){ const I=ISL3.isles[S.at]; if(I) isl3FlyTo(I.x,1.2,I.z,fit({home:11,brickworks:17,blitzbay:16}[S.at]||14),1500);
@@ -10704,7 +10720,10 @@ const BEAT_LIGHT=['See that, out past the mist? A little lavender light. Funny�
   'There it is again. Two soft blinks, then quiet. Like a heartbeat.',
   'The light’s brighter tonight. I think it’s getting closer… or we are.',
   'Every island we finish, that light shines a little stronger. I wonder who’s out there.',
-  'The mist is thinning, {pup}. Whoever is out there, I think they’re waiting for us.'];
+  'The mist is thinning, {pup}. Whoever is out there, I think they’re waiting for us.',
+  'Did you see? The light blinked twice, then twice again. I think it’s calling us, {pup}.',
+  'Every night it’s a little brighter. Soon the mist will let us through.',
+  'One more island, {pup}, and we’ll go and find out who’s been waiting.'];
 // a visiting friend's line about your latest build, by where it was built (home = anything else); a tap on them gives the second
 const BEAT_VISIT={
   tiny:{home:['Ribbit! I told the whole forest about your {b}.','Your {b} is great, {pup}! Can I hop on top of it?'],
@@ -10835,7 +10854,12 @@ function accRender(all){ const o=worldStore(), D=ISL3.accDraft, prev={...o,wear:
   $('#accOff').hidden=!accOn(ACC.find(a=>a.id===D.id)||{slot:D.slot},accWear(o)); }
 function accSave(on){ const o=worldStore(), D=ISL3.accDraft, w=accWear(o); if(on) w[D.slot]=[D.id,D.ci]; else delete w[D.slot]; o.wear=w; o.wearAt=Date.now(); worldSet(o); track(on?'acc_wear:'+D.id:'acc_off'); sfx.chirp(); isl3PupRedress(); }
 // Ten builds: a choice that makes two children's worlds a little different
-function pickOpen(){ const d=$('#pickDlg'); if(!d.open){ d.showModal(); track('pick_offered'); } }
+// Never over a film, the ring or The End, and only on Bloppitopia (Steff, 6 Nov 2026): it waits and tries again.
+// Asked late (an older save, or a long gap), it doesn't say "Ten builds!".
+function pickOpen(){ const d=$('#pickDlg'); if(d.open) return;
+  if(tab!=='island'||ISL3.lufu||ISL3.cine||isl3Holding()||document.querySelector('.is3-cine,.is3-ring,.the-end,dialog[open]')){ clearTimeout(ISL3.pickT); ISL3.pickT=setTimeout(pickOpen,1500); return; }
+  $('#pickTitle').textContent=worldCount(worldStore())<=14?'Ten builds! What shall we build on Home Island?':'What shall we build on Home Island?';
+  d.showModal(); track('pick_offered'); }
 
 // Show Bloppitopia (the Island page): build it, then reveal whatever is new since the last visit
 function isl3Immersive(){ const v=$('#view-island'), card=v&&v.querySelector('.is-card'), btns=v&&v.querySelector('.is-btns'); if(!card||!btns) return;

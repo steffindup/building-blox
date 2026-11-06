@@ -51,6 +51,8 @@ for (const page of PAGES) {
     .replace('<link rel="stylesheet" href="/site.css">', '<link rel="stylesheet" href="site.css">\n<style>.skip,body>header{display:none}</style>')
     .replace(/(src|poster)="\/(art|video)\//g, '$1="../$2/')
     .replace(new RegExp(`href="/(${PAGES.join('|')})/"`, 'g'), 'href="$1.html"');
+  // In the app the FAQ shouldn't say the app is on its way: whoever reads it is already in it.
+  if (page === 'faq') p = p.replace('Bloppit for iPhone and iPad is on its way to the App Store.', 'You’re playing the iPhone and iPad app. Bloppit also plays in any web browser at bloppit.com/build.');
   if (/https:\/\/(cdn|fonts)\./.test(p) || /(href|src)="\/(site\.css|art|video)/.test(p)) throw new Error(`build-www: pages/${page}.html still points at the website`);
   writeFileSync(join(www, 'pages', `${page}.html`), p);
 }
