@@ -1667,7 +1667,9 @@ async function tJoin(t, code) {
   await t.page.fill('#mpCodeIn', code); await t.page.fill('#mpName2', 'Guest'); await t.page.evaluate(() => document.getElementById('mpJoin').click()); await t.page.waitForTimeout(1500);
 }
 async function tAdmitStart(host) {
-  await host.page.waitForSelector('[data-admit]', { timeout: 15000 });
+  await host.page.waitForSelector('[data-admit]', { state: 'attached', timeout: 15000 });
+  await host.page.waitForTimeout(500);
+  assert.ok(await host.page.evaluate(() => [...document.querySelectorAll('[data-admit]')].some((x) => x.getClientRects().length > 0)), 'the host can see the knock');
   while (await host.page.evaluate(() => { const b = document.querySelector('[data-admit]:not([disabled])'); if (b) { b.click(); return true; } return false; })) await host.page.waitForTimeout(900);
   await host.page.waitForTimeout(1200); await host.page.evaluate(() => document.getElementById('mpStart').click()); await host.page.waitForTimeout(2000);
 }
