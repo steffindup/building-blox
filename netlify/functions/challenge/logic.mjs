@@ -151,7 +151,7 @@ export async function handle(method, query, body, store) {
       const run = cleanRun(body, c.nBricks);
       if (run.error) return { status: 400, body: { error: run.error } };
       if (c.runs.length >= MAX_RUNS) return { status: 409, body: { error: `This challenge is full (${MAX_RUNS} players).` } };
-      if (c.kind === 'relay') return { status: 400, body: { error: 'That code is a relay, not a race.' } };
+      if (c.kind === 'relay') return { status: 400, body: { error: 'That code is a Pass the Puzzle, not a race.' } };
       c.runs.push({ id, ms: run.ms, miss: run.miss, hint: run.hint, at: now });
       c.updated = now;
       const { modified } = await store.set(chKey(code), c, { onlyIfMatch: r.etag });
@@ -181,7 +181,7 @@ export async function handle(method, query, body, store) {
       await store.set(chModelKey(code), model, {});
       return { status: 200, body: { code, runId: id, challenge: publicRelay(c, [id]) } };
     }
-    return { status: 500, body: { error: 'Couldn’t make a relay code. Please try again.' } };
+    return { status: 500, body: { error: 'Couldn’t make a Pass the Puzzle code. Please try again.' } };
   }
   if (a === 'relay-finish') {
     const code = cleanCode(body.code);
@@ -189,16 +189,16 @@ export async function handle(method, query, body, store) {
     const id = rand(16, 'abcdefghijklmnopqrstuvwxyz0123456789');
     for (let i = 0; i < 8; i++) {
       const r = await readChallenge(store, code);
-      if (!r || r.data.kind !== 'relay') return { status: 404, body: { error: 'That relay wasn’t found.' } };
+      if (!r || r.data.kind !== 'relay') return { status: 404, body: { error: 'That Pass the Puzzle code wasn’t found.' } };
       const c = r.data;
-      if (c.second) return { status: 409, body: { error: 'That relay has already been finished.' } };
+      if (c.second) return { status: 409, body: { error: 'That puzzle has already been finished.' } };
       const moves = cleanMoves(body.moves, c.nBricks); if (!moves.length) return { status: 400, body: { error: 'Nothing was built.' } };
       c.second = { id, moves, miss: Math.floor(Number(body.miss) || 0), hint: Math.floor(Number(body.hint) || 0), at: now }; c.updated = now; c.runs.push({ id, at: now });
       const { modified } = await store.set(chKey(code), c, { onlyIfMatch: r.etag });
       if (modified) return { status: 200, body: { runId: id, challenge: publicRelay(c, [id]) } };
       await new Promise((res) => setTimeout(res, 40 + Math.random() * 120));
     }
-    return { status: 409, body: { error: 'The relay was busy. Please try again.' } };
+    return { status: 409, body: { error: 'That puzzle was busy. Please try again.' } };
   }
 
   if (a === 'daily') return { status: 410, body: { error: 'The Daily Bloppit is now the Weekly Bloppit. Please update the app.' } };

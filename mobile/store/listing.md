@@ -156,7 +156,7 @@ Progress (scores, finished models, stars, outfits, the otter's name as a number 
 
 Usage counts: the app adds one to a daily count for a few events (a build started or finished, the arrival seen) with the country from the request and whether it was the app or the website. There is no identifier for the player or the device, and nothing is shared with anyone.
 
-Rooms (Team Build, live races): friends join with a 5-letter code and the host lets them in. Players appear under generated labels ("Brave Otter 214"); typed names never leave the device. Relays: one friend builds half a model, the other finishes it from a code. Crews (Together page): a shared lighthouse goal for an approved group; the maker lets each member in; the board only takes fixed phrases and stickers under generated names; report on every post; parents can remove a player from any crew in the Grown-ups corner.
+Rooms (Team Build, live races): friends join with a 5-letter code and the host lets them in. Players appear under generated labels ("Brave Otter 214"); typed names never leave the device. Pass the Puzzle: one friend builds half a model, the other finishes it from a code; inside a crew, the same model goes round every member in turn. Crews (Together page, up to six per player): a group of friends the maker lets in one by one, with a live Crew Quick Game, Pass the Puzzle and a Crew Mega Build (a big puzzle every member's bricks go to); the board only takes fixed phrases and stickers under generated names.
 
 There is no chat and no voice: players in a room only place bricks. Links out of the app and sharing an invite are behind a parental gate (type a number written in words as digits).
 

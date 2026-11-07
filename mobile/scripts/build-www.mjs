@@ -83,6 +83,7 @@ html = html.replace(/<link rel="(canonical|manifest|apple-touch-icon|icon)"[^>]*
 swap('<body>\n', '<body>\n<script>window.BLOPPIT_APP=true;</script>\n');
 
 html = html.replace(/src="\/art\//g, 'src="art/');
+html = html.replace(/url\('\/art\//g, "url('art/");   // drawn icons that use the friends' faces (CSS)
 html = html.replace(/(src|poster)="\/video\//g, '$1="video/');
 if (/https:\/\/(cdn|fonts)\./.test(html)) throw new Error('build-www: the app still loads something from a CDN');
 writeFileSync(join(www, 'index.html'), html);

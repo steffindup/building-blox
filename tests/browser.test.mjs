@@ -738,7 +738,7 @@ test('a relay: one friend builds half, the other finishes, both islands get the 
   assert.match(await a.text('#chMineList'), /Waiting for your friend/);
   const b = await open('?nosplash=1&welcome=0#blitz', { init: seeded });
   await b.page.evaluate((c) => { document.getElementById('bzCodeIn').value = c; document.getElementById('bzJoin').click(); }, code); await b.page.waitForTimeout(2500);
-  assert.match(await b.text('#chPreview'), /started a relay/);
+  assert.match(await b.text('#chPreview'), /passed you a puzzle/);
   await b.page.evaluate(() => document.getElementById('relGo').click()); await b.page.waitForTimeout(1200);
   assert.equal(await b.view(), 'view-build'); assert.doesNotMatch(await b.text('#progress'), /^0 of/);
   for (let i = 0; i < 60; i++) { await autoPlace(b.page, 1); if (await b.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; }
@@ -749,7 +749,7 @@ test('a relay: one friend builds half, the other finishes, both islands get the 
   // the first player hears about it on the Blitz page
   await a.page.evaluate(() => window.bloppitHome()); await a.page.waitForTimeout(300);
   await a.page.evaluate(() => document.querySelector('.hm-tile[data-go="mp"]').click()); await a.page.waitForTimeout(400); await a.page.evaluate(() => document.querySelector('[data-go-race]').click()); await a.page.waitForTimeout(2500);
-  assert.match(await a.text('#trTitle'), /Your relay is finished/);
+  assert.match(await a.text('#trTitle'), /Your passed puzzle is finished/);
   const wa = JSON.parse(await a.page.evaluate(() => localStorage.getItem('bloppit-world-v1'))); assert.equal(wa.log.length, 1);
   assert.deepEqual(a.errors, []); await a.ctx.close();
 });
@@ -1365,7 +1365,7 @@ test('Solo: Pippa’s Puzzles on the menu are her own mirror set, all open in an
   const t = await open('?nosplash=1&welcome=0&films=0');
   const L = await t.page.evaluate(() => ({ flip: window.bloppitLevels.flip.map((l) => l.sample), sea: window.bloppitLevels.sea.map((l) => l.sample) }));
   assert.equal(L.flip.length, 12); assert.deepEqual(L.flip.filter((n) => L.sea.includes(n)), [], 'none of Flipper Beach’s puzzles');
-  assert.match(await t.text('#hmSeaSub'), /12 mirror puzzles/); assert.doesNotMatch(await t.text('#hmSeaSub'), /%/);
+  assert.match(await t.text('#hmSeaSub'), /12 puzzles: Pippa builds half/); assert.doesNotMatch(await t.text('#hmSeaSub'), /%/);
   await t.page.evaluate(() => document.querySelector('#view-home [data-go="flip"]').click()); await t.page.waitForTimeout(300);
   assert.equal(await t.page.evaluate(() => document.getElementById('qpDlg').open), true, 'the difficulty choice first');
   assert.equal(await t.page.evaluate(() => getComputedStyle(document.getElementById('qpIsle')).display), 'none', 'no island behind it');
