@@ -267,6 +267,11 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
 .howto h2{font-size:clamp(2.2rem,5vw,3.2rem);margin-top:12px}
 .howto p{font-size:19px;color:var(--muted);margin:12px 0 22px}
 @media (max-width:860px){.howto{grid-template-columns:1fr;gap:22px}}
+/* the game's own badges on the website buttons (Steff, 7 Nov 2026) */
+.bi{display:inline-block;flex:none;width:1.25em;height:1.25em;vertical-align:-.25em;margin-right:.4em;background:center/contain no-repeat}
+.bi-quick{background-image:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="50" r="46" fill="%23F4BC22" stroke="%2314202C" stroke-width="6"/%3E%3Cpath d="M56 14 26 56h20l-6 30 34-44H52z" fill="%2314202C"/%3E%3C/svg%3E')}
+.bi-isle{background-image:url('data:image/svg+xml,%3Csvg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Ccircle cx="50" cy="50" r="50" fill="%232FB8DC"/%3E%3Ccircle cx="50" cy="52" r="15" fill="%236CC04A" stroke="%23F2D594" stroke-width="4"/%3E%3Cg transform="translate%2850 52%29 scale%28.5%29" stroke="%239E2019" stroke-width="2" fill="%23D8342C"%3E%3Crect x="-20" y="-6" width="40" height="18" rx="2.5"/%3E%3Crect x="-15" y="-13" width="10" height="8" rx="2"/%3E%3Crect x="5" y="-13" width="10" height="8" rx="2"/%3E%3C/g%3E%3Ccircle cx="50.0" cy="19.0" r="8" fill="%239BD32C" stroke="%23F2D594" stroke-width="3"/%3E%3Ccircle cx="81.4" cy="41.8" r="8" fill="%2324407A" stroke="%23F2D594" stroke-width="3"/%3E%3Ccircle cx="69.4" cy="78.7" r="8" fill="%23F2C230" stroke="%23F2D594" stroke-width="3"/%3E%3Ccircle cx="30.6" cy="78.7" r="8" fill="%232F7FD0" stroke="%23F2D594" stroke-width="3"/%3E%3Ccircle cx="18.6" cy="41.8" r="8" fill="%23E9772A" stroke="%23F2D594" stroke-width="3"/%3E%3C/svg%3E')}
+.bi-bibi{background-image:url('/art/head-bibi.png');border-radius:50%;background-color:#FCE3CF;box-shadow:0 0 0 2px #E9772A}
 </style>
 </head>
 <body>
@@ -304,7 +309,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
       <a href="/how-it-works/">How it works</a>
       <a href="/faq/">FAQ</a>
       <a href="/about/">About us</a>
-      <a class="btn quick sm" href="/build/">▶ Play Now</a>
+      <a class="btn quick sm" href="/build/"><i class="bi bi-quick" aria-hidden="true"></i>Play Now</a>
     </div>
   </nav>
 </header>
@@ -317,9 +322,9 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
       <div class="tagline" aria-label="World of Bricks"><span>World</span><span>of</span><span>Bricks</span></div>
       <p>A brick-building game for anyone who loves bricks. Build with Bloppit the otter, raise your pup and grow your own island, Bloppitopia. Then race Swoop the Longtail.</p>
       <div class="actions choose bricks">
-        <a class="btn brick quick big" href="/build/">▶ Play Now</a>
-        <a class="btn brick primary isle" href="/build/#island">🏝️ Bloppitopia</a>
-        <a class="btn brick" href="/build/#daily">📅 This week’s Bloppit</a>
+        <a class="btn brick quick big" href="/build/"><i class="bi bi-quick" aria-hidden="true"></i>Play Now</a>
+        <a class="btn brick primary isle" href="/build/#island"><i class="bi bi-isle" aria-hidden="true"></i>Bloppitopia</a>
+        <a class="btn brick" href="/build/#daily"><i class="bi bi-bibi" aria-hidden="true"></i>This week’s Bloppit</a>
         <a class="btn brick blue" href="#how-to-play">▶ How to play</a>
       </div>
       <p class="choose-note"><b>Play Now:</b> pick a game and start building. <b>Bloppitopia:</b> grow your own island, one build at a time.</p>
@@ -360,10 +365,10 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
     a.textContent=s.name?s.name+'’s':'Your'; h.appendChild(a); h.appendChild(document.createElement('br')); h.appendChild(document.createTextNode('island is waiting.'));
     var tg=txt.querySelector('.tagline'); if(tg) tg.remove();
     txt.querySelector('p').textContent=s.n+' build'+(s.n===1?'':'s')+' so far, and it’s a '+s.stage+'. Every build you finish grows it.';
-    var acts=txt.querySelector('.actions'), isle=acts.querySelector('.isle')||acts.lastElementChild; isle.textContent='🏝️ Back to Bloppitopia'; isle.href='/build/#island';
+    var acts=txt.querySelector('.actions'), isle=acts.querySelector('.isle')||acts.lastElementChild; isle.innerHTML='<i class="bi bi-isle" aria-hidden="true"></i>Back to Bloppitopia'; isle.href='/build/#island';
     var f=document.createElement('figure'); f.className='isle-hero';
     if(s.img&&/^data:image\/jpeg;base64,/.test(s.img)){ var im=document.createElement('img'); im.src=s.img; im.alt=''; f.appendChild(im); } else f.innerHTML=s.svg;
-    var c=document.createElement('figcaption'); c.textContent='🏝️ Bloppitopia · '+s.stage; f.appendChild(c);
+    var c=document.createElement('figcaption'); c.innerHTML='<i class="bi bi-isle" aria-hidden="true"></i>Bloppitopia · '+s.stage; f.appendChild(c);
     var go=document.createElement('a'); go.href='/build/#island'; go.setAttribute('aria-label','Open your island'); go.style.cssText='position:absolute;inset:0'; f.appendChild(go);
     vis.replaceWith(f);
   }catch(e){} })();
@@ -374,7 +379,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
       <span class="pill">45 seconds</span>
       <h2 id="howto-h">How to play</h2>
       <p>Pick a puzzle, grab the brick the booklet shows, and tap it into place. Build it clean for three stars, and every build you finish grows your island.</p>
-      <a class="btn quick sm" href="/build/">▶ Play Now</a>
+      <a class="btn quick sm" href="/build/"><i class="bi bi-quick" aria-hidden="true"></i>Play Now</a>
     </div>
     <figure class="howto-video"><video controls playsinline preload="none" poster="/video/how-to-play.jpg" aria-label="How to play Bloppit, a 45-second video"><source src="/video/how-to-play.mp4" type="video/mp4"></video></figure>
   </section>
@@ -398,13 +403,13 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
     <div class="cards four">
       <article class="card lift">
         <span class="tag" style="background:#FFE7B8">Your island</span>
-        <h3>🏝️ Bloppitopia</h3>
+        <h3><i class="bi bi-isle" aria-hidden="true"></i>Bloppitopia</h3>
         <p>A little otter arrives by boat, and your first build finishes its home. Every build after that grows your world: Home Island becomes a village, and five islands rise from the mist, Frog Forest, Brainpeak, Flipper Beach, Blitz Bay and Brickyard Cove, each growing with its own game. Finish all five and Moonstone Isle opens: the mystery that ends Chapter 1, and a voyage to a whole new world. Your otter levels up and earns outfits. Nothing is ever for sale.</p>
         <a class="card-link" href="/build/#island">Visit the island →</a>
       </article>
       <article class="card lift">
         <span class="tag" style="background:#D3F0F2">New every Monday</span>
-        <h3>📅 Weekly Bloppit</h3>
+        <h3><i class="bi bi-bibi" aria-hidden="true"></i>Weekly Bloppit</h3>
         <p>One puzzle a week, the same for everybody. Build it clean, see how many builders did too, and see it join your creations on Brickyard Cove. Missed a week? No problem.</p>
         <a class="card-link" href="/build/#daily">Build this week’s puzzle →</a>
       </article>
@@ -429,7 +434,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
     <div class="cta">
       <h2 id="cta-h">Ready to build? Let’s bloppit!</h2>
       <p>Your pup is waiting on Bloppitopia. Play in your browser, or get Bloppit for iPhone and iPad on the <a href="https://apps.apple.com/app/id6821449219">App Store</a>.</p>
-      <div class="actions" style="justify-content:center"><a class="btn quick" href="/build/">▶ Play Now</a><a class="btn primary" href="/build/#island">🏝️ Bloppitopia</a></div>
+      <div class="actions" style="justify-content:center"><a class="btn quick" href="/build/"><i class="bi bi-quick" aria-hidden="true"></i>Play Now</a><a class="btn primary" href="/build/#island"><i class="bi bi-isle" aria-hidden="true"></i>Bloppitopia</a></div>
     </div>
   </section>
 </main>
