@@ -129,7 +129,16 @@ follow Bloppit. Apple's limits: 15–30 s, at most 30 fps, footage from the app.
 the arrival made in the game): upload these with 1.1. Set the poster frame to Bloppit holding his red brick on the
 jetty (about 7 s in).
 
-## What's New (1.1)
+## What's New (1.1.1)
+
+Together, and a tidier Bloppit.
+• Play with Friends: a Team Build or Race a Friend, with a code to share
+• Your Crews: friends you keep, with a live Crew Quick Game, Pass the Puzzle (one model round the crew, a few pages each) and a Crew Mega Build everyone's bricks go to
+• Clearer names on the menu: Tiny's Frog Trail, Nora's Brain Trail, Pippa's Mirror Puzzles, Blitz with Swoop, Build Anything with Bibi
+• One colour per friend everywhere, and drawn icons that look the same on every device
+• Together fixes: six-letter codes, invite links, leaving a room, ties share a medal
+
+## What's New (1.1, 6 Nov 2026)
 
 Bloppitopia comes to life!
 • Films: your otter's arrival, every island's arrival, halfway and finish, and the whole Moonstone story. Watch them again in My films
