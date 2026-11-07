@@ -108,6 +108,20 @@ a{color:var(--red-dark)}
 .actions.choose .btn{min-width:200px}
 .actions.choose .btn.big{font-size:23px;min-height:62px;padding-inline:34px;min-width:230px}   /* Play Now is the first, biggest choice (Steff, 5 Nov 2026) */
 .choose-note{margin-top:14px;font-size:16px;font-weight:600;max-width:520px}
+/* Brick buttons (Steff, 6 Nov 2026): the hero's buttons are bricks, two studs on top like Bloppit's red brick */
+.btn.brick{position:relative;border-radius:10px;margin-top:12px}
+.btn.brick::before,.btn.brick::after{content:"";position:absolute;top:-14px;width:30px;height:12px;background:inherit;
+  border:2px solid var(--ink);border-bottom:0;border-radius:7px 7px 0 0;pointer-events:none}
+.btn.brick::before{left:20%}.btn.brick::after{right:20%}
+.btn.brick.big::before,.btn.brick.big::after{width:36px;height:13px;top:-15px}
+.btn.brick.sm{border-radius:8px;margin-top:10px}.btn.brick.sm::before,.btn.brick.sm::after{width:22px;height:9px;top:-11px;border-radius:5px 5px 0 0}
+.btn.blue{background:#0369BD;color:var(--white)}.btn.blue:hover{color:var(--white)}
+/* the four hero bricks: two equal columns, stacked full width on phones */
+.actions.bricks{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;max-width:540px}
+.actions.bricks .btn{min-width:0;width:100%;box-sizing:border-box;padding-inline:16px;text-align:center}
+.actions.bricks .btn.big{min-width:0;padding-inline:16px}
+.actions.bricks .btn:not(.big){min-height:62px}
+@media (max-width:520px){.actions.bricks{grid-template-columns:1fr}}
 .btn.sm{font-size:16px;min-height:44px;padding:8px 20px;box-shadow:0 3px 0 var(--ink)}
 .btn.sm:hover{box-shadow:0 1px 0 var(--ink)}
 .get-app{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:16px}.get-app[hidden]{display:none}
@@ -118,6 +132,16 @@ header{border-bottom:2px solid var(--ink);background:var(--paper);position:stick
 nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;padding-block:12px}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--red)}
 .logo span{font-family:var(--display);font-size:32px;line-height:1}
+.logo span.wob{font-size:inherit}
+/* World / of / Bricks beside the wordmark (Steff, 6 Nov 2026): the same three bricks as the launch screen and social banners */
+.wob{display:inline-flex;gap:4px;margin-left:4px;align-self:center}
+.wob i{font-style:normal;font-family:"Nunito",system-ui,sans-serif;font-weight:800;font-size:13px;line-height:1;padding:4px 7px 5px;border-radius:5px;border:1.5px solid #14202C;box-shadow:0 2px 0 #14202C}
+.wob i:nth-child(1){background:#F4BC22;color:#142022}.wob i:nth-child(2){background:#fff;color:#0369BD}.wob i:nth-child(3){background:#D62F2A;color:#fff}
+@media (max-width:640px){.logo:has(.wob){display:grid;grid-template-columns:auto auto;column-gap:10px;row-gap:3px;align-items:center}
+  .logo:has(.wob) img{grid-row:1 / span 2}.logo .wob{margin-left:0;align-self:start}}   /* phones: the bricks sit under the wordmark */
+@media (max-width:380px){header .btn.sm{padding:8px 12px;font-size:15px}}
+@media (max-width:420px){.wob{gap:3px}.wob i{font-size:10.5px;padding:3px 5px 4px}}
+
 .nav-links{display:flex;flex-wrap:wrap;align-items:center;gap:4px 22px;margin-left:auto;font-weight:800}
 .nav-links a:not(.btn){color:var(--ink);text-decoration:none;padding:10px 0}
 .nav-links a:not(.btn):hover{color:var(--red-dark)}
@@ -274,13 +298,13 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
   <nav class="wrap" aria-label="Main">
     <a class="logo" href="/" aria-label="Bloppit home">
       <img src="/art/bloppit-avatar.png" width="46" height="46" alt="">
-      <span>Bloppit</span>
+      <span>Bloppit</span><span class="wob" aria-hidden="true"><i>World</i><i>of</i><i>Bricks</i></span>
     </a>
     <div class="nav-links">
       <a href="/how-it-works/">How it works</a>
       <a href="/faq/">FAQ</a>
       <a href="/about/">About us</a>
-      <a class="btn primary sm" href="/build/">Play now</a>
+      <a class="btn quick sm" href="/build/">▶ Play Now</a>
     </div>
   </nav>
 </header>
@@ -292,13 +316,14 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
       <h1>Build it.<br>Grow your <span class="accent">world.</span></h1>
       <div class="tagline" aria-label="World of Bricks"><span>World</span><span>of</span><span>Bricks</span></div>
       <p>A brick-building game for anyone who loves bricks. Build with Bloppit the otter, raise your pup and grow your own island, Bloppitopia. Then race Swoop the Longtail.</p>
-      <div class="actions choose">
-        <a class="btn quick big" href="/build/">▶ Play Now</a>
-        <a class="btn primary isle" href="/build/#island">🏝️ Bloppitopia</a>
+      <div class="actions choose bricks">
+        <a class="btn brick quick big" href="/build/">▶ Play Now</a>
+        <a class="btn brick primary isle" href="/build/#island">🏝️ Bloppitopia</a>
+        <a class="btn brick blue" href="#how-to-play">▶ How to play</a>
+        <a class="btn brick" href="/build/#daily">📅 This week’s Bloppit</a>
       </div>
-      <p class="choose-note"><b>Play Now:</b> pick a game and start building. <b>Bloppitopia:</b> grow your own island, one build at a time.</p>
-      <p class="get-app" id="getApp" hidden><a class="btn sm" href="https://apps.apple.com/app/id6821449219">📲 Get the free app</a> <span>Bloppit for iPhone and iPad, on the App Store</span></p>
-      <p style="margin-top:12px"><a href="#how-to-play" style="font-weight:800">▶ Watch how to play (45 seconds)</a> <span aria-hidden="true">·</span> <a href="/build/#daily" style="font-weight:800">📅 This week’s Bloppit</a></p>
+      <p class="choose-note"><b>Play Now:</b> pick a game and start building. <b>Bloppitopia:</b> grow your own island, one build at a time. <b>How to play:</b> a 45-second video.</p>
+      <p class="get-app" id="getApp" hidden><a class="btn brick sm" href="https://apps.apple.com/app/id6821449219">📲 Get the free app</a> <span>Bloppit for iPhone and iPad, on the App Store</span></p>
     </div>
 
     <div class="hero-visual">
@@ -349,7 +374,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
       <span class="pill">45 seconds</span>
       <h2 id="howto-h">How to play</h2>
       <p>Pick a puzzle, grab the brick the booklet shows, and tap it into place. Build it clean for three stars, and every build you finish grows your island.</p>
-      <a class="btn primary sm" href="/build/">▶ Play Now</a>
+      <a class="btn quick sm" href="/build/">▶ Play Now</a>
     </div>
     <figure class="howto-video"><video controls playsinline preload="none" poster="/video/how-to-play.jpg" aria-label="How to play Bloppit, a 45-second video"><source src="/video/how-to-play.mp4" type="video/mp4"></video></figure>
   </section>
@@ -404,7 +429,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
     <div class="cta">
       <h2 id="cta-h">Ready to build? Let’s bloppit!</h2>
       <p>Your pup is waiting on Bloppitopia. Play in your browser, or get Bloppit for iPhone and iPad on the <a href="https://apps.apple.com/app/id6821449219">App Store</a>.</p>
-      <div class="actions" style="justify-content:center"><a class="btn quick" href="/build/">▶ Play Now</a><a class="btn" href="/build/#island">🏝️ Bloppitopia</a></div>
+      <div class="actions" style="justify-content:center"><a class="btn quick" href="/build/">▶ Play Now</a><a class="btn primary" href="/build/#island">🏝️ Bloppitopia</a></div>
     </div>
   </section>
 </main>

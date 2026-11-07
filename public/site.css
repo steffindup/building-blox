@@ -24,6 +24,7 @@ a{color:var(--red-dark)}
 .btn:active{transform:translateY(5px);box-shadow:0 0 0 var(--ink)}
 .btn.primary{background:var(--red);color:var(--white)}
 .btn.primary:hover{color:var(--white)}
+.btn.quick{background:#F4BC22;color:#14202C}.btn.quick:hover{color:#14202C}   /* Play Now is always yellow; red is Bloppitopia (Steff, 6 Nov 2026) */
 .btn.sm{font-size:16px;min-height:44px;padding:8px 20px;box-shadow:0 3px 0 var(--ink)}
 .btn.sm:hover{box-shadow:0 1px 0 var(--ink)}
 
@@ -32,6 +33,16 @@ header{border-bottom:2px solid var(--ink);background:var(--paper);position:stick
 nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;padding-block:12px;max-width:1200px}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--red)}
 .logo span{font-family:var(--display);font-size:32px;line-height:1}
+.logo span.wob{font-size:inherit}
+/* World / of / Bricks beside the wordmark (Steff, 6 Nov 2026): the same three bricks as the launch screen and social banners */
+.wob{display:inline-flex;gap:4px;margin-left:4px;align-self:center}
+.wob i{font-style:normal;font-family:"Nunito",system-ui,sans-serif;font-weight:800;font-size:13px;line-height:1;padding:4px 7px 5px;border-radius:5px;border:1.5px solid #14202C;box-shadow:0 2px 0 #14202C}
+.wob i:nth-child(1){background:#F4BC22;color:#142022}.wob i:nth-child(2){background:#fff;color:#0369BD}.wob i:nth-child(3){background:#D62F2A;color:#fff}
+@media (max-width:640px){.logo:has(.wob){display:grid;grid-template-columns:auto auto;column-gap:10px;row-gap:3px;align-items:center}
+  .logo:has(.wob) img{grid-row:1 / span 2}.logo .wob{margin-left:0;align-self:start}}   /* phones: the bricks sit under the wordmark */
+@media (max-width:380px){header .btn.sm{padding:8px 12px;font-size:15px}}
+@media (max-width:420px){.wob{gap:3px}.wob i{font-size:10.5px;padding:3px 5px 4px}}
+
 .nav-links{display:flex;flex-wrap:wrap;align-items:center;gap:4px 22px;margin-left:auto;font-weight:800}
 .nav-links a:not(.btn){color:var(--ink);text-decoration:none;padding:10px 0;border-bottom:3px solid transparent}
 .nav-links a:not(.btn):hover{color:var(--red-dark)}
