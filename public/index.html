@@ -8,7 +8,7 @@
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="google-site-verification" content="3jgoAs4OQQYRCxP8exwGKqmz1Gw5foP76_TtomURmc8" />
 <link rel="canonical" href="https://bloppit.com/">
-<meta name="theme-color" content="#FFFDF8">
+<meta name="theme-color" content="#FBF7EE">
 <meta name="application-name" content="Bloppit">
 <meta name="apple-mobile-web-app-title" content="Bloppit">
 <meta property="og:type" content="website">
@@ -88,7 +88,7 @@
 .section{padding-block:72px}
 .section-head{max-width:720px;margin-bottom:36px}
 .section-head h2{font-size:clamp(2.2rem,4.6vw,3.2rem);margin:10px 0 12px}
-.band{background:var(--sand)}
+.band{background-color:var(--sand);background-image:radial-gradient(#E2D6BE 1.6px,transparent 1.6px);background-size:28px 28px}
 
 .how{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:48px;align-items:center}
 .how ol{list-style:none;margin:0;padding:0;display:grid;gap:26px;counter-reset:s}
@@ -148,7 +148,7 @@
       <a href="/how-it-works/">How it works</a>
       <a href="/faq/">FAQ</a>
       <a href="/about/">About us</a>
-      <a class="btn play sm" href="/game/">Play Bloppit</a>
+      <a class="btn play sm" href="/game/"><img class="bl" src="/art/bloppit-avatar.png" width="64" height="64" alt="">Play Bloppit</a>
     </div>
   </nav>
 </header>
@@ -159,52 +159,13 @@
       <span class="eyebrow">A brick-building game for all ages</span>
       <h1>Build it.<br>Grow your <span class="accent">world.</span></h1>
       <p class="lede">Build anything from bricks with Bloppit the otter, one step at a time. Every build you finish grows your own island, Bloppitopia, with a friend waiting on every shore.</p>
-      <div class="actions"><a class="btn play lg" href="/game/">Play Bloppit</a><a class="btn ghost" href="https://apps.apple.com/app/id6821449219">Get the iPhone &amp; iPad app</a></div>
+      <div class="actions"><a class="btn play lg" href="/game/"><img class="bl" src="/art/bloppit-avatar.png" width="64" height="64" alt="">Play Bloppit</a><a class="btn ghost" href="https://apps.apple.com/app/id6821449219">Get the iPhone &amp; iPad app</a></div>
       <ul class="facts"><li>Free</li><li>No ads</li><li>Nothing to buy</li><li>Plays in your browser</li></ul>
     </div>
     <figure class="film" id="film">
       <img src="/art/web/hero-arrival.jpg" width="1600" height="900" alt="Bloppit the otter on the jetty of Home Island, holding his red brick">
       <button type="button" aria-label="Watch the arrival film (26 seconds)"><span><i aria-hidden="true">▶</i>Watch the film</span></button>
     </figure>
-  </section>
-
-  <div class="band">
-    <section class="wrap section" id="how-to-play" aria-labelledby="how-h">
-      <div class="how">
-        <div>
-          <span class="eyebrow">How it works</span>
-          <h2 id="how-h" style="font-size:clamp(2.2rem,4.6vw,3.2rem);margin:10px 0 28px">Three steps, endless builds</h2>
-          <ol>
-            <li><h3>Pick a build</h3><p>A puzzle from one of the islands, any of the 66 models in the library, or your own photo or drawing turned into bricks.</p></li>
-            <li><h3>Build it brick by brick</h3><p>Follow the booklet, grab the brick it shows and tap it into place. Build it clean for three stars.</p></li>
-            <li><h3>Grow your world</h3><p>Every build you finish grows Bloppitopia: a home, a garden, a village, then five islands rising from the mist.</p></li>
-          </ol>
-        </div>
-        <figure class="howto-video"><video controls playsinline preload="none" poster="/video/how-to-play.jpg" aria-label="How to play Bloppit, a 45-second video"><source src="/video/how-to-play.mp4" type="video/mp4"></video></figure>
-      </div>
-    </section>
-  </div>
-
-  <section class="wrap section" aria-labelledby="isles-h">
-    <div class="section-head">
-      <span class="eyebrow">Bloppitopia</span>
-      <h2 id="isles-h">Five islands, five friends</h2>
-      <p class="lede">Each island has its own way to play and a friend who lives there. Every build you finish there helps it grow.</p>
-    </div>
-    <div class="isles">
-      <article class="isle" style="--c:var(--c-tiny)"><img class="still" src="/art/web/isle-frog-forest.jpg" width="800" height="450" alt="Bloppit and Tiny the tree frog on the lily pads of Frog Forest" loading="lazy">
-        <div class="body"><span class="who"><img src="/art/head-tiny.png" alt="">Tiny the tree frog</span><h3>Frog Forest</h3><p>Hop up the Frog Trail: 15 levels from tiny to tricky, with a boss at the top.</p></div></article>
-      <article class="isle" style="--c:var(--c-nora)"><img class="still" src="/art/web/isle-brainpeak.jpg" width="800" height="450" alt="Nora the night heron showing Bloppit the path up Brainpeak" loading="lazy">
-        <div class="body"><span class="who"><img src="/art/head-nora.png" alt="">Nora the night heron</span><h3>Brainpeak</h3><p>The Brain Trail: builds with a little maths in them, matched to the player’s age.</p></div></article>
-      <article class="isle" style="--c:var(--c-pippa)"><img class="still" src="/art/web/isle-sunrise-shores.jpg" width="800" height="450" alt="Bloppit and Pippa the penguin in the rock pools of Flipper Beach" loading="lazy">
-        <div class="body"><span class="who"><img src="/art/head-pippa.png" alt="">Pippa the penguin</span><h3>Flipper Beach</h3><p>Pippa’s mirror puzzles: she builds one half, and you build the reflection.</p></div></article>
-      <article class="isle" style="--c:var(--c-swoop)"><img class="still" src="/art/web/isle-blitz-bay.jpg" width="800" height="450" alt="Bloppit showing Swoop the Longtail a photo finish on Blitz Bay" loading="lazy">
-        <div class="body"><span class="who"><img src="/art/head-swoop.png" alt="">Swoop the Longtail</span><h3>Blitz Bay</h3><p>Race the speediest Bermuda Longtail, brick for brick. Win 19 races and the 20th is the Grand Prix.</p></div></article>
-      <article class="isle" style="--c:var(--c-bibi)"><img class="still" src="/art/web/isle-brickworks.jpg" width="800" height="450" alt="Bloppit with a painting of Bibi the lion cub on Brickyard Cove" loading="lazy">
-        <div class="body"><span class="who"><img src="/art/head-bibi.png" alt="">Bibi the lion cub</span><h3>Brickyard Cove</h3><p>Turn your own photos and drawings into builds, and try the Weekly Bloppit: one puzzle a week, the same for everyone.</p></div></article>
-      <article class="isle moon" style="--c:var(--c-lufu)"><img class="still" src="/video/moonstone-feature.jpg" width="640" height="360" alt="A galaxy-coloured brick ship at the edge of the sea at night" loading="lazy">
-        <div class="body"><span class="who">Chapter 1 finale</span><h3>Moonstone Isle</h3><p>Finish all five islands and Moonstone Isle opens: ten chapters, one mystery, and someone small waiting to be found.</p></div></article>
-    </div>
   </section>
 
   <div class="band">
@@ -215,6 +176,45 @@
         <h2 id="meet-h">Meet Bloppit</h2>
         <p>Real otters keep a favourite rock tucked under one arm. Bloppit keeps a favourite brick, and never builds without it.</p>
         <p>He builds beside you, cheers every brick, and looks after your own otter pup on Bloppitopia. Your pup grows as you play, earns outfits, and is always there to greet you when you come back.</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="wrap section" id="how-to-play" aria-labelledby="how-h">
+    <div class="how">
+      <div>
+        <span class="eyebrow">How it works</span>
+        <h2 id="how-h" style="font-size:clamp(2.2rem,4.6vw,3.2rem);margin:10px 0 28px">Three steps, endless builds</h2>
+        <ol>
+          <li><h3>Pick a build</h3><p>A puzzle from one of the islands, any of the 66 models in the library, or your own photo or drawing turned into bricks.</p></li>
+          <li><h3>Build it brick by brick</h3><p>Follow the booklet, grab the brick it shows and tap it into place. Build it clean for three stars.</p></li>
+          <li><h3>Grow your world</h3><p>Every build you finish grows Bloppitopia: a home, a garden, a village, then five islands rising from the mist.</p></li>
+        </ol>
+      </div>
+      <figure class="howto-video"><video controls playsinline preload="none" poster="/video/how-to-play.jpg" aria-label="How to play Bloppit, a 45-second video"><source src="/video/how-to-play.mp4" type="video/mp4"></video></figure>
+    </div>
+  </section>
+
+  <div class="band">
+    <section class="wrap section" aria-labelledby="isles-h">
+      <div class="section-head">
+        <span class="eyebrow">Bloppitopia</span>
+        <h2 id="isles-h">Five islands, five friends</h2>
+        <p class="lede">Each island has its own way to play and a friend who lives there. Every build you finish there helps it grow.</p>
+      </div>
+      <div class="isles">
+        <article class="isle" style="--c:var(--c-tiny)"><img class="still" src="/art/web/isle-frog-forest.jpg" width="800" height="450" alt="Bloppit and Tiny the tree frog on the lily pads of Frog Forest" loading="lazy">
+          <div class="body"><span class="who"><img src="/art/head-tiny.png" alt="">Tiny the tree frog</span><h3>Frog Forest</h3><p>Hop up the Frog Trail: 15 levels from tiny to tricky, with a boss at the top.</p></div></article>
+        <article class="isle" style="--c:var(--c-nora)"><img class="still" src="/art/web/isle-brainpeak.jpg" width="800" height="450" alt="Nora the night heron showing Bloppit the path up Brainpeak" loading="lazy">
+          <div class="body"><span class="who"><img src="/art/head-nora.png" alt="">Nora the night heron</span><h3>Brainpeak</h3><p>The Brain Trail: builds with a little maths in them, matched to the player’s age.</p></div></article>
+        <article class="isle" style="--c:var(--c-pippa)"><img class="still" src="/art/web/isle-sunrise-shores.jpg" width="800" height="450" alt="Bloppit and Pippa the penguin in the rock pools of Flipper Beach" loading="lazy">
+          <div class="body"><span class="who"><img src="/art/head-pippa.png" alt="">Pippa the penguin</span><h3>Flipper Beach</h3><p>Pippa’s mirror puzzles: she builds one half, and you build the reflection.</p></div></article>
+        <article class="isle" style="--c:var(--c-swoop)"><img class="still" src="/art/web/isle-blitz-bay.jpg" width="800" height="450" alt="Bloppit showing Swoop the Longtail a photo finish on Blitz Bay" loading="lazy">
+          <div class="body"><span class="who"><img src="/art/head-swoop.png" alt="">Swoop the Longtail</span><h3>Blitz Bay</h3><p>Race the speediest Bermuda Longtail, brick for brick. Win 19 races and the 20th is the Grand Prix.</p></div></article>
+        <article class="isle" style="--c:var(--c-bibi)"><img class="still" src="/art/web/isle-brickworks.jpg" width="800" height="450" alt="Bloppit with a painting of Bibi the lion cub on Brickyard Cove" loading="lazy">
+          <div class="body"><span class="who"><img src="/art/head-bibi.png" alt="">Bibi the lion cub</span><h3>Brickyard Cove</h3><p>Turn your own photos and drawings into builds, and try the Weekly Bloppit: one puzzle a week, the same for everyone.</p></div></article>
+        <article class="isle moon" style="--c:var(--c-lufu)"><img class="still" src="/video/moonstone-feature.jpg" width="640" height="360" alt="A galaxy-coloured brick ship at the edge of the sea at night" loading="lazy">
+          <div class="body"><span class="who">Chapter 1 finale</span><h3>Moonstone Isle</h3><p>Finish all five islands and Moonstone Isle opens: ten chapters, one mystery, and someone small waiting to be found.</p></div></article>
       </div>
     </section>
   </div>
@@ -252,7 +252,7 @@
   <section class="cta" aria-labelledby="cta-h">
     <h2 id="cta-h">Ready to build?</h2>
     <p>Your otter is waiting on Bloppitopia. Play free in your browser, or get Bloppit for iPhone and iPad.</p>
-    <div class="actions" style="justify-content:center"><a class="btn play lg" href="/game/">Play Bloppit</a><a class="btn ghost" href="https://apps.apple.com/app/id6821449219">Get the app</a></div>
+    <div class="actions" style="justify-content:center"><a class="btn play lg" href="/game/"><img class="bl" src="/art/bloppit-avatar.png" width="64" height="64" alt="">Play Bloppit</a><a class="btn ghost" href="https://apps.apple.com/app/id6821449219">Get the app</a></div>
   </section>
   </div>
 </main>

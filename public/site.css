@@ -3,7 +3,7 @@
    The game (/game/) keeps its own look. The app bundles About, How it works, FAQ and Privacy with this file, so keep
    url()s relative or inline: no /art/… paths in here. */
 :root{
-  --paper:#FFFDF8; --sand:#F6F0E4; --line:#ECE3D3; --ink:#14202C; --muted:#4A5866; --white:#FFFFFF;
+  --paper:#FBF7EE; --dot:#E2DAC6; --sand:#F4ECDC; --line:#ECE3D3; --ink:#14202C; --muted:#4A5866; --white:#FFFFFF;
   --red:#D62F2A; --red-dark:#B32A22; --blue:#0369BD; --blue-dark:#024F91; --yellow:#F4BC22; --yellow-dark:#D9A30F; --cream:#FFF4D6;
   /* the friends' colours (the same as the game) */
   --c-bloppit:#D62F2A; --c-tiny:#7DBE2E; --c-nora:#24407A; --c-pippa:#F4BC22; --c-swoop:#2F7FD0; --c-bibi:#E9772A; --c-lufu:#8A6FD1;
@@ -14,7 +14,7 @@
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--paper);font-family:var(--body);color:var(--ink);font-size:17px;line-height:1.65;overflow-x:hidden;
+body{margin:0;background-color:var(--paper);background-image:radial-gradient(var(--dot) 1.6px,transparent 1.6px);background-size:28px 28px;font-family:var(--body);color:var(--ink);font-size:17px;line-height:1.65;overflow-x:hidden;
   -webkit-font-smoothing:antialiased}
 h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;line-height:1.08;text-wrap:balance;letter-spacing:.005em}
 p{margin:0}
@@ -35,9 +35,13 @@ a:hover{color:var(--blue-dark)}
   transition:transform .12s ease,box-shadow .12s ease,background-color .12s ease;cursor:pointer}
 .btn:hover{transform:translateY(-1px);color:var(--ink)}
 .btn:active{transform:translateY(1px)}
-.btn.play{background:var(--yellow);color:var(--ink);box-shadow:0 3px 0 var(--yellow-dark),0 8px 20px rgba(217,163,15,.25)}
-.btn.play:hover{background:#F7C93F;box-shadow:0 4px 0 var(--yellow-dark),0 12px 26px rgba(217,163,15,.3)}
-.btn.play:active{box-shadow:0 1px 0 var(--yellow-dark)}
+/* Play Bloppit: Bloppit's red, with his logo (Steff, 7 Nov 2026) */
+.btn.play{background:var(--red);color:var(--white);padding-left:10px;box-shadow:0 3px 0 #A8231F,0 8px 20px rgba(214,47,42,.25)}
+.btn.play:hover{background:#E0403A;color:var(--white);box-shadow:0 4px 0 #A8231F,0 12px 26px rgba(214,47,42,.3)}
+.btn.play:active{box-shadow:0 1px 0 #A8231F}
+.btn.play img.bl{width:34px;height:34px;border-radius:50%;flex:none;box-shadow:0 0 0 2px var(--white);margin-right:2px}
+.btn.play.sm{padding-left:6px}.btn.play.sm img.bl{width:30px;height:30px}
+.btn.play.lg{padding-left:12px}.btn.play.lg img.bl{width:40px;height:40px}
 .btn.ghost{background:transparent;border-color:currentColor;color:var(--ink)}
 .btn.ghost:hover{background:rgba(20,32,44,.04)}
 .btn.sm{font-size:16px;min-height:42px;padding:8px 20px}
@@ -45,7 +49,7 @@ a:hover{color:var(--blue-dark)}
 .actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px 14px}
 
 /* Header */
-header{position:sticky;top:0;z-index:5;background:rgba(255,253,248,.92);-webkit-backdrop-filter:saturate(1.4) blur(10px);backdrop-filter:saturate(1.4) blur(10px);
+header{position:sticky;top:0;z-index:5;background:rgba(251,247,238,.92);-webkit-backdrop-filter:saturate(1.4) blur(10px);backdrop-filter:saturate(1.4) blur(10px);
   border-bottom:1px solid var(--line)}
 header nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;padding-block:10px}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--red)}
@@ -141,3 +145,4 @@ footer{background:var(--sand);border-top:1px solid var(--line);margin-top:24px}
 .foot .legal{grid-column:1 / -1;border-top:1px solid var(--line);padding-top:18px;font-size:14px}
 @media (max-width:760px){.foot{grid-template-columns:repeat(2,minmax(0,1fr))}.foot .brand{grid-column:1 / -1}}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media (max-width:420px){header .btn.play.sm{font-size:15px;padding:5px 14px 5px 5px;gap:6px}header .btn.play.sm img.bl{width:26px;height:26px}}
