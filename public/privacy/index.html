@@ -35,12 +35,18 @@ li{margin-top:6px}
 .box{background:#FFF4D6;border-radius:14px;padding:14px 18px;margin-top:18px}
 .box ul{padding-left:20px;margin:4px 0 0}
 footer{text-align:center;font-size:14px;color:var(--muted);padding:0 16px 32px}
+/* World / of / Bricks beside the wordmark (Steff, 6 Nov 2026): the same three bricks as the launch screen and social banners */
+.wob{display:inline-flex;gap:4px;margin-left:4px;align-self:center}
+.wob i{font-style:normal;font-family:"Nunito",system-ui,sans-serif;font-weight:800;font-size:13px;line-height:1;padding:4px 7px 5px;border-radius:5px;border:1.5px solid #14202C;box-shadow:0 2px 0 #14202C}
+.wob i:nth-child(1){background:#F4BC22;color:#142022}.wob i:nth-child(2){background:#fff;color:#0369BD}.wob i:nth-child(3){background:#D62F2A;color:#fff}
+@media (max-width:640px){.home{flex-wrap:wrap;row-gap:4px}}
+@media (max-width:420px){.wob{gap:3px}.wob i{font-size:10.5px;padding:3px 5px 4px}}
 </style>
 </head>
 <body>
 <header>
   <a class="home" href="/" aria-label="Bloppit home">
-    <img src="/art/bloppit-avatar.png" width="46" height="46" alt="">Bloppit</a>
+    <img src="/art/bloppit-avatar.png" width="46" height="46" alt="">Bloppit<span class="wob" aria-hidden="true"><i>World</i><i>of</i><i>Bricks</i></span></a>
 </header>
 
 <main>
