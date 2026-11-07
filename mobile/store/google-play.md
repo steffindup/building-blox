@@ -82,7 +82,7 @@ The phone screenshots are the iPhone ones with a little more brand blue at the s
 ## Android-specific notes
 
 - The back button: skips a playing film, then closes the top card, then goes to the menu; on the menu it puts the app in
-  the background (`appBack()` in `public/build/index.html`).
+  the background (`appBack()` in `public/game/index.html`).
 - Films and the launch sound play without a tap (`MainActivity` turns off the WebView's user-gesture rule, as the iOS
   app does).
 - Launcher icon: the bust on brand blue as an adaptive icon (`mobile/scripts/android-icons.py`); Android 12+ shows it on

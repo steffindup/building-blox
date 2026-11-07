@@ -8,7 +8,7 @@ There's no separate app code: change the web app, then rebuild.
 ```
 cd mobile
 npm ci
-npm run sync      # packages public/build into mobile/www and copies it into the iOS project
+npm run sync      # packages public/game into mobile/www and copies it into the iOS project
 npx cap open ios  # on a Mac only: opens Xcode
 ```
 
