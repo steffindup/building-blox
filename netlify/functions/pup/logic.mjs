@@ -131,7 +131,7 @@ export async function handle(method, query, body, store) {
     const id = cleanId(query.pid);
     if (!id) return { status: 401, body: { error: 'No pup.' } };
     const r = await readPup(store, id);
-    if (!r) return { status: 404, body: { error: 'That pup was not found. It may have been deleted.' } };
+    if (!r) return { status: 404, body: { error: 'That pup wasn’t found. It may have been deleted.' } };
     return { status: 200, body: { data: r.data.data || {}, updated: r.data.updated, ver: r.data.ver || 0 } };
   }
   if (method !== 'POST') return { status: 405, body: { error: 'Method not allowed' } };
@@ -147,7 +147,7 @@ export async function handle(method, query, body, store) {
       const { modified } = await store.set(pupKey(id), rec, { onlyIfNew: true });
       if (modified) return { status: 200, body: { pup: id, ver: 1 } };
     }
-    return { status: 500, body: { error: 'Could not make a pup. Please try again.' } };
+    return { status: 500, body: { error: 'Couldn’t make a pup. Please try again.' } };
   }
 
   // Bring a pup to this device with a transfer code. Works once; the code is then gone.
@@ -155,7 +155,7 @@ export async function handle(method, query, body, store) {
     const code = cleanCode(body.code);
     if (code.length !== 8) return { status: 400, body: { error: 'A transfer code has 8 letters and numbers.' } };
     const x = await store.get(xferKey(code));
-    if (!x || !x.data || now > x.data.exp) return { status: 404, body: { error: 'That code was not found or has expired. Make a new one on the other device.' } };
+    if (!x || !x.data || now > x.data.exp) return { status: 404, body: { error: 'That code wasn’t found or has expired. Make a new one on the other device.' } };
     await store.del(xferKey(code));
     const r = await readPup(store, x.data.pup);
     if (!r) return { status: 404, body: { error: 'That pup is no longer there.' } };
@@ -171,11 +171,11 @@ export async function handle(method, query, body, store) {
       const { modified } = await store.set(familyKey(key), { created: now, updated: now, pups: [] }, { onlyIfNew: true });
       if (modified) return { status: 200, body: { key } };
     }
-    return { status: 500, body: { error: 'Could not make a family key. Please try again.' } };
+    return { status: 500, body: { error: 'Couldn’t make a family key. Please try again.' } };
   }
   if (a === 'family-list' || a === 'family-restore' || a === 'family-delete') {
     const key = cleanFamily(body.key), f = key && (await store.get(familyKey(key)));
-    if (!f || !f.data) return { status: 404, body: { error: 'That family key was not found.' } };
+    if (!f || !f.data) return { status: 404, body: { error: 'That family key wasn’t found.' } };
     const want = cleanId(body.pup);
     if (a !== 'family-list' && !f.data.pups.includes(want)) return { status: 404, body: { error: 'That pup is not in this family.' } };
     if (a === 'family-delete') { await store.del(pupKey(want)); f.data.pups = f.data.pups.filter((p) => p !== want); f.data.updated = now; await store.set(familyKey(key), f.data, {}); return { status: 200, body: { ok: true } }; }
@@ -192,8 +192,8 @@ export async function handle(method, query, body, store) {
     const key = cleanFamily(body.key);
     for (let i = 0; i < 6; i++) {
       const f = key && (await store.get(familyKey(key)));
-      if (!f || !f.data) return { status: 404, body: { error: 'That family key was not found. Check it, or make a new one.' } };
-      const r = await readPup(store, id); if (!r) return { status: 404, body: { error: 'That pup was not found.' } };
+      if (!f || !f.data) return { status: 404, body: { error: 'That family key wasn’t found. Check it, or make a new one.' } };
+      const r = await readPup(store, id); if (!r) return { status: 404, body: { error: 'That pup wasn’t found.' } };
       const pups = a === 'family-attach' ? [...new Set([...f.data.pups, id])].slice(0, 12) : f.data.pups.filter((p) => p !== id);
       const { modified } = await store.set(familyKey(key), { ...f.data, pups, updated: now }, { onlyIfMatch: f.etag });
       if (modified) return { status: 200, body: { ok: true, n: pups.length } };
@@ -206,7 +206,7 @@ export async function handle(method, query, body, store) {
     if (JSON.stringify(incoming).length > MAX_CHARS) return { status: 413, body: { error: 'That save is too big.' } };
     for (let i = 0; i < 5; i++) {
       const r = await readPup(store, id);
-      if (!r) return { status: 404, body: { error: 'That pup was not found. It may have been deleted.' } };
+      if (!r) return { status: 404, body: { error: 'That pup wasn’t found. It may have been deleted.' } };
       const data = merge(r.data.data, incoming);
       const rec = { ...r.data, updated: now, ver: (r.data.ver || 0) + 1, data };
       const { modified } = await store.set(pupKey(id), rec, { onlyIfMatch: r.etag });
@@ -218,13 +218,13 @@ export async function handle(method, query, body, store) {
   // A single-use code to move this pup to another device.
   if (a === 'transfer') {
     const r = await readPup(store, id);
-    if (!r) return { status: 404, body: { error: 'That pup was not found.' } };
+    if (!r) return { status: 404, body: { error: 'That pup wasn’t found.' } };
     for (let i = 0; i < 10; i++) {
       const code = newCode();
       const { modified } = await store.set(xferKey(code), { pup: id, exp: now + XFER_TTL_MS }, { onlyIfNew: true });
       if (modified) return { status: 200, body: { code, exp: now + XFER_TTL_MS } };
     }
-    return { status: 500, body: { error: 'Could not make a code. Please try again.' } };
+    return { status: 500, body: { error: 'Couldn’t make a code. Please try again.' } };
   }
 
   // Delete everything the server holds about this pup.

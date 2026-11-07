@@ -1639,15 +1639,14 @@ body.film-on{overflow:hidden}
 @media (max-width:760px){.hm-grid.four{grid-template-columns:1fr 1fr}}
 @media (max-width:560px){.hm-grid.three{grid-template-columns:1fr 1fr}.hm-grid.three .t-quick{grid-column:1 / -1;min-height:104px}}
 /* Yellow so Bloppit's red brick stands out */
-.hm-tile.t-quick{--c:#F4BC22;color:#14202C}
 .hm-tile.t-quick .ic{background:rgba(255,255,255,.35)}
 .hm-tile.t-sea{--c:var(--c-bloppit)}
 .hm-tile.t-together{--c:#6A3FB5}
 .hm-tile.t-join{--c:#1B2A34}
-.hm-tile.t-crew{--c:var(--c-bloppit)}   /* Crews: teal, no character's colour */
+.hm-tile.t-crew{--c:var(--c-bloppit)}   /* Your Crews: Bloppit red (the main action), no character’s colour */
 /* Character colours (series bible; Steff, 6 Nov 2026: "each character should be associated with a specific colour").
    One colour per friend, used wherever that friend's face leads: menu tiles, the top bar, the trail picker, the Weekly.
-   Red is Bloppit's alone; yellow without a face is Play Now / Quick Play. Light colours carry dark text. */
+   Red is Bloppit’s and the main action (Quick Play too); yellow is Pippa’s and the stars’. Light colours carry dark text. */
 :root{--c-bloppit:#D62F2A;--c-tiny:#7DBE2E;--c-nora:#24407A;--c-pippa:#F4BC22;--c-swoop:#2F7FD0;--c-bibi:#E9772A;--c-lufu:#8A6FD1}
 .hm-tile.t-quick{--c:var(--c-bibi);color:#14202C}                 /* Build anything: Bibi */
 .hm-tile.t-game{--c:var(--c-tiny);color:#14202C}                  /* Tiny’s Frog Trail: Tiny */
@@ -1940,7 +1939,7 @@ body.film-on{overflow:hidden}
   </div>
   <h3 class="hm-sec">Together</h3>
   <div class="hm-grid">
-    <button class="hm-tile t-together" data-go="mp" type="button"><span class="ic" aria-hidden="true"><span class="two"><img src="/art/head-bloppit.png" alt="" width="256" height="256"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span></span><b>Play with Friends</b><span>Team Build or Race, with a code to share</span></button>
+    <button class="hm-tile t-together" data-go="mp" type="button"><span class="ic" aria-hidden="true"><span class="two"><img src="/art/head-bloppit.png" alt="" width="256" height="256"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span></span><b>Play with Friends</b><span>Team Build or Race a Friend, with a code to share</span></button>
     <button class="hm-tile t-join" data-go="code" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a Game</b><span>Got a code? Type it in to play</span></button>
     <button class="hm-tile t-crew" data-go="crew" type="button"><span class="ic" aria-hidden="true"></span><b>Your Crews</b><span>Crew Quick Game, Pass the Puzzle, Crew Mega Build</span></button>
   </div>
@@ -2493,7 +2492,7 @@ body.film-on{overflow:hidden}
   <div class="win-btns"><button class="primary sm" id="grownDone" type="button">Done</button></div>
 </dialog>
 <dialog class="windlg mathdlg" id="mathDlg" aria-labelledby="mqTitle">
-  <div class="mq-head"><img src="/art/head-bloppit.png" alt="" width="64" height="64"><div><div class="tag" id="mqTag">Math puzzle</div><h2 id="mqTitle">Page 1 is locked!</h2></div></div>
+  <div class="mq-head"><img src="/art/head-bloppit.png" alt="" width="64" height="64"><div><div class="tag" id="mqTag">Maths puzzle</div><h2 id="mqTitle">Page 1 is locked!</h2></div></div>
   <div class="mq-vis" id="mqVis"></div>
   <p class="mq-q" id="mqQ"></p>
   <div class="mq-choices" id="mqChoices"></div>
@@ -2602,7 +2601,7 @@ body.film-on{overflow:hidden}
   <div class="pages" id="pages"></div>
 </section>
 </main>
-<p class="appfoot note"><a href="https://bloppit.com/about/">About us</a> · <a href="https://bloppit.com/how-it-works/">How it works</a> · <a href="https://bloppit.com/faq/">FAQ</a> · <a href="https://bloppit.com/privacy/" id="privacyLink">Privacy policy</a></p>
+<p class="appfoot note"><a href="https://bloppit.com/how-it-works/">How it works</a> · <a href="https://bloppit.com/faq/">FAQ</a> · <a href="https://bloppit.com/about/">About us</a> · <a href="https://bloppit.com/privacy/" id="privacyLink">Privacy policy</a></p>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -3559,7 +3558,7 @@ const HERO={
   brain:{who:'nora',art:'/art/char-nora.png',isle:'Brainpeak',title:'Nora’s Brain Trail',line:'A clever mind shines in the dark.',desc:'Nora tucks maths puzzles into the booklet: solve one to open its page. The last build is her Great Telescope.',c:['#4A6FC0','#1C2B57']},
   create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Build Anything with Bibi',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
   blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Blitz with Swoop',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Fastest clean build wins.',c:['#5DB4F2','#1F6FC4']},
-  mp:{who:['pup','pup'],art:'/art/hero-together.png',isle:'Friendship Harbour',title:'Together',line:'Every build is better with a friend!',desc:'Play with Friends: a Team Build or a race, with a code to share. Your Crews: friends you keep, with games of their own.',c:['#B9A2F7','#6E4FD6']}};
+  mp:{who:['pup','pup'],art:'/art/hero-together.png',isle:'Friendship Harbour',title:'Together',line:'Every build is better with a friend!',desc:'Play with Friends: a Team Build or Race a Friend, with a code to share. Your Crews: friends you keep, with games of their own.',c:['#B9A2F7','#6E4FD6']}};
 function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[data-hero="${t}"]`); if(!el) return;
   const key=t==='game'?subOf.game:t, H=HERO[key]; el.hidden=!H; if(!H) return;
   if(el.dataset.k===key) return; el.dataset.k=key;
@@ -6763,7 +6762,7 @@ function openMath(k){
   const g=game.math; g.q=g.q||{};
   if(!g.q[k]) g.q[k]=makePuzzle(g.tier);
   const P=g.q[k]; mq={k,P,tries:0};
-  const gr=gradeOfRung(g.tier); $('#mqTag').textContent=gr>g.grade?`Stepping up: ${MATH_GRADES[gr+1]} math, you’re on a roll!`:`Math puzzle · ${MATH_TOPICS[gr+1]}`;
+  const gr=gradeOfRung(g.tier); $('#mqTag').textContent=gr>g.grade?`Stepping up: ${MATH_GRADES[gr+1]} maths, you’re on a roll!`:`Maths puzzle · ${MATH_TOPICS[gr+1]}`;
   $('#mqTitle').textContent=`Page ${k+1} is locked!`;
   $('#mqVis').innerHTML=P.vis||'';
   $('#mqQ').textContent=P.q; $('#mqQ').classList.toggle('long',!!P.long);
@@ -8728,7 +8727,7 @@ function modelFacts(k,o){
     again=()=>{ if(mp) mpLeave(); setTrail(tr); startLevel(i); }; }
   else if((m=/^w:(.+)$/.exec(k))){ let nm='Bibi’s Weekly Bloppit'; try{ nm=weeklyPuzzle(m[1]).name; }catch(e){} name=nm; from=`Bibi’s Weekly Bloppit · week of ${fmtDay(Date.parse(m[1]+'T12:00:00'))}`;
     if(m[1]===weekOf()) again=()=>setTab('daily'); }
-  else if((m=/^m:(.+):\d+$/.exec(k))){ name=m[1]; from={welcome:'Your very first build',blitz:'Blitz · a race you won',room:'Team Build',challenge:'A challenge',relay:'Passed with a friend'}[b.k]||'Build Anything · the library';
+  else if((m=/^m:(.+):\d+$/.exec(k))){ name=m[1]; from={welcome:'Your very first build',blitz:'Blitz with Swoop · a race you won',room:'Team Build',challenge:'A challenge',relay:'Passed with a friend'}[b.k]||'Build Anything with Bibi · the library';
     const i=SAMPLES.findIndex(x=>x.name===m[1]); if(i>=0&&released(SAMPLES[i])) again=()=>{ if(mp) mpLeave(); if(game) endGame(); loadSample(i); clearTimeout(timer); rebuild(); setTab('build'); }; }
   else if(/^r:/.test(k)){ name='Pass the Puzzle'; from='Passed with a friend'; }
   return {b,name,from,again};
@@ -8790,7 +8789,7 @@ function islandInfo(id,o){
     case 'pup': { const nm=pupName(o), ps=pupStage(o), nx=PUP_STAGES[ps+1], c=PUP_COLORS[pupColorOf(o)];
       const lv=otterLevel(o), nl=levelXP(lv+1), nAcc=ACC.find(a=>!a.legend&&!a.finale&&a.lvl>lv);
       return {title:nm||'Your otter',hint:`Level ${lv} ${PUP_STAGES[ps].name} · ${ps+1} stud${ps?'s':''} on its brick`,icon:pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'}),
-        rows:[['Otter level',`${lv} · ${nl-worldXP(o)} XP to Level ${lv+1}`],...(nAcc?[['Next outfit',`${nAcc.name} at level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at Level ${nx.lvl}: another stud`:'A Legend. That’s the top']],
+        rows:[['Otter Level',`${lv} · ${nl-worldXP(o)} XP to Level ${lv+1}`],...(nAcc?[['Next outfit',`${nAcc.name} at level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at Level ${nx.lvl}: another stud`:'A Legend. That’s the top']],
         bar:nx?{pct:Math.max(4,pupPct(o,ps)),label:`${nx.at-n} more build${nx.at-n===1?'':'s'} to ${nx.name}`}:null,
         actions:[{label:'👕 Wardrobe',fn:()=>wardrobeOpen(),primary:true},{label:nm?'Name or colour':'Name your otter',fn:()=>pupOpen()}]}; }
     case 'model': { const f=modelFacts(arg,o), b=f.b, flagW=arg.startsWith('w:')&&!ISL3.ok, onIsle=shown.list.some(m=>m.key===arg)||flagW;
@@ -9278,16 +9277,16 @@ const LONGTAIL_FACT='Real Longtails are white-tailed tropicbirds. They fly back 
 // Swoop lives on Blitz Bay as the 3D Longtail above. lufu (always lowercase) stays hidden until the mystery is solved,
 // then lives on Home Island beside your otter.
 const CAST={
-  tiny:{name:'Tiny',kind:'the Tree Frog',isle:'otterwood',brick:'lime',h:1.5,aspect:278/360,tag:'Small frog, big forest!',
+  tiny:{name:'Tiny',kind:'the tree frog',isle:'otterwood',brick:'lime',h:1.5,aspect:278/360,tag:'Small frog, big forest!',
     who:'The smallest friend with the biggest voice',story:'Tiny is a Bermuda tree frog. His whistle leads you up his Frog Trail one level at a time, and at night every frog in the forest whistles with him among the fireflies.',
     loves:'Hopping, whistling, and his lime brick (almost as big as he is)',secret:'He dreams of a palace for every frog in the forest, floating on the big pond.',lines:['Small frog, big forest!','Hop to it!','Ribbit-tastic!','Wheee!']},
-  nora:{name:'Nora',kind:'the Night Heron',isle:'brainpeak',brick:'dark blue',h:2.3,aspect:185/360,tag:'A clever mind shines in the dark.',
+  nora:{name:'Nora',kind:'the night heron',isle:'brainpeak',brick:'dark blue',h:2.3,aspect:185/360,tag:'A clever mind shines in the dark.',
     who:'Brainpeak’s stargazer and puzzle-setter',story:'Nora is a yellow-crowned night heron. She watches the stars from Brainpeak and tucks a maths puzzle into Nora’s Brain Trail booklets.',
     loves:'A good “aha”, quiet nights and clear skies',secret:'Her great telescope is broken, and she needs a builder to fix it.',lines:['A clever mind shines in the dark.','Look closer, the answer’s hiding.','Aha! You saw the pattern.']},
-  pippa:{name:'Pippa',kind:'the Penguin',isle:'sunrise',brick:'yellow',h:1.8,aspect:229/360,tag:'A new puzzle just washed ashore!',
+  pippa:{name:'Pippa',kind:'the penguin',isle:'sunrise',brick:'yellow',h:1.8,aspect:229/360,tag:'A new puzzle just washed ashore!',
     who:'The visitor who never left',story:'Pippa washed up on Flipper Beach on holiday, fell in love with the sunshine and stayed. Her mirror puzzles wash ashore as Bloppitopia grows (she builds one half, you flip it to build the other), and every day she sends a message in a bottle.',
     loves:'Surprises, parties, and a swim before breakfast',secret:'She wobbles on land, but she’s the best swimmer in Bloppitopia.',lines:['A new puzzle just washed ashore!','Special delivery!','Ooh, that one’s clean!','See you next Monday!']},
-  bibi:{name:'Bibi',kind:'the Lion Cub',isle:'brickworks',brick:'orange',h:1.85,aspect:241/360,tag:'Build it bold!',
+  bibi:{name:'Bibi',kind:'the lion cub',isle:'brickworks',brick:'orange',h:1.85,aspect:241/360,tag:'Build it bold!',
     who:'The maker of Brickyard Cove',story:'Bibi runs the workshop and paints everything in sight. Every Monday he paints a new puzzle for Bibi’s Weekly Bloppit, and whatever you make, he puts it on show and roars with pride.',
     loves:'Big ideas, bright paint, and the crane',secret:'His roar is more of a squeak. He knows, and he roars anyway.',lines:['Build it bold!','If you can dream it, brick it!','ROAR! That’s brilliant!']},
   lufu:{name:'lufu',kind:'',isle:'moonstone',brick:'moonstone',h:1.5,aspect:237/360,tag:'We have found each other.',
@@ -11842,7 +11841,7 @@ function renderCrew(g){
   const L=g.live, quick=!mine?'':`<section class="crew-game"><h3>Crew Quick Game</h3>
       ${L&&!L.me?`<p class="note">${escapeHTML(L.label)} started a game. Jump in!</p><div class="win-btns" style="justify-content:flex-start"><button class="primary sm" type="button" data-crew-live="${L.room}">Join the game</button></div>`
       :L&&L.me?`<p class="note">You started a game (room ${L.room}). Your crew can see it here for three hours.</p><div class="win-btns" style="justify-content:flex-start"><button class="ghost" type="button" data-crew-live-end="1">Take it down</button></div>`
-      :`<p class="note">Play live now: start a Team Build and everyone in the crew sees it here, ready to join.</p><div class="win-btns" style="justify-content:flex-start"><button class="primary sm" type="button" data-crew-live-start="1">Start a Crew Quick Game</button></div>`}</section>`;
+      :`<p class="note">Play live now: start a Crew Quick Game and everyone in the crew sees it here, ready to join.</p><div class="win-btns" style="justify-content:flex-start"><button class="primary sm" type="button" data-crew-live-start="1">Start a Crew Quick Game</button></div>`}</section>`;
   // Pass the Puzzle: one model passed round the crew, each building their share of pages in turn
   const Q=g.pass, open=Q&&!Q.done;
   const hist=Q?`<ol class="pass-hist">${Q.history.map(h=>`<li>${h.me?'You':escapeHTML(h.label)}: pages ${h.from+1} to ${h.to}</li>`).join('')}</ol>`:'';

@@ -1,6 +1,6 @@
 # Bloppit: App Store listing
 
-Everything to paste into App Store Connect. Character limits are Apple's; counts are checked.
+Everything to paste into App Store Connect. Character limits are Apple’s; counts are checked.
 Never mention LEGO or other toy brands anywhere in the listing (Apple rejects other companies' trademarks).
 
 ## App information
@@ -27,7 +27,7 @@ Use each in its own place, the same everywhere:
 | Role | Words | Where |
 |---|---|---|
 | Name | **Bloppit: World of Bricks** | App Store name, website titles and link previews, social profile names and bios |
-| Line | **Build it. Grow your world.** | App Store subtitle, the front page's headline, footers, the share image under the name |
+| Line | **Build it. Grow your world.** | App Store subtitle, the front page’s headline, footers, the share image under the name |
 | Sign-off | **Brick. Build. Bloppit.** | End cards, videos, social posts; never right beside the name |
 
 The home-screen name stays **Bloppit**.
@@ -73,7 +73,7 @@ FINISH CLEAN, EARN STARS
 
 TRAILS
 • Tiny’s Frog Trail: 15 levels, from a tiny heart to Tiny’s Lily-pad Palace
-• Nora’s Brain Trail: 15 different levels with maths puzzles matched to the player's age
+• Nora’s Brain Trail: 15 different levels with maths puzzles matched to the player’s age
 • Pippa’s Mirror Puzzles: 12 more mirror puzzles to play any time: Pippa builds one half, you build the reflection
 • Separate players on one device, each with their own progress
 
@@ -86,7 +86,7 @@ BLITZ WITH SWOOP
 
 TOGETHER
 • Play with Friends: a Team Build (one model, taking turns) or Race a Friend, live or with a 6-letter challenge code; friends join with a code and the host lets each one in
-• Your Crews: friends you keep, with a Crew Quick Game to play live, Pass the Puzzle (one model passed round, each building their pages in turn) and a Crew Mega Build everyone's bricks go to
+• Your Crews: friends you keep, with a Crew Quick Game to play live, Pass the Puzzle (one model passed round, each building their pages in turn) and a Crew Mega Build everyone’s bricks go to
 
 MADE FOR FAMILIES
 • No ads, no in-app purchases, no accounts, no tracking
@@ -125,26 +125,26 @@ scale, then captions composed with Lilita One); retake them after any visual cha
 
 `previews/iphone-arrival.mp4` (886 × 1920) and `previews/ipad-arrival.mp4` (1200 × 1600): the arrival film (01, Home
 Island; `public/video/arrival.mp4`, the new cut of 27 Oct 2026), 26 s, 30 fps, H.264 with stereo AAC, cropped upright to
-follow Bloppit. Apple's limits: 15–30 s, at most 30 fps, footage from the app. The app plays this film from 1.1 (1.0 has
+follow Bloppit. Apple’s limits: 15–30 s, at most 30 fps, footage from the app. The app plays this film from 1.1 (1.0 has
 the arrival made in the game): upload these with 1.1. Set the poster frame to Bloppit holding his red brick on the
 jetty (about 7 s in).
 
-## What's New (1.1.1)
+## What’s New (1.1.1)
 
 Together, and a tidier Bloppit.
 • Play with Friends: a Team Build or Race a Friend, with a code to share
-• Your Crews: friends you keep, with a live Crew Quick Game, Pass the Puzzle (one model round the crew, a few pages each) and a Crew Mega Build everyone's bricks go to
-• Clearer names on the menu: Tiny's Frog Trail, Nora's Brain Trail, Pippa's Mirror Puzzles, Blitz with Swoop, Build Anything with Bibi
+• Your Crews: friends you keep, with a live Crew Quick Game, Pass the Puzzle (one model round the crew, a few pages each) and a Crew Mega Build everyone’s bricks go to
+• Clearer names on the menu: Tiny’s Frog Trail, Nora’s Brain Trail, Pippa’s Mirror Puzzles, Blitz with Swoop, Build Anything with Bibi
 • One colour per friend everywhere, and drawn icons that look the same on every device
 • Together fixes: six-letter codes, invite links, leaving a room, ties share a medal
 
-## What's New (1.1, 6 Nov 2026)
+## What’s New (1.1, 6 Nov 2026)
 
 Bloppitopia comes to life!
-• Films: your otter's arrival, every island's arrival, halfway and finish, and the whole Moonstone story. Watch them again in My films
+• Films: your otter’s arrival, every island’s arrival, halfway and finish, and the whole Moonstone story. Watch them again in My films
 • A friend on every island: Tiny, Nora, Pippa, Swoop and Bibi, each with something to say
 • Moonstone Isle: ten chapters, someone small waiting to be found, and the Galaxy Ship
-• Pippa's mirror puzzles, 20 races against Swoop with the Grand Prix last, and Galaxy Blocks for decorations
+• Pippa’s mirror puzzles, 20 races against Swoop with the Grand Prix last, and Galaxy Blocks for decorations
 • Quick Play from the menu, and a new look for the menu
 
 ## App Review notes
@@ -153,25 +153,25 @@ Paste as is: one paragraph per topic, no line breaks inside a paragraph.
 
 Bloppit is a brick-building puzzle game for families and anyone who loves bricks. No account or login is needed.
 
-To try it quickly: on the menu tap the Start here card. Pick the otter's colour and name it (type a name or tap Pick a name), then tap Set sail, or just tap Pick later. A short film shows the otter arriving by boat (Skip at the top right ends it). Tap Build our first home and tap the faded brick to place each piece of the 12-brick house; the home then appears on the island. Then on the menu tap Blitz with Swoop (under Solo), then Play on Blitz Bay (its short film can be skipped) and Start the race (works offline).
+To try it quickly: on the menu tap the Start here card. Pick the otter’s colour and name it (type a name or tap Pick a name), then tap Set sail, or just tap Pick later. A short film shows the otter arriving by boat (Skip at the top right ends it). Tap Build our first home and tap the faded brick to place each piece of the 12-brick house; the home then appears on the island. Then on the menu tap Blitz with Swoop (under Solo), then Play on Blitz Bay (its short film can be skipped) and Start the race (works offline).
 
-Films: Bloppit's films are short clips built into the app (no streaming, except the full-length Moonstone Story, which plays from bloppit.com). Each can be skipped, and the unlocked ones are in My films on the Bloppitopia card.
+Films: Bloppit’s films are short clips built into the app (no streaming, except the full-length Moonstone Story, which plays from bloppit.com). Each can be skipped, and the unlocked ones are in My films on the Bloppitopia card.
 
 Challenges: on the menu tap Play with Friends (under Together), then Race a Friend, then Make a challenge, build the puzzle, and you get a 6-letter code; type that code into Join a Game (Got a code?) on another device (the website bloppit.com/game works too) to race the same puzzle.
 
-Bibi’s Weekly Bloppit: tap Bibi's Weekly Bloppit on the menu. Only a finish and whether it was clean are counted (two counts per week, no name); the time and misses are sent only to check it's a real finish and aren't kept. Counts are deleted after 8 weeks.
+Bibi’s Weekly Bloppit: tap Bibi’s Weekly Bloppit on the menu. Only a finish and whether it was clean are counted (two counts per week, no name); the time and misses are sent only to check it’s a real finish and aren’t kept. Counts are deleted after 8 weeks.
 
-Progress (scores, finished models, stars, outfits, the otter's name as a number from a fixed list) is saved under an anonymous progress code minted by our server. A name the player types for the otter stays on the device and is never sent. Grown-ups corner (behind the parental gate) shows the transfer code and the Family Link QR, and can delete the record.
+Progress (scores, finished models, stars, outfits, the otter’s name as a number from a fixed list) is saved under an anonymous progress code minted by our server. A name the player types for the otter stays on the device and is never sent. Grown-ups corner (behind the parental gate) shows the transfer code and the Family Link QR, and can delete the record.
 
 Usage counts: the app adds one to a daily count for a few events (a build started or finished, the arrival seen) with the country from the request and whether it was the app or the website. There is no identifier for the player or the device, and nothing is shared with anyone.
 
-Rooms (Team Build, live races): friends join with a 5-letter code and the host lets them in. Players appear under generated labels ("Brave Otter 214"); typed names never leave the device. Pass the Puzzle: one friend builds half a model, the other finishes it from a code; inside a crew, the same model goes round every member in turn. Crews (Together page, up to six per player): a group of friends the maker lets in one by one, with a live Crew Quick Game, Pass the Puzzle and a Crew Mega Build (a big puzzle every member's bricks go to); the board only takes fixed phrases and stickers under generated names.
+Rooms (Team Build, live races): friends join with a 5-letter code and the host lets them in. Players appear under generated labels ("Brave Otter 214"); typed names never leave the device. Pass the Puzzle: one friend builds half a model, the other finishes it from a code; inside a crew, the same model goes round every member in turn. Crews (Together page, up to six per player): a group of friends the maker lets in one by one, with a live Crew Quick Game, Pass the Puzzle and a Crew Mega Build (a big puzzle every member’s bricks go to); the board only takes fixed phrases and stickers under generated names.
 
 There is no chat and no voice: players in a room only place bricks. Links out of the app and sharing an invite are behind a parental gate (type a number written in words as digits).
 
 ## Age rating questionnaire
 
-Apple's questionnaire now has three parts; required for every new submission from September 2026.
+Apple’s questionnaire now has three parts; required for every new submission from September 2026.
 
 **In-app controls and capabilities** (all of these sit at 4+; only social media and unrestricted web access raise it):
 - Parental controls: **Yes** (the Grown-ups corner, behind the parental gate: delete progress, remove a player from a crew)
@@ -180,7 +180,7 @@ Apple's questionnaire now has three parts; required for every new submission fro
 - User-generated content: **Yes** (crews exchange fixed phrases and stickers; drawings and photo builds can be shared by code)
 - Messaging and chat: **Yes**, to be safe (crew phrases are fixed, from a list; there is no typed chat and no voice)
 - Advertising: **No**
-- Social media: **No** (no feed or discovery of other people's content; rooms and crews are invite-only)
+- Social media: **No** (no feed or discovery of other people’s content; rooms and crews are invite-only)
 
 **Content:** None for everything (violence, mature themes, profanity, horror, medical, alcohol and drugs, sexual content,
 gambling, loot boxes, contests).
@@ -194,7 +194,7 @@ Data used to track you: **No**.
 Data collected (only through rooms, Blitz challenges, crews, Bibi’s Weekly Bloppit, the progress save and the usage counts; rooms are
 deleted 3 days after their last activity, challenges 30 days after the last player, Weekly counts after 8 weeks):
 
-| Data type | Collected | Linked to the user's identity | Used for tracking | Purpose |
+| Data type | Collected | Linked to the user’s identity | Used for tracking | Purpose |
 |---|---|---|---|---|
 | User Content › Photos or Videos (the photos a shared model is made from) | Yes | No | No | App Functionality |
 | User Content › Gameplay Content (bricks placed, scores, Blitz times, Bibi’s Weekly Bloppit finishes, finished models, stars, XP, outfits, island decorations, shared drawings, crew phrases and stickers, progress save) | Yes | No | No | App Functionality |
@@ -206,9 +206,9 @@ Everything else (contact info, identifiers, location, diagnostics, etc.): **Not 
 
 Every push to main that changes the app (`public/build/` or `mobile/`) makes a new Codemagic build, which goes to
 TestFlight on its own (see `codemagic.yaml`). Testers get it from there. Each App Store release still needs a
-new version number (e.g. 1.1) and Apple's review: in App Store Connect, add the version, pick a TestFlight build
+new version number (e.g. 1.1) and Apple’s review: in App Store Connect, add the version, pick a TestFlight build
 and submit it.
 
 ## App icon
 
-1024 × 1024, from `mobile/assets/icon-only.png`. It's already inside the app build, so App Store Connect picks it up.
+1024 × 1024, from `mobile/assets/icon-only.png`. It’s already inside the app build, so App Store Connect picks it up.

@@ -668,7 +668,7 @@ test('island Play: Bloppitopia keeps the recommended next play; an island plays 
       return t.page.evaluate(() => { const b = document.querySelector('.is3-play'), a = document.querySelector('.is3-alt'); return [document.querySelector('.v-name').textContent, b.textContent, a.hidden ? '' : a.textContent]; }); };
     const [, world] = await at(0); assert.match(world, /^▶ Play next/);
     const [frog, play, alt] = await at(3); assert.equal(frog, 'Frog Forest');
-    if (n === 5) { assert.match(play, /^▶ PlayFrog Trail level 6/); assert.equal(alt, ''); }
+    if (n === 5) { assert.match(play, /^▶ PlayTiny’s Frog Trail level 6/); assert.equal(alt, ''); }
     else { assert.match(play, /Back to Bloppitopia✓ Frog Forest is complete!/); assert.equal(alt, '▶ Play anyway'); }
     const [, brain] = await at(4); assert.match(brain, /^▶ PlayNora’s Brain Trail level 1/);
     assert.deepEqual(t.errors, []); await t.ctx.close();
@@ -834,8 +834,8 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   assert.match(await tap('land:beach'), /Home Island.*Builds finished3.*Islands discovered/);
   assert.match(await tapChar('bloppit'), /Bloppit.*storm.*build buddy.*Secret.*red brick/);
   assert.match(await tapChar('longtail:easy'), /Swoop the Longtail.*(Blitz Bay’s racer|Asleep on Blitz Bay).*goggles.*Secret.*Speeds beaten.*Did you know\?.*tropicbirds.*Race 1 of 20.*Choose your own race/);
-  assert.match(await tapChar('char:pippa'), /Pippa the Penguin.*Flipper Beach.*Secret.*A yellow two-stud brick.*still in the mist.*Play Pippa’s puzzle/);
-  assert.match(await tapChar('pup'), /Bubbles.*Level \d+ Pup.*1 stud.*Otter level.*Wardrobe.*Name or colour/);
+  assert.match(await tapChar('char:pippa'), /Pippa the penguin.*Flipper Beach.*Secret.*A yellow two-stud brick.*still in the mist.*Play Pippa’s puzzle/);
+  assert.match(await tapChar('pup'), /Bubbles.*Level \d+ Pup.*1 stud.*Otter Level.*Wardrobe.*Name or colour/);
   assert.match(await tap('decor:flag'), /Flag/);
   assert.match(await tap('isle:sunrise'), /A misty island.*Pippa’s first puzzle washes ashore at 7%.*Back to Bloppitopia/);
   assert.match(await tap('isle:blitzbay'), /A misty island.*Race Swoop/);
@@ -859,7 +859,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   // a model: where it came from, when, stars, best time; then put it away (the card's button)
   const key = (await models())[0];
   const c = await pt('model:' + key); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(400);
-  assert.match(await t.text('#isTip'), /From.*Build anything.*First built.*Best time1:35.*Bricks/);
+  assert.match(await t.text('#isTip'), /From.*Build Anything with Bibi.*First built.*Best time1:35.*Bricks/);
   await t.page.evaluate(() => [...document.querySelectorAll('#isTip [data-a]')].find((b) => /Put away/.test(b.textContent)).click()); await t.page.waitForTimeout(500);
   assert.equal((await models()).includes(key), false);
   await t.page.evaluate((k) => document.querySelector(`#buildsGrid [data-mkey="${k}"]`).click(), key); await t.page.waitForTimeout(300);

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Bloppit stats</title>
+<title>Stats · Bloppit</title>
 <link rel="icon" href="/favicon-96.png?v=4" type="image/png" sizes="96x96">
 <style>
 /* Private engagement page for Bloppit's own counts (/api/event). Needs the EVENTS_KEY, which is kept only in this
@@ -214,7 +214,7 @@ details summary{cursor:pointer;color:var(--text-secondary);font-size:13px}
   function funnel(){ var first=total('first_open');
     var steps=[['Opened for the first time','first_open'],['Started a first build','first_build_started'],['Finished a first build','first_build_completed'],['Chose a second build','second_build_started_by_choice'],['Came back next day','return_d1'],['Came back after a week','return_d7'],['Came back after a month','return_d30']];
     bars('#funnel',steps.map(function(s){ var v=total(s[1]); return [s[0],v,s[1]==='first_open'?'':pct(v,first)]; })); }
-  var NAMES={build_completed:'Builds finished',weekly_completed:'Weekly Bloppit finished',world_finish:'Finishes on the island',island_tip:'Island cards opened',island_arranged:'Models moved on the island',decor_bought:'Decorations bought',pup_named:'Pup named from the list',pup_named_own:'Pup named by the child',pup_colour:'Pup brick colour picked',relay_started:'Relays started',relay_joined:'Relays joined',crew_made:'Crews made',crew_post:'Crew messages',drawing_built:'Drawings built',drawing_saved:'Drawings saved',drawing_shared:'Drawings shared',postcard:'Postcards made',weekly_card:'Weekly cards shared',family_key_made:'Family keys made',family_link_shared:'Family links shared',play_next:'Play Next used',share_build_started:'Shared builds opened',build_started:'Builds started'};
+  var NAMES={build_completed:'Builds finished',weekly_completed:'Bibi’s Weekly Bloppit finished',world_finish:'Finishes on the island',island_tip:'Island cards opened',island_arranged:'Models moved on the island',decor_bought:'Decorations bought',pup_named:'Pup named from the list',pup_named_own:'Pup named by the child',pup_colour:'Pup brick colour picked',relay_started:'Relays started',relay_joined:'Relays joined',crew_made:'Crews made',crew_post:'Crew messages',drawing_built:'Drawings built',drawing_saved:'Drawings saved',drawing_shared:'Drawings shared',postcard:'Postcards made',weekly_card:'Weekly cards shared',family_key_made:'Family keys made',family_link_shared:'Family links shared',play_next:'Play Next used',share_build_started:'Shared builds opened',build_started:'Builds started'};
   function featureRows(){ var t={}; state.data.days.forEach(function(d){ for(var k in d.n||{}){ var base=k.split(':')[0]; if(!NAMES[base]||base==='build_started') continue; t[base]=(t[base]||0)+count(d,k); } });
     return Object.keys(t).map(function(k){ return [NAMES[k],t[k]]; }).filter(function(r){ return r[1]>0; }).sort(function(a,b){ return b[1]-a[1]; }).slice(0,12); }
   function pageRows(){ var t={}; state.data.days.forEach(function(d){ for(var k in d.n||{}) if(k.indexOf('page:')===0) t[k.slice(5)]=(t[k.slice(5)]||0)+count(d,k); });
