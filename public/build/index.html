@@ -1296,7 +1296,8 @@ body.on-home .tabs{visibility:hidden}
 .hm-cont .bar{grid-column:1;height:10px;border-radius:99px;background:rgba(20,32,44,.18);overflow:hidden}
 .hm-cont .bar i{display:block;height:100%;background:#14202C;border-radius:99px}
 .hm-cont .hc-pic{display:none}
-.hm-cont.first{grid-template-columns:auto 1fr auto;background:#F4BC22}
+.hm-cont.first{grid-template-columns:auto 1fr auto;background:var(--c-bloppit,#D62F2A);color:#fff}   /* Bloppit's card: his red */
+.hm-cont.first .go{background:#fff;color:var(--c-bloppit,#D62F2A)}
 .hm-cont.first .hc-pic{display:block;grid-row:1 / span 3;grid-column:1;width:auto;height:84px;margin:-6px 0 -8px}
 .hm-cont.first b,.hm-cont.first .sub{grid-column:2}.hm-cont.first .go{grid-column:3}
 .hm-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px 14px;padding-top:8px}
@@ -1629,6 +1630,18 @@ body.film-on{overflow:hidden}
 .hm-tile.t-friend{--c:#923978}
 .hm-tile.t-together{--c:#6A3FB5}
 .hm-tile.t-join{--c:#1B2A34}
+/* Character colours (series bible; Steff, 6 Nov 2026: "each character should be associated with a specific colour").
+   One colour per friend, used wherever that friend's face leads: menu tiles, the top bar, the trail picker, the Weekly.
+   Red is Bloppit's alone; yellow without a face is Play Now / Quick Play. Light colours carry dark text. */
+:root{--c-bloppit:#D62F2A;--c-tiny:#7DBE2E;--c-nora:#24407A;--c-pippa:#F4BC22;--c-swoop:#2F7FD0;--c-bibi:#E9772A;--c-lufu:#8A6FD1}
+.hm-tile.t-quick{--c:var(--c-bibi);color:#14202C}                 /* Quick Bricks: Bibi */
+.hm-tile.t-game{--c:var(--c-tiny);color:#14202C}                  /* Frog Trail: Tiny */
+.hm-tile.t-brain{--c:var(--c-nora)}                               /* Brain Trail: Nora */
+.hm-tile.t-sea{--c:var(--c-pippa);color:#14202C}                  /* Pippa's Puzzles: Pippa */
+.hm-tile.t-blitz{--c:var(--c-swoop)}                              /* vs Swoop: Swoop */
+.hm-tile.t-quick .ic,.hm-tile.t-game .ic,.hm-tile.t-sea .ic{background:rgba(255,255,255,.35)}
+.hm-daily{background:var(--c-bibi);color:#14202C}                 /* Bibi's Weekly Bloppit */
+.hm-daily .tag{color:rgba(20,32,44,.75)}.hm-daily .go{background:#fff}.hm-daily .hd-pills>span{background:rgba(255,255,255,.35)}
 .hm-side,.hm-main{display:grid;gap:18px;align-content:start;min-width:0}
 #mpBar.calm .clk{display:none}
 /* Laptops and big tablets: the menu spreads out like a game launcher. Hello, Continue and this week's Weekly
@@ -1648,9 +1661,9 @@ body.film-on{overflow:hidden}
 .pick-banner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;background:#F4BC22;color:#14202C;border-radius:14px;padding:10px 14px;font-weight:700;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}
 .trail-pick{justify-self:start;width:max-content;max-width:100%;display:inline-grid;grid-template-columns:1fr 1fr 1fr;gap:4px;padding:4px;border-radius:999px;background:var(--page);border:2px solid var(--line);margin-bottom:12px}
 .trail-pick button{font-family:var(--f-display);font-size:18px;border:0;border-radius:999px;padding:8px 18px;background:transparent;color:var(--ink);cursor:pointer}
-.trail-pick button[aria-selected="true"]{background:#237841;color:#fff}
-.trail-pick button#trBrain[aria-selected="true"]{background:#0055BF}
-.trail-pick button#trSea[aria-selected="true"]{background:#008F9B}
+.trail-pick button[aria-selected="true"]{background:var(--c-tiny);color:#14202C}
+.trail-pick button#trBrain[aria-selected="true"]{background:var(--c-nora);color:#fff}
+.trail-pick button#trSea[aria-selected="true"]{background:var(--c-pippa);color:#14202C}
 .sea .gm-levels.river{background:linear-gradient(180deg,color-mix(in srgb,#F2CD37 14%,var(--page)),color-mix(in srgb,#36AEBF 16%,var(--page)))}
 .trail-pick button:focus-visible{outline:3px solid var(--hi)}
 .gm-mt{font-size:17px}
@@ -1699,7 +1712,7 @@ body.film-on{overflow:hidden}
 .tabs .tab[aria-selected="true"] .n{background:none}
 .tabs .tab[aria-selected="true"]::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:4px;border-radius:4px;background:var(--tc)}
 #tab-mp .n.n2{position:relative;width:40px!important}#tab-mp .n.n2 img{position:absolute;top:0;width:28px;height:28px}#tab-mp .n.n2 img:first-child{left:0}#tab-mp .n.n2 img:last-child{right:0;transform:scaleX(-1)}   /* Together: two Bloppits, facing each other */
-#tab-island{--tc:#2FB8DC}#tab-sea{--tc:#E8B20E}#tab-quick{--tc:#F4BC22}#tab-cove{--tc:#E9772A}#tab-game{--tc:#7DBE2E}
+#tab-island{--tc:#2FB8DC}#tab-sea{--tc:var(--c-pippa)}#tab-quick{--tc:#F4BC22}#tab-cove{--tc:var(--c-bibi)}#tab-game{--tc:var(--c-tiny)}
 /* The character at the top of each page */
 .char-hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 20px;align-items:center;border-radius:20px;padding:14px 24px 14px 14px;background:linear-gradient(115deg,var(--h1),var(--h2));color:var(--hink,#fff);box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer;min-width:0;overflow:hidden}
 #view-create>.char-hero{grid-column:1/-1}
@@ -1728,7 +1741,7 @@ body.film-on{overflow:hidden}
 @media (prefers-reduced-motion: reduce){.bottle .bt-art{animation:none!important}}
 .tab .n{position:relative}
 .tab.bottle-on .n::after{content:"";position:absolute;top:-2px;right:-3px;width:10px;height:10px;border-radius:50%;background:#D2352B;border:2px solid var(--bg)}
-.dy-sea{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;text-align:left;cursor:pointer;font:inherit;color:var(--ink)}.dy-sea img{width:52px;height:52px}.dy-sea b{display:block;font-family:var(--f-display);font-weight:400;font-size:20px}.dy-sea span span{font-size:13px;font-weight:700;color:var(--muted)}.dy-go{font-size:28px;color:var(--muted)}.dy-sea:hover{border-color:var(--accent)}#tab-brain{--tc:#3D5FA8}#tab-blitz{--tc:#2F7FD0}#tab-mp{--tc:#8B5CF6}
+.dy-sea{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;text-align:left;cursor:pointer;font:inherit;color:var(--ink)}.dy-sea img{width:52px;height:52px}.dy-sea b{display:block;font-family:var(--f-display);font-weight:400;font-size:20px}.dy-sea span span{font-size:13px;font-weight:700;color:var(--muted)}.dy-go{font-size:28px;color:var(--muted)}.dy-sea:hover{border-color:var(--accent)}#tab-brain{--tc:var(--c-nora)}#tab-blitz{--tc:var(--c-swoop)}#tab-mp{--tc:#8B5CF6}
 /* The game tabs scroll sideways when they don't all fit: little arrows at either end show there are more, and tap to slide */
 .tabs-wrap{display:contents}.tabs-arr{display:none}
 @media (max-width:1240px){
@@ -3885,7 +3898,7 @@ const filmReady=f=>!f.mid||!!FILM_V[f.file];
 for(let i=FILMS.length-1;i>=0;i--) if(!filmReady(FILMS[i])) FILMS.splice(i,1);
 // What the characters say over a film: a speech bubble with the speaker's face and name, shown for 5.5 s from its time
 // ({name} is the otter's name, or "pup" while it has none)
-const FILM_WHO={lufu:['lufu','#8A6FD1'],bloppit:['Bloppit','#D8342C'],tiny:['Tiny','#7DBE2E'],nora:['Nora','#24407A'],pippa:['Pippa','#C9920A'],swoop:['Swoop','#2F7FD0'],bibi:['Bibi','#E9772A']};
+const FILM_WHO={lufu:['lufu','#8A6FD1'],bloppit:['Bloppit','#D62F2A'],tiny:['Tiny','#7DBE2E'],nora:['Nora','#24407A'],pippa:['Pippa','#C9920A'],swoop:['Swoop','#2F7FD0'],bibi:['Bibi','#E9772A']};
 function filmLine(s,o){ return s.text.replace(/\{name\}/g,pupName(o||worldStore())||'pup'); }
 function filmSay(box,f,t){ if(!box||!f) return; let b=box.querySelector(':scope>.film-say');
   const s=(f.say||[]).find(s=>t>=s.t&&t<s.t+(s.d||5.5)), key=s?f.id+'@'+s.t:'';
