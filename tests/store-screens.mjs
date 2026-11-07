@@ -33,7 +33,7 @@ for (const [tag, vp, dsf] of [['iphone',{width:440,height:956},3],['ipad',{width
     else Object.defineProperty(A, 't0', { get: () => performance.now() - 7000, set() {}, configurable: true }); }); await page.waitForTimeout(2600);   // held at 7 s
   await page.screenshot({ path: `${OUT}${tag}-arrival.png` });
   await page.evaluate(() => document.querySelector('.is3-cine .cn-skip').click());
-  await page.waitForFunction(() => /Build Our First Home/.test(document.querySelector('#isWorld .is3-play')?.textContent || ''), null, { timeout: 20000 }); await page.waitForTimeout(1500);
+  await page.waitForFunction(() => /Build our first home/.test(document.querySelector('#isWorld .is3-play')?.textContent || ''), null, { timeout: 20000 }); await page.waitForTimeout(1500);
   // Build Our First Home → the build → back home, where the cottage appears
   await page.evaluate(() => document.querySelector('#isWorld .is3-play').click()); await page.waitForTimeout(1500);
   await auto(page,5); await page.waitForTimeout(400); await page.screenshot({ path: `${OUT}${tag}-build.png` });

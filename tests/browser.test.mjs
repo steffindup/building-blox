@@ -50,7 +50,7 @@ test('first visit: name the otter first, then the arrival film, which can be ski
   const t0 = Date.now(); await t.page.evaluate(() => document.querySelector('#isWorld .is3-cine .cn-skip').click());
   await t.page.waitForFunction((nm) => (document.querySelector('#isWorld .is3-banner')?.textContent || '').includes(`${nm} has arrived`), nm, { timeout: 6000 });
   // then straight to the home: no card after the trip
-  await t.page.waitForFunction(() => /Build Our First Home/.test(document.querySelector('#isWorld .is3-play')?.textContent || ''), null, { timeout: 8000 });
+  await t.page.waitForFunction(() => /Build our first home/.test(document.querySelector('#isWorld .is3-play')?.textContent || ''), null, { timeout: 8000 });
   assert.ok(Date.now() - t0 < 8000); assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), false);
   assert.equal(await t.page.evaluate(() => document.getElementById('view-island').classList.contains('cine')), false);
   assert.deepEqual(t.errors, []); await t.ctx.close();
@@ -121,14 +121,14 @@ test('first visit: with ?film=0 the arrival made in the game plays instead of th
   await t.page.waitForFunction(() => window.bloppitIsland3 && window.bloppitIsland3().cine, null, { timeout: 10000 }); await t.page.waitForTimeout(1500);
   assert.equal(await t.page.evaluate(() => !document.querySelector('.is3-cine video') && window.bloppitIsland3().cine.t > 0.5), true);
   await t.page.evaluate(() => document.querySelector('#isWorld .is3-cine .cn-skip').click());
-  await t.page.waitForFunction(() => /Build Our First Home/.test(document.querySelector('#isWorld .is3-play')?.textContent || ''), null, { timeout: 8000 });
+  await t.page.waitForFunction(() => /Build our first home/.test(document.querySelector('#isWorld .is3-play')?.textContent || ''), null, { timeout: 8000 });
   assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), false);
   // with no name yet the films call it "pup"
   assert.equal(await t.page.evaluate(() => window.bloppitFilmLine('We did it, {name}!')), 'We did it, pup!');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('first visit: Start here → name the otter → a boat brings it → Build Our First Home → the home appears', { skip: skip() }, async () => {
+test('first visit: Start here → name the otter → a boat brings it → Build our first home → the home appears', { skip: skip() }, async () => {
   const t = await open('?nosplash=1'); const shot = (n) => process.env.SHOTS ? t.page.screenshot({ path: `${process.env.SHOTS}/first-${n}.png` }) : null;
   assert.equal(await t.view(), 'view-home'); assert.match(await t.text('#hmContT'), /Start here: meet your otter/);
   await t.page.evaluate(() => document.getElementById('hmCont').click());
@@ -153,10 +153,10 @@ test('first visit: Start here → name the otter → a boat brings it → Build 
   assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), false);
   // then the arrival plays like a film: a Skip button, over the island
   assert.equal(await t.page.evaluate(() => !!document.querySelector('#isWorld .is3-cine .cn-skip') && document.getElementById('view-island').classList.contains('cine')), true);
-  await t.page.waitForFunction(() => /Build Our First Home/.test(document.querySelector('#isWorld .is3-play')?.textContent || ''), null, { timeout: 45000 }); await t.page.waitForTimeout(500); await shot(3);
+  await t.page.waitForFunction(() => /Build our first home/.test(document.querySelector('#isWorld .is3-play')?.textContent || ''), null, { timeout: 45000 }); await t.page.waitForTimeout(500); await shot(3);
   assert.equal(await t.page.evaluate(() => !!document.querySelector('.is3-cine') || document.getElementById('view-island').classList.contains('cine') || document.getElementById('pupDlg').open), false);
   // Bloppit shows the unfinished home, and there is one button
-  assert.match(await t.text('#isWorld .is3-play'), /Build Our First Home/);
+  assert.match(await t.text('#isWorld .is3-play'), /Build our first home/);
   assert.ok(await t.page.evaluate(() => window.bloppitIslandPoint('pup')));
   let w = JSON.parse(await t.page.evaluate(() => localStorage.getItem('bloppit-world-v1')));
   assert.equal(w.pupText, 'Captain Fizz'); assert.equal(w.pupName, -1); assert.equal(w.pupColor, 2); assert.equal(w.arrived, 1); assert.equal(w.wear.neck[0], 'scarf');
@@ -176,11 +176,12 @@ test('first visit: Start here → name the otter → a boat brings it → Build 
   assert.match(await t.text('#isStage'), /Captain Fizz · Level 1 Pup/); assert.match(await t.text('#isNext'), /Home Island|mist/);
   await t.page.goto(BASE + '?nosplash=1'); await t.page.waitForTimeout(2500);
   assert.equal(await t.view(), 'view-home'); assert.equal(await t.page.evaluate(() => document.getElementById('hmCont').hidden), true);
-  // from now on the island leads: first on the menu, and the hero of bloppit.com on this device
+  // from now on the island leads: first on the menu
   assert.equal(await t.page.evaluate(() => { const w = document.getElementById('hmWorld'); return !w.hidden && !!w.querySelector('.hw-isle img, .hw-isle svg') && w.compareDocumentPosition(document.getElementById('hmCont')) === Node.DOCUMENT_POSITION_FOLLOWING; }), true);
   assert.match(await t.text('#hmWorld'), /Captain Fizz/);
+  // bloppit.com is a website now (7 Nov 2026): no island takeover, one Play Bloppit button to the game
   await t.page.goto(new URL('/', BASE).href); await t.page.waitForTimeout(1500);
-  assert.match(await t.text('.hero h1'), /Captain Fizz’s.*island is waiting/s);
+  assert.match(await t.text('.hero h1'), /Build it/); assert.equal(await t.page.getAttribute('header .btn.play', 'href'), '/game/');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
@@ -249,7 +250,7 @@ test('a world with builds that never saw the arrival gets the boat and the arriv
   await t.page.evaluate(() => document.querySelector('.is3-cine .cn-skip').click());
   await t.page.waitForFunction(() => !!JSON.parse(localStorage.getItem('bloppit-world-v1')).arrived, null, { timeout: 10000 }); await t.page.waitForTimeout(1500);
   assert.equal(await t.page.evaluate(() => !document.querySelector('.is3-cine') && !document.getElementById('view-island').classList.contains('cine')), true);
-  assert.equal(await t.page.evaluate(() => /Build Our First Home/.test(document.querySelector('#isWorld .is3-play')?.textContent || '')), false, 'the island as it stands, not the first home again');
+  assert.equal(await t.page.evaluate(() => /Build our first home/.test(document.querySelector('#isWorld .is3-play')?.textContent || '')), false, 'the island as it stands, not the first home again');
   // and only once
   await t.page.reload(); await t.page.waitForTimeout(3500);
   assert.equal(await t.page.evaluate(() => !document.querySelector('.is3-cine')), true);

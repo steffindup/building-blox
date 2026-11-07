@@ -16,7 +16,7 @@ SHOTS = [('island', 'Every build you finish grows Bloppitopia.'),
          ('build', 'Snap bricks into place, page by page.'),
          ('finish', 'Finish clean. Earn three stars.'),
          ('weekly', 'A new puzzle every week. See how many built it clean.'),
-         ('blitz', 'Race Swoop in Blitz.'),
+         ('blitz', 'Race Swoop in Blitz Bay.'),
          ('menu', 'Your otter grows with every build.')]
 # canvas, frame left edge, frame top, caption size, caption width: measured from the first set
 DEV = {'iphone': dict(size=(1320, 2868), left=136, top=520, font=104, width=1120, radius=48),
