@@ -78,7 +78,7 @@ TRAILS
 • Separate players on one device, each with their own progress
 
 THE LIBRARY
-• 66 models in 11 themes, plus a new one every week, each with a step-by-step instruction booklet
+• 60+ models in 11 themes, plus a new one every week, each with a step-by-step instruction booklet
 • Draw your own brick picture on a stud grid, or turn a photo on your device into one; the photo never leaves the device
 
 BLITZ WITH SWOOP
