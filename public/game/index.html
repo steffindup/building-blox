@@ -164,7 +164,7 @@ button,select,input{font:inherit;color:inherit}
 .tab{border:1px solid var(--line);background:var(--page);border-radius:999px;padding:7px 14px 7px 8px;cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:700}
 .tab .n{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--callout);font-family:var(--f-display);font-size:14px}
 .tab[aria-selected="true"]{background:var(--ink);color:var(--page);border-color:var(--ink)}
-.tab[aria-selected="true"] .n{background:var(--hi);color:#14202C}
+.tab[aria-selected="true"] .n{background:var(--hi);color:var(--hi-ink)}
 
 main{max-width:1640px;margin:0 auto;padding-block:20px 0}
 .view{display:grid;gap:20px}
@@ -174,7 +174,7 @@ main{max-width:1640px;margin:0 auto;padding-block:20px 0}
 #view-create{grid-template-columns:minmax(0,370px) minmax(0,1fr);align-items:start}
 @media (max-width:860px){#view-create{grid-template-columns:minmax(0,1fr)}}
 .panel{display:grid;gap:16px;min-width:0;align-content:start}
-/* Quick Bricks: three ways in as tiles, each with its own screen; the current selection and model settings stay on the first one */
+/* Build anything: three ways in as tiles, each with its own screen; the current selection and model settings stay on the first one */
 .qb-tiles{display:grid;gap:10px}
 .qb-tile{display:grid;grid-template-columns:44px minmax(0,1fr);grid-template-rows:auto auto;column-gap:12px;align-items:center;text-align:left;border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--page);color:var(--ink);cursor:pointer;font:inherit;transition:border-color .15s,transform .1s}
 .qb-tile:hover{border-color:var(--accent)}.qb-tile:active{transform:translateY(1px)}
@@ -203,7 +203,7 @@ main{max-width:1640px;margin:0 auto;padding-block:20px 0}
 .photo .nm{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}
 .photo .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .photo select{border:1px solid var(--line);background:var(--page);border-radius:8px;padding:4px 8px;font-size:13px}
-.ghost{border:1px solid var(--line);background:transparent;border-radius:8px;padding:4px 10px;cursor:pointer;font-size:13px;color:var(--muted)}
+.ghost{border:1px solid var(--line);background:transparent;border-radius:999px;padding:4px 10px;cursor:pointer;font-size:13px;color:var(--muted)}
 .ghost:hover{color:var(--accent);border-color:var(--accent)}
 .tag{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:800;color:var(--muted)}
 .note{font-size:13px;color:var(--muted);margin:0}
@@ -234,7 +234,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .stat{display:grid}
 .stat b{font-family:var(--f-display);font-weight:400;font-size:26px;line-height:1.1;font-variant-numeric:tabular-nums}
 .stat span{font-size:11px;text-transform:uppercase;letter-spacing:.07em;font-weight:800;color:var(--muted)}
-.primary{background:var(--accent);color:var(--accent-ink);border:0;border-radius:12px;padding:12px 20px;font-family:var(--f-display);font-size:19px;cursor:pointer;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
+.primary{background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:12px 20px;font-family:var(--f-display);font-size:19px;cursor:pointer;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
 .primary:hover{filter:brightness(1.06)}
 .primary:disabled{opacity:.5;cursor:default}
 .parts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
@@ -517,8 +517,8 @@ body.on-build .appfoot{display:none}
 .buddy.point .bud-art{animation:bud-nudge 1.6s ease-in-out infinite;transform-origin:50% 100%}
 .bud-say{order:-1;position:relative;align-self:center;justify-self:end;background:var(--page);border:2px solid var(--ink);border-radius:14px;padding:7px 10px;margin-bottom:22px;font-weight:800;font-size:14px;line-height:1.25;box-shadow:0 3px 0 var(--shadow)}
 .bud-say::before{content:"";position:absolute;right:-9px;bottom:12px;width:12px;height:12px;background:var(--page);border-left:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:rotate(-135deg)}
-.buddy.cheer .bud-say,.buddy.hug .bud-say{background:var(--hi);color:#14202C;border-color:#14202C;font-family:var(--f-display);font-weight:400;font-size:18px}
-.buddy.cheer .bud-say::before,.buddy.hug .bud-say::before{background:var(--hi);border-color:#14202C}
+.buddy.cheer .bud-say,.buddy.hug .bud-say{background:var(--hi);color:var(--hi-ink);border-color:var(--hi-ink);font-family:var(--f-display);font-weight:400;font-size:18px}
+.buddy.cheer .bud-say::before,.buddy.hug .bud-say::before{background:var(--hi);border-color:var(--hi-ink)}
 .bud-say .callout{margin-top:6px;padding:5px 8px;gap:4px 10px;box-shadow:none}
 .bud-say .callout img{height:26px}
 .bud-say .callout b{font-size:12px}
@@ -546,7 +546,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .turn-banner small{display:block;font-family:var(--f-body);font-size:12px;font-weight:800;opacity:.85;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .turn-banner b.clk{flex:none;font-family:var(--f-body);font-weight:800;font-size:17px;font-variant-numeric:tabular-nums;margin-left:4px;padding:4px 8px;border-radius:999px;background:rgba(0,0,0,.14)}
 .turn-banner.cpu{background:#3E5468;color:#fff}
-.turn-banner.you{background:var(--hi);color:#14202C}
+.turn-banner.you{background:var(--hi);color:var(--hi-ink)}
 .turn-banner.pop{animation:tb-pop .45s ease-out}
 @keyframes tb-pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
 #buildStage.cpu-turn{border-color:#8A5A3B;box-shadow:inset 0 0 0 4px #8A5A3B}
@@ -579,7 +579,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .stage-tools{position:absolute;right:12px;top:12px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100% - 24px)}
 .tool{background:var(--page);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 2px 0 var(--shadow)}
 .tool:hover{border-color:var(--ink)}
-.tool[aria-pressed="true"]{background:var(--hi);border-color:var(--hi);color:#14202C}
+.tool[aria-pressed="true"]{background:var(--hi);border-color:var(--hi);color:var(--hi-ink)}
 .tool.snd{padding:6px 10px;display:inline-flex;align-items:center;gap:4px}
 .snd-top{margin-left:auto;margin-right:8px;width:40px;height:40px;flex:none;border-radius:50%;display:grid;place-items:center;padding:0;border:1px solid var(--line);background:var(--page);color:var(--ink);cursor:pointer}.snd-top:hover{border-color:var(--ink)}.snd-top+.who{margin-left:0}.mus-top+.snd-top{margin-left:0}.mus-top{margin-right:6px}
 .mus-ic{width:18px;height:18px;display:inline-block;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat;--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 18V5l11-2v13' stroke='black' stroke-width='2.2' fill='none' stroke-linejoin='round'/%3E%3Ccircle cx='6' cy='18' r='3' fill='black'/%3E%3Ccircle cx='17' cy='16' r='3' fill='black'/%3E%3C/svg%3E")}
@@ -604,7 +604,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .pp-place{height:52px;padding:0 20px;font-size:20px;touch-action:manipulation}
 .pp-place:disabled{opacity:.5;cursor:default}
 @media (max-width:560px){.place-pad{justify-content:space-between}.pp-act{min-width:0;flex:1}.pp-arrows{grid-template-columns:repeat(3,42px);grid-template-rows:repeat(2,42px)}}
-.status[data-kind="ok"]{background:var(--hi);border-color:var(--hi);color:#14202C}
+.status[data-kind="ok"]{background:var(--hi);border-color:var(--hi);color:var(--hi-ink)}
 .status[data-kind="err"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .tray-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
 .tray-parts{display:flex;flex-wrap:wrap;gap:10px}
@@ -622,7 +622,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .brick-tip[hidden]{display:none}
 .callout img{height:38px;width:auto;display:block}
 .callout b{font-family:var(--f-body);font-weight:800;font-size:14px;font-variant-numeric:tabular-nums}
-.done-badge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--hi);color:#14202C;font-family:var(--f-display);font-size:30px;padding:10px 22px;border-radius:14px;pointer-events:none;box-shadow:inset 0 -5px 0 rgba(0,0,0,.15)}
+.done-badge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--hi);color:var(--hi-ink);font-family:var(--f-display);font-size:30px;padding:10px 22px;border-radius:14px;pointer-events:none;box-shadow:inset 0 -5px 0 rgba(0,0,0,.15)}
 
 /* Booklet */
 .booklet-bar{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:baseline;justify-content:space-between}
@@ -783,15 +783,15 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .tab.play{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .tab.play .n{background:rgba(255,255,255,.22);color:#fff}
 .tab.play[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
-.tab.play[aria-selected="true"] .n{background:var(--hi);color:#14202C}
+.tab.play[aria-selected="true"] .n{background:var(--hi);color:var(--hi-ink)}
 .tab.play2{background:#0055BF;color:#fff;border-color:#0055BF}
 .tab.play2 .n{background:rgba(255,255,255,.22);color:#fff}
 .tab.play2[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
-.tab.play2[aria-selected="true"] .n{background:var(--hi);color:#14202C}
+.tab.play2[aria-selected="true"] .n{background:var(--hi);color:var(--hi-ink)}
 .tab.play3{background:#F4BC22;color:#1B1410;border-color:#F4BC22}
 .tab.play3 .n{background:rgba(0,0,0,.12);color:#1B1410}
 .tab.play3[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
-.tab.play3[aria-selected="true"] .n{background:var(--hi);color:#14202C}
+.tab.play3[aria-selected="true"] .n{background:var(--hi);color:var(--hi-ink)}
 #view-blitz{gap:16px}
 #mpShared{display:grid;gap:16px}
 #mpShared:empty{display:none}
@@ -896,7 +896,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 @keyframes mp-dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
 .mp-knock{flex-basis:100%;display:grid;gap:6px}
 .mp-knock[hidden]{display:none}
-.mp-knock .kn{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--hi);color:#14202C;border-radius:12px;padding:8px 12px;font-weight:800}
+.mp-knock .kn{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--hi);color:var(--hi-ink);border-radius:12px;padding:8px 12px;font-weight:800}
 .mp-knock .kn span{margin-right:auto}
 .mp-knock .kn .primary{padding:7px 14px;font-size:15px}
 .mp-knock .kn .ghost{background:#fff;color:#14202C}
@@ -908,7 +908,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .gb-where{display:flex;gap:10px;align-items:center;padding-right:20px;border-right:2px solid var(--line,rgba(127,127,127,.25))}.gb-where img{width:40px;height:40px;border-radius:50%;background:#fff;object-fit:cover}
 .gb-where strong{display:block;font-family:var(--f-display);font-weight:400;font-size:20px;line-height:1.1}.gb-where small{display:block;font-weight:700;font-size:13px;opacity:.8}
 .gb-lvl strong{font-family:var(--f-display);font-weight:400;font-size:20px}
-.gb-badge{width:40px;height:40px;border-radius:10px;background:var(--hi);color:#14202C;display:grid;place-items:center;font-family:var(--f-display);font-size:22px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.15)}
+.gb-badge{width:40px;height:40px;border-radius:10px;background:var(--hi);color:var(--hi-ink);display:grid;place-items:center;font-family:var(--f-display);font-size:22px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.15)}
 .gb-score{position:relative;display:grid;grid-template-columns:auto auto;align-items:baseline;column-gap:6px}
 .gb-score .tag{grid-column:1/-1}
 .gb-score b{font-family:var(--f-display);font-weight:400;font-size:28px;line-height:1;font-variant-numeric:tabular-nums}
@@ -950,7 +950,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 #tideDlg .td-pic{width:110px;height:110px;object-fit:contain;border-radius:14px;background:#fff;filter:grayscale(.6);margin:4px auto 0;display:block}
 #tdGo small{display:block;font-size:12px;font-weight:700;opacity:.9}
 .lvl.next{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
-.lvl .ln{position:absolute;left:10px;top:10px;width:30px;height:30px;border-radius:8px;background:var(--hi);color:#14202C;display:grid;place-items:center;font-family:var(--f-display);font-size:17px}
+.lvl .ln{position:absolute;left:10px;top:10px;width:30px;height:30px;border-radius:8px;background:var(--hi);color:var(--hi-ink);display:grid;place-items:center;font-family:var(--f-display);font-size:17px}
 .lvl:disabled .ln{background:var(--line);color:var(--muted)}
 .lvl img{width:92px;height:92px;object-fit:contain;border-radius:10px;background:#fff}
 .lvl:disabled img{filter:grayscale(1)}
@@ -1061,7 +1061,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .windlg .pup-pic{height:150px;border-radius:50%;width:150px;overflow:hidden;background:#E8F1F8;border:4px solid #fff;box-shadow:0 4px 0 var(--shadow);margin:0 auto 6px}
 .windlg .pup-pic svg{width:100%;height:100%;display:block}
 .pupdlg .pup-pic{width:168px;height:196px;border-radius:28px;background:radial-gradient(circle at 50% 62%,color-mix(in srgb,var(--pc,#8FB8DE) 45%,#fff) 0 38%,color-mix(in srgb,var(--pc,#8FB8DE) 16%,#fff) 70%);transition:background .25s}
-.pupdlg .pup-suggest[aria-pressed="true"]{background:var(--hi);color:#14202C;border-color:transparent}
+.pupdlg .pup-suggest[aria-pressed="true"]{background:var(--hi);color:var(--hi-ink);border-color:transparent}
 .pupdlg .pup-lead{margin:2px 0 8px}
 .pup-cols{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 0 14px}
 .pup-cols button{width:36px;height:36px;border-radius:50%;border:3px solid #fff;background:var(--c);box-shadow:0 0 0 2px var(--line);cursor:pointer;padding:0}
@@ -1087,7 +1087,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .pup-later{background:none;border:0;font:inherit;font-weight:700;font-size:14px;color:var(--muted);text-decoration:underline;cursor:pointer;padding:8px}
 .pupdlg .pup-later.primary{position:sticky;bottom:6px;z-index:2;box-shadow:0 6px 18px rgba(0,0,0,.28)}   /* Set sail! stays in view on a phone, however long the card is */
 .pup-age{margin:10px 0 4px}.pup-age>span{display:block;font-weight:700;font-size:14px;margin-bottom:6px}.pup-age div{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}.pup-age button{font:inherit;font-weight:700;font-size:15px;min-width:42px;padding:6px 10px;border-radius:12px;border:2px solid var(--line,#cfd8e3);background:var(--card,#fff);color:var(--ink);cursor:pointer}.pup-age button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--accent-ink,#fff)}
-.is-intro{display:grid;gap:10px;border:3px solid #008F9B}
+.is-intro{display:grid;gap:10px;border:3px solid var(--c-bloppit)}
 .is-intro .ii-head{display:flex;gap:12px;align-items:center}
 .is-intro{position:relative}.is-intro .ii-x{position:absolute;right:10px;top:10px;width:34px;height:34px;border-radius:50%;border:2px solid var(--line);background:var(--page);color:var(--ink);font:inherit;font-weight:800;font-size:15px;cursor:pointer;line-height:1}
 .is-intro .ii-pup{width:72px;height:72px;flex:none;border-radius:50%;overflow:hidden;background:#E8F1F8;border:3px solid #fff;box-shadow:0 2px 0 var(--shadow)}
@@ -1095,7 +1095,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .is-intro h2{margin:0;font-size:24px}.is-intro p{margin:2px 0 0}
 .is-intro .ii-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0;padding:0;list-style:none}
 .is-intro .ii-steps li{display:grid;justify-items:center;padding:8px 4px;border-radius:12px;background:var(--bg);font-size:13px;font-weight:700;color:var(--muted);text-align:center}
-.is-intro .ii-steps b{font-family:var(--f-display);font-weight:400;font-size:22px;color:var(--ink)}.is-intro .ii-steps li.done{background:#D9F2EF;color:#00616A}.is-intro .ii-steps li.done b{color:#008F9B}
+.is-intro .ii-steps b{font-family:var(--f-display);font-weight:400;font-size:22px;color:var(--ink)}.is-intro .ii-steps li.done{background:#D9F2EF;color:#00616A}.is-intro .ii-steps li.done b{color:var(--c-bloppit)}
 .is-intro .ii-btns{display:flex;flex-wrap:wrap;gap:8px}
 .pup-names{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 14px}
 .wc-pup{margin:10px 0 4px;padding:10px 12px 4px;border-radius:14px;background:var(--callout);text-align:left}
@@ -1119,7 +1119,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .world-toast{cursor:pointer}.world-toast .ws-go{color:#F4BC22;margin-left:4px}
 .world-toast .ws-stars{font-size:22px;letter-spacing:3px;color:#F4BC22;line-height:1}
 .world-toast .ws-stars i{font-style:normal;color:rgba(255,255,255,.3)}
-.hm-world.lead{border:3px solid #008F9B}
+.hm-world.lead{border:3px solid var(--c-bloppit)}
 .wc-btns{flex-direction:column;align-items:stretch}.wc-btns button{width:100%}
 .win-stars{font-size:46px;letter-spacing:6px;color:var(--hi);line-height:1}
 .win-pic{display:block;margin:0 auto 6px;max-width:150px;max-height:110px;object-fit:contain;filter:drop-shadow(0 6px 10px rgba(0,0,0,.3));animation:rvBob 2.4s ease-in-out infinite}
@@ -1138,7 +1138,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 @keyframes rvFlash{from{transform:scale(.2);opacity:1}to{transform:scale(9);opacity:0}}
 .rv-bit{position:absolute;width:12px;height:9px;margin:-4px 0 0 -6px;border-radius:2px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.2);animation:rvBit 1.1s cubic-bezier(.2,.7,.4,1) forwards}
 @keyframes rvBit{from{transform:translate(0,0) rotate(0);opacity:1}80%{opacity:1}to{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
-.rv-cap{position:absolute;left:50%;top:58px;transform:translateX(-50%) translateY(12px);opacity:0;transition:opacity .35s,transform .35s;background:var(--hi);color:#14202C;font-family:var(--f-display);font-size:22px;padding:6px 16px;border-radius:999px;box-shadow:0 4px 0 rgba(0,0,0,.18);white-space:nowrap}
+.rv-cap{position:absolute;left:50%;top:58px;transform:translateX(-50%) translateY(12px);opacity:0;transition:opacity .35s,transform .35s;background:var(--hi);color:var(--hi-ink);font-family:var(--f-display);font-size:22px;padding:6px 16px;border-radius:999px;box-shadow:0 4px 0 rgba(0,0,0,.18);white-space:nowrap}
 .rv-cap.in{opacity:1;transform:translateX(-50%)}
 .rv-cap small{display:block;font-family:var(--f-body);font-size:11px;font-weight:700;text-align:center;opacity:.75}
 .win-stars i{font-style:normal;color:var(--line)}
@@ -1151,7 +1151,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .win-best{font-weight:700;margin:10px 0 14px;min-height:1em}
 .win-btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .win-btns .ghost{font-size:14px;font-weight:700;color:var(--ink);padding:9px 14px}
-.resume{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;background:var(--hi);color:#14202C;border-radius:12px;padding:12px 16px;margin-bottom:16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}
+.resume{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;background:var(--hi);color:var(--hi-ink);border-radius:12px;padding:12px 16px;margin-bottom:16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}
 .resume-txt{font-size:15px}
 .resume-txt strong{font-family:var(--f-display);font-weight:400;font-size:19px;margin-right:4px}
 .resume-btns{display:flex;gap:8px;flex-wrap:wrap}
@@ -1223,7 +1223,7 @@ body.on-home .tabs{visibility:hidden}
 #hmQuick,#hmHow{min-height:70px}
 .hm-world{display:grid;grid-template-rows:minmax(0,1fr) auto;height:263px;width:100%;padding:0;overflow:hidden;border-radius:16px;background:var(--page);border:1px solid var(--line);box-shadow:0 2px 0 var(--shadow);text-align:left;font:inherit;color:inherit;cursor:pointer}
 .hm-world:hover{border-color:var(--ink)}
-.hm-world.lead{border:3px solid #008F9B}
+.hm-world.lead{border:3px solid var(--c-bloppit)}
 .hm-world .hw-isle{position:relative;display:block;min-height:0;overflow:hidden;background:#A9D8F2}
 .hm-world .hw-isle>img,.hm-world .hw-isle>svg{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
 .hm-world .hw-tag{position:absolute;left:10px;top:10px;max-width:calc(100% - 20px);padding:4px 12px;border-radius:999px;background:rgba(20,32,44,.82);color:#fff;font-family:var(--f-display);font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1238,12 +1238,12 @@ body.on-home .tabs{visibility:hidden}
 .hm-world .wt b,.hm-world .wname{font-family:var(--f-display);font-weight:400;font-size:17px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hm-world .wt b .sub{font-family:var(--f-body);font-size:13px;font-weight:800;color:var(--muted)}
 .hm-world .wname{cursor:pointer;color:inherit;text-decoration:underline dashed var(--line);text-underline-offset:4px}
-.hm-world .wt .bar{display:block;height:6px;border-radius:3px;background:var(--bg);overflow:hidden}.hm-world .wt .bar i{display:block;height:100%;background:#008F9B;border-radius:3px}
+.hm-world .wt .bar{display:block;height:6px;border-radius:3px;background:var(--bg);overflow:hidden}.hm-world .wt .bar i{display:block;height:100%;background:var(--c-bloppit);border-radius:3px}
 .hm-world .wn{flex:none;display:flex;gap:10px;font-weight:800;font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .hm-world .wn small{font-size:12px;font-weight:700;color:var(--muted)}
 .hm-world .wn .st{display:inline-flex;align-items:center;gap:3px}
 .hm-world .wn .st svg{width:18px;height:auto}
-.hm-daily{display:grid;grid-template-columns:88px minmax(0,1fr) 44px;grid-template-rows:minmax(0,1fr) auto;gap:8px 12px;height:158px;width:100%;padding:14px 14px 16px;text-align:left;border:0;border-radius:16px;background:#008F9B;color:#fff;cursor:pointer;font:inherit;box-shadow:inset 0 -5px 0 rgba(0,0,0,.18)}
+.hm-daily{display:grid;grid-template-columns:88px minmax(0,1fr) 44px;grid-template-rows:minmax(0,1fr) auto;gap:8px 12px;height:158px;width:100%;padding:14px 14px 16px;text-align:left;border:0;border-radius:16px;background:var(--c-bloppit);color:#fff;cursor:pointer;font:inherit;box-shadow:inset 0 -5px 0 rgba(0,0,0,.18)}
 .hm-daily:active{transform:translateY(3px);box-shadow:inset 0 -2px 0 rgba(0,0,0,.18)}
 .hm-daily:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .hm-daily img{grid-row:1 / span 2;width:88px;height:100%;min-height:0;border-radius:14px;background:#fff;object-fit:contain;padding:6px}
@@ -1289,7 +1289,7 @@ body.on-home .tabs{visibility:hidden}
 .hm-bubble h2{font-size:26px;line-height:1.1}
 .hm-bubble p{margin:2px 0 0;color:var(--muted);font-size:14px}
 .hm-who{border:0;background:none;padding:0;font:inherit;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:2px}
-.hm-cont{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 14px;width:100%;text-align:left;border:0;border-radius:16px;padding:14px 16px 16px;background:var(--hi);color:#14202C;cursor:pointer;box-shadow:inset 0 -5px 0 rgba(0,0,0,.14);font:inherit}
+.hm-cont{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 14px;width:100%;text-align:left;border:0;border-radius:16px;padding:14px 16px 16px;background:var(--hi);color:var(--hi-ink);cursor:pointer;box-shadow:inset 0 -5px 0 rgba(0,0,0,.14);font:inherit}
 .hm-cont b{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.1}
 .hm-cont .sub{grid-column:1;font-size:14px;font-weight:600;opacity:.85}
 .hm-cont .go{grid-row:1 / span 3;grid-column:2;width:52px;height:52px;border-radius:50%;background:#D2352B;color:#fff;display:grid;place-items:center;font-size:24px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
@@ -1380,7 +1380,7 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .is3-label{position:absolute;left:0;top:0;display:grid;justify-items:center;padding:2px 9px 3px;border-radius:12px;background:rgba(20,32,44,.82);color:#fff;white-space:nowrap;line-height:1.1;will-change:transform}
 .is3-label b{font-family:var(--f-display);font-weight:400;font-size:12px}.is3-label small{font-size:9.5px;font-weight:700;opacity:.85}
 @media (min-width:700px){.is3-label b{font-size:15px}.is3-label small{font-size:11px}}
-.is3-label.is3-hl{background:#008F9B}
+.is3-label.is3-hl{background:var(--c-bloppit)}
 .is3-label.is3-act{pointer-events:auto;cursor:pointer;border:0;font:inherit;background:var(--accent);color:var(--accent-ink);padding:6px 14px 7px;border-radius:14px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 4px 14px rgba(0,0,0,.3)}.is3-label.is3-act b{font-size:15px}@media (min-width:700px){.is3-label.is3-act b{font-size:18px}}
 .is3-label.is3-myst{background:rgba(40,32,78,.8)}.is3-label.is3-myst b{letter-spacing:.04em}.is3-label.is3-myst b,.is3-label.is3-myst small{font-size:inherit}.is3-label.is3-myst{font-size:10.5px}@media (min-width:700px){.is3-label.is3-myst{font-size:12px}}
 .is3-bar{display:block;width:100%;min-width:70px;height:4px;margin:3px 0 1px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden}.is3-bar>i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#AC78BA,#E9DFFF)}.is3-label.is3-hl b{font-size:18px}
@@ -1407,7 +1407,7 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .is-foot{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;justify-content:space-between;padding:12px 16px 14px;border-top:1px solid var(--line)}
 .is-stage{font-family:var(--f-display);font-size:22px}.is-stage small{display:block;font-family:var(--f-body);font-size:13px;font-weight:700;color:var(--muted)}
 .is-next{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--muted)}
-.is-next .bar{width:140px;height:8px;border-radius:4px;background:var(--bg);overflow:hidden}.is-next .bar i{display:block;height:100%;background:#008F9B}
+.is-next .bar{width:140px;height:8px;border-radius:4px;background:var(--bg);overflow:hidden}.is-next .bar i{display:block;height:100%;background:var(--c-bloppit)}
 .is-prog{display:grid;gap:5px;width:100%;font-size:13px;font-weight:700;color:var(--muted)}.is-prog b{color:var(--ink)}
 .ip-bar{position:relative;height:10px;border-radius:5px;background:var(--bg);overflow:visible}.ip-bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#7DBE2E,#2FB8DC)}
 .ip-bar em{position:absolute;top:-2px;width:3px;height:14px;margin-left:-1.5px;border-radius:2px;background:rgba(127,140,155,.55)}.ip-bar em.on{background:#F2C230}
@@ -1438,10 +1438,10 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .crew-pick label.crew-pzopt{display:grid;grid-template-columns:none;align-items:start;justify-items:stretch;margin:0;font-weight:400;font-size:inherit;gap:2px;width:auto}
 .t-crew .ic svg{width:86%;height:auto;border-radius:8px}
 .crew-pzopt{display:grid;gap:2px;padding:8px;border:2px solid var(--line);border-radius:14px;background:var(--page);cursor:pointer;text-align:left}
-.crew-pzopt input{position:absolute;opacity:0;pointer-events:none}.crew-pzopt:has(input:checked){border-color:#008F9B;box-shadow:0 0 0 2px #008F9B inset}.crew-pzopt:has(input:focus-visible){outline:3px solid var(--hi)}
-.crew-pzopt svg{width:100%;height:auto;display:block;margin-bottom:4px}.crew-pzopt b{font-size:15px}.crew-pzopt em{font-style:normal;font-size:11px;font-weight:800;background:#008F9B;color:#fff;border-radius:999px;padding:1px 7px;margin-left:4px;vertical-align:2px}.crew-pzopt em.done{background:var(--ink)}.crew-pzopt span{font-size:13px;color:var(--muted);line-height:1.3}
+.crew-pzopt input{position:absolute;opacity:0;pointer-events:none}.crew-pzopt:has(input:checked){border-color:var(--c-bloppit);box-shadow:0 0 0 2px var(--c-bloppit) inset}.crew-pzopt:has(input:focus-visible){outline:3px solid var(--hi)}
+.crew-pzopt svg{width:100%;height:auto;display:block;margin-bottom:4px}.crew-pzopt b{font-size:15px}.crew-pzopt em{font-style:normal;font-size:11px;font-weight:800;background:var(--c-bloppit);color:#fff;border-radius:999px;padding:1px 7px;margin-left:4px;vertical-align:2px}.crew-pzopt em.done{background:var(--ink)}.crew-pzopt span{font-size:13px;color:var(--muted);line-height:1.3}
 .crew-picklab{display:block;font-weight:800;margin-top:10px}.crew-next{display:grid;gap:6px;padding:12px;border-radius:14px;background:var(--bg)}
-.crew-row b{font-size:17px}.crew-row .bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:4px}.crew-row .bar i{display:block;height:100%;background:#008F9B}
+.crew-row b{font-size:17px}.crew-row .bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:4px}.crew-row .bar i{display:block;height:100%;background:var(--c-bloppit)}
 .crew-forms{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
 .crew-open{display:grid;gap:14px}
 .crew-head{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
@@ -1460,12 +1460,12 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .dest-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
 .dest{display:grid;grid-template-columns:72px 1fr;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;border:2px solid var(--line);background:var(--page);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
 .dest:hover{border-color:var(--ink)}.dest svg{width:72px;height:72px}.dest b{font-size:16px;display:block}.dest small{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-top:2px}
-.dest .bar{height:6px;border-radius:3px;background:var(--bg);overflow:hidden;margin-top:6px}.dest .bar i{display:block;height:100%;background:#008F9B}
+.dest .bar{height:6px;border-radius:3px;background:var(--bg);overflow:hidden;margin-top:6px}.dest .bar i{display:block;height:100%;background:var(--c-bloppit)}
 .decor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
 .decor-grid button{display:grid;justify-items:center;gap:6px;padding:12px 8px 10px;border-radius:14px;border:2px solid var(--line);background:var(--page);color:var(--ink);font:inherit;font-weight:800;font-size:14px;cursor:pointer}
 .decor-grid button svg{width:72px;height:72px}
 .decor-grid button.confirm{border-color:#F4BC22;background:#FFF6DA}.decor-grid button.confirm .cost{font-weight:800}
-.decor-grid button .cost{font-size:13px;color:#B98200}.decor-grid button[data-owned] .cost{color:#008F9B}
+.decor-grid button .cost{font-size:13px;color:#B98200}.decor-grid button[data-owned] .cost{color:var(--c-bloppit)}
 .decor-grid button:disabled{opacity:.5;cursor:default}
 .decor-grid .dg-h{grid-column:1/-1;display:flex;align-items:baseline;gap:8px;margin:8px 2px 0;font-family:var(--f-display);font-weight:400;font-size:18px}.decor-grid .dg-h:first-child{margin-top:0}.decor-grid .dg-h small{font-family:var(--f-body,inherit);font-size:12px;font-weight:800;color:var(--muted)}
 .decor-grid button[data-locked] svg{filter:grayscale(1);opacity:.6}.decor-grid button[data-locked] .cost{color:var(--muted)}
@@ -1488,7 +1488,7 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .is-tip .tt-ic img,.is-tip .tt-ic svg{width:100%;height:100%;object-fit:contain;display:block}
 .is-tip dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0}
 .is-tip dt{color:var(--muted);font-weight:700}.is-tip dd{margin:0;font-weight:800}
-.is-tip .tt-bar{display:grid;gap:4px}.is-tip .tt-bar .bar{height:8px;border-radius:4px;background:var(--bg);overflow:hidden;display:block}.is-tip .tt-bar .bar i{display:block;height:100%;background:#008F9B}
+.is-tip .tt-bar{display:grid;gap:4px}.is-tip .tt-bar .bar{height:8px;border-radius:4px;background:var(--bg);overflow:hidden;display:block}.is-tip .tt-bar .bar i{display:block;height:100%;background:var(--c-bloppit)}
 .is-tip .tt-bar small{color:var(--muted);font-weight:700}
 .is-tip .tt-btns{display:flex;flex-wrap:wrap;gap:8px}
 .is-tip .tt-story{margin:0 0 8px;font-size:14px;line-height:1.45}
@@ -1528,7 +1528,7 @@ body.end-on .the-end{padding-bottom:calc(22px + env(safe-area-inset-bottom,0px))
 @media (max-width:559px){.the-end .te-card img{width:60px;height:60px}.the-end .te-card q{font-size:15px}.the-end .te-roll .te-pics{grid-template-columns:repeat(3,76px)}.the-end .te-roll img{width:76px;height:76px}}
 .is3-chrome{position:absolute;inset:0;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:12px}
 .is3-banner{pointer-events:none;max-width:90%;text-align:center;padding:8px 16px;border-radius:999px;background:rgba(20,32,44,.86);color:#fff;font-family:var(--f-display);font-size:18px;box-shadow:0 4px 14px rgba(0,0,0,.2);animation:is3-in .4s ease both}
-.is3-banner.big{font-size:22px;background:#008F9B}
+.is3-banner.big{font-size:22px;background:var(--c-bloppit)}
 .is3-banner.soon{background:linear-gradient(135deg,rgba(110,53,184,.92),rgba(59,44,155,.92));font-size:15px;margin-top:150px!important}@media (max-width:559px){.is3-banner.soon{margin-top:160px!important;font-size:13px}}
 @media (max-width:559px){.is3-play{min-width:0;font-size:16px;padding:8px 18px}.is3-play small{font-size:11px}.is3-banner{font-size:15px}.is3-banner.big{font-size:18px}}
 @keyframes is3-in{from{transform:translateY(-10px)}to{transform:none}}
@@ -1628,7 +1628,7 @@ body.film-on{overflow:hidden}
 .tab.play4{background:#008F9B;color:#fff;border-color:#008F9B}
 .tab.play4 .n{background:rgba(255,255,255,.22);color:#fff}
 .tab.play4[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
-.tab.play4[aria-selected="true"] .n{background:var(--hi);color:#14202C}
+.tab.play4[aria-selected="true"] .n{background:var(--hi);color:var(--hi-ink)}
 .hm-sec{font-size:22px;margin:6px 0 -6px}
 .hm-grid.three{grid-template-columns:repeat(3,1fr)}
 .hm-grid.four{grid-template-columns:repeat(4,1fr)}
@@ -1638,19 +1638,19 @@ body.film-on{overflow:hidden}
 .hm-tile.t-quick{--c:#F4BC22;color:#14202C}
 .hm-tile.t-quick .ic{background:rgba(255,255,255,.35)}
 .hm-tile.t-brain{--c:#0055BF}
-.hm-tile.t-sea{--c:#008F9B}
+.hm-tile.t-sea{--c:var(--c-bloppit)}
 .hm-tile.t-friend{--c:#923978}
 .hm-tile.t-together{--c:#6A3FB5}
 .hm-tile.t-join{--c:#1B2A34}
-.hm-tile.t-crew{--c:#008F9B}   /* Crews: teal, no character's colour */
+.hm-tile.t-crew{--c:var(--c-bloppit)}   /* Crews: teal, no character's colour */
 /* Character colours (series bible; Steff, 6 Nov 2026: "each character should be associated with a specific colour").
    One colour per friend, used wherever that friend's face leads: menu tiles, the top bar, the trail picker, the Weekly.
    Red is Bloppit's alone; yellow without a face is Play Now / Quick Play. Light colours carry dark text. */
 :root{--c-bloppit:#D62F2A;--c-tiny:#7DBE2E;--c-nora:#24407A;--c-pippa:#F4BC22;--c-swoop:#2F7FD0;--c-bibi:#E9772A;--c-lufu:#8A6FD1}
-.hm-tile.t-quick{--c:var(--c-bibi);color:#14202C}                 /* Quick Bricks: Bibi */
+.hm-tile.t-quick{--c:var(--c-bibi);color:#14202C}                 /* Build anything: Bibi */
 .hm-tile.t-game{--c:var(--c-tiny);color:#14202C}                  /* Frog Trail: Tiny */
 .hm-tile.t-brain{--c:var(--c-nora)}                               /* Brain Trail: Nora */
-.hm-tile.t-sea{--c:var(--c-pippa);color:#14202C}                  /* Pippa's Puzzles: Pippa */
+.hm-tile.t-sea{--c:var(--c-pippa);color:#14202C}                  /* Pippa's Mirror Puzzles: Pippa */
 .hm-tile.t-blitz{--c:var(--c-swoop)}                              /* vs Swoop: Swoop */
 .hm-tile.t-quick .ic,.hm-tile.t-game .ic,.hm-tile.t-sea .ic{background:rgba(255,255,255,.35)}
 .hm-daily{background:var(--c-bibi);color:#14202C}                 /* Bibi's Weekly Bloppit */
@@ -1703,7 +1703,7 @@ body.film-on{overflow:hidden}
 .ch-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:var(--bg);border-radius:12px;padding:8px 12px}
 .ch-row b.cc{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:15px;letter-spacing:.06em}
 .ch-row .note{margin:0;font-size:13px}
-.ch-code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:38px;letter-spacing:.12em;background:var(--hi);color:#14202C;border-radius:14px;padding:6px 14px;margin:6px auto 10px;width:max-content}
+.ch-code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:38px;letter-spacing:.12em;background:var(--hi);color:var(--hi-ink);border-radius:14px;padding:6px 14px;margin:6px auto 10px;width:max-content}
 .daily-card{display:grid;grid-template-columns:minmax(0,220px) 1fr;gap:20px;align-items:start}
 @media (max-width:600px){.daily-card{grid-template-columns:1fr}}
 .daily-img{width:100%;aspect-ratio:1;border-radius:16px;background:#fff;object-fit:contain;padding:10px;border:2px solid var(--line)}
@@ -1770,12 +1770,65 @@ body.film-on{overflow:hidden}
 }
 @media (max-width:640px){.tabs .tab,.tabs .tab[class*="play"]{padding:6px 8px 10px;gap:5px}.tabs .tab .n{width:24px;height:24px}}
 @media (min-width:641px) and (max-width:1240px){.who{padding:2px;box-shadow:none}.who-txt{display:none}.top{column-gap:16px;flex-wrap:nowrap}.top .tabs{flex-wrap:nowrap;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none;mask-image:linear-gradient(90deg,#000 calc(100% - 18px),transparent)}.top .tabs::-webkit-scrollbar{display:none}}   /* keep the top bar on one line: just the player's face beside the music and sound buttons */
+
+/* ---------- Consistency pass (Steff, 7 Nov 2026; claude/consistency-decisions-2026-11-07.md) ----------
+   Red = the main action, Bloppit and Bloppitopia. Yellow = Pippa and stars only; highlights are ink. One purple for
+   everything Together (not lufu's lavender). No teal. Every menu card is a brick. Buttons are pills. */
+:root{--c-together:#6A3FB5;--accent:#D62F2A;--hi:#14202C;--hi-ink:#FFFFFF}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--hi:#E6EDF5;--hi-ink:#14202C;--accent:#EF5348}}
+:root[data-theme="dark"]{--hi:#E6EDF5;--hi-ink:#14202C;--accent:#EF5348}
+#tab-island{--tc:var(--c-bloppit)}#tab-quick{--tc:var(--c-bloppit)}#tab-mp{--tc:var(--c-together)}
+.hm-tile.t-together,.hm-tile.t-friend,.hm-tile.t-crew,.hm-tile.t-join{--c:var(--c-together)}
+.hm-world.lead{border-color:var(--c-bloppit)}.hm-world .wt .bar i{background:var(--c-bloppit)}
+.hm-quick{border-color:var(--c-bloppit)}.hm-quick .pl{background:var(--c-bloppit);color:#fff}
+.win-stars,.lvl .ls{color:#F4BC22}
+.crew-pzopt:has(input:checked){border-color:var(--c-together);box-shadow:0 0 0 2px var(--c-together) inset}.crew-pzopt em{background:var(--c-together)}
+.crew-row .bar i,.crew-head .bar i,.crew-open .bar i{background:var(--c-together)}
+/* every menu card is a brick: studs along the top, in the card's own colour */
+.hm-quick,.hm-world,.hm-daily,.hm-cont,.hm-how{position:relative;overflow:visible}
+.hm-quick::before,.hm-world::before,.hm-daily::before,.hm-cont::before,.hm-how::before{content:"";position:absolute;left:16px;right:16px;top:-10px;height:12px;border-radius:5px 5px 0 0;
+  background:radial-gradient(circle at 13px 7px,var(--sc) 9px,transparent 9.5px) 0 0/34px 12px repeat-x;pointer-events:none;z-index:1}
+.hm-quick,.hm-world{--sc:var(--c-bloppit)}.hm-daily{--sc:var(--c-bibi)}.hm-how,.hm-cont{--sc:var(--line)}
+.hm-side{row-gap:24px}
+/* the island each game lives on, under its name */
+.hm-tile .isl{font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;opacity:.82;margin:-1px 0 2px}
+/* the wordmark: red Bloppit with the World / of / Bricks bricks, as on the website */
+.brand a>span:not(.wob){color:var(--c-bloppit)}
+.brand .wob{display:inline-flex;gap:3px;margin-left:2px;align-self:center}
+.brand .wob i{font-style:normal;font-family:var(--f-body);font-weight:800;font-size:11px;line-height:1;padding:3px 5px 4px;border-radius:5px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.16)}
+.brand .wob i:nth-child(1){background:#F4BC22;color:#142022}.brand .wob i:nth-child(2){background:#fff;color:#0369BD;box-shadow:inset 0 0 0 1.5px #0369BD}.brand .wob i:nth-child(3){background:#D62F2A;color:#fff}
+/* the links under the menu */
+.appfoot{text-align:center}.appfoot a{color:var(--muted);text-decoration:none;font-weight:700}.appfoot a:hover{color:var(--ink);text-decoration:underline}
+
+/* Drawn icons in place of emoji (Steff, 7 Nov 2026: "all drawn"). They look the same on every phone and computer. */
+.di{display:inline-block;width:1.2em;height:1.2em;vertical-align:-.22em;background:center/contain no-repeat;flex:none;font-style:normal}
+.di-bolt{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23D62F2A'/%3E%3Cpath d='M13.4 3.5 6.4 13.4h4.8l-1.4 7.1 7.8-10.4h-4.9z' fill='%23fff'/%3E%3C/svg%3E")}
+.di-boltw{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14 1.5 4.6 14.5h6.4l-1.9 8 10.3-13.6h-6.5z' fill='%23fff'/%3E%3C/svg%3E")}
+.di-blitz{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%232F7FD0'/%3E%3Cpath d='M13.4 3.5 6.4 13.4h4.8l-1.4 7.1 7.8-10.4h-4.9z' fill='%23fff'/%3E%3C/svg%3E")}
+.di-isle{background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='50' cy='50' r='50' fill='%232FB8DC'/%3E%3Ccircle cx='50' cy='52' r='15' fill='%236CC04A' stroke='%23F2D594' stroke-width='4'/%3E%3Cg transform='translate%2850 52%29 scale%28.5%29' stroke='%239E2019' stroke-width='2' fill='%23D8342C'%3E%3Crect x='-20' y='-6' width='40' height='18' rx='2.5'/%3E%3Crect x='-15' y='-13' width='10' height='8' rx='2'/%3E%3Crect x='5' y='-13' width='10' height='8' rx='2'/%3E%3C/g%3E%3Ccircle cx='50.0' cy='19.0' r='8' fill='%239BD32C' stroke='%23F2D594' stroke-width='3'/%3E%3Ccircle cx='81.4' cy='41.8' r='8' fill='%2324407A' stroke='%23F2D594' stroke-width='3'/%3E%3Ccircle cx='69.4' cy='78.7' r='8' fill='%23F2C230' stroke='%23F2D594' stroke-width='3'/%3E%3Ccircle cx='30.6' cy='78.7' r='8' fill='%232F7FD0' stroke='%23F2D594' stroke-width='3'/%3E%3Ccircle cx='18.6' cy='41.8' r='8' fill='%23E9772A' stroke='%23F2D594' stroke-width='3'/%3E%3C/svg%3E")}
+.di-card{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='1.5' y='4.5' width='21' height='15' rx='2.5' fill='%23fff' stroke='%2314202C' stroke-width='1.6'/%3E%3Crect x='15' y='7' width='5' height='5.5' rx='1' fill='%23D62F2A'/%3E%3Cpath d='M4.5 9h7M4.5 12h7M4.5 15h10' stroke='%2314202C' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")}
+.di-film{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='9' width='20' height='12.5' rx='2' fill='%2314202C'/%3E%3Cpath d='M2.6 4.4 20.9 1.8l.6 4.3L3.2 8.7z' fill='%2314202C'/%3E%3Cpath d='M6.5 3.8l2 3.9M11.5 3.1l2 3.9M16.5 2.4l2 3.9' stroke='%23fff' stroke-width='1.6'/%3E%3Cpath d='M10 12.5v6l5-3z' fill='%23fff'/%3E%3C/svg%3E")}
+.di-flame{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.5c1 4 6.5 6.4 6.5 12.2A6.5 6.5 0 0 1 5.5 13.7c0-3 1.6-4.6 3-6 0 2 .8 3.3 2 3.8C10.2 7.6 11.2 4.4 12 1.5z' fill='%23E9772A'/%3E%3Cpath d='M12 11.5c.6 2 3.3 3 3.3 5.6a3.3 3.3 0 0 1-6.6 0c0-1.6 1-2.6 1.8-3.3.1 1 .5 1.6 1.1 1.8-.2-1.5.1-2.8.4-4.1z' fill='%23F4BC22'/%3E%3C/svg%3E")}
+.di-book{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2 5c3-1.6 6.5-1.6 10 .6V21c-3.5-2.2-7-2.2-10-.6z' fill='%232F7FD0'/%3E%3Cpath d='M22 5c-3-1.6-6.5-1.6-10 .6V21c3.5-2.2 7-2.2 10-.6z' fill='%2324407A'/%3E%3C/svg%3E")}
+.di-camera{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='1.5' y='6.5' width='21' height='14' rx='3' fill='%2314202C'/%3E%3Cpath d='M8 6.5 9.6 3.5h4.8L16 6.5z' fill='%2314202C'/%3E%3Ccircle cx='12' cy='13.5' r='4.6' fill='%23fff'/%3E%3Ccircle cx='12' cy='13.5' r='2.6' fill='%232F7FD0'/%3E%3Ccircle cx='18.6' cy='9.4' r='1.1' fill='%23F4BC22'/%3E%3C/svg%3E")}
+.di-pencil{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M15.6 3.2 20.8 8.4 8.6 20.6 3 21l.4-5.6z' fill='%23F4BC22'/%3E%3Cpath d='M15.6 3.2l2-2 5.2 5.2-2 2z' fill='%23D62F2A'/%3E%3Cpath d='M3.4 15.4 8.6 20.6 3 21z' fill='%23E4CD9E'/%3E%3Cpath d='M3.2 18.6 5.4 20.8 3 21z' fill='%2314202C'/%3E%3C/svg%3E")}
+.di-palette{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.5 2 2 6 2 11.2 2 16.4 6 21 11.4 21c1.6 0 2.2-1 2.2-2 0-1.6-1.8-2 0-3.4 1.4-1 3.6 0 5.6-1C21 13.8 22 12.4 22 10.4 22 5.6 17.6 2 12 2z' fill='%23E4CD9E'/%3E%3Ccircle cx='7' cy='11' r='1.8' fill='%23D62F2A'/%3E%3Ccircle cx='9.6' cy='6.6' r='1.8' fill='%23F4BC22'/%3E%3Ccircle cx='14.6' cy='6.4' r='1.8' fill='%237DBE2E'/%3E%3Ccircle cx='18' cy='10' r='1.8' fill='%232F7FD0'/%3E%3C/svg%3E")}
+.di-together{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%236A3FB5'/%3E%3Crect x='5' y='10.5' width='14' height='7' rx='1.5' fill='%23fff'/%3E%3Crect x='7' y='7.6' width='3.6' height='3.4' rx='1' fill='%23fff'/%3E%3Crect x='13.4' y='7.6' width='3.6' height='3.4' rx='1' fill='%23fff'/%3E%3C/svg%3E")}
+.di-key{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%236A3FB5'/%3E%3Ccircle cx='8.6' cy='12' r='3.6' fill='none' stroke='%23fff' stroke-width='2.2'/%3E%3Cpath d='M12 12h7.4M16.4 12v3M19 12v2.4' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E")}
+.di-friend{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%236A3FB5'/%3E%3Cpath d='M5 12.4 18.6 6.2l-4 12-3-4.4z' fill='%23fff'/%3E%3Cpath d='M11.6 13.8 18.6 6.2' stroke='%23D9CFF0' stroke-width='1.2'/%3E%3C/svg%3E")}
+.hm-quick .pl .di{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14 1.5 4.6 14.5h6.4l-1.9 8 10.3-13.6h-6.5z' fill='%23fff'/%3E%3C/svg%3E");width:.9em;height:.9em}
+.qb-ic .di{width:1.5em;height:1.5em}
+/* phones: the wordmark's bricks go with the word */
+@media (max-width:560px){.brand .wob{display:none}}
+/* the wide Build anything tile: the island sits under the name, the description under that */
+.hm-tile.wide{grid-template-rows:auto auto auto}.hm-tile.wide .ic{grid-row:1 / span 3}
+.hm-tile.wide b{align-self:end}.hm-tile.wide .isl{grid-column:2}.hm-tile.wide span:not(.ic){grid-column:2}
 </style>
 
 <header class="top">
   <h1 class="brand"><a href="/" id="brandLink" aria-label="Bloppit menu">
     <img class="brand-otter" src="/art/bloppit-avatar.png" alt="" width="256" height="256">
-    <span>Bloppit</span></a></h1>
+    <span>Bloppit</span><span class="wob" aria-hidden="true"><i>World</i><i>of</i><i>Bricks</i></span></a></h1>
   <div class="tabs-wrap"><button class="tabs-arr l" type="button" tabindex="-1" aria-hidden="true">‹</button>
   <nav class="tabs" role="tablist" aria-label="Games">
     <button class="tab play5" role="tab" id="tab-island" data-tab="island" aria-selected="false"><span class="n"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="50" fill="#2FB8DC"/><circle cx="50" cy="52" r="15" fill="#6CC04A" stroke="#F2D594" stroke-width="4"/><g transform="translate(50 52) scale(.5)" stroke="#9E2019" stroke-width="2" fill="#D8342C"><rect x="-20" y="-6" width="40" height="18" rx="2.5"/><rect x="-15" y="-13" width="10" height="8" rx="2"/><rect x="5" y="-13" width="10" height="8" rx="2"/></g><circle cx="50.0" cy="19.0" r="8" fill="#9BD32C" stroke="#F2D594" stroke-width="3"/><circle cx="81.4" cy="41.8" r="8" fill="#24407A" stroke="#F2D594" stroke-width="3"/><circle cx="69.4" cy="78.7" r="8" fill="#F2C230" stroke="#F2D594" stroke-width="3"/><circle cx="30.6" cy="78.7" r="8" fill="#2F7FD0" stroke="#F2D594" stroke-width="3"/><circle cx="18.6" cy="41.8" r="8" fill="#E9772A" stroke="#F2D594" stroke-width="3"/></svg></span>Bloppitopia</button>
@@ -1784,7 +1837,7 @@ body.film-on{overflow:hidden}
     <button class="tab play4" role="tab" id="tab-sea" data-tab="game" data-sub="sea" aria-selected="false"><span class="n"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span>Flipper Beach</button>
     <button class="tab play3" role="tab" id="tab-blitz" data-tab="blitz" aria-selected="false"><span class="n"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span>Blitz Bay</button>
     <button class="tab play4" role="tab" id="tab-cove" data-tab="create" data-also="daily" aria-selected="false"><span class="n"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span>Brickyard Cove</button>
-    <button class="tab" type="button" id="tab-quick" aria-selected="false"><span class="n"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="48" fill="#F4BC22"/><path d="M56 14 26 56h20l-6 30 34-44H52z" fill="#14202C"/></svg></span>Quick Play</button>
+    <button class="tab" type="button" id="tab-quick" aria-selected="false"><span class="n"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="48" fill="#D62F2A"/><path d="M56 14 26 56h20l-6 30 34-44H52z" fill="#fff"/></svg></span>Quick Play</button>
     <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n n2"><img src="/art/head-bloppit.png" alt="" width="256" height="256"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span>Together</button>
   </nav><button class="tabs-arr r" type="button" tabindex="-1" aria-hidden="true">›</button></div>
   <button class="snd-top mus-top" id="musTop" type="button" aria-pressed="true" aria-label="Music" title="Music on or off"><span class="mus-ic" aria-hidden="true"></span></button>
@@ -1827,11 +1880,11 @@ body.film-on{overflow:hidden}
 <div class="hm-main">
   <h3 class="hm-sec" id="hmSolo">Solo</h3>
   <div class="hm-grid four">
-    <button class="hm-tile t-quick wide" data-go="quick" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span><b>Quick Bricks</b><span>Any puzzle, at your own pace</span></button>
-    <button class="hm-tile t-game" data-go="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Frog Trail</b><span id="hmOtterSub">Levels from tiny to tricky</span></button>
-    <button class="hm-tile t-brain" data-go="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Brain Trail</b><span id="hmBrainSub">Levels with math puzzles</span></button>
-    <button class="hm-tile t-sea" data-go="flip" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span><b>Pippa’s Puzzles</b><span id="hmSeaSub">Mirror puzzles, any time</span></button>
-    <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>vs Swoop</b><span>Race the speediest Longtail</span></button>
+    <button class="hm-tile t-quick wide" data-go="quick" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span><b>Build anything</b><small class="isl">Brickyard Cove</small><span>Any puzzle, at your own pace</span></button>
+    <button class="hm-tile t-game" data-go="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Frog Trail</b><small class="isl">Frog Forest</small><span id="hmOtterSub">Levels from tiny to tricky</span></button>
+    <button class="hm-tile t-brain" data-go="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Brain Trail</b><small class="isl">Brainpeak</small><span id="hmBrainSub">Levels with math puzzles</span></button>
+    <button class="hm-tile t-sea" data-go="flip" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span><b>Pippa’s Mirror Puzzles</b><small class="isl">Flipper Beach</small><span id="hmSeaSub">Mirror puzzles, any time</span></button>
+    <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>Blitz</b><small class="isl">Blitz Bay</small><span>Race Swoop, the speediest Longtail</span></button>
   </div>
   <h3 class="hm-sec">Together</h3>
   <div class="hm-grid">
@@ -2038,14 +2091,14 @@ body.film-on{overflow:hidden}
   <div class="hub" data-hub>
     <div class="gm-head"><div><h2>🐸 Trails</h2><p class="note">Climb 15 levels, from tiny to tricky: the 15th is the boss. Each trail has its own puzzles and keeps its own points.</p></div></div>
     <div class="hm-grid hub-grid">
-      <button class="hm-tile t-game" data-sub="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Frog Trail</b><span id="hubOtterSub">Levels from tiny to tricky</span></button>
-      <button class="hm-tile t-brain" data-sub="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Brain Trail</b><span id="hubBrainSub">Levels with math puzzles</span></button>
+      <button class="hm-tile t-game" data-sub="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Frog Trail</b><small class="isl">Frog Forest</small><span id="hubOtterSub">Levels from tiny to tricky</span></button>
+      <button class="hm-tile t-brain" data-sub="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Brain Trail</b><small class="isl">Brainpeak</small><span id="hubBrainSub">Levels with math puzzles</span></button>
     </div>
   </div>
   <div class="trail-pick" role="tablist" aria-label="Which trail" hidden>
     <button type="button" role="tab" data-trail="otter" id="trOtter">🐸 Frog Trail</button>
     <button type="button" role="tab" data-trail="brain" id="trBrain">🧠 Brain Trail</button>
-    <button type="button" role="tab" data-trail="sea" id="trSea">🐧 Pippa’s Puzzles</button>
+    <button type="button" role="tab" data-trail="sea" id="trSea">🐧 Pippa’s Mirror Puzzles</button>
   </div>
   <button class="crumb" data-up type="button">‹ Trails</button>
   <div class="card bottle" id="bottleCard">
@@ -2122,7 +2175,7 @@ body.film-on{overflow:hidden}
       <button class="primary" id="mpJoin" type="button">Join</button>
       <p class="note" id="mpRejoinNote" hidden></p>
     </div>
-    <p class="note" style="grid-column:1/-1;margin:0">Want a race instead? Try <a href="#blitz" id="mpToBlitz" style="color:inherit"><b>⚡ Bloppit Blitz</b></a>.</p>
+    <p class="note" style="grid-column:1/-1;margin:0">Want a race instead? Try <a href="#blitz" id="mpToBlitz" style="color:inherit"><b>⚡ Blitz</b></a>.</p>
   </div>
   <div id="mpShared">
   <div class="card mp-waitbox" id="mpWaitBox" hidden>
@@ -2154,12 +2207,12 @@ body.film-on{overflow:hidden}
 <div class="char-hero" data-hero="blitz" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
   <div class="hub" data-hub>
     <div class="hm-grid hub-grid">
-      <button class="hm-tile t-blitz" data-sub="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>vs Swoop</b><span>Race the speediest Longtail</span></button>
+      <button class="hm-tile t-blitz" data-sub="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>Blitz</b><small class="isl">Blitz Bay</small><span>Race Swoop, the speediest Longtail</span></button>
       <button class="hm-tile t-friend" data-sub="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>Race a friend</b><span>Send a challenge code, or race live</span></button>
     </div>
   </div>
   <button class="crumb" data-up type="button">‹ Blitz</button>
-  <div class="gm-head sub-head"><div><h2 id="bzHeadT">⚡ Bloppit Blitz</h2><p class="note">A race against the clock. A hint adds 2 seconds, and each brick in the wrong spot adds 1 second. Shortest time wins.</p></div></div>
+  <div class="gm-head sub-head"><div><h2 id="bzHeadT">⚡ Blitz</h2><p class="note">A race against the clock. A hint adds 2 seconds, and each brick in the wrong spot adds 1 second. Shortest time wins.</p></div></div>
   <div id="bzForms" style="display:grid;gap:16px">
     <div class="card bz-setup">
       <p class="note bz-as" id="bzAs" hidden>Racing as <b id="bzAsN"></b> <button class="ghost sm-link" id="bzAsCh" type="button">Change</button></p>
@@ -2172,7 +2225,7 @@ body.film-on{overflow:hidden}
     </div>
     <div class="mp-forms">
       <div class="card bz-card" id="bzCpuCard">
-        <h2><span aria-hidden="true">🐦</span>vs Swoop</h2>
+        <h2><span aria-hidden="true">🐦</span>Race Swoop</h2>
         <p class="note" style="margin:0">Take turns placing 1, 2 or 3 bricks, then tap Done. Your clock only runs on your turn. Works without internet.</p>
         <div class="field"><span class="lbl">How fast is Swoop?</span>
           <div class="seg bz-speed" style="grid-template-columns:repeat(3,1fr)" role="radiogroup" aria-label="How fast is Swoop?">
@@ -2242,7 +2295,7 @@ body.film-on{overflow:hidden}
       <p class="msg" id="dyMsg" hidden></p>
     </div>
   </div>
-  <button class="crumb dy-up" id="dyUp" type="button">‹ Quick Bricks</button>
+  <button class="crumb dy-up" id="dyUp" type="button">‹ Build anything</button>
   <div class="card" id="dyBoard" hidden><div class="gm-head sub-head"><div><h2>🏆 This week’s top 100</h2><p class="note">Clean builds first, then stars. Generated names only; no times. A grown-up can switch it off in the Grown-ups corner.</p></div></div><div class="board" id="dyBoardList"></div></div>
   <p class="note">Bloppit only counts how many people finished this week’s puzzle and how many finished it clean. No real names and no times. The top-100 board shows generated names and stars; a grown-up can switch it off. The counts are deleted after 8 weeks.</p>
 </section>
@@ -2288,7 +2341,7 @@ body.film-on{overflow:hidden}
   <div class="win-btns"><button class="primary sm" id="ldGo" type="button" autofocus>▶ Start the race</button><button class="ghost" id="ldLater" type="button">Not now</button></div>
 </dialog>
 <dialog class="windlg qpdlg" id="qpDlg" aria-labelledby="qpT">
-  <h2 id="qpT">Quick Bricks</h2>
+  <h2 id="qpT">Build anything</h2>
   <div class="qp-opts">
     <button class="qp-opt isle" id="qpIsle" type="button"><img id="qpImg" src="/art/head-bibi.png" alt=""><b id="qpIsleT">🏝️ Play on Brickyard Cove</b><span>In Bloppitopia: every build grows the island and earns ★, XP and Galaxy Blocks.</span></button>
     <div class="qp-opt qp-quick" id="qpQuickCard"><span class="qp-ic" id="qpQuickIc" aria-hidden="true">⚡</span><b id="qpQuickT">Just Play</b><span id="qpQuickS">Just build. Nothing is added to Bloppitopia.</span>
@@ -3444,15 +3497,15 @@ var subOf={game:'hub',blitz:'hub',mp:'hub'};
 const SUB_OK={game:['hub','otter','brain','sea','flip'],blitz:['hub','cpu','friend'],mp:['hub','start','join']};
 // Which top-bar game a page belongs to (the build screen belongs to whatever you're playing)
 // The top bar: one tab per character. Frog Trail and Brain Trail are both the Trails page (their own level maps), and
-// Pippa's tab is her seaside puzzles (and her daily message in a bottle); the Weekly Bloppit is Bibi's, under Quick Bricks.
+// Pippa's tab is her seaside puzzles (and her daily message in a bottle); the Weekly Bloppit is Bibi's, under Build anything.
 // Each page has its character at the top: who lives there, their island, their line and what the page is for
 const HERO={
   daily:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Bibi’s Weekly Bloppit',line:'Fresh paint! This week’s one is ready.',desc:'Every Monday Bibi paints a new one, and everybody builds the same puzzle. Build it clean: no misses, no hints. Each one you build adds to Brickyard Cove.',c:['#FFAA55','#DD5F1C']},
-  sea:{who:'pippa',art:'/art/char-pippa.png',isle:'Flipper Beach',title:'Pippa’s Puzzles',line:'Ooh, that one’s clean!',desc:'Fifteen mirror puzzles wash ashore as Bloppitopia grows: Pippa builds one half, and you flip it to build the other. Each one adds to Flipper Beach, all the way to the Festival Clock in your own colours. And every day the tide brings a message in a bottle.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
+  sea:{who:'pippa',art:'/art/char-pippa.png',isle:'Flipper Beach',title:'Pippa’s Mirror Puzzles',line:'Ooh, that one’s clean!',desc:'Fifteen mirror puzzles wash ashore as Bloppitopia grows: Pippa builds one half, and you flip it to build the other. Each one adds to Flipper Beach, all the way to the Festival Clock in your own colours. And every day the tide brings a message in a bottle.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
   otter:{who:'tiny',art:'/art/char-tiny.png',isle:'Frog Forest',title:'Frog Trail',line:'Small frog, big forest!',desc:'Hop up the trail with Tiny, one level at a time. The levels start tiny and get bigger, and the last is his Lily-pad Palace.',c:['#A6D93A','#3F8F33']},
   brain:{who:'nora',art:'/art/char-nora.png',isle:'Brainpeak',title:'Brain Trail',line:'A clever mind shines in the dark.',desc:'Nora tucks math puzzles into the booklet: solve one to open its page. The last build is her Great Telescope.',c:['#4A6FC0','#1C2B57']},
-  create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Quick Bricks',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
-  blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Bloppit Blitz',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Fastest clean build wins.',c:['#5DB4F2','#1F6FC4']},
+  create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Build anything',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
+  blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Blitz',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Fastest clean build wins.',c:['#5DB4F2','#1F6FC4']},
   mp:{who:['pup','pup'],art:'/art/hero-together.png',isle:'Friendship Harbour',title:'Build Together',line:'Every build is better with a friend!',desc:'Take turns building one model with friends on their own phones, tablets or computers.',c:['#B9A2F7','#6E4FD6']}};
 function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[data-hero="${t}"]`); if(!el) return;
   const key=t==='game'?subOf.game:t, H=HERO[key]; el.hidden=!H; if(!H) return;
@@ -3477,7 +3530,7 @@ function syncSub(t){
   if(mp||mpw){ if(t==='blitz') s=mp&&mp.cpu?'cpu':'friend'; if(t==='mp') s='start'; }
   if(t==='game'&&s!=='hub') setTrail(s);
   const v=$('#view-'+t); v.dataset.sub=s; v.classList.toggle('in-room',!!(mp||mpw));
-  if(t==='blitz') $('#bzHeadT').textContent=s==='cpu'?'⚡ Blitz vs Swoop':s==='friend'?'⚡ Race a friend':'⚡ Bloppit Blitz';
+  if(t==='blitz') $('#bzHeadT').textContent=s==='cpu'?'Blitz':s==='friend'?'⚡ Race a friend':'⚡ Blitz';
   if(t==='mp') $('#mpHeadT').textContent=s==='join'?'🔑 Join a game':'🧩 Build together';
   if(t==='game'&&s==='hub'){ const st=playerStats(players.cur);
     $('#hubOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
@@ -3624,7 +3677,7 @@ addEventListener('resize',buildFit); addEventListener('orientationchange',()=>se
 if('ResizeObserver' in window){ const r=new ResizeObserver(()=>buildFit()); ['#resume','#mpBar','#gameBar'].forEach(q=>{ const e=$(q); if(e) r.observe(e); }); }
 { const top=$('.top'), setH=()=>{ document.documentElement.style.setProperty('--topH',top.offsetHeight+'px'); buildFit(); }; setH();
   if('ResizeObserver' in window) new ResizeObserver(setH).observe(top); }
-// Quick Bricks's screens: 'home' (the three tiles, the current selection and model settings), 'photo', 'draw' or 'library'
+// Build anything's screens: 'home' (the three tiles, the current selection and model settings), 'photo', 'draw' or 'library'
 const QB_T={photo:'Add a photo',draw:'Draw your own',library:'Pick from the library'};
 function qbShow(screen){ screen=QB_T[screen]?screen:'home';
   document.querySelectorAll('#view-create .panel [data-qb]').forEach(el=>{ el.hidden=el.dataset.qb!==screen; });
@@ -3633,7 +3686,7 @@ function qbShow(screen){ screen=QB_T[screen]?screen:'home';
   try{ if(tab==='create') scrollTo({top:0,behavior:'auto'}); }catch(e){} }
 document.querySelectorAll('[data-qb-go]').forEach(b=>b.addEventListener('click',()=>{ qbShow(b.dataset.qbGo); if(b.dataset.qbGo==='photo') $('#file').click(); }));
 $('#qbBack').onclick=()=>qbShow('home');
-$('#tab-cove').addEventListener('click',()=>qbShow('home'));   // Brickyard Cove = Bibi's Quick Bricks (with her Weekly at the top)
+$('#tab-cove').addEventListener('click',()=>qbShow('home'));   // Brickyard Cove = Bibi's Build anything (with her Weekly at the top)
 $('#tab-quick').addEventListener('click',()=>quickRandom());   // Quick Play: a random Solo game, like the menu's button (Steff, 5 Nov 2026)
 $('#dyUp').onclick=()=>setTab('create');
 qbShow('home');
@@ -6155,7 +6208,7 @@ const BRAIN_LEVELS=[
  // The boss: Nora's Great Telescope, broken just when she needs it. Rebuilding it (math pages and all) completes Brainpeak.
  {name:'Great Telescope', sample:'Great Telescope', size:22, shape:'puffed', thick:.7,  colors:7, pts:1500, boss:true},
 ];
-// Pippa's Puzzles: fifteen seaside builds (twelve until 5 Nov 2026) that grow Flipper Beach. A new one washes ashore every twelfth of the way
+// Pippa's Mirror Puzzles: fifteen seaside builds (twelve until 5 Nov 2026) that grow Flipper Beach. A new one washes ashore every twelfth of the way
 // through Bloppitopia (Frog Forest, Brainpeak, Blitz Bay and Brickyard Cove together), and each also needs the one
 // before it. The last is the Festival Clock. Scores are kept in g.sbest.
 const SEA_LEVELS=[   // mirror builds (Oct 2026): Pippa builds one half, you build its reflection. Every one is symmetrical.
@@ -6257,7 +6310,7 @@ const GAME_KEY='building-blox-game-v1';
 let game=null, autoBusy=false, freeS=null, winLvl=0;
 // Two trails, each with its own levels: Frog Trail (id otter) (just building) and Brain Trail (math puzzles lock some pages).
 // Each keeps its own scores: Frog Trail in g.best (where the levels have always been saved), Brain Trail in g.bbest.
-const TRAILS={otter:{name:'Frog Trail',icon:'🐸'},brain:{name:'Brain Trail',icon:'🧠'},sea:{name:'Pippa’s Puzzles',icon:'🐧'},flip:{name:'Pippa’s Mirror Puzzles',icon:'🪞'}};
+const TRAILS={otter:{name:'Frog Trail',icon:'🐸'},brain:{name:'Brain Trail',icon:'🧠'},sea:{name:'Pippa’s Mirror Puzzles',icon:'🐧'},flip:{name:'Pippa’s Mirror Puzzles',icon:'🪞'}};
 const trailOk=t=>t==='brain'||t==='sea'||t==='flip'?t:'otter';
 let trail=(()=>{ try{ return trailOk(localStorage.getItem('bloppit-trail')); }catch(e){ return 'otter'; } })();
 function setTrail(t){ trail=trailOk(t); try{ localStorage.setItem('bloppit-trail',trail); }catch(e){} }
@@ -6490,7 +6543,7 @@ document.querySelector('.trail-pick').addEventListener('click',e=>{ const b=e.ta
 // A Pippa puzzle the tide hasn't brought in yet: what it's waiting for, and a button to the build that gets it there
 function tideShow(i){ const L=SEA_LEVELS[i], o=worldStore(), k=seaBuildsTo(i,o), B=bestOf(gameStore(),'sea'), first=SEA_LEVELS.findIndex((x,j)=>!(B[j]>0)), n=nextBuild();
   $('#tdTitle').textContent=`${L.name} is still out at sea`; $('#tdPic').src=levelThumb(L);
-  $('#tdTxt').innerHTML=`The tide brings it in when Bloppitopia reaches <b>${seaPct(i)}%</b> (you’re at ${progressPct(o)}%). That’s <b>${k} more build${k===1?'':'s'}</b> on the other islands: Frog Trail, Brain Trail, Blitz or Quick Bricks. Pippa’s own puzzles don’t move the tide.`+(first>=0&&first<i?` And build ${escapeHTML(SEA_LEVELS[first].name)} first.`:'');
+  $('#tdTxt').innerHTML=`The tide brings it in when Bloppitopia reaches <b>${seaPct(i)}%</b> (you’re at ${progressPct(o)}%). That’s <b>${k} more build${k===1?'':'s'}</b> on the other islands: Frog Trail, Brain Trail, Blitz or Build anything. Pippa’s own puzzles don’t move the tide.`+(first>=0&&first<i?` And build ${escapeHTML(SEA_LEVELS[first].name)} first.`:'');
   const g=$('#tdGo'); g.hidden=!n; if(n) g.innerHTML=`▶ Play next<small>${escapeHTML(n.t)}</small>`;
   g.onclick=()=>{ $('#tideDlg').close(); if(n) n.go(); }; $('#tdOk').onclick=()=>$('#tideDlg').close(); $('#tideDlg').showModal(); }
 window.bloppitTide=tideShow;   // for tests
@@ -6878,7 +6931,7 @@ function buildStarted(kind){
   if((o.finished||0)===1&&!o.second) { o.second=true; evStoreSet(o); track('second_build_started_by_choice'); }
 }
 // Called when a build is finished (every build, any mode)
-// Quick play keeps nothing for builds that would grow an island: Quick Bricks, a Trail level, a race against Swoop.
+// Quick play keeps nothing for builds that would grow an island: Build anything, a Trail level, a race against Swoop.
 // The Weekly, challenges, relays and Pippa's own mirror puzzles count as always.
 function quickKeepsNothing(kind){ return !!quickPlay&&!welcomeOn()&&(kind==='quick'||kind==='blitz'||(kind==='trail'&&!!game&&gameTrail()!=='flip')); }
 function buildFinished(kind){
@@ -7078,7 +7131,7 @@ function updateMpBar(){
   if(bz){ $('#hintBtn').textContent=s.calm?'Hint':mp.hintSteps.includes(cur)?'Hint':'Hint (+2s)'; $('#hintBtn').disabled=done||(!mpMyTurn()&&!hintOn); }
   $('#mpBar').classList.toggle('calm',!!s.calm);
   $('#mpBar').classList.toggle('blitz',bz);
-  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?(cpu&&cpu.ladder!=null?(cpu.ladder>=LADDER_N?`Blitz Bay · Race ${BLITZ_RACES} of ${BLITZ_RACES}: the Grand Prix`:`Blitz Bay · Race ${cpu.ladder+1} of ${BLITZ_RACES} · ${CPU_LEVELS[s.cpuLevel].speed}`):`vs Swoop · ${CPU_LEVELS[s.cpuLevel].speed}`):'Room'; $('#mpRoomBtn').textContent=mp.cpu&&s.finished?'🏝️ Back to Bloppitopia':mp.cpu?($('#mpRoomBtn').dataset.confirm?'Tap again to leave':s.solo?'Leave':'Leave race'):'Room'; $('#mpRoomBtn').classList.toggle('primary',!!(mp.cpu&&s.finished)); $('#mpRoomBtn').classList.toggle('ghost',!(mp.cpu&&s.finished)); $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
+  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?(cpu&&cpu.ladder!=null?(cpu.ladder>=LADDER_N?`Blitz Bay · Race ${BLITZ_RACES} of ${BLITZ_RACES}: the Grand Prix`:`Blitz Bay · Race ${cpu.ladder+1} of ${BLITZ_RACES} · ${CPU_LEVELS[s.cpuLevel].speed}`):`Blitz · ${CPU_LEVELS[s.cpuLevel].speed}`):'Room'; $('#mpRoomBtn').textContent=mp.cpu&&s.finished?'🏝️ Back to Bloppitopia':mp.cpu?($('#mpRoomBtn').dataset.confirm?'Tap again to leave':s.solo?'Leave':'Leave race'):'Room'; $('#mpRoomBtn').classList.toggle('primary',!!(mp.cpu&&s.finished)); $('#mpRoomBtn').classList.toggle('ghost',!(mp.cpu&&s.finished)); $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
   const cp=s.players[s.turn], mine=s.turn===mp.me, left=mpLeft(s), el=$('#mpTurn');
   el.classList.toggle('mine',mine&&!s.finished&&s.started);
   if(bz&&s.solo&&s.calm) el.innerHTML=s.finished?'Finished!<small>Let’s see how clean it was</small>':`Build it clean<small>${(s.players[0].n||0)} of ${s.quota} placed</small>`;
@@ -7180,7 +7233,7 @@ function mpModelOptions(id='#mpModel'){
   const sel_=$(id), keep=sel_.value, mine=`<option value="cur">${model?`Your puzzle: ${escapeHTML(niceName(model.name))} (${model.bricks.length} bricks)`:'Your puzzle'}</option>`;
   if(id==='#bzModel'){
     // Blitz: a few ready-made races, easy to hard
-    sel_.innerHTML=mine+['Easy','Medium','Hard',...(grandPrixOpen()?['Grand Prix']:[])].map(d=>`<optgroup label="${d==='Grand Prix'?'🏆 Grand Prix (vs Swoop)':d}">`+BLITZ_PICKS.map((L,i)=>L.diff!==d?'':
+    sel_.innerHTML=mine+['Easy','Medium','Hard',...(grandPrixOpen()?['Grand Prix']:[])].map(d=>`<optgroup label="${d==='Grand Prix'?'🏆 Grand Prix':d}">`+BLITZ_PICKS.map((L,i)=>L.diff!==d?'':
       `<option value="p${i}">${L.name} (${levelCount(L)} bricks)</option>`).join('')+'</optgroup>').join('');
   } else sel_.innerHTML=mine+['Small','Medium','Big'].map(d=>`<optgroup label="${d}">`+TOGETHER_PICKS.map((L,i)=>L.diff!==d?'':
       `<option value="t${i}">${L.name} (${levelCount(L)} bricks)</option>`).join('')+'</optgroup>').join('');
@@ -7230,8 +7283,8 @@ async function renderMpView(){
   const p0=photos[0]; if(p0) $('#mpThumb').src=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png'));
   $('#mpModelName').textContent=s.title;
   $('#mpModelInfo').innerHTML=s.solo?`<span class="blitz-tag">${escapeHTML(s.label)}</span>${s.nBricks} bricks, all yours. Your clock runs until the last brick is in. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
-    :cpuOn?`<span class="blitz-tag">⚡ vs Swoop · ${CPU_LEVELS[s.cpuLevel].speed}</span>${s.nBricks} bricks · you each place ${s.quota} · 1 to 3 bricks a turn. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
-    :bz?`<span class="blitz-tag">⚡ Bloppit Blitz</span>${s.nBricks} bricks · ${s.quota?`everyone places ${s.quota}`:`split evenly between ${s.players.length} player${s.players.length===1?'':'s'}: ${Math.floor(s.nBricks/s.players.length)} each`} · 1 to 3 bricks a turn, against the clock. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
+    :cpuOn?`<span class="blitz-tag">Blitz · ${CPU_LEVELS[s.cpuLevel].speed}</span>${s.nBricks} bricks · you each place ${s.quota} · 1 to 3 bricks a turn. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
+    :bz?`<span class="blitz-tag">⚡ Blitz</span>${s.nBricks} bricks · ${s.quota?`everyone places ${s.quota}`:`split evenly between ${s.players.length} player${s.players.length===1?'':'s'}: ${Math.floor(s.nBricks/s.players.length)} each`} · 1 to 3 bricks a turn, against the clock. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
     :`${s.nBricks} bricks · ${s.perTurn} brick${s.perTurn>1?'s':''} per turn${s.started?` · ${s.moves.length} placed so far`:''}`;
   $('#mpList').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.stale||p.left?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.left?' · left':''}${p.i===s.host&&!cpuOn?' · made the room':''}${s.started?(bz?` <b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>`:` <b>${p.score}</b>`):''}</span>`).join('');
   const host=mp.me===s.host;
@@ -7335,7 +7388,7 @@ $('#mpCopy').onclick=async()=>{ const url=APP?`https://bloppit.com/join/${mp.cod
   try{ if(navigator.share) await navigator.share({title:'Bloppit',text:`Build with me! Room ${mp.code}`,url}); else { await navigator.clipboard.writeText(url); $('#mpCopy').textContent='Copied!'; setTimeout(()=>$('#mpCopy').textContent='Copy invite link',2000); } }catch(e){} };
 document.addEventListener('visibilitychange',()=>{ if(mp&&document.visibilityState==='visible'){ mp.ver=0; mpPoll(); } });
 
-/* ---------- Bloppit Blitz page ---------- */
+/* ---------- Blitz page ---------- */
 $('#bzMake').onclick=async()=>{
   const name=$('#bzName').value.trim(); if(!name){ mpMsg('Type your name first.','err'); bzNameEdit=true; bzNameSync(); $('#bzName').focus(); return; }
   const btn=$('#bzMake'); btn.disabled=true; mpMsg('');
@@ -7356,7 +7409,7 @@ $('#bzJoin').onclick=async()=>{
 $('#bzCodeIn').addEventListener('input',e=>{ e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
 $('#mpToBlitz').onclick=e=>{ e.preventDefault(); setTab('blitz'); };
 
-/* ---------- Bloppit Blitz: race the computer (everything happens on this device) ---------- */
+/* ---------- Blitz: race the computer (everything happens on this device) ---------- */
 // The race uses the same rules and screens as a Blitz room, but the "room" lives here instead of on the server.
 // Bloppit takes a few seconds to find and place each brick, and sometimes misses (+1 second, like everyone).
 // Three Bloppits to race: each one is quicker and makes fewer mistakes than the last.
@@ -7682,7 +7735,7 @@ function chShareUrl(code){ return `https://bloppit.com/join/${code}`; }
 async function chShare(code,kind){
   if(APP&&!await gate.ask('Sharing sends your challenge code to another app.')) return;
   const url=chShareUrl(code), text=kind==='relay'?`I built half. Can you finish it? Bloppit relay code ${code}`:`Can you beat my Bloppit time? Challenge code ${code}`;
-  try{ if(navigator.share) await navigator.share({title:'Bloppit Blitz challenge',text,url}); else { await navigator.clipboard.writeText(`${text} ${url}`); $('#trShare').textContent='Copied!'; setTimeout(()=>$('#trShare').textContent='Share the code',2000); } }catch(e){}
+  try{ if(navigator.share) await navigator.share({title:'Blitz challenge',text,url}); else { await navigator.clipboard.writeText(`${text} ${url}`); $('#trShare').textContent='Copied!'; setTimeout(()=>$('#trShare').textContent='Share the code',2000); } }catch(e){}
 }
 let trialDone=null;
 function trialDialog(o){
@@ -7727,16 +7780,16 @@ async function trialEnd(){
       const cleanRow=clean?'<div class="tot"><span>Clean build</span><span>✓</span></div>':`<div><span>Not clean yet</span><span>${r.miss?`${r.miss} miss${r.miss===1?'':'es'}`:''}${r.miss&&r.hint?', ':''}${r.hint?`${r.hint} hint${r.hint===1?'':'s'}`:''}</span></div>`;
       const streakNote=()=>{ const k=weeklyStreak(); return k>1?` Streak: ${k} weeks 🔥.`:''; };
       if(!first){ trialDialog({icon:'📅',card:true,next:true,isle:'brickworks',title:clean?'Clean build!':'Nice practice!',rows:cleanRow,note:(clean&&!prev.clean?'That one counts as clean now. ':'')+'Come back on Monday for a new puzzle!'+streakNote()}); return; }
-      trialDialog({icon:'📅',title:'Weekly Bloppit done!',rows:cleanRow,note:'Checking how everyone else did…'});
+      trialDialog({icon:'📅',title:'Bibi’s Weekly Bloppit done!',rows:cleanRow,note:'Checking how everyone else did…'});
       try{
         const j=await chApi('POST',{action:'weekly',week:info.week,ms:r.ms,miss:r.miss,hint:r.hint,nBricks:model.bricks.length,board:boardOn(),stars:worldLast?worldLast.stars:0});
         if(j.board) $('#dyBoardList').innerHTML=boardRows(j.board);
         weeklyPeek={week:info.week,n:j.n,clean:j.clean,pct:j.pct};
         W.weeks[info.week].n=j.n; W.weeks[info.week].pct=j.pct; weeklyStoreSet(W);
         const beat=weeklyPuzzle(info.week).beat;
-        trialDialog({icon:clean?'✨':'📅',card:true,next:true,isle:'brickworks',title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,
+        trialDialog({icon:clean?'✨':'📅',card:true,next:true,isle:'brickworks',title:clean?'Clean build!':'Bibi’s Weekly Bloppit done!',rows:cleanRow,
           note:(beat?beat+' ':'')+(clean?(j.clean<=1?'You’re the first clean build this week!':`You and ${j.pct}% of this week’s builders finished clean.`):!j.clean?'Nobody has built it clean yet this week. Build it again and be the first!':`${j.pct}% of this week’s builders finished clean. Build it again for a clean one!`)+streakNote()+' A new puzzle arrives on Monday.'});
-      }catch(e){ trialDialog({icon:'📅',card:true,next:true,isle:'brickworks',title:clean?'Clean build!':'Weekly Bloppit done!',rows:cleanRow,note:`Your build is saved on this device, but it couldn’t be counted with everyone else’s (${e.message}).`+streakNote()}); }
+      }catch(e){ trialDialog({icon:'📅',card:true,next:true,isle:'brickworks',title:clean?'Clean build!':'Bibi’s Weekly Bloppit done!',rows:cleanRow,note:`Your build is saved on this device, but it couldn’t be counted with everyone else’s (${e.message}).`+streakNote()}); }
     }
   };
   await send();
@@ -7918,7 +7971,7 @@ $('#btOpen').onclick=()=>{ const o=worldStore(), day=dayKey(); if(bottleDays(o).
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden) bottleSync(); });
 window.bloppitWorld=()=>{ const o=worldStore(); return {level:otterLevel(o),stage:PUP_STAGES[pupStage(o)].name,galaxy:worldStars(o),stars:worldRating(o),xp:worldXP(o)}; };   // for tests
 window.bloppitBottle=()=>({day:dayKey(),days:bottleDays(worldStore()),xp:worldXP(worldStore()),dot:$('#tab-sea').classList.contains('bottle-on')});   // for tests
-// Bibi's Weekly card on the Quick Bricks page: this week's model and whether it's done
+// Bibi's Weekly card on the Build anything page: this week's model and whether it's done
 function qbWeeklySync(){ try{ const week=weekOf(), o=weeklyPuzzle(week), me=weeklyStore().weeks[week];
   $('#qbWkImg').src=o.thumb||'/art/head-bibi.png';
   $('#qbWkSub').textContent=me?(me.clean?`${o.name}: built clean ✓ · a new one every Monday`:`${o.name}: built ✓ · try it again for a clean one`):`This week: ${o.name} · ${o.n} bricks`; }catch(e){} }
@@ -7927,13 +7980,13 @@ $('#dyGo').onclick=async()=>{
   const b=$('#dyGo'); b.disabled=true;
   try{ const week=weekOf(), o=weeklyPuzzle(week); if(game) endGame(); if(mp) mpLeave(); weeklyLoad(o);
     const nm=mpName()||curPlayer().name||'You';
-    await trialStart({kind:'weekly',week,label:'📅 Weekly Bloppit',title:o.name,calm:true},nm); }
+    await trialStart({kind:'weekly',week,label:'Bibi’s Weekly Bloppit',title:o.name,calm:true},nm); }
   catch(e){ const m=$('#dyMsg'); m.hidden=false; m.textContent=e.message; m.dataset.kind='err'; if(trialOn()) mpLeave(); cpuEnd(); }
   finally{ b.disabled=false; }
 };
 $('#dyBook').onclick=()=>{ const o=weeklyPuzzle(weekOf()); if(mp) mpLeave(); if(game) endGame(); weeklyLoad(o); setTab('booklet'); };
 
-/* ---------- Quick Bricks: pick a puzzle source ---------- */
+/* ---------- Build anything: pick a puzzle source ---------- */
 
 /* ---------- Letting people in (host) ---------- */
 let knockSeen=new Set();
@@ -7986,7 +8039,7 @@ function snapshot(){
     game:game?{lvl:game.lvl,trail:gameTrail(),pen:{...game.pen},hintSteps:[...game.hintSteps],math:game.math?{v:game.math.v,tier:game.math.tier,grade:game.math.grade,locks:game.math.locks,solved:game.math.solved,pts:game.math.pts}:null}:null
   };
 }
-// A Moonstone chapter keeps its own save as well, so leaving it for anything else (Quick Bricks, a trail…) and coming back
+// A Moonstone chapter keeps its own save as well, so leaving it for anything else (Build anything, a trail…) and coming back
 // carries on where you left off: the main save holds only the build on the table (Steff, 5 Nov 2026)
 const MYS_SAVE_KEY='bloppit-mys-save-v1';
 function mysSaveGet(i){ try{ const o=JSON.parse(localStorage.getItem(pkey(MYS_SAVE_KEY))||'null'); return o&&o.ch===i&&o.snap&&o.snap.placedN>0?o.snap:null; }catch(e){ return null; } }
@@ -8262,7 +8315,7 @@ function worldToast(){
   const r=worldLast, el=$('#worldToast'); if(!r){ el.hidden=true; return; }
   el.innerHTML=worldStripHTML(r)+'<span class="ws-go">Island ▸</span>'; el.hidden=false; worldSound(); el.onclick=()=>{ el.hidden=true; setTab('island'); }; clearTimeout(worldToast.t); worldToast.t=setTimeout(()=>{ el.hidden=true; },7000);
 }
-// After a Quick Bricks's reveal: the stars, and on the first ever finish the pup
+// After a Build anything's reveal: the stars, and on the first ever finish the pup
 function worldAfterQuick(){ pupMaybe(()=>{ const o=worldStore(), g=ISL3.ok&&typeof worldNextGoal==='function'?worldNextGoal(o):null;
   trialDialog({icon:'🧱',title:'You built it!',note:quickPlay?'⚡ Quick play: this one isn’t added to Bloppitopia.':g?(/^Next /.test(g.text)?g.text+' on Moonstone Isle.':'Next on Bloppitopia: '+g.text+'.'):'',next:true,quick:true}); }); }
 function pupMaybe(then){ const o=worldStore(); if(pupName(o)||worldCount(o)!==1||o.pupAsked){ if(then) then(); return; } o.pupAsked=true; worldSet(o); pupOpen(then); }
@@ -8599,9 +8652,9 @@ function modelFacts(k,o){
   let m;
   if((m=/^t:([a-z]+):(\d+):(.*)$/.exec(k))){ const tr=m[1], i=+m[2]; name=m[3]||`Level ${i+1}`; from=`${(TRAILS[tr]||{name:'Trail'}).name} · level ${i+1}`;
     again=()=>{ if(mp) mpLeave(); setTrail(tr); startLevel(i); }; }
-  else if((m=/^w:(.+)$/.exec(k))){ let nm='Weekly Bloppit'; try{ nm=weeklyPuzzle(m[1]).name; }catch(e){} name=nm; from=`Weekly Bloppit · week of ${fmtDay(Date.parse(m[1]+'T12:00:00'))}`;
+  else if((m=/^w:(.+)$/.exec(k))){ let nm='Bibi’s Weekly Bloppit'; try{ nm=weeklyPuzzle(m[1]).name; }catch(e){} name=nm; from=`Bibi’s Weekly Bloppit · week of ${fmtDay(Date.parse(m[1]+'T12:00:00'))}`;
     if(m[1]===weekOf()) again=()=>setTab('daily'); }
-  else if((m=/^m:(.+):\d+$/.exec(k))){ name=m[1]; from={welcome:'Your very first build',blitz:'Blitz · a race you won',room:'Build together',challenge:'A challenge',relay:'A relay with a friend'}[b.k]||'Quick Bricks · the library';
+  else if((m=/^m:(.+):\d+$/.exec(k))){ name=m[1]; from={welcome:'Your very first build',blitz:'Blitz · a race you won',room:'Build together',challenge:'A challenge',relay:'A relay with a friend'}[b.k]||'Build anything · the library';
     const i=SAMPLES.findIndex(x=>x.name===m[1]); if(i>=0&&released(SAMPLES[i])) again=()=>{ if(mp) mpLeave(); if(game) endGame(); loadSample(i); clearTimeout(timer); rebuild(); setTab('build'); }; }
   else if(/^r:/.test(k)){ name='Relay build'; from='A relay with a friend'; }
   return {b,name,from,again};
@@ -9817,13 +9870,13 @@ const ISLES={
     milestone:'The Lily-pad Palace',grows:'Every Frog Trail level you finish (the last is the boss)',play:'Play Frog Trail',go:()=>trailGo('otter')},
   brainpeak:{name:'Brainpeak',game:'Brain Trail',unit:'Brain Trail level',x:-8.4,z:-12.8,r:4.4,seed:4.1,ground:['#79C25A','#4E9E3A'],
     milestone:'The Great Telescope',grows:'Every Brain Trail level you finish (the last is the boss)',play:'Play Brain Trail',go:()=>trailGo('brain')},
-  sunrise:{name:'Flipper Beach',game:'Pippa’s Puzzles',unit:'Pippa puzzle',x:5.6,z:-14.8,r:4.3,seed:5.9,ground:['#8AD06A','#5FA94A'],sand:true,
+  sunrise:{name:'Flipper Beach',game:'Pippa’s Mirror Puzzles',unit:'Pippa puzzle',x:5.6,z:-14.8,r:4.3,seed:5.9,ground:['#8AD06A','#5FA94A'],sand:true,
     milestone:'The Festival Clock',grows:'Every one of Pippa’s seaside puzzles you build. A new one washes ashore about every 8% of the way through Bloppitopia',play:'Play Pippa’s puzzle',go:()=>homeGo('sea')},
   blitzbay:{name:'Blitz Bay',game:'Blitz',unit:'Blitz win',x:15.2,z:-4.6,r:4.8,seed:5.3,ground:['#6CC24A','#4E9E3A'],sand:true,
     milestone:'The Grand Prix cup',grows:'Every Blitz race you win against Swoop (the 16th is the Grand Prix)',play:'Race Swoop',go:()=>ladderGo()},
   brickworks:{name:'Brickyard Cove',game:'Creative builds',unit:'creation',x:12.4,z:9.6,r:4.3,seed:6.6,ground:['#7CC45E','#4E9E3A'],
     milestone:'The Grand Creation Gallery',grows:'Every build from your own photo or drawing, from the library, and every Weekly Bloppit',play:'Make your own',
-    go:()=>{ pickPuzzle('quick','top'); }},   // Quick Bricks's first screen: a photo, a drawing or the library
+    go:()=>{ pickPuzzle('quick','top'); }},   // Build anything's first screen: a photo, a drawing or the library
   moonstone:{name:'Moonstone Isle',game:'Chapters',get play(){ const i=mysteryNext(); return i>=0?`▶ Build Chapter ${i+1}: ${mysteryTitle(MYSTERY[i])}`:'Explore Moonstone Isle'; },unit:'chapter',get x(){ return isl3TallNow()?-22.5:23.5; },get z(){ return isl3TallNow()?-11.5:-23.5; },r:4.0,   // far out at sea, in the top corner of the view (upright phones see the world from the side)
    seed:7.7,ground:['#6FB7A4','#4E8F7E'],sand:true,mystery:true,
     milestone:'The Galaxy Ship',grows:'Every chapter you build',go:()=>mysteryGo()},
@@ -10343,7 +10396,7 @@ function isl3Characters(o,W){
    Galaxy ship lies beached; dark violet ground; glowing torch-coral colonies swaying as if underwater; moonstone shards drifting in the air; a ruined
    moonstone arch (the first thing to rebuild one day); dark cliffs behind. Everyone is here: lufu, the pup, Bloppit
    and the six friends, in a loose group by the ship. Builds the child makes while here go on stands on the ground,
-   so Quick Bricks builds and library builds keep working. "Bloppitopia" and "lufu's world" are the two realms; the island
+   so Build anything builds and library builds keep working. "Bloppitopia" and "lufu's world" are the two realms; the island
    view shows one at a time and a button swaps between them (realmGo). Its story is still to be written: "Bloppit
    Chapter 2: Bloppit builds lufu's world". */
 const LUFU_R=12.5, LUFUP=blob3(0,0,LUFU_R,4.7,44), LUFU_T3=new THREE.Vector3(0,3.0,-.6);   // where the camera looks: the group by the ship
@@ -10981,7 +11034,7 @@ function isl3Show(box,o){ isl3Immersive(); isl3WakeCheck(); isl3CharsLoad(o);
   isl3A11y(o);
   ISL3.pending_acc=accNew(o);
   const un=worldUnlocked(o); let seen=seenGet();
-  // Flipper Beach now grows with Pippa's Puzzles (from 24 Oct 2026), so pieces it had from Weekly Bloppits are gone
+  // Flipper Beach now grows with Pippa's Mirror Puzzles (from 24 Oct 2026), so pieces it had from Weekly Bloppits are gone
   // until they're built again: forget them as seen so each one is revealed again when it comes back
   if(seen){ const keep=seen.filter(i=>!/^(sunrise:\d+|isle:sunrise|done:sunrise|final:all)$/.test(i)||un.includes(i)); if(keep.length<seen.length){ seen=keep; seenSet(seen); } }
   if(seen===null){ seenSet([...un,...ACC.filter(a=>accOwned(a,o)).map(a=>'acc:'+a.id)]); ISL3.pending_acc=[]; }
@@ -11292,7 +11345,7 @@ function renderBuilds(){
   const o=worldStore(), keys=[...o.log].reverse(), shownKeys=new Set(islandModelsAny(o).list.map(m=>m.key));
   const B=Object.values(o.builds), clean=B.filter(b=>(b.s||0)>=3).length, nohint=B.filter(b=>(b.s||0)>=2).length, mem=B.filter(b=>b.m).length;
   $('#isBuildsNote').innerHTML=keys.length?`${keys.length} model${keys.length===1?'':'s'} finished. Stars are the best of every try. <span class="mastery"><b>${clean}</b> clean · <b>${nohint}</b> no hints · <b>${mem}</b> from memory</span>`:'Nothing finished yet.';
-  $('#buildsGrid').innerHTML=keys.map(k=>{ const b=o.builds[k], u=worldThumb(k), nm=k.startsWith('w:')?'Weekly Bloppit':(/^m:(.+):\d+$/.exec(k)||/^t:[a-z]+:\d+:(.+)$/.exec(k)||[])[1]||'Your photo';
+  $('#buildsGrid').innerHTML=keys.map(k=>{ const b=o.builds[k], u=worldThumb(k), nm=k.startsWith('w:')?'Bibi’s Weekly Bloppit':(/^m:(.+):\d+$/.exec(k)||/^t:[a-z]+:\d+:(.+)$/.exec(k)||[])[1]||'Your photo';
     const home=isHomeBuild(k), away=!home&&isAway(o,k), on=home||shownKeys.has(k)||(k.startsWith('w:')&&!ISL3.ok);
     return `<button type="button" class="${on?'':'away'}" data-mkey="${escapeHTML(k)}" aria-label="${escapeHTML(modelFacts(k,o).name)}">${home?'<span class="on-isle" title="It became your home">🏠</span>':on?'<span class="on-isle" title="On Bloppitopia">🏝️</span>':''}${u?`<img src="${u}" alt="">`:'<span style="height:72px"></span>'}<span>${escapeHTML(modelFacts(k,o).name)}</span>${wsStars(b.s||0)}<small>${home?'Your home · ':''}${b.n} bricks${b.m?' · 🧠':''}${k.startsWith('w:')?' · 📅':''}${away?' · put away':''}</small></button>`; }).join('');
 }
@@ -11399,7 +11452,7 @@ function shareOpen(code,xfer){
   if(xfer) shareClaim(xfer);
   let week=null, smp=null, title='', note='';
   if(/^w-\d{4}-\d{2}-\d{2}$/.test(code)){ week=code.slice(2); if(week>weekOf()) week=null; }
-  if(week){ const o=weeklyPuzzle(week); smp=SAMPLES[o.i]; title=week===weekOf()?'This week’s Bloppit':'A Weekly Bloppit'; note=week===weekOf()?`${o.name}, ${o.n} bricks. Build it clean and see how many others did too.`:`${o.name}, ${o.n} bricks, from the week of ${new Date(week+'T12:00:00Z').toLocaleDateString(undefined,{day:'numeric',month:'long'})}.`; }
+  if(week){ const o=weeklyPuzzle(week); smp=SAMPLES[o.i]; title=week===weekOf()?'Bibi’s Weekly Bloppit':'A Weekly Bloppit'; note=week===weekOf()?`${o.name}, ${o.n} bricks. Build it clean and see how many others did too.`:`${o.name}, ${o.n} bricks, from the week of ${new Date(week+'T12:00:00Z').toLocaleDateString(undefined,{day:'numeric',month:'long'})}.`; }
   else if(code.startsWith('m-')){ const li=OTTER_LEVELS.findIndex(L=>slugOf(L.name)===code.slice(2));   // a Trail level of that name first (tuned sizes), then the library
     if(li<0){ smp=SAMPLES.find(x=>released(x)&&slugOf(x.name)===code.slice(2)); if(smp){ title=smp.name; note='A Bloppit build, sent to you. No account, nothing to sign up for.'; } }
     else { if(li>=0){ const L=OTTER_LEVELS[li]; $('#shPic').src=levelThumb(L); $('#shPic').hidden=false; $('#shTitle').textContent=L.name; $('#shNote').textContent=`Frog Trail level ${li+1}. A Bloppit build, sent to you. No account, nothing to sign up for.`; setTab('home');
@@ -11446,8 +11499,8 @@ async function weeklyCard(){
     x.fillStyle='#F4BC22'; x.font='800 26px Nunito,sans-serif'; x.fillText('Build it: bloppit.com/p/w-'+info.week, 672, 530);
     const blob=await new Promise(r=>c.toBlob(r,'image/png')), file=new File([blob],'weekly-bloppit.png',{type:'image/png'});
     const url=`${SHARE_BASE}/p/w-${info.week}`, text=`Finished this week’s Bloppit: ${o.name}. ${line} Build it: ${url}`;
-    if(navigator.canShare&&navigator.canShare({files:[file]})) await navigator.share({files:[file],title:'Weekly Bloppit',text,url});
-    else if(navigator.share) await navigator.share({title:'Weekly Bloppit',text,url});
+    if(navigator.canShare&&navigator.canShare({files:[file]})) await navigator.share({files:[file],title:'Bibi’s Weekly Bloppit',text,url});
+    else if(navigator.share) await navigator.share({title:'Bibi’s Weekly Bloppit',text,url});
     else { const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='weekly-bloppit.png'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),5000); try{ await navigator.clipboard.writeText(text); }catch(e){} }
   }catch(e){ if(!/abort/i.test(String(e))) setStatus('Couldn’t make the card just now.','err'); }
 }
@@ -11925,7 +11978,7 @@ $('#wcPupGo').onclick=()=>{ const d=$('#welcomeDlg'); d.close(); endReveal(true)
 function homeContinue(){
   const bar=(a,b)=>b?Math.round(100*a/b):0;
   if(game&&model&&levelsOf(gameTrail())[game.lvl]) return {t:`Back to ${TRAILS[gameTrail()].name} level ${game.lvl+1}`,s:`${levelsOf(gameTrail())[game.lvl].name}: ${placedN} of ${model.bricks.length} bricks placed`,p:bar(placedN,model.bricks.length),go:()=>setTab('build')};
-  if(mp) return {t:mp.state&&mp.state.calm?'Back to this week’s Bloppit':mp.cpu?'Back to your race':'Back to your room',s:mp.state&&mp.state.solo?`Your ${mp.state.label} is still going`:mp.cpu?`Your Blitz race against ${mp.state&&mp.state.cpuLevel?CPU_LEVELS[mp.state.cpuLevel].name:'Swoop'} is still going`:mpBlitz()?'Your Bloppit Blitz game is still going':'Your Play together game is still going',p:-1,go:()=>setTab(mp.state&&mp.state.started?'build':mpHomeTab())};
+  if(mp) return {t:mp.state&&mp.state.calm?'Back to this week’s Bloppit':mp.cpu?'Back to your race':'Back to your room',s:mp.state&&mp.state.solo?`Your ${mp.state.label} is still going`:mp.cpu?`Your Blitz race against ${mp.state&&mp.state.cpuLevel?CPU_LEVELS[mp.state.cpuLevel].name:'Swoop'} is still going`:mpBlitz()?'Your Blitz game is still going':'Your Play together game is still going',p:-1,go:()=>setTab(mp.state&&mp.state.started?'build':mpHomeTab())};
   if(pendingSave){ const o=pendingSave;
     return {t:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`Continue ${TRAILS[trailOk(o.game.trail)].name} level ${o.game.lvl+1}`:'Continue building',
       s:o.game&&levelsOf(o.game&&o.game.trail)[o.game.lvl]?`${levelsOf(o.game&&o.game.trail)[o.game.lvl].name}: ${o.placedN} of ${o.nBricks} bricks placed`:`${/^The /.test(niceName(o.name))?niceName(o.name):'Your '+niceName(o.name)}: ${o.placedN} of ${o.nBricks} bricks placed`,
@@ -11973,21 +12026,21 @@ function homeGo(where){ mpDoneLeave();
 // "Play on <island>" is Bloppitopia as before (its arrival film the first time, the build grows the island);
 // "Quick play" just builds: no film, and nothing is added to Bloppitopia (no island, ★ record, XP or Galaxy Blocks).
 // Quick play lasts until the player goes back to Bloppitopia (the island, a top tab, or the other choice).
-const QP_TILES={quick:{isle:'brickworks',who:'bibi',t:'Quick Bricks'},otter:{isle:'otterwood',who:'tiny',t:'Frog Trail'},brain:{isle:'brainpeak',who:'nora',t:'Brain Trail'},cpu:{isle:'blitzbay',who:'swoop',t:'Blitz vs Swoop'}};
+const QP_TILES={quick:{isle:'brickworks',who:'bibi',t:'Build anything'},otter:{isle:'otterwood',who:'tiny',t:'Frog Trail'},brain:{isle:'brainpeak',who:'nora',t:'Brain Trail'},cpu:{isle:'blitzbay',who:'swoop',t:'Blitz'}};
 function quickPlaySet(on){ quickPlay=!!on; document.body.classList.toggle('quick-play',quickPlay); }
 function quickGo(where){ quickPlaySet(true); track('quick_play:'+where);
   if(where==='quick'){ if(game) endGame(); pickPuzzle('quick','top'); return; }
   if(where==='cpu'){ setTab('blitz','cpu'); scrollTo(0,0); return; }
   setTab('game',where); }
-// The difficulty slider (Steff, 4 Nov 2026): Quick play (and Pippa's Puzzles, which has no island) has a "How tricky?"
+// The difficulty slider (Steff, 4 Nov 2026): Quick play (and Pippa's Mirror Puzzles, which has no island) has a "How tricky?"
 // slider from Tiny to Super tricky, and a puzzle to match is picked and shown, ready to build (🔀 for another one).
 // Trails and races: their puzzles are already in order from tiny to tricky, so the slider takes a fifth of the list.
-// Quick Bricks: any library puzzle, made smaller and simpler or bigger and more colourful (QP_LIB).
+// Build anything: any library puzzle, made smaller and simpler or bigger and more colourful (QP_LIB).
 // vs Swoop: the race's own speed comes with it (Warm-up, Race, Full throttle). The slider is kept per tile.
 const QP_LV=['🐣 Tiny','🙂 Easy','🧱 Medium','🤔 Tricky','🔥 Super tricky'];
 const QP_LIB=[{size:6,shape:'flat',thick:.5,colors:2},{size:8,shape:'flat',thick:1,colors:3},{size:10,shape:'puffed',thick:1,colors:4},{size:13,shape:'puffed',thick:1,colors:6},{size:16,shape:'puffed',thick:1,colors:8}];
 const QP_SPEED={easy:'Warm-up',medium:'Race',hard:'Full throttle'};
-QP_TILES.flip={who:'pippa',t:'Pippa’s Puzzles',solo:true};
+QP_TILES.flip={who:'pippa',t:'Pippa’s Mirror Puzzles',solo:true};
 let qpCur=null;
 function qpDiffs(){ try{ return JSON.parse(localStorage.getItem('bloppit-qp-diff'))||{}; }catch(e){ return {}; } }
 function qpPool(where,d){
@@ -12081,6 +12134,29 @@ function homeRoute(){
   if(sp&&window.BLOPPIT_SPLASH) setTimeout(()=>{ sp.classList.add('out'); setTimeout(()=>sp.remove(),320); },Math.max(0,(reduceMotion?500:1900)-(Date.now()-window.BLOPPIT_SPLASH)));
 }
 navStart();  // from here on, each page change on the website is a step for the browser's Back button
+})();
+
+/* Drawn icons in place of emoji: a fixed set of emoji in the game's own text becomes drawn icons (see .di in the styles),
+   whenever and wherever the game writes them. A ⚡ about racing is Swoop's blue Blitz bolt; any other ⚡ is the red go bolt. */
+(function(){
+  const MAP=[['🏝️','isle'],['🏝','isle'],['⚡','bolt'],['📮','card'],['🎬','film'],['🔥','flame'],['📚','book'],['📷','camera'],['✏️','pencil'],['✏','pencil'],['🎨','palette'],['🧩','together'],['🔑','key'],['🤝','friend']];
+  const RE=new RegExp('('+MAP.map(m=>m[0]).join('|')+')\\uFE0F?','gu'), ANY=new RegExp(MAP.map(m=>m[0]).join('|'),'u');
+  const SKIP=new Set(['SCRIPT','STYLE','TEXTAREA','INPUT','OPTION','SELECT','TITLE','svg','text','KBD']);
+  function swap(n){
+    const s=n.nodeValue; if(!s||!ANY.test(s)) return; const p=n.parentNode; if(!p||SKIP.has(p.nodeName)||p.closest&&p.closest('svg,select,textarea,.no-di')) return;
+    const race=/Blitz|race|Race|Swoop|Grand Prix/.test((p.closest('button,h2,h3,b,span,div')||p).textContent);
+    const f=document.createDocumentFragment(); let last=0; RE.lastIndex=0; let m;
+    while((m=RE.exec(s))){ if(m.index>last) f.appendChild(document.createTextNode(s.slice(last,m.index)));
+      let k=MAP.find(x=>m[1]===x[0])[1]; if(k==='bolt'&&race) k='blitz';
+      const i=document.createElement('i'); i.className='di di-'+k; i.setAttribute('aria-hidden','true'); f.appendChild(i); last=m.index+m[0].length; }
+    if(last<s.length) f.appendChild(document.createTextNode(s.slice(last).replace(/^\s+/,last?' ':'')));
+    p.replaceChild(f,n);
+  }
+  function walk(root){ if(root.nodeType===3){ swap(root); return; } if(root.nodeType!==1||SKIP.has(root.nodeName)) return;
+    const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT), list=[]; while(w.nextNode()) list.push(w.currentNode); list.forEach(swap); }
+  walk(document.body);
+  new MutationObserver(ms=>{ for(const m of ms){ if(m.type==='characterData') swap(m.target); else m.addedNodes.forEach(walk); } })
+    .observe(document.body,{childList:true,subtree:true,characterData:true});
 })();
 </script>
 

@@ -19,9 +19,9 @@ body{margin:0;background-color:var(--paper);background-image:radial-gradient(var
 h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;line-height:1.08;text-wrap:balance;letter-spacing:.005em}
 p{margin:0}
 img,video{max-width:100%}
-a{color:var(--blue);text-underline-offset:3px}
-a:hover{color:var(--blue-dark)}
-:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:4px}
+a{color:var(--ink);text-underline-offset:3px;text-decoration-color:rgba(20,32,44,.35)}
+a:hover{color:var(--red-dark)}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px;border-radius:4px}
 .wrap{max-width:1120px;margin:0 auto;padding-inline:24px}
 @media (max-width:640px){.wrap{padding-inline:16px}}
 .skip{position:absolute;left:-999px;top:8px;background:var(--white);padding:8px 14px;border:1px solid var(--line);border-radius:8px;z-index:10}
@@ -35,13 +35,10 @@ a:hover{color:var(--blue-dark)}
   transition:transform .12s ease,box-shadow .12s ease,background-color .12s ease;cursor:pointer}
 .btn:hover{transform:translateY(-1px);color:var(--ink)}
 .btn:active{transform:translateY(1px)}
-/* Play Bloppit: Bloppit's red, with his logo (Steff, 7 Nov 2026) */
-.btn.play{background:var(--red);color:var(--white);padding-left:10px;box-shadow:0 3px 0 #A8231F,0 8px 20px rgba(214,47,42,.25)}
+/* Play Bloppit: red, the main action everywhere (Steff, 7 Nov 2026) */
+.btn.play{background:var(--red);color:var(--white);box-shadow:0 3px 0 #A8231F,0 8px 20px rgba(214,47,42,.25)}
 .btn.play:hover{background:#E0403A;color:var(--white);box-shadow:0 4px 0 #A8231F,0 12px 26px rgba(214,47,42,.3)}
 .btn.play:active{box-shadow:0 1px 0 #A8231F}
-.btn.play img.bl{width:34px;height:34px;border-radius:50%;flex:none;box-shadow:0 0 0 2px var(--white);margin-right:2px}
-.btn.play.sm{padding-left:6px}.btn.play.sm img.bl{width:30px;height:30px}
-.btn.play.lg{padding-left:12px}.btn.play.lg img.bl{width:40px;height:40px}
 .btn.ghost{background:transparent;border-color:currentColor;color:var(--ink)}
 .btn.ghost:hover{background:rgba(20,32,44,.04)}
 .btn.sm{font-size:16px;min-height:42px;padding:8px 20px}
@@ -121,7 +118,7 @@ details .a{padding:0 20px 18px;display:grid;gap:10px;color:var(--muted)}
 details .a ul{margin:0;padding-left:22px}
 
 /* Closing call to action (every page) */
-.cta{background:var(--blue);color:var(--white);border-radius:28px;padding:56px 28px;display:flex;flex-direction:column;align-items:center;gap:16px;
+.cta{background:var(--ink);color:var(--white);border-radius:28px;padding:56px 28px;display:flex;flex-direction:column;align-items:center;gap:16px;
   text-align:center;margin-top:48px;position:relative;overflow:hidden}
 .cta h2{font-size:clamp(2rem,4.4vw,3.2rem)}
 .cta p{font-size:19px;max-width:560px;opacity:.92}
@@ -145,4 +142,4 @@ footer{background:var(--sand);border-top:1px solid var(--line);margin-top:24px}
 .foot .legal{grid-column:1 / -1;border-top:1px solid var(--line);padding-top:18px;font-size:14px}
 @media (max-width:760px){.foot{grid-template-columns:repeat(2,minmax(0,1fr))}.foot .brand{grid-column:1 / -1}}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
-@media (max-width:420px){header .btn.play.sm{font-size:15px;padding:5px 14px 5px 5px;gap:6px}header .btn.play.sm img.bl{width:26px;height:26px}}
+@media (max-width:420px){header .btn.play.sm{font-size:15px;padding:8px 16px}}

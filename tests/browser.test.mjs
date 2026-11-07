@@ -858,7 +858,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   // a model: where it came from, when, stars, best time; then put it away (the card's button)
   const key = (await models())[0];
   const c = await pt('model:' + key); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(400);
-  assert.match(await t.text('#isTip'), /From.*Quick Bricks.*First built.*Best time1:35.*Bricks/);
+  assert.match(await t.text('#isTip'), /From.*Build anything.*First built.*Best time1:35.*Bricks/);
   await t.page.evaluate(() => [...document.querySelectorAll('#isTip [data-a]')].find((b) => /Put away/.test(b.textContent)).click()); await t.page.waitForTimeout(500);
   assert.equal((await models()).includes(key), false);
   await t.page.evaluate((k) => document.querySelector(`#buildsGrid [data-mkey="${k}"]`).click(), key); await t.page.waitForTimeout(300);

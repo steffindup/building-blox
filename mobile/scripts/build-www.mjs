@@ -41,6 +41,14 @@ writeFileSync(join(www, 'vendor', 'fonts.css'), css);
 // (no grown-ups gate, works offline). Website-only head bits and the site header go; links point at the bundled copies.
 // The app's link handler (see "App Store app" in public/game/index.html) routes the links inside them.
 const PAGES = ['about', 'how-it-works', 'faq', 'privacy'];
+// In the app these pages look like the game around them (Steff, 7 Nov 2026): the game's blue-grey desk, white cards
+// with a thin line, no brick dots, no site header or footer, and no Play Bloppit (the reader's Close goes back to the game).
+const APP_PAGE_CSS = '.skip,body>header,body>footer,.cta{display:none!important}'
+  + 'body{background:#E4EAF2!important;background-image:none!important;font-size:16px}'
+  + '.card,details{background:#fff;border:1px solid #C9D4E1;box-shadow:none;border-radius:16px}'
+  + '.page-head{padding-block:24px 16px}.page-head img{width:64px;height:64px}main{padding-bottom:32px}'
+  + '.note,.mode{background:#D6E5F5}a{color:#14202C}'
+  + '@media (prefers-color-scheme:dark){body{background:#0D141C!important;color:#E6EDF5}.card,details{background:#16212C;border-color:#2A3949;color:#E6EDF5}.note,.mode{background:#1B2F46}a{color:#E6EDF5}}';
 mkdirSync(join(www, 'pages'), { recursive: true });
 copyFileSync(join(root, 'public', 'site.css'), join(www, 'pages', 'site.css'));
 for (const page of PAGES) {
@@ -48,7 +56,7 @@ for (const page of PAGES) {
   p = p.replace(/<link rel="(canonical|icon|apple-touch-icon|manifest|preconnect)"[^>]*>\n/g, '')
     .replace(/<meta (property|name)="(og|twitter):[^>]*>\n/g, '')
     .replace(/<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.com[^>]*>/, '<link rel="stylesheet" href="../vendor/fonts.css">')
-    .replace('<link rel="stylesheet" href="/site.css">', '<link rel="stylesheet" href="site.css">\n<style>.skip,body>header{display:none}</style>')
+    .replace('<link rel="stylesheet" href="/site.css">', '<link rel="stylesheet" href="site.css">\n<style>' + APP_PAGE_CSS + '</style>')
     .replace(/(src|poster)="\/(art|video)\//g, '$1="../$2/')
     .replace(new RegExp(`href="/(${PAGES.join('|')})/"`, 'g'), 'href="$1.html"');
   // In the app the FAQ shouldn't say the app is on its way: whoever reads it is already in it.
