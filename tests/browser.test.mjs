@@ -1128,9 +1128,9 @@ test('Build page: a tile asks Play on the island or Quick play; Quick play has n
   await t.page.evaluate(() => { document.querySelector('#view-home [data-go="otter"]').click(); document.getElementById('qpPick').click(); }); await t.page.waitForTimeout(800);
   assert.equal(await t.page.evaluate(() => document.getElementById('view-game').dataset.sub), 'otter');
   assert.equal(await t.page.evaluate(() => [...document.querySelectorAll('#gmLevels .lvl')].filter((b) => b.disabled).length), 0, 'any level');
-  assert.match(await t.text('#gmIntro'), /Quick play/);
+  assert.match(await t.text('#gmIntro'), /Quick Play/);
   await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="0"]').click()); await t.page.waitForTimeout(1500);
-  assert.equal(await t.page.evaluate(() => window.bloppitFilmOn()), null, 'no Frog Forest film'); assert.match(await t.text('#gbWhere'), /Quick play/);
+  assert.equal(await t.page.evaluate(() => window.bloppitFilmOn()), null, 'no Frog Forest film'); assert.match(await t.text('#gbWhere'), /Quick Play/);
   for (let i = 0; i < 200; i++) { if (await t.page.evaluate(() => document.getElementById('winDlg').open)) break; await t.page.evaluate(() => window.bloppitPlaceRight()); await t.page.waitForTimeout(150); }
   await t.page.waitForFunction(() => document.getElementById('winDlg').open, null, { timeout: 30000 });
   const w = await t.page.evaluate(() => ({ log: JSON.parse(localStorage.getItem('bloppit-world-v1')).log.length, g: JSON.parse(Object.entries(localStorage).find(([k]) => k.includes('building-blox-game-v1'))?.[1] || '{}') }));
