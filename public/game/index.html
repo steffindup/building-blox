@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="Play Bloppit: build with Bloppit the otter, raise your pup, grow your own island, Bloppitopia, and race Swoop the Longtail.">
 <meta name="robots" content="index,follow,max-image-preview:large">
-<link rel="canonical" href="https://bloppit.com/build/">
+<link rel="canonical" href="https://bloppit.com/game/">
 <meta name="theme-color" content="#0369BD">
 <meta name="application-name" content="Bloppit">
 <meta name="apple-mobile-web-app-title" content="Bloppit">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Bloppit">
-<meta property="og:url" content="https://bloppit.com/build/">
+<meta property="og:url" content="https://bloppit.com/game/">
 <meta property="og:title" content="Bloppit: World of Bricks">
 <meta property="og:description" content="Play Bloppit: build with Bloppit the otter, raise your pup, grow your own island, Bloppitopia, and race Swoop the Longtail.">
 <meta property="og:image" content="https://bloppit.com/og-image.png">
@@ -31,7 +31,7 @@
   "@type": "WebApplication",
   "name": "Bloppit: World of Bricks",
   "alternateName": "Bloppit",
-  "url": "https://bloppit.com/build/",
+  "url": "https://bloppit.com/game/",
   "description": "Turn your photos into a brick model and a step-by-step instruction booklet, then build it yourself.",
   "applicationCategory": "GameApplication",
   "operatingSystem": "Any (runs in a web browser)",
@@ -2564,7 +2564,7 @@ const reader=(()=>{
         const page=sitePage(href);
         if(page) open(page);
         else if(/^(https?:|mailto:|tel:)/i.test(href)) leaveApp(href);
-        else close();   // /build/, the logo, anything else of the game's
+        else close();   // /game/, the logo, anything else of the game's
       },true);
     });
   }
@@ -3517,7 +3517,7 @@ function setTab(t,sub){ if(t!=='island'&&typeof ISL3!=='undefined') ISL3.thenCha
   saveSoon();
   navNote(t);
 }
-/* Browser Back and Forward on the website: each page gets its own address (/build/ is the menu, /build/#blitz, #daily, …),
+/* Browser Back and Forward on the website: each page gets its own address (/game/ is the menu, /game/#blitz, #daily, …),
    so Back goes to the page before instead of leaving Bloppit. The App Store app has no Back button, so it skips this. */
 const NAV_HASH={home:'',create:'photos',build:'build',box:'build',booklet:'booklet',game:'trails',mp:'together',blitz:'blitz',daily:'daily',island:'island'};
 const SUB_HASH={game:{hub:'trails',otter:'otter',brain:'brain',sea:'pippa'},blitz:{hub:'blitz',cpu:'blitz-bloppit',friend:'blitz-friend'},mp:{hub:'together',start:'together-start',join:'together-join'}};
@@ -7213,7 +7213,7 @@ async function renderMpView(){
   if(!s) return;
   const bz=s.mode==='blitz', cpuOn=!!mp.cpu;
   $('.mp-room-top').hidden=cpuOn;
-  $('#mpBigCode').textContent=s.code; $('#mpSite').textContent=APP?'bloppit.com/build':location.host+location.pathname.replace(/\/$/,'');
+  $('#mpBigCode').textContent=s.code; $('#mpSite').textContent=APP?'bloppit.com/game':location.host+location.pathname.replace(/\/$/,'');
   $('#mpWhere').textContent=bz?'⚡ Blitz':'🧩 Together';
   const p0=photos[0]; if(p0) $('#mpThumb').src=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png'));
   $('#mpModelName').textContent=s.title;
@@ -11606,7 +11606,7 @@ $('#crewList').addEventListener('click',e=>{ const b=e.target.closest('[data-cre
 $('#crewOpen').addEventListener('click',async e=>{
   const t=e.target.closest('button'); if(!t) return; const code=crewOpenCode;
   if(t.id==='crewClose'){ $('#crewOpen').hidden=true; crewOpenCode=''; return; }
-  if(t.dataset.crewShare){ if(APP&&!await gate.ask('Sharing sends your crew code to another app.')) return; const text=`Join my Bloppit crew! Code ${code}`, url=`https://bloppit.com/build/#together`; try{ if(navigator.share) await navigator.share({title:'Bloppit crew',text,url}); else { await navigator.clipboard.writeText(`${text} ${url}`); t.textContent='Copied!'; } }catch(x){} return; }
+  if(t.dataset.crewShare){ if(APP&&!await gate.ask('Sharing sends your crew code to another app.')) return; const text=`Join my Bloppit crew! Code ${code}`, url=`https://bloppit.com/game/#together`; try{ if(navigator.share) await navigator.share({title:'Bloppit crew',text,url}); else { await navigator.clipboard.writeText(`${text} ${url}`); t.textContent='Copied!'; } }catch(x){} return; }
   if(t.dataset.crewJoin){ track('crew_join_asked'); crewDo({action:'join',code}); return; }
   if(t.dataset.crewOk){ crewDo({action:'approve',code,k:t.dataset.crewOk}); return; }
   if(t.dataset.crewNo){ crewDo({action:'deny',code,k:t.dataset.crewNo}); return; }
@@ -11999,7 +11999,7 @@ window.bloppitPup3=async(id,ci,wear)=>{ await ch3Get(id); await ch3Model(id); co
 window.bloppitChars3d=()=>({on:ch3On(),loaded:Object.keys(CH3.gltf),tiny:{model:ch3Has3d('tiny'),clips:ch3Has3d('tiny')?Object.keys(CH3.gltf.tiny.model.clips).sort():[]},nora:{model:ch3Has3d('nora'),clips:ch3Has3d('nora')?Object.keys(CH3.gltf.nora.model.clips).sort():[]},pippa:{model:ch3Has3d('pippa'),clips:ch3Has3d('pippa')?Object.keys(CH3.gltf.pippa.model.clips).sort():[]},bibi:{model:ch3Has3d('bibi'),clips:ch3Has3d('bibi')?Object.keys(CH3.gltf.bibi.model.clips).sort():[]},swoop:{model:ch3Has3d('swoop'),clips:ch3Has3d('swoop')?Object.keys(CH3.gltf.swoop.model.clips).sort():[]},bloppit:{model:ch3Has3d('bloppit'),clips:ch3Has3d('bloppit')?Object.keys(CH3.gltf.bloppit.model.clips).sort():[]},island:{bloppit:!!ISL3.b3,pup:!!ISL3.p3,longtail:!!ISL3.l3,clips:[ISL3.b3,ISL3.p3,ISL3.l3].map(i=>i&&(i.ctl.current||i.ctl.activeBase)?(i.ctl.current||i.ctl.activeBase).getClip().name:null)},views:CV3.views.filter(v=>v.host.classList.contains('c3on')&&v.host.offsetParent).map(v=>v.host.id||v.host.className.split(' ')[0])});
 // On the website the logo opens the menu; on the menu itself it goes to bloppit.com's front page. (The app handles its own links above.)
 $('#brandLink').addEventListener('click',e=>{ if(APP||tab==='home') return; e.preventDefault(); setTab('home'); });
-// Links straight to a page: /build/#photos, #library, #trails, #otter, #brain, #together, #blitz, #daily (anything else opens the menu).
+// Links straight to a page: /game/#photos, #library, #trails, #otter, #brain, #together, #blitz, #daily (anything else opens the menu).
 // Share links (bloppit.com/join/CODE, or the older /build/?room=CODE and ?ch=CODE) skip the menu and open the room or challenge.
 function homeRoute(){
   const h=location.hash.slice(1).toLowerCase();

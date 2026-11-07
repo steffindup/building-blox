@@ -7,7 +7,7 @@
 #  3. In App Store Connect, create the app with bundle ID com.bloppit.app, then copy its "Apple ID" number
 #     (App Information page) into APP_STORE_APPLE_ID below.
 #  4. Start the "iOS to TestFlight" workflow once by hand. After that, every push to main that changes the
-#     app (public/build/ or mobile/) builds it and sends it to TestFlight automatically. Pushes that only
+#     app (public/game/ or mobile/) builds it and sends it to TestFlight automatically. Pushes that only
 #     change the home page, the room server or other files are skipped, which saves build minutes.
 #     If automatic builds don't start: Codemagic > this app > Webhooks > "Update webhook".
 workflows:
@@ -26,7 +26,7 @@ workflows:
     when:
       changeset: # only build when the app itself changed (codemagic.yaml always counts too)
         includes:
-          - 'public/build/'
+          - 'public/game/'
           - 'mobile/'
         excludes:
           - '**/*.md'

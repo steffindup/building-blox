@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { start } from './devserver.mjs';
 let chromium; try { ({ chromium } = await import('playwright')); } catch { chromium = null; }
 
-const PORT = 8799, BASE = `http://localhost:${PORT}/build/`;
+const PORT = 8799, BASE = `http://localhost:${PORT}/game/`;
 let server, browser;
 before(async () => { server = await start(PORT); if (chromium) browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM || undefined, args: process.env.PLAYWRIGHT_ARGS ? process.env.PLAYWRIGHT_ARGS.split(' ') : ['--use-gl=swiftshader'] }); });
 const skip = () => !chromium;  // decided when the file loads; the browser itself starts in before()
@@ -524,7 +524,7 @@ test('a finished Weekly stands on the 3D island, and can be put away and back', 
   await t.page.waitForTimeout(3000);
   const key = await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1')).log.find((k) => k.startsWith('w:')));
   assert.ok(key, 'the Weekly was recorded');
-  await t.page.goto(new URL('/build/?nosplash=1&lite3d=1#island', 'http://localhost:8799').href); await t.page.waitForTimeout(3000);
+  await t.page.goto(new URL('/game/?nosplash=1&lite3d=1#island', 'http://localhost:8799').href); await t.page.waitForTimeout(3000);
   const on = () => t.page.evaluate((k) => { const I = window.bloppitIsland3(); return !!(I && I.shown && I.shown.list.some((m) => m.key === k)); }, key);
   assert.equal(await t.page.evaluate(() => !!window.bloppitIsland3().ok), true, 'the 3D island');
   assert.equal(await on(), true, 'the Weekly stands on the island');
@@ -1151,7 +1151,7 @@ test('the menu order: Quick play, Bloppitopia, the Weekly, Continue, How to play
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('menu Quick play: opens one of the five Solo games at random with its choice; Play a different game draws another; bloppit.com’s /build/#solo does the same (phone)', { skip: skip() }, async () => {
+test('menu Quick play: opens one of the five Solo games at random with its choice; Play a different game draws another; bloppit.com’s /game/#solo does the same (phone)', { skip: skip() }, async () => {
   const t = await open('?nosplash=1', { viewport: { width: 390, height: 844 } });
   const dlg = () => t.page.evaluate(() => ({ open: document.getElementById('qpDlg').open, where: window.bloppitQP()?.where, other: !document.getElementById('qpOther').hidden, just: document.getElementById('qpQuickT').textContent }));
   await t.page.evaluate(() => document.getElementById('hmQuick').click()); await t.page.waitForTimeout(500);

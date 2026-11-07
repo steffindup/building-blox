@@ -4,7 +4,7 @@
 
 Every frame is the app icon (signature bust, icon framing, brand blue). Only Bloppit's left eye (the one on the
 viewer's right) changes: open, closing, closed (a curved closed-eye arc), reopening. The frame order matches the
-sp-wink keyframes in public/index.html and public/build/index.html, so no CSS changes are needed.
+sp-wink keyframes in public/index.html and public/game/index.html, so no CSS changes are needed.
 """
 import os, sys
 from PIL import Image, ImageDraw

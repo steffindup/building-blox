@@ -8,8 +8,7 @@
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="google-site-verification" content="3jgoAs4OQQYRCxP8exwGKqmz1Gw5foP76_TtomURmc8" />
 <link rel="canonical" href="https://bloppit.com/">
-<link rel="preload" href="/art/bloppit-wink.jpg" as="image">
-<meta name="theme-color" content="#0369BD">
+<meta name="theme-color" content="#FFFDF8">
 <meta name="application-name" content="Bloppit">
 <meta name="apple-mobile-web-app-title" content="Bloppit">
 <meta property="og:type" content="website">
@@ -44,7 +43,7 @@
       "@type": "WebApplication",
       "name": "Bloppit: World of Bricks",
       "alternateName": "Bloppit",
-      "url": "https://bloppit.com/build/",
+      "url": "https://bloppit.com/game/",
       "description": "Bloppit is a brick-building game for anyone who loves bricks. Build with Bloppit the otter, raise your pup and grow your own island, Bloppitopia.",
       "applicationCategory": "GameApplication",
       "operatingSystem": "Any (runs in a web browser)",
@@ -64,402 +63,215 @@
   ]
 }
 </script>
-<script>
-/* Launch screen: shows when you arrive at bloppit.com or refresh the page. It's skipped when you come from another
-   bloppit.com page (or go Back/Forward), and for links to a section. /build/ uses the same rule. */
-(function(){ var nav='', inside=false;
-  try{ var e=performance.getEntriesByType('navigation')[0]; nav=e?e.type:''; }catch(x){}
-  try{ inside=!!document.referrer&&new URL(document.referrer).origin===location.origin; }catch(x){}
-  var show=nav==='reload'||(!inside&&nav!=='back_forward');
-  if(show&&!location.hash) document.documentElement.classList.add('sp-on'); })();
-</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;700;800&display=swap">
+<link rel="stylesheet" href="/site.css?v=2">
 <style>
-:root{
-  --paper:#FBF7EE; --dot:#E2DAC6; --ink:#14202C; --muted:#3B4957; --white:#FFFFFF;
-  --red:#D2352B; --red-dark:#B32A22; --cream:#FFF4D6; --blue-soft:#D6E5F5; --pink-soft:#FBD5CF; --yellow:#F4BC22;
-  --display:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;
-  --body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
-body{margin:0;background-color:var(--paper);background-image:radial-gradient(var(--dot) 1.6px,transparent 1.6px);background-size:28px 28px;
-  font-family:var(--body);color:var(--ink);font-size:17px;line-height:1.55;overflow-x:hidden}
-h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance}
-p{margin:0}
-a{color:var(--red-dark)}
-:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
-.wrap{max-width:1200px;margin:0 auto;padding-inline:24px}
-.skip{position:absolute;left:-999px;top:8px;background:var(--white);padding:8px 14px;border:2px solid var(--ink);border-radius:8px;z-index:10}
-.skip:focus{left:8px}
-
-/* Buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;text-decoration:none;font-weight:800;font-size:19px;
-  padding:14px 28px;border-radius:999px;border:2px solid var(--ink);box-shadow:0 5px 0 var(--ink);color:var(--ink);background:var(--white);
-  transition:transform .08s ease,box-shadow .08s ease}
-.btn:hover{transform:translateY(2px);box-shadow:0 3px 0 var(--ink);color:var(--ink)}
-.btn:active{transform:translateY(5px);box-shadow:0 0 0 var(--ink)}
-.btn.primary{background:var(--red);color:var(--white)}
-.btn.primary:hover{color:var(--white)}
-.btn.quick{background:#F4BC22;color:#14202C}.btn.quick:hover{color:#14202C}
-.actions.choose .btn{min-width:200px}
-.actions.choose .btn.big{font-size:23px;min-height:62px;padding-inline:34px;min-width:230px}   /* Play Now is the first, biggest choice (Steff, 5 Nov 2026) */
-.choose-note{margin-top:14px;font-size:16px;font-weight:600;max-width:520px}
-/* Brick buttons (Steff, 6 Nov 2026): the hero's buttons are bricks, two studs on top like Bloppit's red brick */
-.btn.brick{position:relative;border-radius:10px;margin-top:12px}
-.btn.brick::before,.btn.brick::after{content:"";position:absolute;top:-14px;width:30px;height:12px;background:inherit;
-  border:2px solid var(--ink);border-bottom:0;border-radius:7px 7px 0 0;pointer-events:none}
-.btn.brick::before{left:20%}.btn.brick::after{right:20%}
-.btn.brick.big::before,.btn.brick.big::after{width:36px;height:13px;top:-15px}
-.btn.brick.sm{border-radius:8px;margin-top:10px}.btn.brick.sm::before,.btn.brick.sm::after{width:22px;height:9px;top:-11px;border-radius:5px 5px 0 0}
-.btn.blue{background:#0369BD;color:var(--white)}.btn.blue:hover{color:var(--white)}
-/* the four hero bricks: two equal columns, stacked full width on phones */
-.actions.bricks{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;max-width:540px}
-.actions.bricks .btn{min-width:0;width:100%;box-sizing:border-box;padding-inline:16px;text-align:center}
-.actions.bricks .btn,.actions.bricks .btn.big{min-width:0;min-height:62px;padding-inline:16px;font-size:20px}   /* four equal bricks (Steff, 6 Nov 2026) */
-.actions.bricks .btn.brick::before,.actions.bricks .btn.brick::after{width:32px;height:12px;top:-14px}
-@media (max-width:520px){.actions.bricks{grid-template-columns:1fr}}
-.btn.sm{font-size:16px;min-height:44px;padding:8px 20px;box-shadow:0 3px 0 var(--ink)}
-.btn.sm:hover{box-shadow:0 1px 0 var(--ink)}
-.get-app{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:16px}.get-app[hidden]{display:none}
-.get-app span{font-weight:700;font-size:15px}
-
-/* Nav */
-header{border-bottom:2px solid var(--ink);background:var(--paper);position:sticky;top:0;z-index:5}
-nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;padding-block:12px}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--red)}
-.logo span{font-family:var(--display);font-size:32px;line-height:1}
-.logo span.wob{font-size:inherit}
-/* World / of / Bricks beside the wordmark (Steff, 6 Nov 2026): the same three bricks as the launch screen and social banners */
-.wob{display:inline-flex;gap:4px;margin-left:4px;align-self:center}
-.wob i{font-style:normal;font-family:"Nunito",system-ui,sans-serif;font-weight:800;font-size:13px;line-height:1;padding:4px 7px 5px;border-radius:5px;border:1.5px solid #14202C;box-shadow:0 2px 0 #14202C}
-.wob i:nth-child(1){background:#F4BC22;color:#142022}.wob i:nth-child(2){background:#fff;color:#0369BD}.wob i:nth-child(3){background:#D62F2A;color:#fff}
-@media (max-width:640px){.logo:has(.wob){display:grid;grid-template-columns:auto auto;column-gap:10px;row-gap:3px;align-items:center}
-  .logo:has(.wob) img{grid-row:1 / span 2}.logo .wob{margin-left:0;align-self:start}}   /* phones: the bricks sit under the wordmark */
-@media (max-width:380px){header .btn.sm{padding:8px 12px;font-size:15px}}
-@media (max-width:420px){.wob{gap:3px}.wob i{font-size:10.5px;padding:3px 5px 4px}}
-
-.nav-links{display:flex;flex-wrap:wrap;align-items:center;gap:4px 22px;margin-left:auto;font-weight:800}
-.nav-links a:not(.btn){color:var(--ink);text-decoration:none;padding:10px 0}
-.nav-links a:not(.btn):hover{color:var(--red-dark)}
-@media (max-width:640px){nav{gap:2px 16px}.logo span{font-size:28px}
-  .nav-links{display:contents;font-size:15px}
-  .nav-links .btn{order:1;margin-left:auto}
-  nav::after{content:"";order:1;flex-basis:100%;height:0}
-  .nav-links a:not(.btn){order:2;padding:4px 0 6px}}
-
-/* Hero */
-.hero{display:flex;flex-wrap:wrap;align-items:center;gap:48px;padding-block:64px 80px}
-.hero-text{flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:22px}
-.pill{align-self:flex-start;background:var(--cream);border:2px solid var(--ink);border-radius:999px;padding:6px 16px;font-weight:800;font-size:14px}
-.hero h1{font-size:clamp(3.2rem,6vw,5.6rem);line-height:.98}
+/* Front page only (the shared look is in site.css) */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:56px;align-items:center;padding-block:72px 64px}
+.hero h1{font-size:clamp(2.9rem,6.4vw,5rem);margin:14px 0 18px}
 .hero h1 .accent{color:var(--red)}
-.isle-hero{margin:0;flex:1 1 420px;min-width:0;border:2px solid var(--ink);border-radius:22px;overflow:hidden;box-shadow:0 8px 0 var(--ink);background:#A9D8F2;position:relative}
-.isle-hero svg,.isle-hero img{display:block;width:100%;height:auto}.isle-hero .ghost-build{opacity:.28}.isle-hero .slot-empty{opacity:.35}
-.isle-hero figcaption{position:absolute;left:12px;top:12px;padding:4px 14px;border-radius:999px;background:rgba(20,32,44,.85);color:#fff;font-family:var(--display);font-size:20px}
-.hero-text p{font-size:20px;max-width:520px}
-.tagline{display:flex;flex-wrap:wrap;gap:8px;font-family:var(--body);font-weight:800;font-size:22px;line-height:1}
-.tagline span{padding:7px 13px 9px;border-radius:10px;border:2px solid var(--ink);box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
-.tagline span:nth-child(1){background:#F4BC22;color:#142022}
-.tagline span:nth-child(2){background:var(--white);color:#0369BD}
-.tagline span:nth-child(3){background:#D62F2A;color:var(--white)}
-.race-chip{position:absolute;left:-16px;top:-18px;z-index:1;background:var(--ink);color:var(--white);border-radius:999px;padding:6px 14px;
-  font-weight:800;font-size:16px;font-variant-numeric:tabular-nums;box-shadow:0 3px 0 rgba(0,0,0,.25);transform:rotate(-3deg)}
-.race-chip b{color:var(--yellow)}
-.actions{display:flex;flex-wrap:wrap;gap:14px}
-.hero-visual{flex:1 1 460px;min-width:0;display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap}
-.polaroid{margin:0;background:var(--white);padding:12px 12px 40px;border:2px solid var(--ink);border-radius:10px;box-shadow:0 6px 0 var(--ink);
-  transform:rotate(-4deg);width:200px;position:relative}
-.polaroid svg{display:block;width:100%;height:auto}
-.polaroid figcaption{position:absolute;left:0;right:0;bottom:8px;text-align:center;font-weight:800;font-size:14px;color:var(--muted)}
-.model{position:relative;width:300px;max-width:100%}
-.mosaic{background:var(--white);border:2px solid var(--ink);border-radius:16px;box-shadow:0 6px 0 var(--ink);padding:12px;
-  display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:2px;min-height:200px}
-.mosaic i{aspect-ratio:1;border-radius:3px;display:flex;align-items:center;justify-content:center}
-.mosaic i::after{content:"";width:58%;height:58%;border-radius:50%;background:inherit;
-  box-shadow:inset -1px -2px 0 rgba(0,0,0,.22),inset 1px 1px 0 rgba(255,255,255,.35)}
-.model .buddy{position:absolute;right:-18px;bottom:-40px;width:120px;height:auto}
+.hero .lede{margin-bottom:28px}
+.hero .facts{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:22px;font-size:15px;font-weight:700;color:var(--muted);list-style:none;padding:0}
+.hero .facts li::before{content:"✓";color:#2E8B4A;font-weight:800;margin-right:6px}
+@media (max-width:900px){.hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:40px 40px}}
+.film{position:relative;margin:0;border-radius:24px;overflow:hidden;box-shadow:0 2px 4px rgba(20,32,44,.08),0 24px 60px rgba(20,32,44,.18);background:var(--ink);aspect-ratio:16/9}
+.film img,.film video{display:block;width:100%;height:100%;object-fit:cover}
+.film button{position:absolute;inset:0;border:0;padding:0;background:linear-gradient(180deg,transparent 55%,rgba(20,32,44,.55));cursor:pointer;
+  display:flex;align-items:flex-end;justify-content:flex-start;color:var(--white);font:800 16px/1.2 var(--body)}
+.film button span{display:inline-flex;align-items:center;gap:10px;margin:18px;padding:10px 18px 10px 12px;border-radius:999px;background:rgba(20,32,44,.6);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.film button i{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--white);color:var(--ink);font-style:normal;font-size:14px;padding-left:3px}
+.film button:hover span{background:rgba(20,32,44,.75)}
 
-/* Sections */
-.band{background:var(--white);border-block:2px solid var(--ink)}
-.band.cream{background:var(--cream)}
-.band.cream + .section{padding-top:76px}
-.section{padding-block:76px;display:flex;flex-direction:column;gap:36px}
-.section h2{text-align:center;font-size:clamp(2.2rem,4vw,3.2rem);line-height:1.05}
-.cards{display:flex;flex-wrap:wrap;gap:24px}
-.card{flex:1 1 280px;min-width:0;border:2px solid var(--ink);border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:12px;background:var(--paper)}
-.card.lift{background:var(--white);box-shadow:0 6px 0 var(--ink)}
-.card.cream{background:var(--cream)}
-.card h3{font-size:30px;line-height:1.1}
-.step-head{display:flex;align-items:center;gap:14px}
-.num{width:48px;height:48px;border-radius:50%;background:var(--ink);color:var(--white);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:24px}
-.num.red{background:var(--red)}
-.tag{align-self:flex-start;border-radius:999px;padding:4px 14px;font-weight:800;font-size:14px}
-.math-note{background:var(--cream);border-radius:12px;padding:10px 12px;font-size:.95em;line-height:1.45}
-.chips{display:flex;margin-top:auto;gap:8px}
-.chip{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800}
-.cards.four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
-.cards.four .card{padding:24px}
-@media (max-width:1100px){.cards.four{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:620px){.cards.four{grid-template-columns:minmax(0,1fr)}}
-.names{display:flex;flex-wrap:wrap;gap:6px}
-.names span{background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:2px 10px;font-weight:800;font-size:13px}
-.names .more{background:transparent;border-style:dashed}
-.card-link{margin-top:auto;font-weight:800;text-decoration-thickness:2px;text-underline-offset:3px;padding-block:8px}
-.lvl{background:var(--yellow);border:2px solid var(--ink);font-family:var(--display);font-weight:400}
-.lvl.next{background:var(--white);border-style:dashed}
-.players{gap:0}
-.players .chip{border:2px solid var(--white);color:var(--white)}
-.players .chip+.chip{margin-left:-10px}
+.section{padding-block:72px}
+.section-head{max-width:720px;margin-bottom:36px}
+.section-head h2{font-size:clamp(2.2rem,4.6vw,3.2rem);margin:10px 0 12px}
+.band{background:var(--sand)}
 
-/* Meet */
-.meet{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:40px;padding-block:72px;max-width:1100px}
-.meet-art{flex:0 1 300px;display:flex;flex-direction:column;align-items:center;gap:8px}
-.bubble{background:var(--white);border:2px solid var(--ink);border-radius:22px;padding:10px 20px;font-family:var(--display);font-size:26px}
-.meet-art img{width:260px;max-width:100%;height:auto}
-.meet-text{flex:1 1 380px;min-width:0;display:flex;flex-direction:column;gap:16px}
-.meet-text h2{text-align:left;font-size:clamp(2.2rem,4vw,3.2rem);line-height:1.05}
-.meet-text p{font-size:19px}
+.how{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:48px;align-items:center}
+.how ol{list-style:none;margin:0;padding:0;display:grid;gap:26px;counter-reset:s}
+.how li{display:grid;grid-template-columns:48px 1fr;gap:4px 18px;counter-increment:s}
+.how li::before{content:counter(s);grid-row:1 / span 2;width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:var(--white);
+  border:1px solid var(--line);box-shadow:var(--shadow);font-family:var(--display);font-size:24px;color:var(--red)}
+.how h3{font-size:24px}
+.how p{color:var(--muted)}
+@media (max-width:900px){.how{grid-template-columns:minmax(0,1fr);gap:32px}}
 
-/* Final CTA */
-.cta{background:var(--red);color:var(--white);border:2px solid var(--ink);border-radius:32px;box-shadow:0 8px 0 var(--ink);
-  padding:56px 32px;display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center}
-.cta h2{font-size:clamp(2.4rem,5vw,4rem);line-height:1.02}
-.cta p{font-size:20px;font-weight:700;max-width:560px}
+.isles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+@media (max-width:980px){.isles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.isles{grid-template-columns:minmax(0,1fr)}}
+.isle{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;
+  border-top:5px solid var(--c)}
+.isle img.still{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;background:var(--sand)}
+.isle .body{padding:20px 22px 24px;display:grid;gap:8px}
+.isle .who{display:flex;align-items:center;gap:10px;font-weight:800;font-size:15px;color:var(--muted)}
+.isle .who img{width:36px;height:36px;border-radius:50%;background:var(--white);box-shadow:0 0 0 2px var(--c)}
+.isle h3{font-size:25px}
+.isle p{font-size:16px;color:var(--muted)}
+.isle.moon{background:#1D1838;color:var(--white);border-color:#2E2752}
+.isle.moon p,.isle.moon .who{color:#D9D2F5}
 
-footer{border-top:2px solid var(--ink);background:var(--paper)}
-.foot{display:flex;flex-wrap:wrap;align-items:center;gap:12px 28px;padding-block:28px;font-size:15px;color:var(--muted)}
-.foot .name{font-family:var(--display);font-size:24px;color:var(--red)}
-.foot .legal{margin-left:auto}
-.foot .social{display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%;order:9}
-.foot .social span{font-weight:800;color:var(--ink);margin-right:4px}
-.foot .social a{display:inline-block;padding:5px 12px;border-radius:999px;border:2px solid var(--line,#E2D9CC);color:var(--ink);font-weight:800;font-size:14px;text-decoration:none}
-.foot .social a:hover,.foot .social a:focus-visible{border-color:var(--red);color:var(--red)}
-/* Launch screen (same as the app's): quick and cute, then the front page */
-.splash{display:none;position:fixed;inset:0;z-index:100;background:#0369BD;color:var(--white);display:grid;place-content:center;justify-items:center;gap:6px;
-  text-align:center;font-family:var(--display);cursor:pointer;-webkit-user-select:none;user-select:none;animation:sp-fail .3s ease 4s forwards}
-.sp-on .splash{display:grid}
-.sp-on{overflow:hidden}
-.splash .sp-head{display:block;position:relative}
-/* Bloppit winks once: 9 frames in one strip, stepped at the drawing's own timing */
-.splash .sp-face{display:block;width:150px;height:150px;border-radius:34px;background:#0369BD url(/art/bloppit-wink.jpg) 0 0/900% 100% no-repeat;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:sp-pop .5s cubic-bezier(.3,1.6,.5,1) both,sp-wink 1.04s step-end .5s both}
-.splash .sp-word{font-size:52px;line-height:1;letter-spacing:.01em;text-shadow:0 4px 0 rgba(0,0,0,.18);animation:sp-up .35s ease .1s both}
-.splash .sp-tag{display:flex;gap:8px;margin-top:10px}
-.splash .sp-tag span{font-family:"Nunito",system-ui,sans-serif;font-weight:800;font-size:17px;padding:6px 11px 8px;border-radius:9px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18);animation:sp-pop .3s cubic-bezier(.3,1.6,.5,1) both}
-.splash .sp-tag span:nth-child(1){background:#F4BC22;color:#142022;animation-delay:.25s}
-.splash .sp-tag span:nth-child(2){background:#fff;color:#0369BD;animation-delay:.4s}
-.splash .sp-tag span:nth-child(3){background:#D62F2A;color:#fff;animation-delay:.55s}
-.splash.out{opacity:0;transform:scale(1.04);transition:opacity .3s ease,transform .3s ease;pointer-events:none}
-@keyframes sp-pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
-@keyframes sp-up{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
-@keyframes sp-blink{0%,100%{transform:none}50%{transform:scaleY(.1)}}
-@keyframes sp-wink{0.00%{background-position:0.0% 0}17.31%{background-position:12.5% 0}24.04%{background-position:25.0% 0}31.73%{background-position:37.5% 0}41.35%{background-position:50.0% 0}52.88%{background-position:62.5% 0}62.50%{background-position:75.0% 0}70.19%{background-position:87.5% 0}78.85%{background-position:100.0% 0}100%{background-position:0 0}}
-@keyframes sp-fail{to{opacity:0;visibility:hidden}}
-@media (prefers-reduced-motion: reduce){.splash *,.splash{animation:none!important}}
+.meet{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:48px;align-items:center}
+.meet-art{display:flex;justify-content:center}
+.meet-art img{width:260px;height:auto}
+.meet h2{font-size:clamp(2.2rem,4.6vw,3.2rem);margin:10px 0 16px}
+.meet p+p{margin-top:12px}
+.meet p{font-size:18px;color:var(--muted)}
+@media (max-width:800px){.meet{grid-template-columns:minmax(0,1fr);gap:20px}.meet-art img{width:180px}}
 
-/* How to play video */
-.howto-video{margin:0;background:var(--white);border:2px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink);padding:10px;overflow:hidden;min-width:0}
-.howto-video video{display:block;width:100%;height:auto;aspect-ratio:16/9;border-radius:14px;background:var(--ink)}
-.howto{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,8fr);gap:40px;align-items:center;padding-block:24px 64px}
-.howto h2{font-size:clamp(2.2rem,5vw,3.2rem);margin-top:12px}
-.howto p{font-size:19px;color:var(--muted);margin:12px 0 22px}
-@media (max-width:860px){.howto{grid-template-columns:1fr;gap:22px}}
-/* the game's own badges on the website buttons (Steff, 7 Nov 2026) */
-.bi{display:inline-block;flex:none;width:1.25em;height:1.25em;vertical-align:-.25em;margin-right:.4em;background:center/contain no-repeat}
-.bi-quick{background-image:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="50" r="46" fill="%23F4BC22" stroke="%2314202C" stroke-width="6"/%3E%3Cpath d="M56 14 26 56h20l-6 30 34-44H52z" fill="%2314202C"/%3E%3C/svg%3E')}
-.bi-isle{background-image:url('data:image/svg+xml,%3Csvg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Ccircle cx="50" cy="50" r="50" fill="%232FB8DC"/%3E%3Ccircle cx="50" cy="52" r="15" fill="%236CC04A" stroke="%23F2D594" stroke-width="4"/%3E%3Cg transform="translate%2850 52%29 scale%28.5%29" stroke="%239E2019" stroke-width="2" fill="%23D8342C"%3E%3Crect x="-20" y="-6" width="40" height="18" rx="2.5"/%3E%3Crect x="-15" y="-13" width="10" height="8" rx="2"/%3E%3Crect x="5" y="-13" width="10" height="8" rx="2"/%3E%3C/g%3E%3Ccircle cx="50.0" cy="19.0" r="8" fill="%239BD32C" stroke="%23F2D594" stroke-width="3"/%3E%3Ccircle cx="81.4" cy="41.8" r="8" fill="%2324407A" stroke="%23F2D594" stroke-width="3"/%3E%3Ccircle cx="69.4" cy="78.7" r="8" fill="%23F2C230" stroke="%23F2D594" stroke-width="3"/%3E%3Ccircle cx="30.6" cy="78.7" r="8" fill="%232F7FD0" stroke="%23F2D594" stroke-width="3"/%3E%3Ccircle cx="18.6" cy="41.8" r="8" fill="%23E9772A" stroke="%23F2D594" stroke-width="3"/%3E%3C/svg%3E')}
-.bi-bibi{background-image:url('/art/head-bibi.png');border-radius:50%;background-color:#FCE3CF;box-shadow:0 0 0 2px #E9772A}
+.ways{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+@media (max-width:900px){.ways{grid-template-columns:minmax(0,1fr)}}
+.ways .card h3{font-size:24px;margin-bottom:6px}
+.ways .card p{color:var(--muted);font-size:16px}
+
+.family{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px}
+@media (max-width:980px){.family{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.family{grid-template-columns:minmax(0,1fr)}}
+.family h3{font-family:var(--body);font-weight:800;font-size:18px;margin-bottom:6px}
+.family h3::before{content:"";display:block;width:36px;height:6px;border-radius:3px;background:var(--c);margin-bottom:14px}
+.family p{color:var(--muted);font-size:16px}
+.more-links{margin-top:32px;font-weight:800;display:flex;flex-wrap:wrap;gap:8px 24px}
 </style>
 </head>
 <body>
-<div class="splash" id="splash" aria-hidden="true">
-  <span class="sp-head"><i class="sp-face"></i></span>
-  <div class="sp-word">Bloppit</div>
-  <div class="sp-tag" aria-label="World of Bricks"><span>World</span><span>of</span><span>Bricks</span></div>
-</div>
-<script>
-(function(){ var s=document.getElementById('splash'), h=document.documentElement;
-  if(!h.classList.contains('sp-on')){ s.remove(); return; }
-  var t0=Date.now(), done=false, rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function go(){ if(done) return; done=true; s.classList.add('out'); setTimeout(function(){ s.remove(); h.classList.remove('sp-on'); },320); }
-  // The trademark sound: Stian and Elmar saying "Bloppit", timed so "-pit!" lands as Bloppit's eye shuts.
-  // Browsers may block sound before the first tap; then it plays if the launch screen is tapped instead.
-  var snd=null, played=false;
-  try{ if(localStorage.getItem('bloppit-sound')!=='off'){ snd=new Audio('/sound/bloppit.m4a?v=2'); snd.preload='auto'; } }catch(x){}
-  function say(){ if(!snd||played) return; played=true; try{ var p=snd.play(); if(p&&p.catch) p.catch(function(){ played=false; }); }catch(x){ played=false; } }
-  if(snd) setTimeout(say,Math.max(0,220-(Date.now()-t0)));
-  s.onclick=function(){ say(); go(); };
-  // Quick: about 1.9 seconds (Bloppit's wink), counted from when the page started, so a slow connection doesn't add to it
-  function later(){ setTimeout(go,Math.max(150,(rm?400:1900)-(Date.now()-t0))); }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',later); else later();
-})();
-</script>
 <a class="skip" href="#main">Skip to content</a>
 
 <header>
   <nav class="wrap" aria-label="Main">
     <a class="logo" href="/" aria-label="Bloppit home">
-      <img src="/art/bloppit-avatar.png" width="46" height="46" alt="">
+      <img src="/art/bloppit-avatar.png" width="42" height="42" alt="">
       <span>Bloppit</span><span class="wob" aria-hidden="true"><i>World</i><i>of</i><i>Bricks</i></span>
     </a>
     <div class="nav-links">
       <a href="/how-it-works/">How it works</a>
       <a href="/faq/">FAQ</a>
       <a href="/about/">About us</a>
-      <a class="btn quick sm" href="/build/"><i class="bi bi-quick" aria-hidden="true"></i>Play Now</a>
+      <a class="btn play sm" href="/game/">Play Bloppit</a>
     </div>
   </nav>
 </header>
 
 <main id="main">
   <section class="wrap hero">
-    <div class="hero-text">
-      <span class="pill">Build with Bloppit the otter</span>
-      <h1>Build it.<br>Grow your <span class="accent">world.</span></h1>
-      <div class="tagline" aria-label="World of Bricks"><span>World</span><span>of</span><span>Bricks</span></div>
-      <p>A brick-building game for anyone who loves bricks. Build with Bloppit the otter, raise your pup and grow your own island, Bloppitopia. Then race Swoop the Longtail.</p>
-      <div class="actions choose bricks">
-        <a class="btn brick quick big" href="/build/"><i class="bi bi-quick" aria-hidden="true"></i>Play Now</a>
-        <a class="btn brick primary isle" href="/build/#island"><i class="bi bi-isle" aria-hidden="true"></i>Bloppitopia</a>
-        <a class="btn brick" href="/build/#daily"><i class="bi bi-bibi" aria-hidden="true"></i>This week’s Bloppit</a>
-        <a class="btn brick blue" href="#how-to-play">▶ How to play</a>
-      </div>
-      <p class="choose-note"><b>Play Now:</b> pick a game and start building. <b>Bloppitopia:</b> grow your own island, one build at a time.</p>
-      <p class="get-app" id="getApp" hidden><a class="btn brick sm" href="https://apps.apple.com/app/id6821449219">📲 Get the free app</a> <span>Bloppit for iPhone and iPad, on the App Store</span></p>
-    </div>
-
-    <div class="hero-visual">
-      <figure class="polaroid">
-        <svg viewBox="0 0 120 90" role="img" aria-label="A photo of a red sailing boat on a blue sea">
-          <rect width="120" height="90" fill="#9FC3E9"/>
-          <circle cx="102" cy="16" r="9" fill="#F2CD37"/>
-          <path d="M47 8 V60" stroke="#6C6E68" stroke-width="2.5"/>
-          <path d="M45 12 L45 54 L14 54 Z" fill="#F4F4F4"/>
-          <path d="M50 18 L50 54 L76 54 Z" fill="#F4F4F4"/>
-          <path d="M10 60 H86 L76 74 H22 Z" fill="#C91A09"/>
-          <rect y="72" width="120" height="18" fill="#0055BF"/>
-          <path d="M0 74 q8 -4 16 0 t16 0 t16 0 t16 0 t16 0 t16 0 t16 0 t16 0" stroke="#36AEBF" stroke-width="3" fill="none"/>
-        </svg>
-        <figcaption>our boat.jpg</figcaption>
-      </figure>
-      <svg viewBox="0 0 60 30" width="60" height="30" aria-hidden="true" fill="none" stroke="#14202C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15 H52 M40 4 L54 15 L40 26"/></svg>
-      <div class="model">
-        <span class="race-chip">⭐ <b>Puzzle complete!</b></span>
-        <div class="mosaic" id="mosaic" role="img" aria-label="The same boat as a brick model"></div>
-        <img class="buddy" src="/art/bloppit-front.svg" width="120" height="179" alt="">
-      </div>
-    </div>
-  </section>
-
-  <script>
-  /* A returning player (this device has played): the hero is their own Bloppitopia. The picture and name were
-     saved on this device by the game; nothing is fetched. */
-  (function(){ try{
-    var s=JSON.parse(localStorage.getItem('bloppit-island-v1')); if(!s||!(s.img||s.svg)||!(s.n>0)) return;
-    var hero=document.querySelector('.hero'), txt=hero.querySelector('.hero-text'), vis=hero.querySelector('.hero-visual');
-    txt.querySelector('.pill').textContent='Welcome back!';
-    var h=txt.querySelector('h1'); h.textContent=''; var a=document.createElement('span'); a.className='accent';
-    a.textContent=s.name?s.name+'’s':'Your'; h.appendChild(a); h.appendChild(document.createElement('br')); h.appendChild(document.createTextNode('island is waiting.'));
-    var tg=txt.querySelector('.tagline'); if(tg) tg.remove();
-    txt.querySelector('p').textContent=s.n+' build'+(s.n===1?'':'s')+' so far, and it’s a '+s.stage+'. Every build you finish grows it.';
-    var acts=txt.querySelector('.actions'), isle=acts.querySelector('.isle')||acts.lastElementChild; isle.innerHTML='<i class="bi bi-isle" aria-hidden="true"></i>Back to Bloppitopia'; isle.href='/build/#island';
-    var f=document.createElement('figure'); f.className='isle-hero';
-    if(s.img&&/^data:image\/jpeg;base64,/.test(s.img)){ var im=document.createElement('img'); im.src=s.img; im.alt=''; f.appendChild(im); } else f.innerHTML=s.svg;
-    var c=document.createElement('figcaption'); c.innerHTML='<i class="bi bi-isle" aria-hidden="true"></i>Bloppitopia · '+s.stage; f.appendChild(c);
-    var go=document.createElement('a'); go.href='/build/#island'; go.setAttribute('aria-label','Open your island'); go.style.cssText='position:absolute;inset:0'; f.appendChild(go);
-    vis.replaceWith(f);
-  }catch(e){} })();
-  </script>
-
-  <section class="wrap howto" id="how-to-play" aria-labelledby="howto-h">
     <div>
-      <span class="pill">45 seconds</span>
-      <h2 id="howto-h">How to play</h2>
-      <p>Pick a puzzle, grab the brick the booklet shows, and tap it into place. Build it clean for three stars, and every build you finish grows your island.</p>
-      <a class="btn quick sm" href="/build/"><i class="bi bi-quick" aria-hidden="true"></i>Play Now</a>
+      <span class="eyebrow">A brick-building game for all ages</span>
+      <h1>Build it.<br>Grow your <span class="accent">world.</span></h1>
+      <p class="lede">Build anything from bricks with Bloppit the otter, one step at a time. Every build you finish grows your own island, Bloppitopia, with a friend waiting on every shore.</p>
+      <div class="actions"><a class="btn play lg" href="/game/">Play Bloppit</a><a class="btn ghost" href="https://apps.apple.com/app/id6821449219">Get the iPhone &amp; iPad app</a></div>
+      <ul class="facts"><li>Free</li><li>No ads</li><li>Nothing to buy</li><li>Plays in your browser</li></ul>
     </div>
-    <figure class="howto-video"><video controls playsinline preload="none" poster="/video/how-to-play.jpg" aria-label="How to play Bloppit, a 45-second video"><source src="/video/how-to-play.mp4" type="video/mp4"></video></figure>
+    <figure class="film" id="film">
+      <img src="/art/web/hero-arrival.jpg" width="1600" height="900" alt="Bloppit the otter on the jetty of Home Island, holding his red brick">
+      <button type="button" aria-label="Watch the arrival film (26 seconds)"><span><i aria-hidden="true">▶</i>Watch the film</span></button>
+    </figure>
   </section>
 
-  <div class="band cream" id="meet">
-    <section class="wrap meet" aria-labelledby="meet-h">
-      <div class="meet-art">
-        <span class="bubble">Let’s bloppit!</span>
-        <img src="/art/bloppit-front.svg" width="260" height="387" alt="Bloppit the otter, holding his red brick">
-      </div>
-      <div class="meet-text">
-        <h2 id="meet-h">Meet Bloppit, your building buddy</h2>
-        <p>Real otters keep a favourite rock tucked under one arm. Bloppit keeps a favourite brick, and never builds without it.</p>
-        <p>Bloppit has a friend on every island: Tiny the tree frog in Frog Forest, Nora the night heron on Brainpeak, Pippa the penguin on Flipper Beach, Bibi the lion cub on Brickyard Cove, and Swoop, the speediest Bermuda Longtail, who races you on Blitz Bay. And far out in the mist, someone small is waiting to be found.</p>
+  <div class="band">
+    <section class="wrap section" id="how-to-play" aria-labelledby="how-h">
+      <div class="how">
+        <div>
+          <span class="eyebrow">How it works</span>
+          <h2 id="how-h" style="font-size:clamp(2.2rem,4.6vw,3.2rem);margin:10px 0 28px">Three steps, endless builds</h2>
+          <ol>
+            <li><h3>Pick a build</h3><p>A puzzle from one of the islands, any of the 66 models in the library, or your own photo or drawing turned into bricks.</p></li>
+            <li><h3>Build it brick by brick</h3><p>Follow the booklet, grab the brick it shows and tap it into place. Build it clean for three stars.</p></li>
+            <li><h3>Grow your world</h3><p>Every build you finish grows Bloppitopia: a home, a garden, a village, then five islands rising from the mist.</p></li>
+          </ol>
+        </div>
+        <figure class="howto-video"><video controls playsinline preload="none" poster="/video/how-to-play.jpg" aria-label="How to play Bloppit, a 45-second video"><source src="/video/how-to-play.mp4" type="video/mp4"></video></figure>
       </div>
     </section>
   </div>
 
-  <section class="wrap section" id="play" aria-labelledby="play-h">
-    <h2 id="play-h">How it works</h2>
-    <div class="cards four">
-      <article class="card lift">
-        <span class="tag" style="background:#FFE7B8">Your island</span>
-        <h3><i class="bi bi-isle" aria-hidden="true"></i>Bloppitopia</h3>
-        <p>A little otter arrives by boat, and your first build finishes its home. Every build after that grows your world: Home Island becomes a village, and five islands rise from the mist, Frog Forest, Brainpeak, Flipper Beach, Blitz Bay and Brickyard Cove, each growing with its own game. Finish all five and Moonstone Isle opens: the mystery that ends Chapter 1, and a voyage to a whole new world. Your otter levels up and earns outfits. Nothing is ever for sale.</p>
-        <a class="card-link" href="/build/#island">Visit the island →</a>
-      </article>
-      <article class="card lift">
-        <span class="tag" style="background:#D3F0F2">New every Monday</span>
-        <h3><i class="bi bi-bibi" aria-hidden="true"></i>Weekly Bloppit</h3>
-        <p>One puzzle a week, the same for everybody. Build it clean, see how many builders did too, and see it join your creations on Brickyard Cove. Missed a week? No problem.</p>
-        <a class="card-link" href="/build/#daily">Build this week’s puzzle →</a>
-      </article>
-      <article class="card lift">
-        <span class="tag" style="background:var(--cream)">Solo</span>
-        <h3>🦦 Trails &amp; the library</h3>
-        <p>Hop up <b>Frog Trail</b>, 14 levels from tiny to tricky and a boss at the end. <b>Brain Trail</b> adds math puzzles that match the player’s age. Or pick any of the 66 models in the <b>library</b> (a new one every week) and go at your own pace. Finish clean for three stars.</p>
-        <div class="chips" aria-hidden="true"><span class="chip lvl">1</span><span class="chip lvl">2</span><span class="chip lvl next">3</span></div>
-        <a class="card-link" href="/build/#trails">Start the Trails →</a>
-      </article>
-      <article class="card lift">
-        <span class="tag" style="background:#FFE7B8">Against the clock</span>
-        <h3>⚡ Bloppit Blitz</h3>
-        <p>A head-to-head brick race against Swoop the Longtail, at Warm-up, Race or Full throttle speed. Take turns placing 1 to 3 bricks. Shortest clean time wins. Win 19 races and the 20th is the Grand Prix.</p>
-        <a class="card-link" href="/build/#blitz">Start a race →</a>
-      </article>
+  <section class="wrap section" aria-labelledby="isles-h">
+    <div class="section-head">
+      <span class="eyebrow">Bloppitopia</span>
+      <h2 id="isles-h">Five islands, five friends</h2>
+      <p class="lede">Each island has its own way to play and a friend who lives there. Every build you finish there helps it grow.</p>
     </div>
-    <p class="math-note" style="margin-top:20px"><b>With friends:</b> race a friend live or send a challenge code, or build one model together in a room. Friends only join with a code, and the host lets each one in. No chat, no voice: just bricks.</p>
+    <div class="isles">
+      <article class="isle" style="--c:var(--c-tiny)"><img class="still" src="/art/web/isle-frog-forest.jpg" width="800" height="450" alt="Bloppit and Tiny the tree frog on the lily pads of Frog Forest" loading="lazy">
+        <div class="body"><span class="who"><img src="/art/head-tiny.png" alt="">Tiny the tree frog</span><h3>Frog Forest</h3><p>Hop up the Frog Trail: 15 levels from tiny to tricky, with a boss at the top.</p></div></article>
+      <article class="isle" style="--c:var(--c-nora)"><img class="still" src="/art/web/isle-brainpeak.jpg" width="800" height="450" alt="Nora the night heron showing Bloppit the path up Brainpeak" loading="lazy">
+        <div class="body"><span class="who"><img src="/art/head-nora.png" alt="">Nora the night heron</span><h3>Brainpeak</h3><p>The Brain Trail: builds with a little maths in them, matched to the player’s age.</p></div></article>
+      <article class="isle" style="--c:var(--c-pippa)"><img class="still" src="/art/web/isle-sunrise-shores.jpg" width="800" height="450" alt="Bloppit and Pippa the penguin in the rock pools of Flipper Beach" loading="lazy">
+        <div class="body"><span class="who"><img src="/art/head-pippa.png" alt="">Pippa the penguin</span><h3>Flipper Beach</h3><p>Pippa’s mirror puzzles: she builds one half, and you build the reflection.</p></div></article>
+      <article class="isle" style="--c:var(--c-swoop)"><img class="still" src="/art/web/isle-blitz-bay.jpg" width="800" height="450" alt="Bloppit showing Swoop the Longtail a photo finish on Blitz Bay" loading="lazy">
+        <div class="body"><span class="who"><img src="/art/head-swoop.png" alt="">Swoop the Longtail</span><h3>Blitz Bay</h3><p>Race the speediest Bermuda Longtail, brick for brick. Win 19 races and the 20th is the Grand Prix.</p></div></article>
+      <article class="isle" style="--c:var(--c-bibi)"><img class="still" src="/art/web/isle-brickworks.jpg" width="800" height="450" alt="Bloppit with a painting of Bibi the lion cub on Brickyard Cove" loading="lazy">
+        <div class="body"><span class="who"><img src="/art/head-bibi.png" alt="">Bibi the lion cub</span><h3>Brickyard Cove</h3><p>Turn your own photos and drawings into builds, and try the Weekly Bloppit: one puzzle a week, the same for everyone.</p></div></article>
+      <article class="isle moon" style="--c:var(--c-lufu)"><img class="still" src="/video/moonstone-feature.jpg" width="640" height="360" alt="A galaxy-coloured brick ship at the edge of the sea at night" loading="lazy">
+        <div class="body"><span class="who">Chapter 1 finale</span><h3>Moonstone Isle</h3><p>Finish all five islands and Moonstone Isle opens: ten chapters, one mystery, and someone small waiting to be found.</p></div></article>
+    </div>
   </section>
 
-  <section class="wrap" style="padding-block:80px" aria-labelledby="cta-h">
-    <div class="cta">
-      <h2 id="cta-h">Ready to build? Let’s bloppit!</h2>
-      <p>Your pup is waiting on Bloppitopia. Play in your browser, or get Bloppit for iPhone and iPad on the <a href="https://apps.apple.com/app/id6821449219">App Store</a>.</p>
-      <div class="actions" style="justify-content:center"><a class="btn quick" href="/build/"><i class="bi bi-quick" aria-hidden="true"></i>Play Now</a><a class="btn primary" href="/build/#island"><i class="bi bi-isle" aria-hidden="true"></i>Bloppitopia</a></div>
+  <div class="band">
+    <section class="wrap section meet" aria-labelledby="meet-h">
+      <div class="meet-art"><img src="/art/bloppit-front.svg" width="260" height="387" alt="Bloppit the otter, holding his red brick"></div>
+      <div>
+        <span class="eyebrow">Your building buddy</span>
+        <h2 id="meet-h">Meet Bloppit</h2>
+        <p>Real otters keep a favourite rock tucked under one arm. Bloppit keeps a favourite brick, and never builds without it.</p>
+        <p>He builds beside you, cheers every brick, and looks after your own otter pup on Bloppitopia. Your pup grows as you play, earns outfits, and is always there to greet you when you come back.</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="wrap section" aria-labelledby="ways-h">
+    <div class="section-head">
+      <span class="eyebrow">More ways to play</span>
+      <h2 id="ways-h">On your own or with friends</h2>
+    </div>
+    <div class="ways">
+      <article class="card"><h3>The Weekly Bloppit</h3><p>A new puzzle every Monday, the same for everybody. Build it clean, see how many builders did too, and keep your streak going.</p></article>
+      <article class="card"><h3>The library</h3><p>66 models in 11 themes, with a new one every week. Pick one and build at your own pace.</p></article>
+      <article class="card"><h3>With friends</h3><p>Race a friend live, send a challenge code, or build one model together in a room. Friends join only with your code.</p></article>
     </div>
   </section>
+
+  <div class="band">
+    <section class="wrap section" aria-labelledby="family-h">
+      <div class="section-head">
+        <span class="eyebrow">For parents</span>
+        <h2 id="family-h">Made for families</h2>
+        <p class="lede">Bloppit is made in Bermuda by a dad of two boys, for kids and grown-ups who love bricks.</p>
+      </div>
+      <div class="family">
+        <div style="--c:var(--c-pippa)"><h3>Free, for real</h3><p>No ads, nothing to buy and no pay-to-win. Everything in the game is earned by building.</p></div>
+        <div style="--c:var(--c-swoop)"><h3>No chat, no strangers</h3><p>Friends join only with a code, and the host lets each one in. There’s no chat and no voice: just bricks.</p></div>
+        <div style="--c:var(--c-tiny)"><h3>Private by default</h3><p>No accounts and no tracking. Photos you turn into builds stay on your device. Read the <a href="/privacy/">privacy policy</a>.</p></div>
+        <div style="--c:var(--c-bibi)"><h3>Plays anywhere</h3><p>In any web browser, or as the app for iPhone and iPad, which also works offline.</p></div>
+      </div>
+      <p class="more-links"><a href="/faq/">Questions? Read the FAQ →</a><a href="/activity/">For groups &amp; classes →</a></p>
+    </section>
+  </div>
+
+  <div class="wrap">
+  <section class="cta" aria-labelledby="cta-h">
+    <h2 id="cta-h">Ready to build?</h2>
+    <p>Your otter is waiting on Bloppitopia. Play free in your browser, or get Bloppit for iPhone and iPad.</p>
+    <div class="actions" style="justify-content:center"><a class="btn play lg" href="/game/">Play Bloppit</a><a class="btn ghost" href="https://apps.apple.com/app/id6821449219">Get the app</a></div>
+  </section>
+  </div>
 </main>
 
 <footer>
   <div class="wrap foot">
-    <span class="name">Bloppit</span>
-    <span>Build it. Grow your world.</span>
-    <span class="legal">© 2026 Bloppit · An independent project, not affiliated with any toy brick brand. · <a href="/privacy/">Privacy</a> · <a href="/activity/">For groups &amp; classes</a></span>
-    <nav class="social" aria-label="Bloppit on social media"><span>Follow Bloppit</span><a href="https://www.tiktok.com/@playbloppit" rel="me noopener" target="_blank" aria-label="Bloppit on TikTok (@playbloppit)">TikTok</a><a href="https://www.instagram.com/playbloppit/" rel="me noopener" target="_blank" aria-label="Bloppit on Instagram (@playbloppit)">Instagram</a><a href="https://www.youtube.com/@bloppit" rel="me noopener" target="_blank" aria-label="Bloppit on YouTube (@bloppit)">YouTube</a><a href="https://x.com/playbloppit" rel="me noopener" target="_blank" aria-label="Bloppit on X (@playbloppit)">X</a><a href="https://www.facebook.com/playbloppit" rel="me noopener" target="_blank" aria-label="Bloppit on Facebook (playbloppit)">Facebook</a></nav>
+    <div class="brand"><span class="name">Bloppit</span><p>Bloppit: World of Bricks. Build it. Grow your world. A brick-building game made in Bermuda.</p></div>
+    <div><h3>Play</h3><ul><li><a href="/game/">Play Bloppit</a></li><li><a href="https://apps.apple.com/app/id6821449219">iPhone &amp; iPad app</a></li><li><a href="/activity/">For groups &amp; classes</a></li></ul></div>
+    <div><h3>Bloppit</h3><ul><li><a href="/how-it-works/">How it works</a></li><li><a href="/faq/">FAQ</a></li><li><a href="/about/">About us</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="mailto:hello@bloppit.com">hello@bloppit.com</a></li></ul></div>
+    <nav aria-label="Bloppit on social media"><h3>Follow</h3><ul><li><a href="https://www.tiktok.com/@playbloppit" rel="me noopener" target="_blank" aria-label="Bloppit on TikTok (@playbloppit)">TikTok</a></li><li><a href="https://www.instagram.com/playbloppit/" rel="me noopener" target="_blank" aria-label="Bloppit on Instagram (@playbloppit)">Instagram</a></li><li><a href="https://www.youtube.com/@bloppit" rel="me noopener" target="_blank" aria-label="Bloppit on YouTube (@bloppit)">YouTube</a></li><li><a href="https://x.com/playbloppit" rel="me noopener" target="_blank" aria-label="Bloppit on X (@playbloppit)">X</a></li><li><a href="https://www.facebook.com/playbloppit" rel="me noopener" target="_blank" aria-label="Bloppit on Facebook (playbloppit)">Facebook</a></li></ul></nav>
+    <p class="legal">© 2026 Bloppit · An independent project, not affiliated with any toy brick brand.</p>
   </div>
 </footer>
 
-<script>
-/* The hero's brick version of the boat photo: 12 × 9 studs. */
-(function(){
-  var colors={s:'#9FC3E9',y:'#F2CD37',k:'#6C6E68',w:'#F4F4F4',r:'#C91A09',m:'#36AEBF',b:'#0055BF'};
-  var rows=['ssssksssssyy','sssswkssssyy','ssswwkwsssss','sswwwkwwssss','swwwwkwwwsss','ssssskssssss','srrrrrrrrrss','mmrrrrrrrmmm','bbbbbbbbbbbb'];
-  var el=document.getElementById('mosaic'), html=''; if(!el) return;   // a returning player's hero is their island
-  rows.forEach(function(row){ for(var i=0;i<row.length;i++) html+='<i style="background:'+colors[row[i]]+'"></i>'; });
-  el.innerHTML=html;
-})();
+<script>/* The arrival film plays in place when the picture is tapped */
+(function(){ var f=document.getElementById('film'), b=f&&f.querySelector('button'); if(!b) return;
+  b.addEventListener('click',function(){ var v=document.createElement('video'); v.src='/video/arrival.mp4'; v.controls=true; v.playsInline=true; v.autoplay=true;
+    v.poster='/art/web/hero-arrival.jpg'; v.setAttribute('aria-label','The arrival film'); f.replaceChildren(v); try{ var p=v.play(); if(p&&p.catch) p.catch(function(){}); }catch(e){} }); })();
 </script>
-<script>/* iPhone and iPad visitors also see "Get the free app" (iPads report themselves as a Mac with touch) */
-try{ const ua=navigator.userAgent; if(/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1)) document.getElementById('getApp').hidden=false; }catch(e){}</script>
 <script>/* one count for this page (no cookies, nothing about the visitor) */try{navigator.sendBeacon('/api/event',new Blob([JSON.stringify({events:['page:landing'],p:'web'})],{type:'application/json'}))}catch(e){}</script>
 </body>
 </html>

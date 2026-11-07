@@ -1,4 +1,4 @@
-// Packages the web app (public/build/index.html) into mobile/www for the iPhone/iPad app.
+// Packages the web app (public/game/index.html) into mobile/www for the iPhone/iPad app.
 // Everything the app needs is bundled so it works offline: three.js and the fonts come from
 // node_modules instead of a CDN or Google Fonts. Play together still needs the internet (bloppit.com/api/room).
 // Run: cd mobile && npm run build   (or `npm run sync` to also copy into the iOS project)
@@ -39,7 +39,7 @@ writeFileSync(join(www, 'vendor', 'fonts.css'), css);
 
 // The website's About us, How it works, FAQ and Privacy pages, bundled so the app shows them in its own reader
 // (no grown-ups gate, works offline). Website-only head bits and the site header go; links point at the bundled copies.
-// The app's link handler (see "App Store app" in public/build/index.html) routes the links inside them.
+// The app's link handler (see "App Store app" in public/game/index.html) routes the links inside them.
 const PAGES = ['about', 'how-it-works', 'faq', 'privacy'];
 mkdirSync(join(www, 'pages'), { recursive: true });
 copyFileSync(join(root, 'public', 'site.css'), join(www, 'pages', 'site.css'));
@@ -52,14 +52,14 @@ for (const page of PAGES) {
     .replace(/(src|poster)="\/(art|video)\//g, '$1="../$2/')
     .replace(new RegExp(`href="/(${PAGES.join('|')})/"`, 'g'), 'href="$1.html"');
   // In the app the FAQ shouldn't say the app is on its way: whoever reads it is already in it.
-  if (page === 'faq') p = p.replace('Bloppit for iPhone and iPad is on its way to the App Store.', 'You’re playing the iPhone and iPad app. Bloppit also plays in any web browser at bloppit.com/build.');
+  if (page === 'faq') p = p.replace('Bloppit for iPhone and iPad is on its way to the App Store.', 'You’re playing the iPhone and iPad app. Bloppit also plays in any web browser at bloppit.com/game.');
   if (/https:\/\/(cdn|fonts)\./.test(p) || /(href|src)="\/(site\.css|art|video)/.test(p)) throw new Error(`build-www: pages/${page}.html still points at the website`);
   writeFileSync(join(www, 'pages', `${page}.html`), p);
 }
 
-let html = readFileSync(join(root, 'public', 'build', 'index.html'), 'utf8');
+let html = readFileSync(join(root, 'public', 'game', 'index.html'), 'utf8');
 const swap = (from, to) => {
-  if (!html.includes(from)) throw new Error(`build-www: couldn't find ${from.slice(0, 80)} in public/build/index.html`);
+  if (!html.includes(from)) throw new Error(`build-www: couldn't find ${from.slice(0, 80)} in public/game/index.html`);
   html = html.replace(from, to);
 };
 swap('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>', '<script src="vendor/three.min.js"></script>');

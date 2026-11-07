@@ -30,7 +30,7 @@ build it on screen. The menu is game-first:
   (switched off October 2026; the server answers 410 to the old actions). Nothing typed or spoken passes between players.
 - Every finish screen offers **Build it for real**, which opens the printable booklet.
 
-- Racing Swoop, challenges and the Weekly Bloppit all run on the device: `cpuApi()` in `public/build/index.html`
+- Racing Swoop, challenges and the Weekly Bloppit all run on the device: `cpuApi()` in `public/game/index.html`
   stands in for the room server and follows the same Blitz rules as `logic.mjs`. A challenge or Weekly run is the same
   engine with one player (`s.solo`); `trialEnd()` sends the result. Swoop's speed and miss rate at each level is in `CPU_LEVELS`.
 - **The pup** (`netlify/functions/pup/`, `/api/pup`): each player profile gets an anonymous pup id, minted by the server
@@ -52,13 +52,13 @@ Formerly called Building Blox; the browser save keys still use the old `building
 - The front page is: hero ("Build it. Grow your world."), Meet Bloppit, Four ways to play. **How it works**, **FAQ** and
   **About us** are separate pages (`public/how-it-works/`, `public/faq/`, `public/about/`), linked only from the top
   ribbon; they share `public/site.css`. Keep their facts in step with the game (levels, limits, privacy promises).
-- `public/build/index.html` is the whole app, at bloppit.com/build/ (no build step).
+- `public/game/index.html` is the whole app, at bloppit.com/game/ (no build step).
   Old invite links (`/?room=CODE`) and channel links (`/go/CHANNEL`) redirect into the app via `netlify.toml`.
 - **Flow.** The website and the App Store app share one flow from the menu on. Differences: the website starts at the
   front page (bloppit.com: launch screen → front page → *Play now* → menu); the app opens with the launch screen,
   then the menu. The launch screen shows once per visit (both pages share the `bloppit-splash` sessionStorage flag,
   so whichever page you land on shows it and the other doesn't) and is skipped for links into a section, page, room
-  or challenge. On screens 1000px and wider the menu becomes two columns (hello and the Weekly on the left, tiles on the right). On the website each page has its own address (`/build/` is the menu, then `#blitz`, `#daily`, `#trails`,
+  or challenge. On screens 1000px and wider the menu becomes two columns (hello and the Weekly on the left, tiles on the right). On the website each page has its own address (`/game/` is the menu, then `#blitz`, `#daily`, `#trails`,
   `#together`, `#photos`, `#build`, `#booklet`) so the browser's Back button steps back through Bloppit (`navNote()`).
 - **Share links** are `bloppit.com/join/CODE`: `netlify.toml` sends them to `/build/?code=CODE`, which opens the room
   (5 characters) or challenge (6 characters) straight away. The older `/build/?room=CODE` and `?ch=CODE` still work.
