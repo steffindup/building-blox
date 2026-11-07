@@ -1866,6 +1866,15 @@ body.film-on{overflow:hidden}
 .hm-tile.wide{grid-template-rows:auto auto auto}.hm-tile.wide .ic{grid-row:1 / span 3}
 .hm-tile.wide b{align-self:end}.hm-tile.wide .isl{grid-column:2}.hm-tile.wide span:not(.ic){grid-column:2}
 .hm-tile .ic .two{position:relative;display:block;width:100%;height:100%}.hm-tile .ic .two img{position:absolute;top:8%;width:62%;height:auto}.hm-tile .ic .two img:first-child{left:-4%}.hm-tile .ic .two img:last-child{right:-4%;transform:scaleX(-1)}
+
+/* One voice for buttons and one radius scale (Steff, 7 Nov 2026): buttons in Nunito bold like the website (Lilita One is for
+   headings and the wordmark); 16px on everything card-like, 20px on dialogs and the page banners, 10px on inputs and tabs. */
+.primary{font-family:var(--f-body);font-weight:800;font-size:17px}
+.primary.sm{font-size:15px}
+.card,.hm-tile,.gamebar,.crew-row,.crew-game,.crew-pzopt,.crew-next,.hm-how,.hm-world,.hm-daily,.hm-bubble,.hm-cont,.qp-opt,.ch-row,.lvl,.mode,.is-builds,.bz-card,.crew-card,.crew-open{border-radius:16px}
+.windlg,dialog.windlg,.char-hero,.howdlg{border-radius:20px}
+.inp,.tab,select.inp,input.inp{border-radius:10px}
+.tab{border-radius:999px}
 </style>
 
 <header class="top">
