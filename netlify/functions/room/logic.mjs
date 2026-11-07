@@ -250,8 +250,8 @@ export async function handle(method, query, body, store) {
       if (!w) return { error: 'They’re no longer waiting.', status: 404 };
       s.waiting = s.waiting.filter((x) => x !== w);
       if (a === 'deny') { s.denied = [...(s.denied || []), w.id].slice(-20); return {}; }
-      if (active(s) >= MAX_PLAYERS) return { error: 'The room is full (4 players).', status: 409 };
-      if (blitz(s) && s.started) return { error: 'Bloppit Blitz has already started, so nobody new can join this game.', status: 409 };
+      if (active(s) >= MAX_PLAYERS) return { error: 'That room is full (4 players).', status: 409 };
+      if (blitz(s) && s.started) return { error: 'This race has already started, so nobody new can join. Ask your friend for the next one!', status: 409 };
       const used = new Set(s.players.map((p) => p.color));
       s.players.push({ id: w.id, name: w.name, color: COLORS.find((c) => !used.has(c)) || COLORS[0], pen: { hint: 0, auto: 0, miss: 0 }, seen: Date.now(), ms: 0, miss: 0 });
       return {};
@@ -304,7 +304,7 @@ export async function handle(method, query, body, store) {
       const b = Math.floor(Number(body.b));
       if (!(b >= 0 && b < s.nBricks)) return { error: 'Unknown brick.', status: 400 };
       if (s.moves.some((m) => m.b === b)) return { error: 'That brick is already placed.', status: 409 };
-      if (blitz(s) && body.auto) return { error: 'There’s no “place one for me” in Bloppit Blitz.', status: 400 };
+      if (blitz(s) && body.auto) return { error: 'There’s no “place one for me” in a Blitz race.', status: 400 };
       if (shareDone(s, i)) return { error: 'You’ve placed all your bricks.', status: 409 };
       s.moves.push({ p: i, b, x: Math.round(Number(body.x) || 0), z: Math.round(Number(body.z) || 0), a: body.auto ? 1 : 0 });
       if (body.pen && !blitz(s)) s.players[i].pen = mergePen(s.players[i].pen, body.pen);

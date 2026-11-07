@@ -185,7 +185,7 @@ export async function handle(method, query, body, store) {
   }
   if (a === 'relay-finish') {
     const code = cleanCode(body.code);
-    if (code.length !== 6) return { status: 400, body: { error: 'Relay codes have 6 letters and numbers.' } };
+    if (code.length !== 6) return { status: 400, body: { error: 'Pass the Puzzle codes have 6 letters and numbers.' } };
     const id = rand(16, 'abcdefghijklmnopqrstuvwxyz0123456789');
     for (let i = 0; i < 8; i++) {
       const r = await readChallenge(store, code);
