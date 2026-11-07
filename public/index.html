@@ -108,6 +108,20 @@ a{color:var(--red-dark)}
 .actions.choose .btn{min-width:200px}
 .actions.choose .btn.big{font-size:23px;min-height:62px;padding-inline:34px;min-width:230px}   /* Play Now is the first, biggest choice (Steff, 5 Nov 2026) */
 .choose-note{margin-top:14px;font-size:16px;font-weight:600;max-width:520px}
+/* Brick buttons (Steff, 6 Nov 2026): the hero's buttons are bricks, two studs on top like Bloppit's red brick */
+.btn.brick{position:relative;border-radius:10px;margin-top:12px}
+.btn.brick::before,.btn.brick::after{content:"";position:absolute;top:-14px;width:30px;height:12px;background:inherit;
+  border:2px solid var(--ink);border-bottom:0;border-radius:7px 7px 0 0;pointer-events:none}
+.btn.brick::before{left:20%}.btn.brick::after{right:20%}
+.btn.brick.big::before,.btn.brick.big::after{width:36px;height:13px;top:-15px}
+.btn.brick.sm{border-radius:8px;margin-top:10px}.btn.brick.sm::before,.btn.brick.sm::after{width:22px;height:9px;top:-11px;border-radius:5px 5px 0 0}
+.btn.blue{background:#0369BD;color:var(--white)}.btn.blue:hover{color:var(--white)}
+/* the four hero bricks: two equal columns, stacked full width on phones */
+.actions.bricks{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;max-width:540px}
+.actions.bricks .btn{min-width:0;width:100%;box-sizing:border-box;padding-inline:16px;text-align:center}
+.actions.bricks .btn.big{min-width:0;padding-inline:16px}
+.actions.bricks .btn:not(.big){min-height:62px}
+@media (max-width:520px){.actions.bricks{grid-template-columns:1fr}}
 .btn.sm{font-size:16px;min-height:44px;padding:8px 20px;box-shadow:0 3px 0 var(--ink)}
 .btn.sm:hover{box-shadow:0 1px 0 var(--ink)}
 .get-app{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:16px}.get-app[hidden]{display:none}
@@ -292,13 +306,14 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
       <h1>Build it.<br>Grow your <span class="accent">world.</span></h1>
       <div class="tagline" aria-label="World of Bricks"><span>World</span><span>of</span><span>Bricks</span></div>
       <p>A brick-building game for anyone who loves bricks. Build with Bloppit the otter, raise your pup and grow your own island, Bloppitopia. Then race Swoop the Longtail.</p>
-      <div class="actions choose">
-        <a class="btn quick big" href="/build/">▶ Play Now</a>
-        <a class="btn primary isle" href="/build/#island">🏝️ Bloppitopia</a>
+      <div class="actions choose bricks">
+        <a class="btn brick quick big" href="/build/">▶ Play Now</a>
+        <a class="btn brick primary isle" href="/build/#island">🏝️ Bloppitopia</a>
+        <a class="btn brick blue" href="#how-to-play">▶ How to play</a>
+        <a class="btn brick" href="/build/#daily">📅 This week’s Bloppit</a>
       </div>
-      <p class="choose-note"><b>Play Now:</b> pick a game and start building. <b>Bloppitopia:</b> grow your own island, one build at a time.</p>
-      <p class="get-app" id="getApp" hidden><a class="btn sm" href="https://apps.apple.com/app/id6821449219">📲 Get the free app</a> <span>Bloppit for iPhone and iPad, on the App Store</span></p>
-      <p style="margin-top:12px"><a href="#how-to-play" style="font-weight:800">▶ Watch how to play (45 seconds)</a> <span aria-hidden="true">·</span> <a href="/build/#daily" style="font-weight:800">📅 This week’s Bloppit</a></p>
+      <p class="choose-note"><b>Play Now:</b> pick a game and start building. <b>Bloppitopia:</b> grow your own island, one build at a time. <b>How to play:</b> a 45-second video.</p>
+      <p class="get-app" id="getApp" hidden><a class="btn brick sm" href="https://apps.apple.com/app/id6821449219">📲 Get the free app</a> <span>Bloppit for iPhone and iPad, on the App Store</span></p>
     </div>
 
     <div class="hero-visual">
