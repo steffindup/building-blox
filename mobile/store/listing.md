@@ -50,7 +50,7 @@ Bloppit is a brick-building game for anyone who loves bricks. Build with Bloppit
 
 Every build you finish grows your own world, Bloppitopia. Your otter pup arrives by boat, your first build finishes its home, and five islands wait in the mist.
 
-A new puzzle every week, a library to explore, and Blitz races against Swoop the Longtail.
+A new puzzle every week, a library to explore, and Blitz with Swoop: 20 races against Swoop the Longtail.
 
 YOUR WORLD: BLOPPITOPIA
 • Home Island grows with every build: a cottage, a garden, a workshop, a museum of your best models, then a lively village

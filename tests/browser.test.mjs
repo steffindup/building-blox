@@ -104,7 +104,7 @@ test('My films: hidden until the arrival film is unlocked, then plays it again f
   assert.equal(await u.page.evaluate(() => document.getElementById('hmWorld').hidden), false);
   await u.page.evaluate(() => document.getElementById('hmFilms').click()); await u.page.waitForTimeout(400);
   assert.equal(await u.page.evaluate(() => document.getElementById('filmsDlg').open), true);
-  assert.match(await u.text('#filmNow'), /01 · Arrival/);
+  assert.match(await u.text('#filmNow'), /01 · Welcome to Bloppitopia/);
   await u.page.evaluate(() => document.querySelector('#filmList [data-film="arrival"]').click());
   await u.page.waitForFunction(() => { const v = document.getElementById('filmVid'); return /\/video\/arrival\.mp4(\?v=\w+)?$/.test(v.src) && v.currentTime > 0.3; }, null, { timeout: 10000 }); await shot(2);
   await u.page.evaluate(() => document.getElementById('filmsClose').click()); await u.page.waitForTimeout(300);

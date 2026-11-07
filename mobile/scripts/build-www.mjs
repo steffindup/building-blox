@@ -14,7 +14,7 @@ mkdirSync(join(www, 'vendor', 'fonts'), { recursive: true });
 // Character art (public/art): the build buddy, the Gulls and the launch screen load it by relative path.
 cpSync(join(root, 'public', 'art'), join(www, 'art'), { recursive: true });
 // The How to play video (public/video): played from the menu and the first builds.
-cpSync(join(root, 'public', 'video'), join(www, 'video'), { recursive: true, filter: (f) => !/moonstone-feature\.mp4$/.test(f) });   // the full Moonstone film streams from bloppit.com instead (49 MB)
+cpSync(join(root, 'public', 'video'), join(www, 'video'), { recursive: true, filter: (f) => !/moonstone-feature\.mp4$|for-groups\.(mp4|jpg)$/.test(f) });   // the full Moonstone film streams from bloppit.com instead (49 MB)
 // The launch screen's trademark sound (public/sound): the boys saying "Bloppit" as Bloppit winks.
 cpSync(join(root, 'public', 'sound'), join(www, 'sound'), { recursive: true });
 // The 3D characters (public/3d): models, the glTF/Draco loaders and the decoder, loaded on first need.
@@ -60,7 +60,11 @@ for (const page of PAGES) {
     .replace(/(src|poster)="\/(art|video)\//g, '$1="../$2/')
     .replace(new RegExp(`href="/(${PAGES.join('|')})/"`, 'g'), 'href="$1.html"');
   // In the app the FAQ shouldn't say the app is on its way: whoever reads it is already in it.
-  if (page === 'faq') p = p.replace('Bloppit for iPhone and iPad is on its way to the App Store.', 'You’re playing the iPhone and iPad app. Bloppit also plays in any web browser at bloppit.com/game.');
+  if (page === 'faq') {   // in the app this answer is about the app itself; no link out to /game/ (nothing there inside the app)
+    const web = 'Any phone, tablet or computer with a web browser: just go to <a href="/game/">bloppit.com/game</a>. Bloppit for iPhone and iPad is on the <a href="https://apps.apple.com/app/id6821449219">App Store</a>, free.';
+    if (!p.includes(web)) throw new Error('build-www: the FAQ answer about where Bloppit plays has changed; update build-www.mjs');
+    p = p.replace(web, 'You’re playing the iPhone and iPad app. Bloppit also plays in any web browser at bloppit.com/game.');
+  }
   if (/https:\/\/(cdn|fonts)\./.test(p) || /(href|src)="\/(site\.css|art|video)/.test(p)) throw new Error(`build-www: pages/${page}.html still points at the website`);
   writeFileSync(join(www, 'pages', `${page}.html`), p);
 }

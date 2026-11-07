@@ -1119,7 +1119,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .world-toast{cursor:pointer}.world-toast .ws-go{color:#F4BC22;margin-left:4px}
 .world-toast .ws-stars{font-size:22px;letter-spacing:3px;color:#F4BC22;line-height:1}
 .world-toast .ws-stars i{font-style:normal;color:rgba(255,255,255,.3)}
-.hm-world.lead{border:3px solid var(--c-bloppit)}
+
 .wc-btns{flex-direction:column;align-items:stretch}.wc-btns button{width:100%}
 .win-stars{font-size:46px;letter-spacing:6px;color:var(--hi);line-height:1}
 .win-pic{display:block;margin:0 auto 6px;max-width:150px;max-height:110px;object-fit:contain;filter:drop-shadow(0 6px 10px rgba(0,0,0,.3));animation:rvBob 2.4s ease-in-out infinite}
@@ -1213,7 +1213,7 @@ body.on-home .tabs{visibility:hidden}
 .howdlg .how-x{position:absolute;top:20px;right:20px;z-index:2;width:40px;height:40px;border-radius:50%;border:0;background:rgba(20,32,44,.72);color:#fff;font-size:26px;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .howdlg .how-x:hover{background:rgba(20,32,44,.9)}.howdlg .how-x:focus-visible{outline:3px solid var(--hi)}
 /* My films: the story films a player has unlocked, to watch again */
-.hm-quick{border:3px solid #F4BC22}.hm-quick .pl{background:#F4BC22;color:#14202C;font-size:22px}.hm-quick>span:nth-child(2){flex:1}.hm-quick .go{font-size:18px;color:var(--muted)}
+.hm-quick{border:1px solid var(--line)}.hm-quick .pl{background:#F4BC22;color:#14202C;font-size:22px}.hm-quick>span:nth-child(2){flex:1}.hm-quick .go{font-size:18px;color:var(--muted)}
 #hmSolo{scroll-margin-top:84px}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 /* The menu (Steff, 5 Nov 2026): Quick play, Bloppitopia, the Weekly, Continue, How to play. Quick play, Continue and
@@ -1223,7 +1223,7 @@ body.on-home .tabs{visibility:hidden}
 #hmQuick,#hmHow{min-height:70px}
 .hm-world{display:grid;grid-template-rows:minmax(0,1fr) auto;height:263px;width:100%;padding:0;overflow:hidden;border-radius:16px;background:var(--page);border:1px solid var(--line);box-shadow:0 2px 0 var(--shadow);text-align:left;font:inherit;color:inherit;cursor:pointer}
 .hm-world:hover{border-color:var(--ink)}
-.hm-world.lead{border:3px solid var(--c-bloppit)}
+
 .hm-world .hw-isle{position:relative;display:block;min-height:0;overflow:hidden;background:#A9D8F2}
 .hm-world .hw-isle>img,.hm-world .hw-isle>svg{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
 .hm-world .hw-tag{position:absolute;left:10px;top:10px;max-width:calc(100% - 20px);padding:4px 12px;border-radius:999px;background:rgba(20,32,44,.82);color:#fff;font-family:var(--f-display);font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1235,9 +1235,9 @@ body.on-home .tabs{visibility:hidden}
 .hm-world .pup{flex:none;display:block;width:40px;height:40px;border-radius:50%;overflow:hidden;background:#E8F1F8;border:2px solid #fff;box-shadow:0 1px 0 var(--shadow)}.hm-world .pup svg{width:100%;height:100%;display:block}
 .hm-world .pup.ps-legend{border-color:#F4BC22}
 .hm-world .wt{flex:1;display:grid;gap:4px;min-width:0}
-.hm-world .wt b,.hm-world .wname{font-family:var(--f-display);font-weight:400;font-size:17px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hm-world .wt b .sub{font-family:var(--f-body);font-size:13px;font-weight:800;color:var(--muted)}
-.hm-world .wname{cursor:pointer;color:inherit;text-decoration:underline dashed var(--line);text-underline-offset:4px}
+.hm-world .wt b,.hm-world .wname{font-family:var(--f-display);font-weight:400;font-size:17px;line-height:1.1;overflow-wrap:anywhere}   /* the name and level wrap rather than cut off (Steff, 7 Nov 2026) */
+.hm-world .wt b .sub{font-family:var(--f-body);font-size:13px;font-weight:800;color:var(--muted);white-space:nowrap}
+.hm-world .wname{white-space:nowrap;cursor:pointer;color:inherit;text-decoration:underline dashed var(--line);text-underline-offset:4px}
 .hm-world .wt .bar{display:block;height:6px;border-radius:3px;background:var(--bg);overflow:hidden}.hm-world .wt .bar i{display:block;height:100%;background:var(--c-bloppit);border-radius:3px}
 .hm-world .wn{flex:none;display:flex;gap:10px;font-weight:800;font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .hm-world .wn small{font-size:12px;font-weight:700;color:var(--muted)}
@@ -1250,7 +1250,7 @@ body.on-home .tabs{visibility:hidden}
 .hm-daily .hd-txt{grid-row:1;display:grid;align-content:center;gap:2px;min-width:0}
 .hm-daily .tag{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.85)}
 .hm-daily .hd-txt b{font-family:var(--f-display);font-weight:400;font-size:20px;line-height:1.1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.hm-daily .hd-txt>span:last-child{font-size:13px;font-weight:600;line-height:1.3;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hm-daily .hd-txt>span:last-child{font-size:13px;font-weight:600;line-height:1.3;opacity:.9;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}   /* two lines, not cut off (Steff, 7 Nov 2026) */
 .hm-daily .go{grid-row:1;grid-column:3;align-self:center;width:44px;height:44px;border-radius:50%;background:#F4BC22;color:#14202C;display:grid;place-items:center;font-size:18px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
 .hm-daily .hd-pills{grid-row:2;grid-column:2 / -1;display:flex;flex-wrap:wrap;gap:6px 8px;min-width:0}
 .hm-daily .hd-pills>span{padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.18);font-weight:800;font-size:12px;line-height:1.2;white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -1440,7 +1440,7 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .crew-since{display:grid;gap:2px;margin:8px 0 0;padding:8px 12px;border-radius:12px;background:var(--callout);font-size:14px}.crew-since b{font-size:13px}
 .crew-pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:6px}
 .crew-pick label.crew-pzopt{display:grid;grid-template-columns:none;align-items:start;justify-items:stretch;margin:0;font-weight:400;font-size:inherit;gap:2px;width:auto}
-.t-crew .ic svg{width:86%;height:auto;border-radius:8px}
+.t-crew .ic svg{width:80%;height:auto}
 .crew-pzopt{display:grid;gap:2px;padding:8px;border:2px solid var(--line);border-radius:14px;background:var(--page);cursor:pointer;text-align:left}
 .crew-pzopt input{position:absolute;opacity:0;pointer-events:none}.crew-pzopt:has(input:checked){border-color:var(--c-bloppit);box-shadow:0 0 0 2px var(--c-bloppit) inset}.crew-pzopt:has(input:focus-visible){outline:3px solid var(--hi)}
 .crew-pzopt svg{width:100%;height:auto;display:block;margin-bottom:4px}.crew-pzopt b{font-size:15px}.crew-pzopt em{font-style:normal;font-size:11px;font-weight:800;background:var(--c-bloppit);color:#fff;border-radius:999px;padding:1px 7px;margin-left:4px;vertical-align:2px}.crew-pzopt em.done{background:var(--ink)}.crew-pzopt span{font-size:13px;color:var(--muted);line-height:1.3}
@@ -1637,6 +1637,9 @@ body.film-on{overflow:hidden}
 .hm-grid.three{grid-template-columns:repeat(3,1fr)}
 .hm-grid.four{grid-template-columns:repeat(4,1fr)}
 @media (max-width:760px){.hm-grid.four{grid-template-columns:1fr 1fr}}
+/* Solo tile names fit two lines whatever the tile's width (Steff, 7 Nov 2026: Pippa's Mirror Puzzles ran to three): the size follows the tile */
+.hm-grid.four .hm-tile{container-type:inline-size}
+.hm-grid.four .hm-tile b{font-size:clamp(16px,14cqw,26px);text-wrap:balance}
 @media (max-width:560px){.hm-grid.three{grid-template-columns:1fr 1fr}.hm-grid.three .t-quick{grid-column:1 / -1;min-height:104px}}
 /* Yellow so Bloppit's red brick stands out */
 .hm-tile.t-quick .ic{background:rgba(255,255,255,.35)}
@@ -1661,7 +1664,7 @@ body.film-on{overflow:hidden}
 /* Laptops and big tablets: the menu spreads out like a game launcher. Hello, Continue and this week's Weekly
    on the left; the Solo, Blitz and Together tiles fill the rest of the screen. */
 @media (min-width:1000px){
-  .home{max-width:1180px;grid-template-columns:minmax(300px,360px) minmax(0,1fr);column-gap:36px;align-items:start;padding-top:18px}
+  .home{max-width:1480px;grid-template-columns:minmax(300px,360px) minmax(0,1fr);column-gap:36px;align-items:start;padding-top:18px}
   .hm-side{position:sticky;top:84px}
   .hm-foot{grid-column:1 / -1}
   .hm-sec{font-size:24px}
@@ -1780,8 +1783,9 @@ body.film-on{overflow:hidden}
 :root[data-theme="dark"]{--hi:#E6EDF5;--hi-ink:#14202C;--accent:#EF5348}
 #tab-island{--tc:var(--c-bloppit)}#tab-quick{--tc:var(--c-bloppit)}#tab-mp{--tc:var(--c-together)}
 .hm-tile.t-together,.hm-tile.t-friend,.hm-tile.t-crew,.hm-tile.t-join{--c:var(--c-together)}
-.hm-world.lead{border-color:var(--c-bloppit)}.hm-world .wt .bar i{background:var(--c-bloppit)}
-.hm-quick{border-color:var(--c-bloppit)}.hm-quick .pl{background:var(--c-bloppit);color:#fff}
+/* no coloured outline on the menu cards (Steff, 7 Nov 2026: it clashed with the studs); the studs and the play pill carry the red */
+.hm-world .wt .bar i{background:var(--c-bloppit)}
+.hm-quick .pl{background:var(--c-bloppit);color:#fff}
 .win-stars,.lvl .ls{color:#F4BC22}
 .crew-pzopt:has(input:checked){border-color:var(--c-together);box-shadow:0 0 0 2px var(--c-together) inset}.crew-pzopt em{background:var(--c-together)}
 .crew-row .bar i,.crew-head .bar i,.crew-open .bar i{background:var(--c-together)}
@@ -2306,7 +2310,7 @@ body.film-on{overflow:hidden}
         </div>
         <details class="bz-live"><summary>Race live in a room instead</summary>
           <p class="note">Everyone plays at the same time on their own device, taking turns. Friends join with the room code, and you let them in.</p>
-          <button class="ghost" id="bzMake" type="button">Make a live Blitz room</button>
+          <button class="ghost" id="bzMake" type="button">Make a live race room</button>
         </details>
       </div>
     </div>
@@ -2360,7 +2364,7 @@ body.film-on{overflow:hidden}
   <div class="win-rows" id="trRows"></div>
   <div class="world-strip" data-ws></div>
   <p class="win-best" id="trNote"></p>
-  <div class="win-btns"><button class="primary sm" id="trIsland" type="button" hidden>🏝️ See Bloppitopia</button><button class="ghost" id="trNext" type="button" hidden>▶ Play next</button><button class="ghost" id="trShare" type="button" hidden>Share the code</button><button class="ghost" id="trCard" type="button" hidden>📮 Weekly card</button><button class="ghost" id="trRetry" type="button" hidden>Try sending again</button><button class="primary sm" id="trDone" type="button">Done</button></div>
+  <div class="win-btns"><button class="primary sm" id="trIsland" type="button" hidden>🏝️ See Bloppitopia</button><button class="ghost" id="trNext" type="button" hidden>▶ Play next</button><button class="ghost" id="trShare" type="button" hidden>Share the code</button><button class="ghost" id="trCard" type="button" hidden>📮 Bibi’s Weekly Bloppit card</button><button class="ghost" id="trRetry" type="button" hidden>Try sending again</button><button class="primary sm" id="trDone" type="button">Done</button></div>
 </dialog>
 <dialog class="windlg" id="tideDlg" aria-labelledby="tdTitle">
   <div class="win-stars">🌊</div>
@@ -2376,7 +2380,7 @@ body.film-on{overflow:hidden}
   <p class="lh-sub">Until Chapter 2 arrives, you can:</p>
   <div class="lh-list">
     <button type="button" data-lh="film" class="lh-film"><span>🎬</span><b>Watch the whole Moonstone story</b><small>Chapter 1’s ending as one film, from the light in the mist to lufu’s world (5½ minutes)</small></button>
-    <button type="button" data-lh="build"><span>🔨</span><b>Build Anything here</b><small>Free builds stand on lufu’s world</small></button>
+    <button type="button" data-lh="build"><span>🔨</span><b>Build Anything with Bibi here</b><small>Free builds stand on lufu’s world</small></button>
     <button type="button" data-lh="sail"><span>⛵</span><b>Sail back to Bloppitopia</b><small>The Galaxy Ship takes you between the two, any time</small></button>
     <button type="button" data-lh="pup"><span>🦦</span><b>Start a new game</b><small>A new player with a new pup, from the very beginning</small></button>
     <button type="button" data-lh="builds"><span>🧱</span><b>Browse the builds</b><small>Photos, drawings and the whole library to build from</small></button>
@@ -2475,8 +2479,8 @@ body.film-on{overflow:hidden}
     <p class="note" id="grownClaimNote" hidden></p>
   </section>
   <section class="grown-sec">
-    <h3>Weekly top-100 board</h3>
-    <p class="note">On by default. When on, this player’s Weekly finishes are listed on a top-100 board with other players, under a generated name like “Brave Otter 214”: clean builds first, then stars. No real names and no times are ever shown.</p>
+    <h3>Bibi’s Weekly Bloppit top-100 board</h3>
+    <p class="note">On by default. When on, this player’s Bibi’s Weekly Bloppit finishes are listed on a top-100 board with other players, under a generated name like “Brave Otter 214”: clean builds first, then stars. No real names and no times are ever shown.</p>
     <label class="switch"><input type="checkbox" id="grownBoard"> Show the board and list this player on it</label>
   </section>
   <section class="grown-sec">
@@ -3557,7 +3561,7 @@ const HERO={
   otter:{who:'tiny',art:'/art/char-tiny.png',isle:'Frog Forest',title:'Tiny’s Frog Trail',line:'Small frog, big forest!',desc:'Hop up the trail with Tiny, one level at a time. The levels start tiny and get bigger, and the last is his Lily-pad Palace.',c:['#A6D93A','#3F8F33']},
   brain:{who:'nora',art:'/art/char-nora.png',isle:'Brainpeak',title:'Nora’s Brain Trail',line:'A clever mind shines in the dark.',desc:'Nora tucks maths puzzles into the booklet: solve one to open its page. The last build is her Great Telescope.',c:['#4A6FC0','#1C2B57']},
   create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Build Anything with Bibi',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
-  blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Blitz with Swoop',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Fastest clean build wins.',c:['#5DB4F2','#1F6FC4']},
+  blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Blitz with Swoop',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Shortest time wins.',c:['#5DB4F2','#1F6FC4']},
   mp:{who:['pup','pup'],art:'/art/hero-together.png',isle:'Friendship Harbour',title:'Together',line:'Every build is better with a friend!',desc:'Play with Friends: a Team Build or Race a Friend, with a code to share. Your Crews: friends you keep, with games of their own.',c:['#B9A2F7','#6E4FD6']}};
 function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[data-hero="${t}"]`); if(!el) return;
   const key=t==='game'?subOf.game:t, H=HERO[key]; el.hidden=!H; if(!H) return;
@@ -3703,7 +3707,7 @@ function showToastLeave(){ const t=$('#tab-cove'); const o=t.innerHTML; t.innerH
 // Choosing a puzzle for Blitz: the Puzzle page shows a banner, and its main button hands the puzzle back to Blitz
 var pickFor=null;
 function syncPick(){ const on=!!pickFor&&pickFor!=='quick'&&tab==='create'; $('#pickBanner').hidden=!on;
-  if(on) $('#pickTxt').innerHTML=pickFor==='blitz'?'⚡ Choose a puzzle for <b>Blitz</b>, then tap <b>Use this puzzle</b>. Big puzzles are made smaller (up to 30 bricks) so the race stays quick.'
+  if(on) $('#pickTxt').innerHTML=pickFor==='blitz'?'⚡ Choose a puzzle for the race, then tap <b>Use this puzzle</b>. Big puzzles are made smaller (up to 30 bricks) so the race stays quick.'
     :'🧩 Choose a puzzle to <b>build together</b>, then tap <b>Use this puzzle</b>.';
   $('#pickCancel').textContent=pickFor==='blitz'?'Back to Blitz':'Back to Together';
   $('#startBuild').textContent=on?(pickFor==='blitz'?'Use this puzzle ⚡':'Use this puzzle 🧩'):'Start building'; syncUseBar(); }
@@ -3991,7 +3995,7 @@ const FILM_STREAM=new Set(['moonstone-feature']);   // too big to ship inside th
 const vidUrl=(file,ext)=>APP&&ext==='mp4'&&FILM_STREAM.has(file)?API_BASE+'/video/'+file+'.mp4?v='+(FILM_V[file]||''):VID_BASE+file+'.'+ext+(APP||!FILM_V[file]?'':'?v='+FILM_V[file]);
 const FILMS=[
   // say: what a character says over the film, at t seconds ({name} = the player's otter, or "pup" while it has no name)
-  {id:'arrival',no:'01',name:'Arrival',place:'Home Island',file:'arrival',open:o=>!!o.arrived||worldCount(o)>0,
+  {id:'arrival',no:'01',name:'Welcome to Bloppitopia',place:'Home Island',file:'arrival',open:o=>!!o.arrived||worldCount(o)>0,
     say:[{t:6,who:'bloppit',text:'Welcome to Home Island, {name}!'}]},
   // at: the island moment that plays it (see isl3Reveal): an island rising from the mist, or an island complete
   {id:'frog-arrival',no:'02',name:'Arrival',place:'Frog Forest',file:'frog-forest-arrival',at:'isle:otterwood',open:o=>filmSeen('frog-arrival',o)||isleCount('otterwood',o)>0,hint:'Set off for Frog Forest',
@@ -7203,12 +7207,12 @@ function updateMpBar(){
   if(bz){ $('#hintBtn').textContent=s.calm?'Hint':mp.hintSteps.includes(cur)?'Hint':'Hint (+2s)'; $('#hintBtn').disabled=done||(!mpMyTurn()&&!hintOn); }
   $('#mpBar').classList.toggle('calm',!!s.calm);
   $('#mpBar').classList.toggle('blitz',bz);
-  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?(cpu&&cpu.ladder!=null?(cpu.ladder>=LADDER_N?`Blitz Bay · Race ${BLITZ_RACES} of ${BLITZ_RACES}: the Grand Prix`:`Blitz Bay · Race ${cpu.ladder+1} of ${BLITZ_RACES} · ${CPU_LEVELS[s.cpuLevel].speed}`):`Blitz · ${CPU_LEVELS[s.cpuLevel].speed}`):'Room'; $('#mpRoomBtn').textContent=mp.cpu&&s.finished?'🏝️ Back to Bloppitopia':mp.cpu?($('#mpRoomBtn').dataset.confirm?'Tap again to leave':s.solo?'Leave':'Leave race'):'Room'; $('#mpRoomBtn').classList.toggle('primary',!!(mp.cpu&&s.finished)); $('#mpRoomBtn').classList.toggle('ghost',!(mp.cpu&&s.finished)); $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
+  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?(cpu&&cpu.ladder!=null?(cpu.ladder>=LADDER_N?`Blitz Bay · Race ${BLITZ_RACES} of ${BLITZ_RACES}: the Grand Prix`:`Blitz Bay · Race ${cpu.ladder+1} of ${BLITZ_RACES} · ${CPU_LEVELS[s.cpuLevel].speed}`):`Blitz with Swoop · ${CPU_LEVELS[s.cpuLevel].speed}`):'Room'; $('#mpRoomBtn').textContent=mp.cpu&&s.finished?'🏝️ Back to Bloppitopia':mp.cpu?($('#mpRoomBtn').dataset.confirm?'Tap again to leave':s.solo?'Leave':'Leave race'):'Room'; $('#mpRoomBtn').classList.toggle('primary',!!(mp.cpu&&s.finished)); $('#mpRoomBtn').classList.toggle('ghost',!(mp.cpu&&s.finished)); $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
   const cp=s.players[s.turn], mine=s.turn===mp.me, left=mpLeft(s), el=$('#mpTurn');
   el.classList.toggle('mine',mine&&!s.finished&&s.started);
   if(bz&&s.solo&&s.calm) el.innerHTML=s.finished?'Finished!<small>Let’s see how clean it was</small>':`Build it clean<small>${(s.players[0].n||0)} of ${s.quota} placed</small>`;
   else if(bz&&s.solo) el.innerHTML=s.finished?'Finished!<small>Let’s see your time</small>':`Go go go!<small>${(s.players[0].n||0)} of ${s.quota} placed</small>`;
-  else if(bz) el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Quickest time wins</small>':mine?`Your turn! Go!<small>${s.turnPlaced?`${s.turnPlaced} placed · up to ${left} more, or tap Done`:left<3?`Place up to ${left} brick${left===1?'':'s'} (${left===1?'your last one':'your last ones'})`:'Place 1, 2 or 3 bricks, then tap Done'}</small>`:mp.cpu?`${CPU_LEVELS[s.cpuLevel].name}’s turn<small>${s.turnPlaced?`${s.turnPlaced} placed · `:'Thinking… '}${(s.players[mp.me]||{}).n>=s.quota?'You’re done! Now he finishes his bricks':'his clock is running'}</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} placed · their clock is running${cp.stale?' · hasn’t been seen for a while':''}</small>`;
+  else if(bz) el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Shortest time wins</small>':mine?`Your turn! Go!<small>${s.turnPlaced?`${s.turnPlaced} placed · up to ${left} more, or tap Done`:left<3?`Place up to ${left} brick${left===1?'':'s'} (${left===1?'your last one':'your last ones'})`:'Place 1, 2 or 3 bricks, then tap Done'}</small>`:mp.cpu?`${CPU_LEVELS[s.cpuLevel].name}’s turn<small>${s.turnPlaced?`${s.turnPlaced} placed · `:'Thinking… '}${(s.players[mp.me]||{}).n>=s.quota?'You’re done! Now he finishes his bricks':'his clock is running'}</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} placed · their clock is running${cp.stale?' · hasn’t been seen for a while':''}</small>`;
   else el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Built together</small>':mine?`Your turn!<small>Place ${left} more brick${left===1?'':'s'}</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} of ${s.perTurn} placed${cp.stale?' · hasn’t been seen for a while':''}</small>`;
   if(bz&&!s.solo&&s.quota&&s.started) $('#mpPlayers').innerHTML=raceMeter(s);
   else $('#mpPlayers').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.i===s.turn&&s.started&&!s.finished?' now':''}${p.stale||p.left?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.left?' · left':''} ${bz?`<b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${s.quota?`<span class="mi" style="color:var(--muted)" title="Bricks placed">${p.done?'✓':`${p.n}/${s.quota}`}</span>`:''}${p.miss?`<span class="mi" title="Misses">✕${p.miss}</span>`:''}${p.hint?`<span class="mi" title="Hints" style="color:var(--muted)">💡${p.hint}</span>`:''}`:`<b>${p.score}</b>`}</span>`).join('');
@@ -7355,8 +7359,8 @@ async function renderMpView(){
   const p0=photos[0]; if(p0) $('#mpThumb').src=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png'));
   $('#mpModelName').textContent=s.title;
   $('#mpModelInfo').innerHTML=s.solo?`<span class="blitz-tag">${escapeHTML(s.label)}</span>${s.nBricks} bricks, all yours. Your clock runs until the last brick is in. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
-    :cpuOn?`<span class="blitz-tag">Blitz · ${CPU_LEVELS[s.cpuLevel].speed}</span>${s.nBricks} bricks · you each place ${s.quota} · 1 to 3 bricks a turn. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
-    :bz?`<span class="blitz-tag">⚡ Blitz</span>${s.nBricks} bricks · ${s.quota?`everyone places ${s.quota}`:`split evenly between ${s.players.length} player${s.players.length===1?'':'s'}: ${Math.floor(s.nBricks/s.players.length)} each`} · 1 to 3 bricks a turn, against the clock. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
+    :cpuOn?`<span class="blitz-tag">Blitz with Swoop · ${CPU_LEVELS[s.cpuLevel].speed}</span>${s.nBricks} bricks · you each place ${s.quota} · 1 to 3 bricks a turn. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
+    :bz?`<span class="blitz-tag">⚡ Race a Friend</span>${s.nBricks} bricks · ${s.quota?`everyone places ${s.quota}`:`split evenly between ${s.players.length} player${s.players.length===1?'':'s'}: ${Math.floor(s.nBricks/s.players.length)} each`} · 1 to 3 bricks a turn, against the clock. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
     :`${s.nBricks} bricks · ${s.perTurn} brick${s.perTurn>1?'s':''} per turn${s.started?` · ${s.moves.length} placed so far`:''}`;
   $('#mpList').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.stale||p.left?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.left?' · left':''}${p.i===s.host&&!cpuOn?' · made the room':''}${s.started?(bz?` <b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>`:` <b>${p.score}</b>`):''}</span>`).join('');
   const host=mp.me===s.host;
@@ -8499,7 +8503,7 @@ function renderHomeWorld(){
   const pct=pupPct(o,ps);
   const pic=isl3Init()?isl3Still(o,900,620):'', isle=pic?`<img src="${pic}" alt="">`:islandSVG(o,{uid:'hm'});
   el.hidden=false; el.classList.add('lead');
-  el.setAttribute('aria-label',`Bloppitopia. ${nm||'Your otter'}, level ${otterLevel(o)} ${PUP_STAGES[ps].name}, ${n} build${n===1?'':'s'}, ${islandsOpen(o).length} of ${ISLE_TOTAL} islands.`);
+  el.setAttribute('aria-label',`Bloppitopia. ${nm||'Your otter'}, Level ${otterLevel(o)} ${PUP_STAGES[ps].name}, ${n} build${n===1?'':'s'}, ${islandsOpen(o).length} of ${ISLE_TOTAL} islands.`);
   // A compact tile (Steff, 5 Nov 2026): the island fills it, one strip for the otter, chips for My films and the postcard
   el.innerHTML=`<span class="hw-isle">${isle}<span class="hw-tag">🏝️ Bloppitopia · ${ISL3.ok?islandsOpen(o).length+' of '+ISLE_TOTAL+' islands':ISLAND_STAGES[is].name}</span>
       <span class="hw-chips">${is>=3?'<span class="hw-chip" id="hwCard" role="button" tabindex="0">📮 Postcard</span>':''}<span class="hw-chip" id="hmFilms" role="button" tabindex="0" hidden>🎬 My films <i class="n" id="hmFilmsN"></i><small class="sr-only" id="hmFilmsS">Watch your films again</small></span></span></span>
@@ -8738,8 +8742,8 @@ function islandInfo(id,o){
   const bar=(from,to)=>({pct:Math.max(4,Math.min(100,Math.round(100*(n-from)/Math.max(1,to-from)))),label:`${Math.max(0,to-n)} more build${to-n===1?'':'s'}`});
   const shown=islandModelsAny(o);
   const place=(i,title,what)=>{ const s0=ISLAND_STAGES[i], built=n>=s0.at, nx=ISLAND_STAGES[i+1];
-    return {title:built?title:`${title} (not built yet)`, hint:built?`Level ${i} of 3 · built`:`Opens at ${s0.at} builds`,
-      rows:[['Level',`${i} of 3: ${s0.name}`],['Status',built?`Built ${dateAt(s0.at)||''}`.trim():`${s0.at-n} more build${s0.at-n===1?'':'s'} to build it`],['What it does',what],
+    return {title:built?title:`${title} (not built yet)`, hint:built?`Level ${i} of ${ISLAND_STAGES.length-1} · built`:`Opens at ${s0.at} builds`,
+      rows:[['Level',`${i} of ${ISLAND_STAGES.length-1}: ${s0.name}`],['Status',built?`Built ${dateAt(s0.at)||''}`.trim():`${s0.at-n} more build${s0.at-n===1?'':'s'} to build it`],['What it does',what],
         ...(built&&st>i?[]:nx?[['Next',`The ${nx.name.toLowerCase()} at ${nx.at} builds`]]:[['Next','Everything on Bloppitopia is built']])],
       bar:built?(nx&&st===i?bar(s0.at,nx.at):null):bar(i?ISLAND_STAGES[i-1].at:0,s0.at)}; };
   switch(kind){
@@ -8789,7 +8793,7 @@ function islandInfo(id,o){
     case 'pup': { const nm=pupName(o), ps=pupStage(o), nx=PUP_STAGES[ps+1], c=PUP_COLORS[pupColorOf(o)];
       const lv=otterLevel(o), nl=levelXP(lv+1), nAcc=ACC.find(a=>!a.legend&&!a.finale&&a.lvl>lv);
       return {title:nm||'Your otter',hint:`Level ${lv} ${PUP_STAGES[ps].name} · ${ps+1} stud${ps?'s':''} on its brick`,icon:pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'}),
-        rows:[['Otter Level',`${lv} · ${nl-worldXP(o)} XP to Level ${lv+1}`],...(nAcc?[['Next outfit',`${nAcc.name} at level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at Level ${nx.lvl}: another stud`:'A Legend. That’s the top']],
+        rows:[['Otter Level',`${lv} · ${nl-worldXP(o)} XP to Level ${lv+1}`],...(nAcc?[['Next outfit',`${nAcc.name} at Level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at Level ${nx.lvl}: another stud`:'A Legend. That’s the top']],
         bar:nx?{pct:Math.max(4,pupPct(o,ps)),label:`${nx.at-n} more build${nx.at-n===1?'':'s'} to ${nx.name}`}:null,
         actions:[{label:'👕 Wardrobe',fn:()=>wardrobeOpen(),primary:true},{label:nm?'Name or colour':'Name your otter',fn:()=>pupOpen()}]}; }
     case 'model': { const f=modelFacts(arg,o), b=f.b, flagW=arg.startsWith('w:')&&!ISL3.ok, onIsle=shown.list.some(m=>m.key===arg)||flagW;
@@ -9943,11 +9947,11 @@ const ISLES={
     milestone:'The Lily-pad Palace',grows:'Every Tiny’s Frog Trail level you finish (the last is the boss)',play:'Play Tiny’s Frog Trail',go:()=>trailGo('otter')},
   brainpeak:{name:'Brainpeak',game:'Nora’s Brain Trail',unit:'Nora’s Brain Trail level',x:-8.4,z:-12.8,r:4.4,seed:4.1,ground:['#79C25A','#4E9E3A'],
     milestone:'The Great Telescope',grows:'Every Nora’s Brain Trail level you finish (the last is the boss)',play:'Play Nora’s Brain Trail',go:()=>trailGo('brain')},
-  sunrise:{name:'Flipper Beach',game:'Pippa’s Mirror Puzzles',unit:'Pippa puzzle',x:5.6,z:-14.8,r:4.3,seed:5.9,ground:['#8AD06A','#5FA94A'],sand:true,
+  sunrise:{name:'Flipper Beach',game:'Pippa’s Mirror Puzzles',unit:'Flipper Beach puzzle',x:5.6,z:-14.8,r:4.3,seed:5.9,ground:['#8AD06A','#5FA94A'],sand:true,
     milestone:'The Festival Clock',grows:'Every one of Pippa’s seaside puzzles you build. A new one washes ashore about every 8% of the way through Bloppitopia',play:'Play Pippa’s puzzle',go:()=>homeGo('sea')},
-  blitzbay:{name:'Blitz Bay',game:'Blitz',unit:'Blitz win',x:15.2,z:-4.6,r:4.8,seed:5.3,ground:['#6CC24A','#4E9E3A'],sand:true,
-    milestone:'The Grand Prix cup',grows:'Every Blitz race you win against Swoop (the 16th is the Grand Prix)',play:'Race Swoop',go:()=>ladderGo()},
-  brickworks:{name:'Brickyard Cove',game:'Creative builds',unit:'creation',x:12.4,z:9.6,r:4.3,seed:6.6,ground:['#7CC45E','#4E9E3A'],
+  blitzbay:{name:'Blitz Bay',game:'Blitz with Swoop',unit:'Blitz win',x:15.2,z:-4.6,r:4.8,seed:5.3,ground:['#6CC24A','#4E9E3A'],sand:true,
+    milestone:'The Grand Prix cup',grows:'Every Blitz race you win against Swoop (the 20th is the Grand Prix)',play:'Race Swoop',go:()=>ladderGo()},
+  brickworks:{name:'Brickyard Cove',game:'Build Anything with Bibi',unit:'build',x:12.4,z:9.6,r:4.3,seed:6.6,ground:['#7CC45E','#4E9E3A'],
     milestone:'The Grand Creation Gallery',grows:'Every build from your own photo or drawing, from the library, and each week’s Bibi’s Weekly Bloppit',play:'Make your own',
     go:()=>{ pickPuzzle('quick','top'); }},   // Build anything's first screen: a photo, a drawing or the library
   moonstone:{name:'Moonstone Isle',game:'Chapters',get play(){ const i=mysteryNext(); return i>=0?`▶ Build Chapter ${i+1}: ${mysteryTitle(MYSTERY[i])}`:'Explore Moonstone Isle'; },unit:'chapter',get x(){ return isl3TallNow()?-22.5:23.5; },get z(){ return isl3TallNow()?-11.5:-23.5; },r:4.0,   // far out at sea, in the top corner of the view (upright phones see the world from the side)
@@ -10797,7 +10801,7 @@ function theEnd(then){
     // The end: the whole of Bloppitopia under the stars
     isl3FlyHome(2600);   // the whole of Bloppitopia at night, every island lit (a close-up of Home Island is too busy on a full island)
     el.className='the-end final';
-    el.innerHTML=`<div class="te-fin"><h2>The end of Chapter 1.</h2><p>${escapeHTML(who)} and lufu have found each other.<br>Bloppitopia is yours. Keep building.</p><p class="te-next">Chapter 2: lufu’s world is waiting to be rebuilt. The Galaxy ship will take you there and back.</p><div class="row"><button class="primary" type="button" data-te="lufu">✨ Sail to lufu’s world</button><button class="ghost" type="button" data-te="keep">Stay in Bloppitopia</button></div></div>`;
+    el.innerHTML=`<div class="te-fin"><h2>The end of Chapter 1.</h2><p>${escapeHTML(who)} and lufu have found each other.<br>Bloppitopia is yours. Keep building.</p><p class="te-next">Chapter 2: lufu’s world is waiting to be rebuilt. The Galaxy Ship will take you there and back.</p><div class="row"><button class="primary" type="button" data-te="lufu">✨ Sail to lufu’s world</button><button class="ghost" type="button" data-te="keep">Stay in Bloppitopia</button></div></div>`;
     el.querySelector('[data-te="lufu"]').onclick=e=>{ e.stopPropagation(); then=null; ISL3.finales=[]; ISL3.ending=false; ISL3.hold=false; done(); realmGo('lufu'); };
     el.querySelector('[data-te="keep"]').onclick=e=>{ e.stopPropagation(); done(); };
   };
@@ -11391,7 +11395,7 @@ function renderDecorShop(){
   const o=worldStore(), left=worldStars(o);
   $('#isStars').innerHTML=`You have ${gbIc()} ${gbN(left)}.`;
   const card=d=>{ const owned=o.decor.includes(d.id), away=owned&&isAway(o,'decor:'+d.id), open=decorOpen(d,o); let iname=''; try{ iname=ISLES[d.isle].name; }catch(e){}
-    return `<button type="button" data-decor="${d.id}"${away?' data-owned="1" data-back="1"':owned?' data-owned="1" disabled':!open?' data-locked="1" disabled':left<d.cost?' disabled':''}><svg viewBox="-64 -136 128 148">${decorSVG(d.id,0,d.id==='kite'?-110:d.id==='balloon'?-20:6)}</svg>${d.name}<span class="cost">${away?'Put away · tap to put it back':owned?((o.free||[]).includes(d.id)?'From a Weekly':'On your island'):!open?`🔒 Find ${escapeHTML(iname)}`:`Buy · ${gbIc()} ${d.cost}`}</span></button>`; };
+    return `<button type="button" data-decor="${d.id}"${away?' data-owned="1" data-back="1"':owned?' data-owned="1" disabled':!open?' data-locked="1" disabled':left<d.cost?' disabled':''}><svg viewBox="-64 -136 128 148">${decorSVG(d.id,0,d.id==='kite'?-110:d.id==='balloon'?-20:6)}</svg>${d.name}<span class="cost">${away?'Put away · tap to put it back':owned?((o.free||[]).includes(d.id)?'From Bibi’s Weekly Bloppit':'On your island'):!open?`🔒 Find ${escapeHTML(iname)}`:`Buy · ${gbIc()} ${d.cost}`}</span></button>`; };
   const groups=[['Little touches',d=>!d.tier&&!d.isle],['Bigger builds',d=>d.tier==='mid'],...['otterwood','brainpeak','sunrise','blitzbay','brickworks','moonstone'].map(id=>{ let nm=id; try{ nm=ISLES[id].name; }catch(e){} return [`From ${nm}`,d=>d.isle===id]; }),['Showpieces',d=>d.tier==='show']];
   $('#decorGrid').innerHTML=groups.map(([t,f])=>{ const L=DECOR.filter(f); if(!L.length) return ''; const has=L.filter(d=>o.decor.includes(d.id)).length; return `<h3 class="dg-h">${t}<small>${has} of ${L.length}</small></h3>${L.map(card).join('')}`; }).join('');
 }
@@ -11672,7 +11676,7 @@ const BOARD_KEY='bloppit-board-v1';
 function boardOn(){ try{ return localStorage.getItem(pkey(BOARD_KEY))!=='0'; }catch(e){ return true; } }   // on by default; off only once a grown-up switches it off
 function boardSet(on){ try{ localStorage.setItem(pkey(BOARD_KEY),on?'1':'0'); }catch(e){} track(on?'board_on':'board_off'); renderBoard(); }
 $('#grownBoard').addEventListener('change',e=>boardSet(e.target.checked));
-function boardRows(b){ return b.length?b.map(e=>`<div class="${e.me?'me':''}"><span class="rk">${e.rank}</span><span>${escapeHTML(e.name)}${e.me?' (you)':''}</span><span>${e.clean?'✨ clean':''}</span>${wsStars(e.stars)}</div>`).join(''):'<p class="note">Nobody on the board yet this week. Finish the Weekly to be first.</p>'; }
+function boardRows(b){ return b.length?b.map(e=>`<div class="${e.me?'me':''}"><span class="rk">${e.rank}</span><span>${escapeHTML(e.name)}${e.me?' (you)':''}</span><span>${e.clean?'✨ clean':''}</span>${wsStars(e.stars)}</div>`).join(''):'<p class="note">Nobody on the board yet this week. Finish Bibi’s Weekly Bloppit to be first.</p>'; }
 async function renderBoard(){
   const card=$('#dyBoard'); if(!boardOn()){ card.hidden=true; return; }
   card.hidden=false; const me=curPlayer(), pid=me&&me.pup;
@@ -11779,7 +11783,8 @@ function crewPuzzleSVG(i,frac=1,label){
 function crewPickHTML(sel,done){ done=done||[];
   return CREW_PUZZLES.map((P,i)=>`<label class="crew-pzopt"><input type="radio" name="crewPz" value="${i}"${i===sel?' checked':''}>${crewPuzzleSVG(i,1,P.name)}<b>${escapeHTML(P.name)}${i===0?' <em>Suggested</em>':''}${done.includes(i)?' <em class="done">Built ✓</em>':''}</b><span>${escapeHTML(P.blurb)}</span></label>`).join(''); }
 // The Crews tile: a crew puzzle, half built
-document.querySelectorAll('.t-crew .ic').forEach(el=>{ el.innerHTML=crewPuzzleSVG(0,.55,'A crew puzzle, half built'); });
+// Your Crews: a simple mark at this size (Steff, 7 Nov 2026: the half-built harbour was too much detail): three friends, one brick between them
+document.querySelectorAll('.t-crew .ic').forEach(el=>{ el.innerHTML='<svg viewBox="0 0 60 60" aria-hidden="true" focusable="false"><circle cx="13" cy="21" r="7.5" fill="#fff"/><circle cx="30" cy="19" r="8.5" fill="#fff"/><circle cx="47" cy="21" r="7.5" fill="#fff"/><rect x="14" y="38" width="32" height="14" rx="3" fill="#D62F2A"/><rect x="19" y="33" width="8" height="6" rx="1.5" fill="#E5463C"/><rect x="33" y="33" width="8" height="6" rx="1.5" fill="#E5463C"/></svg>'; });
 /* Crew news (Steff, 7 Nov 2026): what's new in your crews since you last opened each one. This device remembers how
    each crew looked when you last opened it (nothing new is stored on the server); anything new since then puts a dot
    on the Together tab and the Crews tile, a New chip on the crew's row and a "Since you were last here" line on the crew. */
