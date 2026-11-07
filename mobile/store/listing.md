@@ -144,7 +144,7 @@ Paste as is: one paragraph per topic, no line breaks inside a paragraph.
 
 Bloppit is a brick-building puzzle game for families and anyone who loves bricks. No account or login is needed.
 
-To try it quickly: on the menu tap the Start here card. Pick the otter's colour and name it (type a name or tap Pick a name), then tap Set sail, or just tap Pick later. A short film shows the otter arriving by boat (Skip at the top right ends it). Tap Build Our First Home and tap the faded brick to place each piece of the 12-brick house; the home then appears on the island. Then on the menu tap Blitz with Swoop (under Solo), then Play on Blitz Bay (its short film can be skipped) and Start the race (works offline).
+To try it quickly: on the menu tap the Start here card. Pick the otter's colour and name it (type a name or tap Pick a name), then tap Set sail, or just tap Pick later. A short film shows the otter arriving by boat (Skip at the top right ends it). Tap Build our first home and tap the faded brick to place each piece of the 12-brick house; the home then appears on the island. Then on the menu tap Blitz with Swoop (under Solo), then Play on Blitz Bay (its short film can be skipped) and Start the race (works offline).
 
 Films: Bloppit's films are short clips built into the app (no streaming, except the full-length Moonstone Story, which plays from bloppit.com). Each can be skipped, and the unlocked ones are in My films on the Bloppitopia card.
 
@@ -188,7 +188,7 @@ deleted 3 days after their last activity, challenges 30 days after the last play
 | Data type | Collected | Linked to the user's identity | Used for tracking | Purpose |
 |---|---|---|---|---|
 | User Content › Photos or Videos (the photos a shared model is made from) | Yes | No | No | App Functionality |
-| User Content › Gameplay Content (bricks placed, scores, Blitz times, Weekly Bloppit finishes, finished models, stars, XP, outfits, island decorations, shared drawings, crew phrases and stickers, progress save) | Yes | No | No | App Functionality |
+| User Content › Gameplay Content (bricks placed, scores, Blitz times, Bibi’s Weekly Bloppit finishes, finished models, stars, XP, outfits, island decorations, shared drawings, crew phrases and stickers, progress save) | Yes | No | No | App Functionality |
 | Usage Data › Product Interaction (daily counts of a few events, by country and app/website; no identifier) | Yes | No | No | Analytics |
 
 Everything else (contact info, identifiers, location, diagnostics, etc.): **Not collected**.
