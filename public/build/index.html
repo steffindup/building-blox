@@ -7292,7 +7292,7 @@ async function joinSixCode(code){
   try{ const r=await fetch(API_BASE+'/api/challenge?code='+code,{cache:'no-store'}); kind=r.ok?'challenge':r.status===404?'crew':''; }
   catch(e){ mpMsg('Couldn’t reach Bloppit. Check your internet connection.','err'); return; }
   if(kind==='challenge'){ mpMsg(''); setTab('blitz','friend'); $('#bzCodeIn').value=code; chOpen(code); return; }
-  if(kind==='crew'){ mpMsg(''); setTab('mp'); $('#crewCodeIn').value=code; $('#crewCard').scrollIntoView({block:'center'}); $('#crewJoin').click(); return; }
+  if(kind==='crew'){ mpMsg(''); setTab('mp','hub'); $('#crewCodeIn').value=code; $('#crewCard').scrollIntoView({block:'center'}); $('#crewJoin').click(); return; }
   mpMsg('Bloppit didn’t answer. Please try again.','err');
 }
 $('#mpJoin').onclick=async()=>{
@@ -11897,7 +11897,7 @@ function homeGo(where){ mpDoneLeave();
   if(where==='island'){ setTab('island'); return; }
   if(where==='blitz'){ setTab('blitz',mp?undefined:'hub'); return; }
   if(where==='mp'){ setTab('mp',mp?undefined:'start'); return; }
-  if(where==='crew'){ setTab('mp'); requestAnimationFrame(()=>{ const c=$('#crewCard'); if(c) c.scrollIntoView({block:'start',behavior:reduceMotion?'auto':'smooth'}); }); return; }   // Crews: on the Together page
+  if(where==='crew'){ setTab('mp','hub'); requestAnimationFrame(()=>{ const c=$('#crewCard'); if(c) c.scrollIntoView({block:'start',behavior:reduceMotion?'auto':'smooth'}); }); return; }   // Crews: on the Together page
   if(where==='code'){ setTab('mp',mp?undefined:'join'); if(!mp) requestAnimationFrame(()=>{ const i=$('#mpCodeIn'); if(i) i.focus(); }); return; }
   if(where==='cpu'&&!mp){ islandSetOff('blitzbay',()=>{ setTab('blitz','cpu'); scrollTo(0,0); }); return; }
   if(where==='cpu'||where==='friend'){ setTab('blitz',mp?undefined:where); if(!mp) scrollTo(0,0); return; }
