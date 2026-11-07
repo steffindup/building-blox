@@ -295,7 +295,7 @@ test('phone parts box: one screen, the booklet page on top, the parts board fill
 test('a Pippa puzzle still out at sea can be tapped: it says how many builds bring it in and offers Play next', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0&films=0', { init: { fn: () => { const sb = {}; for (let i = 0; i < 9; i++) sb[i] = 2; localStorage.setItem('building-blox-game-v1', JSON.stringify({ best: {}, sbest: sb, seaV: 2 })); } } });
   await t.page.evaluate(() => [...document.querySelectorAll('.tab')].find((x) => /Flipper Beach/.test(x.textContent)).click()); await t.page.waitForTimeout(800);
-  assert.match(await t.text('#gmLevels .lvl[data-i="9"] .tagnew'), /🌊 \d+ more builds?/);
+  assert.match(await t.text('#gmLevels .lvl[data-i="9"] .tagnew'), /\d+ more builds?/);
   assert.equal(await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="9"]').disabled), false);
   await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="9"]').click()); await t.page.waitForTimeout(400);
   assert.equal(await t.page.evaluate(() => document.getElementById('tideDlg').open), true);
@@ -669,7 +669,7 @@ test('island Play: Bloppitopia keeps the recommended next play; an island plays 
     const [frog, play, alt] = await at(3); assert.equal(frog, 'Frog Forest');
     if (n === 5) { assert.match(play, /^▶ PlayFrog Trail level 6/); assert.equal(alt, ''); }
     else { assert.match(play, /Back to Bloppitopia✓ Frog Forest is complete!/); assert.equal(alt, '▶ Play anyway'); }
-    const [, brain] = await at(4); assert.match(brain, /^▶ PlayBrain Trail level 1/);
+    const [, brain] = await at(4); assert.match(brain, /^▶ PlayNora’s Brain Trail level 1/);
     assert.deepEqual(t.errors, []); await t.ctx.close();
   }
 });
@@ -1387,7 +1387,7 @@ test('Solo: Pippa’s Puzzles on the menu are her own mirror set, all open in an
   const g = await t.page.evaluate(() => JSON.parse(Object.entries(localStorage).find(([k]) => k.includes('building-blox-game-v1'))[1]));
   assert.equal(Object.keys(g.fbest || {}).length, 1); assert.equal(Object.keys(g.sbest || {}).length, 0, 'Flipper Beach is untouched');
   await t.page.evaluate(() => { document.getElementById('winDlg').close(); document.getElementById('brandLink').click(); }); await t.page.waitForTimeout(800);
-  assert.match(await t.text('#hmSeaSub'), /1 of 12 puzzles built/);
+  assert.match(await t.text('#hmSeaSub'), /1 of 12 any-time puzzles built/);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
