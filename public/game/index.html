@@ -1430,6 +1430,13 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .crew-list{display:grid;gap:10px}.crew-list:empty{display:none}
 .crew-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:var(--bg)}
 .crew-row svg{width:64px;height:auto}
+.crew-top{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:10px}
+.crew-game{display:grid;gap:8px;padding:14px;border-radius:14px;background:var(--bg)}.crew-game h3{font-size:20px}
+.crew-game .bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}.crew-game .bar i{display:block;height:100%;background:var(--c-together)}
+.crew-mega{display:grid;grid-template-columns:minmax(0,200px) minmax(0,1fr);gap:14px;align-items:center}.crew-mega svg{width:100%;height:auto}
+@media (max-width:520px){.crew-mega{grid-template-columns:1fr}}
+.pass-hist{margin:0;padding-left:20px;font-size:13.5px;color:var(--muted)}
+.hub-sec{margin:4px 0 6px}
 .news-dot{position:absolute;top:-3px;right:-3px;width:14px;height:14px;border-radius:50%;background:#D62F2A;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.25);pointer-events:none;z-index:2}
 .news-dot[hidden]{display:none}#tab-mp,.t-crew{position:relative}.t-crew .news-dot{top:10px;right:10px;width:16px;height:16px}
 .crew-new{font-style:normal;font-size:11px;font-weight:800;background:#D62F2A;color:#fff;border-radius:999px;padding:1px 8px;vertical-align:2px}
@@ -1871,27 +1878,26 @@ body.film-on{overflow:hidden}
     <img src="/art/bloppit-avatar.png" alt="" width="256" height="256">
     <div class="hm-bubble"><h2 id="hmHi">Hi there!</h2><p>What shall we build today?</p></div>
   </div>
-  <button class="hm-how hm-quick" id="hmQuick" type="button"><span class="pl" aria-hidden="true">⚡</span><span><b>Quick play</b><small>Jump straight into a puzzle</small></span><span class="go" aria-hidden="true">▶</span></button>
+  <button class="hm-how hm-quick" id="hmQuick" type="button"><span class="pl" aria-hidden="true">⚡</span><span><b>Quick Play</b><small>A random puzzle, right now</small></span><span class="go" aria-hidden="true">▶</span></button>
   <button class="hm-world" id="hmWorld" data-go="island" type="button" hidden></button>
   <button class="hm-daily" data-go="daily" type="button"><img id="hmDailyImg" alt=""><span class="hd-txt"><span class="tag">Bibi’s Weekly Bloppit</span><b id="hmDailyT">This week’s puzzle</b><span id="hmDailyS">The same puzzle for everyone</span></span><span class="go" aria-hidden="true">▶</span><span class="hd-pills"><span>🔥 <b id="hdStreak">0</b> week streak</span><span><b id="hdTotal">0</b> built</span></span></button>
   <button class="hm-cont" id="hmCont" type="button" hidden><img class="hc-pic" src="/art/bud-offer.png" alt="" width="300" height="398"><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span><span class="go" aria-hidden="true">▶</span></button>
-  <button class="hm-how" id="hmHow" type="button"><span class="pl" aria-hidden="true">▶</span><span><b>How to play</b><small>A 45-second video</small></span></button>
+  <button class="hm-how" id="hmHow" type="button"><span class="pl" aria-hidden="true">▶</span><span><b>How to Play</b><small>See how it works in 45 seconds</small></span></button>
 </div>
 <div class="hm-main">
   <h3 class="hm-sec" id="hmSolo">Solo</h3>
   <div class="hm-grid four">
-    <button class="hm-tile t-quick wide" data-go="quick" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span><b>Build anything</b><small class="isl">Brickyard Cove</small><span>Any puzzle, at your own pace</span></button>
-    <button class="hm-tile t-game" data-go="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Frog Trail</b><small class="isl">Frog Forest</small><span id="hmOtterSub">Levels from tiny to tricky</span></button>
-    <button class="hm-tile t-brain" data-go="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Brain Trail</b><small class="isl">Brainpeak</small><span id="hmBrainSub">Levels with math puzzles</span></button>
-    <button class="hm-tile t-sea" data-go="flip" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span><b>Pippa’s Mirror Puzzles</b><small class="isl">Flipper Beach</small><span id="hmSeaSub">Mirror puzzles, any time</span></button>
-    <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>Blitz</b><small class="isl">Blitz Bay</small><span>Race Swoop, the speediest Longtail</span></button>
+    <button class="hm-tile t-quick wide" data-go="quick" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span><b>Build Anything with Bibi</b><small class="isl">Brickyard Cove</small><span id="hmQuickSub">Photos, drawings or library models</span></button>
+    <button class="hm-tile t-game" data-go="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Tiny’s Frog Trail</b><small class="isl">Frog Forest</small><span id="hmOtterSub">Levels from tiny to tricky</span></button>
+    <button class="hm-tile t-brain" data-go="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Nora’s Brain Trail</b><small class="isl">Brainpeak</small><span id="hmBrainSub">Levels with a maths puzzle in each</span></button>
+    <button class="hm-tile t-sea" data-go="flip" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span><b>Pippa’s Mirror Puzzles</b><small class="isl">Flipper Beach</small><span id="hmSeaSub">Pippa builds half, you build the rest</span></button>
+    <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>Blitz with Swoop</b><small class="isl">Blitz Bay</small><span>20 races against Swoop</span></button>
   </div>
   <h3 class="hm-sec">Together</h3>
   <div class="hm-grid">
-    <button class="hm-tile t-together" data-go="mp" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="0" y="16" width="66" height="58"/><use href="#bh2" x="58" y="28" width="58" height="51"/><rect x="34" y="80" width="52" height="28" rx="5" fill="#D2352B"/><rect x="40" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="66" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="34" y="100" width="52" height="8" rx="4" fill="#B32A22"/><ellipse cx="34" cy="90" rx="8" ry="7" fill="#8A5A3B"/><ellipse cx="86" cy="90" rx="8" ry="7" fill="#C08A5E"/></svg></span><b>Build together</b><span>One puzzle, taking turns with friends</span></button>
-    <button class="hm-tile t-friend" data-go="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>Race a friend</b><span>Send a challenge code, or race live</span></button>
-    <button class="hm-tile t-crew" data-go="crew" type="button"><span class="ic" aria-hidden="true"></span><b>Crews</b><span>Build one big puzzle with friends</span></button>
-    <button class="hm-tile t-join" data-go="code" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a game</b><span>Got a code? Type it in to play</span></button>
+    <button class="hm-tile t-together" data-go="mp" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="0" y="16" width="66" height="58"/><use href="#bh2" x="58" y="28" width="58" height="51"/><rect x="34" y="80" width="52" height="28" rx="5" fill="#D2352B"/><rect x="40" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="66" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="34" y="100" width="52" height="8" rx="4" fill="#B32A22"/><ellipse cx="34" cy="90" rx="8" ry="7" fill="#8A5A3B"/><ellipse cx="86" cy="90" rx="8" ry="7" fill="#C08A5E"/></svg></span><b>Play with Friends</b><span>Team Build or Race, with a code to share</span></button>
+    <button class="hm-tile t-join" data-go="code" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a Game</b><span>Got a code? Type it in to play</span></button>
+    <button class="hm-tile t-crew" data-go="crew" type="button"><span class="ic" aria-hidden="true"></span><b>Your Crews</b><span>Quick Games, Pass the Puzzle and a Mega Build</span></button>
   </div>
 </div>
 </section>
@@ -2091,8 +2097,8 @@ body.film-on{overflow:hidden}
   <div class="hub" data-hub>
     <div class="gm-head"><div><h2>🐸 Trails</h2><p class="note">Climb 15 levels, from tiny to tricky: the 15th is the boss. Each trail has its own puzzles and keeps its own points.</p></div></div>
     <div class="hm-grid hub-grid">
-      <button class="hm-tile t-game" data-sub="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Frog Trail</b><small class="isl">Frog Forest</small><span id="hubOtterSub">Levels from tiny to tricky</span></button>
-      <button class="hm-tile t-brain" data-sub="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Brain Trail</b><small class="isl">Brainpeak</small><span id="hubBrainSub">Levels with math puzzles</span></button>
+      <button class="hm-tile t-game" data-sub="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Tiny’s Frog Trail</b><small class="isl">Frog Forest</small><span id="hubOtterSub">Levels from tiny to tricky</span></button>
+      <button class="hm-tile t-brain" data-sub="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Nora’s Brain Trail</b><small class="isl">Brainpeak</small><span id="hubBrainSub">Levels with a maths puzzle in each</span></button>
     </div>
   </div>
   <div class="trail-pick" role="tablist" aria-label="Which trail" hidden>
@@ -2130,15 +2136,17 @@ body.film-on{overflow:hidden}
 <section class="view" id="view-mp" hidden>
 <div class="char-hero" data-hero="mp" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
   <div class="hub" data-hub>
-    <div class="hm-grid hub-grid">
-      <button class="hm-tile t-together" data-sub="start" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="0" y="16" width="66" height="58"/><use href="#bh2" x="58" y="28" width="58" height="51"/><rect x="34" y="80" width="52" height="28" rx="5" fill="#D2352B"/><rect x="40" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="66" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="34" y="100" width="52" height="8" rx="4" fill="#B32A22"/><ellipse cx="34" cy="90" rx="8" ry="7" fill="#8A5A3B"/><ellipse cx="86" cy="90" rx="8" ry="7" fill="#C08A5E"/></svg></span><b>Build together</b><span>One puzzle, taking turns with friends</span></button>
-      <button class="hm-tile t-join" data-sub="join" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a game</b><span>Got a code? Type it in to play</span></button>
+    <h3 class="hm-sec hub-sec">Play with Friends</h3>
+    <div class="hm-grid hub-grid three">
+      <button class="hm-tile t-together" data-sub="start" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="0" y="16" width="66" height="58"/><use href="#bh2" x="58" y="28" width="58" height="51"/><rect x="34" y="80" width="52" height="28" rx="5" fill="#D2352B"/><rect x="40" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="66" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="34" y="100" width="52" height="8" rx="4" fill="#B32A22"/><ellipse cx="34" cy="90" rx="8" ry="7" fill="#8A5A3B"/><ellipse cx="86" cy="90" rx="8" ry="7" fill="#C08A5E"/></svg></span><b>Team Build</b><span>One puzzle, taking turns with friends</span></button>
+      <button class="hm-tile t-friend" data-go-race type="button"><span class="ic" aria-hidden="true"><i class="di di-friend" style="width:64px;height:64px"></i></span><b>Race</b><span>Race live, or send a code to race later</span></button>
+      <button class="hm-tile t-join" data-sub="join" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a Game</b><span>Got a code? Type it in to play</span></button>
     </div>
     <div class="card crew-card" id="crewCard">
-      <div class="gm-head sub-head"><div><h2>Crews</h2><p class="note">A crew builds one big puzzle together, over days or weeks. The maker picks the puzzle; every brick anyone in the crew builds, in any game, brings it closer. Any player can make a crew; the maker lets each friend in. Crews only pass fixed phrases and stickers, under generated names.</p></div></div>
+      <div class="gm-head sub-head"><div><h2>Your Crews</h2><p class="note">A crew is your group of friends, over days and weeks. Inside each crew: a Crew Quick Game to play live, Pass the Puzzle (one model passed round, each building their pages in turn), and the Crew Mega Build that every brick anyone builds brings closer. You can be in up to six crews. Any player can make a crew; the maker lets each friend in. Crews only pass fixed phrases and stickers, under generated names.</p></div></div>
       <div class="crew-list" id="crewList"></div>
       <div class="crew-forms">
-        <div class="field"><label for="crewName">Make a crew</label><select class="inp" id="crewName" style="width:100%"></select><span class="crew-picklab">Pick your crew’s puzzle</span><div class="crew-pick" id="crewPick" role="radiogroup" aria-label="Crew puzzle"></div><button class="primary sm" id="crewMake" type="button" style="margin-top:8px">Make the crew</button></div>
+        <div class="field"><label for="crewName">Make a crew</label><select class="inp" id="crewName" style="width:100%"></select><span class="crew-picklab">Pick your crew’s Mega Build</span><div class="crew-pick" id="crewPick" role="radiogroup" aria-label="Crew puzzle"></div><button class="primary sm" id="crewMake" type="button" style="margin-top:8px">Make the crew</button></div>
         <div class="field"><label for="crewCodeIn">Got a crew code?</label><div style="display:flex;gap:8px;flex-wrap:wrap"><input class="inp code" id="crewCodeIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC123" style="flex:1;min-width:140px"><button class="primary sm" id="crewJoin" type="button">Ask to join</button></div></div>
       </div>
       <p class="note" id="crewMsg" hidden></p>
@@ -2148,7 +2156,7 @@ body.film-on{overflow:hidden}
     </div>
   </div>
   <button class="crumb" data-up type="button">‹ Together</button>
-  <div class="gm-head sub-head"><div><h2 id="mpHeadT">🧩 Build together</h2><p class="note">Build one puzzle together on different phones, tablets or computers. Take turns placing a few bricks each. Everyone sees the model grow live. Friends join with the room code, and you let them in.</p></div></div>
+  <div class="gm-head sub-head"><div><h2 id="mpHeadT">🧩 Team Build</h2><p class="note">Build one puzzle together on different phones, tablets or computers. Take turns placing a few bricks each. Everyone sees the model grow live. Friends join with the room code, and you let them in.</p></div></div>
   <div class="mp-off" id="mpOff" hidden></div>
   <div class="mp-forms" id="mpForms">
     <div class="card" id="mpStartCard">
@@ -2169,7 +2177,7 @@ body.film-on{overflow:hidden}
       <button class="primary" id="mpCreate" type="button">Make a room</button>
     </div>
     <div class="card" id="mpJoinCard">
-      <h2>Join a game</h2>
+      <h2>Join a Game</h2>
       <div class="field"><label for="mpCodeIn">Got a code?</label><input class="inp code" id="mpCodeIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCDE"><small class="note" style="display:block;margin-top:4px">A room code (5 letters and numbers) or a challenge, relay or crew code (6).</small></div>
       <div class="field"><label for="mpName2">Your name <small class="note">(stays on this device; friends see an otter name)</small></label><input class="inp" id="mpName2" maxlength="16" autocomplete="nickname" placeholder="e.g. Sam"></div>
       <button class="primary" id="mpJoin" type="button">Join</button>
@@ -2207,8 +2215,8 @@ body.film-on{overflow:hidden}
 <div class="char-hero" data-hero="blitz" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
   <div class="hub" data-hub>
     <div class="hm-grid hub-grid">
-      <button class="hm-tile t-blitz" data-sub="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>Blitz</b><small class="isl">Blitz Bay</small><span>Race Swoop, the speediest Longtail</span></button>
-      <button class="hm-tile t-friend" data-sub="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>Race a friend</b><span>Send a challenge code, or race live</span></button>
+      <button class="hm-tile t-blitz" data-sub="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>Blitz with Swoop</b><small class="isl">Blitz Bay</small><span>20 races against Swoop</span></button>
+      <button class="hm-tile t-friend" data-sub="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>Race a Friend</b><span>Race live, or send a code to race later</span></button>
     </div>
   </div>
   <button class="crumb" data-up type="button">‹ Blitz</button>
@@ -2240,17 +2248,17 @@ body.film-on{overflow:hidden}
         <h2><span aria-hidden="true">🔁</span>Relay with a friend</h2>
         <p class="note" style="margin:0">Build the first half of a model, send the code, and your friend builds the rest. The finished model lands on both your islands.</p>
         <button class="primary" id="bzRelayGo" type="button">🔁 Start a relay</button>
-        <p class="note" style="margin:8px 0 0">Got a relay code? Type it into <b>Got a code?</b> under Race a friend, or into Join a game on the menu.</p>
+        <p class="note" style="margin:8px 0 0">Got a relay code? Type it into <b>Got a code?</b> under Race a Friend, or into Join a Game on the menu.</p>
       </div>
       <div class="card bz-card" id="bzFriendCard">
-        <h2><span aria-hidden="true">🤝</span>Race a friend</h2>
+        <h2><span aria-hidden="true">🤝</span>Race a Friend</h2>
         <p class="note" style="margin:0">Build the whole puzzle as fast as you can, then send your code to a friend. They race your time whenever they like. Names never travel: on a friend’s screen you are a generated name like Brave Otter 214.</p>
         <p class="bz-off" id="bzOff" hidden></p>
         <button class="primary" id="bzChMake" type="button">📨 Make a challenge</button>
         <div class="bz-or">
           <div class="bz-join"><div class="field" style="margin:0"><label for="bzCodeIn">Got a code?</label><input class="inp code" id="bzCodeIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC123"></div>
             <button class="primary" id="bzJoin" type="button">Go</button></div>
-          <p class="note" style="margin:6px 0 0">Works for every code: challenges have 6 characters, live Blitz and Build together rooms have 5.</p>
+          <p class="note" style="margin:6px 0 0">Works for every code: challenges have 6 characters, live races and Team Build rooms have 5.</p>
         </div>
         <details class="bz-live"><summary>Race live in a room instead</summary>
           <p class="note">Everyone plays at the same time on their own device, taking turns. Friends join with the room code, and you let them in.</p>
@@ -2295,7 +2303,7 @@ body.film-on{overflow:hidden}
       <p class="msg" id="dyMsg" hidden></p>
     </div>
   </div>
-  <button class="crumb dy-up" id="dyUp" type="button">‹ Build anything</button>
+  <button class="crumb dy-up" id="dyUp" type="button">‹ Build Anything</button>
   <div class="card" id="dyBoard" hidden><div class="gm-head sub-head"><div><h2>🏆 This week’s top 100</h2><p class="note">Clean builds first, then stars. Generated names only; no times. A grown-up can switch it off in the Grown-ups corner.</p></div></div><div class="board" id="dyBoardList"></div></div>
   <p class="note">Bloppit only counts how many people finished this week’s puzzle and how many finished it clean. No real names and no times. The top-100 board shows generated names and stars; a grown-up can switch it off. The counts are deleted after 8 weeks.</p>
 </section>
@@ -2341,10 +2349,10 @@ body.film-on{overflow:hidden}
   <div class="win-btns"><button class="primary sm" id="ldGo" type="button" autofocus>▶ Start the race</button><button class="ghost" id="ldLater" type="button">Not now</button></div>
 </dialog>
 <dialog class="windlg qpdlg" id="qpDlg" aria-labelledby="qpT">
-  <h2 id="qpT">Build anything</h2>
+  <h2 id="qpT">Build Anything with Bibi</h2>
   <div class="qp-opts">
     <button class="qp-opt isle" id="qpIsle" type="button"><img id="qpImg" src="/art/head-bibi.png" alt=""><b id="qpIsleT">🏝️ Play on Brickyard Cove</b><span>In Bloppitopia: every build grows the island and earns ★, XP and Galaxy Blocks.</span></button>
-    <div class="qp-opt qp-quick" id="qpQuickCard"><span class="qp-ic" id="qpQuickIc" aria-hidden="true">⚡</span><b id="qpQuickT">Just Play</b><span id="qpQuickS">Just build. Nothing is added to Bloppitopia.</span>
+    <div class="qp-opt qp-quick" id="qpQuickCard"><span class="qp-ic" id="qpQuickIc" aria-hidden="true">⚡</span><b id="qpQuickT">Quick Play</b><span id="qpQuickS">Just build. Nothing is added to Bloppitopia.</span>
       <div class="qp-diff"><label for="qpDiff">How tricky? <b id="qpDiffT">🙂 Easy</b></label>
         <input type="range" id="qpDiff" min="1" max="5" step="1" value="2">
         <div class="qp-ends" aria-hidden="true"><span>🐣 Tiny</span><span>🔥 Super tricky</span></div></div>
@@ -3504,9 +3512,9 @@ const HERO={
   sea:{who:'pippa',art:'/art/char-pippa.png',isle:'Flipper Beach',title:'Pippa’s Mirror Puzzles',line:'Ooh, that one’s clean!',desc:'Fifteen mirror puzzles wash ashore as Bloppitopia grows: Pippa builds one half, and you flip it to build the other. Each one adds to Flipper Beach, all the way to the Festival Clock in your own colours. And every day the tide brings a message in a bottle.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
   otter:{who:'tiny',art:'/art/char-tiny.png',isle:'Frog Forest',title:'Frog Trail',line:'Small frog, big forest!',desc:'Hop up the trail with Tiny, one level at a time. The levels start tiny and get bigger, and the last is his Lily-pad Palace.',c:['#A6D93A','#3F8F33']},
   brain:{who:'nora',art:'/art/char-nora.png',isle:'Brainpeak',title:'Brain Trail',line:'A clever mind shines in the dark.',desc:'Nora tucks math puzzles into the booklet: solve one to open its page. The last build is her Great Telescope.',c:['#4A6FC0','#1C2B57']},
-  create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Build anything',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
+  create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Build Anything with Bibi',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
   blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Blitz',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Fastest clean build wins.',c:['#5DB4F2','#1F6FC4']},
-  mp:{who:['pup','pup'],art:'/art/hero-together.png',isle:'Friendship Harbour',title:'Build Together',line:'Every build is better with a friend!',desc:'Take turns building one model with friends on their own phones, tablets or computers.',c:['#B9A2F7','#6E4FD6']}};
+  mp:{who:['pup','pup'],art:'/art/hero-together.png',isle:'Friendship Harbour',title:'Play with Friends',line:'Every build is better with a friend!',desc:'A Team Build or a Race with a code to share, or your Crews: friends you keep, with games of their own.',c:['#B9A2F7','#6E4FD6']}};
 function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[data-hero="${t}"]`); if(!el) return;
   const key=t==='game'?subOf.game:t, H=HERO[key]; el.hidden=!H; if(!H) return;
   if(el.dataset.k===key) return; el.dataset.k=key;
@@ -3530,12 +3538,12 @@ function syncSub(t){
   if(mp||mpw){ if(t==='blitz') s=mp&&mp.cpu?'cpu':'friend'; if(t==='mp') s='start'; }
   if(t==='game'&&s!=='hub') setTrail(s);
   const v=$('#view-'+t); v.dataset.sub=s; v.classList.toggle('in-room',!!(mp||mpw));
-  if(t==='blitz') $('#bzHeadT').textContent=s==='cpu'?'Blitz':s==='friend'?'⚡ Race a friend':'⚡ Blitz';
-  if(t==='mp') $('#mpHeadT').textContent=s==='join'?'🔑 Join a game':'🧩 Build together';
+  if(t==='blitz') $('#bzHeadT').textContent=s==='cpu'?'Blitz':s==='friend'?'⚡ Race a Friend':'⚡ Blitz';
+  if(t==='mp') $('#mpHeadT').textContent=s==='join'?'🔑 Join a Game':'🧩 Team Build';
   if(t==='game'&&s==='hub'){ const st=playerStats(players.cur);
     $('#hubOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
-    $('#hubBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} new levels, with math puzzles`;
-    { const h=$('#hubSeaSub'); if(h) h.textContent=st.flv?`${st.flv} of ${FLIP_LEVELS.length} puzzles built`:`${FLIP_LEVELS.length} mirror puzzles, any time`; } }
+    $('#hubBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} levels, a maths puzzle in each`;
+    { const h=$('#hubSeaSub'); if(h) h.textContent=st.flv?`${st.flv} of ${FLIP_LEVELS.length} puzzles built`:`${FLIP_LEVELS.length} puzzles: Pippa builds half, you build the rest`; } }
 }
 // A finished race against Swoop (or a finished timed build) is over: going anywhere else leaves it. It used to hold on,
 // so "Play Pippa's puzzle" (or any Trail) landed on the race page asking you to leave a race that had already ended.
@@ -3865,7 +3873,7 @@ function setupPlay(m){
   resetBuild();
 }
 function resetBuild(){
-  relay=null;
+  relay=null; pass=null;
   $('#trayNote').textContent=TILES?'Tiles go on the dark baseplate. Row 1 is the top of the picture, at the far edge. Follow the yellow outline in the booklet.':'Your first brick can go anywhere on the table. The rest of the model builds out from it. Drag the see-through brick to move it; drag anywhere else to turn the view.';
   placedGroup.clear(); ghostGroup.clear(); hintGroup.clear();
   endReveal(true);
@@ -4568,6 +4576,7 @@ function tryPlace(){
   if(mp&&!mpMyTurn()){ setStatus(mpTurnText(),'err'); return; }
   if(model.mirror&&model.steps[cur]&&model.steps[cur].pippa&&!pippaBusy){ setStatus('🐧 Wait a moment: Pippa is building her side.'); return; }
   if(relay&&relay.role==='first'&&cur>=relay.half){ setStatus('That page is your friend’s. Your half is done!','err'); relayHalfDone(); return; }
+  if(pass&&cur>=pass.to&&pass.to<model.steps.length){ setStatus('Those pages are for the rest of your crew. Yours are done!','err'); passPagesDone(); return; }
   if(mp&&mp.cpu&&Date.now()<mp.state.turnStart){ setStatus('Wait for Go!','err'); return; }
   if(mp&&mp.posting>=mpLeft(mp.state)){ setStatus(mpBlitz()&&(mp.state.players[mp.me].n||0)+mp.posting>=mp.state.quota?'That was your last brick. Wait for the others to finish.':'That was your last brick this turn.','ok'); return; }
   const s=model.steps[cur], {ax,az}=lastAnchor;
@@ -4590,6 +4599,7 @@ function placeBrick(t,ax,az){
   if(off) placed.add(t);
   if(mp) mpSendMove(t,ax,az,autoBusy);
   if(relay) relay.moves.push({b:model.bricks.indexOf(t),x:ax,z:az});
+  if(pass) pass.moves.push({b:model.bricks.indexOf(t),x:ax,z:az});
   placedN++; placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz});
   const pc=model.paint&&sel?sel.c:t.c; if(model.paint) model.paint.set(t.x+','+t.y+','+t.z+','+t.sx+','+t.sz,pc);
   const ms=new THREE.Mesh(brickGeo(t.sx,t.sz),mat(pc)); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
@@ -4616,6 +4626,8 @@ function placeBrick(t,ax,az){
     setStatus(cur>=model.steps.length?'Every step complete. Great build!':`On to step ${cur+1}.${model.steps[cur].hang?' These clip on underneath the bricks above.':''}${held?'':' Open the parts box for the next brick.'}`, cur>=model.steps.length?'ok':'');
     updateBuildUI(); frameBuild(true); pippaTurn();
     if(relay&&relay.role==='first'&&cur>=relay.half&&cur<model.steps.length){ relayHalfDone(); return; }
+    if(pass&&cur>=pass.to&&cur<model.steps.length){ passPagesDone(); return; }
+    if(pass&&cur>=model.steps.length) passPagesDone();   // the last pages: the model is finished, for the whole crew
     if(cur>=model.steps.length&&!mp){ buildFinished(game?'trail':relay&&relay.role==='second'?'relay':'quick'); setTimeout(()=>playReveal(game?winLevel:welcomeOn()?welcomeDone:relay&&relay.role==='second'?relayDone:worldAfterQuick),350); } }, 700);
 }
 // Pippa's half of a mirror build: she places her bricks herself (free, never a hint), then it's your turn to reflect them
@@ -7357,6 +7369,7 @@ async function mpMake(mode,name,choice){
     model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
   mpRememberName(name);
   await mpEnter(res,true,name); renderMpView();
+  if(crewLiveFor&&mp&&mp.code){ const c=crewLiveFor; crewLiveFor=''; crewApi('POST',{action:'live',code:c,room:mp.code}).catch(()=>{}); }
 }
 $('#mpCreate').onclick=async()=>{
   const name=$('#mpName1').value.trim(); if(!name){ mpMsg('Type your name first.','err'); $('#mpName1').focus(); return; }
@@ -8670,7 +8683,7 @@ function modelFacts(k,o){
     again=()=>{ if(mp) mpLeave(); setTrail(tr); startLevel(i); }; }
   else if((m=/^w:(.+)$/.exec(k))){ let nm='Bibi’s Weekly Bloppit'; try{ nm=weeklyPuzzle(m[1]).name; }catch(e){} name=nm; from=`Bibi’s Weekly Bloppit · week of ${fmtDay(Date.parse(m[1]+'T12:00:00'))}`;
     if(m[1]===weekOf()) again=()=>setTab('daily'); }
-  else if((m=/^m:(.+):\d+$/.exec(k))){ name=m[1]; from={welcome:'Your very first build',blitz:'Blitz · a race you won',room:'Build together',challenge:'A challenge',relay:'A relay with a friend'}[b.k]||'Build anything · the library';
+  else if((m=/^m:(.+):\d+$/.exec(k))){ name=m[1]; from={welcome:'Your very first build',blitz:'Blitz · a race you won',room:'Team Build',challenge:'A challenge',relay:'A relay with a friend'}[b.k]||'Build Anything · the library';
     const i=SAMPLES.findIndex(x=>x.name===m[1]); if(i>=0&&released(SAMPLES[i])) again=()=>{ if(mp) mpLeave(); if(game) endGame(); loadSample(i); clearTimeout(timer); rebuild(); setTab('build'); }; }
   else if(/^r:/.test(k)){ name='Relay build'; from='A relay with a friend'; }
   return {b,name,from,again};
@@ -11623,6 +11636,70 @@ async function renderBoard(){
   catch(e){ $('#dyBoardList').innerHTML='<p class="note">Couldn’t load the board just now.</p>'; }
 }
 
+
+/* ---------- Pass the Puzzle and Crew Quick Game (Steff, 7 Nov 2026) ----------
+   Pass the Puzzle: one model passed round a crew. The starter builds the first share of pages (pages ÷ builders),
+   then each member in turn builds theirs when they open Bloppit; the last one finishes it and it lands on everyone's
+   island. Built on the relay. Crew Quick Game: a member starts a Team Build; its room code shows on the crew. */
+var pass=null;   // {role:'start'|'turn', crew, id?, from, to, moves:[], title, sent?}
+let crewLiveFor='';
+function passStart(crewCode,choice,nMembers){
+  const title=mpUseModel(choice); if(game) endGame(); if(mp) mpLeave(); dismissResume();
+  const N=model.steps.length; if(N<nMembers+1) throw new Error(`Pick a bigger puzzle: at least ${nMembers+1} pages for ${nMembers} builders.`);
+  const to=Math.min(N-1,Math.max(1,Math.ceil(N/nMembers)));
+  resetBuild(); rebuildPlaced();
+  pass={role:'start',crew:crewCode,from:0,to,moves:[],title:niceName(title)};
+  track('pass_started'); setTab('build'); updateBuildUI();
+  setStatus(`Pass the Puzzle! You build pages 1 to ${to}; then it goes round your crew.`,'ok');
+}
+function rebuildPlaced(){ placedGroup.clear(); placedBoxes=[]; placed=new Set(); off=null; cands=[]; placedN=0; cur=0; drops=[]; busy=false; }
+async function passOpenTurn(crewCode){
+  crewMsg('Loading the puzzle…');
+  const j=await crewApi('GET',null,`?code=${crewCode}&pass=1`); const Q=j.pass; if(!Q.myTurn){ crewMsg('It isn’t your turn yet.','err'); return; }
+  const ds=await Promise.all(j.model.photos.map(p=>loadPng(p.png)));
+  if(game) endGame(); if(mp) mpLeave(); dismissResume();
+  photos=j.model.photos.map((p,i)=>({id:++pid,name:p.name,view:p.view,sample:true,d:ds[i],png:p.png,m:null}));
+  setControls(j.model.S); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild(); crewMsg('');
+  if(!model||model.bricks.length!==Q.nBricks||model.steps.length!==Q.steps){ crewMsg('This puzzle was made with a different version of Bloppit. Ask the crew to start a new one.','err'); return; }
+  rebuildPlaced();
+  for(const mv of j.moves) applyMoveCore(mv);
+  while(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))) cur++;
+  reconcilePieces(); run={miss:0,hints:new Set(),auto:0,memory:false};
+  const to=Math.min(Q.steps,Q.page+Q.chunk);
+  pass={role:'turn',crew:crewCode,id:Q.id,from:Q.page,to,moves:[],title:Q.title};
+  track('pass_turn'); setTab('build'); updateBuildUI(); frameBuild(false);
+  setStatus(to>=Q.steps?`The last pages are yours: ${Q.page+1} to ${Q.steps}. Finish it for the crew!`:`Your turn: pages ${Q.page+1} to ${to}. Then it passes on.`,'ok');
+}
+async function passPagesDone(){
+  const q=pass; if(!q||q.sent) return; q.sent=true;
+  const last=q.to>=model.steps.length;
+  if(!last) trialDialog({icon:'🧩',title:'Your pages are done!',note:'Passing the puzzle to your crew…'});
+  try{
+    if(q.role==='start') await crewApi('POST',{action:'pass-start',code:q.crew,title:q.title,nBricks:model.bricks.length,steps:model.steps.length,to:q.to,moves:q.moves,
+      model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
+    else await crewApi('POST',{action:'pass-turn',code:q.crew,id:q.id,to:q.to,moves:q.moves});
+    crewMineAt=0;
+    if(!last) trialDialog({icon:'🧩',title:'Passed on!',note:`You built pages ${q.from+1} to ${q.to}. Your crew can see whose turn it is on the crew page.`,card:false});
+  }catch(e){ q.sent=false; trialDialog({icon:'😕',title:'Couldn’t pass the puzzle on',note:e.message}); }
+  if(!last) pass=null;
+}
+// Everyone who took part gets the finished model on their island (the last builder gets it by finishing it)
+function passCredit(g){
+  const Q=g&&g.pass; if(!Q||!Q.done||!Q.inIt) return;
+  const o=worldStore(), key=`p:${g.code}:${Q.id}`; if(o.builds[key]) return;
+  const lastMe=Q.history.length&&Q.history[Q.history.length-1].me; if(lastMe) return;   // they finished it, so it's on their island already
+  o.builds[key]={n:Q.nBricks,s:3,k:'pass',t:Date.now(),c:1}; o.log.push(key); worldSet(o);
+  track('pass_credit'); worldStrips(); renderHome();
+}
+$('#crewOpen').addEventListener('click',async e=>{
+  const b=e.target.closest('button'); if(!b) return; const code=crewOpenCode, g=crewMine.find(x=>x.code===code);
+  if(b.dataset.passStart){ try{ passStart(code,$('#crewPassModel').value,g?g.members.length:2); }catch(x){ crewMsg(x.message,'err'); } return; }
+  if(b.dataset.passGo){ try{ await passOpenTurn(code); }catch(x){ crewMsg(x.message,'err'); } return; }
+  if(b.dataset.crewLiveStart){ crewLiveFor=code; track('crew_live_start'); setTab('mp','start'); mpMsg('Pick a puzzle and make the room: your crew will see it.'); return; }
+  if(b.dataset.crewLive){ track('crew_live_join'); setTab('mp','join'); $('#mpCodeIn').value=b.dataset.crewLive; const n=$('#mpName2'); if(n&&!n.value) n.focus(); else $('#mpJoin').click(); return; }
+  if(b.dataset.crewLiveEnd){ crewDo({action:'live-end',code}); return; }
+});
+document.addEventListener('click',e=>{ if(e.target.closest('[data-go-race]')) homeGo('friend'); });
 /* ---------- Crews: one big shared puzzle for an approved group (friends, a family, a class) ----------
    Identity is the pup (x-pup). The maker approves every join; builds add bricks to the crew's puzzle; only
    fixed phrases and stickers pass, under generated names; a report hides the post for you and three reports
@@ -11715,18 +11792,41 @@ async function renderCrews(force){
 }
 function renderCrew(g){
   crewOpenCode=g.code; const box=$('#crewOpen'); box.hidden=false;
-  const mine=!!g.me, maker=mine&&g.me.creator, news=crewNews(g);
-  box.innerHTML=`<div class="crew-head">${crewPuzzleSVG(g.puzzle,g.total/g.goal)}<div><h2>${escapeHTML(g.name)} <span class="cc">${g.code}</span></h2>
-      <p class="note" style="margin:4px 0 0">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks · ${g.builds} build${g.builds===1?'':'s'} · ${escapeHTML(CREW_PUZZLES[g.puzzle].name)}: ${g.pct>=100?'finished! 🎉':g.total?(g.pct?g.pct+'% built':'just started'):'not started yet'}</p>
-      <div class="bar"><i style="width:${Math.max(2,g.pct)}%"></i></div>
-      ${news?`<p class="crew-since"><b>Since you were last here</b>${news.map(x=>`<span>${escapeHTML(x)}</span>`).join('')}</p>`:''}
-      <div class="win-btns" style="justify-content:flex-start">${mine?`<button class="ghost" type="button" data-crew-share="${g.code}">Share the code</button>`:g.pendingMe?'<span class="note">Waiting for the crew’s maker to let you in.</span>':`<button class="primary sm" type="button" data-crew-join="${g.code}">Ask to join</button>`}<button class="ghost" type="button" id="crewClose">Close</button></div></div></div>
-    ${maker&&(g.pct>=100||!g.total)?`<div class="crew-next"><b>${g.pct>=100?'Pick the crew’s next puzzle':'Change the crew’s puzzle'}</b><span class="note">${g.pct>=100?'Well built, crew! Bricks built from now on go to the next one.':'You can change it until someone builds.'}</span><div class="crew-pick">${crewPickHTML(g.pct>=100?-1:g.puzzle,g.done.concat(g.pct>=100?[g.puzzle]:[]))}</div><button class="primary sm" type="button" data-crew-pz="1">${g.pct>=100?'Start this puzzle':'Use this puzzle'}</button></div>`:''}
+  const mine=!!g.me, maker=mine&&g.me.creator, news=crewNews(g), P=CREW_PUZZLES[g.puzzle]||CREW_PUZZLES[0];
+  // Crew Quick Game: a live room a member started; the others jump in (the host still lets each one in)
+  const L=g.live, quick=!mine?'':`<section class="crew-game"><h3>Crew Quick Game</h3>
+      ${L&&!L.me?`<p class="note">${escapeHTML(L.label)} started a game. Jump in!</p><div class="win-btns" style="justify-content:flex-start"><button class="primary sm" type="button" data-crew-live="${L.room}">Join the game</button></div>`
+      :L&&L.me?`<p class="note">You started a game (room ${L.room}). Your crew can see it here for three hours.</p><div class="win-btns" style="justify-content:flex-start"><button class="ghost" type="button" data-crew-live-end="1">Take it down</button></div>`
+      :`<p class="note">Play live now: start a Team Build and everyone in the crew sees it here, ready to join.</p><div class="win-btns" style="justify-content:flex-start"><button class="primary sm" type="button" data-crew-live-start="1">Start a Crew Quick Game</button></div>`}</section>`;
+  // Pass the Puzzle: one model passed round the crew, each building their share of pages in turn
+  const Q=g.pass, open=Q&&!Q.done;
+  const hist=Q?`<ol class="pass-hist">${Q.history.map(h=>`<li>${h.me?'You':escapeHTML(h.label)}: pages ${h.from+1} to ${h.to}</li>`).join('')}</ol>`:'';
+  const pass=!mine?'':`<section class="crew-game"><h3>Pass the Puzzle</h3>
+      ${open?`<p class="note"><b>${escapeHTML(Q.title)}</b> · ${Q.page} of ${Q.steps} pages built</p><div class="bar"><i style="width:${Math.max(2,Math.round(100*Q.page/Q.steps))}%"></i></div>${hist}
+        ${Q.myTurn?`<p class="note"><b>Your turn!</b> Build pages ${Q.page+1} to ${Math.min(Q.steps,Q.page+Q.chunk)}, then it passes on.</p><div class="win-btns" style="justify-content:flex-start"><button class="primary sm" type="button" data-pass-go="1">Build my pages</button></div>`
+          :`<p class="note">Waiting for ${escapeHTML(Q.turnLabel)} to build the next pages.</p>`}`
+      :`${Q&&Q.done?`<p class="note"><b>${escapeHTML(Q.title)}</b>: finished together! It’s on everyone’s island.</p>${hist}`:''}
+        ${g.members.length<2?'<p class="note">Pass the Puzzle needs at least two in the crew. Share the code to bring a friend in.</p>'
+        :`<p class="note">Pick a puzzle and build the first pages. Then it passes round the crew, each of the ${g.members.length} builders taking a turn.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><select class="inp" id="crewPassModel" style="flex:1;min-width:180px" aria-label="Puzzle to pass round"></select><button class="primary sm" type="button" data-pass-start="1">Start Pass the Puzzle</button></div>`}`}</section>`;
+  // Crew Mega Build: the big puzzle everyone's bricks go to
+  const mega=`<section class="crew-game"><h3>Crew Mega Build</h3><div class="crew-mega">${crewPuzzleSVG(g.puzzle,g.total/g.goal)}<div>
+      <p class="note" style="margin:0"><b>${escapeHTML(P.name)}</b>: ${g.pct>=100?'finished! 🎉':g.total?(g.pct?g.pct+'% built':'just started'):'not started yet'}</p>
+      <p class="note" style="margin:4px 0 0">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks · every brick anyone in the crew builds, in any game, goes here.</p>
+      <div class="bar"><i style="width:${Math.max(2,g.pct)}%"></i></div></div></div>
+    ${maker&&(g.pct>=100||!g.total)?`<div class="crew-next"><b>${g.pct>=100?'Pick the crew’s next Mega Build':'Change the crew’s Mega Build'}</b><span class="note">${g.pct>=100?'Well built, crew! Bricks built from now on go to the next one.':'You can change it until someone builds.'}</span><div class="crew-pick">${crewPickHTML(g.pct>=100?-1:g.puzzle,g.done.concat(g.pct>=100?[g.puzzle]:[]))}</div><button class="primary sm" type="button" data-crew-pz="1">${g.pct>=100?'Start this one':'Use this one'}</button></div>`:''}</section>`;
+  box.innerHTML=`<div class="crew-top"><div><h2>${escapeHTML(g.name)} <span class="cc">${g.code}</span></h2>
+      <p class="note" style="margin:4px 0 0">${g.members.length} builder${g.members.length===1?'':'s'} · ${g.builds} build${g.builds===1?'':'s'}${!mine?` · ${escapeHTML(P.name)} Mega Build`:''}</p></div>
+      <div class="win-btns" style="justify-content:flex-start">${mine?`<button class="ghost" type="button" data-crew-share="${g.code}">Share the code</button>`:g.pendingMe?'<span class="note">Waiting for the crew’s maker to let you in.</span>':`<button class="primary sm" type="button" data-crew-join="${g.code}">Ask to join</button>`}<button class="ghost" type="button" id="crewClose">Close</button></div></div>
+    ${news?`<p class="crew-since"><b>Since you were last here</b>${news.map(x=>`<span>${escapeHTML(x)}</span>`).join('')}</p>`:''}
     ${maker&&g.pending&&g.pending.length?`<div class="crew-pending"><b>Waiting to join</b>${g.pending.map(w=>`<div><span>🚪 ${escapeHTML(w.label)}</span><button class="primary sm" type="button" data-crew-ok="${w.k}">Let in</button><button class="ghost" type="button" data-crew-no="${w.k}">Not this time</button></div>`).join('')}</div>`:''}
+    ${quick}${pass}${mega}
     <div><b>Builders</b><div class="crew-members" style="margin-top:6px">${g.members.map(m=>`<span class="${m.me?'me':''}${m.muted?' muted':''}">${escapeHTML(m.label)}${m.me?' (you)':''}${m.creator?' · maker':''} · ${m.bricks}${maker&&!m.me?` <button class="rep" type="button" data-crew-kick="${escapeHTML(m.label)}" title="Take out of the crew">✕</button>`:''}${maker&&m.muted?` <button class="rep" type="button" data-crew-unmute="${escapeHTML(m.label)}">unpause</button>`:''}</span>`).join('')}</div></div>
-    ${mine?`<div><b>Crew board</b><div class="crew-feed" id="crewFeed">${g.posts.length?g.posts.slice().reverse().map(p=>`<div class="crew-post${p.me?' me':''}"><span class="who">${p.me?'You':escapeHTML(p.label)}</span><span class="what${p.sticker!=null?' st':''}">${p.sticker!=null?CREW_STICKERS[p.sticker]||'':escapeHTML(CREW_PHRASES[p.phrase]||'')}</span>${p.me?'':`<button class="rep" type="button" data-crew-report="${p.id}">Report</button>`}</div>`).join(''):'<p class="note">Nothing on the board yet.</p>'}</div>
-      ${g.me.muted?'<p class="note">Your posts here are paused while a report is looked at.</p>':`<div class="crew-say">${CREW_PHRASES.map((t,i)=>`<button type="button" data-crew-say="${i}">${escapeHTML(t)}</button>`).join('')}${CREW_STICKERS.map((t,i)=>`<button class="st" type="button" data-crew-st="${i}">${t}</button>`).join('')}</div>`}
+    ${mine?`<div><b>Crew board</b><div class="crew-feed no-di" id="crewFeed">${g.posts.length?g.posts.slice().reverse().map(p=>`<div class="crew-post${p.me?' me':''}"><span class="who">${p.me?'You':escapeHTML(p.label)}</span><span class="what${p.sticker!=null?' st':''}">${p.sticker!=null?CREW_STICKERS[p.sticker]||'':escapeHTML(CREW_PHRASES[p.phrase]||'')}</span>${p.me?'':`<button class="rep" type="button" data-crew-report="${p.id}">Report</button>`}</div>`).join(''):'<p class="note">Nothing on the board yet.</p>'}</div>
+      ${g.me.muted?'<p class="note">Your posts here are paused while a report is looked at.</p>':`<div class="crew-say no-di">${CREW_PHRASES.map((t,i)=>`<button type="button" data-crew-say="${i}">${escapeHTML(t)}</button>`).join('')}${CREW_STICKERS.map((t,i)=>`<button class="st" type="button" data-crew-st="${i}">${t}</button>`).join('')}</div>`}
       <p class="note" style="margin:6px 0 0">Only these phrases and stickers can be sent. Report hides a post for you and tells the crew’s maker; three reports pause the sender.</p></div>`:''}`;
+  if($('#crewPassModel')){ mpModelOptions('#crewPassModel'); const o=$('#crewPassModel').querySelector('optgroup[label="Medium"] option'); if(o) $('#crewPassModel').value=o.value; }
+  passCredit(g);
   box.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});
   if(mine){ const i=crewMine.findIndex(x=>x.code===g.code); if(i>=0) crewMine[i]=g; crewSeenSet(g); crewDots(); }   // opened: it's all seen now
 }
@@ -12015,9 +12115,10 @@ function renderHome(){
   if(homeCont){ $('#hmContT').textContent=homeCont.t; $('#hmContS').textContent=homeCont.s;
     $('#hmContBar').hidden=homeCont.p<0; $('#hmContBar i').style.width=Math.max(4,homeCont.p)+'%'; $('#hmCont').classList.toggle('first',!!homeCont.first); }
   const st=playerStats(players.cur);
+  { const q=$('#hmQuickSub'); if(q) q.textContent=`Photos, drawings or ${SAMPLES.filter(released).length} library models`; }
   $('#hmOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
-  $('#hmBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} new levels, with math puzzles`;
-  $('#hmSeaSub').textContent=st.flv?`${st.flv} of ${FLIP_LEVELS.length} puzzles built`:`${FLIP_LEVELS.length} mirror puzzles, any time`;
+  $('#hmBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} levels, a maths puzzle in each`;
+  $('#hmSeaSub').textContent=st.flv?`${st.flv} of ${FLIP_LEVELS.length} puzzles built`:`${FLIP_LEVELS.length} puzzles: Pippa builds half, you build the rest`;
   try{ const week=weekOf(), o=weeklyPuzzle(week), me=weeklyStore().weeks[week], k=weeklyStreak();
     $('#hmDailyImg').src=o.thumb; $('#hmDailyT').textContent=me?`${o.name}: ${me.clean?'clean ✓':'done ✓'}`:`This week: ${o.name}`;
     renderHomeWeekly();
@@ -12030,7 +12131,7 @@ function homeGo(where){ mpDoneLeave();
   if(where==='daily'){ setTab('daily'); return; }
   if(where==='island'){ setTab('island'); return; }
   if(where==='blitz'){ setTab('blitz',mp?undefined:'hub'); return; }
-  if(where==='mp'){ setTab('mp',mp?undefined:'start'); return; }
+  if(where==='mp'){ setTab('mp',mp?undefined:'hub'); return; }   // Play with Friends: choose Team Build or Race
   if(where==='crew'){ setTab('mp','hub'); requestAnimationFrame(()=>{ const c=$('#crewCard'); if(c) c.scrollIntoView({block:'start',behavior:reduceMotion?'auto':'smooth'}); }); return; }   // Crews: on the Together page
   if(where==='code'){ setTab('mp',mp?undefined:'join'); if(!mp) requestAnimationFrame(()=>{ const i=$('#mpCodeIn'); if(i) i.focus(); }); return; }
   if(where==='cpu'&&!mp){ islandSetOff('blitzbay',()=>{ setTab('blitz','cpu'); scrollTo(0,0); }); return; }
@@ -12042,7 +12143,7 @@ function homeGo(where){ mpDoneLeave();
 // "Play on <island>" is Bloppitopia as before (its arrival film the first time, the build grows the island);
 // "Quick play" just builds: no film, and nothing is added to Bloppitopia (no island, ★ record, XP or Galaxy Blocks).
 // Quick play lasts until the player goes back to Bloppitopia (the island, a top tab, or the other choice).
-const QP_TILES={quick:{isle:'brickworks',who:'bibi',t:'Build anything'},otter:{isle:'otterwood',who:'tiny',t:'Frog Trail'},brain:{isle:'brainpeak',who:'nora',t:'Brain Trail'},cpu:{isle:'blitzbay',who:'swoop',t:'Blitz'}};
+const QP_TILES={quick:{isle:'brickworks',who:'bibi',t:'Build Anything with Bibi'},otter:{isle:'otterwood',who:'tiny',t:'Tiny’s Frog Trail'},brain:{isle:'brainpeak',who:'nora',t:'Nora’s Brain Trail'},cpu:{isle:'blitzbay',who:'swoop',t:'Blitz with Swoop'}};
 function quickPlaySet(on){ quickPlay=!!on; document.body.classList.toggle('quick-play',quickPlay); }
 function quickGo(where){ quickPlaySet(true); track('quick_play:'+where);
   if(where==='quick'){ if(game) endGame(); pickPuzzle('quick','top'); return; }
@@ -12100,7 +12201,7 @@ function playAsk(where,opt){ const T=QP_TILES[where]; if(!T||mp){ homeGo(where);
   let iname=''; try{ iname=ISLES[T.isle].name; }catch(e){}
   $('#qpT').textContent=T.t; $('#qpImg').src=`/art/head-${T.who}.png`; $('#qpIsleT').textContent=`🏝️ Play on ${iname||'Bloppitopia'}`;
   const d=$('#qpDlg'); d.classList.toggle('solo',!!T.solo);
-  $('#qpQuickT').textContent=T.solo?'Pick how tricky':'Just Play'; $('#qpQuickIc').textContent=T.solo?'🪞':'⚡';
+  $('#qpQuickT').textContent=T.solo?'Pick how tricky':'Quick Play'; $('#qpQuickIc').textContent=T.solo?'🪞':'⚡';
   $('#qpQuickS').textContent=T.solo?'Pippa finds a mirror puzzle to match.':where==='cpu'?'Just race. Nothing is added to Bloppitopia.':'Just build. Nothing is added to Bloppitopia.';
   qpCur={where,d:qpDiffs()[where]||2,pick:null}; qpSet(qpCur.d);
   $('#qpIsle').onclick=()=>{ d.close(); quickPlaySet(false); track('quick_play_no:'+where); homeGo(where); };

@@ -748,7 +748,7 @@ test('a relay: one friend builds half, the other finishes, both islands get the 
   assert.deepEqual(b.errors, []); await b.ctx.close();
   // the first player hears about it on the Blitz page
   await a.page.evaluate(() => window.bloppitHome()); await a.page.waitForTimeout(300);
-  await a.page.evaluate(() => document.querySelector('[data-go="friend"]').click()); await a.page.waitForTimeout(2500);
+  await a.page.evaluate(() => document.querySelector('.hm-tile[data-go="mp"]').click()); await a.page.waitForTimeout(400); await a.page.evaluate(() => document.querySelector('[data-go-race]').click()); await a.page.waitForTimeout(2500);
   assert.match(await a.text('#trTitle'), /Your relay is finished/);
   const wa = JSON.parse(await a.page.evaluate(() => localStorage.getItem('bloppit-world-v1'))); assert.equal(wa.log.length, 1);
   assert.deepEqual(a.errors, []); await a.ctx.close();
@@ -1143,21 +1143,21 @@ test('Build page: a tile asks Play on the island or Quick play; Quick play has n
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('the menu order: Quick play, Bloppitopia, the Weekly, Continue, How to play; Solo opens with Quick Bricks, Race a friend is in Together (phone)', { skip: skip() }, async () => {
+test('the menu order: Quick play, Bloppitopia, the Weekly, Continue, How to play; Solo opens with Build Anything; Together is Play with Friends, Join a Game, Your Crews (phone)', { skip: skip() }, async () => {
   const t = await open('?nosplash=1', { viewport: { width: 402, height: 874 }, touch: true, init: { fn: () => { localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); } } });
   await t.page.waitForTimeout(2500); assert.equal(await t.view(), 'view-home');
   const r = await t.page.evaluate(() => { const y = (s) => { const e = document.querySelector(s); return e && !e.hidden ? Math.round(e.getBoundingClientRect().top) : null; }, h = (s) => Math.round(document.querySelector(s).getBoundingClientRect().height);
     return { quick: y('#hmQuick'), world: y('#hmWorld'), daily: y('.hm-daily'), how: y('#hmHow'), qh: h('#hmQuick'), wh: h('#hmWorld'), dh: h('.hm-daily'),
       films: !!document.querySelector('#hmWorld #hmFilms'), streak: !!document.querySelector('.hm-daily #hdStreak'),
-      secs: [...document.querySelectorAll('.hm-sec')].map((e) => e.textContent.trim()),
+      secs: [...document.querySelectorAll('#view-home .hm-sec')].map((e) => e.textContent.trim()),
       solo: [...document.querySelectorAll('#hmSolo + .hm-grid .hm-tile')].map((b) => b.dataset.go), wide: document.querySelector('#hmSolo + .hm-grid .hm-tile').classList.contains('wide'),
-      together: [...document.querySelectorAll('.hm-sec')].pop().nextElementSibling.textContent }; });
+      together: [...document.querySelectorAll('#view-home .hm-sec')].pop().nextElementSibling.textContent }; });
   assert.ok(r.quick < r.world && r.world < r.daily && r.daily < r.how, JSON.stringify(r));
   assert.ok(Math.abs(r.wh - 263) <= 2 && Math.abs(r.dh - 158) <= 2 && r.qh >= 68 && r.qh <= 74, JSON.stringify(r));
   assert.ok(r.films && r.streak);
   assert.deepEqual(r.secs, ['Solo', 'Together']);
   assert.deepEqual(r.solo, ['quick', 'otter', 'brain', 'flip', 'cpu']); assert.ok(r.wide);
-  assert.match(r.together, /Build together.*Race a friend.*Join a game/s);
+  assert.match(r.together, /Play with Friends.*Join a Game.*Your Crews/s);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
@@ -1166,7 +1166,7 @@ test('menu Quick play: opens one of the five Solo games at random with its choic
   const dlg = () => t.page.evaluate(() => ({ open: document.getElementById('qpDlg').open, where: window.bloppitQP()?.where, other: !document.getElementById('qpOther').hidden, just: document.getElementById('qpQuickT').textContent }));
   await t.page.evaluate(() => document.getElementById('hmQuick').click()); await t.page.waitForTimeout(500);
   let d = await dlg(); assert.ok(d.open && ['quick', 'otter', 'brain', 'flip', 'cpu'].includes(d.where) && d.other, JSON.stringify(d));
-  assert.match(d.just, /Just Play|Pick how tricky/);
+  assert.match(d.just, /Quick Play|Pick how tricky/);
   const seen = new Set([d.where]);
   for (let i = 0; i < 12; i++) { const was = d.where; await t.page.evaluate(() => document.getElementById('qpOther').click()); await t.page.waitForTimeout(150); d = await dlg();
     assert.ok(d.open && d.where !== was, `a different game: ${was} → ${d.where}`); seen.add(d.where); }
@@ -1717,7 +1717,7 @@ test('Together: a room invite link opens the join form with the code in (not the
 
 test('Together: Join a game takes every code: a challenge code opens the challenge; an unknown 6-letter code is tried as a crew', { skip: skip() }, async () => {
   const a = await open(T_OPEN);
-  await a.page.evaluate(() => document.querySelector('.hm-tile[data-go="friend"]').click()); await a.page.waitForTimeout(600);
+  await a.page.evaluate(() => document.querySelector('.hm-tile[data-go="mp"]').click()); await a.page.waitForTimeout(400); await a.page.evaluate(() => document.querySelector('[data-go-race]').click()); await a.page.waitForTimeout(600);
   await a.page.evaluate(() => { document.getElementById('bzName').value = 'Maker'; document.getElementById('bzChMake').click(); }); await a.page.waitForTimeout(1500);
   await a.page.waitForSelector('.go-btn', { timeout: 10000 }); await a.page.evaluate(() => document.querySelector('.go-btn').click()); await a.page.waitForTimeout(1000);
   for (let i = 0; i < 60 && !(await a.page.evaluate(() => { const c = document.getElementById('trCode'); return c && !c.hidden && c.textContent.trim().length === 6; })); i++) {
@@ -1755,12 +1755,12 @@ test('Together: tied scores share a medal; a host who taps Leave room is skipped
 
 test('Together: a live race between friends: only the winner sees Race won; a late joiner is told the race has started', { skip: skip() }, async () => {
   const a = await open(T_OPEN), b = await open(T_OPEN);
-  for (const t of [a, b]) { await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="friend"]').click()); await t.page.waitForTimeout(600); await t.page.evaluate(() => { document.getElementById('bzName').value = 'Racer'; }); }
+  for (const t of [a, b]) { await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="mp"]').click()); await t.page.waitForTimeout(400); await t.page.evaluate(() => document.querySelector('[data-go-race]').click()); await t.page.waitForTimeout(600); await t.page.evaluate(() => { document.getElementById('bzName').value = 'Racer'; }); }
   await a.page.evaluate(() => document.getElementById('bzMake').click()); await a.page.waitForFunction(() => /^[A-Z0-9]{5}$/.test(document.getElementById('mpBigCode')?.textContent.trim() || ''), null, { timeout: 15000 });
   const code = await tCode(a);
   await b.page.fill('#bzCodeIn', code); await b.page.evaluate(() => document.getElementById('bzJoin').click()); await b.page.waitForTimeout(1500);
   await tAdmitStart(a);
-  const late = await open(T_OPEN); await late.page.evaluate(() => document.querySelector('.hm-tile[data-go="friend"]').click()); await late.page.waitForTimeout(600);
+  const late = await open(T_OPEN); await late.page.evaluate(() => document.querySelector('.hm-tile[data-go="mp"]').click()); await late.page.waitForTimeout(400); await late.page.evaluate(() => document.querySelector('[data-go-race]').click()); await late.page.waitForTimeout(600);
   await late.page.evaluate((c) => { document.getElementById('bzName').value = 'Late'; document.getElementById('bzCodeIn').value = c; document.getElementById('bzJoin').click(); }, code); await late.page.waitForTimeout(2000);
   assert.match(await late.text('#mpMsg'), /already started/); assert.equal(await late.page.locator('#mpWaitBox').isVisible(), false);
   const end = await tPlay([a, b], code, 3); assert.equal(end.finished, true);
@@ -1776,8 +1776,47 @@ test('Together: the menu has a Crews tile that opens the Crews card; Race a frie
   assert.match(await t.text('.hm-tile[data-go="crew"]'), /Crews/);
   await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="crew"]').click()); await t.page.waitForTimeout(1200);
   assert.equal(await t.view(), 'view-mp'); assert.ok(await t.page.locator('#crewCard').isVisible());
-  await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="friend"]').click()); await t.page.waitForTimeout(600);
-  assert.match(await t.text('#bzHeadT'), /Race a friend/); assert.doesNotMatch(await t.page.evaluate(() => document.body.innerText), /vs Friend/);
+  await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="mp"]').click()); await t.page.waitForTimeout(400); await t.page.evaluate(() => document.querySelector('[data-go-race]').click()); await t.page.waitForTimeout(600);
+  assert.match(await t.text('#bzHeadT'), /Race a Friend/); assert.doesNotMatch(await t.page.evaluate(() => document.body.innerText), /vs Friend/);
   assert.equal(await t.page.getAttribute('#bzName', 'placeholder'), 'e.g. Sam');
   assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('a crew: Pass the Puzzle goes round (first pages, then the next builder finishes it); a Crew Quick Game shows on the crew', { skip: skip() }, async () => {
+  const mk = () => open('?nosplash=1&welcome=0&chars3d=0', { init: { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = [];
+    for (let i = 0; i < 3; i++) { const k = `m:Model${i}:10`; builds[k] = { n: 10, s: 2, t: 1e12 + i, c: 1, k: 'quick' }; log.push(k); }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, pick: 'tree' }));
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); } } });
+  const a = await mk(), b = await mk();
+  const crews = async (t) => { await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="crew"]').click()); await t.page.waitForTimeout(1500); };
+  await crews(a); await a.page.evaluate(() => document.getElementById('crewMake').click()); await a.page.waitForTimeout(1500);
+  const code = await a.page.evaluate(() => document.querySelector('#crewOpen .cc').textContent);
+  assert.match(await a.text('#crewOpen'), /Crew Quick Game.*Pass the Puzzle.*Crew Mega Build/s);
+  assert.match(await a.text('#crewOpen'), /needs at least two/);
+  await crews(b); await b.page.evaluate((c) => { document.getElementById('crewCodeIn').value = c; document.getElementById('crewJoin').click(); }, code);
+  await b.page.waitForSelector('[data-crew-join]', { timeout: 15000 }); await b.page.evaluate(() => document.querySelector('[data-crew-join]').click()); await b.page.waitForTimeout(1200);
+  await crews(a); await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);
+  await a.page.evaluate(() => document.querySelector('[data-crew-ok]').click()); await a.page.waitForTimeout(1500);
+  // A starts Pass the Puzzle with a ready-made puzzle and builds the first pages
+  await a.page.evaluate(() => document.querySelector('[data-pass-start]').click()); await a.page.waitForTimeout(1200);
+  assert.equal(await a.view(), 'view-build'); assert.match(await a.text('#status'), /Pass the Puzzle! You build pages 1 to/);
+  for (let i = 0; i < 80; i++) { await autoPlace(a.page, 1); if (await a.page.evaluate(() => document.getElementById('trialDlg').open && /Passed on/.test(document.getElementById('trTitle').textContent))) break; }
+  assert.match(await a.text('#trTitle'), /Passed on/);
+  // B sees it's their turn, builds the rest and finishes it
+  await crews(b); await b.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await b.page.waitForTimeout(800);
+  assert.match(await b.text('#crewOpen'), /Your turn!/);
+  await b.page.evaluate(() => document.querySelector('[data-pass-go]').click()); await b.page.waitForTimeout(2500);
+  assert.equal(await b.view(), 'view-build'); assert.doesNotMatch(await b.text('#progress'), /^0 of/);
+  for (let i = 0; i < 80; i++) { await autoPlace(b.page, 1); if (await b.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; }
+  await b.page.waitForTimeout(2500);
+  // A: finished together, and the model lands on A's island too
+  await crews(a); await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);
+  assert.match(await a.text('#crewOpen'), /finished together/);
+  const wa = JSON.parse(await a.page.evaluate(() => localStorage.getItem('bloppit-world-v1'))); assert.ok(wa.log.some((k) => /^p:/.test(k)), wa.log.join(','));
+  // A Crew Quick Game: A makes a Team Build room from the crew; B sees "started a game"
+  await a.page.evaluate(() => document.querySelector('[data-crew-live-start]').click()); await a.page.waitForTimeout(800);
+  await a.page.evaluate(() => { document.getElementById('mpName1').value = 'A'; document.getElementById('mpCreate').click(); }); await a.page.waitForTimeout(2500);
+  await crews(b); await b.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await b.page.waitForTimeout(800);
+  assert.match(await b.text('#crewOpen'), /started a game/);
+  assert.deepEqual(a.errors, []); assert.deepEqual(b.errors, []); await a.ctx.close(); await b.ctx.close();
 });
