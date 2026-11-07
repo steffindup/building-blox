@@ -776,6 +776,7 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   await hub(a); await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);
   await a.page.evaluate(() => document.querySelector('[data-crew-ok]').click()); await a.page.waitForTimeout(1500);
   assert.equal(await a.page.evaluate(() => document.querySelectorAll('#crewOpen .crew-members span').length), 2);
+  await a.page.evaluate(() => document.getElementById('crewClose').click());
   // B finishes a Trail level: bricks go to the crew's puzzle
   await b.page.evaluate(() => window.bloppitHome()); await b.page.evaluate(() => { document.querySelector('[data-go="otter"]').click(); document.getElementById('qpIsle').click(); }); await b.page.waitForTimeout(500);
   await b.page.evaluate(() => [...document.querySelectorAll('#view-game button')].find((x) => /Heart/.test(x.textContent) && x.offsetParent).click()); await b.page.waitForTimeout(800);
@@ -787,7 +788,13 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   assert.match(await b.text('#crewOpen'), /Space Station: just started/);
   await b.page.evaluate(() => document.querySelector('[data-crew-say="0"]').click()); await b.page.waitForTimeout(1200);
   assert.match(await b.text('#crewFeed'), /Nice clean build!/);
-  await hub(a); await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);
+  // Crew news: A sees a dot on the Together tab and a New chip, then what happened since; opening the crew clears it
+  await hub(a);
+  assert.equal(await a.page.evaluate(() => { const d = document.querySelector('#tab-mp .news-dot'); return !!d && !d.hidden; }), true);
+  assert.match(await a.text('#crewList'), /New/);
+  await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);
+  const since = await a.text('#crewOpen .crew-since'); assert.match(since, /Since you were last here/); assert.match(since, /added 10 bricks/); assert.match(since, /1 new on the crew board/);
+  assert.equal(await a.page.evaluate(() => document.querySelector('#tab-mp .news-dot').hidden), true);
   assert.match(await a.text('#crewFeed'), /Nice clean build!/);
   await a.page.evaluate(() => document.querySelector('[data-crew-report]').click()); await a.page.evaluate(() => document.querySelector('[data-crew-report]').click()); await a.page.waitForTimeout(1200);
   assert.doesNotMatch(await a.text('#crewFeed'), /Nice clean build!/);

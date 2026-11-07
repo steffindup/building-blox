@@ -1430,6 +1430,10 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .crew-list{display:grid;gap:10px}.crew-list:empty{display:none}
 .crew-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:var(--bg)}
 .crew-row svg{width:64px;height:auto}
+.news-dot{position:absolute;top:-3px;right:-3px;width:14px;height:14px;border-radius:50%;background:#D62F2A;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.25);pointer-events:none;z-index:2}
+.news-dot[hidden]{display:none}#tab-mp,.t-crew{position:relative}.t-crew .news-dot{top:10px;right:10px;width:16px;height:16px}
+.crew-new{font-style:normal;font-size:11px;font-weight:800;background:#D62F2A;color:#fff;border-radius:999px;padding:1px 8px;vertical-align:2px}
+.crew-since{display:grid;gap:2px;margin:8px 0 0;padding:8px 12px;border-radius:12px;background:var(--callout);font-size:14px}.crew-since b{font-size:13px}
 .crew-pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:6px}
 .crew-pick label.crew-pzopt{display:grid;grid-template-columns:none;align-items:start;justify-items:stretch;margin:0;font-weight:400;font-size:inherit;gap:2px;width:auto}
 .t-crew .ic svg{width:86%;height:auto;border-radius:8px}
@@ -11586,6 +11590,46 @@ function crewPickHTML(sel,done){ done=done||[];
   return CREW_PUZZLES.map((P,i)=>`<label class="crew-pzopt"><input type="radio" name="crewPz" value="${i}"${i===sel?' checked':''}>${crewPuzzleSVG(i,1,P.name)}<b>${escapeHTML(P.name)}${i===0?' <em>Suggested</em>':''}${done.includes(i)?' <em class="done">Built ✓</em>':''}</b><span>${escapeHTML(P.blurb)}</span></label>`).join(''); }
 // The Crews tile: a crew puzzle, half built
 document.querySelectorAll('.t-crew .ic').forEach(el=>{ el.innerHTML=crewPuzzleSVG(0,.55,'A crew puzzle, half built'); });
+/* Crew news (Steff, 7 Nov 2026): what's new in your crews since you last opened each one. This device remembers how
+   each crew looked when you last opened it (nothing new is stored on the server); anything new since then puts a dot
+   on the Together tab and the Crews tile, a New chip on the crew's row and a "Since you were last here" line on the crew. */
+const CREW_SEEN_K='bloppit-crew-seen-v1';
+let crewNewsAt=0;
+function crewSeenAll(){ try{ return JSON.parse(localStorage.getItem(CREW_SEEN_K))||{}; }catch(e){ return {}; } }
+function crewSeenMine(){ const p=curPlayer(); return (p&&p.pup&&crewSeenAll()[p.pup])||{}; }
+function crewSeenSet(g){ const p=curPlayer(); if(!p||!p.pup||!g.me) return; const all=crewSeenAll(), mine=all[p.pup]||{};
+  mine[g.code]={pz:g.puzzle,d:(g.done||[]).length,t:g.total,m:Object.fromEntries(g.members.map(m=>[m.label,m.bricks])),p:g.posts.map(x=>x.id)};
+  for(const c of Object.keys(mine)) if(!crewMine.some(x=>x.code===c)&&c!==g.code) delete mine[c];   // crews you've left
+  all[p.pup]=mine; try{ localStorage.setItem(CREW_SEEN_K,JSON.stringify(all)); }catch(e){} }
+// The news for one crew, or null. A crew seen for the first time is remembered as it is (no news yet).
+function crewNews(g){
+  if(!g||!g.me) return null; const s=crewSeenMine()[g.code], out=[];
+  if(g.me.creator&&g.pending&&g.pending.length) out.push(`${g.pending.length} friend${g.pending.length===1?'':'s'} waiting to join`);
+  if(s){
+    for(const m of g.members){ if(m.me) continue; const was=s.m[m.label];
+      if(was==null) out.push(`${m.label} joined the crew`); else if(m.bricks>was) out.push(`${m.label} added ${(m.bricks-was).toLocaleString()} brick${m.bricks-was===1?'':'s'}`); }
+    const P=CREW_PUZZLES[g.puzzle]||CREW_PUZZLES[0];
+    if((g.done||[]).length>s.d) out.push(`${(CREW_PUZZLES[g.done[g.done.length-1]]||P).name} was finished, and ${P.name} is next`);
+    else if(g.pct>=100&&s.t<g.goal) out.push(`${P.name} is finished! 🎉`);
+    else if(g.total>s.t) out.push(g.pct?`${P.name} is now ${g.pct}% built`:`${P.name} has been started`);
+    const nb=g.posts.filter(x=>!x.me&&!s.p.includes(x.id)).length; if(nb) out.push(`${nb} new on the crew board`);
+  }
+  return out.length?out:null;
+}
+function crewDots(){
+  const seen=crewSeenMine(); crewMine.forEach(g=>{ if(g.me&&!seen[g.code]) crewSeenSet(g); });
+  const on=crewMine.some(g=>crewNews(g));
+  ['#tab-mp','.t-crew'].forEach(sel=>document.querySelectorAll(sel).forEach(el=>{ let d=el.querySelector(':scope>.news-dot');
+    if(!d){ d=document.createElement('i'); d.className='news-dot'; d.setAttribute('aria-hidden','true'); el.appendChild(d); } d.hidden=!on;
+    el.dataset.news=on?'1':''; }));
+  const tile=document.querySelector('.t-crew'); if(tile) tile.setAttribute('aria-label',on?'Crews: something new in your crews':'Crews');
+}
+// On the menu: look at your crews now and then (only if you're in one), so the dot can show up
+async function crewNewsCheck(){
+  const p=curPlayer(); if(!p||!p.pup||!Object.keys(crewSeenMine()).length) return;
+  if(Date.now()-crewNewsAt<60000) { crewDots(); return; } crewNewsAt=Date.now();
+  try{ const j=await crewApi('GET',null,'?mine=1'); crewMine=j.groups; crewMineAt=Date.now(); crewDots(); }catch(e){}
+}
 function crewMsg(t,kind){ const el=$('#crewMsg'); el.hidden=!t; el.textContent=t||''; el.dataset.kind=kind||''; }
 async function renderCrews(force){
   const sel=$('#crewName'); if(!sel.options.length) sel.innerHTML=CREW_NAMES.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
@@ -11596,15 +11640,17 @@ async function renderCrews(force){
   if(!me||!me.pup){ $('#crewList').innerHTML=''; crewMsg(me&&worldCount(worldStore())>0?'Couldn’t reach Bloppit just now. Check your internet connection and try again.':'Finish one build first; then you can make or join a crew.'); return; }
   if(!force&&Date.now()-crewMineAt<4000) return; crewMineAt=Date.now();
   try{ const j=await crewApi('GET',null,'?mine=1'); crewMine=j.groups; crewMsg(''); }catch(e){ crewMsg(e.message,'err'); return; }
-  $('#crewList').innerHTML=crewMine.map(g=>`<div class="crew-row">${crewPuzzleSVG(g.puzzle,g.total/g.goal)}<div><b>${escapeHTML(g.name)}</b> <span class="note">· ${g.members.length} builder${g.members.length===1?'':'s'}${g.pendingMe?' · waiting to be let in':''}</span><div class="bar"><i style="width:${Math.max(2,g.pct)}%"></i></div><span class="note">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks${g.pending&&g.pending.length?` · <b>${g.pending.length} waiting to join</b>`:''}</span></div><button class="ghost" type="button" data-crew="${g.code}">Open</button></div>`).join('');
+  $('#crewList').innerHTML=crewMine.map(g=>`<div class="crew-row">${crewPuzzleSVG(g.puzzle,g.total/g.goal)}<div><b>${escapeHTML(g.name)}</b>${crewNews(g)?' <em class="crew-new">New</em>':''} <span class="note">· ${g.members.length} builder${g.members.length===1?'':'s'}${g.pendingMe?' · waiting to be let in':''}</span><div class="bar"><i style="width:${Math.max(2,g.pct)}%"></i></div><span class="note">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks${g.pending&&g.pending.length?` · <b>${g.pending.length} waiting to join</b>`:''}</span></div><button class="ghost" type="button" data-crew="${g.code}">Open</button></div>`).join('');
   if(crewOpenCode){ const g=crewMine.find(x=>x.code===crewOpenCode); if(g) renderCrew(g); }
+  crewDots();
 }
 function renderCrew(g){
   crewOpenCode=g.code; const box=$('#crewOpen'); box.hidden=false;
-  const mine=!!g.me, maker=mine&&g.me.creator;
+  const mine=!!g.me, maker=mine&&g.me.creator, news=crewNews(g);
   box.innerHTML=`<div class="crew-head">${crewPuzzleSVG(g.puzzle,g.total/g.goal)}<div><h2>${escapeHTML(g.name)} <span class="cc">${g.code}</span></h2>
       <p class="note" style="margin:4px 0 0">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks · ${g.builds} build${g.builds===1?'':'s'} · ${escapeHTML(CREW_PUZZLES[g.puzzle].name)}: ${g.pct>=100?'finished! 🎉':g.total?(g.pct?g.pct+'% built':'just started'):'not started yet'}</p>
       <div class="bar"><i style="width:${Math.max(2,g.pct)}%"></i></div>
+      ${news?`<p class="crew-since"><b>Since you were last here</b>${news.map(x=>`<span>${escapeHTML(x)}</span>`).join('')}</p>`:''}
       <div class="win-btns" style="justify-content:flex-start">${mine?`<button class="ghost" type="button" data-crew-share="${g.code}">Share the code</button>`:g.pendingMe?'<span class="note">Waiting for the crew’s maker to let you in.</span>':`<button class="primary sm" type="button" data-crew-join="${g.code}">Ask to join</button>`}<button class="ghost" type="button" id="crewClose">Close</button></div></div></div>
     ${maker&&(g.pct>=100||!g.total)?`<div class="crew-next"><b>${g.pct>=100?'Pick the crew’s next puzzle':'Change the crew’s puzzle'}</b><span class="note">${g.pct>=100?'Well built, crew! Bricks built from now on go to the next one.':'You can change it until someone builds.'}</span><div class="crew-pick">${crewPickHTML(g.pct>=100?-1:g.puzzle,g.done.concat(g.pct>=100?[g.puzzle]:[]))}</div><button class="primary sm" type="button" data-crew-pz="1">${g.pct>=100?'Start this puzzle':'Use this puzzle'}</button></div>`:''}
     ${maker&&g.pending&&g.pending.length?`<div class="crew-pending"><b>Waiting to join</b>${g.pending.map(w=>`<div><span>🚪 ${escapeHTML(w.label)}</span><button class="primary sm" type="button" data-crew-ok="${w.k}">Let in</button><button class="ghost" type="button" data-crew-no="${w.k}">Not this time</button></div>`).join('')}</div>`:''}
@@ -11613,6 +11659,7 @@ function renderCrew(g){
       ${g.me.muted?'<p class="note">Your posts here are paused while a report is looked at.</p>':`<div class="crew-say">${CREW_PHRASES.map((t,i)=>`<button type="button" data-crew-say="${i}">${escapeHTML(t)}</button>`).join('')}${CREW_STICKERS.map((t,i)=>`<button class="st" type="button" data-crew-st="${i}">${t}</button>`).join('')}</div>`}
       <p class="note" style="margin:6px 0 0">Only these phrases and stickers can be sent. Report hides a post for you and tells the crew’s maker; three reports pause the sender.</p></div>`:''}`;
   box.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});
+  if(mine){ const i=crewMine.findIndex(x=>x.code===g.code); if(i>=0) crewMine[i]=g; crewSeenSet(g); crewDots(); }   // opened: it's all seen now
 }
 async function crewDo(body,ok){ try{ const j=await crewApi('POST',body); crewMineAt=0; await renderCrews(true); if(j.group) renderCrew(j.group); else { $('#crewOpen').hidden=true; crewOpenCode=''; } if(ok) ok(j); }catch(e){ crewMsg(e.message,'err'); } }
 $('#crewMake').onclick=()=>{ track('crew_made'); const pz=document.querySelector('#crewPick input:checked'); crewDo({action:'create',name:+$('#crewName').value,puzzle:pz?+pz.value:0}); };
@@ -11894,7 +11941,7 @@ function renderHome(){
   const w=$('#hmWho'); if(w) w.onclick=()=>$('#whoBtn').click();
   homeCont=homeContinue(); $('#hmCont').hidden=!homeCont;
   { const c=$('#hmCont'), q=$('#hmQuick'), h=$('#hmHow'), w=homeCont&&homeCont.first?q:h; if(c.nextElementSibling!==w) w.parentNode.insertBefore(c,w); }   // first visit: "Start here" leads, above Quick play
-  renderHomeWorld(); renderFilmsTile();
+  renderHomeWorld(); renderFilmsTile(); setTimeout(()=>{ try{ crewNewsCheck(); }catch(e){} },0);   // after start-up: the crew code below is ready by then
   if(tab==='home') pupMaybe();  // the first finish anywhere (a Trail level, a race) meets the pup on the way back to the menu
   if(homeCont){ $('#hmContT').textContent=homeCont.t; $('#hmContS').textContent=homeCont.s;
     $('#hmContBar').hidden=homeCont.p<0; $('#hmContBar i').style.width=Math.max(4,homeCont.p)+'%'; $('#hmCont').classList.toggle('first',!!homeCont.first); }
