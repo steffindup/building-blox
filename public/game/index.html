@@ -2493,7 +2493,7 @@ body.film-on{overflow:hidden}
   <div class="win-btns"><button class="primary sm" id="grownDone" type="button">Done</button></div>
 </dialog>
 <dialog class="windlg mathdlg" id="mathDlg" aria-labelledby="mqTitle">
-  <div class="mq-head"><img src="/art/head-bloppit.png" alt="" width="64" height="64"><div><div class="tag" id="mqTag">Math puzzle</div><h2 id="mqTitle">Page 1 is locked!</h2></div></div>
+  <div class="mq-head"><img src="/art/head-bloppit.png" alt="" width="64" height="64"><div><div class="tag" id="mqTag">Maths puzzle</div><h2 id="mqTitle">Page 1 is locked!</h2></div></div>
   <div class="mq-vis" id="mqVis"></div>
   <p class="mq-q" id="mqQ"></p>
   <div class="mq-choices" id="mqChoices"></div>
@@ -2602,7 +2602,7 @@ body.film-on{overflow:hidden}
   <div class="pages" id="pages"></div>
 </section>
 </main>
-<p class="appfoot note"><a href="https://bloppit.com/about/">About us</a> · <a href="https://bloppit.com/how-it-works/">How it works</a> · <a href="https://bloppit.com/faq/">FAQ</a> · <a href="https://bloppit.com/privacy/" id="privacyLink">Privacy policy</a></p>
+<p class="appfoot note"><a href="https://bloppit.com/how-it-works/">How it works</a> · <a href="https://bloppit.com/faq/">FAQ</a> · <a href="https://bloppit.com/about/">About us</a> · <a href="https://bloppit.com/privacy/" id="privacyLink">Privacy policy</a></p>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -6763,7 +6763,7 @@ function openMath(k){
   const g=game.math; g.q=g.q||{};
   if(!g.q[k]) g.q[k]=makePuzzle(g.tier);
   const P=g.q[k]; mq={k,P,tries:0};
-  const gr=gradeOfRung(g.tier); $('#mqTag').textContent=gr>g.grade?`Stepping up: ${MATH_GRADES[gr+1]} math, you’re on a roll!`:`Math puzzle · ${MATH_TOPICS[gr+1]}`;
+  const gr=gradeOfRung(g.tier); $('#mqTag').textContent=gr>g.grade?`Stepping up: ${MATH_GRADES[gr+1]} maths, you’re on a roll!`:`Maths puzzle · ${MATH_TOPICS[gr+1]}`;
   $('#mqTitle').textContent=`Page ${k+1} is locked!`;
   $('#mqVis').innerHTML=P.vis||'';
   $('#mqQ').textContent=P.q; $('#mqQ').classList.toggle('long',!!P.long);
