@@ -2360,7 +2360,7 @@ body.film-on{overflow:hidden}
   <div class="win-rows" id="trRows"></div>
   <div class="world-strip" data-ws></div>
   <p class="win-best" id="trNote"></p>
-  <div class="win-btns"><button class="primary sm" id="trIsland" type="button" hidden>🏝️ See Bloppitopia</button><button class="ghost" id="trNext" type="button" hidden>▶ Play next</button><button class="ghost" id="trShare" type="button" hidden>Share the code</button><button class="ghost" id="trCard" type="button" hidden>📮 Weekly card</button><button class="ghost" id="trRetry" type="button" hidden>Try sending again</button><button class="primary sm" id="trDone" type="button">Done</button></div>
+  <div class="win-btns"><button class="primary sm" id="trIsland" type="button" hidden>🏝️ See Bloppitopia</button><button class="ghost" id="trNext" type="button" hidden>▶ Play next</button><button class="ghost" id="trShare" type="button" hidden>Share the code</button><button class="ghost" id="trCard" type="button" hidden>📮 Bibi’s Weekly Bloppit card</button><button class="ghost" id="trRetry" type="button" hidden>Try sending again</button><button class="primary sm" id="trDone" type="button">Done</button></div>
 </dialog>
 <dialog class="windlg" id="tideDlg" aria-labelledby="tdTitle">
   <div class="win-stars">🌊</div>
@@ -2376,7 +2376,7 @@ body.film-on{overflow:hidden}
   <p class="lh-sub">Until Chapter 2 arrives, you can:</p>
   <div class="lh-list">
     <button type="button" data-lh="film" class="lh-film"><span>🎬</span><b>Watch the whole Moonstone story</b><small>Chapter 1’s ending as one film, from the light in the mist to lufu’s world (5½ minutes)</small></button>
-    <button type="button" data-lh="build"><span>🔨</span><b>Build Anything here</b><small>Free builds stand on lufu’s world</small></button>
+    <button type="button" data-lh="build"><span>🔨</span><b>Build Anything with Bibi here</b><small>Free builds stand on lufu’s world</small></button>
     <button type="button" data-lh="sail"><span>⛵</span><b>Sail back to Bloppitopia</b><small>The Galaxy Ship takes you between the two, any time</small></button>
     <button type="button" data-lh="pup"><span>🦦</span><b>Start a new game</b><small>A new player with a new pup, from the very beginning</small></button>
     <button type="button" data-lh="builds"><span>🧱</span><b>Browse the builds</b><small>Photos, drawings and the whole library to build from</small></button>
@@ -2475,8 +2475,8 @@ body.film-on{overflow:hidden}
     <p class="note" id="grownClaimNote" hidden></p>
   </section>
   <section class="grown-sec">
-    <h3>Weekly top-100 board</h3>
-    <p class="note">On by default. When on, this player’s Weekly finishes are listed on a top-100 board with other players, under a generated name like “Brave Otter 214”: clean builds first, then stars. No real names and no times are ever shown.</p>
+    <h3>Bibi’s Weekly Bloppit top-100 board</h3>
+    <p class="note">On by default. When on, this player’s Bibi’s Weekly Bloppit finishes are listed on a top-100 board with other players, under a generated name like “Brave Otter 214”: clean builds first, then stars. No real names and no times are ever shown.</p>
     <label class="switch"><input type="checkbox" id="grownBoard"> Show the board and list this player on it</label>
   </section>
   <section class="grown-sec">
@@ -8499,7 +8499,7 @@ function renderHomeWorld(){
   const pct=pupPct(o,ps);
   const pic=isl3Init()?isl3Still(o,900,620):'', isle=pic?`<img src="${pic}" alt="">`:islandSVG(o,{uid:'hm'});
   el.hidden=false; el.classList.add('lead');
-  el.setAttribute('aria-label',`Bloppitopia. ${nm||'Your otter'}, level ${otterLevel(o)} ${PUP_STAGES[ps].name}, ${n} build${n===1?'':'s'}, ${islandsOpen(o).length} of ${ISLE_TOTAL} islands.`);
+  el.setAttribute('aria-label',`Bloppitopia. ${nm||'Your otter'}, Level ${otterLevel(o)} ${PUP_STAGES[ps].name}, ${n} build${n===1?'':'s'}, ${islandsOpen(o).length} of ${ISLE_TOTAL} islands.`);
   // A compact tile (Steff, 5 Nov 2026): the island fills it, one strip for the otter, chips for My films and the postcard
   el.innerHTML=`<span class="hw-isle">${isle}<span class="hw-tag">🏝️ Bloppitopia · ${ISL3.ok?islandsOpen(o).length+' of '+ISLE_TOTAL+' islands':ISLAND_STAGES[is].name}</span>
       <span class="hw-chips">${is>=3?'<span class="hw-chip" id="hwCard" role="button" tabindex="0">📮 Postcard</span>':''}<span class="hw-chip" id="hmFilms" role="button" tabindex="0" hidden>🎬 My films <i class="n" id="hmFilmsN"></i><small class="sr-only" id="hmFilmsS">Watch your films again</small></span></span></span>
@@ -8738,8 +8738,8 @@ function islandInfo(id,o){
   const bar=(from,to)=>({pct:Math.max(4,Math.min(100,Math.round(100*(n-from)/Math.max(1,to-from)))),label:`${Math.max(0,to-n)} more build${to-n===1?'':'s'}`});
   const shown=islandModelsAny(o);
   const place=(i,title,what)=>{ const s0=ISLAND_STAGES[i], built=n>=s0.at, nx=ISLAND_STAGES[i+1];
-    return {title:built?title:`${title} (not built yet)`, hint:built?`Level ${i} of 3 · built`:`Opens at ${s0.at} builds`,
-      rows:[['Level',`${i} of 3: ${s0.name}`],['Status',built?`Built ${dateAt(s0.at)||''}`.trim():`${s0.at-n} more build${s0.at-n===1?'':'s'} to build it`],['What it does',what],
+    return {title:built?title:`${title} (not built yet)`, hint:built?`Level ${i} of ${ISLAND_STAGES.length-1} · built`:`Opens at ${s0.at} builds`,
+      rows:[['Level',`${i} of ${ISLAND_STAGES.length-1}: ${s0.name}`],['Status',built?`Built ${dateAt(s0.at)||''}`.trim():`${s0.at-n} more build${s0.at-n===1?'':'s'} to build it`],['What it does',what],
         ...(built&&st>i?[]:nx?[['Next',`The ${nx.name.toLowerCase()} at ${nx.at} builds`]]:[['Next','Everything on Bloppitopia is built']])],
       bar:built?(nx&&st===i?bar(s0.at,nx.at):null):bar(i?ISLAND_STAGES[i-1].at:0,s0.at)}; };
   switch(kind){
@@ -8789,7 +8789,7 @@ function islandInfo(id,o){
     case 'pup': { const nm=pupName(o), ps=pupStage(o), nx=PUP_STAGES[ps+1], c=PUP_COLORS[pupColorOf(o)];
       const lv=otterLevel(o), nl=levelXP(lv+1), nAcc=ACC.find(a=>!a.legend&&!a.finale&&a.lvl>lv);
       return {title:nm||'Your otter',hint:`Level ${lv} ${PUP_STAGES[ps].name} · ${ps+1} stud${ps?'s':''} on its brick`,icon:pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'}),
-        rows:[['Otter Level',`${lv} · ${nl-worldXP(o)} XP to Level ${lv+1}`],...(nAcc?[['Next outfit',`${nAcc.name} at level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at Level ${nx.lvl}: another stud`:'A Legend. That’s the top']],
+        rows:[['Otter Level',`${lv} · ${nl-worldXP(o)} XP to Level ${lv+1}`],...(nAcc?[['Next outfit',`${nAcc.name} at Level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at Level ${nx.lvl}: another stud`:'A Legend. That’s the top']],
         bar:nx?{pct:Math.max(4,pupPct(o,ps)),label:`${nx.at-n} more build${nx.at-n===1?'':'s'} to ${nx.name}`}:null,
         actions:[{label:'👕 Wardrobe',fn:()=>wardrobeOpen(),primary:true},{label:nm?'Name or colour':'Name your otter',fn:()=>pupOpen()}]}; }
     case 'model': { const f=modelFacts(arg,o), b=f.b, flagW=arg.startsWith('w:')&&!ISL3.ok, onIsle=shown.list.some(m=>m.key===arg)||flagW;
@@ -10797,7 +10797,7 @@ function theEnd(then){
     // The end: the whole of Bloppitopia under the stars
     isl3FlyHome(2600);   // the whole of Bloppitopia at night, every island lit (a close-up of Home Island is too busy on a full island)
     el.className='the-end final';
-    el.innerHTML=`<div class="te-fin"><h2>The end of Chapter 1.</h2><p>${escapeHTML(who)} and lufu have found each other.<br>Bloppitopia is yours. Keep building.</p><p class="te-next">Chapter 2: lufu’s world is waiting to be rebuilt. The Galaxy ship will take you there and back.</p><div class="row"><button class="primary" type="button" data-te="lufu">✨ Sail to lufu’s world</button><button class="ghost" type="button" data-te="keep">Stay in Bloppitopia</button></div></div>`;
+    el.innerHTML=`<div class="te-fin"><h2>The end of Chapter 1.</h2><p>${escapeHTML(who)} and lufu have found each other.<br>Bloppitopia is yours. Keep building.</p><p class="te-next">Chapter 2: lufu’s world is waiting to be rebuilt. The Galaxy Ship will take you there and back.</p><div class="row"><button class="primary" type="button" data-te="lufu">✨ Sail to lufu’s world</button><button class="ghost" type="button" data-te="keep">Stay in Bloppitopia</button></div></div>`;
     el.querySelector('[data-te="lufu"]').onclick=e=>{ e.stopPropagation(); then=null; ISL3.finales=[]; ISL3.ending=false; ISL3.hold=false; done(); realmGo('lufu'); };
     el.querySelector('[data-te="keep"]').onclick=e=>{ e.stopPropagation(); done(); };
   };
@@ -11391,7 +11391,7 @@ function renderDecorShop(){
   const o=worldStore(), left=worldStars(o);
   $('#isStars').innerHTML=`You have ${gbIc()} ${gbN(left)}.`;
   const card=d=>{ const owned=o.decor.includes(d.id), away=owned&&isAway(o,'decor:'+d.id), open=decorOpen(d,o); let iname=''; try{ iname=ISLES[d.isle].name; }catch(e){}
-    return `<button type="button" data-decor="${d.id}"${away?' data-owned="1" data-back="1"':owned?' data-owned="1" disabled':!open?' data-locked="1" disabled':left<d.cost?' disabled':''}><svg viewBox="-64 -136 128 148">${decorSVG(d.id,0,d.id==='kite'?-110:d.id==='balloon'?-20:6)}</svg>${d.name}<span class="cost">${away?'Put away · tap to put it back':owned?((o.free||[]).includes(d.id)?'From a Weekly':'On your island'):!open?`🔒 Find ${escapeHTML(iname)}`:`Buy · ${gbIc()} ${d.cost}`}</span></button>`; };
+    return `<button type="button" data-decor="${d.id}"${away?' data-owned="1" data-back="1"':owned?' data-owned="1" disabled':!open?' data-locked="1" disabled':left<d.cost?' disabled':''}><svg viewBox="-64 -136 128 148">${decorSVG(d.id,0,d.id==='kite'?-110:d.id==='balloon'?-20:6)}</svg>${d.name}<span class="cost">${away?'Put away · tap to put it back':owned?((o.free||[]).includes(d.id)?'From Bibi’s Weekly Bloppit':'On your island'):!open?`🔒 Find ${escapeHTML(iname)}`:`Buy · ${gbIc()} ${d.cost}`}</span></button>`; };
   const groups=[['Little touches',d=>!d.tier&&!d.isle],['Bigger builds',d=>d.tier==='mid'],...['otterwood','brainpeak','sunrise','blitzbay','brickworks','moonstone'].map(id=>{ let nm=id; try{ nm=ISLES[id].name; }catch(e){} return [`From ${nm}`,d=>d.isle===id]; }),['Showpieces',d=>d.tier==='show']];
   $('#decorGrid').innerHTML=groups.map(([t,f])=>{ const L=DECOR.filter(f); if(!L.length) return ''; const has=L.filter(d=>o.decor.includes(d.id)).length; return `<h3 class="dg-h">${t}<small>${has} of ${L.length}</small></h3>${L.map(card).join('')}`; }).join('');
 }
@@ -11672,7 +11672,7 @@ const BOARD_KEY='bloppit-board-v1';
 function boardOn(){ try{ return localStorage.getItem(pkey(BOARD_KEY))!=='0'; }catch(e){ return true; } }   // on by default; off only once a grown-up switches it off
 function boardSet(on){ try{ localStorage.setItem(pkey(BOARD_KEY),on?'1':'0'); }catch(e){} track(on?'board_on':'board_off'); renderBoard(); }
 $('#grownBoard').addEventListener('change',e=>boardSet(e.target.checked));
-function boardRows(b){ return b.length?b.map(e=>`<div class="${e.me?'me':''}"><span class="rk">${e.rank}</span><span>${escapeHTML(e.name)}${e.me?' (you)':''}</span><span>${e.clean?'✨ clean':''}</span>${wsStars(e.stars)}</div>`).join(''):'<p class="note">Nobody on the board yet this week. Finish the Weekly to be first.</p>'; }
+function boardRows(b){ return b.length?b.map(e=>`<div class="${e.me?'me':''}"><span class="rk">${e.rank}</span><span>${escapeHTML(e.name)}${e.me?' (you)':''}</span><span>${e.clean?'✨ clean':''}</span>${wsStars(e.stars)}</div>`).join(''):'<p class="note">Nobody on the board yet this week. Finish Bibi’s Weekly Bloppit to be first.</p>'; }
 async function renderBoard(){
   const card=$('#dyBoard'); if(!boardOn()){ card.hidden=true; return; }
   card.hidden=false; const me=curPlayer(), pid=me&&me.pup;
