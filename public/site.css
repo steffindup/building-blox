@@ -96,8 +96,8 @@ main{padding-bottom:80px}
 
 /* How it works steps */
 .step{display:grid;grid-template-columns:auto 1fr;gap:6px 22px;align-items:start}
-.step .n{grid-row:1 / span 3;width:56px;height:56px;border-radius:16px;color:var(--white);display:grid;place-items:center;font-family:var(--display);font-size:30px}
-.step .n.red{background:var(--red)} .step .n.blue{background:var(--blue)} .step .n.green{background:#2E8B4A} .step .n.yellow{background:var(--yellow);color:var(--ink)}
+.step .n{grid-row:1 / span 3;width:56px;height:56px;border-radius:16px;background:var(--white);border:1px solid var(--line);box-shadow:var(--shadow);color:var(--red);display:grid;place-items:center;font-family:var(--display);font-size:30px}
+/* step numbers: white brick, red number, the same as the front page's How it works (no four-colour set) */
 @media (max-width:640px){.step{grid-template-columns:1fr}.step .n{grid-row:auto;width:48px;height:48px;font-size:26px}}
 .modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}
 @media (max-width:760px){.modes{grid-template-columns:minmax(0,1fr)}}
@@ -114,7 +114,7 @@ summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-c
 summary::-webkit-details-marker{display:none}
 summary::after{content:"+";flex:none;width:30px;height:30px;border-radius:50%;background:var(--sand);color:var(--ink);display:grid;place-items:center;
   font-weight:800;font-size:20px;line-height:1}
-details[open] summary::after{content:"–";background:var(--yellow)}
+details[open] summary::after{content:"–";background:var(--ink);color:var(--white)}
 details .a{padding:0 20px 18px;display:grid;gap:10px;color:var(--muted)}
 details .a ul{margin:0;padding-left:22px}
 

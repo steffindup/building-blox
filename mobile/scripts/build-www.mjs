@@ -60,7 +60,11 @@ for (const page of PAGES) {
     .replace(/(src|poster)="\/(art|video)\//g, '$1="../$2/')
     .replace(new RegExp(`href="/(${PAGES.join('|')})/"`, 'g'), 'href="$1.html"');
   // In the app the FAQ shouldn't say the app is on its way: whoever reads it is already in it.
-  if (page === 'faq') p = p.replace('Bloppit for iPhone and iPad is on its way to the App Store.', 'You’re playing the iPhone and iPad app. Bloppit also plays in any web browser at bloppit.com/game.');
+  if (page === 'faq') {   // in the app this answer is about the app itself; no link out to /game/ (nothing there inside the app)
+    const web = 'Any phone, tablet or computer with a web browser: just go to <a href="/game/">bloppit.com/game</a>. Bloppit for iPhone and iPad is on the <a href="https://apps.apple.com/app/id6821449219">App Store</a>, free.';
+    if (!p.includes(web)) throw new Error('build-www: the FAQ answer about where Bloppit plays has changed; update build-www.mjs');
+    p = p.replace(web, 'You’re playing the iPhone and iPad app. Bloppit also plays in any web browser at bloppit.com/game.');
+  }
   if (/https:\/\/(cdn|fonts)\./.test(p) || /(href|src)="\/(site\.css|art|video)/.test(p)) throw new Error(`build-www: pages/${page}.html still points at the website`);
   writeFileSync(join(www, 'pages', `${page}.html`), p);
 }
