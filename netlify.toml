@@ -5,20 +5,34 @@
   publish = "public"
   command = ""
 
-# The landing page is at / and the app at /build/. Play together invites made before the move
+# The website is at / and the game at /game/ (it was /build/ until 7 Nov 2026). Play together invites made before the move
 # point at /?room=CODE: send those straight into the app.
 [[redirects]]
   from = "/"
-  to = "/build/?room=:room"
+  to = "/game/?room=:room"
   status = 301
   force = true
   query = {room = ":room"}
+
+# The game moved from /build/ to /game/ (7 Nov 2026). Old links (the App Store listing, posters, shared links, saved
+# home-screen icons) keep working: the rest of the address and any ?query come along, and the browser keeps the #page.
+[[redirects]]
+  from = "/build"
+  to = "/game/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/build/*"
+  to = "/game/:splat"
+  status = 301
+  force = true
 
 # Short share links: bloppit.com/join/CODE opens that room (5 characters) or challenge (6 characters) in the app,
 # skipping the front page and the menu.
 [[redirects]]
   from = "/join/:code"
-  to = "/build/?code=:code"
+  to = "/game/?code=:code"
   status = 302
   force = true
 
@@ -50,7 +64,7 @@
 # build can be credited to the channel. Nothing identifies the person.
 [[redirects]]
   from = "/go/:channel"
-  to = "/build/?go=:channel"
+  to = "/game/?go=:channel"
   status = 302
   force = true
 
@@ -59,13 +73,13 @@
 # transfer code (?x=CODE) so a parent's phone can hand the game to the child's device with nothing personal crossing.
 [[redirects]]
   from = "/p/:code"
-  to = "/build/?p=:code"
+  to = "/game/?p=:code"
   status = 302
   force = true
 
 # The 3D character models (about 10 MB each) and their loader: browsers keep them for a year instead of checking back
 # on every visit. Safe because the game always asks for them with a version (bloppit.glb?v=2, GLTFLoader.js?v=2):
-# a changed file MUST get a new version number in public/build/index.html (MODEL3's v, or the loader's ?v=),
+# a changed file MUST get a new version number in public/game/index.html (MODEL3's v, or the loader's ?v=),
 # or players keep the old one.
 [[headers]]
   for = "/3d/*"

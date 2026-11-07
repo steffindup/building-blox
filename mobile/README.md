@@ -2,7 +2,7 @@
 
 On the App Store as **Bloppit: World of Bricks** (1.1, live 6 Nov 2026; 1.0 was "Bloppit: Brick Building Game"): https://apps.apple.com/app/id6821449219; the name under the home-screen icon is **Bloppit**.
 
-The App Store app is the web app (`public/build/index.html`) wrapped with [Capacitor 8](https://capacitorjs.com).
+The App Store app is the web app (`public/game/index.html`) wrapped with [Capacitor 8](https://capacitorjs.com).
 There's no separate app code: change the web app, then rebuild.
 
 ```
@@ -17,7 +17,7 @@ Cloud builds (no Mac): `codemagic.yaml` at the repo root builds the app and uplo
 ## What's different in the app
 
 `scripts/build-www.mjs` sets `window.BLOPPIT_APP = true`, which switches on the app behaviour at the top of
-the main script in `public/build/index.html` ("App Store app"):
+the main script in `public/game/index.html` ("App Store app"):
 
 - **Works offline.** three.js and the fonts are bundled from `node_modules` instead of loaded from a CDN.
   Only Play together needs the internet; it talks to `https://bloppit.com/api/room` (the room server allows

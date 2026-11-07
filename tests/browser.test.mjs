@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { start } from './devserver.mjs';
 let chromium; try { ({ chromium } = await import('playwright')); } catch { chromium = null; }
 
-const PORT = 8799, BASE = `http://localhost:${PORT}/build/`;
+const PORT = 8799, BASE = `http://localhost:${PORT}/game/`;
 let server, browser;
 before(async () => { server = await start(PORT); if (chromium) browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM || undefined, args: process.env.PLAYWRIGHT_ARGS ? process.env.PLAYWRIGHT_ARGS.split(' ') : ['--use-gl=swiftshader'] }); });
 const skip = () => !chromium;  // decided when the file loads; the browser itself starts in before()
@@ -524,7 +524,7 @@ test('a finished Weekly stands on the 3D island, and can be put away and back', 
   await t.page.waitForTimeout(3000);
   const key = await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1')).log.find((k) => k.startsWith('w:')));
   assert.ok(key, 'the Weekly was recorded');
-  await t.page.goto(new URL('/build/?nosplash=1&lite3d=1#island', 'http://localhost:8799').href); await t.page.waitForTimeout(3000);
+  await t.page.goto(new URL('/game/?nosplash=1&lite3d=1#island', 'http://localhost:8799').href); await t.page.waitForTimeout(3000);
   const on = () => t.page.evaluate((k) => { const I = window.bloppitIsland3(); return !!(I && I.shown && I.shown.list.some((m) => m.key === k)); }, key);
   assert.equal(await t.page.evaluate(() => !!window.bloppitIsland3().ok), true, 'the 3D island');
   assert.equal(await on(), true, 'the Weekly stands on the island');
@@ -764,9 +764,11 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   const a = await mkPlayer(), b = await mkPlayer();
   const hub = async (t) => { await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => { location.hash = '#together'; document.getElementById('tab-mp').click(); }); await t.page.waitForTimeout(1500); };
   await hub(a);
-  await a.page.evaluate(() => { document.getElementById('crewName').value = '2'; document.getElementById('crewMake').click(); }); await a.page.waitForTimeout(1500);
+  await a.page.evaluate(() => { document.getElementById('crewName').value = '2'; document.querySelector('#crewPick input[value="2"]').checked = true; document.getElementById('crewMake').click(); }); await a.page.waitForTimeout(1500);
   const code = await a.page.evaluate(() => document.querySelector('#crewOpen .cc')?.textContent); assert.match(code || '', /^[A-Z0-9]{6}$/);
   assert.match(await a.text('#crewOpen h2'), /Lighthouse Builders/);
+  assert.match(await a.text('#crewOpen'), /Space Station: not started yet/);   // the puzzle picked when making the crew
+  assert.equal(await a.page.evaluate(() => document.querySelectorAll('#crewPick .crew-pzopt').length), 4);
   await hub(b);
   await b.page.evaluate((c) => { document.getElementById('crewCodeIn').value = c; document.getElementById('crewJoin').click(); }, code); await b.page.waitForSelector('[data-crew-join]', { timeout: 15000 });
   await b.page.evaluate(() => document.querySelector('[data-crew-join]').click()); await b.page.waitForTimeout(1200);
@@ -774,7 +776,8 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   await hub(a); await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);
   await a.page.evaluate(() => document.querySelector('[data-crew-ok]').click()); await a.page.waitForTimeout(1500);
   assert.equal(await a.page.evaluate(() => document.querySelectorAll('#crewOpen .crew-members span').length), 2);
-  // B finishes a Trail level: bricks go to the lighthouse
+  await a.page.evaluate(() => document.getElementById('crewClose').click());
+  // B finishes a Trail level: bricks go to the crew's puzzle
   await b.page.evaluate(() => window.bloppitHome()); await b.page.evaluate(() => { document.querySelector('[data-go="otter"]').click(); document.getElementById('qpIsle').click(); }); await b.page.waitForTimeout(500);
   await b.page.evaluate(() => [...document.querySelectorAll('#view-game button')].find((x) => /Heart/.test(x.textContent) && x.offsetParent).click()); await b.page.waitForTimeout(800);
   await b.page.evaluate(() => [...document.querySelectorAll('button')].find((x) => /^(Play|Start|Build)/.test(x.textContent.trim()) && x.offsetParent)?.click()); await b.page.waitForTimeout(800);
@@ -782,9 +785,16 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   await b.page.waitForTimeout(3500); await b.page.evaluate(() => document.getElementById('winDlg').close());
   await hub(b); await b.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await b.page.waitForTimeout(800);
   assert.match(await b.text('#crewOpen'), /10 of 2,000 bricks/);
+  assert.match(await b.text('#crewOpen'), /Space Station: just started/);
   await b.page.evaluate(() => document.querySelector('[data-crew-say="0"]').click()); await b.page.waitForTimeout(1200);
   assert.match(await b.text('#crewFeed'), /Nice clean build!/);
-  await hub(a); await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);
+  // Crew news: A sees a dot on the Together tab and a New chip, then what happened since; opening the crew clears it
+  await hub(a);
+  assert.equal(await a.page.evaluate(() => { const d = document.querySelector('#tab-mp .news-dot'); return !!d && !d.hidden; }), true);
+  assert.match(await a.text('#crewList'), /New/);
+  await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);
+  const since = await a.text('#crewOpen .crew-since'); assert.match(since, /Since you were last here/); assert.match(since, /added 10 bricks/); assert.match(since, /1 new on the crew board/);
+  assert.equal(await a.page.evaluate(() => document.querySelector('#tab-mp .news-dot').hidden), true);
   assert.match(await a.text('#crewFeed'), /Nice clean build!/);
   await a.page.evaluate(() => document.querySelector('[data-crew-report]').click()); await a.page.evaluate(() => document.querySelector('[data-crew-report]').click()); await a.page.waitForTimeout(1200);
   assert.doesNotMatch(await a.text('#crewFeed'), /Nice clean build!/);
@@ -848,7 +858,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   // a model: where it came from, when, stars, best time; then put it away (the card's button)
   const key = (await models())[0];
   const c = await pt('model:' + key); await t.page.mouse.click(c.x, c.y); await t.page.waitForTimeout(400);
-  assert.match(await t.text('#isTip'), /From.*Quick Bricks.*First built.*Best time1:35.*Bricks/);
+  assert.match(await t.text('#isTip'), /From.*Build anything.*First built.*Best time1:35.*Bricks/);
   await t.page.evaluate(() => [...document.querySelectorAll('#isTip [data-a]')].find((b) => /Put away/.test(b.textContent)).click()); await t.page.waitForTimeout(500);
   assert.equal((await models()).includes(key), false);
   await t.page.evaluate((k) => document.querySelector(`#buildsGrid [data-mkey="${k}"]`).click(), key); await t.page.waitForTimeout(300);
@@ -1151,7 +1161,7 @@ test('the menu order: Quick play, Bloppitopia, the Weekly, Continue, How to play
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('menu Quick play: opens one of the five Solo games at random with its choice; Play a different game draws another; bloppit.com’s /build/#solo does the same (phone)', { skip: skip() }, async () => {
+test('menu Quick play: opens one of the five Solo games at random with its choice; Play a different game draws another; bloppit.com’s /game/#solo does the same (phone)', { skip: skip() }, async () => {
   const t = await open('?nosplash=1', { viewport: { width: 390, height: 844 } });
   const dlg = () => t.page.evaluate(() => ({ open: document.getElementById('qpDlg').open, where: window.bloppitQP()?.where, other: !document.getElementById('qpOther').hidden, just: document.getElementById('qpQuickT').textContent }));
   await t.page.evaluate(() => document.getElementById('hmQuick').click()); await t.page.waitForTimeout(500);

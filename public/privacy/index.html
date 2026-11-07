@@ -6,50 +6,42 @@
 <title>Privacy policy · Bloppit</title>
 <meta name="description" content="How Bloppit handles your information: no accounts, no ads, no tracking. Photos stay on your device unless you start a room or a Blitz challenge.">
 <link rel="canonical" href="https://bloppit.com/privacy/">
-<meta name="theme-color" content="#D2352B">
+<meta name="theme-color" content="#FBF7EE">
 <link rel="icon" href="/favicon-96.png?v=3" type="image/png" sizes="96x96">
 <link rel="icon" href="/favicon.ico?v=3" sizes="16x16 32x32 48x48">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;700;800&display=swap">
+<link rel="stylesheet" href="/site.css">
 <style>
-:root{--paper:#FBF7EE;--dot:#E2DAC6;--ink:#14202C;--muted:#3B4957;--white:#FFFFFF;--red:#D2352B;--red-dark:#B32A22;--yellow:#F4BC22;--line:#E2DAC6;
-  --display:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;--body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif}
-*{box-sizing:border-box}
-body{margin:0;background-color:var(--paper);background-image:radial-gradient(var(--dot) 1.6px,transparent 1.6px);background-size:28px 28px;
-  font-family:var(--body);color:var(--ink);font-size:17px;line-height:1.6}
-a{color:var(--red-dark)}
-:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
-header{padding:20px 16px 0}
-.home{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:var(--display);font-size:28px}
-main{max-width:760px;margin:16px auto 40px;padding:28px 24px;background:var(--white);border:2px solid var(--ink);border-radius:20px;box-shadow:0 6px 0 var(--ink)}
-@media (max-width:600px){main{margin:12px 12px 32px;padding:22px 18px}}
-h1,h2{font-family:var(--display);font-weight:400;line-height:1.15;margin:0}
-h1{font-size:40px}
-h2{font-size:24px;margin-top:30px}
-p,ul{margin:10px 0 0}
-li{margin-top:6px}
-.lede{font-size:19px;color:var(--muted)}
+.policy{max-width:800px;margin-top:48px}
+.policy h1{font-size:clamp(2.4rem,5vw,3.4rem)}
+.policy h2{font-size:24px;margin-top:30px}
+.policy p,.policy ul{margin:10px 0 0}
+.policy li{margin-top:6px}
 .updated{font-size:14px;color:var(--muted);margin-top:6px}
-.box{background:#FFF4D6;border-radius:14px;padding:14px 18px;margin-top:18px}
+.box{background:var(--cream);border-radius:14px;padding:14px 18px;margin-top:18px}
 .box ul{padding-left:20px;margin:4px 0 0}
-footer{text-align:center;font-size:14px;color:var(--muted);padding:0 16px 32px}
-/* World / of / Bricks beside the wordmark (Steff, 6 Nov 2026): the same three bricks as the launch screen and social banners */
-.wob{display:inline-flex;gap:4px;margin-left:4px;align-self:center}
-.wob i{font-style:normal;font-family:"Nunito",system-ui,sans-serif;font-weight:800;font-size:13px;line-height:1;padding:4px 7px 5px;border-radius:5px;border:1.5px solid #14202C;box-shadow:0 2px 0 #14202C}
-.wob i:nth-child(1){background:#F4BC22;color:#142022}.wob i:nth-child(2){background:#fff;color:#0369BD}.wob i:nth-child(3){background:#D62F2A;color:#fff}
-@media (max-width:640px){.home{flex-wrap:wrap;row-gap:4px}}
-@media (max-width:420px){.wob{gap:3px}.wob i{font-size:10.5px;padding:3px 5px 4px}}
 </style>
 </head>
 <body>
 <header>
-  <a class="home" href="/" aria-label="Bloppit home">
-    <img src="/art/bloppit-avatar.png" width="46" height="46" alt="">Bloppit<span class="wob" aria-hidden="true"><i>World</i><i>of</i><i>Bricks</i></span></a>
+  <nav class="wrap" aria-label="Main">
+    <a class="logo" href="/" aria-label="Bloppit home">
+      <img src="/art/bloppit-avatar.png" width="42" height="42" alt="">
+      <span>Bloppit</span><span class="wob" aria-hidden="true"><i>World</i><i>of</i><i>Bricks</i></span>
+    </a>
+    <div class="nav-links">
+      <a href="/how-it-works/">How it works</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/about/">About us</a>
+      <a class="btn play sm" href="/game/">Play Bloppit</a>
+    </div>
+  </nav>
 </header>
 
-<main>
+<main id="main" class="wrap"><article class="card policy">
   <h1>Privacy policy</h1>
   <p class="updated">Last updated 5 November 2026. Applies to the website bloppit.com and the Bloppit app for iPhone and iPad.</p>
   <p class="lede">Bloppit is made for children and families, so we collect as little as possible.</p>
@@ -61,7 +53,7 @@ footer{text-align:center;font-size:14px;color:var(--muted);padding:0 16px 32px}
       <li>No ads, no third-party analytics, no tracking, and nothing is sold or shared for marketing. Bloppit keeps its own simple counts of how the game is used (how many first builds were finished today, for example), with nothing in them about any one child.</li>
       <li>Your photos and builds stay on your device.</li>
       <li>The exceptions are <b>rooms</b> (Build together and live Blitz) and <b>Blitz challenges</b>. When you start one, the puzzle is shared through our server so your friends can play it. Rooms are deleted after 3 days without activity, and challenges 30 days after the last player.</li>
-      <li>The <b>Weekly Bloppit</b> keeps two things when you finish it: that you finished, and whether it was a clean build. The build’s time and misses are sent only to check it’s a real finish, and aren’t kept. No name. The week’s counts are deleted after 8 weeks.</li>
+      <li>Bibi’s <b>Weekly Bloppit</b> keeps two things when you finish it: that you finished, and whether it was a clean build. The build’s time and misses are sent only to check it’s a real finish, and aren’t kept. No name. The week’s counts are deleted after 8 weeks.</li>
       <li>Each player’s <b>progress</b> (trail scores, Weekly Bloppit builds, finished models with their stars, XP, the island’s decorations and arrangement, up to twelve stud-grid drawings as colour numbers, the otter’s brick colour, the outfit it wears and the colours picked for it, whether a treehouse or a lighthouse was chosen for Home Island, the otter’s name when it was picked from the list, kept as a number, and which speed each Blitz win beat, and which of the story’s films have been seen) is saved on our server under an anonymous <b>progress code</b>, so it isn’t lost if a device is lost or its storage is cleared. The progress code holds numbers and dates only: no name, no age, no photo, no device details. A grown-up can move it to another device with a one-time transfer code, or delete it, from the Grown-ups corner.</li>
       <li>If a child <b>types a name</b> for their otter, that name stays on the device. It is never sent to us, and no other player ever sees it. The game also keeps a picture of the player’s island, and the bricks of each finished model (so it can stand on Bloppitopia), on the device, so bloppit.com’s front page can show the island when they come back. None of that is sent to us.</li>
     </ul>
@@ -84,11 +76,11 @@ footer{text-align:center;font-size:14px;color:var(--muted);padding:0 16px 32px}
   <h2>Weekly top-100 board</h2>
   <p>On by default; a grown-up can switch it off for a player in the Grown-ups corner. When on, that player’s Weekly finish is listed on a board of up to 100 players under a generated name (“Brave Otter 214”) with whether it was clean and how many stars: no real names and no times. The board is deleted with the week’s counts after 8 weeks.</p>
   <h2>Crews</h2>
-  <p>A crew is a small group (a family, a class, a club) with a shared building goal. The player who makes a crew gets a code and lets each friend in. Our server keeps, under the crew code: a crew name chosen from a fixed list, each member’s progress code, the bricks and builds each member has added, and the crew board. The board can only hold phrases and stickers chosen from a fixed list, shown under generated names (“Brave Otter 214”); nothing typed is ever sent. Anyone in a crew can report a post, which hides it for them and tells the crew’s maker; three reports pause the sender’s posts in that crew. A parent can see every crew a player is in, and take them out, from the Grown-ups corner. A crew nobody has built in for six months is deleted.</p>
+  <p>A crew is a small group (a family, a class, a club) with a shared building goal. The player who makes a crew gets a code and lets each friend in. Our server keeps, under the crew code: a crew name and a crew puzzle, both chosen from fixed lists, each member’s progress code, the bricks and builds each member has added, and the crew board. The board can only hold phrases and stickers chosen from a fixed list, shown under generated names (“Brave Otter 214”); nothing typed is ever sent. Anyone in a crew can report a post, which hides it for them and tells the crew’s maker; three reports pause the sender’s posts in that crew. A parent can see every crew a player is in, and take them out, from the Grown-ups corner. A crew nobody has built in for six months is deleted.</p>
   <h2>Blitz challenges and relays</h2>
   <p>A challenge lets a friend race your time later; a relay lets a friend finish a model you started. When you make one, our server keeps the code, the puzzle (including the photos it was made from), and for each player a generated label such as “Brave Otter 214”, their time or the bricks they placed, and their misses and hints (up to 12 players on a challenge, two on a relay). Typed names are never sent. Anyone with the code can see the labels and times on that challenge. A challenge is deleted 30 days after the last player.</p>
-  <h2>Weekly Bloppit</h2>
-  <p>When you finish the Weekly Bloppit for the first time in a week, the app tells our server that one more person finished it, and whether the build was clean (no misses, no hints). The build’s time, misses and hints travel with it only so the server can check it’s a real finish; they are not stored. No name and no rank are kept. The server keeps two counts per week so it can tell you how many builders finished clean, and deletes them after 8 weeks.</p>
+  <h2>Bibi’s Weekly Bloppit</h2>
+  <p>When you finish Bibi’s Weekly Bloppit for the first time in a week, the app tells our server that one more person finished it, and whether the build was clean (no misses, no hints). The build’s time, misses and hints travel with it only so the server can check it’s a real finish; they are not stored. No name and no rank are kept. The server keeps two counts per week so it can tell you how many builders finished clean, and deletes them after 8 weeks.</p>
   <h2>Your progress code (saved progress)</h2>
   <p>The first time a player finishes a build, our server makes an anonymous <b>progress code</b> for that player and keeps their progress under it: trail scores, Weekly Bloppit builds, and later the island they grow. It holds numbers and dates only. The player’s name and age never leave the device. The progress code is kept on the device and is the only key to that progress; it is never shown in a web address.</p>
   <p>From the Grown-ups corner (Who’s playing → Grown-ups), a parent can make a one-time <b>transfer code</b> to bring a player’s progress to another device (it works once and expires after 72 hours), or <b>delete</b> everything the server holds for that player. A player that hasn’t played for a year is deleted automatically. A <b>family key</b> (12 characters, made in the Grown-ups corner and shown once) lets a parent see, bring to any device or delete the players attached to it, from any device; our server keeps only which progress codes belong to the key, nothing about the parent. The <b>Family Link</b> there is a link or QR code to Bloppit’s first build (bloppit.com/p/start) for opening on the child’s device; it carries a transfer code only when a parent has just made one, and nothing else. Share links and cards (bloppit.com/p/…) point at a build, or carry a drawing as colour numbers in the link itself, never at a player.</p>
@@ -106,9 +98,17 @@ footer{text-align:center;font-size:14px;color:var(--muted);padding:0 16px 32px}
 
   <h2>Contact</h2>
   <p>Questions or requests: <a href="mailto:hello@bloppit.com">hello@bloppit.com</a>. Bloppit is an independent project based in Bermuda.</p>
-</main>
+</article></main>
 
-<footer>© 2026 Bloppit · <a href="/">Home</a> · <a href="/build/">Open Bloppit</a><br>Follow Bloppit: <a href="https://www.tiktok.com/@playbloppit" rel="me noopener" target="_blank">TikTok</a> · <a href="https://www.instagram.com/playbloppit/" rel="me noopener" target="_blank">Instagram</a> · <a href="https://www.youtube.com/@bloppit" rel="me noopener" target="_blank">YouTube</a> · <a href="https://x.com/playbloppit" rel="me noopener" target="_blank">X</a> · <a href="https://www.facebook.com/playbloppit" rel="me noopener" target="_blank">Facebook</a></footer>
+<footer>
+  <div class="wrap foot">
+    <div class="brand"><span class="name">Bloppit</span><p>Bloppit: World of Bricks. Build it. Grow your world. A brick-building game made in Bermuda.</p></div>
+    <div><h3>Play</h3><ul><li><a href="/game/">Play Bloppit</a></li><li><a href="https://apps.apple.com/app/id6821449219">iPhone &amp; iPad app</a></li><li><a href="/activity/">For groups &amp; classes</a></li></ul></div>
+    <div><h3>Bloppit</h3><ul><li><a href="/how-it-works/">How it works</a></li><li><a href="/faq/">FAQ</a></li><li><a href="/about/">About us</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="mailto:hello@bloppit.com">hello@bloppit.com</a></li></ul></div>
+    <nav aria-label="Bloppit on social media"><h3>Follow</h3><ul><li><a href="https://www.tiktok.com/@playbloppit" rel="me noopener" target="_blank" aria-label="Bloppit on TikTok (@playbloppit)">TikTok</a></li><li><a href="https://www.instagram.com/playbloppit/" rel="me noopener" target="_blank" aria-label="Bloppit on Instagram (@playbloppit)">Instagram</a></li><li><a href="https://www.youtube.com/@bloppit" rel="me noopener" target="_blank" aria-label="Bloppit on YouTube (@bloppit)">YouTube</a></li><li><a href="https://x.com/playbloppit" rel="me noopener" target="_blank" aria-label="Bloppit on X (@playbloppit)">X</a></li><li><a href="https://www.facebook.com/playbloppit" rel="me noopener" target="_blank" aria-label="Bloppit on Facebook (playbloppit)">Facebook</a></li></ul></nav>
+    <p class="legal">© 2026 Bloppit · An independent project, not affiliated with any toy brick brand.</p>
+  </div>
+</footer>
 <script>/* one count for this page (no cookies, nothing about the visitor) */try{navigator.sendBeacon('/api/event',new Blob([JSON.stringify({events:['page:privacy'],p:'web'})],{type:'application/json'}))}catch(e){}</script>
 </body>
 </html>

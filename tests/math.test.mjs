@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-const html = fs.readFileSync(new URL('../public/build/index.html', import.meta.url), 'utf8');
+const html = fs.readFileSync(new URL('../public/game/index.html', import.meta.url), 'utf8');
 const code = html.slice(html.indexOf('const MATH_GRADES='), html.indexOf('var mq=null'));
 const M = new Function('clamp', 'brickIcon', 'curPlayer', 'gameStore', 'gameStoreSet', 'playersSave', 'renderWho', 'trail', 'game', 'window',
   code + '\nreturn {MATH_GRADES,MATH_TOPICS,gradeFor,makePuzzle,puzzleChoices,rungOf,gradeOfRung,stepOfRung,rungLimits,mathRung,levelStep};')(

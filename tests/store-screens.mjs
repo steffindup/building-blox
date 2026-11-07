@@ -19,7 +19,7 @@ for (const [tag, vp, dsf] of [['iphone',{width:440,height:956},3],['ipad',{width
     const f=u.match(/^http:\/\/fonts\.local\/(.+)$/); if (f) return r.fulfill({status:200,contentType:'font/woff2',body:fs.readFileSync(path.join(FONTS,f[1]))});
     r.continue(); });
   const page = await ctx.newPage(); page.setDefaultTimeout(180000); page.on('pageerror', e => console.log('ERR', e.message));
-  await page.goto('http://localhost:8788/build/?nosplash=1&hour=11',   // late morning, whatever the clock says
+  await page.goto('http://localhost:8788/game/?nosplash=1&hour=11',   // late morning, whatever the clock says
     { waitUntil: 'load' }); await page.waitForTimeout(3500);
   // first visit: the otter gets its name first (Pebble, from the list), then the boat brings it to Home Island
   await page.evaluate(() => document.getElementById('hmCont').click());

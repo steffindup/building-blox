@@ -98,6 +98,24 @@ test('crew: create → join (pending) → approve → contribute → post → re
   assert.equal(PHRASES.length, 8);
 });
 
+test('crew puzzle: suggested by default, chosen at making, fixed once started, next one after it is finished', async () => {
+  mem.clear();
+  const A = 'a'.repeat(24), B = 'b'.repeat(24);
+  const d = await group('POST', { pid: A }, { action: 'create', name: 0 }, store); assert.equal(d.body.group.puzzle, 0);
+  assert.equal((await group('POST', { pid: A }, { action: 'create', name: 0, puzzle: 9 }, store)).status, 400);
+  const c = await group('POST', { pid: A }, { action: 'create', name: 1, puzzle: 2 }, store); const code = c.body.group.code; assert.equal(c.body.group.puzzle, 2);
+  assert.equal((await group('POST', { pid: A }, { action: 'puzzle', code, puzzle: 3 }, store)).body.group.puzzle, 3);   // before anyone builds: free to change
+  await group('POST', { pid: B }, { action: 'join', code }, store);
+  const k = (await group('GET', { pid: A, code }, null, store)).body.group.pending[0].k; await group('POST', { pid: A }, { action: 'approve', code, k }, store);
+  assert.equal((await group('POST', { pid: B }, { action: 'puzzle', code, puzzle: 1 }, store)).status, 403);   // only the maker
+  await group('POST', { pid: B }, { action: 'contribute', code, bricks: 900 }, store);
+  assert.equal((await group('POST', { pid: A }, { action: 'puzzle', code, puzzle: 1 }, store)).status, 409);   // started: finish it first
+  await group('POST', { pid: A }, { action: 'contribute', code, bricks: 1300 }, store);
+  const f = (await group('GET', { pid: A, code }, null, store)).body.group; assert.equal(f.pct, 100); assert.equal(f.total, 2000);
+  const n = (await group('POST', { pid: A }, { action: 'puzzle', code, puzzle: 1 }, store)).body.group;
+  assert.equal(n.puzzle, 1); assert.deepEqual(n.done, [3]); assert.equal(n.total, 200);   // the extra 200 bricks carry over
+});
+
 import { handle as challenge } from '../netlify/functions/challenge/logic.mjs';
 test('weekly board: entries only with the switch, generated names, clean first then stars, me flagged', async () => {
   mem.clear();
