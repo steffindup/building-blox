@@ -19,6 +19,26 @@ export const GOAL_BRICKS = 2000;                   // a crew puzzle: 2,000 brick
 export const PUZZLE_COUNT = 4, SUGGESTED_PUZZLE = 0;
 const puzzleOf = (g) => (Number.isInteger(g.puzzle) && g.puzzle >= 0 && g.puzzle < PUZZLE_COUNT ? g.puzzle : SUGGESTED_PUZZLE);
 const progressOf = (g) => g.members.reduce((a, m) => a + m.bricks, 0) - (g.base || 0);   // bricks towards this puzzle
+// Inside a crew (Steff, 7 Nov 2026): a Crew Quick Game (a live room any member starts; the others see it and join),
+// Pass the Puzzle (one model passed round the crew over days, each member building their share of pages in turn) and
+// the Crew Mega Build (the big puzzle above).
+const LIVE_MS = 3 * 3600_000;                       // a Crew Quick Game shows on the crew for 3 hours
+const MAX_MODEL_CHARS = 2_500_000;
+const passModelKey = (c) => `gpass/${c}`;
+function cleanMoves(list, nBricks) {
+  if (!Array.isArray(list)) return [];
+  return list.slice(0, 5000).map((m) => ({ b: Math.floor(Number(m.b)), x: Math.round(Number(m.x)), z: Math.round(Number(m.z)) }))
+    .filter((m) => m.b >= 0 && m.b < nBricks && Number.isFinite(m.x) && Number.isFinite(m.z));
+}
+// Whose turn it is: the next member in the order who is still in the crew
+function passTurnId(g) { const p = g.pass; if (!p || p.done) return ''; const ids = new Set(g.members.map((m) => m.id));
+  for (let k = 0; k < p.order.length; k++) { const id = p.order[(p.turn + k) % p.order.length]; if (ids.has(id)) return id; } return ''; }
+function publicPass(g, pid) {
+  const p = g.pass; if (!p) return null; const turnId = passTurnId(g);
+  return { id: p.id, title: p.title, nBricks: p.nBricks, steps: p.steps, page: p.page, chunk: p.chunk, done: !!p.done, myTurn: turnId === pid,
+    turnLabel: turnId ? labelFor(turnId) : '', byLabel: labelFor(p.by), byMe: p.by === pid, inIt: p.order.includes(pid), at: p.at,
+    history: p.history.map((h) => ({ label: labelFor(h.id), me: h.id === pid, from: h.from, to: h.to, at: h.at })) };
+}
 const MAX_MEMBERS = 24, MAX_PENDING = 12, MAX_POSTS = 40, MUTE_AT = 3, MAX_GROUPS_PER_PUP = 6;
 
 const rand = (n, chars) => { let s = ''; const a = new Uint32Array(n); crypto.getRandomValues(a); for (const v of a) s += chars[v % chars.length]; return s; };
@@ -39,7 +59,9 @@ export function publicGroup(g, pid) {
     pct: Math.min(100, Math.floor(100 * total / GOAL_BRICKS)),
     builds: g.members.reduce((a, m) => a + m.builds, 0), created: g.created, members, posts, me: me ? { creator: g.creator === pid, muted: !!me.muted } : null,
     pending: g.creator === pid ? (g.pending || []).map((w) => ({ k: w.k, label: labelFor(w.id), at: w.at })) : undefined,
-    pendingMe: (g.pending || []).some((w) => w.id === pid), creatorLabel: creator ? labelFor(creator.id) : '' };
+    pendingMe: (g.pending || []).some((w) => w.id === pid), creatorLabel: creator ? labelFor(creator.id) : '',
+    pass: me ? publicPass(g, pid) : null,
+    live: me && g.live && Date.now() - g.live.at < LIVE_MS ? { room: g.live.room, label: labelFor(g.live.by), me: g.live.by === pid, at: g.live.at } : null };
 }
 
 async function readGroup(store, code) {
@@ -86,6 +108,12 @@ export async function handle(method, query, body, store) {
     if (code.length !== 6) return { status: 400, body: { error: 'Crew codes have 6 letters and numbers.' } };
     const r = await readGroup(store, code);
     if (!r) return { status: 404, body: { error: 'That crew code wasn’t found. Check it with whoever made the crew.' } };
+    if (query.pass) {
+      const g = r.data; if (!g.members.some((m) => m.id === pid)) return { status: 403, body: { error: 'You’re not in this crew.' } };
+      if (!g.pass) return { status: 404, body: { error: 'This crew has no Pass the Puzzle yet.' } };
+      const m = await store.get(passModelKey(code)); if (!m) return { status: 404, body: { error: 'The puzzle has gone. Start a new one.' } };
+      return { status: 200, body: { pass: publicPass(g, pid), moves: g.pass.moves, model: m.data } };
+    }
     return { status: 200, body: { group: publicGroup(r.data, pid) } };
   }
   if (method !== 'POST') return { status: 405, body: { error: 'Method not allowed' } };
@@ -157,6 +185,49 @@ export async function handle(method, query, body, store) {
       if (prog >= GOAL_BRICKS) { g.done = [...(g.done || []), puzzleOf(g)]; g.base = (g.base || 0) + GOAL_BRICKS; }   // extra bricks carry over
       else if (prog > 0) return { error: 'The crew has started this puzzle. Finish it first, then pick the next one.', status: 409 };
       g.puzzle = puzzle;
+    });
+    return r.status === 200 ? { status: 200, body: { group: publicGroup(r.body.group, pid) } } : r;
+  }
+  if (a === 'live') {
+    // A member started a Crew Quick Game: the room's code shows on the crew for the others (the host still lets each one in)
+    const room = String(body.room || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); if (room.length !== 5) return { status: 400, body: { error: 'Bad room code.' } };
+    const r = await update(store, code, (g) => { if (!g.members.some((m) => m.id === pid)) return { error: 'You’re not in this crew.', status: 403 }; g.live = { room, by: pid, at: now }; });
+    return r.status === 200 ? { status: 200, body: { group: publicGroup(r.body.group, pid) } } : r;
+  }
+  if (a === 'live-end') {
+    const r = await update(store, code, (g) => { if (g.live && g.live.by === pid) g.live = null; });
+    return r.status === 200 ? { status: 200, body: { group: publicGroup(r.body.group, pid) } } : r;
+  }
+  if (a === 'pass-start') {
+    // Pass the Puzzle: the starter's own first share of pages comes with the model. Everyone in the crew now takes a turn.
+    const model = body.model, nBricks = Math.floor(Number(body.nBricks)), steps = Math.floor(Number(body.steps)), to = Math.floor(Number(body.to));
+    if (!model || !Array.isArray(model.photos) || !model.photos.length) return { status: 400, body: { error: 'No puzzle to pass.' } };
+    if (JSON.stringify(model).length > MAX_MODEL_CHARS) return { status: 413, body: { error: 'That puzzle is too big to pass round. Try a smaller one.' } };
+    if (!(nBricks > 1 && nBricks < 5000) || !(steps > 1 && steps < 5000) || !(to >= 1 && to < steps)) return { status: 400, body: { error: 'Bad puzzle size.' } };
+    const moves = cleanMoves(body.moves, nBricks); if (!moves.length) return { status: 400, body: { error: 'Build your pages first.' } };
+    const r0 = await readGroup(store, code); if (!r0) return { status: 404, body: { error: 'That crew code wasn’t found.' } };
+    if (r0.data.pass && !r0.data.pass.done) return { status: 409, body: { error: 'Your crew is already passing a puzzle round. Finish that one first.' } };
+    await store.set(passModelKey(code), model, {});
+    const r = await update(store, code, (g) => {
+      if (!g.members.some((m) => m.id === pid)) return { error: 'You’re not in this crew.', status: 403 };
+      if (g.members.length < 2) return { error: 'Pass the Puzzle needs at least two in the crew.', status: 409 };
+      if (g.pass && !g.pass.done) return { error: 'Your crew is already passing a puzzle round. Finish that one first.', status: 409 };
+      const order = [pid, ...g.members.map((m) => m.id).filter((id) => id !== pid)];
+      const chunk = Math.max(1, Math.ceil(steps / order.length));
+      g.pass = { id: rand(8, ALPHABET), title: String(body.title || 'Puzzle').slice(0, 24), nBricks, steps, chunk, order, turn: 1 % order.length, page: Math.min(to, steps - 1),
+        moves, by: pid, at: now, done: false, history: [{ id: pid, from: 0, to: Math.min(to, steps - 1), at: now }] };
+    });
+    return r.status === 200 ? { status: 200, body: { group: publicGroup(r.body.group, pid) } } : r;
+  }
+  if (a === 'pass-turn') {
+    const r = await update(store, code, (g) => {
+      const p = g.pass; if (!p || p.done || p.id !== String(body.id || '')) return { error: 'That puzzle has moved on. Open the crew again.', status: 409 };
+      if (passTurnId(g) !== pid) return { error: 'It isn’t your turn yet.', status: 409 };
+      const to = Math.floor(Number(body.to)); if (!(to > p.page && to <= p.steps)) return { error: 'Bad pages.', status: 400 };
+      const moves = cleanMoves(body.moves, p.nBricks); if (!moves.length) return { error: 'Build your pages first.', status: 400 };
+      const k = p.order.indexOf(pid);
+      p.moves = p.moves.concat(moves).slice(0, 5000); p.history.push({ id: pid, from: p.page, to, at: now }); p.page = to; p.at = now;
+      if (to >= p.steps) p.done = true; else p.turn = (k + 1) % p.order.length;
     });
     return r.status === 200 ? { status: 200, body: { group: publicGroup(r.body.group, pid) } } : r;
   }

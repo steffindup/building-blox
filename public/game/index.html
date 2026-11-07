@@ -127,7 +127,7 @@
 /* Layout: an instruction-booklet desk. Photo tools on the left, a big render stage on the right; the Build view is one full booklet page with the step number and parts callout top-left. */
 :root{
   --bg:#E4EAF2; --page:#FFFFFF; --ink:#14202C; --muted:#586777; --line:#C9D4E1;
-  --callout:#D6E5F5; --accent:#D2352B; --accent-ink:#FFFFFF; --hi:#F4BC22; --shadow:rgba(20,32,44,.10);
+  --callout:#D6E5F5; --accent:#D62F2A; --accent-ink:#FFFFFF; --hi:#F4BC22; --shadow:rgba(20,32,44,.10);
   --paper:#FBF7EE; --dot:#E2DAC6;
   --f-display:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;
   --f-body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -452,7 +452,7 @@ body.on-build .appfoot{display:none}
   body.on-build .hand-prog:empty{display:none}
   body.on-build .playcol .hand-btns:has(#putBack[hidden]){display:flex;flex-direction:row;align-items:center;gap:6px}
   body.on-build .playcol .hand-btns .mini-restart{display:inline-block;padding:6px 9px;font-size:15px;line-height:1;min-height:0}
-  body.on-build .playcol .hand-btns .mini-restart.confirm{font-size:12px;padding:6px 8px;border-color:var(--red,#D2352B);color:var(--red,#D2352B)}
+  body.on-build .playcol .hand-btns .mini-restart.confirm{font-size:12px;padding:6px 8px;border-color:var(--red,#D62F2A);color:var(--red,#D62F2A)}
   body.on-build .playcol .card:has(#restart[hidden]) .mini-restart,body.on-build .playcol .card:has(#putBack:not([hidden])) .mini-restart{display:none}
   /* a race: one strip with both clocks side by side; the rules are on the race card before you start */
   body.on-build #mpBar,body.on-box #mpBar{position:relative;padding:6px 8px;margin-bottom:6px}
@@ -490,12 +490,12 @@ body.on-build .appfoot{display:none}
 .qp-opt:hover,.qp-opt:focus-visible{border-color:var(--hi,#F2CD37)}
 .qp-opt img,.qp-opt .qp-ic{grid-row:span 2;width:52px;height:52px;border-radius:12px;object-fit:contain;display:grid;place-items:center;font-size:30px;background:color-mix(in srgb,var(--hi,#F2CD37) 22%,transparent)}
 .qp-opt b{font-size:1.05rem}.qp-opt span{font-size:.88rem;opacity:.8}
-.qp-opt.isle{border-color:color-mix(in srgb,#2FB8DC 55%,transparent)}
+.qp-opt.isle{border-color:color-mix(in srgb,var(--c-bloppit) 55%,transparent)}
 /* the difficulty slider (Steff, 4 Nov 2026): pick how tricky, and a puzzle to match is ready to build */
 .qp-quick{cursor:default}.qp-quick:hover{border-color:var(--line,#D9E1EA)}
 .qp-quick>.qp-diff,.qp-quick>.qp-pz,.qp-quick>#qpQuick,.qp-quick>#qpPick{grid-column:1/-1}
 .qp-diff{margin-top:6px}.qp-diff label{display:flex;justify-content:space-between;align-items:baseline;font-size:.9rem;font-weight:700}
-.qp-diff label b{font-size:1rem}.qp-diff input{width:100%;margin:6px 0 0;accent-color:#F4BC22;height:28px}
+.qp-diff label b{font-size:1rem}.qp-diff input{width:100%;margin:6px 0 0;accent-color:var(--ink);height:28px}
 .qp-diff .qp-ends{display:flex;justify-content:space-between;font-size:.75rem;opacity:.7}
 .qp-pz{display:flex;gap:10px;align-items:center;padding:8px;border-radius:12px;background:color-mix(in srgb,var(--hi,#F2CD37) 12%,transparent)}
 .qp-pz img{width:52px;height:52px;border-radius:10px;background:#fff;object-fit:contain;flex:none}
@@ -802,7 +802,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 .bz-join{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
 .bz-off{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;margin:0}
 .gamebar.mpbar{position:relative;border-color:#5A93DB}
-.gb-badge.mp-code{width:auto;padding:0 10px;font-size:18px;letter-spacing:.08em;background:#5A93DB;color:#fff}
+.gb-badge.mp-code{width:auto;padding:0 10px;font-size:18px;letter-spacing:.08em;background:var(--c-together);color:#fff}
 .gb-badge.mp-code.face{width:44px;height:44px;padding:0;background:#E8F1F8;overflow:hidden;border-radius:12px}.gb-badge.mp-code.face img{width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block}
 .mp-turn{font-family:var(--f-display);font-size:20px;line-height:1.15;min-width:180px}
 .mp-turn small{display:block;font-family:var(--f-body);font-size:13px;font-weight:700;color:var(--muted)}
@@ -867,7 +867,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .mp-pl.away{opacity:.55}
 .mp-pl b.clk{color:var(--ink);min-width:3.6em;text-align:right}
 .mp-pl.now b.clk{color:var(--accent)}
-.mp-pl .mi{font-size:11px;font-weight:800;color:#C8372D}
+.mp-pl .mi{font-size:11px;font-weight:800;color:var(--c-bloppit)}
 .blitz-tag{display:inline-block;background:#F4BC22;color:#1B1410;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:800;margin-right:6px;vertical-align:middle}
 .mpbar.blitz #mpEndTurn{background:var(--accent);color:#fff;border-color:var(--accent)}
 .mpbar.tb-on #mpTurn,.mpbar.tb-on #mpEndTurn{display:none!important}
@@ -881,7 +881,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .seg4{grid-template-columns:repeat(4,1fr)}
 .mp-room{gap:14px}
 .mp-room-top{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-between;align-items:flex-start}
-.mp-bigcode{font-family:var(--f-display);font-size:54px;letter-spacing:.14em;line-height:1;color:#0055BF}
+.mp-bigcode{font-family:var(--f-display);font-size:54px;letter-spacing:.14em;line-height:1;color:var(--c-together)}
 .mp-room-model{display:flex;gap:12px;align-items:center}
 .mp-room-model img{width:72px;height:72px;object-fit:contain;border-radius:10px;background:#fff;border:1px solid var(--line)}
 .mp-room h3{font-size:19px;margin-top:4px}
@@ -946,7 +946,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .lvl.wait>*:not(.tagnew){opacity:.5}
 .lvl.wait .ln{background:var(--line);color:var(--muted)}
 .lvl.wait img{filter:grayscale(1)}
-.lvl .tagnew.tide{background:#2B7FC4;color:#fff;white-space:nowrap}
+.lvl .tagnew.tide{background:var(--ink);color:#fff;white-space:nowrap}
 #tideDlg .td-pic{width:110px;height:110px;object-fit:contain;border-radius:14px;background:#fff;filter:grayscale(.6);margin:4px auto 0;display:block}
 #tdGo small{display:block;font-size:12px;font-weight:700;opacity:.9}
 .lvl.next{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
@@ -966,7 +966,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .windlg{border:0;border-radius:18px;padding:22px 22px 18px;width:min(440px,calc(100vw - 32px));background:var(--page);color:var(--ink);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)}
 .gm-math{display:grid;gap:6px 18px;grid-template-columns:auto 1fr;align-items:center;background:var(--page);border:2px solid var(--line);border-radius:14px;padding:12px 16px;margin-top:12px}
 .gm-math .note{margin:0;font-size:14px}
-.gm-math.on{border-color:#5A93DB}
+.gm-math.on{border-color:var(--ink)}
 .gm-age{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
 .gm-age label{font-weight:800;font-size:14px}
 .gm-age select{width:auto;min-width:90px}
@@ -976,7 +976,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .gm-switch input{position:absolute;opacity:0}
 .gm-switch .sw{width:44px;height:26px;border-radius:999px;background:var(--line);position:relative;transition:background .15s;flex:none}
 .gm-switch .sw::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transition:transform .15s}
-.gm-switch input:checked+.sw{background:#0055BF}
+.gm-switch input:checked+.sw{background:var(--ink)}
 .gm-switch input:checked+.sw::after{transform:translateX(18px)}
 .gm-switch input:focus-visible+.sw{outline:3px solid var(--hi);outline-offset:2px}
 .page.live{position:relative}
@@ -1095,7 +1095,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .is-intro h2{margin:0;font-size:24px}.is-intro p{margin:2px 0 0}
 .is-intro .ii-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0;padding:0;list-style:none}
 .is-intro .ii-steps li{display:grid;justify-items:center;padding:8px 4px;border-radius:12px;background:var(--bg);font-size:13px;font-weight:700;color:var(--muted);text-align:center}
-.is-intro .ii-steps b{font-family:var(--f-display);font-weight:400;font-size:22px;color:var(--ink)}.is-intro .ii-steps li.done{background:#D9F2EF;color:#00616A}.is-intro .ii-steps li.done b{color:var(--c-bloppit)}
+.is-intro .ii-steps b{font-family:var(--f-display);font-weight:400;font-size:22px;color:var(--ink)}.is-intro .ii-steps li.done{background:#DFF3E4;color:#1F7A3C}.is-intro .ii-steps li.done b{color:var(--c-bloppit)}
 .is-intro .ii-btns{display:flex;flex-wrap:wrap;gap:8px}
 .pup-names{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 14px}
 .wc-pup{margin:10px 0 4px;padding:10px 12px 4px;border-radius:14px;background:var(--callout);text-align:left}
@@ -1110,7 +1110,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .pup-later.primary{display:block;width:100%;margin-top:6px;padding:12px;border-radius:14px;background:#14202C;color:#fff;text-decoration:none;font-size:17px;font-weight:800;box-shadow:0 4px 0 var(--shadow)}
 .world-strip:empty{display:none}
 .world-strip{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 12px;margin:8px 0 2px;padding:8px 12px;border-radius:12px;background:#FFF6D6;color:#14202C;font-weight:800;font-size:14px}
-.world-strip .ws-stars{font-size:22px;letter-spacing:3px;color:#E9A800;line-height:1}
+.world-strip .ws-stars{font-size:22px;letter-spacing:3px;color:#F4BC22;line-height:1}
 .world-strip .ws-stars i{font-style:normal;color:#D9D2B8}
 .world-strip .ws-up{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:#14202C;color:#fff;font-size:13px}
 .world-strip .ws-up img,.world-strip .ws-up svg{width:22px;height:22px;border-radius:50%;object-fit:cover;object-position:center 20%;background:#E8F1F8}
@@ -1202,10 +1202,10 @@ body.on-home .tabs{visibility:hidden}
 .hm-hello{display:flex;align-items:center;gap:14px}
 /* How to play: a 45-second video (remade 5 Nov 2026, at phone size), on the menu and on the build page for a player's first builds */
 .hm-how{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid var(--line);border-radius:16px;padding:10px 14px;background:var(--page);color:var(--ink);cursor:pointer;font:inherit;box-shadow:0 2px 0 var(--shadow)}
-.hm-how .pl{flex:none;width:44px;height:44px;border-radius:50%;background:#D2352B;color:#fff;display:grid;place-items:center;font-size:18px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
+.hm-how .pl{flex:none;width:44px;height:44px;border-radius:50%;background:#D62F2A;color:#fff;display:grid;place-items:center;font-size:18px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
 .hm-how b{display:block;font-family:"Lilita One","Arial Rounded MT Bold",system-ui,sans-serif;font-weight:400;font-size:20px;line-height:1.1}
 .hm-how small{color:var(--muted);font-size:13px;font-weight:700}
-.tool.how{background:#D2352B;color:#fff;border-color:#B32A22}
+.tool.how{background:#D62F2A;color:#fff;border-color:#B32A22}
 .howdlg{width:min(980px,calc(100vw - 24px));padding:12px 12px 14px}
 .howdlg video{display:block;width:100%;aspect-ratio:16/9;border-radius:12px;background:#14202C}
 .howdlg.tall{width:min(420px,calc(100vw - 24px))}.howdlg.tall video{aspect-ratio:9/16;max-height:calc(100vh - 130px);max-height:calc(100dvh - 130px);margin:0 auto;width:auto;max-width:100%}
@@ -1230,7 +1230,7 @@ body.on-home .tabs{visibility:hidden}
 .hm-world .hw-chips{position:absolute;right:10px;bottom:10px;display:flex;gap:6px}
 .hm-world .hw-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:var(--page);color:var(--ink);font-weight:800;font-size:13px;line-height:1.2;box-shadow:0 2px 0 rgba(20,32,44,.18);cursor:pointer}
 .hm-world .hw-chip[hidden]{display:none}.hm-world .hw-chip:hover{outline:2px solid var(--ink)}.hm-world .hw-chip:focus-visible{outline:3px solid var(--hi)}
-.hm-world .hw-chip .n{font-style:normal;min-width:20px;padding:0 6px;border-radius:999px;background:#0b4f6c;color:#fff;font-size:12px;text-align:center;font-variant-numeric:tabular-nums}
+.hm-world .hw-chip .n{font-style:normal;min-width:20px;padding:0 6px;border-radius:999px;background:var(--ink);color:var(--page);font-size:12px;text-align:center;font-variant-numeric:tabular-nums}
 .hm-world .hw-strip{display:flex;align-items:center;gap:10px;padding:8px 12px;min-width:0}
 .hm-world .pup{flex:none;display:block;width:40px;height:40px;border-radius:50%;overflow:hidden;background:#E8F1F8;border:2px solid #fff;box-shadow:0 1px 0 var(--shadow)}.hm-world .pup svg{width:100%;height:100%;display:block}
 .hm-world .pup.ps-legend{border-color:#F4BC22}
@@ -1292,7 +1292,7 @@ body.on-home .tabs{visibility:hidden}
 .hm-cont{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 14px;width:100%;text-align:left;border:0;border-radius:16px;padding:14px 16px 16px;background:var(--hi);color:var(--hi-ink);cursor:pointer;box-shadow:inset 0 -5px 0 rgba(0,0,0,.14);font:inherit}
 .hm-cont b{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.1}
 .hm-cont .sub{grid-column:1;font-size:14px;font-weight:600;opacity:.85}
-.hm-cont .go{grid-row:1 / span 3;grid-column:2;width:52px;height:52px;border-radius:50%;background:#D2352B;color:#fff;display:grid;place-items:center;font-size:24px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
+.hm-cont .go{grid-row:1 / span 3;grid-column:2;width:52px;height:52px;border-radius:50%;background:#D62F2A;color:#fff;display:grid;place-items:center;font-size:24px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
 .hm-cont .bar{grid-column:1;height:10px;border-radius:99px;background:rgba(20,32,44,.18);overflow:hidden}
 .hm-cont .bar i{display:block;height:100%;background:#14202C;border-radius:99px}
 .hm-cont .hc-pic{display:none}
@@ -1312,7 +1312,7 @@ body.on-home .tabs{visibility:hidden}
 #view-blitz[data-sub="friend"]:not(.in-room) #bzCpuCard{display:none!important}
 #view-blitz:not([data-sub="hub"]):not(.in-room) .mp-forms,#view-mp:not([data-sub="hub"]):not(.in-room) .mp-forms{grid-template-columns:1fr}
 #view-mp[data-sub="start"] #mpJoinCard,#view-mp[data-sub="join"] #mpStartCard{display:none!important}
-.hm-tile{--c:#D2352B;position:relative;display:grid;align-content:end;justify-items:start;gap:2px;min-height:132px;padding:16px;border:0;border-radius:14px;background:var(--c);color:#fff;text-align:left;cursor:pointer;font:inherit;box-shadow:inset 0 -6px 0 rgba(0,0,0,.2);transition:transform .12s ease}
+.hm-tile{--c:#D62F2A;position:relative;display:grid;align-content:end;justify-items:start;gap:2px;min-height:132px;padding:16px;border:0;border-radius:14px;background:var(--c);color:#fff;text-align:left;cursor:pointer;font:inherit;box-shadow:inset 0 -6px 0 rgba(0,0,0,.2);transition:transform .12s ease}
 .hm-tile::before{content:"";position:absolute;left:16px;right:16px;top:-9px;height:12px;border-radius:5px 5px 0 0;background:radial-gradient(circle at 13px 7px,var(--c) 9px,transparent 9.5px) 0 0/34px 12px repeat-x;filter:brightness(1.08)}
 .hm-tile:active{transform:translateY(3px);box-shadow:inset 0 -3px 0 rgba(0,0,0,.2)}
 .hm-tile:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
@@ -1326,7 +1326,7 @@ body.on-home .tabs{visibility:hidden}
 .hm-tile.wide .ic{grid-row:1 / span 2;margin:0;width:64px;height:64px;font-size:36px}
 .hm-tile.wide b{margin-top:0;align-self:end}
 .hm-tile.wide span:not(.ic){align-self:start}
-.hm-tile.t-photo{--c:#D2352B;min-height:140px}
+.hm-tile.t-photo{--c:#D62F2A;min-height:140px}
 .hm-tile.t-lib{--c:#0055BF}
 .hm-tile.t-game{--c:#237841}
 .hm-tile.t-mp{--c:#923978}
@@ -1364,7 +1364,7 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 #view-island .ic-gb svg,#view-island .ic-gb img,.isd-gb svg,.isd-gb img{width:18px;height:18px}
 .is-drawer{position:absolute;z-index:5;top:10px;right:10px;bottom:10px;width:min(560px,calc(100% - 20px));display:flex;flex-direction:column;border-radius:20px;background:var(--page);color:var(--ink);border:1px solid var(--line);box-shadow:0 18px 50px rgba(0,0,0,.35);overflow:hidden}
 .isd-head{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line)}
-.isd-tabs{display:flex;gap:6px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}.isd-tabs::-webkit-scrollbar{display:none}.isd-tabs button{border:0;border-radius:999px;padding:8px 14px;font-weight:800;white-space:nowrap;background:transparent;cursor:pointer;color:inherit}@media (max-width:559px){.isd-tabs{gap:2px}.isd-tabs button{padding:7px 10px;font-size:13px}}.isd-tabs button[aria-selected="true"]{background:#8A3BC9;color:#fff}
+.isd-tabs{display:flex;gap:6px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}.isd-tabs::-webkit-scrollbar{display:none}.isd-tabs button{border:0;border-radius:999px;padding:8px 14px;font-weight:800;white-space:nowrap;background:transparent;cursor:pointer;color:inherit}@media (max-width:559px){.isd-tabs{gap:2px}.isd-tabs button{padding:7px 10px;font-size:13px}}.isd-tabs button[aria-selected="true"]{background:var(--c-bloppit);color:#fff}
 .isd-gb{background:rgba(138,59,201,.18);color:var(--ink)}.isd-gb b{color:var(--ink)}.isd-x{border:0;background:transparent;font-size:18px;cursor:pointer;padding:6px 10px;border-radius:10px;color:inherit}
 .isd-body{flex:1;overflow:auto;padding:0 6px 10px}.isd-body>.card{box-shadow:none;border:0;margin:0}.isd-body .gm-head.sub-head{display:none}
 @media (max-width:559px){.is-drawer{top:auto;left:8px;right:8px;bottom:8px;width:auto;height:min(78%,640px)}#view-island.immersive .is-btns .is-custom{font-size:13px!important;padding:7px 10px!important;gap:6px}#view-island .ic-long{display:none}#view-island .is-custom .ic-gb{font-size:12px;padding:2px 7px}#view-island.immersive .is-foot{max-width:calc(100% - 178px)!important}}
@@ -1424,12 +1424,19 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 #view-island.immersive .ip-bar{height:8px;background:rgba(255,255,255,.22)}#view-island.immersive .ip-bar em{height:12px;background:rgba(255,255,255,.45)}#view-island.immersive .ip-bar em.on{background:#F2C230}
 #dyBoardList{display:grid;gap:4px;max-height:420px;overflow:auto}
 #dyBoardList div{display:grid;grid-template-columns:40px 1fr auto auto;gap:10px;align-items:center;padding:6px 10px;border-radius:10px;background:var(--bg);font-weight:700;font-size:14px}
-#dyBoardList div.me{background:#14202C;color:#fff}#dyBoardList .rk{font-family:var(--f-display);font-size:18px}#dyBoardList .ws-stars{font-size:16px;letter-spacing:2px;color:#E9A800}#dyBoardList div.me .ws-stars i{color:rgba(255,255,255,.3)}
+#dyBoardList div.me{background:#14202C;color:#fff}#dyBoardList .rk{font-family:var(--f-display);font-size:18px}#dyBoardList .ws-stars{font-size:16px;letter-spacing:2px;color:#F4BC22}#dyBoardList div.me .ws-stars i{color:rgba(255,255,255,.3)}
 .switch{display:flex;align-items:center;gap:10px;font-weight:700;cursor:pointer}.switch input{width:22px;height:22px}
 .crew-card{display:grid;gap:14px}
 .crew-list{display:grid;gap:10px}.crew-list:empty{display:none}
 .crew-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:var(--bg)}
 .crew-row svg{width:64px;height:auto}
+.crew-top{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:10px}
+.crew-game{display:grid;gap:8px;padding:14px;border-radius:14px;background:var(--bg)}.crew-game h3{font-size:20px}
+.crew-game .bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}.crew-game .bar i{display:block;height:100%;background:var(--c-together)}
+.crew-mega{display:grid;grid-template-columns:minmax(0,200px) minmax(0,1fr);gap:14px;align-items:center}.crew-mega svg{width:100%;height:auto}
+@media (max-width:520px){.crew-mega{grid-template-columns:1fr}}
+.pass-hist{margin:0;padding-left:20px;font-size:13.5px;color:var(--muted)}
+.hub-sec{margin:4px 0 6px}
 .news-dot{position:absolute;top:-3px;right:-3px;width:14px;height:14px;border-radius:50%;background:#D62F2A;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.25);pointer-events:none;z-index:2}
 .news-dot[hidden]{display:none}#tab-mp,.t-crew{position:relative}.t-crew .news-dot{top:10px;right:10px;width:16px;height:16px}
 .crew-new{font-style:normal;font-size:11px;font-weight:800;background:#D62F2A;color:#fff;border-radius:999px;padding:1px 8px;vertical-align:2px}
@@ -1492,7 +1499,7 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .is-tip .tt-bar small{color:var(--muted);font-weight:700}
 .is-tip .tt-btns{display:flex;flex-wrap:wrap;gap:8px}
 .is-tip .tt-story{margin:0 0 8px;font-size:14px;line-height:1.45}
-.is-tip .tt-chips{display:flex;flex-wrap:wrap;gap:4px;max-height:132px;overflow:auto}.is-tip .tt-chips span{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--bg);color:var(--muted)}.is-tip .tt-chips span.ok{background:#D9F2EF;color:#00616A}
+.is-tip .tt-chips{display:flex;flex-wrap:wrap;gap:4px;max-height:132px;overflow:auto}.is-tip .tt-chips span{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--bg);color:var(--muted)}.is-tip .tt-chips span.ok{background:#DFF3E4;color:#1F7A3C}
 /* The end: the closing sequence after the whole world is complete */
 .the-end{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:16px 16px 22px;cursor:pointer;background:linear-gradient(180deg,transparent 55%,rgba(8,14,24,.55))}
 #view-island:has(.the-end) :is(.is-btns,.is-foot,.is3-labels){visibility:hidden}
@@ -1622,7 +1629,7 @@ body.film-on{overflow:hidden}
 .is-hover b{font-family:var(--f-display);font-weight:400;font-size:16px}.is-hover span{opacity:.85;font-weight:700}
 .builds-grid div,.builds-grid button{display:grid;justify-items:center;gap:4px;padding:10px 6px 8px;border-radius:14px;background:var(--bg);font-size:13px;font-weight:800;text-align:center}
 .builds-grid img{width:96px;height:72px;object-fit:contain}
-.builds-grid .ws-stars{font-size:16px;letter-spacing:2px;color:#E9A800}.builds-grid .ws-stars i{font-style:normal;color:var(--line)}
+.builds-grid .ws-stars{font-size:16px;letter-spacing:2px;color:#F4BC22}.builds-grid .ws-stars i{font-style:normal;color:var(--line)}
 .builds-grid small{font-weight:700;color:var(--muted)}
 .mastery{display:inline-flex;gap:10px;margin-left:8px;font-size:13px;font-weight:700;color:var(--muted)}.mastery b{color:var(--ink)}
 .tab.play4{background:#008F9B;color:#fff;border-color:#008F9B}
@@ -1648,8 +1655,8 @@ body.film-on{overflow:hidden}
    Red is Bloppit's alone; yellow without a face is Play Now / Quick Play. Light colours carry dark text. */
 :root{--c-bloppit:#D62F2A;--c-tiny:#7DBE2E;--c-nora:#24407A;--c-pippa:#F4BC22;--c-swoop:#2F7FD0;--c-bibi:#E9772A;--c-lufu:#8A6FD1}
 .hm-tile.t-quick{--c:var(--c-bibi);color:#14202C}                 /* Build anything: Bibi */
-.hm-tile.t-game{--c:var(--c-tiny);color:#14202C}                  /* Frog Trail: Tiny */
-.hm-tile.t-brain{--c:var(--c-nora)}                               /* Brain Trail: Nora */
+.hm-tile.t-game{--c:var(--c-tiny);color:#14202C}                  /* Tiny’s Frog Trail: Tiny */
+.hm-tile.t-brain{--c:var(--c-nora)}                               /* Nora’s Brain Trail: Nora */
 .hm-tile.t-sea{--c:var(--c-pippa);color:#14202C}                  /* Pippa's Mirror Puzzles: Pippa */
 .hm-tile.t-blitz{--c:var(--c-swoop)}                              /* vs Swoop: Swoop */
 .hm-tile.t-quick .ic,.hm-tile.t-game .ic,.hm-tile.t-sea .ic{background:rgba(255,255,255,.35)}
@@ -1677,13 +1684,13 @@ body.film-on{overflow:hidden}
 .trail-pick button[aria-selected="true"]{background:var(--c-tiny);color:#14202C}
 .trail-pick button#trBrain[aria-selected="true"]{background:var(--c-nora);color:#fff}
 .trail-pick button#trSea[aria-selected="true"]{background:var(--c-pippa);color:#14202C}
-.sea .gm-levels.river{background:linear-gradient(180deg,color-mix(in srgb,#F2CD37 14%,var(--page)),color-mix(in srgb,#36AEBF 16%,var(--page)))}
+.sea .gm-levels.river{background:linear-gradient(180deg,color-mix(in srgb,var(--c-pippa) 14%,var(--page)),color-mix(in srgb,#2FB8DC 16%,var(--page)))}
 .trail-pick button:focus-visible{outline:3px solid var(--hi)}
 .gm-mt{font-size:17px}
 .bz-speed .spd{display:block;font-size:30px;line-height:1.25;margin:2px 0 4px}
 .gm-levels.river{position:relative;padding:14px;border-radius:18px;background:linear-gradient(180deg,color-mix(in srgb,#5A93DB 12%,var(--page)),color-mix(in srgb,#36AEBF 9%,var(--page)));
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='90'%3E%3Cpath d='M10 30q15-8 30 0t30 0M140 72q15-8 30 0t30 0' fill='none' stroke='%2336AEBF' stroke-opacity='.22' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"),linear-gradient(180deg,color-mix(in srgb,#5A93DB 12%,var(--page)),color-mix(in srgb,#36AEBF 9%,var(--page)));background-size:240px 90px,auto}
-.brain .gm-levels.river{background-image:radial-gradient(circle 2px at 20px 14px,rgba(0,85,191,.1) 98%,transparent),linear-gradient(180deg,color-mix(in srgb,#0055BF 14%,var(--page)),color-mix(in srgb,#AC78BA 14%,var(--page)));background-size:40px 40px,auto}
+.brain .gm-levels.river{background-image:radial-gradient(circle 2px at 20px 14px,rgba(36,64,122,.1) 98%,transparent),linear-gradient(180deg,color-mix(in srgb,var(--c-nora) 14%,var(--page)),color-mix(in srgb,var(--c-nora) 6%,var(--page)));background-size:40px 40px,auto}
 .bz-puzzle{display:grid;gap:8px}
 .bzp{display:flex;align-items:center;gap:12px;background:var(--bg);border-radius:12px;padding:8px}
 .bzp img{width:56px;height:56px;border-radius:10px;background:#fff;object-fit:contain;flex:none}
@@ -1753,7 +1760,7 @@ body.film-on{overflow:hidden}
 @media (max-width:560px){.bottle{grid-template-columns:48px minmax(0,1fr)}.bottle .bt-art{width:48px;height:48px}#btOpen{grid-column:1/-1}}
 @media (prefers-reduced-motion: reduce){.bottle .bt-art{animation:none!important}}
 .tab .n{position:relative}
-.tab.bottle-on .n::after{content:"";position:absolute;top:-2px;right:-3px;width:10px;height:10px;border-radius:50%;background:#D2352B;border:2px solid var(--bg)}
+.tab.bottle-on .n::after{content:"";position:absolute;top:-2px;right:-3px;width:10px;height:10px;border-radius:50%;background:#D62F2A;border:2px solid var(--bg)}
 .dy-sea{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;text-align:left;cursor:pointer;font:inherit;color:var(--ink)}.dy-sea img{width:52px;height:52px}.dy-sea b{display:block;font-family:var(--f-display);font-weight:400;font-size:20px}.dy-sea span span{font-size:13px;font-weight:700;color:var(--muted)}.dy-go{font-size:28px;color:var(--muted)}.dy-sea:hover{border-color:var(--accent)}#tab-brain{--tc:var(--c-nora)}#tab-blitz{--tc:var(--c-swoop)}#tab-mp{--tc:#8B5CF6}
 /* The game tabs scroll sideways when they don't all fit: little arrows at either end show there are more, and tap to slide */
 .tabs-wrap{display:contents}.tabs-arr{display:none}
@@ -1816,6 +1823,46 @@ body.film-on{overflow:hidden}
 .di-together{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%236A3FB5'/%3E%3Crect x='5' y='10.5' width='14' height='7' rx='1.5' fill='%23fff'/%3E%3Crect x='7' y='7.6' width='3.6' height='3.4' rx='1' fill='%23fff'/%3E%3Crect x='13.4' y='7.6' width='3.6' height='3.4' rx='1' fill='%23fff'/%3E%3C/svg%3E")}
 .di-key{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%236A3FB5'/%3E%3Ccircle cx='8.6' cy='12' r='3.6' fill='none' stroke='%23fff' stroke-width='2.2'/%3E%3Cpath d='M12 12h7.4M16.4 12v3M19 12v2.4' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E")}
 .di-friend{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%236A3FB5'/%3E%3Cpath d='M5 12.4 18.6 6.2l-4 12-3-4.4z' fill='%23fff'/%3E%3Cpath d='M11.6 13.8 18.6 6.2' stroke='%23D9CFF0' stroke-width='1.2'/%3E%3C/svg%3E")}
+.di-box{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2.5 8 12 3.5 21.5 8 12 12.5z' fill='%23E4CD9E'/%3E%3Cpath d='M2.5 8v9L12 21.5v-9z' fill='%23C9A96E'/%3E%3Cpath d='M21.5 8v9L12 21.5v-9z' fill='%23B08D55'/%3E%3Cpath d='M7 5.9 16.5 10.4v3l-1.5-.7v-2.4L5.6 6.6z' fill='%23D62F2A'/%3E%3C/svg%3E")}
+.di-env{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='4.5' width='20' height='15' rx='2.5' fill='%23fff' stroke='%2314202C' stroke-width='1.6'/%3E%3Cpath d='M3 6.5 12 13l9-6.5' fill='none' stroke='%2314202C' stroke-width='1.6'/%3E%3Ccircle cx='18.5' cy='6.5' r='3' fill='%23D62F2A'/%3E%3C/svg%3E")}
+.di-pass{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%236A3FB5'/%3E%3Cpath d='M7 9.5h7.5l-2-2M17 14.5H9.5l2 2' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.di-hammer{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3.5 19.5 12 11l1.8 1.8-8.5 8.5a1.3 1.3 0 0 1-1.8-1.8z' fill='%238A5A3B'/%3E%3Cpath d='M10.5 5.5 14 2l7.5 7.5-3.5 3.5-2.2-2.2-1.6 1.6-3.1-3.1 1.6-1.6z' fill='%235B6778'/%3E%3C/svg%3E")}
+.di-boat{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2v13' stroke='%238A5A3B' stroke-width='1.6'/%3E%3Cpath d='M12.8 3 20 13h-7.2z' fill='%23fff' stroke='%2314202C' stroke-width='1.2'/%3E%3Cpath d='M11.2 5v8H5.5z' fill='%23fff' stroke='%2314202C' stroke-width='1.2'/%3E%3Cpath d='M3 15h18l-2.5 4.5h-13z' fill='%23D62F2A'/%3E%3Cpath d='M2 21q2.5-1.6 5 0t5 0 5 0 5 0' fill='none' stroke='%232F7FD0' stroke-width='1.6'/%3E%3C/svg%3E")}
+.di-bulb{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z' fill='%23F4BC22'/%3E%3Crect x='8.5' y='18' width='7' height='2' rx='1' fill='%2314202C'/%3E%3Crect x='9.5' y='21' width='5' height='1.6' rx='.8' fill='%2314202C'/%3E%3C/svg%3E")}
+.di-tree{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='10.5' y='15' width='3' height='7' fill='%238A5A3B'/%3E%3Ccircle cx='12' cy='10' r='7' fill='%237DBE2E'/%3E%3Ccircle cx='8' cy='12' r='4' fill='%235FA94A'/%3E%3Ccircle cx='16' cy='12.5' r='4' fill='%235FA94A'/%3E%3C/svg%3E")}
+.di-flag{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 2v20' stroke='%2314202C' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M5 3h14v10H5z' fill='%23fff' stroke='%2314202C' stroke-width='1.2'/%3E%3Cpath d='M5 3h3.5v3.3H5zM12 3h3.5v3.3H12zM8.5 6.3H12v3.4H8.5zM15.5 6.3H19v3.4h-3.5zM5 9.7h3.5V13H5zM12 9.7h3.5V13H12z' fill='%2314202C'/%3E%3C/svg%3E")}
+.di-rocket{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1.5c3.5 2.5 5 6.5 5 11l-2 2.5H9L7 12.5c0-4.5 1.5-8.5 5-11z' fill='%23E6EDF5' stroke='%2314202C' stroke-width='1.2'/%3E%3Ccircle cx='12' cy='9' r='2' fill='%232F7FD0'/%3E%3Cpath d='M7 12.5 3.5 16l3.5.5zM17 12.5l3.5 3.5-3.5.5z' fill='%23D62F2A'/%3E%3Cpath d='M10 15.5h4l-2 7z' fill='%23F4BC22'/%3E%3C/svg%3E")}
+.di-cal{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2.5' y='4' width='19' height='17.5' rx='2.5' fill='%23fff' stroke='%2314202C' stroke-width='1.6'/%3E%3Crect x='2.5' y='4' width='19' height='5' rx='2.5' fill='%23E9772A'/%3E%3Cpath d='M7.5 2v4M16.5 2v4' stroke='%2314202C' stroke-width='1.8' stroke-linecap='round'/%3E%3Crect x='6' y='12' width='3' height='3' fill='%2314202C'/%3E%3Crect x='10.5' y='12' width='3' height='3' fill='%2314202C'/%3E%3Crect x='15' y='12' width='3' height='3' fill='%23D62F2A'/%3E%3C/svg%3E")}
+.di-tiny{background-image:url('/art/head-tiny.png');border-radius:50%}.di-nora{background-image:url('/art/head-nora.png');border-radius:50%}.di-pippa{background-image:url('/art/head-pippa.png');border-radius:50%}
+.di-trophy{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 3h10v7a5 5 0 0 1-10 0z' fill='%23F4BC22'/%3E%3Cpath d='M7 5H3.5v2.5A3.5 3.5 0 0 0 7 11M17 5h3.5v2.5A3.5 3.5 0 0 1 17 11' fill='none' stroke='%23F4BC22' stroke-width='2'/%3E%3Crect x='10.5' y='14.5' width='3' height='3.5' fill='%23D9A30F'/%3E%3Crect x='7' y='18' width='10' height='3' rx='1' fill='%238A5A3B'/%3E%3C/svg%3E")}
+.di-lock{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='4.5' y='10' width='15' height='11' rx='2.5' fill='%23F4BC22'/%3E%3Cpath d='M8 10V7a4 4 0 0 1 8 0v3' fill='none' stroke='%2314202C' stroke-width='2.2'/%3E%3Ccircle cx='12' cy='15.5' r='1.8' fill='%2314202C'/%3E%3C/svg%3E")}
+.di-moon{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M15 2.5A9.5 9.5 0 1 0 21.5 15 7.5 7.5 0 0 1 15 2.5z' fill='%23F4BC22'/%3E%3C/svg%3E")}
+.di-oops{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23E4CD9E'/%3E%3Ccircle cx='8.5' cy='10' r='1.4' fill='%2314202C'/%3E%3Ccircle cx='15.5' cy='10' r='1.4' fill='%2314202C'/%3E%3Cpath d='M8 16q2-2 4 0t4-1' fill='none' stroke='%2314202C' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E")}
+.di-wave{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2 15q3-5 6 0t6 0 6 0 3-2v8H2z' fill='%232F7FD0'/%3E%3Cpath d='M2 12q3-5 6 0t6 0 6 0 3-2' fill='none' stroke='%239FC3E9' stroke-width='2'/%3E%3C/svg%3E")}
+.di-brick{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='3' y='9' width='18' height='11' rx='1.5' fill='%23D62F2A'/%3E%3Crect x='5.5' y='5' width='5' height='4.5' rx='1' fill='%23E5463C'/%3E%3Crect x='13.5' y='5' width='5' height='4.5' rx='1' fill='%23E5463C'/%3E%3Crect x='3' y='17' width='18' height='3' rx='1.5' fill='%23A8231F'/%3E%3C/svg%3E")}
+.di-mirror{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='5' y='2.5' width='14' height='19' rx='7' fill='%23C9D4E1' stroke='%235B6778' stroke-width='1.6'/%3E%3Cpath d='M9 6.5q2.5 2 1 8' fill='none' stroke='%23fff' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E")}
+.di-crown{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 8l4.5 4L12 5l4.5 7L21 8l-1.5 11h-15z' fill='%23F4BC22'/%3E%3Crect x='4.5' y='17' width='15' height='2.5' fill='%23D9A30F'/%3E%3Ccircle cx='12' cy='13.5' r='1.6' fill='%23D62F2A'/%3E%3C/svg%3E")}
+.di-gold{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 2h3l1 6h-3zM13 2h3l-1 6h-3z' fill='%232F7FD0'/%3E%3Ccircle cx='12' cy='14.5' r='7' fill='%23F4BC22'/%3E%3Ccircle cx='12' cy='14.5' r='4.5' fill='none' stroke='%23D9A30F' stroke-width='1.4'/%3E%3C/svg%3E")}
+.di-silver{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 2h3l1 6h-3zM13 2h3l-1 6h-3z' fill='%232F7FD0'/%3E%3Ccircle cx='12' cy='14.5' r='7' fill='%23C9D4E1'/%3E%3Ccircle cx='12' cy='14.5' r='4.5' fill='none' stroke='%239AA3AD' stroke-width='1.4'/%3E%3C/svg%3E")}
+.di-bronze{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 2h3l1 6h-3zM13 2h3l-1 6h-3z' fill='%232F7FD0'/%3E%3Ccircle cx='12' cy='14.5' r='7' fill='%23C98B4E'/%3E%3Ccircle cx='12' cy='14.5' r='4.5' fill='none' stroke='%239A6430' stroke-width='1.4'/%3E%3C/svg%3E")}
+.di-party{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 21 8.5 7l8.5 8.5z' fill='%23F4BC22'/%3E%3Cpath d='M3 21 8.5 7l3.5 3.5z' fill='%23D62F2A'/%3E%3Ccircle cx='18.5' cy='5' r='1.6' fill='%23D62F2A'/%3E%3Ccircle cx='14' cy='3.5' r='1.3' fill='%232F7FD0'/%3E%3Ccircle cx='20.5' cy='10.5' r='1.3' fill='%237DBE2E'/%3E%3Cpath d='M12.5 5.5q3-3 5 0' fill='none' stroke='%236A3FB5' stroke-width='1.6'/%3E%3C/svg%3E")}
+.di-smile{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23F4BC22'/%3E%3Ccircle cx='8.5' cy='10' r='1.5' fill='%2314202C'/%3E%3Ccircle cx='15.5' cy='10' r='1.5' fill='%2314202C'/%3E%3Cpath d='M7.5 14.5q4.5 4 9 0' fill='none' stroke='%2314202C' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E")}
+.di-chick{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='13' r='8.5' fill='%23F4BC22'/%3E%3Ccircle cx='9' cy='11.5' r='1.3' fill='%2314202C'/%3E%3Ccircle cx='15' cy='11.5' r='1.3' fill='%2314202C'/%3E%3Cpath d='M10.5 14.5h3l-1.5 2z' fill='%23E9772A'/%3E%3Cpath d='M8 4l1.5 2.5M12 3v3M16 4l-1.5 2.5' stroke='%23D9A30F' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E")}
+.di-scarf{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 8q7-4 14 0v4q-7-3-14 0z' fill='%23D62F2A'/%3E%3Cpath d='M9 11.5 7 21l4-1 1-8z' fill='%23D62F2A'/%3E%3Cpath d='M5 10q7-3 14 0' fill='none' stroke='%23fff' stroke-width='1.4'/%3E%3C/svg%3E")}
+.di-door{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='5' y='2.5' width='14' height='19' rx='1.5' fill='%238A5A3B'/%3E%3Crect x='7.5' y='5' width='9' height='14' rx='1' fill='%23A66E47'/%3E%3Ccircle cx='14.5' cy='12.5' r='1.3' fill='%23F4BC22'/%3E%3C/svg%3E")}
+.di-star{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2l2.9 6.3 6.9.7-5.2 4.6 1.6 6.8L12 16.8l-6.2 3.6 1.6-6.8L2.2 9l6.9-.7z' fill='%23F4BC22'/%3E%3C/svg%3E")}
+.di-house{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 11 12 3l9 8v10H3z' fill='%23D62F2A'/%3E%3Crect x='9.5' y='13' width='5' height='8' fill='%23F4BC22'/%3E%3Cpath d='M3 11 12 3l9 8' fill='none' stroke='%2314202C' stroke-width='1.6'/%3E%3C/svg%3E")}
+.di-phone{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='6' y='2' width='12' height='20' rx='2.5' fill='%2314202C'/%3E%3Crect x='7.5' y='4.5' width='9' height='13.5' rx='1' fill='%239FC3E9'/%3E%3Ccircle cx='12' cy='20' r='1' fill='%23fff'/%3E%3C/svg%3E")}
+.di-bucket{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 7h16l-2 14H6z' fill='%232F7FD0'/%3E%3Cellipse cx='12' cy='7' rx='8' ry='2.5' fill='%239FC3E9'/%3E%3Cpath d='M6 7q6-6 12 0' fill='none' stroke='%2314202C' stroke-width='1.6'/%3E%3C/svg%3E")}
+.di-ruler{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='8' width='20' height='8' rx='1.5' fill='%23F4BC22'/%3E%3Cpath d='M6 8v3M10 8v4.5M14 8v3M18 8v4.5' stroke='%2314202C' stroke-width='1.4'/%3E%3C/svg%3E")}
+.di-turtle{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cellipse cx='12' cy='13' rx='8' ry='5.5' fill='%237DBE2E'/%3E%3Cellipse cx='12' cy='12' rx='5.5' ry='3.5' fill='%235FA94A'/%3E%3Ccircle cx='20' cy='12' r='2.3' fill='%237DBE2E'/%3E%3Cpath d='M6 17.5l-1.5 2.5M18 17.5l1.5 2.5' stroke='%235FA94A' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")}
+.di-shuffle{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 7h4l6 10h5M3 17h4l2-3.3M12 10.3 14 7h4' fill='none' stroke='%2314202C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M17 4.5 21 7l-4 2.5zM17 14.5 21 17l-4 2.5z' fill='%2314202C'/%3E%3C/svg%3E")}
+.di-die{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='3' y='3' width='18' height='18' rx='4' fill='%23fff' stroke='%2314202C' stroke-width='1.6'/%3E%3Ccircle cx='8' cy='8' r='1.7' fill='%2314202C'/%3E%3Ccircle cx='16' cy='8' r='1.7' fill='%2314202C'/%3E%3Ccircle cx='12' cy='12' r='1.7' fill='%2314202C'/%3E%3Ccircle cx='8' cy='16' r='1.7' fill='%2314202C'/%3E%3Ccircle cx='16' cy='16' r='1.7' fill='%2314202C'/%3E%3C/svg%3E")}
+.di-cap{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 14a8 8 0 0 1 16 0z' fill='%232F7FD0'/%3E%3Cpath d='M3 14h18l2 2.5H3z' fill='%2324407A'/%3E%3C/svg%3E")}
+.di-shirt{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 3 12 5l4-2 5 4-2.5 3.5L16 9v12H8V9l-2.5 1.5L3 7z' fill='%237DBE2E'/%3E%3C/svg%3E")}
+.di-think{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23F4BC22'/%3E%3Ccircle cx='8.5' cy='10' r='1.5' fill='%2314202C'/%3E%3Ccircle cx='15.5' cy='10' r='1.5' fill='%2314202C'/%3E%3Cpath d='M8.5 16q3-1.5 7 0' fill='none' stroke='%2314202C' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M5 7q2-2.5 4-1' fill='none' stroke='%2314202C' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E")}
+.di-sparkle{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z' fill='%23F4BC22'/%3E%3Cpath d='M19 15l.9 2.6 2.6.9-2.6.9L19 22l-.9-2.6-2.6-.9 2.6-.9z' fill='%23F4BC22'/%3E%3Cpath d='M5 16l.6 1.9 1.9.6-1.9.6L5 21l-.6-1.9L2.5 18.5l1.9-.6z' fill='%23F4BC22'/%3E%3C/svg%3E")}
+.di-bloppit{background-image:url('/art/head-bloppit.png');border-radius:50%}.di-swoop{background-image:url('/art/head-swoop.png');border-radius:50%}
 .hm-quick .pl .di{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14 1.5 4.6 14.5h6.4l-1.9 8 10.3-13.6h-6.5z' fill='%23fff'/%3E%3C/svg%3E");width:.9em;height:.9em}
 .qb-ic .di{width:1.5em;height:1.5em}
 /* phones: the wordmark's bricks go with the word */
@@ -1823,6 +1870,7 @@ body.film-on{overflow:hidden}
 /* the wide Build anything tile: the island sits under the name, the description under that */
 .hm-tile.wide{grid-template-rows:auto auto auto}.hm-tile.wide .ic{grid-row:1 / span 3}
 .hm-tile.wide b{align-self:end}.hm-tile.wide .isl{grid-column:2}.hm-tile.wide span:not(.ic){grid-column:2}
+.hm-tile .ic .two{position:relative;display:block;width:100%;height:100%}.hm-tile .ic .two img{position:absolute;top:8%;width:62%;height:auto}.hm-tile .ic .two img:first-child{left:-4%}.hm-tile .ic .two img:last-child{right:-4%;transform:scaleX(-1)}
 </style>
 
 <header class="top">
@@ -1871,27 +1919,26 @@ body.film-on{overflow:hidden}
     <img src="/art/bloppit-avatar.png" alt="" width="256" height="256">
     <div class="hm-bubble"><h2 id="hmHi">Hi there!</h2><p>What shall we build today?</p></div>
   </div>
-  <button class="hm-how hm-quick" id="hmQuick" type="button"><span class="pl" aria-hidden="true">⚡</span><span><b>Quick play</b><small>Jump straight into a puzzle</small></span><span class="go" aria-hidden="true">▶</span></button>
+  <button class="hm-how hm-quick" id="hmQuick" type="button"><span class="pl" aria-hidden="true">⚡</span><span><b>Quick Play</b><small>A random puzzle, right now</small></span><span class="go" aria-hidden="true">▶</span></button>
   <button class="hm-world" id="hmWorld" data-go="island" type="button" hidden></button>
   <button class="hm-daily" data-go="daily" type="button"><img id="hmDailyImg" alt=""><span class="hd-txt"><span class="tag">Bibi’s Weekly Bloppit</span><b id="hmDailyT">This week’s puzzle</b><span id="hmDailyS">The same puzzle for everyone</span></span><span class="go" aria-hidden="true">▶</span><span class="hd-pills"><span>🔥 <b id="hdStreak">0</b> week streak</span><span><b id="hdTotal">0</b> built</span></span></button>
   <button class="hm-cont" id="hmCont" type="button" hidden><img class="hc-pic" src="/art/bud-offer.png" alt="" width="300" height="398"><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span><span class="go" aria-hidden="true">▶</span></button>
-  <button class="hm-how" id="hmHow" type="button"><span class="pl" aria-hidden="true">▶</span><span><b>How to play</b><small>A 45-second video</small></span></button>
+  <button class="hm-how" id="hmHow" type="button"><span class="pl" aria-hidden="true">▶</span><span><b>How to Play</b><small>See how it works in 45 seconds</small></span></button>
 </div>
 <div class="hm-main">
   <h3 class="hm-sec" id="hmSolo">Solo</h3>
   <div class="hm-grid four">
-    <button class="hm-tile t-quick wide" data-go="quick" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span><b>Build anything</b><small class="isl">Brickyard Cove</small><span>Any puzzle, at your own pace</span></button>
-    <button class="hm-tile t-game" data-go="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Frog Trail</b><small class="isl">Frog Forest</small><span id="hmOtterSub">Levels from tiny to tricky</span></button>
-    <button class="hm-tile t-brain" data-go="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Brain Trail</b><small class="isl">Brainpeak</small><span id="hmBrainSub">Levels with math puzzles</span></button>
-    <button class="hm-tile t-sea" data-go="flip" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span><b>Pippa’s Mirror Puzzles</b><small class="isl">Flipper Beach</small><span id="hmSeaSub">Mirror puzzles, any time</span></button>
-    <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>Blitz</b><small class="isl">Blitz Bay</small><span>Race Swoop, the speediest Longtail</span></button>
+    <button class="hm-tile t-quick wide" data-go="quick" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span><b>Build Anything with Bibi</b><small class="isl">Brickyard Cove</small><span id="hmQuickSub">Photos, drawings or library models</span></button>
+    <button class="hm-tile t-game" data-go="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Tiny’s Frog Trail</b><small class="isl">Frog Forest</small><span id="hmOtterSub">Levels from tiny to tricky</span></button>
+    <button class="hm-tile t-brain" data-go="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Nora’s Brain Trail</b><small class="isl">Brainpeak</small><span id="hmBrainSub">Levels with a maths puzzle in each</span></button>
+    <button class="hm-tile t-sea" data-go="flip" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span><b>Pippa’s Mirror Puzzles</b><small class="isl">Flipper Beach</small><span id="hmSeaSub">Pippa builds half, you build the rest</span></button>
+    <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>Blitz with Swoop</b><small class="isl">Blitz Bay</small><span>20 races against Swoop</span></button>
   </div>
   <h3 class="hm-sec">Together</h3>
   <div class="hm-grid">
-    <button class="hm-tile t-together" data-go="mp" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="0" y="16" width="66" height="58"/><use href="#bh2" x="58" y="28" width="58" height="51"/><rect x="34" y="80" width="52" height="28" rx="5" fill="#D2352B"/><rect x="40" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="66" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="34" y="100" width="52" height="8" rx="4" fill="#B32A22"/><ellipse cx="34" cy="90" rx="8" ry="7" fill="#8A5A3B"/><ellipse cx="86" cy="90" rx="8" ry="7" fill="#C08A5E"/></svg></span><b>Build together</b><span>One puzzle, taking turns with friends</span></button>
-    <button class="hm-tile t-friend" data-go="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>Race a friend</b><span>Send a challenge code, or race live</span></button>
-    <button class="hm-tile t-crew" data-go="crew" type="button"><span class="ic" aria-hidden="true"></span><b>Crews</b><span>Build one big puzzle with friends</span></button>
-    <button class="hm-tile t-join" data-go="code" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a game</b><span>Got a code? Type it in to play</span></button>
+    <button class="hm-tile t-together" data-go="mp" type="button"><span class="ic" aria-hidden="true"><span class="two"><img src="/art/head-bloppit.png" alt="" width="256" height="256"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span></span><b>Play with Friends</b><span>Team Build or Race, with a code to share</span></button>
+    <button class="hm-tile t-join" data-go="code" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a Game</b><span>Got a code? Type it in to play</span></button>
+    <button class="hm-tile t-crew" data-go="crew" type="button"><span class="ic" aria-hidden="true"></span><b>Your Crews</b><span>Crew Quick Game, Pass the Puzzle, Crew Mega Build</span></button>
   </div>
 </div>
 </section>
@@ -2004,7 +2051,7 @@ body.film-on{overflow:hidden}
         <div class="pg-top"><div class="pg-step" id="bpStep">1</div><div class="callout" id="bpCallout"></div></div>
         <div class="pg-view" id="bpView" role="img" aria-label="Booklet picture for this step. Drag to turn it, pinch to zoom."><div class="pg-zoom"><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">−</button><button type="button" class="zx" id="bpBig" aria-label="Open this page big" title="Open big">⤢</button><button type="button" class="zfin" id="bpFinalMini" aria-label="See final build" title="See final build">🏁</button></div><span class="pg-turn" aria-hidden="true">Drag to turn · pinch to zoom</span><canvas class="pg-chart" id="bpChart" hidden></canvas></div>
         <div class="pg-foot" id="bpFoot"></div>
-        <div class="pg-lock" id="bpLock" hidden><div class="lk-ic" aria-hidden="true">🔒</div><b>This page is locked</b><span>Solve Bloppit’s math puzzle to open it.</span><button class="primary sm" id="bpUnlock" type="button">Solve the puzzle</button></div>
+        <div class="pg-lock" id="bpLock" hidden><div class="lk-ic" aria-hidden="true">🔒</div><b>This page is locked</b><span>Solve Bloppit’s maths puzzle to open it.</span><button class="primary sm" id="bpUnlock" type="button">Solve the puzzle</button></div>
       </article>
       <div class="bp-nav">
         <button class="ghost" id="bpPrev" type="button">&lsaquo; Page</button>
@@ -2016,7 +2063,7 @@ body.film-on{overflow:hidden}
     <div class="playcol">
       <div class="stage" id="buildStage">
         <div class="stage-tools">
-          <button class="tool how" id="howBtn" type="button" aria-label="How to play" hidden>▶<span class="lg"> How to play</span></button>
+          <button class="tool how" id="howBtn" type="button" aria-label="How to Play" hidden>▶<span class="lg"> How to Play</span></button>
           <button class="tool" id="bookBtn" type="button" aria-pressed="true">Booklet <kbd>B</kbd></button>
           <button class="tool" id="fitBtn" type="button">Zoom<span class="lg"> to build</span> <kbd>F</kbd></button>
           <button class="tool" id="rotBtn" type="button">Rotate <kbd>R</kbd></button>
@@ -2089,15 +2136,15 @@ body.film-on{overflow:hidden}
 <section class="view" id="view-game" hidden>
   <div class="char-hero" data-hero="game" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
   <div class="hub" data-hub>
-    <div class="gm-head"><div><h2>🐸 Trails</h2><p class="note">Climb 15 levels, from tiny to tricky: the 15th is the boss. Each trail has its own puzzles and keeps its own points.</p></div></div>
+    <div class="gm-head"><div><h2>Trails</h2><p class="note">Climb 15 levels, from tiny to tricky: the 15th is the boss. Each trail has its own puzzles and keeps its own points.</p></div></div>
     <div class="hm-grid hub-grid">
-      <button class="hm-tile t-game" data-sub="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Frog Trail</b><small class="isl">Frog Forest</small><span id="hubOtterSub">Levels from tiny to tricky</span></button>
-      <button class="hm-tile t-brain" data-sub="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Brain Trail</b><small class="isl">Brainpeak</small><span id="hubBrainSub">Levels with math puzzles</span></button>
+      <button class="hm-tile t-game" data-sub="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Tiny’s Frog Trail</b><small class="isl">Frog Forest</small><span id="hubOtterSub">Levels from tiny to tricky</span></button>
+      <button class="hm-tile t-brain" data-sub="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Nora’s Brain Trail</b><small class="isl">Brainpeak</small><span id="hubBrainSub">Levels with a maths puzzle in each</span></button>
     </div>
   </div>
   <div class="trail-pick" role="tablist" aria-label="Which trail" hidden>
-    <button type="button" role="tab" data-trail="otter" id="trOtter">🐸 Frog Trail</button>
-    <button type="button" role="tab" data-trail="brain" id="trBrain">🧠 Brain Trail</button>
+    <button type="button" role="tab" data-trail="otter" id="trOtter">🐸 Tiny’s Frog Trail</button>
+    <button type="button" role="tab" data-trail="brain" id="trBrain">🧠 Nora’s Brain Trail</button>
     <button type="button" role="tab" data-trail="sea" id="trSea">🐧 Pippa’s Mirror Puzzles</button>
   </div>
   <button class="crumb" data-up type="button">‹ Trails</button>
@@ -2107,7 +2154,7 @@ body.film-on{overflow:hidden}
     <button class="primary sm" id="btOpen" type="button">Open it</button>
   </div>
   <div class="gm-head">
-    <div><h2 id="gmTitle">Frog Trail</h2><p class="note" id="gmIntro">Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, and Tiny cheers you all the way.</p></div>
+    <div><h2 id="gmTitle">Tiny’s Frog Trail</h2><p class="note" id="gmIntro">Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, and Tiny cheers you all the way.</p></div>
     <div class="gm-total"><span class="tag" id="gmWho">Your stars</span><b id="gmTotal">0</b><span class="note" id="gmDone"></span><button class="ghost sm-link" id="gmSwitch" type="button">Switch player</button></div>
   </div>
   <div class="gm-rules">
@@ -2117,8 +2164,8 @@ body.film-on{overflow:hidden}
     <span>Every ★ earns a Galaxy Block</span>
   </div>
   <div class="gm-math" id="gmMath">
-    <b class="gm-mt">🧠 Math puzzles</b>
-    <p class="note">Some booklet pages are locked with a math puzzle from Bloppit. Solve it to open the page. Puzzles get harder as the levels go up, and higher levels lock more pages.</p>
+    <b class="gm-mt">🧠 Maths puzzles</b>
+    <p class="note">Some booklet pages are locked with a maths puzzle from Bloppit. Solve it to open the page. Puzzles get harder as the levels go up, and higher levels lock more pages.</p>
     <div class="gm-age"><label for="mathAge">Player’s age</label>
       <select class="inp" id="mathAge"></select><span class="note" style="margin:0">for <b id="mathAgeFor"></b></span>
       <span class="tag" id="mathTier"></span></div>
@@ -2130,15 +2177,17 @@ body.film-on{overflow:hidden}
 <section class="view" id="view-mp" hidden>
 <div class="char-hero" data-hero="mp" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
   <div class="hub" data-hub>
-    <div class="hm-grid hub-grid">
-      <button class="hm-tile t-together" data-sub="start" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="0" y="16" width="66" height="58"/><use href="#bh2" x="58" y="28" width="58" height="51"/><rect x="34" y="80" width="52" height="28" rx="5" fill="#D2352B"/><rect x="40" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="66" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="34" y="100" width="52" height="8" rx="4" fill="#B32A22"/><ellipse cx="34" cy="90" rx="8" ry="7" fill="#8A5A3B"/><ellipse cx="86" cy="90" rx="8" ry="7" fill="#C08A5E"/></svg></span><b>Build together</b><span>One puzzle, taking turns with friends</span></button>
-      <button class="hm-tile t-join" data-sub="join" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a game</b><span>Got a code? Type it in to play</span></button>
+    <h3 class="hm-sec hub-sec">Play with Friends</h3>
+    <div class="hm-grid hub-grid three">
+      <button class="hm-tile t-together" data-sub="start" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="0" y="16" width="66" height="58"/><use href="#bh2" x="58" y="28" width="58" height="51"/><rect x="34" y="80" width="52" height="28" rx="5" fill="#D2352B"/><rect x="40" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="66" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="34" y="100" width="52" height="8" rx="4" fill="#B32A22"/><ellipse cx="34" cy="90" rx="8" ry="7" fill="#8A5A3B"/><ellipse cx="86" cy="90" rx="8" ry="7" fill="#C08A5E"/></svg></span><b>Team Build</b><span>One puzzle, taking turns with friends</span></button>
+      <button class="hm-tile t-friend" data-go-race type="button"><span class="ic" aria-hidden="true"><i class="di di-friend" style="width:64px;height:64px"></i></span><b>Race a Friend</b><span>Race live, or send a code to race later</span></button>
+      <button class="hm-tile t-join" data-sub="join" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a Game</b><span>Got a code? Type it in to play</span></button>
     </div>
     <div class="card crew-card" id="crewCard">
-      <div class="gm-head sub-head"><div><h2>Crews</h2><p class="note">A crew builds one big puzzle together, over days or weeks. The maker picks the puzzle; every brick anyone in the crew builds, in any game, brings it closer. Any player can make a crew; the maker lets each friend in. Crews only pass fixed phrases and stickers, under generated names.</p></div></div>
+      <div class="gm-head sub-head"><div><h2>Your Crews</h2><p class="note">A crew is your group of friends, over days and weeks. Inside each crew: a Crew Quick Game to play live, Pass the Puzzle (one model passed round, each building their pages in turn), and the Crew Mega Build that every brick anyone builds brings closer. You can be in up to six crews. Any player can make a crew; the maker lets each friend in. Crews only pass fixed phrases and stickers, under generated names.</p></div></div>
       <div class="crew-list" id="crewList"></div>
       <div class="crew-forms">
-        <div class="field"><label for="crewName">Make a crew</label><select class="inp" id="crewName" style="width:100%"></select><span class="crew-picklab">Pick your crew’s puzzle</span><div class="crew-pick" id="crewPick" role="radiogroup" aria-label="Crew puzzle"></div><button class="primary sm" id="crewMake" type="button" style="margin-top:8px">Make the crew</button></div>
+        <div class="field"><label for="crewName">Make a crew</label><select class="inp" id="crewName" style="width:100%"></select><span class="crew-picklab">Pick your crew’s Mega Build</span><div class="crew-pick" id="crewPick" role="radiogroup" aria-label="Crew puzzle"></div><button class="primary sm" id="crewMake" type="button" style="margin-top:8px">Make the crew</button></div>
         <div class="field"><label for="crewCodeIn">Got a crew code?</label><div style="display:flex;gap:8px;flex-wrap:wrap"><input class="inp code" id="crewCodeIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC123" style="flex:1;min-width:140px"><button class="primary sm" id="crewJoin" type="button">Ask to join</button></div></div>
       </div>
       <p class="note" id="crewMsg" hidden></p>
@@ -2148,7 +2197,7 @@ body.film-on{overflow:hidden}
     </div>
   </div>
   <button class="crumb" data-up type="button">‹ Together</button>
-  <div class="gm-head sub-head"><div><h2 id="mpHeadT">🧩 Build together</h2><p class="note">Build one puzzle together on different phones, tablets or computers. Take turns placing a few bricks each. Everyone sees the model grow live. Friends join with the room code, and you let them in.</p></div></div>
+  <div class="gm-head sub-head"><div><h2 id="mpHeadT">🧩 Team Build</h2><p class="note">Build one puzzle together on different phones, tablets or computers. Take turns placing a few bricks each. Everyone sees the model grow live. Friends join with the room code, and you let them in.</p></div></div>
   <div class="mp-off" id="mpOff" hidden></div>
   <div class="mp-forms" id="mpForms">
     <div class="card" id="mpStartCard">
@@ -2169,8 +2218,8 @@ body.film-on{overflow:hidden}
       <button class="primary" id="mpCreate" type="button">Make a room</button>
     </div>
     <div class="card" id="mpJoinCard">
-      <h2>Join a game</h2>
-      <div class="field"><label for="mpCodeIn">Got a code?</label><input class="inp code" id="mpCodeIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCDE"><small class="note" style="display:block;margin-top:4px">A room code (5 letters and numbers) or a challenge, relay or crew code (6).</small></div>
+      <h2>Join a Game</h2>
+      <div class="field"><label for="mpCodeIn">Got a code?</label><input class="inp code" id="mpCodeIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCDE"><small class="note" style="display:block;margin-top:4px">A room code (5 letters and numbers) or a challenge, Pass the Puzzle or crew code (6).</small></div>
       <div class="field"><label for="mpName2">Your name <small class="note">(stays on this device; friends see an otter name)</small></label><input class="inp" id="mpName2" maxlength="16" autocomplete="nickname" placeholder="e.g. Sam"></div>
       <button class="primary" id="mpJoin" type="button">Join</button>
       <p class="note" id="mpRejoinNote" hidden></p>
@@ -2207,11 +2256,11 @@ body.film-on{overflow:hidden}
 <div class="char-hero" data-hero="blitz" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
   <div class="hub" data-hub>
     <div class="hm-grid hub-grid">
-      <button class="hm-tile t-blitz" data-sub="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>Blitz</b><small class="isl">Blitz Bay</small><span>Race Swoop, the speediest Longtail</span></button>
-      <button class="hm-tile t-friend" data-sub="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>Race a friend</b><span>Send a challenge code, or race live</span></button>
+      <button class="hm-tile t-blitz" data-sub="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>Blitz with Swoop</b><small class="isl">Blitz Bay</small><span>20 races against Swoop</span></button>
+      <button class="hm-tile t-friend" data-sub="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>Race a Friend</b><span>Race live, or send a code to race later</span></button>
     </div>
   </div>
-  <button class="crumb" data-up type="button">‹ Blitz</button>
+  <button class="crumb" data-up type="button">‹ Blitz Bay</button>
   <div class="gm-head sub-head"><div><h2 id="bzHeadT">⚡ Blitz</h2><p class="note">A race against the clock. A hint adds 2 seconds, and each brick in the wrong spot adds 1 second. Shortest time wins.</p></div></div>
   <div id="bzForms" style="display:grid;gap:16px">
     <div class="card bz-setup">
@@ -2230,27 +2279,27 @@ body.film-on{overflow:hidden}
         <div class="field"><span class="lbl">How fast is Swoop?</span>
           <div class="seg bz-speed" style="grid-template-columns:repeat(3,1fr)" role="radiogroup" aria-label="How fast is Swoop?">
             <input type="radio" name="bzLevel" id="bzEasy" value="easy"><label for="bzEasy"><span class="spd" aria-hidden="true">🐢</span>Warm-up</label>
-            <input type="radio" name="bzLevel" id="bzMed" value="medium" checked><label for="bzMed"><span class="spd" aria-hidden="true">🏁</span>Race</label>
+            <input type="radio" name="bzLevel" id="bzMed" value="medium" checked><label for="bzMed"><span class="spd" aria-hidden="true">🏁</span>Steady</label>
             <input type="radio" name="bzLevel" id="bzHard" value="hard"><label for="bzHard"><span class="spd" aria-hidden="true">🚀</span>Full throttle</label>
           </div>
           <p class="note" id="bzLevelNote" style="margin:6px 0 0"></p></div>
         <button class="primary" id="bzCpuGo" type="button">Start the race</button>
       </div>
       <div class="card bz-card" id="bzRelayCard">
-        <h2><span aria-hidden="true">🔁</span>Relay with a friend</h2>
+        <h2><span aria-hidden="true">🔁</span>Pass the Puzzle to a friend</h2>
         <p class="note" style="margin:0">Build the first half of a model, send the code, and your friend builds the rest. The finished model lands on both your islands.</p>
-        <button class="primary" id="bzRelayGo" type="button">🔁 Start a relay</button>
-        <p class="note" style="margin:8px 0 0">Got a relay code? Type it into <b>Got a code?</b> under Race a friend, or into Join a game on the menu.</p>
+        <button class="primary" id="bzRelayGo" type="button">🔁 Pass the Puzzle</button>
+        <p class="note" style="margin:8px 0 0">Got a Pass the Puzzle code? Type it into <b>Got a code?</b> under Race a Friend, or into Join a Game on the menu.</p>
       </div>
       <div class="card bz-card" id="bzFriendCard">
-        <h2><span aria-hidden="true">🤝</span>Race a friend</h2>
+        <h2><span aria-hidden="true">🤝</span>Make a challenge</h2>
         <p class="note" style="margin:0">Build the whole puzzle as fast as you can, then send your code to a friend. They race your time whenever they like. Names never travel: on a friend’s screen you are a generated name like Brave Otter 214.</p>
         <p class="bz-off" id="bzOff" hidden></p>
         <button class="primary" id="bzChMake" type="button">📨 Make a challenge</button>
         <div class="bz-or">
           <div class="bz-join"><div class="field" style="margin:0"><label for="bzCodeIn">Got a code?</label><input class="inp code" id="bzCodeIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC123"></div>
             <button class="primary" id="bzJoin" type="button">Go</button></div>
-          <p class="note" style="margin:6px 0 0">Works for every code: challenges have 6 characters, live Blitz and Build together rooms have 5.</p>
+          <p class="note" style="margin:6px 0 0">Works for every code: challenges have 6 characters, live races and Team Build rooms have 5.</p>
         </div>
         <details class="bz-live"><summary>Race live in a room instead</summary>
           <p class="note">Everyone plays at the same time on their own device, taking turns. Friends join with the room code, and you let them in.</p>
@@ -2272,7 +2321,7 @@ body.film-on{overflow:hidden}
     <div class="ii-head"><span class="ii-pup" id="iiPup"></span><div><h2 id="iiTitle">Welcome to Bloppitopia</h2><p id="iiTxt">Your otter lives here with Bloppit.</p></div></div>
     <p style="margin:0">Every build you finish grows the island, and your models stand on it. Builds earn Galaxy Blocks, and Bibi’s shop sells decorations for them.</p>
     <ol class="ii-steps" id="iiSteps"></ol>
-    <div class="ii-btns"><button class="primary sm" id="iiNext" type="button">Keep building</button><button class="ghost" id="iiWeekly" type="button">📅 This week’s Bloppit</button><button class="ghost" id="iiLook" type="button">Look around</button></div>
+    <div class="ii-btns"><button class="primary sm" id="iiNext" type="button">Keep building</button><button class="ghost" id="iiWeekly" type="button">Bibi’s Weekly Bloppit</button><button class="ghost" id="iiLook" type="button">Look around</button></div>
   </div>
   <div class="card is-card"><div class="island" id="isWorld"></div><div class="is-a11y" id="isA11y"></div>
     <div class="is-foot"><div class="is-stage" id="isStage"></div><div class="is-next" id="isNext"></div><div class="is-prog" id="isProg" hidden></div></div></div>
@@ -2291,11 +2340,11 @@ body.film-on{overflow:hidden}
       <h2 id="dyName"></h2>
       <p class="note" id="dyInfo"></p>
       <div class="daily-stats" id="dyStats"></div>
-      <div class="win-btns" style="justify-content:flex-start"><button class="primary" id="dyGo" type="button">Build this week’s Bloppit</button><button class="ghost" id="dyBook" type="button" hidden>📖 See the pages</button></div>
+      <div class="win-btns" style="justify-content:flex-start"><button class="primary" id="dyGo" type="button">Build this week’s puzzle</button><button class="ghost" id="dyBook" type="button" hidden>📖 See the pages</button></div>
       <p class="msg" id="dyMsg" hidden></p>
     </div>
   </div>
-  <button class="crumb dy-up" id="dyUp" type="button">‹ Build anything</button>
+  <button class="crumb dy-up" id="dyUp" type="button">‹ Build Anything</button>
   <div class="card" id="dyBoard" hidden><div class="gm-head sub-head"><div><h2>🏆 This week’s top 100</h2><p class="note">Clean builds first, then stars. Generated names only; no times. A grown-up can switch it off in the Grown-ups corner.</p></div></div><div class="board" id="dyBoardList"></div></div>
   <p class="note">Bloppit only counts how many people finished this week’s puzzle and how many finished it clean. No real names and no times. The top-100 board shows generated names and stars; a grown-up can switch it off. The counts are deleted after 8 weeks.</p>
 </section>
@@ -2324,7 +2373,7 @@ body.film-on{overflow:hidden}
   <p class="lh-sub">Until Chapter 2 arrives, you can:</p>
   <div class="lh-list">
     <button type="button" data-lh="film" class="lh-film"><span>🎬</span><b>Watch the whole Moonstone story</b><small>Chapter 1’s ending as one film, from the light in the mist to lufu’s world (5½ minutes)</small></button>
-    <button type="button" data-lh="build"><span>🔨</span><b>Build anything here</b><small>Free builds stand on lufu’s world</small></button>
+    <button type="button" data-lh="build"><span>🔨</span><b>Build Anything here</b><small>Free builds stand on lufu’s world</small></button>
     <button type="button" data-lh="sail"><span>⛵</span><b>Sail back to Bloppitopia</b><small>The Galaxy Ship takes you between the two, any time</small></button>
     <button type="button" data-lh="pup"><span>🦦</span><b>Start a new game</b><small>A new player with a new pup, from the very beginning</small></button>
     <button type="button" data-lh="builds"><span>🧱</span><b>Browse the builds</b><small>Photos, drawings and the whole library to build from</small></button>
@@ -2341,10 +2390,10 @@ body.film-on{overflow:hidden}
   <div class="win-btns"><button class="primary sm" id="ldGo" type="button" autofocus>▶ Start the race</button><button class="ghost" id="ldLater" type="button">Not now</button></div>
 </dialog>
 <dialog class="windlg qpdlg" id="qpDlg" aria-labelledby="qpT">
-  <h2 id="qpT">Build anything</h2>
+  <h2 id="qpT">Build Anything with Bibi</h2>
   <div class="qp-opts">
     <button class="qp-opt isle" id="qpIsle" type="button"><img id="qpImg" src="/art/head-bibi.png" alt=""><b id="qpIsleT">🏝️ Play on Brickyard Cove</b><span>In Bloppitopia: every build grows the island and earns ★, XP and Galaxy Blocks.</span></button>
-    <div class="qp-opt qp-quick" id="qpQuickCard"><span class="qp-ic" id="qpQuickIc" aria-hidden="true">⚡</span><b id="qpQuickT">Just Play</b><span id="qpQuickS">Just build. Nothing is added to Bloppitopia.</span>
+    <div class="qp-opt qp-quick" id="qpQuickCard"><span class="qp-ic" id="qpQuickIc" aria-hidden="true">⚡</span><b id="qpQuickT">Quick Play</b><span id="qpQuickS">Just build. Nothing is added to Bloppitopia.</span>
       <div class="qp-diff"><label for="qpDiff">How tricky? <b id="qpDiffT">🙂 Easy</b></label>
         <input type="range" id="qpDiff" min="1" max="5" step="1" value="2">
         <div class="qp-ends" aria-hidden="true"><span>🐣 Tiny</span><span>🔥 Super tricky</span></div></div>
@@ -2367,7 +2416,7 @@ body.film-on{overflow:hidden}
 
 <dialog class="windlg whodlg" id="whoDlg" aria-labelledby="whoTitle">
   <h2 id="whoTitle">Who’s playing?</h2>
-  <p class="note" style="margin:-6px 0 12px">Each player has their own scores, math level and build in progress on this device.</p>
+  <p class="note" style="margin:-6px 0 12px">Each player has their own scores, maths level and build in progress on this device.</p>
   <div class="who-list" id="whoList"></div>
   <form class="who-form" id="whoForm" hidden autocomplete="off">
     <h3 id="whoFormTitle">New player</h3>
@@ -2477,7 +2526,7 @@ body.film-on{overflow:hidden}
   <div class="win-btns"><button class="primary sm" id="winIsland" type="button" autofocus>🏝️ Back to Bloppitopia</button><button class="ghost" id="winNext" type="button">Next level</button><button class="ghost" id="winReplay" type="button">Play again</button><button class="ghost" id="winMap" type="button">Level map</button></div>
 </dialog>
 
-<dialog class="windlg howdlg" id="howDlg" aria-label="How to play Bloppit">
+<dialog class="windlg howdlg" id="howDlg" aria-label="How to Play Bloppit">
   <button class="how-x" id="howX" type="button" aria-label="Close">×</button>
   <video id="howVid" controls playsinline preload="none" poster="/video/how-to-play.jpg"><source src="/video/how-to-play.mp4" type="video/mp4"></video>
   <div class="win-btns"><button class="primary sm" id="howClose" type="button">Let’s build!</button></div>
@@ -2496,7 +2545,7 @@ body.film-on{overflow:hidden}
   <h2 id="wcTitle">You built it!</h2>
   <div class="world-strip" data-ws></div>
   <p class="win-best" id="wcNote">What next?</p>
-  <div class="win-btns wc-btns"><button class="primary sm" id="wcPupGo" type="button" hidden>🦦 Meet your otter</button><button class="primary sm" id="wcTrail" type="button">Keep building</button><button class="ghost" id="wcWeekly" type="button">📅 This week’s Bloppit</button><button class="ghost" id="wcLibrary" type="button">Explore builds</button></div>
+  <div class="win-btns wc-btns"><button class="primary sm" id="wcPupGo" type="button" hidden>🦦 Meet your otter</button><button class="primary sm" id="wcTrail" type="button">Keep building</button><button class="ghost" id="wcWeekly" type="button">Bibi’s Weekly Bloppit</button><button class="ghost" id="wcLibrary" type="button">Explore builds</button></div>
 </dialog>
 <dialog class="windlg pupdlg" id="pupDlg" aria-labelledby="pupTitle">
   <div class="pup-pic" id="pupPic"></div>
@@ -2639,7 +2688,7 @@ const reader=(()=>{
 /* ---------- Players (profiles on this device) ---------- */
 // Each player has their own name, age, game scores, math setting and build in progress.
 // The first player ('p1') keeps the original storage keys, so progress from before profiles existed carries over.
-const PLAYERS_KEY='bloppit-players-v1', AV_COLORS=['#D2352B','#0055BF','#237841','#F08A00','#923978','#008F9B','#AA7D55','#1B2A34'];
+const PLAYERS_KEY='bloppit-players-v1', AV_COLORS=['#D62F2A','#2F7FD0','#7DBE2E','#E9772A','#6A3FB5','#F4BC22','#AA7D55','#14202C'];
 const players=(()=>{
   let o=null; try{ o=JSON.parse(localStorage.getItem(PLAYERS_KEY)); }catch(e){}
   if(!o||!Array.isArray(o.list)||!o.list.length){
@@ -3496,17 +3545,17 @@ function niceName(n){ const b=String(n||'').replace(/\.[^.]+$/,'').trim();
 var subOf={game:'hub',blitz:'hub',mp:'hub'};
 const SUB_OK={game:['hub','otter','brain','sea','flip'],blitz:['hub','cpu','friend'],mp:['hub','start','join']};
 // Which top-bar game a page belongs to (the build screen belongs to whatever you're playing)
-// The top bar: one tab per character. Frog Trail and Brain Trail are both the Trails page (their own level maps), and
+// The top bar: one tab per character. Tiny’s Frog Trail and Nora’s Brain Trail are both the Trails page (their own level maps), and
 // Pippa's tab is her seaside puzzles (and her daily message in a bottle); the Weekly Bloppit is Bibi's, under Build anything.
 // Each page has its character at the top: who lives there, their island, their line and what the page is for
 const HERO={
   daily:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Bibi’s Weekly Bloppit',line:'Fresh paint! This week’s one is ready.',desc:'Every Monday Bibi paints a new one, and everybody builds the same puzzle. Build it clean: no misses, no hints. Each one you build adds to Brickyard Cove.',c:['#FFAA55','#DD5F1C']},
-  sea:{who:'pippa',art:'/art/char-pippa.png',isle:'Flipper Beach',title:'Pippa’s Mirror Puzzles',line:'Ooh, that one’s clean!',desc:'Fifteen mirror puzzles wash ashore as Bloppitopia grows: Pippa builds one half, and you flip it to build the other. Each one adds to Flipper Beach, all the way to the Festival Clock in your own colours. And every day the tide brings a message in a bottle.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
-  otter:{who:'tiny',art:'/art/char-tiny.png',isle:'Frog Forest',title:'Frog Trail',line:'Small frog, big forest!',desc:'Hop up the trail with Tiny, one level at a time. The levels start tiny and get bigger, and the last is his Lily-pad Palace.',c:['#A6D93A','#3F8F33']},
-  brain:{who:'nora',art:'/art/char-nora.png',isle:'Brainpeak',title:'Brain Trail',line:'A clever mind shines in the dark.',desc:'Nora tucks math puzzles into the booklet: solve one to open its page. The last build is her Great Telescope.',c:['#4A6FC0','#1C2B57']},
-  create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Build anything',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
-  blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Blitz',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Fastest clean build wins.',c:['#5DB4F2','#1F6FC4']},
-  mp:{who:['pup','pup'],art:'/art/hero-together.png',isle:'Friendship Harbour',title:'Build Together',line:'Every build is better with a friend!',desc:'Take turns building one model with friends on their own phones, tablets or computers.',c:['#B9A2F7','#6E4FD6']}};
+  sea:{who:'pippa',art:'/art/char-pippa.png',isle:'Flipper Beach',title:'Pippa’s Mirror Puzzles',line:'Ooh, that one’s clean!',desc:'Fifteen mirror puzzles wash ashore here as Bloppitopia grows: Pippa builds one half, and you flip it to build the other. Each one adds to Flipper Beach, all the way to the Festival Clock in your own colours. And every day the tide brings a message in a bottle.',c:['#FFD54A','#F0A10C'],ink:'#2A1D06'},
+  otter:{who:'tiny',art:'/art/char-tiny.png',isle:'Frog Forest',title:'Tiny’s Frog Trail',line:'Small frog, big forest!',desc:'Hop up the trail with Tiny, one level at a time. The levels start tiny and get bigger, and the last is his Lily-pad Palace.',c:['#A6D93A','#3F8F33']},
+  brain:{who:'nora',art:'/art/char-nora.png',isle:'Brainpeak',title:'Nora’s Brain Trail',line:'A clever mind shines in the dark.',desc:'Nora tucks maths puzzles into the booklet: solve one to open its page. The last build is her Great Telescope.',c:['#4A6FC0','#1C2B57']},
+  create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Build Anything with Bibi',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
+  blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Blitz with Swoop',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Fastest clean build wins.',c:['#5DB4F2','#1F6FC4']},
+  mp:{who:['pup','pup'],art:'/art/hero-together.png',isle:'Friendship Harbour',title:'Together',line:'Every build is better with a friend!',desc:'Play with Friends: a Team Build or a race, with a code to share. Your Crews: friends you keep, with games of their own.',c:['#B9A2F7','#6E4FD6']}};
 function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[data-hero="${t}"]`); if(!el) return;
   const key=t==='game'?subOf.game:t, H=HERO[key]; el.hidden=!H; if(!H) return;
   if(el.dataset.k===key) return; el.dataset.k=key;
@@ -3530,12 +3579,12 @@ function syncSub(t){
   if(mp||mpw){ if(t==='blitz') s=mp&&mp.cpu?'cpu':'friend'; if(t==='mp') s='start'; }
   if(t==='game'&&s!=='hub') setTrail(s);
   const v=$('#view-'+t); v.dataset.sub=s; v.classList.toggle('in-room',!!(mp||mpw));
-  if(t==='blitz') $('#bzHeadT').textContent=s==='cpu'?'Blitz':s==='friend'?'⚡ Race a friend':'⚡ Blitz';
-  if(t==='mp') $('#mpHeadT').textContent=s==='join'?'🔑 Join a game':'🧩 Build together';
+  if(t==='blitz') $('#bzHeadT').textContent=s==='cpu'?'⚡ Blitz with Swoop':s==='friend'?'⚡ Race a Friend':'⚡ Blitz';
+  if(t==='mp') $('#mpHeadT').textContent=s==='join'?'🔑 Join a Game':'🧩 Team Build';
   if(t==='game'&&s==='hub'){ const st=playerStats(players.cur);
     $('#hubOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
-    $('#hubBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} new levels, with math puzzles`;
-    { const h=$('#hubSeaSub'); if(h) h.textContent=st.flv?`${st.flv} of ${FLIP_LEVELS.length} puzzles built`:`${FLIP_LEVELS.length} mirror puzzles, any time`; } }
+    $('#hubBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} levels, a maths puzzle in each`;
+    { const h=$('#hubSeaSub'); if(h) h.textContent=st.flv?`${st.flv} of ${FLIP_LEVELS.length} any-time puzzles built`:`${FLIP_LEVELS.length} puzzles: Pippa builds half, you build the rest`; } }
 }
 // A finished race against Swoop (or a finished timed build) is over: going anywhere else leaves it. It used to hold on,
 // so "Play Pippa's puzzle" (or any Trail) landed on the race page asking you to leave a race that had already ended.
@@ -3865,7 +3914,7 @@ function setupPlay(m){
   resetBuild();
 }
 function resetBuild(){
-  relay=null;
+  relay=null; pass=null;
   $('#trayNote').textContent=TILES?'Tiles go on the dark baseplate. Row 1 is the top of the picture, at the far edge. Follow the yellow outline in the booklet.':'Your first brick can go anywhere on the table. The rest of the model builds out from it. Drag the see-through brick to move it; drag anywhere else to turn the view.';
   placedGroup.clear(); ghostGroup.clear(); hintGroup.clear();
   endReveal(true);
@@ -3945,10 +3994,10 @@ const FILMS=[
   {id:'frog-arrival',no:'02',name:'Arrival',place:'Frog Forest',file:'frog-forest-arrival',at:'isle:otterwood',open:o=>filmSeen('frog-arrival',o)||isleCount('otterwood',o)>0,hint:'Set off for Frog Forest',
     say:[{t:12,who:'tiny',text:'Welcome to Frog Forest, {name}!'}]},
   {id:'frog-mid',no:'2½',name:'Midway',place:'Frog Forest',file:'frog-forest-mid',mid:'otterwood',open:o=>filmSeen('frog-mid',o)||(seenGet()||[]).includes('mid:otterwood'),hint:'Keep building on Frog Forest',say:[]},
-  {id:'frog-complete',no:'03',name:'Complete',place:'Frog Forest',file:'frog-forest-complete',at:'done:otterwood',open:o=>isleComplete('otterwood',o),hint:'Finish every Frog Trail level',
+  {id:'frog-complete',no:'03',name:'Complete',place:'Frog Forest',file:'frog-forest-complete',at:'done:otterwood',open:o=>isleComplete('otterwood',o),hint:'Finish every Tiny’s Frog Trail level',
     say:[{t:11,who:'tiny',text:'We did it, {name}!'}]},
   // [arrival no, complete no, island id, place, file, hints, who speaks, when in the arrival film, when in the completion film]
-  ...[['04','05','brainpeak','Brainpeak','brainpeak','Set off for Brainpeak','Finish every Brain Trail level','nora',12,24.5],
+  ...[['04','05','brainpeak','Brainpeak','brainpeak','Set off for Brainpeak','Finish every Nora’s Brain Trail level','nora',12,24.5],
       ['06','07','sunrise','Flipper Beach','sunrise-shores','Set off for Flipper Beach','Build all of Pippa’s puzzles','pippa',15,17],
       ['08','09','blitzbay','Blitz Bay','blitz-bay','Race Swoop','Win the Grand Prix','swoop',19,20],
       ['10','11','brickworks','Brickyard Cove','brickworks','Set off for Brickyard Cove','Fill Brickyard Cove with your own builds','bibi',2,20]]
@@ -4391,7 +4440,7 @@ function buddyUpdate(){
     budSay('point', viewPage<cur?`That’s a step you’ve done. You’re on step ${cur+1}.`:`That’s coming up later. You’re on step ${cur+1}.`);
     return;
   }
-  if(isLocked(cur)){ budSay('point','This page is locked! Solve my math puzzle to open it.'); if(budStep!==cur){ budStep=cur; budPing(); } return; }
+  if(isLocked(cur)){ budSay('point','This page is locked! Solve my maths puzzle to open it.'); if(budStep!==cur){ budStep=cur; budPing(); } return; }
   if(mpBlitz()){ budSay('point', mpMyTurn()?(mp.state.calm?`Step ${cur+1}. Take your time.`:mp.state.solo?`Step ${cur+1}! Go go go!`:mp.cpu?`Your turn! Step ${cur+1}. Beat my time!`:`Step ${cur+1}! Check the booklet. Quick!`):`Step ${cur+1}. Get ready for your turn!`); if(budStep!==cur){ budStep=cur; budPing(); } return; }
   const left=stepLeft(cur), total=model.steps[cur].bricks.length;
   if(welcomeOn()){ const lead=left.length===total?(cur===0?(total>1?'Hi! I’m Bloppit. Here are your first bricks. Tap a faded one!':'Hi! I’m Bloppit. Here’s your first brick. Tap the faded one!'):['Here’s the next one!','Another one. Tap the faded brick!','Nice. Next brick!','Keep going!'][cur%4]):left.length===1?'One more for this step:':`${left.length} more for this step:`;
@@ -4564,10 +4613,11 @@ function wrongBrickMsg(){
 }
 function tryPlace(){
   if(!sel||!lastAnchor||busy) return;
-  if(isLocked(cur)){ setStatus('This page is locked. Solve Bloppit’s math puzzle to open it.','err'); openMath(cur); return; }
+  if(isLocked(cur)){ setStatus('This page is locked. Solve Bloppit’s maths puzzle to open it.','err'); openMath(cur); return; }
   if(mp&&!mpMyTurn()){ setStatus(mpTurnText(),'err'); return; }
   if(model.mirror&&model.steps[cur]&&model.steps[cur].pippa&&!pippaBusy){ setStatus('🐧 Wait a moment: Pippa is building her side.'); return; }
   if(relay&&relay.role==='first'&&cur>=relay.half){ setStatus('That page is your friend’s. Your half is done!','err'); relayHalfDone(); return; }
+  if(pass&&cur>=pass.to&&pass.to<model.steps.length){ setStatus('Those pages are for the rest of your crew. Yours are done!','err'); passPagesDone(); return; }
   if(mp&&mp.cpu&&Date.now()<mp.state.turnStart){ setStatus('Wait for Go!','err'); return; }
   if(mp&&mp.posting>=mpLeft(mp.state)){ setStatus(mpBlitz()&&(mp.state.players[mp.me].n||0)+mp.posting>=mp.state.quota?'That was your last brick. Wait for the others to finish.':'That was your last brick this turn.','ok'); return; }
   const s=model.steps[cur], {ax,az}=lastAnchor;
@@ -4590,6 +4640,7 @@ function placeBrick(t,ax,az){
   if(off) placed.add(t);
   if(mp) mpSendMove(t,ax,az,autoBusy);
   if(relay) relay.moves.push({b:model.bricks.indexOf(t),x:ax,z:az});
+  if(pass) pass.moves.push({b:model.bricks.indexOf(t),x:ax,z:az});
   placedN++; placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz});
   const pc=model.paint&&sel?sel.c:t.c; if(model.paint) model.paint.set(t.x+','+t.y+','+t.z+','+t.sx+','+t.sz,pc);
   const ms=new THREE.Mesh(brickGeo(t.sx,t.sz),mat(pc)); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
@@ -4616,6 +4667,8 @@ function placeBrick(t,ax,az){
     setStatus(cur>=model.steps.length?'Every step complete. Great build!':`On to step ${cur+1}.${model.steps[cur].hang?' These clip on underneath the bricks above.':''}${held?'':' Open the parts box for the next brick.'}`, cur>=model.steps.length?'ok':'');
     updateBuildUI(); frameBuild(true); pippaTurn();
     if(relay&&relay.role==='first'&&cur>=relay.half&&cur<model.steps.length){ relayHalfDone(); return; }
+    if(pass&&cur>=pass.to&&cur<model.steps.length){ passPagesDone(); return; }
+    if(pass&&cur>=model.steps.length) passPagesDone();   // the last pages: the model is finished, for the whole crew
     if(cur>=model.steps.length&&!mp){ buildFinished(game?'trail':relay&&relay.role==='second'?'relay':'quick'); setTimeout(()=>playReveal(game?winLevel:welcomeOn()?welcomeDone:relay&&relay.role==='second'?relayDone:worldAfterQuick),350); } }, 700);
 }
 // Pippa's half of a mirror build: she places her bricks herself (free, never a hint), then it's your turn to reflect them
@@ -4636,7 +4689,7 @@ function pippaTurn(){ if(model&&model.paint&&!mp&&model.steps[cur]&&model.steps[
   setStatus('🐧 Pippa is building her side…'); pippaT=setTimeout(go,reduceMotion?100:500); }
 function autoPlace(){
   if(busy||!model||cur>=model.steps.length||mpBlitz()) return;
-  if(isLocked(cur)){ setStatus('This page is locked. Solve Bloppit’s math puzzle to open it.','err'); openMath(cur); return; }
+  if(isLocked(cur)){ setStatus('This page is locked. Solve Bloppit’s maths puzzle to open it.','err'); openMath(cur); return; }
   if(mp&&!mpMyTurn()){ setStatus(mpTurnText(),'err'); return; }
   const s=model.steps[cur]; let o,t;
   if(off){ o=off; t=s.bricks.find(b=>!placed.has(b)); }
@@ -5089,7 +5142,7 @@ function makeBooklet(){
 let lockImg=null;
 function LOCK_IMG(){ if(lockImg) return lockImg; const c=document.createElement('canvas'); c.width=400; c.height=300; const x=c.getContext('2d');
   for(let i=-300;i<400;i+=28){ x.fillStyle='#D6E5F5'; x.beginPath(); x.moveTo(i,0); x.lineTo(i+14,0); x.lineTo(i+314,300); x.lineTo(i+300,300); x.fill(); }
-  x.font='72px system-ui'; x.textAlign='center'; x.fillText('🔒',200,150); x.font='800 22px Nunito,system-ui,sans-serif'; x.fillStyle='#14202C'; x.fillText('Solve the math puzzle to open',200,210);
+  x.font='72px system-ui'; x.textAlign='center'; x.fillText('🔒',200,150); x.font='800 22px Nunito,system-ui,sans-serif'; x.fillStyle='#14202C'; x.fillText('Solve the maths puzzle to open',200,210);
   return lockImg=c.toDataURL(); }
 /* ---------- Booklet page you can turn around ---------- */
 let lbK=0;
@@ -6202,10 +6255,10 @@ const OTTER_LEVELS=[
  {name:'Sailboat',   sample:'Sailboat',  size:14, shape:'puffed', thick:.9,  colors:6, pts:600},
  {name:'Cottage',    sample:'Cottage',   size:11, shape:'puffed', thick:1,  colors:8, pts:750},
  {name:'Otter',      sample:'Otter',     size:12, shape:'puffed', thick:.5,  colors:8, pts:1000},
- // The boss: Tiny's Lily-pad Palace, a palace for every frog in the forest and the biggest Frog Trail build. Finishing it completes Frog Forest.
+ // The boss: Tiny's Lily-pad Palace, a palace for every frog in the forest and the biggest Tiny’s Frog Trail build. Finishing it completes Frog Forest.
  {name:'Lily-pad Palace',sample:'Lily-pad Palace',size:18, shape:'puffed', thick:.8,  colors:7, pts:1500, boss:true},
 ];
-// Brain Trail has its own puzzles (same climb from tiny to tricky, same points), so the two trails feel different
+// Nora’s Brain Trail has its own puzzles (same climb from tiny to tricky, same points), so the two trails feel different
 const BRAIN_LEVELS=[
  {name:'Star',          art:'star',              size:8,  shape:'flat',   thick:.5, colors:2, pts:100},
  {name:'Apple',         art:'apple',             size:7,  shape:'flat',   thick:1,  colors:3, pts:120},
@@ -6271,7 +6324,7 @@ const seaWashed=(i,o)=>gameProgress(o)+1e-9>=(i+1)/SEA_LEVELS.length;      // ha
 const progressPct=o=>Math.floor(gameProgress(o)*100);
 const levelsOf=tr=>tr==='brain'?BRAIN_LEVELS:tr==='sea'?SEA_LEVELS:tr==='flip'?FLIP_LEVELS:OTTER_LEVELS;
 // Ready-made Blitz races, small enough to be quick (Blitz keeps races to 30 bricks or fewer). Blitz Bay has its own
-// puzzles: none of these is a Frog Trail, Brain Trail, Pippa or mystery build. Brick counts: 9/11/12, 18/19/21, 26/28/30.
+// puzzles: none of these is a Tiny’s Frog Trail, Nora’s Brain Trail, Pippa or mystery build. Brick counts: 9/11/12, 18/19/21, 26/28/30.
 // The Blitz races, in Blitz Bay's order (Oct 2026): fifteen, smallest first, and Swoop faster every five (lv: Warm-up,
 // Race, Full throttle). Through Bloppitopia they're a ladder, one race after another; the Blitz page offers any of them.
 const BLITZ_PICKS=[
@@ -6324,9 +6377,9 @@ const TOGETHER_DEFAULT_PICK='t1';  // the Toadstool
 const pickOf=v=>/^p\d+$/.test(v)?BLITZ_PICKS[+v.slice(1)]:/^t\d+$/.test(v)?TOGETHER_PICKS[+v.slice(1)]:OTTER_LEVELS[+v];
 const GAME_KEY='building-blox-game-v1';
 let game=null, autoBusy=false, freeS=null, winLvl=0;
-// Two trails, each with its own levels: Frog Trail (id otter) (just building) and Brain Trail (math puzzles lock some pages).
-// Each keeps its own scores: Frog Trail in g.best (where the levels have always been saved), Brain Trail in g.bbest.
-const TRAILS={otter:{name:'Frog Trail',icon:'🐸'},brain:{name:'Brain Trail',icon:'🧠'},sea:{name:'Pippa’s Mirror Puzzles',icon:'🐧'},flip:{name:'Pippa’s Mirror Puzzles',icon:'🪞'}};
+// Two trails, each with its own levels: Tiny’s Frog Trail (id otter) (just building) and Nora’s Brain Trail (maths puzzles lock some pages).
+// Each keeps its own scores: Tiny’s Frog Trail in g.best (where the levels have always been saved), Nora’s Brain Trail in g.bbest.
+const TRAILS={otter:{name:'Tiny’s Frog Trail',icon:'🐸'},brain:{name:'Nora’s Brain Trail',icon:'🧠'},sea:{name:'Pippa’s Mirror Puzzles',icon:'🐧'},flip:{name:'Pippa’s Mirror Puzzles',icon:'🪞'}};
 const trailOk=t=>t==='brain'||t==='sea'||t==='flip'?t:'otter';
 let trail=(()=>{ try{ return trailOk(localStorage.getItem('bloppit-trail')); }catch(e){ return 'otter'; } })();
 function setTrail(t){ trail=trailOk(t); try{ localStorage.setItem('bloppit-trail',trail); }catch(e){} }
@@ -6388,7 +6441,7 @@ function updateGameBar(){
   // Where you are: the trail (with its friend) and the island it grows
   { const tr=gameTrail(), T=TRAILS[tr]||{name:'Trail'}, isle={otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr], who={otter:'tiny',brain:'nora',sea:'pippa',flip:'pippa'}[tr];
     let iname=''; try{ iname=ISLES[isle].name; }catch(e){}
-    $('#gbWhere').innerHTML=`${who?`<img src="/art/head-${who}.png" alt="">`:''}<div><strong>${escapeHTML(T.name)}</strong>${quickPlay?'<small>⚡ Quick play</small>':iname?`<small>🏝️ ${escapeHTML(iname)}</small>`:''}</div>`; }
+    $('#gbWhere').innerHTML=`${who?`<img src="/art/head-${who}.png" alt="">`:''}<div><strong>${escapeHTML(T.name)}</strong>${quickPlay?'<small>⚡ Quick Play</small>':iname?`<small>🏝️ ${escapeHTML(iname)}</small>`:''}</div>`; }
   $('#gbBadge').textContent=game.lvl+1; $('#gbNum').textContent=`${game.lvl+1} of ${LV.length}`; $('#gbName').textContent=L.name;
   { const st=runStars(); $('#gbPts').innerHTML=starHTML(st); $('#gbOf').textContent=''; if(game.lastSt&&st<game.lastSt){ const f=$('#gbFlash'); f.textContent='−★'; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); } game.lastSt=st; }
   const bits=[]; if(p.hint) bits.push(`Hints ${p.hint}`); if(p.auto) bits.push(`Placed for you ${p.auto}`); if(run&&run.miss) bits.push(`Wrong bricks ${run.miss}`);
@@ -6510,7 +6563,7 @@ function winLevel(){
   setTrail(tr); winLvl=i;
   $('#winStars').innerHTML=starHTML(st); worldSound();
   { const pic=reveal&&reveal.url; $('#winPic').hidden=!pic; if(pic){ $('#winPic').src=pic; $('#winPic').alt=`The real ${L.name}`; } }
-  { const o=worldStore(), el=$('#winChars'), fid={otter:'tiny',brain:'nora',sea:'pippa',flip:'pippa'}[tr], tiny=!!fid&&ch3Ready(fid), tc=L.boss?'cheer':fid==='nora'?'aha':fid==='pippa'?'excited':'whistle';   // the trail's friend joins in: Tiny whistles you up Frog Trail, Nora has an "aha!" on Brain Trail (both cheer for their boss build)
+  { const o=worldStore(), el=$('#winChars'), fid={otter:'tiny',brain:'nora',sea:'pippa',flip:'pippa'}[tr], tiny=!!fid&&ch3Ready(fid), tc=L.boss?'cheer':fid==='nora'?'aha':fid==='pippa'?'excited':'whistle';   // the trail's friend joins in: Tiny whistles you up his Frog Trail, Nora has an "aha!" on Nora’s Brain Trail (both cheer for their boss build)
     el.classList.toggle('three',tiny&&hasPup(o));
     if(reveal&&reveal.url) el.hidden=true; else if(hasPup(o)) cheer3(el,tiny?['bloppit','pup',fid]:['bloppit','pup'],tiny?['cheer','happy_hop',tc]:['cheer','happy_hop']); else cheer3(el,tiny?['bloppit',fid]:'bloppit',tiny?['cheer',tc]:'cheer'); }
   $('#winTitle').textContent=`${TRAILS[tr].icon} Level ${i+1} complete!`;
@@ -6537,10 +6590,10 @@ function renderGameMap(){
   $('#trOtter').setAttribute('aria-selected',trail==='otter'); $('#trBrain').setAttribute('aria-selected',trail==='brain'); $('#trSea').setAttribute('aria-selected',trail==='sea');
   $('#gmTitle').textContent=`${T.icon} ${T.name}`;
   const pct=trail==='sea'?progressPct(worldStore()):0;
-  { const tip=quickPlay&&trail!=='flip'&&trail!=='sea'?`⚡ Quick play: any level, in any order. Nothing is added to Bloppitopia. To grow ${ISLES[TRAIL_ISLE[trail]].name}, play it from the island.`:trail==='flip'?'Pippa builds one half of each puzzle, and you build the other half, flipped like a reflection. Twelve to try, in any order. (Flipper Beach in Bloppitopia has its own set.)':trail==='sea'?`You’re ${pct}% of the way through Bloppitopia. A new puzzle washes ashore about every 8%.`:'';   // the hero says the rest (no repeats, Steff 5 Nov 2026)
+  { const tip=quickPlay&&trail!=='flip'&&trail!=='sea'?`⚡ Quick Play: any level, in any order. Nothing is added to Bloppitopia. To grow ${ISLES[TRAIL_ISLE[trail]].name}, play it from the island.`:trail==='flip'?'Pippa builds one half of each puzzle, and you build the other half, flipped like a reflection. Twelve to try, in any order. (Flipper Beach in Bloppitopia has its own set.)':trail==='sea'?`You’re ${pct}% of the way through Bloppitopia. A new puzzle washes ashore about every 8%.`:'';   // the hero says the rest (no repeats, Steff 5 Nov 2026)
     $('#gmIntro').textContent=tip; $('#gmIntro').hidden=!tip; }
   { const ts=trailStars(trail); $('#gmTotal').textContent=`${ts} ★`; $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} stars`; $('#gmDone').dataset.of=`${levelsOf(trail).length*3}`; } syncMathUI();
-  $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} ${trail==='sea'||trail==='flip'?'puzzles built':'levels done'}`;
+  $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} ${trail==='sea'?'Flipper Beach puzzles built':trail==='flip'?'any-time puzzles built':'levels done'}`;
   $('#gmLevels').innerHTML=levelsOf(trail).map((L,i)=>{
     const best=B[i], ashore=trail!=='sea'||seaWashed(i), open=trail==='flip'||quickPlay&&trail!=='sea'||i<=unlocked&&(ashore||!!best), cur_=game&&game.lvl===i&&gameTrail()===trail;
     const st=best?levelStars(trail,i,null,best):0, wait=!best&&!ashore, k=wait?seaBuildsTo(i):0;   // a Pippa puzzle still out at sea: tap it to hear how to bring it in
@@ -6559,7 +6612,7 @@ document.querySelector('.trail-pick').addEventListener('click',e=>{ const b=e.ta
 // A Pippa puzzle the tide hasn't brought in yet: what it's waiting for, and a button to the build that gets it there
 function tideShow(i){ const L=SEA_LEVELS[i], o=worldStore(), k=seaBuildsTo(i,o), B=bestOf(gameStore(),'sea'), first=SEA_LEVELS.findIndex((x,j)=>!(B[j]>0)), n=nextBuild();
   $('#tdTitle').textContent=`${L.name} is still out at sea`; $('#tdPic').src=levelThumb(L);
-  $('#tdTxt').innerHTML=`The tide brings it in when Bloppitopia reaches <b>${seaPct(i)}%</b> (you’re at ${progressPct(o)}%). That’s <b>${k} more build${k===1?'':'s'}</b> on the other islands: Frog Trail, Brain Trail, Blitz or Build anything. Pippa’s own puzzles don’t move the tide.`+(first>=0&&first<i?` And build ${escapeHTML(SEA_LEVELS[first].name)} first.`:'');
+  $('#tdTxt').innerHTML=`The tide brings it in when Bloppitopia reaches <b>${seaPct(i)}%</b> (you’re at ${progressPct(o)}%). That’s <b>${k} more build${k===1?'':'s'}</b> on the other islands: Tiny’s Frog Trail, Nora’s Brain Trail, Blitz with Swoop or Build Anything with Bibi. Pippa’s own puzzles don’t move the tide.`+(first>=0&&first<i?` And build ${escapeHTML(SEA_LEVELS[first].name)} first.`:'');
   const g=$('#tdGo'); g.hidden=!n; if(n) g.innerHTML=`▶ Play next<small>${escapeHTML(n.t)}</small>`;
   g.onclick=()=>{ $('#tideDlg').close(); if(n) n.go(); }; $('#tdOk').onclick=()=>$('#tideDlg').close(); $('#tideDlg').showModal(); }
 window.bloppitTide=tideShow;   // for tests
@@ -6568,10 +6621,10 @@ $('#gmReset').onclick=()=>{ const b=$('#gmReset'); if(!b.dataset.confirm){ b.dat
   delete b.dataset.confirm; b.textContent='Reset game progress'; const g=gameStore(); if(trail==='brain') g.bbest={}; else if(trail==='sea') g.sbest={}; else if(trail==='flip') g.fbest={}; else g.best={}; gameStoreSet(g); renderGameMap(); };
 
 /* ---------- Math challenge (Play the Game) ---------- */
-// Some booklet pages are locked behind a math puzzle; higher levels lock more pages.
+// Some booklet pages are locked behind a maths puzzle; higher levels lock more pages.
 // The player's age is the only input. In the background it becomes a US school grade (Pre-K to 8th), and the
 // puzzles follow the Common Core standards for that grade. Each grade has three steps (easy, medium, hard):
-// Brain Trail levels 1-5 use the easy step, 6-10 medium, 11-14 hard, so later levels get harder WITHIN the grade.
+// Nora’s Brain Trail levels 1-5 use the easy step, 6-10 medium, 11-14 hard, so later levels get harder WITHIN the grade.
 // Puzzles also adapt: two first-try misses in a row drop a step, three first-try rights in a row raise one, up to
 // the hardest step of the player's own grade. Going beyond it, into the next grade's topics, only happens on
 // levels 11-14 and takes eight first-try rights in a row at that top step (the label then says so); never more
@@ -7295,7 +7348,7 @@ async function renderMpView(){
   const bz=s.mode==='blitz', cpuOn=!!mp.cpu;
   $('.mp-room-top').hidden=cpuOn;
   $('#mpBigCode').textContent=s.code; $('#mpSite').textContent=APP?'bloppit.com/game':location.host+location.pathname.replace(/\/$/,'');
-  $('#mpWhere').textContent=bz?'⚡ Blitz':'🧩 Together';
+  $('#mpWhere').textContent=bz?'⚡ Blitz':'🧩 Team Build';
   const p0=photos[0]; if(p0) $('#mpThumb').src=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png'));
   $('#mpModelName').textContent=s.title;
   $('#mpModelInfo').innerHTML=s.solo?`<span class="blitz-tag">${escapeHTML(s.label)}</span>${s.nBricks} bricks, all yours. Your clock runs until the last brick is in. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
@@ -7357,6 +7410,7 @@ async function mpMake(mode,name,choice){
     model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
   mpRememberName(name);
   await mpEnter(res,true,name); renderMpView();
+  if(crewLiveFor&&mp&&mp.code){ const c=crewLiveFor; crewLiveFor=''; crewApi('POST',{action:'live',code:c,room:mp.code}).catch(()=>{}); }
 }
 $('#mpCreate').onclick=async()=>{
   const name=$('#mpName1').value.trim(); if(!name){ mpMsg('Type your name first.','err'); $('#mpName1').focus(); return; }
@@ -7379,7 +7433,7 @@ async function joinSixCode(code){
 $('#mpJoin').onclick=async()=>{
   const code=$('#mpCodeIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''), name=$('#mpName2').value.trim();
   if(code.length===6){ joinSixCode(code); return; }
-  if(code.length!==5){ mpMsg('Codes have 5 letters and numbers (a room) or 6 (a challenge, relay or crew).','err'); $('#mpCodeIn').focus(); return; }
+  if(code.length!==5){ mpMsg('Codes have 5 letters and numbers (a room) or 6 (a challenge, a Pass the Puzzle or a crew).','err'); $('#mpCodeIn').focus(); return; }
   if(!name){ mpMsg('Type your name first.','err'); $('#mpName2').focus(); return; }
   const btn=$('#mpJoin'); btn.disabled=true; mpMsg('Joining…');
   try{ const st=mpStored(); mpRememberName(name); await mpJoin(code,name,st&&st.code===code?st.playerId:undefined); mpMsg(''); renderMpView(); }
@@ -7433,7 +7487,7 @@ const CPU_LEVELS={
   // Swoop the Longtail, Blitz Bay's racer, at three speeds (he used to be three Longtails: Scraps, Swoop, Squint).
   // Bloppit himself is the player's buddy and never the opponent.
   easy:  {name:'Swoop',speed:'Warm-up',      ms:[7000,11000],miss:.25,turn:[1,2],note:'Warm-up: Swoop takes it slow and drops a lot of bricks. Great for a first race.'},
-  medium:{name:'Swoop',speed:'Race',         ms:[4500,7500], miss:.12,turn:[1,3],note:'Race: Swoop is quick, but careless. A fair race.'},
+  medium:{name:'Swoop',speed:'Steady',       ms:[4500,7500], miss:.12,turn:[1,3],note:'Steady: Swoop is quick, but careless. A fair race.'},
   hard:  {name:'Swoop',speed:'Full throttle',ms:[2500,4500], miss:.05,turn:[2,3],note:'Full throttle: Swoop is fast and hardly ever misses. Can you beat him?'}};
 const CPU_IDS={easy:'#bzEasy',medium:'#bzMed',hard:'#bzHard'}, COUNTDOWN_MS=3000;
 // A fair race for every child: Swoop paces himself against the child's own speed (seconds per brick, mistakes and
@@ -7750,7 +7804,7 @@ function chRows(c){ const medals=['🥇','🥈','🥉'];
 function chShareUrl(code){ return `https://bloppit.com/join/${code}`; }
 async function chShare(code,kind){
   if(APP&&!await gate.ask('Sharing sends your challenge code to another app.')) return;
-  const url=chShareUrl(code), text=kind==='relay'?`I built half. Can you finish it? Bloppit relay code ${code}`:`Can you beat my Bloppit time? Challenge code ${code}`;
+  const url=chShareUrl(code), text=kind==='relay'?`I built half. Can you finish it? Bloppit Pass the Puzzle code ${code}`:`Can you beat my Bloppit time? Challenge code ${code}`;
   try{ if(navigator.share) await navigator.share({title:'Blitz challenge',text,url}); else { await navigator.clipboard.writeText(`${text} ${url}`); $('#trShare').textContent='Copied!'; setTimeout(()=>$('#trShare').textContent='Share the code',2000); } }catch(e){}
 }
 let trialDone=null;
@@ -7945,7 +7999,7 @@ async function renderDaily(){
   const st=[]; if(me) st.push(`<span>${me.clean?'Clean build <b>✓</b>':'Done <b>✓</b> · not clean yet'}</span>`);
   if(streak>0) st.push(`<span>Streak <b>${streak}</b> 🔥</span>`); { const t=weeklyPeek&&weeklyPeek.week===week?cleanLine(weeklyPeek,me):''; st.push(`<span id="dyCount"${t?'':' hidden'}>${t}</span>`); }
   $('#dyStats').innerHTML=st.join('');
-  $('#dyGo').textContent=me?(me.clean?'Build it again':'Build it again for a clean one'):'Build this week’s Bloppit'; $('#dyBook').hidden=!me;
+  $('#dyGo').textContent=me?(me.clean?'Build it again':'Build it again for a clean one'):'Build this week’s puzzle'; $('#dyBook').hidden=!me;
   $('#dyMsg').hidden=true;
   weeklyFetch().then(j=>{ const el=$('#dyCount'); if(el&&tab==='daily'){ el.textContent=cleanLine(j,me); el.hidden=!el.textContent; } }).catch(()=>{});
 }
@@ -8333,7 +8387,7 @@ function worldToast(){
 }
 // After a Build anything's reveal: the stars, and on the first ever finish the pup
 function worldAfterQuick(){ pupMaybe(()=>{ const o=worldStore(), g=ISL3.ok&&typeof worldNextGoal==='function'?worldNextGoal(o):null;
-  trialDialog({icon:'🧱',title:'You built it!',note:quickPlay?'⚡ Quick play: this one isn’t added to Bloppitopia.':g?(/^Next /.test(g.text)?g.text+' on Moonstone Isle.':'Next on Bloppitopia: '+g.text+'.'):'',next:true,quick:true}); }); }
+  trialDialog({icon:'🧱',title:'You built it!',note:quickPlay?'⚡ Quick Play: this one isn’t added to Bloppitopia.':g?(/^Next /.test(g.text)?g.text+' on Moonstone Isle.':'Next on Bloppitopia: '+g.text+'.'):'',next:true,quick:true}); }); }
 function pupMaybe(then){ const o=worldStore(); if(pupName(o)||worldCount(o)!==1||o.pupAsked){ if(then) then(); return; } o.pupAsked=true; worldSet(o); pupOpen(then); }
 // Meet your pup: its brick colour, then a name. Typing one is the main way; the list and "later" are there too.
 // After the first time, Bloppitopia is introduced (unless something else is already waiting: then()).
@@ -8369,7 +8423,7 @@ function pupMixSet(final){ PUP_HEX=pupMixHex($('#pupHue').value,$('#pupShade').v
   if(final){ const o=worldStore(); o.pupColor=PUP_MIX; o.pupHex=PUP_HEX; o.pupAt=Date.now(); worldSet(o); track('pup_colour_mix'); sfx.chirp(); pupColsRender(); isl3PupRedress(); } }
 $('#pupAge').addEventListener('click',e=>{ const b=e.target.closest('[data-age]'); if(!b) return; const n=+b.dataset.age; curPlayer().age=n; playersSave(); try{ renderWho(); }catch(x){} track('age_set:'+n); sfx.chirp();
   document.querySelectorAll('#pupAge [data-age]').forEach(x=>x.setAttribute('aria-pressed',String(x===b))); });
-// "How old are you?" for a player with no age yet (Brain Trail needs it for its maths), once, before the level starts
+// "How old are you?" for a player with no age yet (Nora’s Brain Trail needs it for its maths), once, before the level starts
 function ageAsk(then){ let d=$('#ageDlg'); if(!d){ d=document.createElement('dialog'); d.className='windlg agedlg'; d.id='ageDlg'; d.setAttribute('aria-labelledby','ageT');
     d.innerHTML=`<img src="/art/head-nora.png" alt="" width="72" height="72" style="border-radius:50%"><h2 id="ageT">How old are you?</h2><p class="note">Nora picks your maths puzzles to suit you.</p><div class="pup-age"><div role="group" aria-label="Your age">${Array.from({length:9},(_,i)=>i+5).map(n=>`<button type="button" data-age="${n}">${n===13?'13+':n}</button>`).join('')}</div></div>`;
     document.body.appendChild(d); }
@@ -8670,9 +8724,9 @@ function modelFacts(k,o){
     again=()=>{ if(mp) mpLeave(); setTrail(tr); startLevel(i); }; }
   else if((m=/^w:(.+)$/.exec(k))){ let nm='Bibi’s Weekly Bloppit'; try{ nm=weeklyPuzzle(m[1]).name; }catch(e){} name=nm; from=`Bibi’s Weekly Bloppit · week of ${fmtDay(Date.parse(m[1]+'T12:00:00'))}`;
     if(m[1]===weekOf()) again=()=>setTab('daily'); }
-  else if((m=/^m:(.+):\d+$/.exec(k))){ name=m[1]; from={welcome:'Your very first build',blitz:'Blitz · a race you won',room:'Build together',challenge:'A challenge',relay:'A relay with a friend'}[b.k]||'Build anything · the library';
+  else if((m=/^m:(.+):\d+$/.exec(k))){ name=m[1]; from={welcome:'Your very first build',blitz:'Blitz · a race you won',room:'Team Build',challenge:'A challenge',relay:'Passed with a friend'}[b.k]||'Build Anything · the library';
     const i=SAMPLES.findIndex(x=>x.name===m[1]); if(i>=0&&released(SAMPLES[i])) again=()=>{ if(mp) mpLeave(); if(game) endGame(); loadSample(i); clearTimeout(timer); rebuild(); setTab('build'); }; }
-  else if(/^r:/.test(k)){ name='Relay build'; from='A relay with a friend'; }
+  else if(/^r:/.test(k)){ name='Pass the Puzzle'; from='Passed with a friend'; }
   return {b,name,from,again};
 }
 function islandInfo(id,o){
@@ -9221,10 +9275,10 @@ const LONGTAIL_FACT='Real Longtails are white-tailed tropicbirds. They fly back 
 // then lives on Home Island beside your otter.
 const CAST={
   tiny:{name:'Tiny',kind:'the Tree Frog',isle:'otterwood',brick:'lime',h:1.5,aspect:278/360,tag:'Small frog, big forest!',
-    who:'The smallest friend with the biggest voice',story:'Tiny is a Bermuda tree frog. His whistle leads you up Frog Trail one level at a time, and at night every frog in the forest whistles with him among the fireflies.',
+    who:'The smallest friend with the biggest voice',story:'Tiny is a Bermuda tree frog. His whistle leads you up his Frog Trail one level at a time, and at night every frog in the forest whistles with him among the fireflies.',
     loves:'Hopping, whistling, and his lime brick (almost as big as he is)',secret:'He dreams of a palace for every frog in the forest, floating on the big pond.',lines:['Small frog, big forest!','Hop to it!','Ribbit-tastic!','Wheee!']},
   nora:{name:'Nora',kind:'the Night Heron',isle:'brainpeak',brick:'dark blue',h:2.3,aspect:185/360,tag:'A clever mind shines in the dark.',
-    who:'Brainpeak’s stargazer and puzzle-setter',story:'Nora is a yellow-crowned night heron. She watches the stars from Brainpeak and tucks a math puzzle into the Brain Trail booklets.',
+    who:'Brainpeak’s stargazer and puzzle-setter',story:'Nora is a yellow-crowned night heron. She watches the stars from Brainpeak and tucks a maths puzzle into Nora’s Brain Trail booklets.',
     loves:'A good “aha”, quiet nights and clear skies',secret:'Her great telescope is broken, and she needs a builder to fix it.',lines:['A clever mind shines in the dark.','Look closer, the answer’s hiding.','Aha! You saw the pattern.']},
   pippa:{name:'Pippa',kind:'the Penguin',isle:'sunrise',brick:'yellow',h:1.8,aspect:229/360,tag:'A new puzzle just washed ashore!',
     who:'The visitor who never left',story:'Pippa washed up on Flipper Beach on holiday, fell in love with the sunshine and stayed. Her mirror puzzles wash ashore as Bloppitopia grows (she builds one half, you flip it to build the other), and every day she sends a message in a bottle.',
@@ -9882,10 +9936,10 @@ function mysteryGo(){ if(!mysteryOpen()){ setTab('daily'); return; } const i=mys
 const MYST_S=.66;   // how big Mystery Island looks until it's reached
 const isl3TallNow=()=>{ const b=typeof ISL3!=='undefined'&&ISL3.box; return !!(b&&b.clientWidth&&CAM_TALL(b.clientWidth/(b.clientHeight||b.clientWidth))); };
 const ISLES={
-  otterwood:{name:'Frog Forest',game:'Frog Trail',unit:'Frog Trail level',x:-14.6,z:3.2,r:4.5,seed:2.2,ground:['#5DBB46','#3F8F33'],
-    milestone:'The Lily-pad Palace',grows:'Every Frog Trail level you finish (the last is the boss)',play:'Play Frog Trail',go:()=>trailGo('otter')},
-  brainpeak:{name:'Brainpeak',game:'Brain Trail',unit:'Brain Trail level',x:-8.4,z:-12.8,r:4.4,seed:4.1,ground:['#79C25A','#4E9E3A'],
-    milestone:'The Great Telescope',grows:'Every Brain Trail level you finish (the last is the boss)',play:'Play Brain Trail',go:()=>trailGo('brain')},
+  otterwood:{name:'Frog Forest',game:'Tiny’s Frog Trail',unit:'Tiny’s Frog Trail level',x:-14.6,z:3.2,r:4.5,seed:2.2,ground:['#5DBB46','#3F8F33'],
+    milestone:'The Lily-pad Palace',grows:'Every Tiny’s Frog Trail level you finish (the last is the boss)',play:'Play Tiny’s Frog Trail',go:()=>trailGo('otter')},
+  brainpeak:{name:'Brainpeak',game:'Nora’s Brain Trail',unit:'Nora’s Brain Trail level',x:-8.4,z:-12.8,r:4.4,seed:4.1,ground:['#79C25A','#4E9E3A'],
+    milestone:'The Great Telescope',grows:'Every Nora’s Brain Trail level you finish (the last is the boss)',play:'Play Nora’s Brain Trail',go:()=>trailGo('brain')},
   sunrise:{name:'Flipper Beach',game:'Pippa’s Mirror Puzzles',unit:'Pippa puzzle',x:5.6,z:-14.8,r:4.3,seed:5.9,ground:['#8AD06A','#5FA94A'],sand:true,
     milestone:'The Festival Clock',grows:'Every one of Pippa’s seaside puzzles you build. A new one washes ashore about every 8% of the way through Bloppitopia',play:'Play Pippa’s puzzle',go:()=>homeGo('sea')},
   blitzbay:{name:'Blitz Bay',game:'Blitz',unit:'Blitz win',x:15.2,z:-4.6,r:4.8,seed:5.3,ground:['#6CC24A','#4E9E3A'],sand:true,
@@ -10715,8 +10769,8 @@ function theEnd(then){
   track('the_end'); const o=worldStore(), B=Object.entries(o.builds), nf=n=>n.toLocaleString(), who=pupName(o)||'your otter';
   const sum=f=>B.filter(([k,b])=>f(k,b)).reduce((a,[,b])=>a+(b.n||0),0), wins=B.filter(([,b])=>b.k==='blitz').length;
   const steps=[
-    {at:'otterwood',img:'tiny',name:'Tiny',say:'You climbed all of Frog Trail. Small otter, big forest!',got:`${OTTER_LEVELS.length} Frog Trail levels · ${nf(sum(k=>k.startsWith('t:otter:')))} bricks`},
-    {at:'brainpeak',img:'nora',name:'Nora',say:'You fixed my telescope. Look how many stars there are now.',got:`${BRAIN_LEVELS.length} Brain Trail levels, math pages and all`},
+    {at:'otterwood',img:'tiny',name:'Tiny',say:'You climbed all of Tiny’s Frog Trail. Small otter, big forest!',got:`${OTTER_LEVELS.length} Tiny’s Frog Trail levels · ${nf(sum(k=>k.startsWith('t:otter:')))} bricks`},
+    {at:'brainpeak',img:'nora',name:'Nora',say:'You fixed my telescope. Look how many stars there are now.',got:`${BRAIN_LEVELS.length} Nora’s Brain Trail levels, math pages and all`},
     {at:'sunrise',img:'pippa',name:'Pippa',say:'Every puzzle that washed ashore, you built. Best festival ever!',got:`${SEA_LEVELS.length} of Pippa’s puzzles · ${nf(sum(k=>k.startsWith('t:sea:')))} bricks`},
     {at:'blitzbay',img:'swoop',name:'Swoop',say:'You beat me at full throttle. Rematch one day?',got:`${wins} Blitz win${wins===1?'':'s'} and the Grand Prix cup`},
     {at:'brickworks',img:'bibi',name:'Bibi',say:'Your creations fill my whole gallery. ROAR!',got:`${isleCount('brickworks',o)} creations of your own`},
@@ -10763,8 +10817,8 @@ function finaleCard(id){
     trialDialog({icon:'🌟',title:'You built a whole world!',quick:true,rows:`<div><span>Builds finished</span><span>${nf(n)}</span></div><div><span>Bricks placed</span><span>${nf(bricks)}</span></div><div><span>Islands complete</span><span>${ISLE_TOTAL} of ${ISLE_TOTAL}</span></div><div><span>Moonstone crown</span><span>👑</span></div><div class="tot"><span>Bonus Galaxy Blocks</span><span>+10 ${gbIc()}</span></div>`,
       note:`Every island in Bloppitopia is finished, and lufu has given ${pupName(o)||'your otter'} the Moonstone crown! A new Weekly Bloppit still comes every Monday, so keep building.`}); return; }
   const isle=id.split(':')[1], N=ISLES[isle]; if(!N){ setTimeout(()=>isl3AfterReveal(worldStore()),0); return; }
-  const line={otterwood:()=>`All ${OTTER_LEVELS.length} Frog Trail levels, boss and all: ${nf(sum(k=>k.startsWith('t:otter:')))} bricks`,
-    brainpeak:()=>`All ${BRAIN_LEVELS.length} Brain Trail levels, math pages and all: ${nf(sum(k=>k.startsWith('t:brain:')))} bricks`,
+  const line={otterwood:()=>`All ${OTTER_LEVELS.length} Tiny’s Frog Trail levels, boss and all: ${nf(sum(k=>k.startsWith('t:otter:')))} bricks`,
+    brainpeak:()=>`All ${BRAIN_LEVELS.length} Nora’s Brain Trail levels, math pages and all: ${nf(sum(k=>k.startsWith('t:brain:')))} bricks`,
     sunrise:()=>`All ${SEA_LEVELS.length} of Pippa’s seaside puzzles: ${nf(sum(k=>k.startsWith('t:sea:')))} bricks`,
     blitzbay:()=>`${B.filter(([,b])=>b.k==='blitz').length} Blitz wins, and the Grand Prix against Swoop`,
     brickworks:()=>`${isleCount('brickworks',o)} creations: your own, the library and the Weekly Bloppit`,
@@ -10792,7 +10846,7 @@ function isl3Chrome(){ const box=ISL3.box; if(!box) return; let c=box.querySelec
   { const rb=c.querySelector('.is3-realm'), open=lufuWorldOpen(); rb.hidden=!open||!!(ISL3.arrival||isl3Holding()); if(open) rb.innerHTML=inLufu()?'⛵ Sail to Bloppitopia':'✨ Sail to lufu’s world'; }
   if(!ISL3.revealing&&!ISL3.arrival){ const bn=c.querySelector('.is3-banner'); if(ISL3.lufu){ bn.textContent='🌙 Chapter 2: Bloppit builds lufu’s world · coming soon'; bn.hidden=false; bn.classList.remove('big'); bn.classList.add('soon'); } else if(bn.classList.contains('soon')){ bn.classList.remove('soon'); bn.hidden=true; } }
   const b=c.querySelector('.is3-play'), alt=c.querySelector('.is3-alt'), o=worldStore(); alt.hidden=true; c.classList.remove('has-alt');
-  if(ISL3.arrival==='home'){ b.dataset.act='home'; b.innerHTML='🔨 Build Our First Home'; b.hidden=false; }
+  if(ISL3.arrival==='home'){ b.dataset.act='home'; b.innerHTML='🔨 Build our first home'; b.hidden=false; }
   else if(ISL3.arrival||isl3Holding()){ b.hidden=true; }
   else { const V=isl3Views(), v=V[ISL3.viewI||0], isle=v&&v.id.startsWith('isle:')?v.id.slice(5):null;
     b.hidden=false; b.dataset.isle=isle||'';
@@ -11471,7 +11525,7 @@ function shareOpen(code,xfer){
   if(week){ const o=weeklyPuzzle(week); smp=SAMPLES[o.i]; title=week===weekOf()?'Bibi’s Weekly Bloppit':'A Weekly Bloppit'; note=week===weekOf()?`${o.name}, ${o.n} bricks. Build it clean and see how many others did too.`:`${o.name}, ${o.n} bricks, from the week of ${new Date(week+'T12:00:00Z').toLocaleDateString(undefined,{day:'numeric',month:'long'})}.`; }
   else if(code.startsWith('m-')){ const li=OTTER_LEVELS.findIndex(L=>slugOf(L.name)===code.slice(2));   // a Trail level of that name first (tuned sizes), then the library
     if(li<0){ smp=SAMPLES.find(x=>released(x)&&slugOf(x.name)===code.slice(2)); if(smp){ title=smp.name; note='A Bloppit build, sent to you. No account, nothing to sign up for.'; } }
-    else { if(li>=0){ const L=OTTER_LEVELS[li]; $('#shPic').src=levelThumb(L); $('#shPic').hidden=false; $('#shTitle').textContent=L.name; $('#shNote').textContent=`Frog Trail level ${li+1}. A Bloppit build, sent to you. No account, nothing to sign up for.`; setTab('home');
+    else { if(li>=0){ const L=OTTER_LEVELS[li]; $('#shPic').src=levelThumb(L); $('#shPic').hidden=false; $('#shTitle').textContent=L.name; $('#shNote').textContent=`Tiny’s Frog Trail level ${li+1}. A Bloppit build, sent to you. No account, nothing to sign up for.`; setTab('home');
       const d=$('#shareDlg'); $('#shGo').onclick=()=>{ d.close(); track('share_build_started'); if(mp) mpLeave(); if(game) endGame(); setTrail('otter'); startLevel(li); }; $('#shLook').onclick=()=>{ d.close(); setTab('home'); }; d.onclose=null; if(!d.open) d.showModal(); return; } } }
   else if(code.startsWith('d-')){ const dd=drawDecode(code.slice(2)); if(dd){ $('#shPic').src=drawThumb(dd,120); $('#shPic').hidden=false; $('#shTitle').textContent='A drawing for you'; $('#shNote').textContent=`Someone drew this, stud by stud, ${dd.w} × ${dd.h}. Build it as a brick picture.`; setTab('home');
       const d=$('#shareDlg'); $('#shGo').onclick=()=>{ d.close(); track('share_build_started'); draw={...draw,w:dd.w,h:dd.h,cells:dd.cells,undo:[],id:null}; $('#drawSize').value=dd.w; drawRender(); drawBuild(draw); }; $('#shLook').onclick=()=>{ d.close(); setTab('home'); }; d.onclose=null; if(!d.open) d.showModal(); return; } }
@@ -11623,12 +11677,76 @@ async function renderBoard(){
   catch(e){ $('#dyBoardList').innerHTML='<p class="note">Couldn’t load the board just now.</p>'; }
 }
 
+
+/* ---------- Pass the Puzzle and Crew Quick Game (Steff, 7 Nov 2026) ----------
+   Pass the Puzzle: one model passed round a crew. The starter builds the first share of pages (pages ÷ builders),
+   then each member in turn builds theirs when they open Bloppit; the last one finishes it and it lands on everyone's
+   island. Built on the relay. Crew Quick Game: a member starts a Team Build; its room code shows on the crew. */
+var pass=null;   // {role:'start'|'turn', crew, id?, from, to, moves:[], title, sent?}
+let crewLiveFor='';
+function passStart(crewCode,choice,nMembers){
+  const title=mpUseModel(choice); if(game) endGame(); if(mp) mpLeave(); dismissResume();
+  const N=model.steps.length; if(N<nMembers+1) throw new Error(`Pick a bigger puzzle: at least ${nMembers+1} pages for ${nMembers} builders.`);
+  const to=Math.min(N-1,Math.max(1,Math.ceil(N/nMembers)));
+  resetBuild(); rebuildPlaced();
+  pass={role:'start',crew:crewCode,from:0,to,moves:[],title:niceName(title)};
+  track('pass_started'); setTab('build'); updateBuildUI();
+  setStatus(`Pass the Puzzle! You build pages 1 to ${to}; then it goes round your crew.`,'ok');
+}
+function rebuildPlaced(){ placedGroup.clear(); placedBoxes=[]; placed=new Set(); off=null; cands=[]; placedN=0; cur=0; drops=[]; busy=false; }
+async function passOpenTurn(crewCode){
+  crewMsg('Loading the puzzle…');
+  const j=await crewApi('GET',null,`?code=${crewCode}&pass=1`); const Q=j.pass; if(!Q.myTurn){ crewMsg('It isn’t your turn yet.','err'); return; }
+  const ds=await Promise.all(j.model.photos.map(p=>loadPng(p.png)));
+  if(game) endGame(); if(mp) mpLeave(); dismissResume();
+  photos=j.model.photos.map((p,i)=>({id:++pid,name:p.name,view:p.view,sample:true,d:ds[i],png:p.png,m:null}));
+  setControls(j.model.S); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild(); crewMsg('');
+  if(!model||model.bricks.length!==Q.nBricks||model.steps.length!==Q.steps){ crewMsg('This puzzle was made with a different version of Bloppit. Ask the crew to start a new one.','err'); return; }
+  rebuildPlaced();
+  for(const mv of j.moves) applyMoveCore(mv);
+  while(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))) cur++;
+  reconcilePieces(); run={miss:0,hints:new Set(),auto:0,memory:false};
+  const to=Math.min(Q.steps,Q.page+Q.chunk);
+  pass={role:'turn',crew:crewCode,id:Q.id,from:Q.page,to,moves:[],title:Q.title};
+  track('pass_turn'); setTab('build'); updateBuildUI(); frameBuild(false);
+  setStatus(to>=Q.steps?`The last pages are yours: ${Q.page+1} to ${Q.steps}. Finish it for the crew!`:`Your turn: pages ${Q.page+1} to ${to}. Then it passes on.`,'ok');
+}
+async function passPagesDone(){
+  const q=pass; if(!q||q.sent) return; q.sent=true;
+  const last=q.to>=model.steps.length;
+  if(!last) trialDialog({icon:'🧩',title:'Your pages are done!',note:'Passing the puzzle to your crew…'});
+  try{
+    if(q.role==='start') await crewApi('POST',{action:'pass-start',code:q.crew,title:q.title,nBricks:model.bricks.length,steps:model.steps.length,to:q.to,moves:q.moves,
+      model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
+    else await crewApi('POST',{action:'pass-turn',code:q.crew,id:q.id,to:q.to,moves:q.moves});
+    crewMineAt=0;
+    if(!last) trialDialog({icon:'🧩',title:'Passed on!',note:`You built pages ${q.from+1} to ${q.to}. Your crew can see whose turn it is on the crew page.`,card:false});
+  }catch(e){ q.sent=false; trialDialog({icon:'😕',title:'Couldn’t pass the puzzle on',note:e.message}); }
+  if(!last) pass=null;
+}
+// Everyone who took part gets the finished model on their island (the last builder gets it by finishing it)
+function passCredit(g){
+  const Q=g&&g.pass; if(!Q||!Q.done||!Q.inIt) return;
+  const o=worldStore(), key=`p:${g.code}:${Q.id}`; if(o.builds[key]) return;
+  const lastMe=Q.history.length&&Q.history[Q.history.length-1].me; if(lastMe) return;   // they finished it, so it's on their island already
+  o.builds[key]={n:Q.nBricks,s:3,k:'pass',t:Date.now(),c:1}; o.log.push(key); worldSet(o);
+  track('pass_credit'); worldStrips(); renderHome();
+}
+$('#crewOpen').addEventListener('click',async e=>{
+  const b=e.target.closest('button'); if(!b) return; const code=crewOpenCode, g=crewMine.find(x=>x.code===code);
+  if(b.dataset.passStart){ try{ passStart(code,$('#crewPassModel').value,g?g.members.length:2); }catch(x){ crewMsg(x.message,'err'); } return; }
+  if(b.dataset.passGo){ try{ await passOpenTurn(code); }catch(x){ crewMsg(x.message,'err'); } return; }
+  if(b.dataset.crewLiveStart){ crewLiveFor=code; track('crew_live_start'); setTab('mp','start'); mpMsg('Pick a puzzle and make the room: your crew will see it.'); return; }
+  if(b.dataset.crewLive){ track('crew_live_join'); setTab('mp','join'); $('#mpCodeIn').value=b.dataset.crewLive; const n=$('#mpName2'); if(n&&!n.value) n.focus(); else $('#mpJoin').click(); return; }
+  if(b.dataset.crewLiveEnd){ crewDo({action:'live-end',code}); return; }
+});
+document.addEventListener('click',e=>{ if(e.target.closest('[data-go-race]')) homeGo('friend'); });
 /* ---------- Crews: one big shared puzzle for an approved group (friends, a family, a class) ----------
    Identity is the pup (x-pup). The maker approves every join; builds add bricks to the crew's puzzle; only
    fixed phrases and stickers pass, under generated names; a report hides the post for you and three reports
    pause the sender; a parent sees every crew and can take a player out from the Grown-ups corner. */
 const CREW_NAMES=['Otter Crew','Brick Buddies','Lighthouse Builders','Harbour Gang','Snap Squad','Island Crew','Reef Builders','Sandcastle Club','Tide Team','Puffin Patrol','Starfish Society','Clean Build Club'];
-const CREW_PHRASES=['Nice clean build!','Race you!','Let’s bloppit!','Great relay!','Welcome to the crew!','Good night, builders!','Almost there!','Snap!'];
+const CREW_PHRASES=['Nice clean build!','Race you!','Let’s bloppit!','Great pass!','Welcome to the crew!','Good night, builders!','Almost there!','Snap!'];
 const CREW_STICKERS=['🦦','🧱','⭐','🏝️','🎉','👏','🔥','🌊'];
 const CREW_PAL={"a":"#9FC3E9","n":"#1F2B52","w":"#F4F4F4","r":"#C91A09","y":"#F2CD37","o":"#FE8A18","b":"#0055BF","m":"#36AEBF","g":"#4B9F4A","l":"#A5CA18","k":"#7C4A1E","t":"#E4CD9E","h":"#A0A5A9","d":"#6C6E68","p":"#FC97AC","v":"#8A6FD1","z":"#1B2A34","s":"#F2D594","c":"#5A93DB"};
 // The crew puzzles: large, and only for crews (not in the library). The maker picks one when making the crew, with
@@ -11715,18 +11833,41 @@ async function renderCrews(force){
 }
 function renderCrew(g){
   crewOpenCode=g.code; const box=$('#crewOpen'); box.hidden=false;
-  const mine=!!g.me, maker=mine&&g.me.creator, news=crewNews(g);
-  box.innerHTML=`<div class="crew-head">${crewPuzzleSVG(g.puzzle,g.total/g.goal)}<div><h2>${escapeHTML(g.name)} <span class="cc">${g.code}</span></h2>
-      <p class="note" style="margin:4px 0 0">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks · ${g.builds} build${g.builds===1?'':'s'} · ${escapeHTML(CREW_PUZZLES[g.puzzle].name)}: ${g.pct>=100?'finished! 🎉':g.total?(g.pct?g.pct+'% built':'just started'):'not started yet'}</p>
-      <div class="bar"><i style="width:${Math.max(2,g.pct)}%"></i></div>
-      ${news?`<p class="crew-since"><b>Since you were last here</b>${news.map(x=>`<span>${escapeHTML(x)}</span>`).join('')}</p>`:''}
-      <div class="win-btns" style="justify-content:flex-start">${mine?`<button class="ghost" type="button" data-crew-share="${g.code}">Share the code</button>`:g.pendingMe?'<span class="note">Waiting for the crew’s maker to let you in.</span>':`<button class="primary sm" type="button" data-crew-join="${g.code}">Ask to join</button>`}<button class="ghost" type="button" id="crewClose">Close</button></div></div></div>
-    ${maker&&(g.pct>=100||!g.total)?`<div class="crew-next"><b>${g.pct>=100?'Pick the crew’s next puzzle':'Change the crew’s puzzle'}</b><span class="note">${g.pct>=100?'Well built, crew! Bricks built from now on go to the next one.':'You can change it until someone builds.'}</span><div class="crew-pick">${crewPickHTML(g.pct>=100?-1:g.puzzle,g.done.concat(g.pct>=100?[g.puzzle]:[]))}</div><button class="primary sm" type="button" data-crew-pz="1">${g.pct>=100?'Start this puzzle':'Use this puzzle'}</button></div>`:''}
+  const mine=!!g.me, maker=mine&&g.me.creator, news=crewNews(g), P=CREW_PUZZLES[g.puzzle]||CREW_PUZZLES[0];
+  // Crew Quick Game: a live room a member started; the others jump in (the host still lets each one in)
+  const L=g.live, quick=!mine?'':`<section class="crew-game"><h3>Crew Quick Game</h3>
+      ${L&&!L.me?`<p class="note">${escapeHTML(L.label)} started a game. Jump in!</p><div class="win-btns" style="justify-content:flex-start"><button class="primary sm" type="button" data-crew-live="${L.room}">Join the game</button></div>`
+      :L&&L.me?`<p class="note">You started a game (room ${L.room}). Your crew can see it here for three hours.</p><div class="win-btns" style="justify-content:flex-start"><button class="ghost" type="button" data-crew-live-end="1">Take it down</button></div>`
+      :`<p class="note">Play live now: start a Team Build and everyone in the crew sees it here, ready to join.</p><div class="win-btns" style="justify-content:flex-start"><button class="primary sm" type="button" data-crew-live-start="1">Start a Crew Quick Game</button></div>`}</section>`;
+  // Pass the Puzzle: one model passed round the crew, each building their share of pages in turn
+  const Q=g.pass, open=Q&&!Q.done;
+  const hist=Q?`<ol class="pass-hist">${Q.history.map(h=>`<li>${h.me?'You':escapeHTML(h.label)}: pages ${h.from+1} to ${h.to}</li>`).join('')}</ol>`:'';
+  const pass=!mine?'':`<section class="crew-game"><h3>Pass the Puzzle</h3>
+      ${open?`<p class="note"><b>${escapeHTML(Q.title)}</b> · ${Q.page} of ${Q.steps} pages built</p><div class="bar"><i style="width:${Math.max(2,Math.round(100*Q.page/Q.steps))}%"></i></div>${hist}
+        ${Q.myTurn?`<p class="note"><b>Your turn!</b> Build pages ${Q.page+1} to ${Math.min(Q.steps,Q.page+Q.chunk)}, then it passes on.</p><div class="win-btns" style="justify-content:flex-start"><button class="primary sm" type="button" data-pass-go="1">Build my pages</button></div>`
+          :`<p class="note">Waiting for ${escapeHTML(Q.turnLabel)} to build the next pages.</p>`}`
+      :`${Q&&Q.done?`<p class="note"><b>${escapeHTML(Q.title)}</b>: finished together! It’s on everyone’s island.</p>${hist}`:''}
+        ${g.members.length<2?'<p class="note">Pass the Puzzle needs at least two in the crew. Share the code to bring a friend in.</p>'
+        :`<p class="note">Pick a puzzle and build the first pages. Then it passes round the crew, each of the ${g.members.length} builders taking a turn.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><select class="inp" id="crewPassModel" style="flex:1;min-width:180px" aria-label="Puzzle to pass round"></select><button class="primary sm" type="button" data-pass-start="1">Start Pass the Puzzle</button></div>`}`}</section>`;
+  // Crew Mega Build: the big puzzle everyone's bricks go to
+  const mega=`<section class="crew-game"><h3>Crew Mega Build</h3><div class="crew-mega">${crewPuzzleSVG(g.puzzle,g.total/g.goal)}<div>
+      <p class="note" style="margin:0"><b>${escapeHTML(P.name)}</b>: ${g.pct>=100?'finished! 🎉':g.total?(g.pct?g.pct+'% built':'just started'):'not started yet'}</p>
+      <p class="note" style="margin:4px 0 0">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks · every brick anyone in the crew builds, in any game, goes here.</p>
+      <div class="bar"><i style="width:${Math.max(2,g.pct)}%"></i></div></div></div>
+    ${maker&&(g.pct>=100||!g.total)?`<div class="crew-next"><b>${g.pct>=100?'Pick the crew’s next Mega Build':'Change the crew’s Mega Build'}</b><span class="note">${g.pct>=100?'Well built, crew! Bricks built from now on go to the next one.':'You can change it until someone builds.'}</span><div class="crew-pick">${crewPickHTML(g.pct>=100?-1:g.puzzle,g.done.concat(g.pct>=100?[g.puzzle]:[]))}</div><button class="primary sm" type="button" data-crew-pz="1">${g.pct>=100?'Start this one':'Use this one'}</button></div>`:''}</section>`;
+  box.innerHTML=`<div class="crew-top"><div><h2>${escapeHTML(g.name)} <span class="cc">${g.code}</span></h2>
+      <p class="note" style="margin:4px 0 0">${g.members.length} builder${g.members.length===1?'':'s'} · ${g.builds} build${g.builds===1?'':'s'}${!mine?` · ${escapeHTML(P.name)} Mega Build`:''}</p></div>
+      <div class="win-btns" style="justify-content:flex-start">${mine?`<button class="ghost" type="button" data-crew-share="${g.code}">Share the code</button>`:g.pendingMe?'<span class="note">Waiting for the crew’s maker to let you in.</span>':`<button class="primary sm" type="button" data-crew-join="${g.code}">Ask to join</button>`}<button class="ghost" type="button" id="crewClose">Close</button></div></div>
+    ${news?`<p class="crew-since"><b>Since you were last here</b>${news.map(x=>`<span>${escapeHTML(x)}</span>`).join('')}</p>`:''}
     ${maker&&g.pending&&g.pending.length?`<div class="crew-pending"><b>Waiting to join</b>${g.pending.map(w=>`<div><span>🚪 ${escapeHTML(w.label)}</span><button class="primary sm" type="button" data-crew-ok="${w.k}">Let in</button><button class="ghost" type="button" data-crew-no="${w.k}">Not this time</button></div>`).join('')}</div>`:''}
+    ${quick}${pass}${mega}
     <div><b>Builders</b><div class="crew-members" style="margin-top:6px">${g.members.map(m=>`<span class="${m.me?'me':''}${m.muted?' muted':''}">${escapeHTML(m.label)}${m.me?' (you)':''}${m.creator?' · maker':''} · ${m.bricks}${maker&&!m.me?` <button class="rep" type="button" data-crew-kick="${escapeHTML(m.label)}" title="Take out of the crew">✕</button>`:''}${maker&&m.muted?` <button class="rep" type="button" data-crew-unmute="${escapeHTML(m.label)}">unpause</button>`:''}</span>`).join('')}</div></div>
-    ${mine?`<div><b>Crew board</b><div class="crew-feed" id="crewFeed">${g.posts.length?g.posts.slice().reverse().map(p=>`<div class="crew-post${p.me?' me':''}"><span class="who">${p.me?'You':escapeHTML(p.label)}</span><span class="what${p.sticker!=null?' st':''}">${p.sticker!=null?CREW_STICKERS[p.sticker]||'':escapeHTML(CREW_PHRASES[p.phrase]||'')}</span>${p.me?'':`<button class="rep" type="button" data-crew-report="${p.id}">Report</button>`}</div>`).join(''):'<p class="note">Nothing on the board yet.</p>'}</div>
-      ${g.me.muted?'<p class="note">Your posts here are paused while a report is looked at.</p>':`<div class="crew-say">${CREW_PHRASES.map((t,i)=>`<button type="button" data-crew-say="${i}">${escapeHTML(t)}</button>`).join('')}${CREW_STICKERS.map((t,i)=>`<button class="st" type="button" data-crew-st="${i}">${t}</button>`).join('')}</div>`}
+    ${mine?`<div><b>Crew board</b><div class="crew-feed no-di" id="crewFeed">${g.posts.length?g.posts.slice().reverse().map(p=>`<div class="crew-post${p.me?' me':''}"><span class="who">${p.me?'You':escapeHTML(p.label)}</span><span class="what${p.sticker!=null?' st':''}">${p.sticker!=null?CREW_STICKERS[p.sticker]||'':escapeHTML(CREW_PHRASES[p.phrase]||'')}</span>${p.me?'':`<button class="rep" type="button" data-crew-report="${p.id}">Report</button>`}</div>`).join(''):'<p class="note">Nothing on the board yet.</p>'}</div>
+      ${g.me.muted?'<p class="note">Your posts here are paused while a report is looked at.</p>':`<div class="crew-say no-di">${CREW_PHRASES.map((t,i)=>`<button type="button" data-crew-say="${i}">${escapeHTML(t)}</button>`).join('')}${CREW_STICKERS.map((t,i)=>`<button class="st" type="button" data-crew-st="${i}">${t}</button>`).join('')}</div>`}
       <p class="note" style="margin:6px 0 0">Only these phrases and stickers can be sent. Report hides a post for you and tells the crew’s maker; three reports pause the sender.</p></div>`:''}`;
+  if($('#crewPassModel')){ mpModelOptions('#crewPassModel'); const o=$('#crewPassModel').querySelector('optgroup[label="Medium"] option'); if(o) $('#crewPassModel').value=o.value; }
+  passCredit(g);
   box.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});
   if(mine){ const i=crewMine.findIndex(x=>x.code===g.code); if(i>=0) crewMine[i]=g; crewSeenSet(g); crewDots(); }   // opened: it's all seen now
 }
@@ -11771,9 +11912,9 @@ setTimeout(()=>{ const me=curPlayer(); if(me&&me.pup) renderCrews(true).catch(()
 var relay=null;   // {role:'first'|'second', half, code?, moves:[]}
 function relayStart(choice){
   const title=mpUseModel(choice); if(game) endGame(); if(mp) mpLeave(); dismissResume();
-  const N=model.steps.length; if(N<4) throw new Error('Pick a bigger model for a relay (at least 4 pages).');
+  const N=model.steps.length; if(N<4) throw new Error('Pick a bigger puzzle to pass (at least 4 pages).');
   relay={role:'first',half:Math.ceil(N/2),moves:[],title:niceName(title)};
-  track('relay_started'); setTab('build'); setStatus(`A relay! You build pages 1 to ${relay.half}; your friend builds ${relay.half+1} to ${N}.`,'ok'); updateBuildUI();
+  track('relay_started'); setTab('build'); setStatus(`Pass the Puzzle! You build pages 1 to ${relay.half}; your friend builds ${relay.half+1} to ${N}.`,'ok'); updateBuildUI();
 }
 async function relayHalfDone(){
   if(!relay||relay.role!=='first'||relay.sent) return; relay.sent=true;
@@ -11784,17 +11925,17 @@ async function relayHalfDone(){
       model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
     chRemember(j.code,relay.title,j.runId,'relay'); worldThumbSave('r:'+j.code);
     trialDialog({icon:'🔁',title:'Your half is done!',code:j.code,note:`Send this code to a friend. They type it into Got a code? on the Blitz page and build pages ${half+1} to ${N}. When they finish, the model lands on both your islands.`,relay:true});
-  }catch(e){ relay.sent=false; trialDialog({icon:'😕',title:'Couldn’t make the relay code',note:e.message,retry:true,relayRetry:true}); }
+  }catch(e){ relay.sent=false; trialDialog({icon:'😕',title:'Couldn’t make the code',note:e.message,retry:true,relayRetry:true}); }
 }
 async function relayOpen(c,m){
   const box=$('#chPreview'), ds=await Promise.all(m.model.photos.map(p=>loadPng(p.png)));
   if(game) endGame(); if(mp) mpLeave();
   photos=m.model.photos.map((p,i)=>({id:++pid,name:p.name,view:p.view,sample:true,d:ds[i],png:p.png,m:null}));
   setControls(m.model.S); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild(); mpMsg('');
-  if(!model||model.bricks.length!==c.nBricks||model.steps.length!==c.steps) throw new Error('This relay was made with a different version of Bloppit. Ask your friend to make a new one.');
+  if(!model||model.bricks.length!==c.nBricks||model.steps.length!==c.steps) throw new Error('This puzzle was passed with a different version of Bloppit. Ask your friend to pass it again.');
   const who=c.first.me?'You':escapeHTML(c.first.label), left=c.steps-c.half;
   box.hidden=false;
-  box.innerHTML=`<div class="ch-top"><img alt="" src="${photos[0].png}"><div><span class="tag">Relay ${c.code}</span><h2>${c.done?'Finished together!':c.first.me?'Waiting for your friend':`${who} started a relay`}</h2><p class="note" style="margin:0">${escapeHTML(c.title)} · ${c.nBricks} bricks · ${who} built pages 1 to ${c.half}${c.done?`, ${c.second.me?'you':escapeHTML(c.second.label)} built the rest`:`. ${left} page${left===1?'':'s'} to go.`}</p></div></div>
+  box.innerHTML=`<div class="ch-top"><img alt="" src="${photos[0].png}"><div><span class="tag">Pass the Puzzle ${c.code}</span><h2>${c.done?'Finished together!':c.first.me?'Waiting for your friend':`${who} passed you a puzzle`}</h2><p class="note" style="margin:0">${escapeHTML(c.title)} · ${c.nBricks} bricks · ${who} built pages 1 to ${c.half}${c.done?`, ${c.second.me?'you':escapeHTML(c.second.label)} built the rest`:`. ${left} page${left===1?'':'s'} to go.`}</p></div></div>
     <div class="win-btns" style="justify-content:flex-start">${c.done||c.first.me?'':'<button class="primary" id="relGo" type="button">Finish it! 🔁</button>'}${c.first.me&&!c.done?'<button class="ghost" id="chShareBtn" type="button">Share the code</button>':''}<button class="ghost" id="chClose" type="button">Close</button></div>`;
   box.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'});
   $('#chClose').onclick=()=>{ box.hidden=true; };
@@ -11827,12 +11968,12 @@ function relayCredit(c){
   o.builds[key]={n:c.nBricks,s:stars,k:'relay',t:Date.now(),c:1}; o.log.push(key); worldSet(o);
   const after={pup:pupStage(o),island:islandStage(o)};
   worldLast={key,kind:'relay',stars,best:stars,gained:stars,xp:buildXP(key,o.builds[key]),bonus:0,first:true,clean,noHint:c.first.hint===0,before,after,pupUp:after.pup>before.pup,islandUp:after.island>before.island,total:worldStars(o),count:worldCount(o)};
-  track('relay_finished_first'); worldStrips(); trialDialog({icon:'🔁',title:'Your relay is finished!',note:`${escapeHTML(c.second.label)} built the rest of the ${escapeHTML(c.title)}. It’s on your island now.`,card:false}); worldSound(); renderHome();
+  track('relay_finished_first'); worldStrips(); trialDialog({icon:'🔁',title:'Your passed puzzle is finished!',note:`${escapeHTML(c.second.label)} built the rest of the ${escapeHTML(c.title)}. It’s on your island now.`,card:false}); worldSound(); renderHome();
 }
 $('#bzRelayGo').onclick=()=>{ try{ relayStart($('#bzModel').value); }catch(e){ mpMsg(e.message,'err'); } };
 
 /* ---------- Play Next: what to build next, with a picture ---------- */
-// The next unfinished Frog Trail level, then Brain Trail, then the first library model not yet built.
+// The next unfinished Tiny’s Frog Trail level, then Nora’s Brain Trail, then the first library model not yet built.
 // Play next: the islands rise together. It takes turns: a trail level (whichever trail's island is further behind),
 // then a Blitz race, then a library build, then (once it's reachable) the next chapter of the mystery, and round
 // again, skipping whatever is finished. So a child moves between trails, races and their own builds.
@@ -11843,7 +11984,7 @@ const isleFrac=(id,o)=>{ const P=PIECES[id]; return Math.min(1,isleCount(id,o)/P
 function nextCandidates(){
   const g=gameStore(), o=worldStore(), out=[];
   for(const tr of ['otter','brain','sea']){ const LV=levelsOf(tr), B=bestOf(g,tr), i=LV.findIndex((_,k)=>!B[k]);
-    if(i>=0&&(tr!=='sea'||seaWashed(i,o))){ const L=LV[i]; out.push({kind:tr,isle:{otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr],t:tr==='sea'?`🐧 Pippa’s puzzle ${i+1}: ${L.name}`:`${L.boss?'👑 Boss: ':''}${tr==='otter'?'Frog':'Brain'} Trail level ${i+1}: ${L.name}`,s:'',thumb:levelThumb(L),go:()=>{ setTrail(tr); if(mp) mpLeave(); startLevel(i); }}); } }
+    if(i>=0&&(tr!=='sea'||seaWashed(i,o))){ const L=LV[i]; out.push({kind:tr,isle:{otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr],t:tr==='sea'?`🐧 Pippa’s puzzle ${i+1}: ${L.name}`:`${L.boss?'👑 Boss: ':''}${tr==='otter'?'Tiny’s Frog':'Nora’s Brain'} Trail level ${i+1}: ${L.name}`,s:'',thumb:levelThumb(L),go:()=>{ setTrail(tr); if(mp) mpLeave(); startLevel(i); }}); } }
   { const i=ladderStep(o);   // Blitz Bay's ladder: the next race, Swoop faster every five, then the Grand Prix
     if(i>=0){ const L=BLITZ_PICKS[i], gp=i>=LADDER_N, lvl=gp?'hard':L.lv;
       out.push({kind:'blitz',isle:'blitzbay',t:gp?`🏆 Blitz Bay race ${BLITZ_RACES} of ${BLITZ_RACES}: the Grand Prix against Swoop`:`⚡ Blitz Bay race ${i+1} of ${BLITZ_RACES}: ${L.name} (Swoop at ${CPU_LEVELS[lvl].speed})`,s:'',thumb:levelThumb(L),go:()=>ladderGo(true)}); } }
@@ -11915,7 +12056,7 @@ function nextButtonHTML(n,cls){ return n?`<img src="${n.thumb}" alt="">${escapeH
    On a first visit (no build started or finished on this device, nothing to resume) the menu's hero card is
    "Start here": one tap opens a six-brick tree on the build stage. Bloppit puts each step's brick straight into
    the player's hand and the hint shows where it goes, so the first snap happens in seconds. The reveal, the
-   pup, then a fork: keep building (Frog Trail), this week's Bloppit, or the library. ?welcome=1 opens the
+   pup, then a fork: keep building (Tiny’s Frog Trail), this week's Bloppit, or the library. ?welcome=1 opens the
    build straight away (playtests); ?welcome=0 hides the card. */
 var WELCOME={sample:'Little house',S:{kind:'model',shape:'flat',thick:1,tol:48,maxColors:6,gray:true,pw:48,pcol:24,size:6}};
 var welcomeVer=-1, welcomeBook=false;  // var: the buddy can update before this line runs
@@ -12015,9 +12156,10 @@ function renderHome(){
   if(homeCont){ $('#hmContT').textContent=homeCont.t; $('#hmContS').textContent=homeCont.s;
     $('#hmContBar').hidden=homeCont.p<0; $('#hmContBar i').style.width=Math.max(4,homeCont.p)+'%'; $('#hmCont').classList.toggle('first',!!homeCont.first); }
   const st=playerStats(players.cur);
+  { const q=$('#hmQuickSub'); if(q) q.textContent=`Photos, drawings or ${SAMPLES.filter(released).length} library models`; }
   $('#hmOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
-  $('#hmBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} new levels, with math puzzles`;
-  $('#hmSeaSub').textContent=st.flv?`${st.flv} of ${FLIP_LEVELS.length} puzzles built`:`${FLIP_LEVELS.length} mirror puzzles, any time`;
+  $('#hmBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} levels, a maths puzzle in each`;
+  $('#hmSeaSub').textContent=st.flv?`${st.flv} of ${FLIP_LEVELS.length} any-time puzzles built`:`${FLIP_LEVELS.length} puzzles: Pippa builds half, you build the rest`;
   try{ const week=weekOf(), o=weeklyPuzzle(week), me=weeklyStore().weeks[week], k=weeklyStreak();
     $('#hmDailyImg').src=o.thumb; $('#hmDailyT').textContent=me?`${o.name}: ${me.clean?'clean ✓':'done ✓'}`:`This week: ${o.name}`;
     renderHomeWeekly();
@@ -12030,7 +12172,7 @@ function homeGo(where){ mpDoneLeave();
   if(where==='daily'){ setTab('daily'); return; }
   if(where==='island'){ setTab('island'); return; }
   if(where==='blitz'){ setTab('blitz',mp?undefined:'hub'); return; }
-  if(where==='mp'){ setTab('mp',mp?undefined:'start'); return; }
+  if(where==='mp'){ setTab('mp',mp?undefined:'hub'); return; }   // Play with Friends: choose Team Build or Race
   if(where==='crew'){ setTab('mp','hub'); requestAnimationFrame(()=>{ const c=$('#crewCard'); if(c) c.scrollIntoView({block:'start',behavior:reduceMotion?'auto':'smooth'}); }); return; }   // Crews: on the Together page
   if(where==='code'){ setTab('mp',mp?undefined:'join'); if(!mp) requestAnimationFrame(()=>{ const i=$('#mpCodeIn'); if(i) i.focus(); }); return; }
   if(where==='cpu'&&!mp){ islandSetOff('blitzbay',()=>{ setTab('blitz','cpu'); scrollTo(0,0); }); return; }
@@ -12042,7 +12184,7 @@ function homeGo(where){ mpDoneLeave();
 // "Play on <island>" is Bloppitopia as before (its arrival film the first time, the build grows the island);
 // "Quick play" just builds: no film, and nothing is added to Bloppitopia (no island, ★ record, XP or Galaxy Blocks).
 // Quick play lasts until the player goes back to Bloppitopia (the island, a top tab, or the other choice).
-const QP_TILES={quick:{isle:'brickworks',who:'bibi',t:'Build anything'},otter:{isle:'otterwood',who:'tiny',t:'Frog Trail'},brain:{isle:'brainpeak',who:'nora',t:'Brain Trail'},cpu:{isle:'blitzbay',who:'swoop',t:'Blitz'}};
+const QP_TILES={quick:{isle:'brickworks',who:'bibi',t:'Build Anything with Bibi'},otter:{isle:'otterwood',who:'tiny',t:'Tiny’s Frog Trail'},brain:{isle:'brainpeak',who:'nora',t:'Nora’s Brain Trail'},cpu:{isle:'blitzbay',who:'swoop',t:'Blitz with Swoop'}};
 function quickPlaySet(on){ quickPlay=!!on; document.body.classList.toggle('quick-play',quickPlay); }
 function quickGo(where){ quickPlaySet(true); track('quick_play:'+where);
   if(where==='quick'){ if(game) endGame(); pickPuzzle('quick','top'); return; }
@@ -12055,7 +12197,7 @@ function quickGo(where){ quickPlaySet(true); track('quick_play:'+where);
 // vs Swoop: the race's own speed comes with it (Warm-up, Race, Full throttle). The slider is kept per tile.
 const QP_LV=['🐣 Tiny','🙂 Easy','🧱 Medium','🤔 Tricky','🔥 Super tricky'];
 const QP_LIB=[{size:6,shape:'flat',thick:.5,colors:2},{size:8,shape:'flat',thick:1,colors:3},{size:10,shape:'puffed',thick:1,colors:4},{size:13,shape:'puffed',thick:1,colors:6},{size:16,shape:'puffed',thick:1,colors:8}];
-const QP_SPEED={easy:'Warm-up',medium:'Race',hard:'Full throttle'};
+const QP_SPEED={easy:'Warm-up',medium:'Steady',hard:'Full throttle'};
 QP_TILES.flip={who:'pippa',t:'Pippa’s Mirror Puzzles',solo:true};
 let qpCur=null;
 function qpDiffs(){ try{ return JSON.parse(localStorage.getItem('bloppit-qp-diff'))||{}; }catch(e){ return {}; } }
@@ -12074,7 +12216,7 @@ function qpShow(){ const C=qpCur; if(!C) return; const P=C.pick;
   $('#qpPzImg').hidden=!thumb; if(thumb) $('#qpPzImg').src=thumb;
   $('#qpPzName').textContent=C.where==='quick'?niceName(L.name):L.name;
   let n=0; try{ n=levelCount(L); }catch(e){}
-  const bits=[]; if(n) bits.push(`${n} bricks`); if(C.where==='cpu') bits.push(`Swoop: ${QP_SPEED[L.boss?'hard':L.lv]||'Race'}`);
+  const bits=[]; if(n) bits.push(`${n} bricks`); if(C.where==='cpu') bits.push(`Swoop: ${QP_SPEED[L.boss?'hard':L.lv]||'Steady'}`);
   if(C.where==='otter'||C.where==='brain'||C.where==='flip') bits.unshift(`${C.where==='flip'?'Puzzle':'Level'} ${P.i+1}`);
   $('#qpPzInfo').textContent=bits.join(' · ');
   $('#qpQuick').textContent=C.where==='cpu'?'▶ Set up the race':`▶ Build ${C.where==='quick'?'it':'this one'}`; }
@@ -12100,7 +12242,7 @@ function playAsk(where,opt){ const T=QP_TILES[where]; if(!T||mp){ homeGo(where);
   let iname=''; try{ iname=ISLES[T.isle].name; }catch(e){}
   $('#qpT').textContent=T.t; $('#qpImg').src=`/art/head-${T.who}.png`; $('#qpIsleT').textContent=`🏝️ Play on ${iname||'Bloppitopia'}`;
   const d=$('#qpDlg'); d.classList.toggle('solo',!!T.solo);
-  $('#qpQuickT').textContent=T.solo?'Pick how tricky':'Just Play'; $('#qpQuickIc').textContent=T.solo?'🪞':'⚡';
+  $('#qpQuickT').textContent=T.solo?'Pick how tricky':'Quick Play'; $('#qpQuickIc').textContent=T.solo?'🪞':'⚡';
   $('#qpQuickS').textContent=T.solo?'Pippa finds a mirror puzzle to match.':where==='cpu'?'Just race. Nothing is added to Bloppitopia.':'Just build. Nothing is added to Bloppitopia.';
   qpCur={where,d:qpDiffs()[where]||2,pick:null}; qpSet(qpCur.d);
   $('#qpIsle').onclick=()=>{ d.close(); quickPlaySet(false); track('quick_play_no:'+where); homeGo(where); };
@@ -12155,7 +12297,9 @@ navStart();  // from here on, each page change on the website is a step for the 
 /* Drawn icons in place of emoji: a fixed set of emoji in the game's own text becomes drawn icons (see .di in the styles),
    whenever and wherever the game writes them. A ⚡ about racing is Swoop's blue Blitz bolt; any other ⚡ is the red go bolt. */
 (function(){
-  const MAP=[['🏝️','isle'],['🏝','isle'],['⚡','bolt'],['📮','card'],['🎬','film'],['🔥','flame'],['📚','book'],['📷','camera'],['✏️','pencil'],['✏','pencil'],['🎨','palette'],['🧩','together'],['🔑','key'],['🤝','friend']];
+  const MAP=[['🏝️','isle'],['🏝','isle'],['⚡','bolt'],['📮','card'],['🎬','film'],['🔥','flame'],['📚','book'],['📷','camera'],['✏️','pencil'],['✏','pencil'],['🎨','palette'],['🧩','together'],['🔑','key'],['🤝','friend'],
+    ['📦','box'],['📸','camera'],['📨','env'],['🔁','pass'],['📖','book'],['🔨','hammer'],['⛵','boat'],['💡','bulb'],['🌳','tree'],['🏁','flag'],['🚀','rocket'],['📅','cal'],['🐸','tiny'],['🧠','nora'],['🐧','pippa'],
+    ['🏆','trophy'],['🔒','lock'],['🌙','moon'],['😕','oops'],['🌊','wave'],['🧱','brick'],['🪞','mirror'],['👑','crown'],['🥇','gold'],['🥈','silver'],['🥉','bronze'],['🎉','party'],['🦦','bloppit'],['🙂','smile'],['🐣','chick'],['🧣','scarf'],['🚪','door'],['🌟','star'],['🏠','house'],['📱','phone'],['🪣','bucket'],['📏','ruler'],['🐦','swoop'],['🐢','turtle'],['🔀','shuffle'],['🎲','die'],['🧢','cap'],['👕','shirt'],['🤔','think'],['✨','sparkle']];
   const RE=new RegExp('('+MAP.map(m=>m[0]).join('|')+')\\uFE0F?','gu'), ANY=new RegExp(MAP.map(m=>m[0]).join('|'),'u');
   const SKIP=new Set(['SCRIPT','STYLE','TEXTAREA','INPUT','OPTION','SELECT','TITLE','svg','text','KBD']);
   function swap(n){

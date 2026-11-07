@@ -116,6 +116,29 @@ test('crew puzzle: suggested by default, chosen at making, fixed once started, n
   assert.equal(n.puzzle, 1); assert.deepEqual(n.done, [3]); assert.equal(n.total, 200);   // the extra 200 bricks carry over
 });
 
+test('crew games: a Crew Quick Game shows for the crew; Pass the Puzzle goes round in turns and finishes', async () => {
+  mem.clear();
+  const A = 'a'.repeat(24), B = 'b'.repeat(24), C = 'c'.repeat(24);
+  const code = (await group('POST', { pid: A }, { action: 'create', name: 0 }, store)).body.group.code;
+  for (const P of [B, C]) { await group('POST', { pid: P }, { action: 'join', code }, store); const k = (await group('GET', { pid: A, code }, null, store)).body.group.pending[0].k; await group('POST', { pid: A }, { action: 'approve', code, k }, store); }
+  // Crew Quick Game
+  assert.equal((await group('POST', { pid: B }, { action: 'live', code, room: 'ab12c' }, store)).status, 200);
+  const seen = (await group('GET', { pid: C, code }, null, store)).body.group.live; assert.equal(seen.room, 'AB12C'); assert.equal(seen.me, false);
+  await group('POST', { pid: B }, { action: 'live-end', code }, store); assert.equal((await group('GET', { pid: C, code }, null, store)).body.group.live, null);
+  // Pass the Puzzle: 9 pages, 3 in the crew → 3 pages each
+  const model = { name: 'Boat', S: {}, photos: [{ name: 'Boat', view: 'front', png: 'data:image/png;base64,AAAA' }] };
+  const mv = (n) => Array.from({ length: n }, (_, i) => ({ b: i, x: i, z: 0 }));
+  const s = await group('POST', { pid: A }, { action: 'pass-start', code, title: 'Boat', nBricks: 30, steps: 9, to: 3, moves: mv(3), model }, store);
+  assert.equal(s.status, 200); const p0 = s.body.group.pass; assert.equal(p0.chunk, 3); assert.equal(p0.page, 3); assert.equal(p0.byMe, true); assert.equal(p0.myTurn, false);
+  assert.equal((await group('POST', { pid: A }, { action: 'pass-start', code, title: 'X', nBricks: 30, steps: 9, to: 3, moves: mv(3), model }, store)).status, 409);   // one at a time
+  const pb = (await group('GET', { pid: B, code }, null, store)).body.group.pass; assert.equal(pb.myTurn, true);
+  assert.equal((await group('POST', { pid: C }, { action: 'pass-turn', code, id: pb.id, to: 6, moves: mv(3) }, store)).status, 409);   // not C's turn
+  const g = await group('GET', { pid: B, code, pass: 1 }, null, store); assert.equal(g.body.moves.length, 3); assert.equal(g.body.model.name, 'Boat');
+  assert.equal((await group('POST', { pid: B }, { action: 'pass-turn', code, id: pb.id, to: 6, moves: mv(3) }, store)).body.group.pass.page, 6);
+  const end = (await group('POST', { pid: C }, { action: 'pass-turn', code, id: pb.id, to: 9, moves: mv(3) }, store)).body.group.pass;
+  assert.equal(end.done, true); assert.equal(end.history.length, 3); assert.equal(end.history[2].me, true);
+});
+
 import { handle as challenge } from '../netlify/functions/challenge/logic.mjs';
 test('weekly board: entries only with the switch, generated names, clean first then stars, me flagged', async () => {
   mem.clear();
