@@ -2,12 +2,12 @@
 
 1.0 went live on 6 Nov 2026 (a quiet soft launch, all 175 countries). 1.1 brings everything since the 1.0 build to the
 app: the films and My films, the friends on every island, the Moonstone story, Pippa's mirror puzzles, the 20-race Blitz
-Bay, Galaxy Blocks, the new menu and Quick play. Everything to paste is in `listing.md`.
+Bay, Galaxy Blocks, the new menu and Quick Play. Everything to paste is in `listing.md`.
 
 ## Before submitting
 
 - [x] App version is 1.1 (`MARKETING_VERSION`, since #89); every push to main that changes the app builds 1.1 (N) to TestFlight.
-- [ ] The build to submit: the first 1.1 build after #198 (new name, How to play end cards); 1.1 (177) was the first with the Midway films.
+- [ ] The build to submit: the first 1.1 build after #198 (new name, How to Play end cards); 1.1 (177) was the first with the Midway films.
       A later app change makes a newer build: submit the newest one.
 - [ ] Play that build on an iPhone and an iPad from TestFlight: first visit (name → arrival film → first home), a Trail
       level, a race against Swoop, My films.

@@ -833,7 +833,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 body.bz-jump #view-blitz{visibility:hidden}
 .lufuhi{max-width:min(560px,94vw)}.lufuhi .lh-txt{text-align:left;line-height:1.5;margin:4px 0 10px}.lufuhi .lh-sub{font-weight:800;margin:6px 0;text-align:left}
 .lh-list{display:grid;gap:8px}.lh-list button{display:grid;grid-template-columns:36px 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-align:left;padding:10px 14px;border-radius:14px;border:2px solid var(--line);background:var(--page);color:var(--ink);font:inherit;cursor:pointer}
-.lh-list button:hover{border-color:#8A3BC9}.lh-list .lh-film{border-color:#8A3BC9;background:color-mix(in srgb,#8A3BC9 12%,var(--page))}.lh-list span{grid-row:1/3;font-size:24px;text-align:center}.lh-list b{font-weight:800}.lh-list small{color:var(--muted);font-weight:700}
+.lh-list button:hover{border-color:#8A3BC9}.lh-list .lh-film{border-color:var(--c-lufu);background:color-mix(in srgb,var(--c-lufu) 12%,var(--page))}.lh-list span{grid-row:1/3;font-size:24px;text-align:center}.lh-list b{font-weight:800}.lh-list small{color:var(--muted);font-weight:700}
 .paint-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px}.paint-row span{font-size:12px;font-weight:800;color:var(--muted)}
 .paint-row button{width:28px;height:28px;border-radius:50%;border:2px solid rgba(0,0,0,.25);cursor:pointer;padding:0}.paint-row button[aria-pressed="true"]{outline:3px solid #F4BC22;outline-offset:2px}
 /* Race scoreboard (Blitz, two or more racers): who leads and by how much, compared at the same brick, so the brick
@@ -1328,9 +1328,6 @@ body.on-home .tabs{visibility:hidden}
 .hm-tile.wide span:not(.ic){align-self:start}
 .hm-tile.t-photo{--c:#D62F2A;min-height:140px}
 .hm-tile.t-lib{--c:#0055BF}
-.hm-tile.t-game{--c:#237841}
-.hm-tile.t-mp{--c:#923978}
-.hm-tile.t-blitz{--c:#F08A00}
 .view #library{scroll-margin-top:80px}
 .hm-foot{text-align:center;font-size:13px;color:var(--muted)}
 .hm-foot a{color:inherit}
@@ -1644,9 +1641,7 @@ body.film-on{overflow:hidden}
 /* Yellow so Bloppit's red brick stands out */
 .hm-tile.t-quick{--c:#F4BC22;color:#14202C}
 .hm-tile.t-quick .ic{background:rgba(255,255,255,.35)}
-.hm-tile.t-brain{--c:#0055BF}
 .hm-tile.t-sea{--c:var(--c-bloppit)}
-.hm-tile.t-friend{--c:#923978}
 .hm-tile.t-together{--c:#6A3FB5}
 .hm-tile.t-join{--c:#1B2A34}
 .hm-tile.t-crew{--c:var(--c-bloppit)}   /* Crews: teal, no character's colour */
@@ -1732,7 +1727,7 @@ body.film-on{overflow:hidden}
 .tabs .tab[aria-selected="true"] .n{background:none}
 .tabs .tab[aria-selected="true"]::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:4px;border-radius:4px;background:var(--tc)}
 #tab-mp .n.n2{position:relative;width:40px!important}#tab-mp .n.n2 img{position:absolute;top:0;width:28px;height:28px}#tab-mp .n.n2 img:first-child{left:0}#tab-mp .n.n2 img:last-child{right:0;transform:scaleX(-1)}   /* Together: two Bloppits, facing each other */
-#tab-island{--tc:#2FB8DC}#tab-sea{--tc:var(--c-pippa)}#tab-quick{--tc:#F4BC22}#tab-cove{--tc:var(--c-bibi)}#tab-game{--tc:var(--c-tiny)}
+#tab-sea{--tc:var(--c-pippa)}#tab-quick{--tc:#F4BC22}#tab-cove{--tc:var(--c-bibi)}#tab-game{--tc:var(--c-tiny)}
 /* The character at the top of each page */
 .char-hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 20px;align-items:center;border-radius:20px;padding:14px 24px 14px 14px;background:linear-gradient(115deg,var(--h1),var(--h2));color:var(--hink,#fff);box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer;min-width:0;overflow:hidden}
 #view-create>.char-hero{grid-column:1/-1}
@@ -1761,7 +1756,7 @@ body.film-on{overflow:hidden}
 @media (prefers-reduced-motion: reduce){.bottle .bt-art{animation:none!important}}
 .tab .n{position:relative}
 .tab.bottle-on .n::after{content:"";position:absolute;top:-2px;right:-3px;width:10px;height:10px;border-radius:50%;background:#D62F2A;border:2px solid var(--bg)}
-.dy-sea{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;text-align:left;cursor:pointer;font:inherit;color:var(--ink)}.dy-sea img{width:52px;height:52px}.dy-sea b{display:block;font-family:var(--f-display);font-weight:400;font-size:20px}.dy-sea span span{font-size:13px;font-weight:700;color:var(--muted)}.dy-go{font-size:28px;color:var(--muted)}.dy-sea:hover{border-color:var(--accent)}#tab-brain{--tc:var(--c-nora)}#tab-blitz{--tc:var(--c-swoop)}#tab-mp{--tc:#8B5CF6}
+.dy-sea{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;text-align:left;cursor:pointer;font:inherit;color:var(--ink)}.dy-sea img{width:52px;height:52px}.dy-sea b{display:block;font-family:var(--f-display);font-weight:400;font-size:20px}.dy-sea span span{font-size:13px;font-weight:700;color:var(--muted)}.dy-go{font-size:28px;color:var(--muted)}.dy-sea:hover{border-color:var(--accent)}#tab-brain{--tc:var(--c-nora)}#tab-blitz{--tc:var(--c-swoop)}
 /* The game tabs scroll sideways when they don't all fit: little arrows at either end show there are more, and tap to slide */
 .tabs-wrap{display:contents}.tabs-arr{display:none}
 @media (max-width:1240px){
@@ -3998,7 +3993,7 @@ const FILMS=[
     say:[{t:11,who:'tiny',text:'We did it, {name}!'}]},
   // [arrival no, complete no, island id, place, file, hints, who speaks, when in the arrival film, when in the completion film]
   ...[['04','05','brainpeak','Brainpeak','brainpeak','Set off for Brainpeak','Finish every Nora’s Brain Trail level','nora',12,24.5],
-      ['06','07','sunrise','Flipper Beach','sunrise-shores','Set off for Flipper Beach','Build all of Pippa’s puzzles','pippa',15,17],
+      ['06','07','sunrise','Flipper Beach','sunrise-shores','Set off for Flipper Beach','Build all of Pippa’s Mirror Puzzles','pippa',15,17],
       ['08','09','blitzbay','Blitz Bay','blitz-bay','Race Swoop','Win the Grand Prix','swoop',19,20],
       ['10','11','brickworks','Brickyard Cove','brickworks','Set off for Brickyard Cove','Fill Brickyard Cove with your own builds','bibi',2,20]]
     .flatMap(([a,c,isle,place,file,ha,hc,who,ta,tc])=>[
@@ -9284,7 +9279,7 @@ const CAST={
     who:'The visitor who never left',story:'Pippa washed up on Flipper Beach on holiday, fell in love with the sunshine and stayed. Her mirror puzzles wash ashore as Bloppitopia grows (she builds one half, you flip it to build the other), and every day she sends a message in a bottle.',
     loves:'Surprises, parties, and a swim before breakfast',secret:'She wobbles on land, but she’s the best swimmer in Bloppitopia.',lines:['A new puzzle just washed ashore!','Special delivery!','Ooh, that one’s clean!','See you next Monday!']},
   bibi:{name:'Bibi',kind:'the Lion Cub',isle:'brickworks',brick:'orange',h:1.85,aspect:241/360,tag:'Build it bold!',
-    who:'The maker of Brickyard Cove',story:'Bibi runs the workshop and paints everything in sight. Every Monday he paints a new Weekly Bloppit, and whatever you make, he puts it on show and roars with pride.',
+    who:'The maker of Brickyard Cove',story:'Bibi runs the workshop and paints everything in sight. Every Monday he paints a new puzzle for Bibi’s Weekly Bloppit, and whatever you make, he puts it on show and roars with pride.',
     loves:'Big ideas, bright paint, and the crane',secret:'His roar is more of a squeak. He knows, and he roars anyway.',lines:['Build it bold!','If you can dream it, brick it!','ROAR! That’s brilliant!']},
   lufu:{name:'lufu',kind:'',isle:'moonstone',brick:'moonstone',h:1.5,aspect:237/360,tag:'We have found each other.',
     who:'A small, shy spirit of light',story:'lufu lived alone on Moonstone Isle for so long that its glow, and the stars above it, almost went out. Then you came, and built the crystal that made it shine again.',
@@ -9945,7 +9940,7 @@ const ISLES={
   blitzbay:{name:'Blitz Bay',game:'Blitz',unit:'Blitz win',x:15.2,z:-4.6,r:4.8,seed:5.3,ground:['#6CC24A','#4E9E3A'],sand:true,
     milestone:'The Grand Prix cup',grows:'Every Blitz race you win against Swoop (the 16th is the Grand Prix)',play:'Race Swoop',go:()=>ladderGo()},
   brickworks:{name:'Brickyard Cove',game:'Creative builds',unit:'creation',x:12.4,z:9.6,r:4.3,seed:6.6,ground:['#7CC45E','#4E9E3A'],
-    milestone:'The Grand Creation Gallery',grows:'Every build from your own photo or drawing, from the library, and every Weekly Bloppit',play:'Make your own',
+    milestone:'The Grand Creation Gallery',grows:'Every build from your own photo or drawing, from the library, and each week’s Bibi’s Weekly Bloppit',play:'Make your own',
     go:()=>{ pickPuzzle('quick','top'); }},   // Build anything's first screen: a photo, a drawing or the library
   moonstone:{name:'Moonstone Isle',game:'Chapters',get play(){ const i=mysteryNext(); return i>=0?`▶ Build Chapter ${i+1}: ${mysteryTitle(MYSTERY[i])}`:'Explore Moonstone Isle'; },unit:'chapter',get x(){ return isl3TallNow()?-22.5:23.5; },get z(){ return isl3TallNow()?-11.5:-23.5; },r:4.0,   // far out at sea, in the top corner of the view (upright phones see the world from the side)
    seed:7.7,ground:['#6FB7A4','#4E8F7E'],sand:true,mystery:true,
@@ -10770,8 +10765,8 @@ function theEnd(then){
   const sum=f=>B.filter(([k,b])=>f(k,b)).reduce((a,[,b])=>a+(b.n||0),0), wins=B.filter(([,b])=>b.k==='blitz').length;
   const steps=[
     {at:'otterwood',img:'tiny',name:'Tiny',say:'You climbed all of Tiny’s Frog Trail. Small otter, big forest!',got:`${OTTER_LEVELS.length} Tiny’s Frog Trail levels · ${nf(sum(k=>k.startsWith('t:otter:')))} bricks`},
-    {at:'brainpeak',img:'nora',name:'Nora',say:'You fixed my telescope. Look how many stars there are now.',got:`${BRAIN_LEVELS.length} Nora’s Brain Trail levels, math pages and all`},
-    {at:'sunrise',img:'pippa',name:'Pippa',say:'Every puzzle that washed ashore, you built. Best festival ever!',got:`${SEA_LEVELS.length} of Pippa’s puzzles · ${nf(sum(k=>k.startsWith('t:sea:')))} bricks`},
+    {at:'brainpeak',img:'nora',name:'Nora',say:'You fixed my telescope. Look how many stars there are now.',got:`${BRAIN_LEVELS.length} Nora’s Brain Trail levels, maths pages and all`},
+    {at:'sunrise',img:'pippa',name:'Pippa',say:'Every puzzle that washed ashore, you built. Best festival ever!',got:`${SEA_LEVELS.length} of Pippa’s Mirror Puzzles · ${nf(sum(k=>k.startsWith('t:sea:')))} bricks`},
     {at:'blitzbay',img:'swoop',name:'Swoop',say:'You beat me at full throttle. Rematch one day?',got:`${wins} Blitz win${wins===1?'':'s'} and the Grand Prix cup`},
     {at:'brickworks',img:'bibi',name:'Bibi',say:'Your creations fill my whole gallery. ROAR!',got:`${isleCount('brickworks',o)} creations of your own`},
     {at:'home',img:'bloppit',name:'Bloppit',say:'And you built the home it all started from.',got:`${nf(worldCount(o))} builds in all`},
@@ -10815,13 +10810,13 @@ function finaleCard(id){
     end(); return; }
   if(id==='final:all'){ const n=worldCount(o), bricks=B.reduce((a,[,b])=>a+(b.n||0),0);
     trialDialog({icon:'🌟',title:'You built a whole world!',quick:true,rows:`<div><span>Builds finished</span><span>${nf(n)}</span></div><div><span>Bricks placed</span><span>${nf(bricks)}</span></div><div><span>Islands complete</span><span>${ISLE_TOTAL} of ${ISLE_TOTAL}</span></div><div><span>Moonstone crown</span><span>👑</span></div><div class="tot"><span>Bonus Galaxy Blocks</span><span>+10 ${gbIc()}</span></div>`,
-      note:`Every island in Bloppitopia is finished, and lufu has given ${pupName(o)||'your otter'} the Moonstone crown! A new Weekly Bloppit still comes every Monday, so keep building.`}); return; }
+      note:`Every island in Bloppitopia is finished, and lufu has given ${pupName(o)||'your otter'} the Moonstone crown! A new Bibi’s Weekly Bloppit still comes every Monday, so keep building.`}); return; }
   const isle=id.split(':')[1], N=ISLES[isle]; if(!N){ setTimeout(()=>isl3AfterReveal(worldStore()),0); return; }
   const line={otterwood:()=>`All ${OTTER_LEVELS.length} Tiny’s Frog Trail levels, boss and all: ${nf(sum(k=>k.startsWith('t:otter:')))} bricks`,
-    brainpeak:()=>`All ${BRAIN_LEVELS.length} Nora’s Brain Trail levels, math pages and all: ${nf(sum(k=>k.startsWith('t:brain:')))} bricks`,
+    brainpeak:()=>`All ${BRAIN_LEVELS.length} Nora’s Brain Trail levels, maths pages and all: ${nf(sum(k=>k.startsWith('t:brain:')))} bricks`,
     sunrise:()=>`All ${SEA_LEVELS.length} of Pippa’s seaside puzzles: ${nf(sum(k=>k.startsWith('t:sea:')))} bricks`,
     blitzbay:()=>`${B.filter(([,b])=>b.k==='blitz').length} Blitz wins, and the Grand Prix against Swoop`,
-    brickworks:()=>`${isleCount('brickworks',o)} creations: your own, the library and the Weekly Bloppit`,
+    brickworks:()=>`${isleCount('brickworks',o)} creations: your own, the library and Bibi’s Weekly Bloppit`,
     moonstone:()=>`The mystery solved: all ${MYSTERY.length} chapters, and lufu found`}[isle];
   trialDialog({icon:isle==='moonstone'?'⛵':'🏆',title:isle==='moonstone'?'The Galaxy Ship sets sail!':`${N.name} is complete!`,quick:true,rows:`<div><span>${escapeHTML(line?line():'')}</span><span></span></div><div><span>${escapeHTML(N.milestone)}</span><span>✓</span></div><div class="tot"><span>Bonus Galaxy Blocks</span><span>+5 ${gbIc()}</span></div>`,
     note:(isle==='moonstone'?`All eight of you are aboard: Bloppit and ${pupName(o)||'your otter'} at the bow, the friends beside them, and lufu by the lantern, watching the way home. The ship sails for lufu’s own world. `:'')+(islesComplete(o).length<ISLE_TOTAL?`${islesComplete(o).length} of ${ISLE_TOTAL} islands complete. ${ISLE_TOTAL-islesComplete(o).length===1?'One to go!':'Keep going!'}`:'Every island is complete!')});
@@ -11522,7 +11517,7 @@ function shareOpen(code,xfer){
   if(xfer) shareClaim(xfer);
   let week=null, smp=null, title='', note='';
   if(/^w-\d{4}-\d{2}-\d{2}$/.test(code)){ week=code.slice(2); if(week>weekOf()) week=null; }
-  if(week){ const o=weeklyPuzzle(week); smp=SAMPLES[o.i]; title=week===weekOf()?'Bibi’s Weekly Bloppit':'A Weekly Bloppit'; note=week===weekOf()?`${o.name}, ${o.n} bricks. Build it clean and see how many others did too.`:`${o.name}, ${o.n} bricks, from the week of ${new Date(week+'T12:00:00Z').toLocaleDateString(undefined,{day:'numeric',month:'long'})}.`; }
+  if(week){ const o=weeklyPuzzle(week); smp=SAMPLES[o.i]; title=week===weekOf()?'Bibi’s Weekly Bloppit':'An earlier Bibi’s Weekly Bloppit'; note=week===weekOf()?`${o.name}, ${o.n} bricks. Build it clean and see how many others did too.`:`${o.name}, ${o.n} bricks, from the week of ${new Date(week+'T12:00:00Z').toLocaleDateString(undefined,{day:'numeric',month:'long'})}.`; }
   else if(code.startsWith('m-')){ const li=OTTER_LEVELS.findIndex(L=>slugOf(L.name)===code.slice(2));   // a Trail level of that name first (tuned sizes), then the library
     if(li<0){ smp=SAMPLES.find(x=>released(x)&&slugOf(x.name)===code.slice(2)); if(smp){ title=smp.name; note='A Bloppit build, sent to you. No account, nothing to sign up for.'; } }
     else { if(li>=0){ const L=OTTER_LEVELS[li]; $('#shPic').src=levelThumb(L); $('#shPic').hidden=false; $('#shTitle').textContent=L.name; $('#shNote').textContent=`Tiny’s Frog Trail level ${li+1}. A Bloppit build, sent to you. No account, nothing to sign up for.`; setTab('home');
