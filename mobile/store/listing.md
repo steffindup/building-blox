@@ -42,7 +42,7 @@ The home-screen name stays **Bloppit** (set by `CFBundleDisplayName` in the iOS 
 
 ## Promotional text (170)
 
-Build with Bloppit the otter, raise your pup and grow your own world of islands, Bloppitopia. A new puzzle every Monday, and Swoop the Longtail to race.
+Build with Bloppit the otter, raise your pup and grow your own world of islands, Bloppitopia. A new puzzle every Monday, and Swoop the longtail to race.
 
 ## Description (4000)
 
@@ -50,12 +50,12 @@ Bloppit is a brick-building game for anyone who loves bricks. Build with Bloppit
 
 Every build you finish grows your own world, Bloppitopia. Your otter pup arrives by boat, your first build finishes its home, and five islands wait in the mist.
 
-A new puzzle every week, a library to explore, and Blitz with Swoop: 20 races against Swoop the Longtail.
+A new puzzle every week, a library to explore, and Blitz with Swoop: 20 races against Swoop the longtail.
 
 YOUR WORLD: BLOPPITOPIA
 • Home Island grows with every build: a cottage, a garden, a workshop, a museum of your best models, then a lively village
 • Five islands rise from the mist as you play: Frog Forest (Tiny’s Frog Trail), Brainpeak (Nora’s Brain Trail), Flipper Beach (15 of Pippa’s mirror puzzles), Blitz Bay (20 races against Swoop) and Brickyard Cove (your own creations and Bibi’s Weekly Bloppit)
-• A friend on every island: Tiny the tree frog, Nora the night heron, Pippa the penguin, Swoop the Longtail and Bibi the lion cub
+• A friend on every island: Tiny the tree frog, Nora the night heron, Pippa the penguin, Swoop the longtail and Bibi the lion cub
 • A story with an ending: finish all five islands and the mystery opens, ten chapters on Moonstone Isle and someone small waiting to be found; then the Galaxy Ship sails for a new world, where Chapter 2 is being built
 • A short film for the big moments: arriving on each island, halfway, finishing it, and every Moonstone chapter. Watch them again in My films
 • Your otter grows with you, Pup, Splash, Legend, and earns outfits; you pick the colours
@@ -78,11 +78,11 @@ TRAILS
 • Separate players on one device, each with their own progress
 
 THE LIBRARY
-• 66 models in 11 themes, plus a new one every week, each with a step-by-step instruction booklet
+• 60+ models in 11 themes, plus a new one every week, each with a step-by-step instruction booklet
 • Draw your own brick picture on a stud grid, or turn a photo on your device into one; the photo never leaves the device
 
 BLITZ WITH SWOOP
-• Race Swoop the Longtail at three speeds, Warm-up, Steady and Full throttle: 20 races, the last one the Grand Prix
+• Race Swoop the longtail at three speeds, Warm-up, Steady and Full throttle: 20 races, the last one the Grand Prix
 
 TOGETHER
 • Play with Friends: a Team Build (one model, taking turns) or Race a Friend, live or with a 6-letter challenge code; friends join with a code and the host lets each one in
