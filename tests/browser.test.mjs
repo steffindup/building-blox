@@ -764,9 +764,11 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   const a = await mkPlayer(), b = await mkPlayer();
   const hub = async (t) => { await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => { location.hash = '#together'; document.getElementById('tab-mp').click(); }); await t.page.waitForTimeout(1500); };
   await hub(a);
-  await a.page.evaluate(() => { document.getElementById('crewName').value = '2'; document.getElementById('crewMake').click(); }); await a.page.waitForTimeout(1500);
+  await a.page.evaluate(() => { document.getElementById('crewName').value = '2'; document.querySelector('#crewPick input[value="2"]').checked = true; document.getElementById('crewMake').click(); }); await a.page.waitForTimeout(1500);
   const code = await a.page.evaluate(() => document.querySelector('#crewOpen .cc')?.textContent); assert.match(code || '', /^[A-Z0-9]{6}$/);
   assert.match(await a.text('#crewOpen h2'), /Lighthouse Builders/);
+  assert.match(await a.text('#crewOpen'), /Space Station: not started yet/);   // the puzzle picked when making the crew
+  assert.equal(await a.page.evaluate(() => document.querySelectorAll('#crewPick .crew-pzopt').length), 4);
   await hub(b);
   await b.page.evaluate((c) => { document.getElementById('crewCodeIn').value = c; document.getElementById('crewJoin').click(); }, code); await b.page.waitForSelector('[data-crew-join]', { timeout: 15000 });
   await b.page.evaluate(() => document.querySelector('[data-crew-join]').click()); await b.page.waitForTimeout(1200);
@@ -774,7 +776,7 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   await hub(a); await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);
   await a.page.evaluate(() => document.querySelector('[data-crew-ok]').click()); await a.page.waitForTimeout(1500);
   assert.equal(await a.page.evaluate(() => document.querySelectorAll('#crewOpen .crew-members span').length), 2);
-  // B finishes a Trail level: bricks go to the lighthouse
+  // B finishes a Trail level: bricks go to the crew's puzzle
   await b.page.evaluate(() => window.bloppitHome()); await b.page.evaluate(() => { document.querySelector('[data-go="otter"]').click(); document.getElementById('qpIsle').click(); }); await b.page.waitForTimeout(500);
   await b.page.evaluate(() => [...document.querySelectorAll('#view-game button')].find((x) => /Heart/.test(x.textContent) && x.offsetParent).click()); await b.page.waitForTimeout(800);
   await b.page.evaluate(() => [...document.querySelectorAll('button')].find((x) => /^(Play|Start|Build)/.test(x.textContent.trim()) && x.offsetParent)?.click()); await b.page.waitForTimeout(800);
@@ -782,6 +784,7 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   await b.page.waitForTimeout(3500); await b.page.evaluate(() => document.getElementById('winDlg').close());
   await hub(b); await b.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await b.page.waitForTimeout(800);
   assert.match(await b.text('#crewOpen'), /10 of 2,000 bricks/);
+  assert.match(await b.text('#crewOpen'), /Space Station: just started/);
   await b.page.evaluate(() => document.querySelector('[data-crew-say="0"]').click()); await b.page.waitForTimeout(1200);
   assert.match(await b.text('#crewFeed'), /Nice clean build!/);
   await hub(a); await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);

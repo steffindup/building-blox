@@ -1,5 +1,5 @@
 // Crews (groups): a persistent shared goal for an approved family, club or class. Any creator makes a crew;
-// the creator approves every join; members' finished builds add bricks to the crew's lighthouse; the only things
+// the creator approves every join; members' finished builds add bricks to the crew's puzzle; the only things
 // that pass between members are fixed phrases and stickers, under generated labels. A report hides a post for
 // the reporter and queues it for review; three reports mute the sender in that crew until reviewed. A parent
 // can see every crew a player is in and take them out, from the Grown-ups corner.
@@ -13,7 +13,12 @@ export const GROUP_TTL_MS = 180 * 86400_000;       // a crew nobody has built in
 export const GROUP_NAMES = ['Otter Crew', 'Brick Buddies', 'Lighthouse Builders', 'Harbour Gang', 'Snap Squad', 'Island Crew', 'Reef Builders', 'Sandcastle Club', 'Tide Team', 'Puffin Patrol', 'Starfish Society', 'Clean Build Club'];
 export const PHRASES = ['Nice clean build!', 'Race you!', 'Let’s bloppit!', 'Great relay!', 'Welcome to the crew!', 'Good night, builders!', 'Almost there!', 'Snap!'];
 export const STICKERS = ['🦦', '🧱', '⭐', '🏝️', '🎉', '👏', '🔥', '🌊'];
-export const GOAL_BRICKS = 2000;                   // the crew lighthouse: 2,000 bricks built together
+export const GOAL_BRICKS = 2000;                   // a crew puzzle: 2,000 bricks built together finish it
+// The crew puzzles (drawn in public/game/index.html, CREW_PUZZLES): large and only for crews. The maker picks one
+// when making the crew (the first is suggested), and picks the next once it's finished. (Steff, 7 Nov 2026)
+export const PUZZLE_COUNT = 4, SUGGESTED_PUZZLE = 0;
+const puzzleOf = (g) => (Number.isInteger(g.puzzle) && g.puzzle >= 0 && g.puzzle < PUZZLE_COUNT ? g.puzzle : SUGGESTED_PUZZLE);
+const progressOf = (g) => g.members.reduce((a, m) => a + m.bricks, 0) - (g.base || 0);   // bricks towards this puzzle
 const MAX_MEMBERS = 24, MAX_PENDING = 12, MAX_POSTS = 40, MUTE_AT = 3, MAX_GROUPS_PER_PUP = 6;
 
 const rand = (n, chars) => { let s = ''; const a = new Uint32Array(n); crypto.getRandomValues(a); for (const v of a) s += chars[v % chars.length]; return s; };
@@ -29,8 +34,9 @@ export function publicGroup(g, pid) {
     .sort((a, b) => b.bricks - a.bricks);
   const posts = g.posts.filter((p) => !(p.reports || []).includes(pid))
     .map((p) => ({ id: p.id, label: labelFor(p.by), me: p.by === pid, phrase: p.phrase, sticker: p.sticker, at: p.at, reported: (p.reports || []).length > 0 && g.creator === pid }));
-  const total = g.members.reduce((a, m) => a + m.bricks, 0);
-  return { code: g.code, name: GROUP_NAMES[g.name] || GROUP_NAMES[0], nameIdx: g.name, goal: GOAL_BRICKS, total, pct: Math.min(100, Math.round(100 * total / GOAL_BRICKS)),
+  const total = Math.min(GOAL_BRICKS, Math.max(0, progressOf(g)));
+  return { code: g.code, name: GROUP_NAMES[g.name] || GROUP_NAMES[0], nameIdx: g.name, puzzle: puzzleOf(g), done: g.done || [], goal: GOAL_BRICKS, total,
+    pct: Math.min(100, Math.floor(100 * total / GOAL_BRICKS)),
     builds: g.members.reduce((a, m) => a + m.builds, 0), created: g.created, members, posts, me: me ? { creator: g.creator === pid, muted: !!me.muted } : null,
     pending: g.creator === pid ? (g.pending || []).map((w) => ({ k: w.k, label: labelFor(w.id), at: w.at })) : undefined,
     pendingMe: (g.pending || []).some((w) => w.id === pid), creatorLabel: creator ? labelFor(creator.id) : '' };
@@ -88,10 +94,12 @@ export async function handle(method, query, body, store) {
 
   if (a === 'create') {
     const name = Math.floor(Number(body.name)); if (!(name >= 0 && name < GROUP_NAMES.length)) return { status: 400, body: { error: 'Pick a crew name from the list.' } };
+    const puzzle = body.puzzle == null ? SUGGESTED_PUZZLE : Math.floor(Number(body.puzzle));
+    if (!(puzzle >= 0 && puzzle < PUZZLE_COUNT)) return { status: 400, body: { error: 'Pick a crew puzzle from the list.' } };
     if ((await listFor(store, pid)).length >= MAX_GROUPS_PER_PUP) return { status: 409, body: { error: `You can be in ${MAX_GROUPS_PER_PUP} crews at most.` } };
     for (let i = 0; i < 10; i++) {
       const code = rand(6, ALPHABET);
-      const g = { code, name, creator: pid, created: now, updated: now, members: [{ id: pid, joined: now, bricks: 0, builds: 0 }], pending: [], posts: [], reports: [] };
+      const g = { code, name, puzzle, base: 0, done: [], creator: pid, created: now, updated: now, members: [{ id: pid, joined: now, bricks: 0, builds: 0 }], pending: [], posts: [], reports: [] };
       const { modified } = await store.set(gKey(code), g, { onlyIfNew: true });
       if (!modified) continue;
       await remember(store, pid, code, true);
@@ -138,6 +146,18 @@ export async function handle(method, query, body, store) {
   if (a === 'contribute') {
     const bricks = Math.floor(Number(body.bricks)); if (!(bricks > 0 && bricks < 5000)) return { status: 400, body: { error: 'Bad build size.' } };
     const r = await update(store, code, (g) => { const m = g.members.find((x) => x.id === pid); if (!m) return { error: 'You’re not in this crew.', status: 403 }; m.bricks += bricks; m.builds += 1; });
+    return r.status === 200 ? { status: 200, body: { group: publicGroup(r.body.group, pid) } } : r;
+  }
+  if (a === 'puzzle') {
+    // The maker can change the puzzle before anyone has built towards it, and picks the next one once it's finished.
+    const puzzle = Math.floor(Number(body.puzzle)); if (!(puzzle >= 0 && puzzle < PUZZLE_COUNT)) return { status: 400, body: { error: 'Pick a crew puzzle from the list.' } };
+    const r = await update(store, code, (g) => {
+      if (g.creator !== pid) return { error: 'Only the crew’s maker can do that.', status: 403 };
+      const prog = progressOf(g);
+      if (prog >= GOAL_BRICKS) { g.done = [...(g.done || []), puzzleOf(g)]; g.base = (g.base || 0) + GOAL_BRICKS; }   // extra bricks carry over
+      else if (prog > 0) return { error: 'The crew has started this puzzle. Finish it first, then pick the next one.', status: 409 };
+      g.puzzle = puzzle;
+    });
     return r.status === 200 ? { status: 200, body: { group: publicGroup(r.body.group, pid) } } : r;
   }
   if (a === 'post') {

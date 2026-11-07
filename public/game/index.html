@@ -1429,12 +1429,20 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .crew-card{display:grid;gap:14px}
 .crew-list{display:grid;gap:10px}.crew-list:empty{display:none}
 .crew-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:var(--bg)}
-.crew-row svg{width:44px;height:60px}
+.crew-row svg{width:64px;height:auto}
+.crew-pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:6px}
+.crew-pick label.crew-pzopt{display:grid;grid-template-columns:none;align-items:start;justify-items:stretch;margin:0;font-weight:400;font-size:inherit;gap:2px;width:auto}
+.t-crew .ic svg{width:86%;height:auto;border-radius:8px}
+.crew-pzopt{display:grid;gap:2px;padding:8px;border:2px solid var(--line);border-radius:14px;background:var(--page);cursor:pointer;text-align:left}
+.crew-pzopt input{position:absolute;opacity:0;pointer-events:none}.crew-pzopt:has(input:checked){border-color:#008F9B;box-shadow:0 0 0 2px #008F9B inset}.crew-pzopt:has(input:focus-visible){outline:3px solid var(--hi)}
+.crew-pzopt svg{width:100%;height:auto;display:block;margin-bottom:4px}.crew-pzopt b{font-size:15px}.crew-pzopt em{font-style:normal;font-size:11px;font-weight:800;background:#008F9B;color:#fff;border-radius:999px;padding:1px 7px;margin-left:4px;vertical-align:2px}.crew-pzopt em.done{background:var(--ink)}.crew-pzopt span{font-size:13px;color:var(--muted);line-height:1.3}
+.crew-picklab{display:block;font-weight:800;margin-top:10px}.crew-next{display:grid;gap:6px;padding:12px;border-radius:14px;background:var(--bg)}
 .crew-row b{font-size:17px}.crew-row .bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:4px}.crew-row .bar i{display:block;height:100%;background:#008F9B}
 .crew-forms{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
 .crew-open{display:grid;gap:14px}
 .crew-head{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
-.crew-head svg{width:96px;height:130px}
+.crew-head svg{width:210px;height:auto}
+@media (max-width:520px){.crew-head{grid-template-columns:1fr}.crew-head svg{width:100%}}
 .crew-head h2{font-size:26px;margin:0}.crew-head .cc{font-family:var(--f-mono);font-weight:700;background:var(--bg);padding:2px 8px;border-radius:8px}
 .crew-head .bar{height:12px;border-radius:6px;background:var(--bg);overflow:hidden;margin:6px 0}.crew-head .bar i{display:block;height:100%;background:#F4BC22;border-radius:6px}
 .crew-members{display:flex;flex-wrap:wrap;gap:6px}.crew-members span{padding:5px 10px;border-radius:999px;background:var(--bg);font-size:13px;font-weight:700}.crew-members span.me{background:#14202C;color:#fff}.crew-members span.muted{opacity:.5}
@@ -1825,7 +1833,7 @@ body.film-on{overflow:hidden}
   <div class="hm-grid">
     <button class="hm-tile t-together" data-go="mp" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="0" y="16" width="66" height="58"/><use href="#bh2" x="58" y="28" width="58" height="51"/><rect x="34" y="80" width="52" height="28" rx="5" fill="#D2352B"/><rect x="40" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="66" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="34" y="100" width="52" height="8" rx="4" fill="#B32A22"/><ellipse cx="34" cy="90" rx="8" ry="7" fill="#8A5A3B"/><ellipse cx="86" cy="90" rx="8" ry="7" fill="#C08A5E"/></svg></span><b>Build together</b><span>One puzzle, taking turns with friends</span></button>
     <button class="hm-tile t-friend" data-go="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>Race a friend</b><span>Send a challenge code, or race live</span></button>
-    <button class="hm-tile t-crew" data-go="crew" type="button"><span class="ic" aria-hidden="true">🏮</span><b>Crews</b><span>Build a lighthouse with friends</span></button>
+    <button class="hm-tile t-crew" data-go="crew" type="button"><span class="ic" aria-hidden="true"></span><b>Crews</b><span>Build one big puzzle with friends</span></button>
     <button class="hm-tile t-join" data-go="code" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a game</b><span>Got a code? Type it in to play</span></button>
   </div>
 </div>
@@ -2070,10 +2078,10 @@ body.film-on{overflow:hidden}
       <button class="hm-tile t-join" data-sub="join" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a game</b><span>Got a code? Type it in to play</span></button>
     </div>
     <div class="card crew-card" id="crewCard">
-      <div class="gm-head sub-head"><div><h2>🏮 Crews</h2><p class="note">A crew builds a lighthouse together: every brick anyone in the crew finishes adds to it. Any player can make a crew; the maker lets each friend in. Crews only pass fixed phrases and stickers, under generated names.</p></div></div>
+      <div class="gm-head sub-head"><div><h2>Crews</h2><p class="note">A crew builds one big puzzle together, over days or weeks. The maker picks the puzzle; every brick anyone in the crew builds, in any game, brings it closer. Any player can make a crew; the maker lets each friend in. Crews only pass fixed phrases and stickers, under generated names.</p></div></div>
       <div class="crew-list" id="crewList"></div>
       <div class="crew-forms">
-        <div class="field"><label for="crewName">Make a crew</label><div style="display:flex;gap:8px;flex-wrap:wrap"><select class="inp" id="crewName" style="flex:1;min-width:180px"></select><button class="primary sm" id="crewMake" type="button">Make it</button></div></div>
+        <div class="field"><label for="crewName">Make a crew</label><select class="inp" id="crewName" style="width:100%"></select><span class="crew-picklab">Pick your crew’s puzzle</span><div class="crew-pick" id="crewPick" role="radiogroup" aria-label="Crew puzzle"></div><button class="primary sm" id="crewMake" type="button" style="margin-top:8px">Make the crew</button></div>
         <div class="field"><label for="crewCodeIn">Got a crew code?</label><div style="display:flex;gap:8px;flex-wrap:wrap"><input class="inp code" id="crewCodeIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC123" style="flex:1;min-width:140px"><button class="primary sm" id="crewJoin" type="button">Ask to join</button></div></div>
       </div>
       <p class="note" id="crewMsg" hidden></p>
@@ -11542,13 +11550,17 @@ async function renderBoard(){
   catch(e){ $('#dyBoardList').innerHTML='<p class="note">Couldn’t load the board just now.</p>'; }
 }
 
-/* ---------- Crews: a shared lighthouse for an approved group (friends, a family, a class) ----------/* ---------- Crews: a shared lighthouse for an approved group (friends, a family, a class) ----------
-   Identity is the pup (x-pup). The maker approves every join; builds add bricks to the crew's lighthouse; only
+/* ---------- Crews: one big shared puzzle for an approved group (friends, a family, a class) ----------
+   Identity is the pup (x-pup). The maker approves every join; builds add bricks to the crew's puzzle; only
    fixed phrases and stickers pass, under generated names; a report hides the post for you and three reports
    pause the sender; a parent sees every crew and can take a player out from the Grown-ups corner. */
 const CREW_NAMES=['Otter Crew','Brick Buddies','Lighthouse Builders','Harbour Gang','Snap Squad','Island Crew','Reef Builders','Sandcastle Club','Tide Team','Puffin Patrol','Starfish Society','Clean Build Club'];
 const CREW_PHRASES=['Nice clean build!','Race you!','Let’s bloppit!','Great relay!','Welcome to the crew!','Good night, builders!','Almost there!','Snap!'];
 const CREW_STICKERS=['🦦','🧱','⭐','🏝️','🎉','👏','🔥','🌊'];
+const CREW_PAL={"a":"#9FC3E9","n":"#1F2B52","w":"#F4F4F4","r":"#C91A09","y":"#F2CD37","o":"#FE8A18","b":"#0055BF","m":"#36AEBF","g":"#4B9F4A","l":"#A5CA18","k":"#7C4A1E","t":"#E4CD9E","h":"#A0A5A9","d":"#6C6E68","p":"#FC97AC","v":"#8A6FD1","z":"#1B2A34","s":"#F2D594","c":"#5A93DB"};
+// The crew puzzles: large, and only for crews (not in the library). The maker picks one when making the crew, with
+// the first suggested, and the next once it's finished. Keep the count in step with PUZZLE_COUNT in netlify/functions/group/logic.mjs.
+const CREW_PUZZLES=[{name:"Bloppit Harbour",blurb:"Cottages, a dock and a boat in the bay",rows:["aaaaaaaaaaaaaaaaaaaaaaaaaaaa","aaaayaaaaaaaaaaaaaaaaaaaaaaa","aaayyyaaaaawaaaaaaaaarrraaaa","aayyyyyaaawawwaaawaaakaaaaaa","aaayyyaaaaaaaaaawawawkaaaaaa","aaaayaaaaaaaaaaaaaaawkaaaaaa","aaaaaaaaaaaaaaaaaaawwkwaaaaa","aaaaaaaaaaaaaaaaaawwwkwaaaaa","awwaaawwaaawwaaaaawwwkwwaaaa","wwwwawwwwawwwwaaawwwwkwwwaaa","ppppgyyyygccccaaawwwwkwwwaaa","ppbpgyybygccbcggwwwwwkwwwwgg","pkppgykyygckccgwwwwwwkwwwwgg","pkppgykyygckccgwwwwwwkwwwwwg","tttttttttttttbbbbbbbbkbbbbbb","kkkkkkkkkkkkkbbrrrrrrrrrrrrr","mkbbmmkbmmbkmmbbrrrrrrrrrrrb","bkbbbbkbbbbkbbbbbbbbbbbbbbbb","bbbbbbbbbbbbbbbbbbbbbbbbbbbb","bbmmbbmmbbmmbbmmbbmmbbmmbbmm","bbbbbbbbbbbbbbbbbbbbbbbbbbbb","bbbbbbbbbbbbbbbbbbbbbbbbbbbb"]},{name:"Ferris Wheel",blurb:"The fair at night, lights and all",rows:["nnnnnnnnnnnnnnynnnnnnnnnnnnn","nnnnnnnnynnnnnnnnnnnynnnnnnn","nnynnnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnvvvwwwpppnnnnnynnn","nnnnnnnnnnvvvnhnpppnnnnnnnnn","nnnnnnnnnwnnnnhnnnnwnnnnnnnn","nnnnnnnnwnhnnnhnnnhnwnnnnnnn","nnnnnnooonnhnnhnnhnnmmmnnnnn","nnnnynooonnnhnhnhnnnmmmnnnnn","nnnnnnnwnnnnnhyhnnnnnwnnnnyn","nnnnnnnwhhhhhydyhhhhhwnnnnnn","nnnnnnnwnnnnnhdhnnnnnwnnnnnn","nnnnnnnwnnnnhdhdhnnnnwnnnnnn","nnnnnngggnnhdnhndhnnrrrnnnnn","nwwwwwgggnhndnhndnhnrrwwwwwn","nrrrrrnnnwndnnhnndnwnnbbbbbn","nryyyrnnnndwnnhnnwdnnnbyyybn","nryyyrnnnndbbwwwyydnnnbyyybn","nrrrrrnnnndbbnnnyydnnnbbbbbn","ggggggggdddddddddddddggggggg","gggggggggggggggggggggggggggg","gggggggggggggggggggggggggggg"]},{name:"Space Station",blurb:"Orbiting high above the Earth",rows:["zzzzzzzzzzzzzzzzzwzzzzzzzzzz","zwzzzzzzzzzwzzrzzzzzzzzzzzzz","zzzzzzzzzzzzzrrrzzzzzzzzzwzz","zzzzzzzzzzzzzzrzzzzzzzzzzzzz","zzzzzzwzzzzzzzdzzzzzzzzzzzzz","zzbbbbbzzzzzzzdzzzzzzbbbbbzz","zzbbbbbzzzzzzzdzzzzzwbbbbbzz","zzccccczzzzzhhhhhzzzzccccczz","zzbbbbbzzzzzhwwwhzzzzbbbbbzz","zzccccczddddhwcwhddddccccczz","zzbbbbbzzzzzhwwwhzzzzbbbbbzz","zzccccczzzzzhhhhhzzzzccccczz","zzbbbbbzzzzzzooozzzzzbbbbbwz","zzbbbbbzzwzzzooozzzzzbbbbbzz","zzzzzzzzzzzzzooozzzzzzzzzzzz","zzzzzzzzzzzzzzyzzzzzzzzzzzzz","zzzzzzzzzzzzzzzzzzzzzzzzzzzz","zzzzzzzzzzzzzzbzzzzzzzzzzzzz","zzzzzzzzzbbbbbbbbbggzzzzzzzz","zzzzzggbbbbbbbbbbbbbgbzzzzzz","zzzzzbbgbbbbggbbbbbbbbbbgzzz","zzzzbbbbbbbbbbbbbbbbbbbbbzzz"]},{name:"Big Top",blurb:"A striped circus tent, ready for the show",rows:["aaaaaaaaaaaaaayyyaaaaaaaaaaa","aaaaaaaaaaaaakkaaaaaaaaaaaaa","aaaawaaaaaaaarraaaaaaaaaaaaa","aaawwwaaaaaarrwwaaaaaawaaaaa","aaaaaaaaaaawrrwwraaaawwwaaaa","aaaaaaaaarwwrrwwrrwaaaaaaaaa","aaaaaaaarrwwrrwwrrwwaaaaaaaa","aaaaaaawrrwwrrwwrrwwraaaaaaa","aaaaarwwrrwwrrwwrrwwrrwaaaaa","aaaarrwwrrwwrrwwrrwwrrwwaaaa","aaawrrwwrrwwrrwwrrwwrrwwraaa","aaayyyyyyyyyyyyyyyyyyyyyyyaa","aaarwrwrwrwrwrwrwrwrwrwrwraa","aaarwrwrwrwrwzzrwrwrwrwrwraa","aaarwrwrwrwrwzzrwrwrwrwrwraa","aaarwrwrwrwrzzzzwrwrwrwrwraa","aaarwrwrwrwzzzzzzrwrwrwrwraa","aaarwrwrwrwzzzzzzrwrwrwrwraa","aaarwrwrwrzzzzzzzzwrwrwrwraa","yggyggyggyggyggyggyggyggyggy","gggggggggggggggggggggggggggg","gggggggggggggggggggggggggggg"]}];
 let crewMine=[], crewMineAt=0, crewOpenCode='';
 async function crewApi(method,body,query=''){
   const me=curPlayer(); if(!me||!me.pup){ await pupSync(); }
@@ -11560,36 +11572,41 @@ async function crewApi(method,body,query=''){
   if(!r.ok||!j) throw new Error((j&&j.error)||'Bloppit didn’t answer. Please try again.');
   return j;
 }
-// The crew lighthouse, drawn by how far along the goal is
-function lighthouseSVG(pct){
-  const st=pct>=100?4:pct>=75?3:pct>=50?2:pct>=25?1:0;
-  return `<svg viewBox="0 0 60 84" aria-label="Lighthouse, ${pct}% built">
-    <ellipse cx="30" cy="80" rx="26" ry="4" fill="#000" opacity=".1"/><rect x="8" y="70" width="44" height="10" rx="3" fill="#9AA3AD"/>
-    ${st>=1?'<path d="M16 70 L20 36 L40 36 L44 70 Z" fill="#F4F4F4" stroke="#B9C2CF" stroke-width="1.5"/>':'<path d="M16 70 L20 36 L40 36 L44 70 Z" fill="none" stroke="#B9C2CF" stroke-width="1.5" stroke-dasharray="3 3"/>'}
-    ${st>=2?'<path d="M18 62 h24 M19.5 50 h21" stroke="#D2352B" stroke-width="7"/>':''}
-    ${st>=3?'<rect x="17" y="28" width="26" height="8" fill="#5B6778"/><rect x="21" y="16" width="18" height="12" fill="#FFF0B0" stroke="#5B6778" stroke-width="1.5"/><path d="M18 16 L30 6 L42 16 Z" fill="#D2352B"/>':''}
-    ${st>=4?'<path d="M39 20 L60 10 L60 30 Z" fill="#F4BC22" opacity=".55"/><path d="M21 20 L0 10 L0 30 Z" fill="#F4BC22" opacity=".55"/><rect x="29" y="0" width="2" height="8" fill="#14202C"/><path d="M31 1 l8 3 l-8 3z" fill="#008F9B"/>':''}
-  </svg>`;
+// A crew puzzle as a brick picture. It fills in brick by brick from the bottom row up as the crew builds (frac 0–1);
+// the bricks still to come show faintly, so everyone can see what they're making.
+function crewPuzzleSVG(i,frac=1,label){
+  const P=CREW_PUZZLES[i]||CREW_PUZZLES[0], H=P.rows.length, W=P.rows[0].length, N=W*H, placed=Math.floor(Math.max(0,Math.min(1,frac))*N);
+  let out='', k=0;
+  for(let y=H-1;y>=0;y--) for(let x=0;x<W;x++,k++){ const c=CREW_PAL[P.rows[y][x]]||'#ccc', on=k<placed;
+    out+=`<g${on?'':' opacity=".22"'}><rect x="${x*10+.5}" y="${y*10+.5}" width="9" height="9" rx="1.6" fill="${c}"/>${on?`<circle cx="${x*10+5}" cy="${y*10+5}" r="2.6" fill="${c}" stroke="#000" stroke-opacity=".16" stroke-width=".8"/>`:''}</g>`; }
+  return `<svg class="crew-pz" viewBox="0 0 ${W*10} ${H*10}" role="img" aria-label="${escapeHTML(label||`${P.name}, ${Math.round(frac*100)}% built`)}"><rect width="${W*10}" height="${H*10}" rx="6" fill="#E9EEF3"/>${out}</svg>`;
 }
+// The puzzle picker: on Make a crew, and for the maker before the crew starts or once a puzzle is finished
+function crewPickHTML(sel,done){ done=done||[];
+  return CREW_PUZZLES.map((P,i)=>`<label class="crew-pzopt"><input type="radio" name="crewPz" value="${i}"${i===sel?' checked':''}>${crewPuzzleSVG(i,1,P.name)}<b>${escapeHTML(P.name)}${i===0?' <em>Suggested</em>':''}${done.includes(i)?' <em class="done">Built ✓</em>':''}</b><span>${escapeHTML(P.blurb)}</span></label>`).join(''); }
+// The Crews tile: a crew puzzle, half built
+document.querySelectorAll('.t-crew .ic').forEach(el=>{ el.innerHTML=crewPuzzleSVG(0,.55,'A crew puzzle, half built'); });
 function crewMsg(t,kind){ const el=$('#crewMsg'); el.hidden=!t; el.textContent=t||''; el.dataset.kind=kind||''; }
 async function renderCrews(force){
   const sel=$('#crewName'); if(!sel.options.length) sel.innerHTML=CREW_NAMES.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
+  const pk=$('#crewPick'); if(!pk.children.length) pk.innerHTML=crewPickHTML(0);
   const me=curPlayer();
   // A player with builds whose save hasn't reached the server yet gets it there first (they used to be told to finish a build)
   if(me&&!me.pup&&worldCount(worldStore())>0){ try{ await pupSync(); }catch(e){} }
   if(!me||!me.pup){ $('#crewList').innerHTML=''; crewMsg(me&&worldCount(worldStore())>0?'Couldn’t reach Bloppit just now. Check your internet connection and try again.':'Finish one build first; then you can make or join a crew.'); return; }
   if(!force&&Date.now()-crewMineAt<4000) return; crewMineAt=Date.now();
   try{ const j=await crewApi('GET',null,'?mine=1'); crewMine=j.groups; crewMsg(''); }catch(e){ crewMsg(e.message,'err'); return; }
-  $('#crewList').innerHTML=crewMine.map(g=>`<div class="crew-row">${lighthouseSVG(g.pct)}<div><b>${escapeHTML(g.name)}</b> <span class="note">· ${g.members.length} builder${g.members.length===1?'':'s'}${g.pendingMe?' · waiting to be let in':''}</span><div class="bar"><i style="width:${Math.max(2,g.pct)}%"></i></div><span class="note">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks${g.pending&&g.pending.length?` · <b>${g.pending.length} waiting to join</b>`:''}</span></div><button class="ghost" type="button" data-crew="${g.code}">Open</button></div>`).join('');
+  $('#crewList').innerHTML=crewMine.map(g=>`<div class="crew-row">${crewPuzzleSVG(g.puzzle,g.total/g.goal)}<div><b>${escapeHTML(g.name)}</b> <span class="note">· ${g.members.length} builder${g.members.length===1?'':'s'}${g.pendingMe?' · waiting to be let in':''}</span><div class="bar"><i style="width:${Math.max(2,g.pct)}%"></i></div><span class="note">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks${g.pending&&g.pending.length?` · <b>${g.pending.length} waiting to join</b>`:''}</span></div><button class="ghost" type="button" data-crew="${g.code}">Open</button></div>`).join('');
   if(crewOpenCode){ const g=crewMine.find(x=>x.code===crewOpenCode); if(g) renderCrew(g); }
 }
 function renderCrew(g){
   crewOpenCode=g.code; const box=$('#crewOpen'); box.hidden=false;
   const mine=!!g.me, maker=mine&&g.me.creator;
-  box.innerHTML=`<div class="crew-head">${lighthouseSVG(g.pct)}<div><h2>${escapeHTML(g.name)} <span class="cc">${g.code}</span></h2>
-      <p class="note" style="margin:4px 0 0">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks · ${g.builds} build${g.builds===1?'':'s'} · ${g.pct>=100?'The lighthouse is lit! 🏮':g.pct>=75?'The lamp room is on. Light it!':g.pct>=50?'The tower has its stripes.':g.pct>=25?'The tower is rising.':'Lay the foundation: finish builds.'}</p>
+  box.innerHTML=`<div class="crew-head">${crewPuzzleSVG(g.puzzle,g.total/g.goal)}<div><h2>${escapeHTML(g.name)} <span class="cc">${g.code}</span></h2>
+      <p class="note" style="margin:4px 0 0">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks · ${g.builds} build${g.builds===1?'':'s'} · ${escapeHTML(CREW_PUZZLES[g.puzzle].name)}: ${g.pct>=100?'finished! 🎉':g.total?(g.pct?g.pct+'% built':'just started'):'not started yet'}</p>
       <div class="bar"><i style="width:${Math.max(2,g.pct)}%"></i></div>
       <div class="win-btns" style="justify-content:flex-start">${mine?`<button class="ghost" type="button" data-crew-share="${g.code}">Share the code</button>`:g.pendingMe?'<span class="note">Waiting for the crew’s maker to let you in.</span>':`<button class="primary sm" type="button" data-crew-join="${g.code}">Ask to join</button>`}<button class="ghost" type="button" id="crewClose">Close</button></div></div></div>
+    ${maker&&(g.pct>=100||!g.total)?`<div class="crew-next"><b>${g.pct>=100?'Pick the crew’s next puzzle':'Change the crew’s puzzle'}</b><span class="note">${g.pct>=100?'Well built, crew! Bricks built from now on go to the next one.':'You can change it until someone builds.'}</span><div class="crew-pick">${crewPickHTML(g.pct>=100?-1:g.puzzle,g.done.concat(g.pct>=100?[g.puzzle]:[]))}</div><button class="primary sm" type="button" data-crew-pz="1">${g.pct>=100?'Start this puzzle':'Use this puzzle'}</button></div>`:''}
     ${maker&&g.pending&&g.pending.length?`<div class="crew-pending"><b>Waiting to join</b>${g.pending.map(w=>`<div><span>🚪 ${escapeHTML(w.label)}</span><button class="primary sm" type="button" data-crew-ok="${w.k}">Let in</button><button class="ghost" type="button" data-crew-no="${w.k}">Not this time</button></div>`).join('')}</div>`:''}
     <div><b>Builders</b><div class="crew-members" style="margin-top:6px">${g.members.map(m=>`<span class="${m.me?'me':''}${m.muted?' muted':''}">${escapeHTML(m.label)}${m.me?' (you)':''}${m.creator?' · maker':''} · ${m.bricks}${maker&&!m.me?` <button class="rep" type="button" data-crew-kick="${escapeHTML(m.label)}" title="Take out of the crew">✕</button>`:''}${maker&&m.muted?` <button class="rep" type="button" data-crew-unmute="${escapeHTML(m.label)}">unpause</button>`:''}</span>`).join('')}</div></div>
     ${mine?`<div><b>Crew board</b><div class="crew-feed" id="crewFeed">${g.posts.length?g.posts.slice().reverse().map(p=>`<div class="crew-post${p.me?' me':''}"><span class="who">${p.me?'You':escapeHTML(p.label)}</span><span class="what${p.sticker!=null?' st':''}">${p.sticker!=null?CREW_STICKERS[p.sticker]||'':escapeHTML(CREW_PHRASES[p.phrase]||'')}</span>${p.me?'':`<button class="rep" type="button" data-crew-report="${p.id}">Report</button>`}</div>`).join(''):'<p class="note">Nothing on the board yet.</p>'}</div>
@@ -11598,7 +11615,7 @@ function renderCrew(g){
   box.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});
 }
 async function crewDo(body,ok){ try{ const j=await crewApi('POST',body); crewMineAt=0; await renderCrews(true); if(j.group) renderCrew(j.group); else { $('#crewOpen').hidden=true; crewOpenCode=''; } if(ok) ok(j); }catch(e){ crewMsg(e.message,'err'); } }
-$('#crewMake').onclick=()=>{ track('crew_made'); crewDo({action:'create',name:+$('#crewName').value}); };
+$('#crewMake').onclick=()=>{ track('crew_made'); const pz=document.querySelector('#crewPick input:checked'); crewDo({action:'create',name:+$('#crewName').value,puzzle:pz?+pz.value:0}); };
 $('#crewJoin').onclick=async()=>{ const code=$('#crewCodeIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''); if(code.length!==6){ crewMsg('Crew codes have 6 letters and numbers.','err'); return; }
   try{ const j=await crewApi('GET',null,`?code=${code}`); renderCrew(j.group); }catch(e){ crewMsg(e.message,'err'); } };
 $('#crewCodeIn').addEventListener('input',e=>{ e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
@@ -11611,6 +11628,7 @@ $('#crewOpen').addEventListener('click',async e=>{
   if(t.dataset.crewOk){ crewDo({action:'approve',code,k:t.dataset.crewOk}); return; }
   if(t.dataset.crewNo){ crewDo({action:'deny',code,k:t.dataset.crewNo}); return; }
   if(t.dataset.crewKick){ if(!t.dataset.confirm){ t.dataset.confirm='1'; t.textContent='sure?'; setTimeout(()=>{ delete t.dataset.confirm; t.textContent='✕'; },3000); return; } crewDo({action:'remove',code,label:t.dataset.crewKick}); return; }
+  if(t.dataset.crewPz){ const pz=$('#crewOpen').querySelector('.crew-next input:checked'); if(!pz){ crewMsg('Pick a puzzle first.','err'); return; } track('crew_puzzle'); crewDo({action:'puzzle',code,puzzle:+pz.value}); return; }
   if(t.dataset.crewUnmute){ crewDo({action:'unmute',code,label:t.dataset.crewUnmute}); return; }
   if(t.dataset.crewSay!=null){ track('crew_post'); crewDo({action:'post',code,phrase:+t.dataset.crewSay}); return; }
   if(t.dataset.crewSt!=null){ track('crew_post'); crewDo({action:'post',code,sticker:+t.dataset.crewSt}); return; }
