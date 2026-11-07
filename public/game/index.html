@@ -3620,6 +3620,22 @@ window.addEventListener('popstate',()=>{
   const want=navHash(tab)?'#'+navHash(tab):'';
   if((location.hash==='#home'?'':location.hash)!==want) try{ history.replaceState({bloppit:tab},'',location.pathname+location.search+want); }catch(e){}
 });
+// Android's back button in the app (the app has no browser history): like Escape, one step at a time.
+// A film is skipped, then the top card closes, then any page goes to the menu (it offers Continue, as Back does on
+// the website); on the menu the app goes to the background, so the game is just as you left it.
+function appBack(){
+  if(document.fullscreenElement){ try{ document.exitFullscreen(); }catch(e){} return 'fullscreen'; }
+  const skip=[...document.querySelectorAll('.cn-skip')].find(b=>b.getClientRects().length);
+  if(skip){ skip.click(); return 'film'; }
+  const ds=[...document.querySelectorAll('dialog[open]')];
+  if(ds.length){ const d=ds[ds.length-1], ev=new Event('cancel',{cancelable:true}); d.dispatchEvent(ev); if(!ev.defaultPrevented&&d.open) d.close(); return 'card'; }
+  if(tab!=='home'){ quickPlaySet(false); setTab(tab==='game'&&mp?mpHomeTab():'home'); return 'menu'; }
+  try{ Capacitor.Plugins.App.minimizeApp(); }catch(e){}
+  return 'background';
+}
+window.bloppitAppBack=appBack;   // test hook
+try{ const CapApp=APP&&window.Capacitor&&Capacitor.getPlatform&&Capacitor.getPlatform()==='android'&&Capacitor.Plugins&&Capacitor.Plugins.App;
+  if(CapApp) CapApp.addListener('backButton',()=>appBack()); }catch(e){}
 document.querySelectorAll('.tab[data-tab]').forEach(b=>b.addEventListener('click',()=>{ quickPlaySet(false); if(b.dataset.tab!=='build') mpDoneLeave();
   if(b.dataset.tab==='create'&&mp){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus(`You’re in ${mpWhat()}. Tap Brickyard Cove again to leave it.`,'err'); else showToastLeave(); return; } mpLeave(); }
   if(b.dataset.tab==='game'&&mp){ setTab(mpHomeTab()); mpMsg(`Leave ${mpWhat()} first to play the levels on your own.`); return; }

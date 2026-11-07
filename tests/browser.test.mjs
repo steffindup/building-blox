@@ -1599,6 +1599,18 @@ test('mid-island films: every 15 builds a slot opens, and the next build on an i
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('app back button (Android): a card closes first, then a page goes to the menu, then the app goes to the background', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1');
+  await t.page.evaluate(() => document.getElementById('tab-game').click()); await t.page.waitForTimeout(400);
+  assert.equal(await t.page.evaluate(() => window.bloppitAppBack()), 'menu');
+  await t.page.waitForTimeout(300);
+  assert.equal(await t.page.evaluate(() => window.bloppitAppBack()), 'background');
+  await t.page.evaluate(() => { const d = document.querySelector('dialog'); d.showModal(); });
+  assert.equal(await t.page.evaluate(() => window.bloppitAppBack()), 'card');
+  assert.equal(await t.page.evaluate(() => !!document.querySelector('dialog[open]')), false);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('mid-island films with films on: build 15 on Frog Forest plays its Midway film (frog-forest-mid.mp4), then Tiny speaks, and it joins My films', { skip: skip() }, async () => {
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = [];
     for (let i = 0; i < 13; i++) { const k = `m:Model${i}:10`; builds[k] = { n: 10, s: 2, t: 1e12 + i, c: 1, k: 'quick' }; log.push(k); }

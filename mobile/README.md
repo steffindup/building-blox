@@ -1,4 +1,4 @@
-# Bloppit for iPhone and iPad
+# Bloppit for iPhone, iPad and Android
 
 On the App Store as **Bloppit: World of Bricks** (1.1, live 6 Nov 2026; 1.0 was "Bloppit: Brick Building Game"): https://apps.apple.com/app/id6821449219; the name under the home-screen icon is **Bloppit**.
 
@@ -8,11 +8,15 @@ There's no separate app code: change the web app, then rebuild.
 ```
 cd mobile
 npm ci
-npm run sync      # packages public/build into mobile/www and copies it into the iOS project
+npm run sync      # packages public/game into mobile/www and copies it into the iOS project
 npx cap open ios  # on a Mac only: opens Xcode
 ```
 
 Cloud builds (no Mac): `codemagic.yaml` at the repo root builds the app and uploads it to TestFlight.
+
+**Android** (`mobile/android`, same app): `npm run sync:android` packages the web app into the Android project; Codemagic's
+"Android for Google Play" workflow builds the signed `.aab`. Google Play setup, listing and form answers:
+`store/google-play.md`.
 
 ## What's different in the app
 
