@@ -1195,7 +1195,7 @@ test('Build page: the difficulty slider picks a puzzle to match, and Build it st
   const before = q.i; await t.page.evaluate(() => document.getElementById('qpShuffle').click()); assert.notEqual((await t.page.evaluate(() => window.bloppitQP())).i, before, '🔀 another one');
   q = await slide(3); await t.page.evaluate(() => document.getElementById('qpQuick').click()); await t.page.waitForTimeout(1500);
   assert.equal(await t.page.evaluate(() => window.bloppitFilmOn()), null, 'no Frog Forest film'); assert.equal(await t.view(), 'view-build');
-  assert.equal(await t.text('#gbName'), q.name); assert.match(await t.text('#gbWhere'), /Quick play/);
+  assert.equal(await t.text('#gbName'), q.name); assert.match(await t.text('#gbWhere'), /Quick Play/);
   // the slider is kept for that tile
   await tile('otter'); assert.equal((await t.page.evaluate(() => window.bloppitQP())).d, 3); await t.page.evaluate(() => document.getElementById('qpX').click());
   // Quick Bricks: a library puzzle, small and simple at Tiny, big at Super tricky
