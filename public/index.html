@@ -119,8 +119,8 @@ a{color:var(--red-dark)}
 /* the four hero bricks: two equal columns, stacked full width on phones */
 .actions.bricks{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;max-width:540px}
 .actions.bricks .btn{min-width:0;width:100%;box-sizing:border-box;padding-inline:16px;text-align:center}
-.actions.bricks .btn.big{min-width:0;padding-inline:16px}
-.actions.bricks .btn:not(.big){min-height:62px}
+.actions.bricks .btn,.actions.bricks .btn.big{min-width:0;min-height:62px;padding-inline:16px;font-size:20px}   /* four equal bricks (Steff, 6 Nov 2026) */
+.actions.bricks .btn.brick::before,.actions.bricks .btn.brick::after{width:32px;height:12px;top:-14px}
 @media (max-width:520px){.actions.bricks{grid-template-columns:1fr}}
 .btn.sm{font-size:16px;min-height:44px;padding:8px 20px;box-shadow:0 3px 0 var(--ink)}
 .btn.sm:hover{box-shadow:0 1px 0 var(--ink)}
@@ -319,10 +319,10 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
       <div class="actions choose bricks">
         <a class="btn brick quick big" href="/build/">▶ Play Now</a>
         <a class="btn brick primary isle" href="/build/#island">🏝️ Bloppitopia</a>
-        <a class="btn brick blue" href="#how-to-play">▶ How to play</a>
         <a class="btn brick" href="/build/#daily">📅 This week’s Bloppit</a>
+        <a class="btn brick blue" href="#how-to-play">▶ How to play</a>
       </div>
-      <p class="choose-note"><b>Play Now:</b> pick a game and start building. <b>Bloppitopia:</b> grow your own island, one build at a time. <b>How to play:</b> a 45-second video.</p>
+      <p class="choose-note"><b>Play Now:</b> pick a game and start building. <b>Bloppitopia:</b> grow your own island, one build at a time.</p>
       <p class="get-app" id="getApp" hidden><a class="btn brick sm" href="https://apps.apple.com/app/id6821449219">📲 Get the free app</a> <span>Bloppit for iPhone and iPad, on the App Store</span></p>
     </div>
 
@@ -360,7 +360,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
     a.textContent=s.name?s.name+'’s':'Your'; h.appendChild(a); h.appendChild(document.createElement('br')); h.appendChild(document.createTextNode('island is waiting.'));
     var tg=txt.querySelector('.tagline'); if(tg) tg.remove();
     txt.querySelector('p').textContent=s.n+' build'+(s.n===1?'':'s')+' so far, and it’s a '+s.stage+'. Every build you finish grows it.';
-    var acts=txt.querySelector('.actions'), isle=acts.querySelector('.isle')||acts.lastElementChild; isle.textContent='🏝️ Back to your island'; isle.href='/build/#island';
+    var acts=txt.querySelector('.actions'), isle=acts.querySelector('.isle')||acts.lastElementChild; isle.textContent='🏝️ Back to Bloppitopia'; isle.href='/build/#island';
     var f=document.createElement('figure'); f.className='isle-hero';
     if(s.img&&/^data:image\/jpeg;base64,/.test(s.img)){ var im=document.createElement('img'); im.src=s.img; im.alt=''; f.appendChild(im); } else f.innerHTML=s.svg;
     var c=document.createElement('figcaption'); c.textContent='🏝️ Bloppitopia · '+s.stage; f.appendChild(c);
