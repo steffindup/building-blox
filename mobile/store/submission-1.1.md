@@ -33,8 +33,8 @@ Bay, Galaxy Blocks, the new menu and Quick play. Everything to paste is in `list
 
 ## On release
 
-- [ ] Release 1.1 in App Store Connect.
-- [ ] Landing page: "Get the app" for iOS visitors, with "or play in your browser" beneath (`public/index.html`, hero actions).
-- [ ] `mobile/README.md` and `listing.md`: note the live version and date.
+- [x] Release 1.1 in App Store Connect (live 6 Nov 2026, build 179).
+- [x] Landing page: "Get the app" for iOS visitors, with "or play in your browser" beneath (`public/index.html`, hero actions).
+- [x] `mobile/README.md` and `listing.md`: note the live version and date.
 - [ ] Launch posts with bloppit.com/go/… links.
 - [ ] Social profiles (TikTok, Instagram, X, YouTube, Facebook): display name or bio to "Bloppit: World of Bricks" with the line "Build it. Grow your world."

@@ -37,7 +37,7 @@ No child-audience words ("kids", "children") in the listing text itself: the lan
 The home-screen name stays **Bloppit** (set by `CFBundleDisplayName` in the iOS project).
 
 **1.0** (the full game, Bloppitopia included) went live on the App Store on 6 Nov 2026 as a quiet soft launch.
-**1.1** is the version to market: the films, the friends and the Moonstone story reach the app. Everything below is the
+**1.1** (build 179) went live on 6 Nov 2026 too, as **Bloppit: World of Bricks** (https://apps.apple.com/app/id6821449219). It is the version to market: the films, the friends and the Moonstone story reach the app. Everything below is the
 1.1 listing; `submission-1.1.md` is the checklist.
 
 ## Promotional text (170)

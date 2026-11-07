@@ -50,6 +50,16 @@
       "operatingSystem": "Any (runs in a web browser)",
       "image": "https://bloppit.com/og-image.png",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "MobileApplication",
+      "name": "Bloppit: World of Bricks",
+      "alternateName": "Bloppit",
+      "url": "https://apps.apple.com/app/id6821449219",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "iOS 15 or later, iPadOS 15 or later",
+      "image": "https://bloppit.com/og-image.png",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
     }
   ]
 }
@@ -100,6 +110,8 @@ a{color:var(--red-dark)}
 .choose-note{margin-top:14px;font-size:16px;font-weight:600;max-width:520px}
 .btn.sm{font-size:16px;min-height:44px;padding:8px 20px;box-shadow:0 3px 0 var(--ink)}
 .btn.sm:hover{box-shadow:0 1px 0 var(--ink)}
+.get-app{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:16px}.get-app[hidden]{display:none}
+.get-app span{font-weight:700;font-size:15px}
 
 /* Nav */
 header{border-bottom:2px solid var(--ink);background:var(--paper);position:sticky;top:0;z-index:5}
@@ -285,6 +297,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
         <a class="btn primary isle" href="/build/#island">🏝️ Bloppitopia</a>
       </div>
       <p class="choose-note"><b>Play Now:</b> pick a game and start building. <b>Bloppitopia:</b> grow your own island, one build at a time.</p>
+      <p class="get-app" id="getApp" hidden><a class="btn sm" href="https://apps.apple.com/app/id6821449219">📲 Get the free app</a> <span>Bloppit for iPhone and iPad, on the App Store</span></p>
       <p style="margin-top:12px"><a href="#how-to-play" style="font-weight:800">▶ Watch how to play (45 seconds)</a> <span aria-hidden="true">·</span> <a href="/build/#daily" style="font-weight:800">📅 This week’s Bloppit</a></p>
     </div>
 
@@ -390,7 +403,7 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
   <section class="wrap" style="padding-block:80px" aria-labelledby="cta-h">
     <div class="cta">
       <h2 id="cta-h">Ready to build? Let’s bloppit!</h2>
-      <p>Your pup is waiting on Bloppitopia. Play in your browser; the iPad and iPhone app is on its way.</p>
+      <p>Your pup is waiting on Bloppitopia. Play in your browser, or get Bloppit for iPhone and iPad on the <a href="https://apps.apple.com/app/id6821449219">App Store</a>.</p>
       <div class="actions" style="justify-content:center"><a class="btn quick" href="/build/">▶ Play Now</a><a class="btn" href="/build/#island">🏝️ Bloppitopia</a></div>
     </div>
   </section>
@@ -415,6 +428,8 @@ footer{border-top:2px solid var(--ink);background:var(--paper)}
   el.innerHTML=html;
 })();
 </script>
+<script>/* iPhone and iPad visitors also see "Get the free app" (iPads report themselves as a Mac with touch) */
+try{ const ua=navigator.userAgent; if(/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1)) document.getElementById('getApp').hidden=false; }catch(e){}</script>
 <script>/* one count for this page (no cookies, nothing about the visitor) */try{navigator.sendBeacon('/api/event',new Blob([JSON.stringify({events:['page:landing'],p:'web'})],{type:'application/json'}))}catch(e){}</script>
 </body>
 </html>
