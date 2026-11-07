@@ -1,5 +1,5 @@
-// Play Blitz against a Longtail the way a player would (one brick at a time on the right spot, then Done) and
-// report whether the Longtail ever gets stuck on his turn.
+// Play Blitz against a longtail the way a player would (one brick at a time on the right spot, then Done) and
+// report whether the longtail ever gets stuck on his turn.
 //   PLAYWRIGHT_CHROMIUM=/path/to/chrome node tests/blitz-repro.mjs [model=Trophy] [races=3] [level=bzEasy]
 import { chromium } from 'playwright';
 import { start } from './devserver.mjs';

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Play Bloppit: build with Bloppit the otter, raise your pup, grow your own island, Bloppitopia, and race Swoop the Longtail.">
+<meta name="description" content="Play Bloppit: build with Bloppit the otter, raise your pup, grow your own island, Bloppitopia, and race Swoop the longtail.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="canonical" href="https://bloppit.com/game/">
 <meta name="theme-color" content="#E4EAF2">
@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="Bloppit">
 <meta property="og:url" content="https://bloppit.com/game/">
 <meta property="og:title" content="Bloppit: World of Bricks">
-<meta property="og:description" content="Play Bloppit: build with Bloppit the otter, raise your pup, grow your own island, Bloppitopia, and race Swoop the Longtail.">
+<meta property="og:description" content="Play Bloppit: build with Bloppit the otter, raise your pup, grow your own island, Bloppitopia, and race Swoop the longtail.">
 <meta property="og:image" content="https://bloppit.com/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -21,7 +21,7 @@
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Bloppit: World of Bricks">
-<meta name="twitter:description" content="Play Bloppit: build with Bloppit the otter, raise your pup, grow your own island, Bloppitopia, and race Swoop the Longtail.">
+<meta name="twitter:description" content="Play Bloppit: build with Bloppit the otter, raise your pup, grow your own island, Bloppitopia, and race Swoop the longtail.">
 <meta name="twitter:image" content="https://bloppit.com/og-image.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
 <link rel="manifest" href="/site.webmanifest">
@@ -4345,7 +4345,7 @@ const sfx=(()=>{
     // Your pup: an excited "eep-eep!", higher and quicker than Bloppit
     squeak(){ const c=ok('squeak',.3); if(!c) return; const t=c.currentTime+.02;
       [[0,1800,2900],[.11,2100,3400]].forEach(([d,a,b])=>{ slide(c,t+d,jit(a,.05),jit(b,.05),.08,.13,30); }); },
-    // Swoop the Longtail: a shrill, excited seabird "kik-kik-keeer"
+    // Swoop the longtail: a shrill, excited seabird "kik-kik-keeer"
     kee(){ const c=ok('kee',.35); if(!c) return; const t=c.currentTime+.02;
       [0,.08].forEach(d=>{ tone(c,t+d,jit(3300,.04),.05,{type:'triangle',vol:.1,to:3700,att:.004}); noise(c,t+d,.04,{vol:.04,freq:3500,q:5}); });
       slide(c,t+.17,jit(3600,.04),2400,.26,.11,18,'triangle'); },
@@ -7491,7 +7491,7 @@ $('#mpToBlitz').onclick=e=>{ e.preventDefault(); setTab('blitz'); };
 // Bloppit takes a few seconds to find and place each brick, and sometimes misses (+1 second, like everyone).
 // Three Bloppits to race: each one is quicker and makes fewer mistakes than the last.
 const CPU_LEVELS={
-  // Swoop the Longtail, Blitz Bay's racer, at three speeds (he used to be three Longtails: Scraps, Swoop, Squint).
+  // Swoop the longtail, Blitz Bay's racer, at three speeds (he used to be three longtails: Scraps, Swoop, Squint).
   // Bloppit himself is the player's buddy and never the opponent.
   easy:  {name:'Swoop',speed:'Warm-up',      ms:[7000,11000],miss:.25,turn:[1,2],note:'Warm-up: Swoop takes it slow and drops a lot of bricks. Great for a first race.'},
   medium:{name:'Swoop',speed:'Steady',       ms:[4500,7500], miss:.12,turn:[1,3],note:'Steady: Swoop is quick, but careless. A fair race.'},
@@ -7635,7 +7635,7 @@ async function cpuApi(method,body,query){
   s.ver++; setTimeout(cpuKick,0);
   return {state:cpuPub()};
 }
-// The Longtail's next brick: one still needed for the earliest unfinished step from the player's page on,
+// The longtail's next brick: one still needed for the earliest unfinished step from the player's page on,
 // and if those are all in (the bricks left over belong to an earlier step), any brick still missing.
 function cpuPick(){
   const s=cpu.s, o=curOff()||{x:0,z:0}, u=usedSet();
@@ -7647,20 +7647,20 @@ function cpuPick(){
   const t=list[Math.floor(Math.random()*list.length)];
   return {b:mpToken(t,s.moves),x:t.x+o.x,z:t.z+o.z};
 }
-// The race can't go on (no brick left the Longtail can find): any odd bricks go in off the clock and it ends
+// The race can't go on (no brick left the longtail can find): any odd bricks go in off the clock and it ends
 function cpuFinishNow(){
   const s=cpu.s; if(s.finished) return; cpuStopClock();
   const done=new Set(s.moves.map(m=>m.b));
   for(let k=0;k<s.nBricks;k++) if(!done.has(k)) s.moves.push({p:-1,b:k,x:0,z:0,a:1});
   s.finished=true; if(!s.solo) buildFinished('blitz');
 }
-// Nothing for the Longtail to place: hand the turn on, and if nobody else can play either, finish the race
+// Nothing for the longtail to place: hand the turn on, and if nobody else can play either, finish the race
 function cpuGiveUp(){
   const s=cpu.s; cpuAimGroup.clear(); cpu.lastAct=Date.now();
   cpuNextTurn(); if(s.turn===1&&!s.finished) cpuFinishNow();
   cpuSend();
 }
-// Watchdog: a Longtail's turn must always move on. If he has no move queued 15 s after his turn (or his last brick),
+// Watchdog: a longtail's turn must always move on. If he has no move queued 15 s after his turn (or his last brick),
 // nudge him; if he still hasn't placed after 30 s, his turn ends.
 function cpuWatch(){
   if(!cpuTurnNow()) return;
@@ -7703,7 +7703,7 @@ function cpuStep(extra=0,retry=false){
     cpuPlace(1,pick.b,pick.x,pick.z); cpu.left--; cpu.lastAct=Date.now();
     cpu.say={cls:'hop',html:['Click! Got it.','Snap! In it goes.','Yes! That one fits.'][s.players[1].n%3]};
     cpuSend();
-    if(s.finished||s.turn!==1) return;     // the Longtail placed 3, or his last one
+    if(s.finished||s.turn!==1) return;     // the longtail placed 3, or his last one
     if(cpu.left>0){ cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(!s.finished&&s.turn===1) cpuStep(); },700/(s.ff||1)); return; }
     cpu.timer=setTimeout(()=>{ if(!cpu||cpu.s!==s) return; cpu.timer=null; if(s.finished||s.turn!==1) return; cpuNextTurn(); cpuHandOver(); cpuSend(); if(s.turn===1&&!s.finished) cpuKick(); },rndIn(500,900)/(s.ff||1));   // you've finished: his next turn starts now (it used to wait ~15 s for the watchdog)
   },wait);
@@ -8343,7 +8343,7 @@ function worldFinish(kind){
   let dur=0; try{ dur=(mp&&mp.state&&mp.state.mode==='blitz')?((mpScores(mp.state).find(x=>x.i===mp.me)||{}).ms||0):(run.t0?Date.now()-run.t0:0); }catch(e){}
   const rec=prev?{...prev,s:Math.max(prev.s||0,stars),c:(prev.c||1)+1}:{n:N,s:stars,k:kind,t:Date.now(),c:1}; if(memory) rec.m=1;
   if(first&&typeof inLufu==='function'&&inLufu()) rec.realm='lufu';   // built in lufu's world: it stands there, not on Home Island
-  if(blitz){ const lv=['easy','medium','hard'].indexOf(mp.state.cpuLevel); if(lv>=0) rec.lv=Math.max(prev&&Number.isInteger(prev.lv)?prev.lv:-1,lv); if(cpu&&cpu.boss) rec.boss=1; }   // which Longtail was beaten; the Grand Prix
+  if(blitz){ const lv=['easy','medium','hard'].indexOf(mp.state.cpuLevel); if(lv>=0) rec.lv=Math.max(prev&&Number.isInteger(prev.lv)?prev.lv:-1,lv); if(cpu&&cpu.boss) rec.boss=1; }   // which longtail was beaten; the Grand Prix
   if(dur>500&&dur<6*3600e3) rec.d=Math.round(prev&&prev.d?Math.min(prev.d,dur):dur);   // best time, in ms
   o.builds[key]=rec; if(first) o.log.push(key); o.xp=worldXP(o); o.bonus=worldStarsEarned(o)-Object.values(o.builds).reduce((a,b)=>a+(b.s||0),0);  // kept for older readers; derived
   worldSet(o);
@@ -8783,7 +8783,7 @@ function islandInfo(id,o){
     case 'bloppit': return {title:'Bloppit',hint:ISL3.ok&&ISL3.dozing?'Having a little nap':'Your build buddy',icon:'<img src="/art/head-bloppit.png" alt="" width="256" height="256">',story:STORIES.bloppit.story,rows:[['Who','Your build buddy. '+STORIES.bloppit.who+'.'],['Loves',STORIES.bloppit.loves],['Secret',STORIES.bloppit.secret],['Lives',ISL3.ok?'On Home Island, with your otter':st>=2?'At the workshop door':'On the beach'],['Built together',`${n} build${n===1?'':'s'}`]],
       actions:[{label:'Build something',fn:()=>{ const x=nextBuild(); if(x) x.go(); else homeGo('quick'); },primary:true}]};
     case 'longtail': { const L=CPU_LEVELS[arg], S=STORIES[arg]; if(!L||!S) break; const wins=Object.values(o.builds).filter(b=>b.k==='blitz').length;
-      return {title:'Swoop the Longtail',hint:ISL3.ltNight?'Asleep on Blitz Bay':'Blitz Bay’s racer · “Ready, set, snap!”',icon:`<img src="${cv3Snap(LT3[arg],null,'bust',192)||`/art/head-${LONGTAIL_ART[arg].id}.png`}" alt="" width="256" height="256">`,story:S.story,
+      return {title:'Swoop the longtail',hint:ISL3.ltNight?'Asleep on Blitz Bay':'Blitz Bay’s racer · “Ready, set, snap!”',icon:`<img src="${cv3Snap(LT3[arg],null,'bust',192)||`/art/head-${LONGTAIL_ART[arg].id}.png`}" alt="" width="256" height="256">`,story:S.story,
         rows:[['Who',S.who],['Loves',S.loves],['Secret',S.secret],['Your Blitz wins',String(wins)],['Speeds beaten',(()=>{ const m=longtailBeaten(o); return m<0?'None yet. Start at Warm-up!':['Warm-up','Warm-up and Race','All three!'][m]; })()],['Did you know?',LONGTAIL_FACT]],
         actions:(()=>{ const i=ladderStep(o); return [...(i>=0?[{label:i>=LADDER_N?`🏆 Race ${BLITZ_RACES} of ${BLITZ_RACES}: the Grand Prix`:`⚡ Race ${i+1} of ${BLITZ_RACES}`,fn:()=>ladderGo(),primary:true}]:[]),{label:'Choose your own race',fn:()=>{ try{ bzLevelSet(arg); bzLevelSync(); }catch(e){} homeGo('cpu'); },primary:i<0}]; })()}; }
     case 'char': { const C=CAST[arg]; if(!C) break; const I=ISLES[C.isle], c=isleCount(C.isle,o), home=arg==='lufu';
@@ -9260,25 +9260,25 @@ function isl3Snap(o){
 }
 
 // Tap Bloppit: a jump and a grin
-// The Longtail on Bloppitopia is the one you race (the Blitz level picked)
+// The longtail on Bloppitopia is the one you race (the Blitz level picked)
 const LONGTAIL_ART={easy:{id:'swoop',aspect:207/300},medium:{id:'swoop',aspect:207/300},hard:{id:'swoop',aspect:207/300}};
 // The speed to race Swoop at next: Warm-up, then Race, then Full throttle
 function longtailBeaten(o){ o=o||worldStore(); let m=-1; for(const b of Object.values(o.builds||{})) if(b&&b.k==='blitz') m=Math.max(m,Number.isInteger(b.lv)?b.lv:0); return m; }
 function longtailNow(){ return ['easy','medium','hard'][Math.min(2,longtailBeaten()+1)]; }
 function beachPoint(a){ const P=scalePoly(HOMEP,0,0,.93); let r=1; while(r<12&&inPoly(Math.cos(a)*(r+.2),Math.sin(a)*(r+.2),P)) r+=.2; return [Math.cos(a)*r,Math.sin(a)*r]; }
 function longtailSquawk(){ ISL3.ltJumpT=performance.now(); try{ sfx.voice('longtail'); }catch(e){} if(ISL3.ltNight){ const L=CPU_LEVELS[longtailNow()]; isl3Banner(`${L.name}: “Wha? It’s the middle of the night! …Fine, one race.”`); clearTimeout(ISL3.ltT); ISL3.ltT=setTimeout(()=>isl3Banner(''),3500); } isl3Kick(); }
-// Who they are (tap Bloppit or a Longtail). Gentle, and true to the character sheet: Bloppit's brick is red; Longtails never hold red.
+// Who they are (tap Bloppit or a longtail). Gentle, and true to the character sheet: Bloppit's brick is red; longtails never hold red.
 const STORIES={
   bloppit:{who:'An otter who loves building more than anything',story:'Long ago a storm washed Bloppit up on a bare little island with nothing but a red brick in his paws. He snapped it to a rock, then found another brick, and another. That island became Bloppitopia.',loves:'The click when two bricks fit, fishing (he always lets the fish go), and a good book in the hammock',secret:'That red brick is the very first brick of Bloppitopia. He has never once put it down.'},
-  easy:{who:'The speediest Longtail in the sky',story:'Swoop found his goggles in a lost snorkel kit and has worn them ever since. He races everything on Blitz Bay: boats, clouds, even his own shadow.',loves:'Going fast, a close finish, and a rematch',secret:'Win or lose, he always asks for a rematch. Racing is more fun with a friend.'},
-  medium:{who:'The speediest Longtail in the sky',story:'Swoop found his goggles in a lost snorkel kit and has worn them ever since. He races everything on Blitz Bay: boats, clouds, even his own shadow.',loves:'Going fast, a close finish, and a rematch',secret:'Win or lose, he always asks for a rematch. Racing is more fun with a friend.'},
-  hard:{who:'The speediest Longtail in the sky',story:'Swoop found his goggles in a lost snorkel kit and has worn them ever since. He races everything on Blitz Bay: boats, clouds, even his own shadow.',loves:'Going fast, a close finish, and a rematch',secret:'Win or lose, he always asks for a rematch. Racing is more fun with a friend.'},
+  easy:{who:'The speediest longtail in the sky',story:'Swoop found his goggles in a lost snorkel kit and has worn them ever since. He races everything on Blitz Bay: boats, clouds, even his own shadow.',loves:'Going fast, a close finish, and a rematch',secret:'Win or lose, he always asks for a rematch. Racing is more fun with a friend.'},
+  medium:{who:'The speediest longtail in the sky',story:'Swoop found his goggles in a lost snorkel kit and has worn them ever since. He races everything on Blitz Bay: boats, clouds, even his own shadow.',loves:'Going fast, a close finish, and a rematch',secret:'Win or lose, he always asks for a rematch. Racing is more fun with a friend.'},
+  hard:{who:'The speediest longtail in the sky',story:'Swoop found his goggles in a lost snorkel kit and has worn them ever since. He races everything on Blitz Bay: boats, clouds, even his own shadow.',loves:'Going fast, a close finish, and a rematch',secret:'Win or lose, he always asks for a rematch. Racing is more fun with a friend.'},
 };
-const LONGTAIL_FACT='Real Longtails are white-tailed tropicbirds. They fly back to Bermuda every spring and nest in holes in the cliffs.';
+const LONGTAIL_FACT='Real longtails are white-tailed tropicbirds. They fly back to Bermuda every spring and nest in holes in the cliffs.';
 // One friend on each adventure island (Character Bible, 24 Oct 2026), each holding a two-stud brick in their island's
 // colour. Drawn art (public/art/char-*.png, from the approved sheets in design/characters); Tiny also has his approved 3D model
 // (public/3d/tiny.glb, see "Tiny in 3D" below), and the others' models come later.
-// Swoop lives on Blitz Bay as the 3D Longtail above. lufu (always lowercase) stays hidden until the mystery is solved,
+// Swoop lives on Blitz Bay as the 3D longtail above. lufu (always lowercase) stays hidden until the mystery is solved,
 // then lives on Home Island beside your otter.
 const CAST={
   tiny:{name:'Tiny',kind:'the tree frog',isle:'otterwood',brick:'lime',h:1.5,aspect:278/360,tag:'Small frog, big forest!',
@@ -9301,7 +9301,7 @@ const castFull=id=>CAST[id].kind?`${CAST[id].name} ${CAST[id].kind}`:CAST[id].na
 const lufuHome=o=>isleComplete('moonstone',o||worldStore());
 // Tap a character: something funny happens straight away (a hop, a wiggle, a spin, a squash), with a word and a sound
 /* ---------- The characters: their drawings, brought to life ----------
-   Bloppit, your otter, the Longtails and the five friends are their own drawings on a bendable mesh that always turns to
+   Bloppit, your otter, the longtails and the five friends are their own drawings on a bendable mesh that always turns to
    face you (a paper puppet): they breathe, blink, tilt their heads, hop with squash and stretch, wiggle, and Bloppit switches
    to his other drawings for reactions (cheering with his brick up, offering it, a giggly hug, an oops). They take the same
    calls the 3D models did (play('wave'), poke(), setMode()…), so the island, the build buddy, the cards and dialogs, the
@@ -9312,7 +9312,7 @@ function ch3GL(){ if(CH3.gl!=null) return CH3.gl; try{ const c=document.createEl
 function ch3On(){ return !CH3.failed&&typeof THREE!=='undefined'&&!!THREE.WebGLRenderer&&!/[?&]chars3d=0/.test(location.search)&&ch3GL(); }
 // Each character: its drawing (and Bloppit's reaction drawings), height on the island, where the neck, belly and brick sit
 // (as a share of the body's height, from the top), its eyes in the drawing's own units (x, y, half-width, half-height) and lid colours.
-// kind: 'otter' (Bloppit), 'pup', 'bird' (the Longtails), 'friend', 'spirit' (lufu drifts and never performs).
+// kind: 'otter' (Bloppit), 'pup', 'bird' (the longtails), 'friend', 'spirit' (lufu drifts and never performs).
 const RIG={
   bloppit:{kind:'otter',h:2.36,art:'/art/bloppit-front.svg',neck:.43,belly:.72,brick:.6,eyes:[[264,310,41,46],[462,314,42,49]],lid:['#B07B4A','#93603A'],lash:'#3B2314',
     poses:{cheer:'/art/happy-snap.svg',wave:'/art/happy-snap.svg',show_brick:'/art/offering.svg',giggle_wiggle:'/art/hugging.svg',surprised_jump:'/art/oops.svg',look_at_you:'/art/bloppit-3q.svg'}},
@@ -9334,7 +9334,7 @@ function ch3Sheet(draw,w,h,lid,rig,k){ const S=512/h, W=pot(Math.ceil(w*S)), H=p
   const ox=(W-w*S)/2, oy=H-h*S; x.save(); x.translate(ox,oy); x.scale(S,S); draw(x); x.restore(); if(rig.fill) ch3FillHoles(x,W,H,rig.fill,Math.max(3,Math.round(7*H/512)));
   x.save(); x.translate(ox,oy); x.scale(S,S); if(lid&&rig.eyes) ch3Lids(x,rig,lid,k||1); x.restore();
   return {cv,W,H,S,ox,oy}; }
-// Some drawings (the Longtails) leave their white feathers as holes: fill every hole inside the outline with feather-white,
+// Some drawings (the longtails) leave their white feathers as holes: fill every hole inside the outline with feather-white,
 // leaving the outside clear. Gaps in the outline up to n px are bridged (the outline is grown, the outside found from the
 // edges, then shrunk back), so a hole that just touches the edge still counts as inside.
 function ch3FillHoles(x,W,H,col,n){ const img=x.getImageData(0,0,W,H), d=img.data, N=W*H, m=new Uint8Array(N);
@@ -9426,7 +9426,7 @@ const CLIP3={
   wake:{d:2.4,f:k=>({lid:1-sm3(.25,.45,k),sq:.09*Math.sin(sm3(.4,.85,k)*Math.PI),tilt:-.1*(1-sm3(.1,.5,k))})},
   fly_in_land:{d:2.4,f:k=>{ const u=sm3(0,.8,k); return {dx:-2.6*(1-u),hop:2.2*(1-u)*(1-u)+(k<.8?.05*Math.sin(k*40):0),lean:.25*(1-u),sq:k>.8?-.14*Math.exp(-(k-.8)*20):.06*Math.sin(k*40)}; }},
   drift:{d:1.6,f:k=>({hop:.05*Math.sin(k*Math.PI),tilt:.07*Math.sin(k*Math.PI*2),lean:.03*Math.sin(k*Math.PI*2)})}};
-// The resting loops: breathing and a gentle bob; asleep (Bloppit dozing, a Longtail in its nest) the eyes stay shut and it breathes slower
+// The resting loops: breathing and a gentle bob; asleep (Bloppit dozing, a longtail in its nest) the eyes stay shut and it breathes slower
 function rest3(t,kind,asleep){ const sp=asleep?.55:1, b=.5+.5*Math.sin(t*2*Math.PI/2.6*sp);
   const p={breathe:asleep?1.6*b:b,bob:(asleep?-3:1.5)*Math.sin(t*2*Math.PI/2.6*sp+1),sq:.012*Math.sin(t*2*Math.PI/2.6*sp),tilt:asleep?.1:.025*Math.sin(t*.7),lid:asleep?1:0};
   if(kind==='spirit'){ p.hop=.07+.04*Math.sin(t*1.3); p.lean=.03*Math.sin(t*.9); }   // lufu floats
@@ -9798,7 +9798,7 @@ function cv3Loop(t){ CV3.raf=0; if(CV3.t&&t-CV3.t<30){ CV3.raf=requestAnimationF
     if(v.canvas.width!==w||v.canvas.height!==h){ v.canvas.width=w; v.canvas.height=h; } const x=v.canvas.getContext('2d'); x.clearRect(0,0,w,h); x.drawImage(c,0,c.height-h,w,h,0,0,w,h); });
   r.setScissorTest(false); if(!reduceMotion) CV3.raf=requestAnimationFrame(cv3Loop); }
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden) cv3Kick(); });
-// A still portrait (a data URL) for small icons: the pup in its outfit, a Longtail's head. Null until the model has loaded.
+// A still portrait (a data URL) for small icons: the pup in its outfit, a longtail's head. Null until the model has loaded.
 function cv3Snap(id,o,frame,px,opt){ if(!ch3On()||!ch3Ready(id)) return null; opt=opt||{}; const key=JSON.stringify([id,frame,px,id.startsWith('pup')?[opt.ci!=null?opt.ci:pupColorOf(o),opt.wear||accWear(o||{}),PUP_HEX]:0]);
   if(CV3.snaps.has(key)) return CV3.snaps.get(key);
   try{ const r=cv3R(), sc=new THREE.Scene(), cam=new THREE.PerspectiveCamera(24,1,.05,60), i=ch3Make(id); cv3Lights(sc); sc.add(i.root); ch3Dress(i,o,opt); i.ctl.update(.6);
@@ -9811,7 +9811,7 @@ function ch3Warm(){ if(!ch3On()) return; const o=worldStore(), lv=typeof longtai
 function cv3Img(img,opts){ if(!img||!ch3On()) return null; let host=img.parentNode;
   if(!host.classList.contains('c3-wrap')){ host=document.createElement('span'); host.className=img.className+' c3-wrap'; img.className=''; img.parentNode.insertBefore(host,img); host.appendChild(img); }
   cv3(host,opts); return host; }
-// The build buddy: Bloppit acting out what his bubble says, or on a Blitz turn the Longtail you're racing
+// The build buddy: Bloppit acting out what his bubble says, or on a Blitz turn the longtail you're racing
 const BUD3={cheer:'cheer',hug:'happy_hop',oops:'surprised_jump',reach:'giggle_wiggle',offer:'show_brick',point:'look_at_you',think:'look_at_you',hop:'happy_hop'};
 const BUD3_BIRD={cheer:'cheeky_taunt',hug:'cheer',oops:'surprised_jump',reach:'surprised_jump',offer:'cheeky_taunt',point:'look_at_you',think:'look_at_you',hop:'happy_hop'};
 function buddy3(){ const b=$('#buddy'), art=b&&b.querySelector('.bud-art'); if(!art||!ch3On()) return;
@@ -9819,7 +9819,7 @@ function buddy3(){ const b=$('#buddy'), art=b&&b.querySelector('.bud-art'); if(!
   if(!cv3(art,{who,frame:'full'})) return;
   const st=Object.keys(BUD3).find(k=>b.classList.contains(k))||'';
   if(st!==art.__st||who!==art.__who){ const swap=who!==art.__who; art.__st=st; art.__who=who; if(st) setTimeout(()=>cv3Play(art,(lv?BUD3_BIRD:BUD3)[st]),swap?60:0); } }
-// Finish screens: Bloppit cheers and your otter hops along; after a race the Longtail reacts to who won
+// Finish screens: Bloppit cheers and your otter hops along; after a race the longtail reacts to who won
 function cheer3(el,who,clips){ if(!el) return; const ids=[].concat(who).map(w=>w==='pup'?ch3PupId(worldStore()):w);
   if(!ch3On()||!ch3Ready(...ids)){ el.hidden=true; return; } el.hidden=false; cv3(el,{who,frame:'full'}); [].concat(clips).forEach((c,i)=>cv3Play(el,c,i)); }
 const hasPup=o=>!!(pupName(o)||worldCount(o));
@@ -10367,7 +10367,7 @@ function isl3BuildBloppitopia(o,W,add){
       const da2=Math.abs(Math.atan2(Math.sin(t-toward),Math.cos(t-toward))), df=Math.abs(Math.atan2(Math.sin(t-front),Math.cos(t-front)));
       const sc=bad*10+da2*.6+df*.5+Math.abs(rk-.6)*2; if(!best||sc<best.s) best={s:sc,p:[x,z]}; }
     return ISL3.spots[key]=best.p; };
-  // Swoop, Blitz Bay's racer (the one Longtail now), on his island's shore; asleep there at night
+  // Swoop, Blitz Bay's racer (the one longtail now), on his island's shore; asleep there at night
   { const lv=longtailNow(), art=LONGTAIL_ART[lv], g=new THREE.Group(), l3=ch3Isle(LT3[lv],g,TOP3,0), sp=l3?null:sprite3(`/art/longtail-${art.id}.png`,2.1,art.aspect); if(sp){ sp.position.y=TOP3; g.add(sp); } ISL3.l3=l3; hitBox(g,1.9);
     const night=isNight3(); ISL3.ltNight=night; const [bx,bz]=isleCount('blitzbay',o)?spot('blitzbay',1.9,-.75,.7):shore('blitzbay',-1.5,1.02);   // in front of the mist (like the friends) until the island is found
     if(l3){ if(night) l3.ctl.setMode(5); else if(!ISL3.ltLanded){ ISL3.ltLanded=1; l3.ctl.play('fly_in_land'); } }
@@ -12034,7 +12034,7 @@ try{ const u=new URL(location.href); if(u.searchParams.get('rewind')==='moonston
   m.textContent=`Moonstone Isle is back to Chapter 7, The Moonstone Lighthouse${n?` (${n} build${n===1?'':'s'} taken off the island)`:''}. Everything else is as it was.`;
   Object.assign(m.style,{position:'fixed',left:'50%',bottom:'24px',transform:'translateX(-50%)',zIndex:200,background:'#1B2A34',color:'#fff',padding:'12px 18px',borderRadius:'14px',font:'700 15px Nunito,system-ui,sans-serif',maxWidth:'min(92vw,520px)',textAlign:'center',boxShadow:'0 6px 24px rgba(0,0,0,.25)',transition:'opacity .6s'});
   window.bloppitRewindNote=m.textContent; document.body.appendChild(m); setTimeout(()=>{ m.style.opacity='0'; setTimeout(()=>m.remove(),700); },7000); } }catch(e){}
-// Start a Blitz race straight from Play next: the race page with the puzzle and the Longtail picked, then Go
+// Start a Blitz race straight from Play next: the race page with the puzzle and the longtail picked, then Go
 // Blitz Bay through Bloppitopia: the next race on the ladder, shown as one card with one button (no puzzle, speed or
 // name to choose; that's all on the Blitz page for races outside the story)
 function ladderGo(){ const o=worldStore(), i=ladderStep(o); if(i<0){ homeGo('cpu'); return; }

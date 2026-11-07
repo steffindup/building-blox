@@ -821,7 +821,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
     await t.page.evaluate(() => { window.__said = ''; const grab = () => document.querySelectorAll('#isWorld .is3-say, #isWorld .is3-banner').forEach((b) => { if (!b.hidden && b.textContent) window.__said = b.textContent; });
       (window.__saidObs ||= new MutationObserver(grab)).disconnect(); document.querySelectorAll('#isWorld .is3-say, #isWorld .is3-banner').forEach((b) => window.__saidObs.observe(b, { attributes: true, childList: true, characterData: true, subtree: true })); });
     await t.page.mouse.click(c.x, c.y);
-    // a word in a bubble, or (a Longtail woken at night) a grumble in the banner
+    // a word in a bubble, or (a longtail woken at night) a grumble in the banner
     await t.page.waitForFunction(() => window.__said, null, { timeout: 4000, polling: 100 }).catch(() => {});
     const said = await t.page.evaluate(() => window.__said);
     assert.ok(said, 'a reaction for ' + id); assert.equal(await t.page.evaluate(() => document.getElementById('isTip').hidden), true);
@@ -833,7 +833,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   // places, Bloppit, the pup, a decoration, the islands nearby: each says what it is, its level and what's next
   assert.match(await tap('land:beach'), /Home Island.*Builds finished3.*Islands discovered/);
   assert.match(await tapChar('bloppit'), /Bloppit.*storm.*build buddy.*Secret.*red brick/);
-  assert.match(await tapChar('longtail:easy'), /Swoop the Longtail.*(Blitz Bay’s racer|Asleep on Blitz Bay).*goggles.*Secret.*Speeds beaten.*Did you know\?.*tropicbirds.*Race 1 of 20.*Choose your own race/);
+  assert.match(await tapChar('longtail:easy'), /Swoop the longtail.*(Blitz Bay’s racer|Asleep on Blitz Bay).*goggles.*Secret.*Speeds beaten.*Did you know\?.*tropicbirds.*Race 1 of 20.*Choose your own race/);
   assert.match(await tapChar('char:pippa'), /Pippa the penguin.*Flipper Beach.*Secret.*A yellow two-stud brick.*still in the mist.*Play Pippa’s puzzle/);
   assert.match(await tapChar('pup'), /Bubbles.*Level \d+ Pup.*1 stud.*Otter Level.*Wardrobe.*Name or colour/);
   assert.match(await tap('decor:flag'), /Flag/);
