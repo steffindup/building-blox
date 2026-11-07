@@ -465,7 +465,7 @@ test('a race against Swoop starts and shows him in the banner on his turn', { sk
 test('share links: a Weekly, a library model, and /p/start', { skip: skip() }, async () => {
   const seeded = { fn: () => localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 })) };
   let t = await open('?nosplash=1&p=w-2026-10-12', { init: seeded, at: '2026-10-14T18:00:00Z' });
-  assert.equal(await t.page.evaluate(() => document.getElementById('shareDlg').open), true); assert.match(await t.text('#shTitle'), /This week/);
+  assert.equal(await t.page.evaluate(() => document.getElementById('shareDlg').open), true); assert.match(await t.text('#shTitle'), /Bibi’s Weekly Bloppit/);
   await t.page.evaluate(() => document.getElementById('shGo').click()); await t.page.waitForTimeout(4500);
   assert.equal(await t.view(), 'view-build'); assert.deepEqual(t.errors, []); await t.ctx.close();
   t = await open('?nosplash=1&p=m-toadstool', { init: seeded });
