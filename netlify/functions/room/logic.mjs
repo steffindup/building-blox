@@ -59,7 +59,7 @@ function publicState(s, viewer = -1) {
     code: s.code, ver: s.ver, started: s.started, finished: s.finished, perTurn: s.perTurn, mode: s.mode || 'classic',
     nBricks: s.nBricks, title: s.title, level: s.level, host: s.host, turn: s.turn,
     turnPlaced: s.turnPlaced, turnStart: s.turnStart, moves: s.moves, now, quota: s.quota || 0,
-    players: s.players.map((p) => ({ name: p.name, color: p.color, pen: p.pen, stale: now - p.seen > STALE_MS,
+    players: s.players.map((p) => ({ name: p.name, color: p.color, pen: p.pen, stale: now - p.seen > STALE_MS, ...(p.left ? { left: true } : {}),
       ...(s.mode === 'blitz' ? { ms: p.ms || 0, miss: p.miss || 0, hint: p.hint || 0, n: p.n || 0 } : {}) })),
   };
   if (viewer >= 0) {
@@ -86,11 +86,15 @@ function stopClock(s) {
 }
 // In Blitz everyone places the same number of bricks (their share), so a player who has placed theirs is skipped.
 const shareDone = (s, i) => blitz(s) && s.quota > 0 && (s.players[i].n || 0) >= s.quota;
+// A player who tapped Leave room keeps their place in the list (moves name players by position) but gets no more turns.
+const gone = (s, i) => !!(s.players[i] && s.players[i].left);
+const active = (s) => s.players.filter((p) => !p.left).length;
+const raceDone = (s) => blitz(s) && s.players.every((_, k) => gone(s, k) || shareDone(s, k));
 function nextTurn(s) {
   stopClock(s);
   for (let k = 0; k < s.players.length; k++) {
     s.turn = (s.turn + 1) % s.players.length;
-    if (!shareDone(s, s.turn)) break;
+    if (!shareDone(s, s.turn) && !gone(s, s.turn)) break;
   }
   s.turnPlaced = 0;
   s.turnStart = Date.now();
@@ -186,9 +190,11 @@ export async function handle(method, query, body, store) {
     const res = await update(store, code, (s) => {
       const now = Date.now();
       const idx = body.playerId ? findPlayer(s, body.playerId) : -1;
+      if (idx >= 0 && s.players[idx].left) return { error: 'You left this game.' };
       if (idx >= 0) { s.players[idx].seen = now; me = idx; pid = body.playerId; return {}; }
       if (s.finished) return { error: 'That game has already finished.' };
-      if (s.players.length >= MAX_PLAYERS) return { error: 'That room is full (4 players).' };
+      if (blitz(s) && s.started) return { error: 'This race has already started, so nobody new can join. Ask your friend for the next one!' };
+      if (active(s) >= MAX_PLAYERS) return { error: 'That room is full (4 players).' };
       s.waiting = (s.waiting || []).filter((w) => now - w.seen <= WAIT_STALE_MS);
       const w0 = body.playerId ? s.waiting.find((w) => w.id === body.playerId) : null;
       if (w0) { w0.seen = now; pid = w0.id; waiting = true; return {}; }
@@ -224,7 +230,7 @@ export async function handle(method, query, body, store) {
       if (i !== s.host) return { error: 'Only the player who made the room can start it.', status: 403 };
       if (!s.started) {
         if (blitz(s)) {
-          s.quota = Math.floor(s.nBricks / s.players.length);
+          s.quota = Math.floor(s.nBricks / active(s));
           if (s.quota < 1) return { error: 'This model doesn’t have enough bricks for everyone. Pick a bigger one.', status: 409 };
           s.players.forEach((p) => { p.n = 0; p.ms = 0; p.miss = 0; p.hint = 0; });
         }
@@ -244,7 +250,7 @@ export async function handle(method, query, body, store) {
       if (!w) return { error: 'They’re no longer waiting.', status: 404 };
       s.waiting = s.waiting.filter((x) => x !== w);
       if (a === 'deny') { s.denied = [...(s.denied || []), w.id].slice(-20); return {}; }
-      if (s.players.length >= MAX_PLAYERS) return { error: 'The room is full (4 players).', status: 409 };
+      if (active(s) >= MAX_PLAYERS) return { error: 'The room is full (4 players).', status: 409 };
       if (blitz(s) && s.started) return { error: 'Bloppit Blitz has already started, so nobody new can join this game.', status: 409 };
       const used = new Set(s.players.map((p) => p.color));
       s.players.push({ id: w.id, name: w.name, color: COLORS.find((c) => !used.has(c)) || COLORS[0], pen: { hint: 0, auto: 0, miss: 0 }, seen: Date.now(), ms: 0, miss: 0 });
@@ -304,7 +310,7 @@ export async function handle(method, query, body, store) {
       if (body.pen && !blitz(s)) s.players[i].pen = mergePen(s.players[i].pen, body.pen);
       s.turnPlaced += 1;
       s.players[i].n = (s.players[i].n || 0) + 1;
-      if (blitz(s) && s.players.every((_, k) => shareDone(s, k))) {
+      if (raceDone(s)) {
         // Everyone has placed their share. If the bricks didn't divide evenly, Bloppit puts in the last few.
         stopClock(s);
         const done = new Set(s.moves.map((m) => m.b));
@@ -312,6 +318,31 @@ export async function handle(method, query, body, store) {
         s.finished = true;
       } else if (s.moves.length >= s.nBricks) { stopClock(s); s.finished = true; }
       else if (s.turnPlaced >= s.perTurn || shareDone(s, i)) nextTurn(s);
+      return {};
+    }, pid);
+  }
+
+  // Leave room: before the start the player is simply taken out; once it has started they keep their place (moves
+  // name players by position) but get no more turns. The host's job passes to the next player still in.
+  if (a === 'leave') {
+    return update(store, code, (s) => {
+      const i = findPlayer(s, pid);
+      if (i < 0) return {};
+      if (!s.started) {
+        s.players.splice(i, 1);
+        if (s.host === i) s.host = 0; else if (s.host > i) s.host -= 1;
+        return {};
+      }
+      if (gone(s, i)) return {};
+      const wasTurn = i === s.turn && !s.finished;
+      if (wasTurn) stopClock(s);
+      s.players[i].left = true;
+      if (s.host === i) { const h = s.players.findIndex((p) => !p.left); if (h >= 0) s.host = h; }
+      if (!s.finished && blitz(s) && raceDone(s)) {
+        const done = new Set(s.moves.map((m) => m.b));
+        for (let k = 0; k < s.nBricks; k++) if (!done.has(k)) s.moves.push({ p: -1, b: k, x: 0, z: 0, a: 1 });
+        s.finished = true;
+      } else if (wasTurn && active(s) > 0) { s.turnStart = Date.now(); nextTurn(s); }   // the leaver's clock already stopped; nextTurn adds nothing more
       return {};
     }, pid);
   }

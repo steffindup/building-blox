@@ -3,6 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { merge, cleanData, handle as pup } from '../netlify/functions/pup/logic.mjs';
 import { weekOf } from '../netlify/functions/challenge/logic.mjs';
+import { handle as room } from '../netlify/functions/room/logic.mjs';
 import { store, mem } from './devserver.mjs';
 
 test('pup: only allowed fields are kept', () => {
@@ -151,4 +152,64 @@ test('pup: the hardest Longtail beaten on a Blitz build is kept', () => {
   const w = (lv) => ({ world: { builds: { 'm:Car:20': { n: 20, s: 1, k: 'blitz', t: 5, c: 1, lv } }, log: ['m:Car:20'] } });
   assert.equal(merge(w(2), w(0)).world.builds['m:Car:20'].lv, 2);
   assert.equal(merge(w(0), w(1)).world.builds['m:Car:20'].lv, 1);
+});
+
+// Rooms: a room with a host and players let in (Build together or a live Blitz race)
+async function roomWith(mode, n, perTurn = 2) {
+  const model = { name: 'Test', S: {}, photos: [{ name: 'p', view: 'front', png: 'data:,' }] };
+  const c = await room('POST', {}, { action: 'create', name: 'H', mode, perTurn, nBricks: 12, title: 'Test', model }, store);
+  const code = c.body.code, ids = [c.body.playerId];
+  for (let k = 1; k < n; k++) {
+    const j = await room('POST', {}, { action: 'join', code, name: 'P' + k }, store);
+    const st = await room('GET', { code, pid: ids[0] }, null, store);
+    await room('POST', {}, { action: 'admit', code, playerId: ids[0], k: st.body.state.waiting[0].k }, store);
+    ids.push(j.body.playerId);
+  }
+  return { code, ids, start: () => room('POST', {}, { action: 'start', code, playerId: ids[0] }, store),
+    move: (i, b) => room('POST', {}, { action: 'move', code, playerId: ids[i], b }, store),
+    leave: (i) => room('POST', {}, { action: 'leave', code, playerId: ids[i] }, store),
+    state: async () => (await room('GET', { code }, null, store)).body.state };
+}
+test('room: Leave room tells the server; their turns are skipped and the host passes on (Build together)', async () => {
+  mem.clear();
+  const r = await roomWith('classic', 3, 2); await r.start();
+  await r.move(0, 0); await r.move(0, 1);                       // host's turn done → player 1
+  assert.equal((await r.state()).turn, 1);
+  await r.leave(0);                                             // the host leaves (not on their turn)
+  let s = await r.state(); assert.equal(s.players[0].left, true); assert.equal(s.host, 1, 'host passes to the next player still in');
+  await r.move(1, 2); await r.move(1, 3);                       // → player 2
+  await r.move(2, 4); await r.move(2, 5);                       // → skips the host, back to player 1
+  assert.equal((await r.state()).turn, 1);
+  await r.leave(1);                                             // leaving on your own turn passes it on
+  s = await r.state(); assert.equal(s.turn, 2); assert.equal(s.host, 2);
+  const rejoin = await room('POST', {}, { action: 'join', code: r.code, name: 'H', playerId: r.ids[0] }, store);
+  assert.match(rejoin.body.error || '', /left this game/);
+});
+test('room: before the start, a leaver is simply taken out', async () => {
+  mem.clear();
+  const r = await roomWith('classic', 3); await r.leave(0);
+  const s = await r.state(); assert.equal(s.players.length, 2); assert.equal(s.host, 0);
+});
+test('room: a started race takes nobody new; a race finishes when everyone still in has placed their share', async () => {
+  mem.clear();
+  const r = await roomWith('blitz', 3); await r.start();
+  const late = await room('POST', {}, { action: 'join', code: r.code, name: 'Late' }, store);
+  assert.match(late.body.error || '', /already started/); assert.equal((await r.state()).players.length, 3);
+  let s = await r.state(); assert.equal(s.quota, 4);
+  for (let b = 0; b < 3; b++) await r.move(0, b);                // a Blitz turn is 3 bricks → player 1
+  assert.equal((await r.state()).turn, 1);
+  await r.leave(1);                                             // player 1 leaves on their turn → player 2
+  s = await r.state(); assert.equal(s.turn, 2); assert.equal(s.finished, false);
+  for (let b = 3; b < 6; b++) await r.move(2, b);                // → back to player 0 (player 1 skipped)
+  assert.equal((await r.state()).turn, 0);
+  await r.move(0, 6);                                           // player 0's share (4) done → player 2
+  assert.equal((await r.state()).turn, 2);
+  await r.move(2, 7);                                           // player 2's share done: everyone still in is done
+  s = await r.state(); assert.equal(s.finished, true, 'done without the player who left'); assert.equal(s.moves.length, 12, 'Bloppit puts in the rest');
+});
+test('room: a full room counts only the players still in', async () => {
+  mem.clear();
+  const r = await roomWith('classic', 4); await r.start(); await r.leave(3);
+  const j = await room('POST', {}, { action: 'join', code: r.code, name: 'New' }, store);
+  assert.equal(j.body.waiting, true);
 });
