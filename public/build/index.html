@@ -8073,7 +8073,8 @@ function pupFig(o,opt){ opt=opt||{};
   return `<svg class="pupfig${opt.cls?' '+opt.cls:''}" viewBox="${opt.vb||'0 -40 239 340'}" preserveAspectRatio="${opt.par||'xMidYMid meet'}" aria-hidden="true" focusable="false">${pupLayers(ci,n,o)}</svg>`; }
 // A name the child typed: letters in any language, spaces, ' and -, at most 14 characters (same rule as the server)
 function cleanPupText(v){ return typeof v!=='string'?'':v.normalize('NFC').replace(/[^\p{L}\p{M} '\-]/gu,'').replace(/\s+/g,' ').trim().slice(0,14).trim(); }
-var ISLAND_STAGES=[{name:'Beach',at:0,slots:0},{name:'Hut',at:1,slots:1},{name:'Workshop',at:3,slots:3},{name:'Village',at:10,slots:12}];
+var ISLAND_STAGES=[{name:'Beach',at:0,slots:0},{name:'Hut',at:1,slots:1},{name:'Workshop',at:3,slots:3},{name:'Village',at:10,slots:12},
+  {name:'Town',at:25,slots:12},{name:'Harbour Town',at:50,slots:12},{name:'Grand Isle',at:100,slots:12}];   // Town and up: Steff, 6 Nov 2026 (Village was the top, at 10)
 var DECOR=[{id:'flag',name:'Flag',cost:3},{id:'campfire',name:'Campfire',cost:3},{id:'bench',name:'Bench',cost:3},{id:'lantern',name:'Lantern',cost:5},{id:'signpost',name:'Signpost',cost:5},{id:'rockpool',name:'Rock pool',cost:5},
   {id:'sandcastle',name:'Sandcastle',cost:5},{id:'hammock',name:'Hammock',cost:8},{id:'kite',name:'Kite',cost:5},{id:'palm',name:'Palm',cost:8},{id:'crab',name:'Crab',cost:3},{id:'buoy',name:'Buoy',cost:8,water:1},
   // Bigger things (Oct 2026): Galaxy Blocks pile up much faster than the twelve little ones above use them, so there's always a next
@@ -8309,7 +8310,7 @@ function renderIslandIntro(o){
   const nm=pupName(o);
   $('#iiPup').innerHTML=pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice',svg:1});   // the drawn cartoon otter as its profile picture
   $('#iiTxt').textContent=nm?`${nm} lives here with Bloppit.`:'Your otter lives here with Bloppit.';
-  const n0=worldCount(o); $('#iiSteps').innerHTML=ISLAND_STAGES.slice(1).map(st=>`<li class="${n0>=st.at?'done':''}"><b>${n0>=st.at?'✓':st.at}</b>${n0>=st.at?st.at+' ':''}build${st.at===1?'':'s'}: ${st.name==='Hut'?'a hut':st.name==='Workshop'?'a workshop':'a village'}</li>`).join('');
+  const n0=worldCount(o); $('#iiSteps').innerHTML=ISLAND_STAGES.slice(1,4).map(st=>`<li class="${n0>=st.at?'done':''}"><b>${n0>=st.at?'✓':st.at}</b>${n0>=st.at?st.at+' ':''}build${st.at===1?'':'s'}: a ${st.name.toLowerCase()}</li>`).join('');
   const n=nextBuild(); $('#iiNext').innerHTML=n?`<img class="nb-pic" src="${n.thumb}" alt=""><span>Keep building<small>${escapeHTML(n.t)}</small></span>`:'Keep building';
 }
 function islandIntroDone(how){ const o=worldStore(); o.isle=1; worldSet(o); track('island_intro:'+how); $('#isIntro').hidden=true; }
@@ -8578,8 +8579,8 @@ function islandInfo(id,o){
     case 'land': {
       const nx=ISLAND_STAGES[st+1];
       if(arg==='beach'&&ISL3.ok){ const hp=HOME_PIECES.filter(x=>!x.hide&&x.id!=='pick'), nx=hp.find(x=>x.at>n); return {title:'Home Island',hint:pupName(o)?`${pupName(o)}’s home`:'Your home',rows:[['Builds finished',String(n)],['Models standing',`${shown.list.length} of ${shown.cap} stands`],['Islands discovered',`${islandsOpen(o).length} of 5`],['Next',nx?`${nx.name} at ${nx.at} builds`:'Everything on Home Island is built']],chips:hp.map(x=>[x.name,n>=x.at]),actions:n?[{label:'✨ Decorate',fn:()=>$('#isDecor').click()}]:[]}; }
-      if(arg==='beach') return {title:'Bloppitopia',hint:`Level ${st} of 3: ${ISLAND_STAGES[st].name}`,
-        rows:[['Level',`${st} of 3: ${ISLAND_STAGES[st].name}`],['Builds finished',String(n)],['Models standing',`${shown.list.length} of ${shown.cap} stands`],['Decorations',`${decorOut(o).length} of ${DECOR.length}`],['Next',nx?`The ${nx.name.toLowerCase()} at ${nx.at} builds`:'Everything is built']],
+      if(arg==='beach') return {title:'Bloppitopia',hint:`Level ${st} of ${ISLAND_STAGES.length-1}: ${ISLAND_STAGES[st].name}`,
+        rows:[['Level',`${st} of ${ISLAND_STAGES.length-1}: ${ISLAND_STAGES[st].name}`],['Builds finished',String(n)],['Models standing',`${shown.list.length} of ${shown.cap} stands`],['Decorations',`${decorOut(o).length} of ${DECOR.length}`],['Next',nx?`The ${nx.name.toLowerCase()} at ${nx.at} builds`:'Everything is built']],
         bar:nx?bar(ISLAND_STAGES[st].at,nx.at):null, actions:n?[{label:'✨ Decorate',fn:()=>$('#isDecor').click()}]:[]};
       if(arg==='meadow') return {...place(3,'The meadow','Where the village grows'),title:'The meadow',hint:n>=10?'The village stands here':'The village grows here at 10 builds'};
       if(arg==='sea') return {title:'The sea',hint:'Six islands around Home Island: tap one',rows:destinations().map(d=>[d.n?d.name:ISLES[d.id].mystery?'Mystery Island':d.name,d.n?(d.st===3?`${d.milestone} ✓`:`${isleProg(d.id,d.n,d.total)}${d.next?` · next: ${d.next}`:''}`):ISLES[d.id].mystery?mysteryHint():`In the mist · play ${ISLES[d.id].game} to find it`])};
@@ -11208,7 +11209,7 @@ function renderIsland(){
     isProgRender(o);
     $('#isNext').innerHTML=g?`<span>${escapeHTML(g.text)}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*g.frac))}%"></i></span>`:'<span>Every island is complete. What a world!</span>'; }
   else $('#isStage').innerHTML=`${ISLAND_STAGES[stage].name}<small>${n} build${n===1?'':'s'} finished · ${gbN(worldStars(o))} to spend</small>`;
-  if(!ISL3.ok) $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>Your village is built. Now grow the five islands around it.</span>';
+  if(!ISL3.ok) $('#isNext').innerHTML=next?`<span>${next.at-n} more build${next.at-n===1?'':'s'} to the ${next.name}</span><span class="bar"><i style="width:${Math.max(4,Math.round(100*(n-ISLAND_STAGES[stage].at)/(next.at-ISLAND_STAGES[stage].at)))}%"></i></span>`:'<span>Your Grand Isle is built. Now grow the five islands around it.</span>';
   $('#isNote').textContent=n?`${pupName(o)||'Your otter'} and Bloppit are home. Tap anything to see what it is${n>1?`, and drag a model anywhere on the ${ISL3.ok?'grass':'sand'}`:''}${ISL3.ok?'. Use the arrows to move between views, '+(mouseOnly()?'scroll':'pinch')+' to look closer, and tap anyone to say hello':''}.`:ISL3.ok?`${pupName(o)?pupName(o)+'’s':'Your'} home is waiting to be built. Tap anything to see what it is.`:'Finish any build and the first hut rises from the sand. Tap anything to see what it is.';
   { const d=$('#isdCard'); if(d) d.hidden=stage<3; $('#isCard').hidden=stage<3||!!d; } $('#isDecor').hidden=!n||!!$('#isDrawer');   // with the Customise button, Decorate lives in its drawer
   renderDecorShop(); renderBuilds(); isGbSync();
