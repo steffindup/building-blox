@@ -1630,6 +1630,7 @@ body.film-on{overflow:hidden}
 .hm-tile.t-friend{--c:#923978}
 .hm-tile.t-together{--c:#6A3FB5}
 .hm-tile.t-join{--c:#1B2A34}
+.hm-tile.t-crew{--c:#008F9B}   /* Crews: teal, no character's colour */
 /* Character colours (series bible; Steff, 6 Nov 2026: "each character should be associated with a specific colour").
    One colour per friend, used wherever that friend's face leads: menu tiles, the top bar, the trail picker, the Weekly.
    Red is Bloppit's alone; yellow without a face is Play Now / Quick Play. Light colours carry dark text. */
@@ -1824,7 +1825,8 @@ body.film-on{overflow:hidden}
   <div class="hm-grid">
     <button class="hm-tile t-together" data-go="mp" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="0" y="16" width="66" height="58"/><use href="#bh2" x="58" y="28" width="58" height="51"/><rect x="34" y="80" width="52" height="28" rx="5" fill="#D2352B"/><rect x="40" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="66" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="34" y="100" width="52" height="8" rx="4" fill="#B32A22"/><ellipse cx="34" cy="90" rx="8" ry="7" fill="#8A5A3B"/><ellipse cx="86" cy="90" rx="8" ry="7" fill="#C08A5E"/></svg></span><b>Build together</b><span>One puzzle, taking turns with friends</span></button>
     <button class="hm-tile t-friend" data-go="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><ellipse cx="31.6" cy="65.2" rx="10" ry="11" fill="#8A5A3B"/><path d="M24 66 q7.5 6 15 0" stroke="#1B1410" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>Race a friend</b><span>Send a challenge code, or race live</span></button>
-    <button class="hm-tile t-join wide" data-go="code" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a game</b><span>Got a code? Type it in to play</span></button>
+    <button class="hm-tile t-crew" data-go="crew" type="button"><span class="ic" aria-hidden="true">🏮</span><b>Crews</b><span>Build a lighthouse with friends</span></button>
+    <button class="hm-tile t-join" data-go="code" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a game</b><span>Got a code? Type it in to play</span></button>
   </div>
 </div>
 </section>
@@ -2086,7 +2088,7 @@ body.film-on{overflow:hidden}
   <div class="mp-forms" id="mpForms">
     <div class="card" id="mpStartCard">
       <h2>Start a game</h2>
-      <div class="field"><label for="mpName1">Your name</label><input class="inp" id="mpName1" maxlength="16" autocomplete="nickname" placeholder="e.g. Elmar"></div>
+      <div class="field"><label for="mpName1">Your name <small class="note">(stays on this device; friends see an otter name)</small></label><input class="inp" id="mpName1" maxlength="16" autocomplete="nickname" placeholder="e.g. Sam"></div>
       <div class="field bz-puzzle"><span class="lbl">Puzzle</span>
         <div class="bzp"><img id="mpPzThumb" alt=""><div class="bzp-txt"><b id="mpPzName"></b><span class="note" id="mpPzInfo"></span></div></div>
         <div class="bzp-btns"><button class="ghost" id="mpLib" type="button">📚 Library</button><button class="ghost" id="mpPhoto" type="button">📸 Your photo</button>
@@ -2103,8 +2105,8 @@ body.film-on{overflow:hidden}
     </div>
     <div class="card" id="mpJoinCard">
       <h2>Join a game</h2>
-      <div class="field"><label for="mpCodeIn">Room code</label><input class="inp code" id="mpCodeIn" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCDE"></div>
-      <div class="field"><label for="mpName2">Your name</label><input class="inp" id="mpName2" maxlength="16" autocomplete="nickname" placeholder="e.g. Stian"></div>
+      <div class="field"><label for="mpCodeIn">Got a code?</label><input class="inp code" id="mpCodeIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCDE"><small class="note" style="display:block;margin-top:4px">A room code (5 letters and numbers) or a challenge, relay or crew code (6).</small></div>
+      <div class="field"><label for="mpName2">Your name <small class="note">(stays on this device; friends see an otter name)</small></label><input class="inp" id="mpName2" maxlength="16" autocomplete="nickname" placeholder="e.g. Sam"></div>
       <button class="primary" id="mpJoin" type="button">Join</button>
       <p class="note" id="mpRejoinNote" hidden></p>
     </div>
@@ -2141,7 +2143,7 @@ body.film-on{overflow:hidden}
   <div class="hub" data-hub>
     <div class="hm-grid hub-grid">
       <button class="hm-tile t-blitz" data-sub="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>vs Swoop</b><span>Race the speediest Longtail</span></button>
-      <button class="hm-tile t-friend" data-sub="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><ellipse cx="31.6" cy="65.2" rx="10" ry="11" fill="#8A5A3B"/><path d="M24 66 q7.5 6 15 0" stroke="#1B1410" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>vs Friend</b><span>Send a challenge code, or race live</span></button>
+      <button class="hm-tile t-friend" data-sub="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><ellipse cx="31.6" cy="65.2" rx="10" ry="11" fill="#8A5A3B"/><path d="M24 66 q7.5 6 15 0" stroke="#1B1410" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>Race a friend</b><span>Send a challenge code, or race live</span></button>
     </div>
   </div>
   <button class="crumb" data-up type="button">‹ Blitz</button>
@@ -2149,7 +2151,7 @@ body.film-on{overflow:hidden}
   <div id="bzForms" style="display:grid;gap:16px">
     <div class="card bz-setup">
       <p class="note bz-as" id="bzAs" hidden>Racing as <b id="bzAsN"></b> <button class="ghost sm-link" id="bzAsCh" type="button">Change</button></p>
-      <div class="field" id="bzNameF"><label for="bzName">Your name in the race</label><input class="inp" id="bzName" maxlength="16" autocomplete="nickname" placeholder="e.g. Elmar"></div>
+      <div class="field" id="bzNameF"><label for="bzName">Your name in the race <small class="note">(stays on this device; friends see an otter name)</small></label><input class="inp" id="bzName" maxlength="16" autocomplete="nickname" placeholder="e.g. Sam"></div>
       <div class="field bz-puzzle"><span class="lbl">Puzzle</span>
         <div class="bzp"><img id="bzThumb" alt=""><div class="bzp-txt"><b id="bzPzName"></b><span class="note" id="bzPzInfo"></span></div></div>
         <div class="bzp-btns"><button class="ghost" id="bzLib" type="button">📚 Library</button><button class="ghost" id="bzPhoto" type="button">📸 Your photo</button>
@@ -2173,10 +2175,10 @@ body.film-on{overflow:hidden}
         <h2><span aria-hidden="true">🔁</span>Relay with a friend</h2>
         <p class="note" style="margin:0">Build the first half of a model, send the code, and your friend builds the rest. The finished model lands on both your islands.</p>
         <button class="primary" id="bzRelayGo" type="button">🔁 Start a relay</button>
-        <p class="note" style="margin:8px 0 0">Got a relay code? Type it under <b>vs Friend</b>; the same box opens relays and races.</p>
+        <p class="note" style="margin:8px 0 0">Got a relay code? Type it into <b>Got a code?</b> under Race a friend, or into Join a game on the menu.</p>
       </div>
       <div class="card bz-card" id="bzFriendCard">
-        <h2><span aria-hidden="true">🤝</span>vs Friend</h2>
+        <h2><span aria-hidden="true">🤝</span>Race a friend</h2>
         <p class="note" style="margin:0">Build the whole puzzle as fast as you can, then send your code to a friend. They race your time whenever they like. Names never travel: on a friend’s screen you are a generated name like Brave Otter 214.</p>
         <p class="bz-off" id="bzOff" hidden></p>
         <button class="primary" id="bzChMake" type="button">📨 Make a challenge</button>
@@ -3463,7 +3465,7 @@ function syncSub(t){
   if(mp||mpw){ if(t==='blitz') s=mp&&mp.cpu?'cpu':'friend'; if(t==='mp') s='start'; }
   if(t==='game'&&s!=='hub') setTrail(s);
   const v=$('#view-'+t); v.dataset.sub=s; v.classList.toggle('in-room',!!(mp||mpw));
-  if(t==='blitz') $('#bzHeadT').textContent=s==='cpu'?'⚡ Blitz vs Swoop':s==='friend'?'⚡ Blitz vs Friend':'⚡ Bloppit Blitz';
+  if(t==='blitz') $('#bzHeadT').textContent=s==='cpu'?'⚡ Blitz vs Swoop':s==='friend'?'⚡ Race a friend':'⚡ Bloppit Blitz';
   if(t==='mp') $('#mpHeadT').textContent=s==='join'?'🔑 Join a game':'🧩 Build together';
   if(t==='game'&&s==='hub'){ const st=playerStats(players.cur);
     $('#hubOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
@@ -6971,9 +6973,11 @@ function raceScoreboard(s){ const L=raceLead(s); if(!L) return '';
   return `<div class="race-meter rm-mini" role="group" aria-label="Race scoreboard">${raceHead(s,L)}<div class="rm-chips">${chips}</div><span class="rm-rule">${s.quota} bricks each · shortest time wins · miss +1s · hint +2s</span></div>`; }
 function mpScores(s){
   return s.players.map((p,i)=>{ const own=s.moves.filter(m=>m.p===i&&!m.a).length, auto=s.moves.filter(m=>m.p===i&&m.a).length, pen=p.pen||{};
-    if(s.mode==='blitz') return {i,name:p.name,color:p.color,own,miss:p.miss||0,hint:p.hint||0,stale:p.stale,ms:mpTime(s,i),n:p.n||0,done:!!s.quota&&(p.n||0)>=s.quota};
-    return {i,name:p.name,color:p.color,own,auto,hint:pen.hint||0,miss:pen.miss||0,stale:p.stale,score:Math.max(0,own*10-auto*10-(pen.hint||0)*5)}; });
+    if(s.mode==='blitz') return {i,name:p.name,color:p.color,own,miss:p.miss||0,hint:p.hint||0,stale:p.stale,left:!!p.left,ms:mpTime(s,i),n:p.n||0,done:!!s.quota&&(p.n||0)>=s.quota};
+    return {i,name:p.name,color:p.color,own,auto,hint:pen.hint||0,miss:pen.miss||0,stale:p.stale,left:!!p.left,score:Math.max(0,own*10-auto*10-(pen.hint||0)*5)}; });
 }
+// Places with ties shared: equal scores (or times) get the same place and medal. A player who left gets no place.
+const mpPlaces=(sc,better)=>sc.map(p=>p.left?0:1+sc.filter(q=>!q.left&&better(q,p)).length), MP_MEDAL=['','🥇','🥈','🥉'];
 function mpEndSolo(){ if(game){ game=null; freeS=null; } hintOn=false; updateGameBar(); }
 
 // Placing a brick: one placed by anybody (including this device, when the server echoes it back)
@@ -7070,7 +7074,7 @@ function updateMpBar(){
   else if(bz) el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Quickest time wins</small>':mine?`Your turn! Go!<small>${s.turnPlaced?`${s.turnPlaced} placed · up to ${left} more, or tap Done`:left<3?`Place up to ${left} brick${left===1?'':'s'} (${left===1?'your last one':'your last ones'})`:'Place 1, 2 or 3 bricks, then tap Done'}</small>`:mp.cpu?`${CPU_LEVELS[s.cpuLevel].name}’s turn<small>${s.turnPlaced?`${s.turnPlaced} placed · `:'Thinking… '}${(s.players[mp.me]||{}).n>=s.quota?'You’re done! Now he finishes his bricks':'his clock is running'}</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} placed · their clock is running${cp.stale?' · hasn’t been seen for a while':''}</small>`;
   else el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Built together</small>':mine?`Your turn!<small>Place ${left} more brick${left===1?'':'s'}</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} of ${s.perTurn} placed${cp.stale?' · hasn’t been seen for a while':''}</small>`;
   if(bz&&!s.solo&&s.quota&&s.started) $('#mpPlayers').innerHTML=raceMeter(s);
-  else $('#mpPlayers').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.i===s.turn&&s.started&&!s.finished?' now':''}${p.stale?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''} ${bz?`<b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${s.quota?`<span class="mi" style="color:var(--muted)" title="Bricks placed">${p.done?'✓':`${p.n}/${s.quota}`}</span>`:''}${p.miss?`<span class="mi" title="Misses">✕${p.miss}</span>`:''}${p.hint?`<span class="mi" title="Hints" style="color:var(--muted)">💡${p.hint}</span>`:''}`:`<b>${p.score}</b>`}</span>`).join('');
+  else $('#mpPlayers').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.i===s.turn&&s.started&&!s.finished?' now':''}${p.stale||p.left?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.left?' · left':''} ${bz?`<b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${s.quota?`<span class="mi" style="color:var(--muted)" title="Bricks placed">${p.done?'✓':`${p.n}/${s.quota}`}</span>`:''}${p.miss?`<span class="mi" title="Misses">✕${p.miss}</span>`:''}${p.hint?`<span class="mi" title="Hints" style="color:var(--muted)">💡${p.hint}</span>`:''}`:`<b>${p.score}</b>`}</span>`).join('');
   updateVoiceUI();
   turnBanner(s); $('#mpBar').classList.toggle('tb-on',!!(bz&&mp.cpu&&!s.solo&&s.started&&!s.finished));   // the turn bar on the stage carries the turn and Done
   $('#mpEndTurn').textContent=bz?'Done':'End my turn';
@@ -7117,6 +7121,10 @@ async function mpEnter(res,isHost,name){
 }
 function mpLeave(){ cpuGateGone();
   if(!mp) return;
+  // Tell the room (not a race against Swoop, which has no server): the others' turns skip this player from now on,
+  // and if this was the host, the next player still in becomes the host. Sent with keepalive so it goes even as the page moves on.
+  if(!mp.cpu&&mp.code&&mp.playerId) try{ fetch(API_BASE+'/api/room',{method:'POST',keepalive:true,headers:{'content-type':'application/json','x-player':mp.playerId},
+    body:JSON.stringify({action:'leave',code:mp.code,playerId:mp.playerId})}).catch(()=>{}); }catch(e){}
   voLeave(true);
   clearInterval(mp.poll); clearInterval(mp.ping); clearInterval(mp.tick);
   const wasCpu=mp.cpu; cpuEnd();
@@ -7213,7 +7221,7 @@ async function renderMpView(){
     :cpuOn?`<span class="blitz-tag">⚡ vs Swoop · ${CPU_LEVELS[s.cpuLevel].speed}</span>${s.nBricks} bricks · you each place ${s.quota} · 1 to 3 bricks a turn. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
     :bz?`<span class="blitz-tag">⚡ Bloppit Blitz</span>${s.nBricks} bricks · ${s.quota?`everyone places ${s.quota}`:`split evenly between ${s.players.length} player${s.players.length===1?'':'s'}: ${Math.floor(s.nBricks/s.players.length)} each`} · 1 to 3 bricks a turn, against the clock. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
     :`${s.nBricks} bricks · ${s.perTurn} brick${s.perTurn>1?'s':''} per turn${s.started?` · ${s.moves.length} placed so far`:''}`;
-  $('#mpList').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.stale?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.i===s.host&&!cpuOn?' · made the room':''}${s.started?(bz?` <b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>`:` <b>${p.score}</b>`):''}</span>`).join('');
+  $('#mpList').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.stale||p.left?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.left?' · left':''}${p.i===s.host&&!cpuOn?' · made the room':''}${s.started?(bz?` <b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>`:` <b>${p.score}</b>`):''}</span>`).join('');
   const host=mp.me===s.host;
   $('#mpStart').hidden=!(host&&!s.started); $('#mpStart').textContent=s.players.length<2?'Start (just you so far)':`Start the game (${s.players.length} players)`;
   $('#mpGoBuild').hidden=!s.started; $('#mpGoBuild').textContent=cpuOn?'Back to the race':'Back to the build';
@@ -7225,24 +7233,25 @@ async function renderMpView(){
 function mpShowEnd(){
   if(!mp||!mp.state) return;
   if(mp.state.mode==='blitz') return mpShowBlitzEnd();
-  const s=mp.state, sc=mpScores(s).sort((a,b)=>b.score-a.score), medals=['🥇','🥈','🥉',''];
+  const s=mp.state, sc=mpScores(s).sort((a,b)=>(a.left-b.left)||(b.score-a.score)), pl=mpPlaces(sc,(q,p)=>q.score>p.score);
   $('#mpEndTitle').textContent=`${s.title}: built together!`; $('#mpEndNew').textContent='New game';
-  $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span>${p.own} brick${p.own===1?'':'s'} · ${p.score} pts</span></div>`).join('');
+  $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${pl[k]===1?' class="first"':''}><span>${MP_MEDAL[pl[k]]||''} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.left?' · left':''}</span><span>${p.own} brick${p.own===1?'':'s'} · ${p.score} pts</span></div>`).join('');
   $('#mpEndNote').textContent=`${s.nBricks} bricks placed by ${s.players.length} player${s.players.length>1?'s':''}. Each brick you place is worth 10 points; hints and “place one for me” cost points. Wrong spots are free: just try again.`;
   { const o=worldStore(); cheer3($('#mpEndChars'),hasPup(o)?['bloppit','pup']:'bloppit',['cheer','happy_hop']); }
   $('#mpEndDlg').showModal(); worldSound();
 }
 function mpShowBlitzEnd(){
   if(mp.cpu&&mp.state.solo) return trialEnd();
-  const s=mp.state, sc=mpScores(s).sort((a,b)=>a.ms-b.ms), medals=['🥇','🥈','🥉',''], w=sc[0];
+  const s=mp.state, sc=mpScores(s).sort((a,b)=>(a.left-b.left)||(a.ms-b.ms)), pl=mpPlaces(sc,(q,p)=>q.ms<p.ms), tops=sc.filter((p,k)=>pl[k]===1);
+  const w=tops.find(p=>p.i===mp.me)||tops[0]||sc[0], tie=tops.length>1;
   if(mp.cpu&&cpu&&cpu.f&&!cpu.paced){ cpu.paced=1; const me=cpu.s.players[0]; blitzPaceSave(totalMs(me)/1000,me.n); }   // the child's pace, for the next race's first guess
-  $('#mpEndTitle').textContent=sc.length>1?`⚡ ${w.i===mp.me?'You win':`${w.name} wins`}!`:`⚡ Done in ${fmtTime(w.ms)}!`;
+  $('#mpEndTitle').textContent=sc.length>1?(tie?'⚡ It’s a tie!':`⚡ ${w.i===mp.me?'You win':`${w.name} wins`}!`):`⚡ Done in ${fmtTime(w.ms)}!`;
   $('#mpEndNew').textContent=mp.cpu?'Race again':'New game'; mpEndNext=null;
   if(mp.cpu&&cpu&&cpu.ladder!=null){ const at=cpu.ladder, won=w.i===mp.me, nx=ladderStep(), pk='p'+at, lv=at>=LADDER_N?'hard':BLITZ_PICKS[at].lv;   // Blitz Bay's ladder: the clear next race
     if(!won){ $('#mpEndNew').textContent='↻ Try again'; mpEndNext=()=>{ mpLeave(); islandSetOff('blitzbay',()=>nextBlitz(pk,lv,at)); }; }
     else if(nx>=0){ $('#mpEndNew').textContent=nx>=LADDER_N?`▶ Next: race ${BLITZ_RACES} of ${BLITZ_RACES}, the Grand Prix`:`▶ Next: race ${nx+1} of ${BLITZ_RACES}`; mpEndNext=()=>{ mpLeave(); setTab('island'); ladderGo(); }; }
     else $('#mpEndNew').textContent='Race again'; }
-  $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${k?'':' class="first"'}><span>${medals[k]} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}</span><span><b>${fmtTime(p.ms)}</b> · ${p.own} brick${p.own===1?'':'s'} · ${p.miss} miss${p.miss===1?'':'es'}${p.hint?` · ${p.hint} hint${p.hint===1?'':'s'}`:''}</span></div>`).join('');
+  $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${pl[k]===1?' class="first"':''}><span>${MP_MEDAL[pl[k]]||''} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.left?' · left':''}</span><span><b>${fmtTime(p.ms)}</b> · ${p.own} brick${p.own===1?'':'s'} · ${p.miss} miss${p.miss===1?'':'es'}${p.hint?` · ${p.hint} hint${p.hint===1?'':'s'}`:''}</span></div>`).join('');
   const extra=s.moves.filter(m=>m.p<0).length;
   $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and Swoop put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, every miss added 1 second and every hint 2 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Swoop at full throttle. Amazing!':' Ready to race Swoop at a faster speed?'):' Practice makes perfect. Try again?'):''}`;
   { const o=worldStore(), won=w.i===mp.me; if(mp.cpu) cheer3($('#mpEndChars'),hasPup(o)?['pup',LT3[s.cpuLevel]||'swoop']:['bloppit',LT3[s.cpuLevel]||'swoop'],won?['cheer','surprised_jump']:['look_at_you','cheer']);
@@ -7275,9 +7284,21 @@ $('#mpCreate').onclick=async()=>{
   catch(e){ mpMsg(e.message,'err'); }
   finally{ btn.disabled=false; }
 };
+// Join a game takes every code (Steff, 6 Nov 2026): 5 = a room (Build together or a live race); 6 = a challenge or a
+// relay, or else a crew. Before, it only took room codes, so a friend's challenge, relay or crew code was cut short.
+async function joinSixCode(code){
+  mpMsg('Opening…');
+  let kind='';
+  try{ const r=await fetch(API_BASE+'/api/challenge?code='+code,{cache:'no-store'}); kind=r.ok?'challenge':r.status===404?'crew':''; }
+  catch(e){ mpMsg('Couldn’t reach Bloppit. Check your internet connection.','err'); return; }
+  if(kind==='challenge'){ mpMsg(''); setTab('blitz','friend'); $('#bzCodeIn').value=code; chOpen(code); return; }
+  if(kind==='crew'){ mpMsg(''); setTab('mp'); $('#crewCodeIn').value=code; $('#crewCard').scrollIntoView({block:'center'}); $('#crewJoin').click(); return; }
+  mpMsg('Bloppit didn’t answer. Please try again.','err');
+}
 $('#mpJoin').onclick=async()=>{
   const code=$('#mpCodeIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''), name=$('#mpName2').value.trim();
-  if(code.length!==5){ mpMsg('Room codes have 5 letters and numbers.','err'); $('#mpCodeIn').focus(); return; }
+  if(code.length===6){ joinSixCode(code); return; }
+  if(code.length!==5){ mpMsg('Codes have 5 letters and numbers (a room) or 6 (a challenge, relay or crew).','err'); $('#mpCodeIn').focus(); return; }
   if(!name){ mpMsg('Type your name first.','err'); $('#mpName2').focus(); return; }
   const btn=$('#mpJoin'); btn.disabled=true; mpMsg('Joining…');
   try{ const st=mpStored(); mpRememberName(name); await mpJoin(code,name,st&&st.code===code?st.playerId:undefined); mpMsg(''); renderMpView(); }
@@ -8169,6 +8190,7 @@ function worldFinish(kind){
   if(kind==='welcome'){ hint=0; auto=0; }
   const blitz=kind==='blitz'&&mp&&mp.cpu&&!mp.state.solo;
   if(blitz&&!won) return null;
+  let place=0; if(mp&&mp.state&&mp.state.mode==='blitz'&&!mp.cpu){ const sc=mpScores(mp.state), me=sc.find(p=>p.i===mp.me); if(me&&sc.filter(p=>!p.left).length>1) place=1+sc.filter(p=>!p.left&&p.ms<me.ms).length; }   // a live race between friends
   const key=modelKey(), prev=o.builds[key], first=!prev;
   const noHint=hint+auto===0, clean=noHint&&miss===0;
   const stars=blitz?1:1+(noHint?1:0)+(clean?1:0);
@@ -8185,7 +8207,7 @@ function worldFinish(kind){
   worldSet(o);
   worldThumbSave(key); worldShapeSave(key);
   const after={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
-  const r={key,kind,stars,best:rec.s,gained:first?stars+bonus:Math.max(0,stars-(prev.s||0))+(memory?1:0),xp,bonus,first,clean,noHint,memory,miss,hint:hint+auto,before,after,
+  const r={key,kind,place,stars,best:rec.s,gained:first?stars+bonus:Math.max(0,stars-(prev.s||0))+(memory?1:0),xp,bonus,first,clean,noHint,memory,miss,hint:hint+auto,before,after,
     pupUp:after.pup>before.pup,islandUp:after.island>before.island,total:worldStars(o),count:after.n,decor:r_decor};
   track('world_finish:'+stars+'star'+(first?'':'_again'), memory?'from_memory':'', r.pupUp?'pup_stage:'+PUP_STAGES[after.pup].name.toLowerCase():'', r.islandUp?'island_stage:'+ISLAND_STAGES[after.island].name.toLowerCase():'');
   return r;
@@ -8209,7 +8231,7 @@ function worldThumb(key){ const t=worldThumbs()[key]; if(t) return t.u; const m=
 const wsStars=n=>`<span class="ws-stars" aria-label="${n} of 3 stars">${'★'.repeat(n)}<i>${'★'.repeat(Math.max(0,3-n))}</i></span>`;
 function worldStripHTML(r){
   if(!r) return '';
-  const o=worldStore(), what=r.kind==='blitz'?'Race won':r.clean?'Clean build!':r.noHint?'No hints!':'Finished!';
+  const o=worldStore(), what=r.kind==='blitz'?(r.place>1?`${ordinal(r.place)} place`:'Race won'):r.clean?'Clean build!':r.noHint?'No hints!':'Finished!';
   const parts=[wsStars(r.stars),`<span>${what}</span>`];
   if(r.gained) parts.push(`<span class="ws-gb">+${r.gained} ${gbIc()}</span>`);
   if(r.xp) parts.push(`<span>+${r.xp} XP</span>`); else if(!r.first&&!r.gained) parts.push('<span>Built before · best kept</span>');
@@ -11552,7 +11574,10 @@ function lighthouseSVG(pct){
 function crewMsg(t,kind){ const el=$('#crewMsg'); el.hidden=!t; el.textContent=t||''; el.dataset.kind=kind||''; }
 async function renderCrews(force){
   const sel=$('#crewName'); if(!sel.options.length) sel.innerHTML=CREW_NAMES.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
-  const me=curPlayer(); if(!me||!me.pup){ $('#crewList').innerHTML=''; crewMsg('Finish one build first; then you can make or join a crew.'); return; }
+  const me=curPlayer();
+  // A player with builds whose save hasn't reached the server yet gets it there first (they used to be told to finish a build)
+  if(me&&!me.pup&&worldCount(worldStore())>0){ try{ await pupSync(); }catch(e){} }
+  if(!me||!me.pup){ $('#crewList').innerHTML=''; crewMsg(me&&worldCount(worldStore())>0?'Couldn’t reach Bloppit just now. Check your internet connection and try again.':'Finish one build first; then you can make or join a crew.'); return; }
   if(!force&&Date.now()-crewMineAt<4000) return; crewMineAt=Date.now();
   try{ const j=await crewApi('GET',null,'?mine=1'); crewMine=j.groups; crewMsg(''); }catch(e){ crewMsg(e.message,'err'); return; }
   $('#crewList').innerHTML=crewMine.map(g=>`<div class="crew-row">${lighthouseSVG(g.pct)}<div><b>${escapeHTML(g.name)}</b> <span class="note">· ${g.members.length} builder${g.members.length===1?'':'s'}${g.pendingMe?' · waiting to be let in':''}</span><div class="bar"><i style="width:${Math.max(2,g.pct)}%"></i></div><span class="note">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks${g.pending&&g.pending.length?` · <b>${g.pending.length} waiting to join</b>`:''}</span></div><button class="ghost" type="button" data-crew="${g.code}">Open</button></div>`).join('');
@@ -11824,8 +11849,9 @@ $('#wcPupGo').onclick=()=>{ const d=$('#welcomeDlg'); d.close(); endReveal(true)
   if(pcode){ try{ history.replaceState(null,'',location.pathname); }catch(e){} shareOpen(pcode,xcode); }
   else if(chq.length===6&&!q){ setTab('blitz'); $('#bzCodeIn').value=chq; setTimeout(()=>chOpen(chq),0); try{ history.replaceState(null,'',location.pathname); }catch(e){} }
   else if(q){
-    $('#mpCodeIn').value=q; setTab('mp');
+    $('#mpCodeIn').value=q; setTab('mp','join');   // the join form itself (it used to land on the Together hub with the form hidden)
     const st=mpStored();
+    if(!(st&&st.code===q)) requestAnimationFrame(()=>{ const n=$('#mpName2'); if(n&&!n.value) n.focus(); else $('#mpJoin').focus(); });
     if(st&&st.code===q) mpJoin(q,st.name,st.playerId).then(()=>renderMpView()).catch(e=>{ mpMsg(e.message,'err'); mpStore(null); renderMpView(); });
   } else homeRoute();
 }
@@ -11871,6 +11897,7 @@ function homeGo(where){ mpDoneLeave();
   if(where==='island'){ setTab('island'); return; }
   if(where==='blitz'){ setTab('blitz',mp?undefined:'hub'); return; }
   if(where==='mp'){ setTab('mp',mp?undefined:'start'); return; }
+  if(where==='crew'){ setTab('mp'); requestAnimationFrame(()=>{ const c=$('#crewCard'); if(c) c.scrollIntoView({block:'start',behavior:reduceMotion?'auto':'smooth'}); }); return; }   // Crews: on the Together page
   if(where==='code'){ setTab('mp',mp?undefined:'join'); if(!mp) requestAnimationFrame(()=>{ const i=$('#mpCodeIn'); if(i) i.focus(); }); return; }
   if(where==='cpu'&&!mp){ islandSetOff('blitzbay',()=>{ setTab('blitz','cpu'); scrollTo(0,0); }); return; }
   if(where==='cpu'||where==='friend'){ setTab('blitz',mp?undefined:where); if(!mp) scrollTo(0,0); return; }
