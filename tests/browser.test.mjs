@@ -1032,6 +1032,31 @@ test('a film started with sound off: the sound button unmutes the film, and the 
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('sound mixes with the player\'s own music: ambient, playback only while a film is heard, island music quiet when other music plays', { skip: skip() }, async () => {
+  // Chromium has no navigator.audioSession (iPhone and iPad do): a stand-in records what the game asks for
+  const seed = { fn: () => { Object.defineProperty(Navigator.prototype, 'audioSession', { configurable: true, get() { return window.__as || (window.__as = { type: 'auto' }); } });
+    if (localStorage.getItem('bloppit-world-v1')) return; const k = 'm:Rowboat:10';
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds: { [k]: { n: 10, s: 2, t: 1e12, c: 1 } }, log: [k], decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, films: [] })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 }));
+    localStorage.setItem('bloppit-seen3-v1', JSON.stringify(['home:home1'])); localStorage.setItem('bloppit-sound', 'off'); } };
+  const t = await open('?nosplash=1&hour=11&films=1#island', { init: seed });
+  assert.equal((await t.page.evaluate(() => window.bloppitAudio())).type, 'ambient', 'ambient from the start');
+  await t.page.waitForFunction(() => window.bloppitFilmOn() === 'moon-12', null, { timeout: 40000, polling: 200 });
+  await t.page.waitForFunction(() => { const v = document.querySelector('.is3-film video'); return v && !v.paused; }, null, { timeout: 15000 });
+  assert.equal((await t.page.evaluate(() => window.bloppitAudio())).type, 'ambient', 'a film on mute stays ambient');
+  await t.page.evaluate(() => document.getElementById('sndTop').click()); await t.page.waitForTimeout(400);
+  assert.equal((await t.page.evaluate(() => window.bloppitAudio())).type, 'playback', 'a film with sound is always heard');
+  await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click());
+  await t.page.waitForFunction(() => window.bloppitAudio().type === 'ambient', null, { timeout: 10000 });
+  // the island music plays, then stays quiet while the player's own music plays
+  await t.page.waitForFunction(() => !document.querySelector('.is3-film'), null, { timeout: 20000 });
+  await t.page.mouse.click(5, 400); await t.page.waitForFunction(() => window.bloppitMusic() > .1, null, { timeout: 15000 });
+  await t.page.evaluate(() => window.bloppitAudio(true));
+  await t.page.waitForFunction(() => window.bloppitMusic() < .01, null, { timeout: 5000 });
+  await t.page.evaluate(() => window.bloppitAudio(false));
+  await t.page.waitForFunction(() => window.bloppitMusic() > .1, null, { timeout: 5000 });
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('Frog Forest films: its arrival film plays when it rises from the mist, its completion film when it is complete, then both are in My films', { skip: skip() }, async () => {
   // every Frog Trail level done, and the island not yet revealed: both moments are new
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; for (let i = 0; i < 3; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1 }; log.push(k); }
