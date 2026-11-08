@@ -98,6 +98,15 @@ test('crew: create → join (pending) → approve → contribute → post → re
   assert.equal(PHRASES.length, 8);
 });
 
+test('crew names: three words from the lists make a crew its own name; anything else (typed text, out of range) is refused', async () => {
+  mem.clear(); const A = 'd'.repeat(24);
+  const c = await group('POST', { pid: A }, { action: 'create', name: [0, 1, 5] }, store); assert.equal(c.status, 200);
+  assert.equal(c.body.group.name, 'Brave Puffin Patrol');
+  for (const bad of ['Bad words', [0, 1], [0, 1, 99], [-1, 0, 0], ['Brave', 'Puffin', 'Patrol'], [0.5, 1, 1]]) {
+    assert.equal((await group('POST', { pid: A }, { action: 'create', name: bad }, store)).status, 400, JSON.stringify(bad)); }
+  assert.equal((await group('POST', { pid: A }, { action: 'create', name: 2 }, store)).body.group.name, 'Lighthouse Builders');   // an older app's pick still works
+});
+
 test('crew puzzle: suggested by default, chosen at making, fixed once started, next one after it is finished', async () => {
   mem.clear();
   const A = 'a'.repeat(24), B = 'b'.repeat(24);

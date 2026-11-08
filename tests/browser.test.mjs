@@ -763,11 +763,15 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
       localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); } } });
     return t; };
   const a = await mkPlayer(), b = await mkPlayer();
-  const hub = async (t) => { await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => { location.hash = '#together'; document.getElementById('tab-mp').click(); }); await t.page.waitForTimeout(1500); };
+  // Your Crews is its own page: the Together tab (Play with Friends) has a tile for it
+  const hub = async (t) => { await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => { location.hash = '#together'; document.getElementById('tab-mp').click(); }); await t.page.waitForTimeout(800);
+    assert.equal(await t.page.evaluate(() => { const c = document.getElementById('crewCard'); return !!c && c.offsetParent === null; }), true, 'Play with Friends has no crews on it');
+    await t.page.evaluate(() => document.querySelector('#view-mp .hub [data-sub="crews"]').click()); await t.page.waitForTimeout(1500);
+    assert.equal(await t.page.evaluate(() => document.getElementById('view-mp').dataset.sub), 'crews'); };
   await hub(a);
-  await a.page.evaluate(() => { document.getElementById('crewName').value = '2'; document.querySelector('#crewPick input[value="2"]').checked = true; document.getElementById('crewMake').click(); }); await a.page.waitForTimeout(1500);
+  await a.page.evaluate(() => { [0, 1, 5].forEach((k, i) => { document.getElementById('crewW' + i).value = String(k); document.getElementById('crewW' + i).dispatchEvent(new Event('change')); }); document.querySelector('#crewPick input[value="2"]').checked = true; document.getElementById('crewMake').click(); }); await a.page.waitForTimeout(1500);
   const code = await a.page.evaluate(() => document.querySelector('#crewOpen .cc')?.textContent); assert.match(code || '', /^[A-Z0-9]{6}$/);
-  assert.match(await a.text('#crewOpen h2'), /Lighthouse Builders/);
+  assert.match(await a.text('#crewOpen h2'), /Brave Puffin Patrol/);   // the crew's own name, picked word by word
   assert.match(await a.text('#crewOpen'), /Space Station: not started yet/);   // the puzzle picked when making the crew
   assert.equal(await a.page.evaluate(() => document.querySelectorAll('#crewPick .crew-pzopt').length), 4);
   await hub(b);
@@ -1803,7 +1807,10 @@ test('Together: the menu has a Crews tile that opens the Crews card; Race a frie
   assert.match(await t.text('.hm-tile[data-go="crew"]'), /Crews/);
   await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="crew"]').click()); await t.page.waitForTimeout(1200);
   assert.equal(await t.view(), 'view-mp'); assert.ok(await t.page.locator('#crewCard').isVisible());
-  await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="mp"]').click()); await t.page.waitForTimeout(400); await t.page.evaluate(() => document.querySelector('[data-go-race]').click()); await t.page.waitForTimeout(600);
+  // Your Crews and Play with Friends are two pages: the crews page shows no Team Build tiles, Play with Friends no crews
+  assert.equal(await t.page.locator('#view-mp .hub [data-sub="start"]').isVisible(), false);
+  await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="mp"]').click()); await t.page.waitForTimeout(400);
+  assert.ok(await t.page.locator('#view-mp .hub [data-sub="start"]').isVisible()); assert.equal(await t.page.locator('#crewCard').isVisible(), false); await t.page.evaluate(() => document.querySelector('[data-go-race]').click()); await t.page.waitForTimeout(600);
   assert.match(await t.text('#bzHeadT'), /Race a Friend/); assert.doesNotMatch(await t.page.evaluate(() => document.body.innerText), /vs Friend/);
   assert.equal(await t.page.getAttribute('#bzName', 'placeholder'), 'e.g. Sam');
   assert.deepEqual(t.errors, []); await t.ctx.close();

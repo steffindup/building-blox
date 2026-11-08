@@ -1314,6 +1314,9 @@ body.on-home .tabs{visibility:hidden}
 .crumb:hover{color:var(--ink)}
 .view[data-sub="hub"]>:not(.hub):not(.char-hero){display:none!important}   /* the character stays on top of every page of its tab (Steff, 5 Nov 2026) */
 .view:not([data-sub="hub"])>.hub{display:none}
+/* Your Crews is a page of its own on the Together tab (Steff, 8 Nov 2026) */
+#view-mp[data-sub="crews"]>:not(.crews-page):not(.char-hero){display:none!important}
+#view-mp:not([data-sub="crews"])>.crews-page{display:none}
 .view.in-room>.crumb{display:none}
 #view-blitz[data-sub="cpu"]:not(.in-room) #bzFriendCard,#view-blitz[data-sub="cpu"] #chPreview,#view-blitz[data-sub="cpu"] #chMine{display:none!important}
 #view-blitz[data-sub="friend"]:not(.in-room) #bzCpuCard{display:none!important}
@@ -1806,6 +1809,9 @@ body.film-on{overflow:hidden}
 .hm-quick .pl{background:#fff;color:var(--c-quick);box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}
 #qpQuickIc:has(.di-bolt){background:color-mix(in srgb,var(--c-quick) 18%,transparent)}
 .win-stars,.lvl .ls{color:#F4BC22}
+.crew-name{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px}.crew-name .inp{min-width:0;padding-left:8px;padding-right:4px}.crew-dice{padding:0 12px;font-size:20px}
+@media (max-width:420px){.crew-name{grid-template-columns:1fr 1fr auto}.crew-name #crewW2{grid-column:1 / 3}}
+.crew-namesee{margin:6px 0 4px;font-weight:700}.crew-namesee b{font-family:var(--f-display);font-weight:400;font-size:20px;color:var(--c-crew)}
 .crew-pzopt:has(input:checked){border-color:var(--c-crew);box-shadow:0 0 0 2px var(--c-crew) inset}.crew-pzopt em{background:var(--c-crew)}
 .crew-row .bar i,.crew-head .bar i,.crew-open .bar i{background:var(--c-crew)}
 /* every menu card is a brick: studs along the top, in the card's own colour */
@@ -2212,18 +2218,22 @@ body.film-on{overflow:hidden}
       <button class="hm-tile t-friend" data-go-race type="button"><span class="ic" aria-hidden="true"><i class="di di-friend" style="width:64px;height:64px"></i></span><b>Race a Friend</b><span>Race live, or send a code to race later</span></button>
       <button class="hm-tile t-join" data-sub="join" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a Game</b><span>Got a code? Type it in to play</span></button>
     </div>
+    <div class="hm-grid hub-grid">
+      <button class="hm-tile t-crew wide" data-sub="crews" type="button"><span class="ic" aria-hidden="true"></span><b>Your Crews</b><span>Crew Quick Game, Pass the Puzzle, Crew Mega Build</span></button>
+    </div>
+  </div>
+  <div class="crews-page">
+  <button class="crumb" data-crews-up type="button">‹ Together</button>
     <div class="card crew-card" id="crewCard">
       <div class="gm-head sub-head"><div><h2>Your Crews</h2><p class="note">A crew is your group of friends, over days and weeks. Inside each crew: a Crew Quick Game to play live, Pass the Puzzle (one model passed round, each building their pages in turn), and the Crew Mega Build that every brick anyone builds brings closer. You can be in up to six crews. Any player can make a crew; the maker lets each friend in. Crews only pass fixed phrases and stickers, under generated names.</p></div></div>
       <div class="crew-list" id="crewList"></div>
       <div class="crew-forms">
-        <div class="field"><label for="crewName">Make a crew</label><select class="inp" id="crewName" style="width:100%"></select><span class="crew-picklab">Pick your crew’s Mega Build</span><div class="crew-pick" id="crewPick" role="radiogroup" aria-label="Crew puzzle"></div><button class="primary sm" id="crewMake" type="button" style="margin-top:8px">Make the crew</button></div>
+        <div class="field"><span class="lbl" id="crewNameLab">Make a crew: pick its name</span><div class="crew-name" role="group" aria-labelledby="crewNameLab"><select class="inp" id="crewW0" aria-label="First word"></select><select class="inp" id="crewW1" aria-label="Second word"></select><select class="inp" id="crewW2" aria-label="Third word"></select><button class="ghost crew-dice" id="crewDice" type="button" aria-label="Another name" title="Another name">🎲</button></div><p class="crew-namesee">Your crew: <b id="crewNameSee"></b></p><span class="crew-picklab">Pick your crew’s Mega Build</span><div class="crew-pick" id="crewPick" role="radiogroup" aria-label="Crew puzzle"></div><button class="primary sm" id="crewMake" type="button" style="margin-top:8px">Make the crew</button></div>
         <div class="field"><label for="crewCodeIn">Got a crew code?</label><div style="display:flex;gap:8px;flex-wrap:wrap"><input class="inp code" id="crewCodeIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC123" style="flex:1;min-width:140px"><button class="primary sm" id="crewJoin" type="button">Ask to join</button></div></div>
       </div>
       <p class="note" id="crewMsg" hidden></p>
     </div>
     <div class="card crew-open" id="crewOpen" hidden></div>
-    <div class="hm-grid hub-grid" hidden>
-    </div>
   </div>
   <button class="crumb" data-up type="button">‹ Together</button>
   <div class="gm-head sub-head"><div><h2 id="mpHeadT">🧩 Team Build</h2><p class="note">Build one puzzle together on different phones, tablets or computers. Take turns placing a few bricks each. Everyone sees the model grow live. Friends join with the room code, and you let them in.</p></div></div>
@@ -3572,7 +3582,7 @@ function niceName(n){ const b=String(n||'').replace(/\.[^.]+$/,'').trim();
 // Trails, Blitz and Together each have a hub page ('hub') and a page per game. setTab(t) keeps the page the
 // section was last on; setTab(t,'hub') or setTab('blitz','cpu') picks one.
 var subOf={game:'hub',blitz:'hub',mp:'hub'};
-const SUB_OK={game:['hub','otter','brain','sea','flip'],blitz:['hub','cpu','friend'],mp:['hub','start','join']};
+const SUB_OK={game:['hub','otter','brain','sea','flip'],blitz:['hub','cpu','friend'],mp:['hub','start','join','crews']};
 // Which top-bar game a page belongs to (the build screen belongs to whatever you're playing)
 // The top bar: one tab per character. Tiny’s Frog Trail and Nora’s Brain Trail are both the Trails page (their own level maps), and
 // Pippa's tab is her seaside puzzles (and her daily message in a bottle); the Weekly Bloppit is Bibi's, under Build anything.
@@ -3630,7 +3640,7 @@ function setTab(t,sub){ if(t!=='island'&&typeof ISL3!=='undefined') ISL3.thenCha
   ['home','create','build','box','booklet','game','mp','blitz','daily','island'].forEach(v=>$('#view-'+v).hidden=v!==t);
   if(t==='island') renderIsland();
   if(t==='create'){ renderDrawSaved(); qbWeeklySync(); }
-  if(t==='mp'&&(sub==='hub'||subOf.mp==='hub')) renderCrews(true);
+  if(t==='mp'&&(sub==='crews'||!sub&&subOf.mp==='crews')) renderCrews(true);
   if(t!=='create'&&pickFor) pickFor=null;
   syncPick();
   document.body.classList.toggle('on-home',t==='home');
@@ -3668,7 +3678,7 @@ const navHash=t=>SUB_HASH[t]?SUB_HASH[t][subOf[t]]:NAV_HASH[t];
 // Address → [page, part]
 function hashPage(h){
   for(const [t,m] of Object.entries(SUB_HASH)) for(const [s,hh] of Object.entries(m)) if(h===hh) return [t,s];
-  const t={photos:'create',create:'create',quick:'create',build:'build',booklet:'booklet',game:['game','hub'],'play-together':['mp','hub'],daily:'daily',island:'island'}[h];
+  const t={photos:'create',create:'create',quick:'create',build:'build',booklet:'booklet',game:['game','hub'],'play-together':['mp','hub'],crews:['mp','crews'],daily:'daily',island:'island'}[h];
   return Array.isArray(t)?t:[t||'home'];
 }
 var navReady=false, navFromBack=false;  // var: setTab runs during start-up, before this line
@@ -3724,6 +3734,7 @@ document.querySelectorAll('.view .hub [data-sub]').forEach(b=>b.addEventListener
   if(t==='game'&&mp){ mpMsg(`Leave ${mpWhat()} first to play the Trails on your own.`); setTab(mpHomeTab()); return; }
   setTab(t,b.dataset.sub); if(t==='mp'&&b.dataset.sub==='join') requestAnimationFrame(()=>{ const i=$('#mpCodeIn'); if(i) i.focus(); }); }));
 document.querySelectorAll('.view>.crumb[data-up]').forEach(b=>b.addEventListener('click',()=>setTab(b.closest('.view').id.slice(5),'hub')));
+document.querySelector('[data-crews-up]').addEventListener('click',()=>setTab('mp','hub'));
 let leaveArmed=false;
 function showToastLeave(){ const t=$('#tab-cove'); const o=t.innerHTML; t.innerHTML=t.querySelector('.n').outerHTML+'Tap again to leave'; setTimeout(()=>{t.innerHTML=o;},3000); }
 // Choosing a puzzle for Blitz: the Puzzle page shows a banner, and its main button hands the puzzle back to Blitz
@@ -7467,7 +7478,7 @@ async function joinSixCode(code){
   try{ const r=await fetch(API_BASE+'/api/challenge?code='+code,{cache:'no-store'}); kind=r.ok?'challenge':r.status===404?'crew':''; }
   catch(e){ mpMsg('Couldn’t reach Bloppit. Check your internet connection.','err'); return; }
   if(kind==='challenge'){ mpMsg(''); setTab('blitz','friend'); $('#bzCodeIn').value=code; chOpen(code); return; }
-  if(kind==='crew'){ mpMsg(''); setTab('mp','hub'); $('#crewCodeIn').value=code; $('#crewCard').scrollIntoView({block:'center'}); $('#crewJoin').click(); return; }
+  if(kind==='crew'){ mpMsg(''); setTab('mp','crews'); $('#crewCodeIn').value=code; $('#crewCard').scrollIntoView({block:'center'}); $('#crewJoin').click(); return; }
   mpMsg('Bloppit didn’t answer. Please try again.','err');
 }
 $('#mpJoin').onclick=async()=>{
@@ -11786,7 +11797,17 @@ document.addEventListener('click',e=>{ if(e.target.closest('[data-go-race]')) ho
    Identity is the pup (x-pup). The maker approves every join; builds add bricks to the crew's puzzle; only
    fixed phrases and stickers pass, under generated names; a report hides the post for you and three reports
    pause the sender; a parent sees every crew and can take a player out from the Grown-ups corner. */
-const CREW_NAMES=['Otter Crew','Brick Buddies','Lighthouse Builders','Harbour Gang','Snap Squad','Island Crew','Reef Builders','Sandcastle Club','Tide Team','Puffin Patrol','Starfish Society','Clean Build Club'];
+// A crew's name: three words from fixed lists (the same lists as netlify/functions/group/logic.mjs CREW_WORDS, in the
+// same order: crews store the indexes). Every crew can have its own name, and nothing typed ever leaves the device.
+const CREW_WORDS=[
+  ['Brave','Happy','Speedy','Sunny','Clever','Mighty','Jolly','Lucky','Busy','Bright','Cosy','Tiny','Giant','Bouncy','Starry','Sparkly','Golden','Silver','Bold','Calm','Super','Wild','Snappy','Merry'],
+  ['Otter','Puffin','Turtle','Frog','Penguin','Longtail','Lion','Heron','Dolphin','Octopus','Starfish','Crab','Seal','Whale','Seahorse','Brick','Lighthouse','Island','Harbour','Rocket','Rainbow','Comet','Coral','Moon'],
+  ['Crew','Club','Squad','Team','Gang','Patrol','Builders','Buddies','Society','Pack','Band','Explorers']];
+const crewNamePicked=()=>[0,1,2].map(i=>+$('#crewW'+i).value);
+function crewNameShow(){ $('#crewNameSee').textContent=crewNamePicked().map((k,i)=>CREW_WORDS[i][k]).join(' '); }
+function crewNameRoll(){ [0,1,2].forEach(i=>{ $('#crewW'+i).value=String(Math.floor(Math.random()*CREW_WORDS[i].length)); }); crewNameShow(); }
+[0,1,2].forEach(i=>$('#crewW'+i).addEventListener('change',crewNameShow));
+$('#crewDice').addEventListener('click',crewNameRoll);
 const CREW_PHRASES=['Nice clean build!','Race you!','Let’s bloppit!','Great pass!','Welcome to the crew!','Good night, builders!','Almost there!','Snap!'];
 const CREW_STICKERS=['🦦','🧱','⭐','🏝️','🎉','👏','🔥','🌊'];
 const CREW_PAL={"a":"#9FC3E9","n":"#1F2B52","w":"#F4F4F4","r":"#C91A09","y":"#F2CD37","o":"#FE8A18","b":"#0055BF","m":"#36AEBF","g":"#4B9F4A","l":"#A5CA18","k":"#7C4A1E","t":"#E4CD9E","h":"#A0A5A9","d":"#6C6E68","p":"#FC97AC","v":"#8A6FD1","z":"#1B2A34","s":"#F2D594","c":"#5A93DB"};
@@ -11861,7 +11882,7 @@ async function crewNewsCheck(){
 }
 function crewMsg(t,kind){ const el=$('#crewMsg'); el.hidden=!t; el.textContent=t||''; el.dataset.kind=kind||''; }
 async function renderCrews(force){
-  const sel=$('#crewName'); if(!sel.options.length) sel.innerHTML=CREW_NAMES.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
+  if(!$('#crewW0').options.length){ [0,1,2].forEach(i=>{ $('#crewW'+i).innerHTML=CREW_WORDS[i].map((w,k)=>`<option value="${k}">${w}</option>`).join(''); }); crewNameRoll(); }
   const pk=$('#crewPick'); if(!pk.children.length) pk.innerHTML=crewPickHTML(0);
   const me=curPlayer();
   // A player with builds whose save hasn't reached the server yet gets it there first (they used to be told to finish a build)
@@ -11914,7 +11935,7 @@ function renderCrew(g){
   if(mine){ const i=crewMine.findIndex(x=>x.code===g.code); if(i>=0) crewMine[i]=g; crewSeenSet(g); crewDots(); }   // opened: it's all seen now
 }
 async function crewDo(body,ok){ try{ const j=await crewApi('POST',body); crewMineAt=0; await renderCrews(true); if(j.group) renderCrew(j.group); else { $('#crewOpen').hidden=true; crewOpenCode=''; } if(ok) ok(j); }catch(e){ crewMsg(e.message,'err'); } }
-$('#crewMake').onclick=()=>{ track('crew_made'); const pz=document.querySelector('#crewPick input:checked'); crewDo({action:'create',name:+$('#crewName').value,puzzle:pz?+pz.value:0}); };
+$('#crewMake').onclick=()=>{ track('crew_made'); const pz=document.querySelector('#crewPick input:checked'); crewDo({action:'create',name:crewNamePicked(),puzzle:pz?+pz.value:0}); };
 $('#crewJoin').onclick=async()=>{ const code=$('#crewCodeIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''); if(code.length!==6){ crewMsg('Crew codes have 6 letters and numbers.','err'); return; }
   try{ const j=await crewApi('GET',null,`?code=${code}`); renderCrew(j.group); }catch(e){ crewMsg(e.message,'err'); } };
 $('#crewCodeIn').addEventListener('input',e=>{ e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
@@ -12215,7 +12236,7 @@ function homeGo(where){ mpDoneLeave();
   if(where==='island'){ setTab('island'); return; }
   if(where==='blitz'){ setTab('blitz',mp?undefined:'hub'); return; }
   if(where==='mp'){ setTab('mp',mp?undefined:'hub'); return; }   // Play with Friends: choose Team Build or Race
-  if(where==='crew'){ setTab('mp','hub'); requestAnimationFrame(()=>{ const c=$('#crewCard'); if(c) c.scrollIntoView({block:'start',behavior:reduceMotion?'auto':'smooth'}); }); return; }   // Crews: on the Together page
+  if(where==='crew'){ setTab('mp','crews'); scrollTo(0,0); return; }   // Your Crews: its own page (Steff, 8 Nov 2026; it used to share Play with Friends' page)
   if(where==='code'){ setTab('mp',mp?undefined:'join'); if(!mp) requestAnimationFrame(()=>{ const i=$('#mpCodeIn'); if(i) i.focus(); }); return; }
   if(where==='cpu'&&!mp){ islandSetOff('blitzbay',()=>{ setTab('blitz','cpu'); scrollTo(0,0); }); return; }
   if(where==='cpu'||where==='friend'){ setTab('blitz',mp?undefined:where); if(!mp) scrollTo(0,0); return; }

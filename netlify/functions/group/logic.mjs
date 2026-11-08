@@ -4,13 +4,22 @@
 // the reporter and queues it for review; three reports mute the sender in that crew until reviewed. A parent
 // can see every crew a player is in and take them out, from the Grown-ups corner.
 //
-// Identity is the pup id (x-pup header): a member is a pup. Nothing typed by a child is stored: crew names come
-// from a fixed list, posts are indexes into fixed lists, labels are generated from ids.
+// Identity is the pup id (x-pup header): a member is a pup. Nothing typed by a child is stored: crew names are
+// put together from fixed word lists (CREW_WORDS; older crews: one of GROUP_NAMES), posts are indexes into fixed lists, labels are generated from ids.
 import { labelFor } from '../room/logic.mjs';
 
 const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 export const GROUP_TTL_MS = 180 * 86400_000;       // a crew nobody has built in for six months is deleted
 export const GROUP_NAMES = ['Otter Crew', 'Brick Buddies', 'Lighthouse Builders', 'Harbour Gang', 'Snap Squad', 'Island Crew', 'Reef Builders', 'Sandcastle Club', 'Tide Team', 'Puffin Patrol', 'Starfish Society', 'Clean Build Club'];
+// A crew's own name (Steff, 8 Nov 2026): three words picked from these lists ("Brave" + "Puffin" + "Patrol"), so every
+// crew can have its own name and nothing typed by a child is ever stored or shown. Append only: crews store indexes.
+export const CREW_WORDS = [
+  ['Brave', 'Happy', 'Speedy', 'Sunny', 'Clever', 'Mighty', 'Jolly', 'Lucky', 'Busy', 'Bright', 'Cosy', 'Tiny', 'Giant', 'Bouncy', 'Starry', 'Sparkly', 'Golden', 'Silver', 'Bold', 'Calm', 'Super', 'Wild', 'Snappy', 'Merry'],
+  ['Otter', 'Puffin', 'Turtle', 'Frog', 'Penguin', 'Longtail', 'Lion', 'Heron', 'Dolphin', 'Octopus', 'Starfish', 'Crab', 'Seal', 'Whale', 'Seahorse', 'Brick', 'Lighthouse', 'Island', 'Harbour', 'Rocket', 'Rainbow', 'Comet', 'Coral', 'Moon'],
+  ['Crew', 'Club', 'Squad', 'Team', 'Gang', 'Patrol', 'Builders', 'Buddies', 'Society', 'Pack', 'Band', 'Explorers'],
+];
+export const crewWords = (n) => Array.isArray(n) && n.length === 3 && n.every((k, i) => Number.isInteger(k) && k >= 0 && k < CREW_WORDS[i].length);
+export const nameOf = (g) => crewWords(g.name) ? g.name.map((k, i) => CREW_WORDS[i][k]).join(' ') : (GROUP_NAMES[g.name] || GROUP_NAMES[0]);
 export const PHRASES = ['Nice clean build!', 'Race you!', 'Let’s bloppit!', 'Great relay!', 'Welcome to the crew!', 'Good night, builders!', 'Almost there!', 'Snap!'];
 export const STICKERS = ['🦦', '🧱', '⭐', '🏝️', '🎉', '👏', '🔥', '🌊'];
 export const GOAL_BRICKS = 2000;                   // a crew puzzle: 2,000 bricks built together finish it
@@ -55,7 +64,7 @@ export function publicGroup(g, pid) {
   const posts = g.posts.filter((p) => !(p.reports || []).includes(pid))
     .map((p) => ({ id: p.id, label: labelFor(p.by), me: p.by === pid, phrase: p.phrase, sticker: p.sticker, at: p.at, reported: (p.reports || []).length > 0 && g.creator === pid }));
   const total = Math.min(GOAL_BRICKS, Math.max(0, progressOf(g)));
-  return { code: g.code, name: GROUP_NAMES[g.name] || GROUP_NAMES[0], nameIdx: g.name, puzzle: puzzleOf(g), done: g.done || [], goal: GOAL_BRICKS, total,
+  return { code: g.code, name: nameOf(g), nameIdx: g.name, puzzle: puzzleOf(g), done: g.done || [], goal: GOAL_BRICKS, total,
     pct: Math.min(100, Math.floor(100 * total / GOAL_BRICKS)),
     builds: g.members.reduce((a, m) => a + m.builds, 0), created: g.created, members, posts, me: me ? { creator: g.creator === pid, muted: !!me.muted } : null,
     pending: g.creator === pid ? (g.pending || []).map((w) => ({ k: w.k, label: labelFor(w.id), at: w.at })) : undefined,
@@ -121,7 +130,9 @@ export async function handle(method, query, body, store) {
   const a = body && body.action;
 
   if (a === 'create') {
-    const name = Math.floor(Number(body.name)); if (!(name >= 0 && name < GROUP_NAMES.length)) return { status: 400, body: { error: 'Pick a crew name from the list.' } };
+    // Three words from CREW_WORDS; a bare number is one of the older names (apps from before 8 Nov 2026 send that)
+    const name = Array.isArray(body.name) ? body.name.slice(0, 4) : Math.floor(Number(body.name));
+    if (!(Array.isArray(name) ? crewWords(name) : name >= 0 && name < GROUP_NAMES.length)) return { status: 400, body: { error: 'Pick your crew’s name from the lists.' } };
     const puzzle = body.puzzle == null ? SUGGESTED_PUZZLE : Math.floor(Number(body.puzzle));
     if (!(puzzle >= 0 && puzzle < PUZZLE_COUNT)) return { status: 400, body: { error: 'Pick a crew puzzle from the list.' } };
     if ((await listFor(store, pid)).length >= MAX_GROUPS_PER_PUP) return { status: 409, body: { error: `You can be in ${MAX_GROUPS_PER_PUP} crews at most.` } };
