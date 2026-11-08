@@ -1367,7 +1367,7 @@ test('Solo: Pippa’s Puzzles on the menu are her own mirror set, all open in an
   const t = await open('?nosplash=1&welcome=0&films=0');
   const L = await t.page.evaluate(() => ({ flip: window.bloppitLevels.flip.map((l) => l.sample), sea: window.bloppitLevels.sea.map((l) => l.sample) }));
   assert.equal(L.flip.length, 12); assert.deepEqual(L.flip.filter((n) => L.sea.includes(n)), [], 'none of Flipper Beach’s puzzles');
-  assert.match(await t.text('#hmSeaSub'), /12 puzzles: Pippa builds half/); assert.doesNotMatch(await t.text('#hmSeaSub'), /%/);
+  assert.match(await t.text('#hmSeaSub'), /^12 puzzles to mirror$/); assert.doesNotMatch(await t.text('#hmSeaSub'), /%/);
   await t.page.evaluate(() => document.querySelector('#view-home [data-go="flip"]').click()); await t.page.waitForTimeout(300);
   assert.equal(await t.page.evaluate(() => document.getElementById('qpDlg').open), true, 'the difficulty choice first');
   assert.equal(await t.page.evaluate(() => getComputedStyle(document.getElementById('qpIsle')).display), 'none', 'no island behind it');
@@ -1389,7 +1389,7 @@ test('Solo: Pippa’s Puzzles on the menu are her own mirror set, all open in an
   const g = await t.page.evaluate(() => JSON.parse(Object.entries(localStorage).find(([k]) => k.includes('building-blox-game-v1'))[1]));
   assert.equal(Object.keys(g.fbest || {}).length, 1); assert.equal(Object.keys(g.sbest || {}).length, 0, 'Flipper Beach is untouched');
   await t.page.evaluate(() => { document.getElementById('winDlg').close(); document.getElementById('brandLink').click(); }); await t.page.waitForTimeout(800);
-  assert.match(await t.text('#hmSeaSub'), /1 of 12 any-time puzzles built/);
+  assert.match(await t.text('#hmSeaSub'), /^1 of 12 puzzles built$/);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 

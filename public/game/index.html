@@ -1640,6 +1640,12 @@ body.film-on{overflow:hidden}
 /* Solo tile names fit two lines whatever the tile's width (Steff, 7 Nov 2026: Pippa's Mirror Puzzles ran to three): the size follows the tile */
 .hm-grid.four .hm-tile{container-type:inline-size}
 .hm-grid.four .hm-tile b{font-size:clamp(16px,14cqw,26px);text-wrap:balance}
+/* the four friends' tiles match (Steff, 8 Nov 2026): picture at the top, the name always on two lines (it breaks at the
+   same place on every screen), the island, then a line kept to two lines, so pictures and names line up across the row */
+.hm-grid.four .hm-tile:not(.wide){align-content:start}
+.hm-grid.four .hm-tile:not(.wide) .ic{margin-bottom:0}
+.hm-grid.four .hm-tile:not(.wide) b{white-space:nowrap;font-size:clamp(15px,13cqw,26px);margin-top:12px}
+.hm-grid.four .hm-tile:not(.wide)>span:not(.ic){min-height:2.6em}
 @media (max-width:560px){.hm-grid.three{grid-template-columns:1fr 1fr}.hm-grid.three .t-quick{grid-column:1 / -1;min-height:104px}}
 /* Yellow so Bloppit's red brick stands out */
 .hm-tile.t-quick .ic{background:rgba(255,255,255,.35)}
@@ -1942,11 +1948,11 @@ body.film-on{overflow:hidden}
 <div class="hm-main">
   <h3 class="hm-sec" id="hmSolo">Solo</h3>
   <div class="hm-grid four">
-    <button class="hm-tile t-game" data-go="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Tiny’s Frog Trail</b><small class="isl">Frog Forest</small><span id="hmOtterSub">Levels from tiny to tricky</span></button>
-    <button class="hm-tile t-brain" data-go="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Nora’s Brain Trail</b><small class="isl">Brainpeak</small><span id="hmBrainSub">Levels with a maths puzzle in each</span></button>
+    <button class="hm-tile t-game" data-go="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Tiny’s<br>Frog Trail</b><small class="isl">Frog Forest</small><span id="hmOtterSub">Levels from tiny to tricky</span></button>
+    <button class="hm-tile t-brain" data-go="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Nora’s<br>Brain Trail</b><small class="isl">Brainpeak</small><span id="hmBrainSub">Levels with a maths puzzle in each</span></button>
     <button class="hm-tile t-quick wide" data-go="quick" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span><b>Build Anything with Bibi</b><small class="isl">Brickyard Cove</small><span id="hmQuickSub">Photos, drawings or library models</span></button>
-    <button class="hm-tile t-sea" data-go="flip" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span><b>Pippa’s Mirror Puzzles</b><small class="isl">Flipper Beach</small><span id="hmSeaSub">Pippa builds half, you build the rest</span></button>
-    <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>Blitz with Swoop</b><small class="isl">Blitz Bay</small><span>20 races against Swoop</span></button>
+    <button class="hm-tile t-sea" data-go="flip" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span><b>Pippa’s<br>Mirror Puzzles</b><small class="isl">Flipper Beach</small><span id="hmSeaSub">12 puzzles to mirror</span></button>
+    <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>Blitz with<br>Swoop</b><small class="isl">Blitz Bay</small><span>20 races against Swoop</span></button>
   </div>
   <h3 class="hm-sec">Together</h3>
   <div class="hm-grid">
@@ -12174,7 +12180,7 @@ function renderHome(){
   { const q=$('#hmQuickSub'); if(q) q.textContent='Photos, drawings or 60+ library models'; /* a growing count is 60+ (Steff, 8 Nov 2026) */ }
   $('#hmOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
   $('#hmBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} levels, a maths puzzle in each`;
-  $('#hmSeaSub').textContent=st.flv?`${st.flv} of ${FLIP_LEVELS.length} any-time puzzles built`:`${FLIP_LEVELS.length} puzzles: Pippa builds half, you build the rest`;
+  $('#hmSeaSub').textContent=st.flv?`${st.flv} of ${FLIP_LEVELS.length} puzzles built`:`${FLIP_LEVELS.length} puzzles to mirror`;
   try{ const week=weekOf(), o=weeklyPuzzle(week), me=weeklyStore().weeks[week], k=weeklyStreak();
     $('#hmDailyImg').src=o.thumb; $('#hmDailyT').textContent=me?`${o.name}: ${me.clean?'clean ✓':'done ✓'}`:`This week: ${o.name}`;
     renderHomeWeekly();
