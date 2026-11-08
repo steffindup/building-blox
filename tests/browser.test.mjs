@@ -769,9 +769,9 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
     await t.page.evaluate(() => document.querySelector('#view-mp .hub [data-sub="crews"]').click()); await t.page.waitForTimeout(1500);
     assert.equal(await t.page.evaluate(() => document.getElementById('view-mp').dataset.sub), 'crews'); };
   await hub(a);
-  await a.page.evaluate(() => { document.getElementById('crewName').value = '2'; document.querySelector('#crewPick input[value="2"]').checked = true; document.getElementById('crewMake').click(); }); await a.page.waitForTimeout(1500);
+  await a.page.evaluate(() => { [0, 1, 5].forEach((k, i) => { document.getElementById('crewW' + i).value = String(k); document.getElementById('crewW' + i).dispatchEvent(new Event('change')); }); document.querySelector('#crewPick input[value="2"]').checked = true; document.getElementById('crewMake').click(); }); await a.page.waitForTimeout(1500);
   const code = await a.page.evaluate(() => document.querySelector('#crewOpen .cc')?.textContent); assert.match(code || '', /^[A-Z0-9]{6}$/);
-  assert.match(await a.text('#crewOpen h2'), /Lighthouse Builders/);
+  assert.match(await a.text('#crewOpen h2'), /Brave Puffin Patrol/);   // the crew's own name, picked word by word
   assert.match(await a.text('#crewOpen'), /Space Station: not started yet/);   // the puzzle picked when making the crew
   assert.equal(await a.page.evaluate(() => document.querySelectorAll('#crewPick .crew-pzopt').length), 4);
   await hub(b);
