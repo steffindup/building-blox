@@ -1838,6 +1838,29 @@ test('Together pages: Race a Friend stays in Together (tab lit, back to Together
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('Your Crews: the list says how many of 6, each crew is a card that opens on its own, Make and Join are their own views, the 6th crew is the last', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&chars3d=0', { viewport: { width: 402, height: 874 }, init: { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = [];
+    for (let i = 0; i < 3; i++) { const k = `m:Model${i}:10`; builds[k] = { n: 10, s: 2, t: 1e12 + i, c: 1, k: 'quick' }; log.push(k); }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, pick: 'tree' }));
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); } } });
+  const mode = () => t.page.evaluate(() => document.querySelector('.crews-page').dataset.mode);
+  await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="crew"]').click()); await t.page.waitForTimeout(2500);
+  assert.equal(await mode(), 'list'); assert.match(await t.text('#crewList'), /No crews yet/); assert.equal(await t.page.locator('#crewCount').isVisible(), false);
+  assert.equal(await t.page.locator('#crewMake').isVisible(), false, 'the maker opens only when asked');
+  for (let k = 0; k < 6; k++) {
+    await t.page.evaluate(() => document.getElementById('crewNew').click()); assert.equal(await mode(), 'make'); assert.ok(await t.page.locator('#crewMake').isVisible());
+    await t.page.evaluate((k) => { document.getElementById('crewW0').value = String(k); document.getElementById('crewMake').click(); }, k); await t.page.waitForTimeout(1500);
+    assert.equal(await mode(), 'crew', 'a new crew opens on its own'); assert.equal(await t.page.locator('#crewCard').isVisible(), false);
+    await t.page.evaluate(() => document.getElementById('crewClose').click()); await t.page.waitForTimeout(1200); assert.equal(await mode(), 'list');
+    assert.equal(await t.text('#crewCount'), `Your crews · ${k + 1} of 6`); assert.equal(await t.page.locator('.crew-tile').count(), k + 1);
+  }
+  assert.equal(await t.page.evaluate(() => document.getElementById('crewNew').disabled), true); assert.match(await t.text('#crewNew'), /6 crews, the most/);
+  await t.page.evaluate(() => document.getElementById('crewHave').click()); assert.equal(await mode(), 'join'); assert.ok(await t.page.locator('#crewCodeIn').isVisible());
+  await t.page.evaluate(() => document.querySelector('.crew-v-join [data-crew-back]').click()); assert.equal(await mode(), 'list');
+  await t.page.evaluate(() => document.querySelector('.crew-tile').click()); await t.page.waitForTimeout(800); assert.equal(await mode(), 'crew');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('a crew: Pass the Puzzle goes round (first pages, then the next builder finishes it); a Crew Quick Game shows on the crew', { skip: skip() }, async () => {
   const mk = () => open('?nosplash=1&welcome=0&chars3d=0', { init: { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = [];
     for (let i = 0; i < 3; i++) { const k = `m:Model${i}:10`; builds[k] = { n: 10, s: 2, t: 1e12 + i, c: 1, k: 'quick' }; log.push(k); }
