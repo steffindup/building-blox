@@ -173,7 +173,9 @@ button,select,input{font:inherit;color:inherit}
 .tab[aria-selected="true"]{background:var(--ink);color:var(--page);border-color:var(--ink)}
 .tab[aria-selected="true"] .n{background:var(--hi);color:var(--hi-ink)}
 
-main{max-width:1640px;margin:0 auto;padding-block:20px 0}
+/* body is a full-height column, so on a short screen the footer links sit at the bottom of the screen, not straight under the content */
+body{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
+main{max-width:1640px;width:100%;margin:0 auto;padding-block:20px 0;flex:1 0 auto}
 .view{display:grid;gap:20px}
 .view[hidden]{display:none}
 
@@ -1883,7 +1885,7 @@ body.film-on{overflow:hidden}
 .brand .wob i{font-style:normal;font-family:var(--f-body);font-weight:800;font-size:11px;line-height:1;padding:3px 5px 4px;border-radius:5px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.16)}
 .brand .wob i:nth-child(1){background:#F4BC22;color:#142022}.brand .wob i:nth-child(2){background:#fff;color:#0369BD;box-shadow:inset 0 0 0 1.5px #0369BD}.brand .wob i:nth-child(3){background:#D62F2A;color:#fff}
 /* the links under the menu */
-.appfoot{text-align:center}.appfoot a{color:var(--muted);text-decoration:none;font-weight:700}.appfoot a:hover{color:var(--ink);text-decoration:underline}
+.appfoot{text-align:center;margin-top:auto;padding-top:24px}.appfoot a{color:var(--muted);text-decoration:none;font-weight:700}.appfoot a:hover{color:var(--ink);text-decoration:underline}
 
 /* Drawn icons in place of emoji (Steff, 7 Nov 2026: "all drawn"). They look the same on every phone and computer. */
 .di{display:inline-block;width:1.2em;height:1.2em;vertical-align:-.22em;background:center/contain no-repeat;flex:none;font-style:normal}
