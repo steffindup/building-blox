@@ -798,6 +798,7 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   await hub(a);
   assert.equal(await a.page.evaluate(() => { const d = document.querySelector('.hm-tile[data-go="crew"] .news-dot'); return !!d && !d.hidden; }), true);
   assert.equal(await a.page.evaluate(() => !document.querySelector('#tab-mp .news-dot')), true, 'not on the Together tab, which opens Play with Friends');
+  assert.equal(await a.page.evaluate(() => { const d = document.querySelector('#tab-crew .news-dot'); return !!d && !d.hidden; }), true, 'and on the Crews tab');
   assert.match(await a.text('#crewList'), /New/);
   await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);
   const since = await a.text('#crewOpen .crew-since'); assert.match(since, /Since you were last here/); assert.match(since, /added 10 bricks/); assert.match(since, /1 new on the crew board/);
@@ -1855,6 +1856,10 @@ test('Your Crews: the list says how many of 6, each crew is a card that opens on
     assert.equal(await t.text('#crewCount'), `Your crews · ${k + 1} of 6`); assert.equal(await t.page.locator('.crew-tile').count(), k + 1);
   }
   assert.equal(await t.page.evaluate(() => document.getElementById('crewNew').disabled), true); assert.match(await t.text('#crewNew'), /6 crews, the most/);
+  // Crews has its own tab: lit here (Together isn't); the Together tab opens Play with Friends, and the Crews tab comes back
+  assert.equal(await t.page.evaluate(() => [document.getElementById('tab-crew').getAttribute('aria-selected'), document.getElementById('tab-mp').getAttribute('aria-selected')].join()), 'true,false');
+  await t.page.evaluate(() => document.getElementById('tab-mp').click()); await t.page.waitForTimeout(600); assert.equal(await t.page.evaluate(() => document.getElementById('view-mp').dataset.sub), 'hub');
+  await t.page.evaluate(() => document.getElementById('tab-crew').click()); await t.page.waitForTimeout(1200); assert.equal(await mode(), 'list'); assert.equal(await t.text('#crewCount'), 'Your crews · 6 of 6');
   await t.page.evaluate(() => document.getElementById('crewHave').click()); assert.equal(await mode(), 'join'); assert.ok(await t.page.locator('#crewCodeIn').isVisible());
   await t.page.evaluate(() => document.querySelector('.crew-v-join [data-crew-back]').click()); assert.equal(await mode(), 'list');
   await t.page.evaluate(() => document.querySelector('.crew-tile').click()); await t.page.waitForTimeout(800); assert.equal(await mode(), 'crew');

@@ -1320,7 +1320,7 @@ body.on-home .tabs{visibility:hidden}
 /* Your Crews is a page of its own on the Together tab (Steff, 8 Nov 2026) */
 #view-mp[data-sub="crews"]>:not(.crews-page):not(.char-hero){display:none!important}
 .crews-page .crew-v{display:none;gap:12px}.crews-page[data-mode="list"] .crew-v-list,.crews-page[data-mode="make"] .crew-v-make,.crews-page[data-mode="join"] .crew-v-join{display:grid}
-.crews-page[data-mode="crew"] #crewCard,.crews-page:not([data-mode="list"])>.crumb[data-crews-up]{display:none}
+.crews-page[data-mode="crew"] #crewCard{display:none}
 .crews-page:not([data-mode="crew"]) #crewOpen{display:none!important}
 .crew-v h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:28px}.crew-v>.crumb{justify-self:start;margin:0}
 .crew-count{margin:6px 0 -2px;font-family:var(--f-display);font-weight:400;font-size:19px}
@@ -1467,7 +1467,7 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .pass-hist{margin:0;padding-left:20px;font-size:13.5px;color:var(--muted)}
 .hub-sec{margin:4px 0 6px}
 .news-dot{position:absolute;top:-3px;right:-3px;width:14px;height:14px;border-radius:50%;background:#D62F2A;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.25);pointer-events:none;z-index:2}
-.news-dot[hidden]{display:none}#tab-mp,.t-crew{position:relative}.t-crew .news-dot{top:10px;right:10px;width:16px;height:16px}
+.news-dot[hidden]{display:none}#tab-mp,#tab-crew,.t-crew{position:relative}.t-crew .news-dot{top:10px;right:10px;width:16px;height:16px}
 .crew-new{font-style:normal;font-size:11px;font-weight:800;background:#D62F2A;color:#fff;border-radius:999px;padding:1px 8px;vertical-align:2px}
 .crew-since{display:grid;gap:2px;margin:8px 0 0;padding:8px 12px;border-radius:12px;background:var(--callout);font-size:14px}.crew-since b{font-size:13px}
 .crew-pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:6px}
@@ -1827,7 +1827,7 @@ body.film-on{overflow:hidden}
 :root{--c-together:#6A3FB5;--accent:#D62F2A;--hi:#14202C;--hi-ink:#FFFFFF}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--hi:#E6EDF5;--hi-ink:#14202C;--accent:#EF5348}}
 :root[data-theme="dark"]{--hi:#E6EDF5;--hi-ink:#14202C;--accent:#EF5348}
-#tab-island{--tc:var(--c-bloppit)}#tab-quick{--tc:var(--c-quick)}#tab-mp{--tc:var(--c-together)}
+#tab-island{--tc:var(--c-bloppit)}#tab-quick{--tc:var(--c-quick)}#tab-mp{--tc:var(--c-together)}#tab-crew{--tc:var(--c-crew)}
 .hm-tile.t-together,.hm-tile.t-friend,.hm-tile.t-join{--c:var(--c-together)}
 /* Crews are pink, everywhere crews show (Steff, 8 Nov 2026): the Your Crews tile (full width) and the crews' progress and picks */
 .hm-tile.t-crew{--c:var(--c-crew)}
@@ -1964,6 +1964,7 @@ body.film-on{overflow:hidden}
     <button class="tab play4" role="tab" id="tab-cove" data-tab="create" data-also="daily" aria-selected="false"><span class="n"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span>Brickyard Cove</button>
     <button class="tab" type="button" id="tab-quick" aria-selected="false"><span class="n"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="48" fill="#1F9E8F"/><path d="M56 14 26 56h20l-6 30 34-44H52z" fill="#fff"/></svg></span>Quick Play</button>
     <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n n2"><img src="/art/head-bloppit.png" alt="" width="256" height="256"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span>Together</button>
+    <button class="tab" role="tab" id="tab-crew" data-tab="mp" data-sub="crews" aria-selected="false"><span class="n"><svg viewBox="0 0 60 60" aria-hidden="true" focusable="false"><rect x="8" y="40" width="44" height="13" rx="2.5" fill="#E5487F"/><rect x="12" y="36" width="7" height="5" rx="1.5" fill="#E5487F"/><rect x="26.5" y="36" width="7" height="5" rx="1.5" fill="#E5487F"/><rect x="41" y="36" width="7" height="5" rx="1.5" fill="#E5487F"/><rect x="10" y="24" width="20" height="12" rx="2.5" fill="#7DBE2E"/><rect x="13" y="20" width="6" height="5" rx="1.5" fill="#7DBE2E"/><rect x="21" y="20" width="6" height="5" rx="1.5" fill="#7DBE2E"/><rect x="31" y="24" width="20" height="12" rx="2.5" fill="#F4BC22"/><rect x="34" y="20" width="6" height="5" rx="1.5" fill="#F4BC22"/><rect x="42" y="20" width="6" height="5" rx="1.5" fill="#F4BC22"/><rect x="20" y="8" width="20" height="12" rx="2.5" fill="#2F7FD0"/><rect x="23" y="4" width="6" height="5" rx="1.5" fill="#2F7FD0"/><rect x="31" y="4" width="6" height="5" rx="1.5" fill="#2F7FD0"/></svg></span>Crews</button>
   </nav><button class="tabs-arr r" type="button" tabindex="-1" aria-hidden="true">›</button></div>
   <button class="snd-top mus-top" id="musTop" type="button" aria-pressed="true" aria-label="Music" title="Music on or off"><span class="mus-ic" aria-hidden="true"></span></button>
   <button class="snd-top" id="sndTop" type="button" aria-pressed="true" aria-label="Sound" title="Sound on or off (M)"><span class="snd-ic" aria-hidden="true"></span></button>
@@ -2262,7 +2263,6 @@ body.film-on{overflow:hidden}
     </div>
   </div>
   <div class="crews-page" data-mode="list">
-  <button class="crumb" data-crews-up type="button">‹ Together</button>
     <div class="card crew-card" id="crewCard">
       <div class="crew-v crew-v-list">
         <h2>Your Crews</h2>
@@ -3661,8 +3661,10 @@ function tabsSync(t){ const sec=sectionOf(t===undefined?tab:t), tr=typeof trail!
   document.querySelectorAll('.tab').forEach(b=>{ let on=!!b.dataset.tab&&(b.dataset.tab===sec||(b.dataset.also||'').split(' ').includes(sec));
     if(sec==='game'){ const sub=(t==='game'&&subOf.game)||tr; on=!!b.dataset.sub&&b.dataset.tab==='game'&&b.dataset.sub===sub; }
     // the Weekly Bloppit is Bibi's: the Brickyard Cove tab
+    if(b.id==='tab-crew') on=sec==='crew'; else if(b.dataset.tab==='mp'&&sec==='crew') on=false;   // Crews has its own tab (Steff, 8 Nov 2026)
     b.setAttribute('aria-selected',on); }); }
 function sectionOf(t){
+  if(t==='mp'&&!mp&&!mpw&&subOf.mp==='crews') return 'crew';
   if(t==='blitz'&&!mp&&!mpw&&subOf.blitz==='friend') return 'mp';   // Race a Friend lives in Together (Steff, 8 Nov 2026)
   if(t==='build'||t==='box'||t==='booklet'){ if(typeof welcomeOn==='function'&&welcomeOn()) return 'island'; if(game) return 'game'; if(typeof mysOn==='function'&&mysOn()) return 'island'; if(mp) return trialOn()&&mp.state.calm?'daily':mpHomeTab(); return 'create'; }
   return t==='home'?'':t;
@@ -3796,7 +3798,6 @@ document.querySelectorAll('.view .hub [data-sub]').forEach(b=>b.addEventListener
 document.querySelectorAll('.view>.crumb[data-up]').forEach(b=>b.addEventListener('click',()=>{ const t=b.closest('.view').id.slice(5);
   if(t==='blitz'&&subOf.blitz==='friend'){ setTab('mp','hub'); return; }   // Race a Friend goes back to Together
   setTab(t,'hub'); }));
-document.querySelector('[data-crews-up]').addEventListener('click',()=>setTab('mp','hub'));
 let leaveArmed=false;
 function showToastLeave(){ const t=$('#tab-cove'); const o=t.innerHTML; t.innerHTML=t.querySelector('.n').outerHTML+'Tap again to leave'; setTimeout(()=>{t.innerHTML=o;},3000); }
 // Choosing a puzzle for Blitz: the Puzzle page shows a banner, and its main button hands the puzzle back to Blitz
@@ -11933,7 +11934,7 @@ function crewNews(g){
 function crewDots(){
   const seen=crewSeenMine(); crewMine.forEach(g=>{ if(g.me&&!seen[g.code]) crewSeenSet(g); });
   const on=crewMine.some(g=>crewNews(g));
-  ['.t-crew'].forEach(sel=>document.querySelectorAll(sel).forEach(el=>{ let d=el.querySelector(':scope>.news-dot');
+  ['#tab-crew','.t-crew'].forEach(sel=>document.querySelectorAll(sel).forEach(el=>{ let d=el.querySelector(':scope>.news-dot');
     if(!d){ d=document.createElement('i'); d.className='news-dot'; d.setAttribute('aria-hidden','true'); el.appendChild(d); } d.hidden=!on;
     el.dataset.news=on?'1':''; }));
   const tile=document.querySelector('.t-crew'); if(tile) tile.setAttribute('aria-label',on?'Crews: something new in your crews':'Crews');
