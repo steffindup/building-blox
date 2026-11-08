@@ -1429,7 +1429,7 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .crew-row svg{width:64px;height:auto}
 .crew-top{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:10px}
 .crew-game{display:grid;gap:8px;padding:14px;border-radius:14px;background:var(--bg)}.crew-game h3{font-size:20px}
-.crew-game .bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}.crew-game .bar i{display:block;height:100%;background:var(--c-together)}
+.crew-game .bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}.crew-game .bar i{display:block;height:100%;background:var(--c-crew)}
 .crew-mega{display:grid;grid-template-columns:minmax(0,200px) minmax(0,1fr);gap:14px;align-items:center}.crew-mega svg{width:100%;height:auto}
 @media (max-width:520px){.crew-mega{grid-template-columns:1fr}}
 .pass-hist{margin:0;padding-left:20px;font-size:13.5px;color:var(--muted)}
@@ -1656,7 +1656,7 @@ body.film-on{overflow:hidden}
 /* Character colours (series bible; Steff, 6 Nov 2026: "each character should be associated with a specific colour").
    One colour per friend, used wherever that friend's face leads: menu tiles, the top bar, the trail picker, the Weekly.
    Red is Bloppit’s and the main action; teal is Quick Play’s; yellow is Pippa’s and the stars’. Light colours carry dark text. */
-:root{--c-quick:#1F9E8F;--c-bloppit:#D62F2A;--c-tiny:#7DBE2E;--c-nora:#24407A;--c-pippa:#F4BC22;--c-swoop:#2F7FD0;--c-bibi:#E9772A;--c-lufu:#8A6FD1}
+:root{--c-quick:#1F9E8F;--c-crew:#E5487F;--c-bloppit:#D62F2A;--c-tiny:#7DBE2E;--c-nora:#24407A;--c-pippa:#F4BC22;--c-swoop:#2F7FD0;--c-bibi:#E9772A;--c-lufu:#8A6FD1}
 .hm-tile.t-quick{--c:var(--c-bibi);color:#14202C}                 /* Build anything: Bibi */
 .hm-tile.t-game{--c:var(--c-tiny);color:#14202C}                  /* Tiny’s Frog Trail: Tiny */
 .hm-tile.t-brain{--c:var(--c-nora)}                               /* Nora’s Brain Trail: Nora */
@@ -1788,7 +1788,9 @@ body.film-on{overflow:hidden}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--hi:#E6EDF5;--hi-ink:#14202C;--accent:#EF5348}}
 :root[data-theme="dark"]{--hi:#E6EDF5;--hi-ink:#14202C;--accent:#EF5348}
 #tab-island{--tc:var(--c-bloppit)}#tab-quick{--tc:var(--c-quick)}#tab-mp{--tc:var(--c-together)}
-.hm-tile.t-together,.hm-tile.t-friend,.hm-tile.t-crew,.hm-tile.t-join{--c:var(--c-together)}
+.hm-tile.t-together,.hm-tile.t-friend,.hm-tile.t-join{--c:var(--c-together)}
+/* Crews are pink, everywhere crews show (Steff, 8 Nov 2026): the Your Crews tile (full width) and the crews' progress and picks */
+.hm-tile.t-crew{--c:var(--c-crew)}
 /* no coloured outline on the menu cards (Steff, 7 Nov 2026: it clashed with the studs); the studs and the play pill carry the red */
 .hm-world .wt .bar i{background:var(--c-bloppit)}
 /* Quick Play is teal, everywhere: card, studs, tab, bolt, pop-up (Steff, 8 Nov 2026; teal is Quick Play's alone) */
@@ -1797,8 +1799,8 @@ body.film-on{overflow:hidden}
 .hm-quick .pl{background:#fff;color:var(--c-quick);box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}
 #qpQuickIc:has(.di-bolt){background:color-mix(in srgb,var(--c-quick) 18%,transparent)}
 .win-stars,.lvl .ls{color:#F4BC22}
-.crew-pzopt:has(input:checked){border-color:var(--c-together);box-shadow:0 0 0 2px var(--c-together) inset}.crew-pzopt em{background:var(--c-together)}
-.crew-row .bar i,.crew-head .bar i,.crew-open .bar i{background:var(--c-together)}
+.crew-pzopt:has(input:checked){border-color:var(--c-crew);box-shadow:0 0 0 2px var(--c-crew) inset}.crew-pzopt em{background:var(--c-crew)}
+.crew-row .bar i,.crew-head .bar i,.crew-open .bar i{background:var(--c-crew)}
 /* every menu card is a brick: studs along the top, in the card's own colour */
 .hm-quick,.hm-world,.hm-daily,.hm-cont,.hm-how{position:relative;overflow:visible}
 .hm-quick::before,.hm-world::before,.hm-daily::before,.hm-cont::before,.hm-how::before{content:"";position:absolute;left:16px;right:16px;top:-10px;height:12px;border-radius:5px 5px 0 0;
@@ -1958,7 +1960,7 @@ body.film-on{overflow:hidden}
   <div class="hm-grid">
     <button class="hm-tile t-together" data-go="mp" type="button"><span class="ic" aria-hidden="true"><span class="two"><img src="/art/head-bloppit.png" alt="" width="256" height="256"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span></span><b>Play with Friends</b><span>Team Build or Race a Friend, with a code to share</span></button>
     <button class="hm-tile t-join" data-go="code" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a Game</b><span>Got a code? Type it in to play</span></button>
-    <button class="hm-tile t-crew" data-go="crew" type="button"><span class="ic" aria-hidden="true"></span><b>Your Crews</b><span>Crew Quick Game, Pass the Puzzle, Crew Mega Build</span></button>
+    <button class="hm-tile t-crew wide" data-go="crew" type="button"><span class="ic" aria-hidden="true"></span><b>Your Crews</b><span>Crew Quick Game, Pass the Puzzle, Crew Mega Build</span></button>
   </div>
 </div>
 </section>
