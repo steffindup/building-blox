@@ -763,10 +763,11 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
       localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); } } });
     return t; };
   const a = await mkPlayer(), b = await mkPlayer();
-  // Your Crews is its own page: the Together tab (Play with Friends) has a tile for it
+  // Your Crews is its own page, opened from the menu's tile; the Together tab (Play with Friends) has no crews
   const hub = async (t) => { await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => { location.hash = '#together'; document.getElementById('tab-mp').click(); }); await t.page.waitForTimeout(800);
     assert.equal(await t.page.evaluate(() => { const c = document.getElementById('crewCard'); return !!c && c.offsetParent === null; }), true, 'Play with Friends has no crews on it');
-    await t.page.evaluate(() => document.querySelector('#view-mp .hub [data-sub="crews"]').click()); await t.page.waitForTimeout(1500);
+    assert.equal(await t.page.evaluate(() => [...document.querySelectorAll('#view-mp .t-crew')].some((e) => e.offsetParent)), false, 'and no Your Crews tile');
+    await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="crew"]').click()); await t.page.waitForTimeout(1500);
     assert.equal(await t.page.evaluate(() => document.getElementById('view-mp').dataset.sub), 'crews'); };
   await hub(a);
   await a.page.evaluate(() => { [0, 1, 5].forEach((k, i) => { document.getElementById('crewW' + i).value = String(k); document.getElementById('crewW' + i).dispatchEvent(new Event('change')); }); document.querySelector('#crewPick input[value="2"]').checked = true; document.getElementById('crewMake').click(); }); await a.page.waitForTimeout(1500);
@@ -793,13 +794,14 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   assert.match(await b.text('#crewOpen'), /Space Station: just started/);
   await b.page.evaluate(() => document.querySelector('[data-crew-say="0"]').click()); await b.page.waitForTimeout(1200);
   assert.match(await b.text('#crewFeed'), /Nice clean build!/);
-  // Crew news: A sees a dot on the Together tab and a New chip, then what happened since; opening the crew clears it
+  // Crew news: A sees a dot on the menu's Your Crews tile and a New chip, then what happened since; opening the crew clears it
   await hub(a);
-  assert.equal(await a.page.evaluate(() => { const d = document.querySelector('#tab-mp .news-dot'); return !!d && !d.hidden; }), true);
+  assert.equal(await a.page.evaluate(() => { const d = document.querySelector('.hm-tile[data-go="crew"] .news-dot'); return !!d && !d.hidden; }), true);
+  assert.equal(await a.page.evaluate(() => !document.querySelector('#tab-mp .news-dot')), true, 'not on the Together tab, which opens Play with Friends');
   assert.match(await a.text('#crewList'), /New/);
   await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);
   const since = await a.text('#crewOpen .crew-since'); assert.match(since, /Since you were last here/); assert.match(since, /added 10 bricks/); assert.match(since, /1 new on the crew board/);
-  assert.equal(await a.page.evaluate(() => document.querySelector('#tab-mp .news-dot').hidden), true);
+  assert.equal(await a.page.evaluate(() => document.querySelector('.hm-tile[data-go="crew"] .news-dot').hidden), true);
   assert.match(await a.text('#crewFeed'), /Nice clean build!/);
   await a.page.evaluate(() => document.querySelector('[data-crew-report]').click()); await a.page.evaluate(() => document.querySelector('[data-crew-report]').click()); await a.page.waitForTimeout(1200);
   assert.doesNotMatch(await a.text('#crewFeed'), /Nice clean build!/);

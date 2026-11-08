@@ -1656,6 +1656,11 @@ body.film-on{overflow:hidden}
 .hm-grid.four .hm-tile:not(.wide) .ic{margin-bottom:0}
 .hm-grid.four .hm-tile:not(.wide) b{white-space:nowrap;font-size:clamp(15px,13cqw,26px);margin-top:12px}
 .hm-grid.four .hm-tile:not(.wide)>span:not(.ic){min-height:2.6em}
+/* the Together tiles line up the same way: picture at the top, the name on one line, a two-line line under it */
+.hm-grid.match .hm-tile:not(.wide){align-content:start;container-type:inline-size}
+.hm-grid.match .hm-tile:not(.wide) .ic{margin-bottom:0}
+.hm-grid.match .hm-tile:not(.wide) b{white-space:nowrap;font-size:clamp(16px,12cqw,26px);margin-top:12px}
+.hm-grid.match .hm-tile:not(.wide)>span:not(.ic){min-height:2.6em}
 @media (max-width:560px){.hm-grid.three{grid-template-columns:1fr 1fr}.hm-grid.three .t-quick{grid-column:1 / -1;min-height:104px}}
 /* Yellow so Bloppit's red brick stands out */
 .hm-tile.t-quick .ic{background:rgba(255,255,255,.35)}
@@ -1979,8 +1984,8 @@ body.film-on{overflow:hidden}
     <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>Blitz with<br>Swoop</b><small class="isl">Blitz Bay</small><span>20 races against Swoop</span></button>
   </div>
   <h3 class="hm-sec">Together</h3>
-  <div class="hm-grid">
-    <button class="hm-tile t-together" data-go="mp" type="button"><span class="ic" aria-hidden="true"><span class="two"><img src="/art/head-bloppit.png" alt="" width="256" height="256"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span></span><b>Play with Friends</b><span>Team Build or Race a Friend, with a code to share</span></button>
+  <div class="hm-grid match">
+    <button class="hm-tile t-together" data-go="mp" type="button"><span class="ic" aria-hidden="true"><span class="two"><img src="/art/head-bloppit.png" alt="" width="256" height="256"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span></span><b>Play with Friends</b><span>Team Build or Race a Friend</span></button>
     <button class="hm-tile t-join" data-go="code" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a Game</b><span>Got a code? Type it in to play</span></button>
     <button class="hm-tile t-crew wide" data-go="crew" type="button"><span class="ic" aria-hidden="true"></span><b>Your Crews</b><span>Crew Quick Game, Pass the Puzzle, Crew Mega Build</span></button>
   </div>
@@ -2222,13 +2227,10 @@ body.film-on{overflow:hidden}
 <div class="char-hero" data-hero="mp" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
   <div class="hub" data-hub>
     <h3 class="hm-sec hub-sec">Play with Friends</h3>
-    <div class="hm-grid hub-grid three">
+    <div class="hm-grid hub-grid three match">
       <button class="hm-tile t-together" data-sub="start" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="0" y="16" width="66" height="58"/><use href="#bh2" x="58" y="28" width="58" height="51"/><rect x="34" y="80" width="52" height="28" rx="5" fill="#D2352B"/><rect x="40" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="66" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="34" y="100" width="52" height="8" rx="4" fill="#B32A22"/><ellipse cx="34" cy="90" rx="8" ry="7" fill="#8A5A3B"/><ellipse cx="86" cy="90" rx="8" ry="7" fill="#C08A5E"/></svg></span><b>Team Build</b><span>One puzzle, taking turns with friends</span></button>
       <button class="hm-tile t-friend" data-go-race type="button"><span class="ic" aria-hidden="true"><i class="di di-friend" style="width:64px;height:64px"></i></span><b>Race a Friend</b><span>Race live, or send a code to race later</span></button>
       <button class="hm-tile t-join" data-sub="join" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a Game</b><span>Got a code? Type it in to play</span></button>
-    </div>
-    <div class="hm-grid hub-grid">
-      <button class="hm-tile t-crew wide" data-sub="crews" type="button"><span class="ic" aria-hidden="true"></span><b>Your Crews</b><span>Crew Quick Game, Pass the Puzzle, Crew Mega Build</span></button>
     </div>
   </div>
   <div class="crews-page">
@@ -11878,7 +11880,7 @@ function crewNews(g){
 function crewDots(){
   const seen=crewSeenMine(); crewMine.forEach(g=>{ if(g.me&&!seen[g.code]) crewSeenSet(g); });
   const on=crewMine.some(g=>crewNews(g));
-  ['#tab-mp','.t-crew'].forEach(sel=>document.querySelectorAll(sel).forEach(el=>{ let d=el.querySelector(':scope>.news-dot');
+  ['.t-crew'].forEach(sel=>document.querySelectorAll(sel).forEach(el=>{ let d=el.querySelector(':scope>.news-dot');
     if(!d){ d=document.createElement('i'); d.className='news-dot'; d.setAttribute('aria-hidden','true'); el.appendChild(d); } d.hidden=!on;
     el.dataset.news=on?'1':''; }));
   const tile=document.querySelector('.t-crew'); if(tile) tile.setAttribute('aria-label',on?'Crews: something new in your crews':'Crews');
