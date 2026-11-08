@@ -1792,8 +1792,11 @@ body.film-on{overflow:hidden}
 /* every menu card is a brick: studs along the top, in the card's own colour */
 .hm-quick,.hm-world,.hm-daily,.hm-cont,.hm-how{position:relative;overflow:visible}
 .hm-quick::before,.hm-world::before,.hm-daily::before,.hm-cont::before,.hm-how::before{content:"";position:absolute;left:16px;right:16px;top:-10px;height:12px;border-radius:5px 5px 0 0;
-  background:radial-gradient(circle at 13px 7px,var(--sc) 9px,transparent 9.5px) 0 0/34px 12px repeat-x;pointer-events:none;z-index:1}
-.hm-quick,.hm-world{--sc:var(--c-bloppit)}.hm-daily{--sc:var(--c-bibi)}.hm-how,.hm-cont{--sc:var(--line)}
+  background:radial-gradient(circle at 13px 7px,var(--sc) 8.2px,var(--so,var(--sc)) 8.6px,var(--so,var(--sc)) 9px,transparent 9.5px) 0 0/34px 12px repeat-x;pointer-events:none;z-index:1}
+/* the studs are the card's own colour; a white card gets white studs with the card's outline (Steff, 8 Nov 2026).
+   Bloppitopia's card keeps red studs: its top is the island picture. */
+.hm-how,.hm-quick{--sc:var(--page);--so:var(--line)}.hm-world{--sc:var(--c-bloppit)}.hm-daily{--sc:var(--c-bibi)}
+.hm-cont{--sc:var(--hi)}.hm-cont.first{--sc:var(--c-bloppit)}
 .hm-side{row-gap:24px}
 /* the island each game lives on, under its name */
 .hm-tile .isl{font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;opacity:.82;margin:-1px 0 2px}
