@@ -216,6 +216,7 @@ main{max-width:1640px;margin:0 auto;padding-block:20px 0}
 .note{font-size:13px;color:var(--muted);margin:0}
 .field{display:grid;gap:6px}
 .field label,.field .lbl{display:flex;justify-content:space-between;font-weight:700;font-size:14px}
+.field label:has(>small.note){flex-wrap:wrap;justify-content:flex-start}.field label>small.note{flex-basis:100%;font-weight:600}
 .field output{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
 input[type=range]{width:100%;accent-color:var(--accent)}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-flow:column;grid-auto-columns:1fr;border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -1313,9 +1314,30 @@ body.on-home .tabs{visibility:hidden}
 .crumb{justify-self:start;border:0;background:none;color:var(--muted);font:inherit;font-weight:700;font-size:14px;padding:2px 0;cursor:pointer}
 .crumb:hover{color:var(--ink)}
 .view[data-sub="hub"]>:not(.hub):not(.char-hero){display:none!important}   /* the character stays on top of every page of its tab (Steff, 5 Nov 2026) */
+/* …except Together: its banner is on Play with Friends only, so each page below starts with its own heading (Steff, 8 Nov 2026) */
+#view-mp:not([data-sub="hub"])>.char-hero,#view-blitz[data-sub="friend"]>.char-hero{display:none!important}
 .view:not([data-sub="hub"])>.hub{display:none}
 /* Your Crews is a page of its own on the Together tab (Steff, 8 Nov 2026) */
 #view-mp[data-sub="crews"]>:not(.crews-page):not(.char-hero){display:none!important}
+.crews-page .crew-v{display:none;gap:12px}.crews-page[data-mode="list"] .crew-v-list,.crews-page[data-mode="make"] .crew-v-make,.crews-page[data-mode="join"] .crew-v-join{display:grid}
+.crews-page[data-mode="crew"] #crewCard,.crews-page:not([data-mode="list"])>.crumb[data-crews-up]{display:none}
+.crews-page:not([data-mode="crew"]) #crewOpen{display:none!important}
+.crew-v h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:28px}.crew-v>.crumb{justify-self:start;margin:0}
+.crew-count{margin:6px 0 -2px;font-family:var(--f-display);font-weight:400;font-size:19px}
+.crew-list{display:grid;gap:22px;margin-top:12px}
+.crew-tile{position:relative;display:grid;grid-template-columns:76px minmax(0,1fr);gap:14px;align-items:center;width:100%;text-align:left;font:inherit;cursor:pointer;border:0;border-radius:16px;padding:12px 14px 17px;background:var(--c-crew);color:#fff;box-shadow:inset 0 -5px 0 rgba(0,0,0,.18)}
+.crew-tile::before{content:"";position:absolute;left:16px;right:16px;top:-9px;height:12px;background:radial-gradient(circle at 13px 7px,var(--c-crew) 9px,transparent 9.5px) 0 0/34px 12px repeat-x;filter:brightness(1.08)}
+.crew-tile:active{transform:translateY(2px)}.crew-tile:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.crew-tile .crew-pz{width:76px;height:auto;border-radius:10px;background:#fff;padding:3px;display:block}
+.crew-tile .ct-txt{display:grid;gap:4px;min-width:0}.crew-tile b{font-family:var(--f-display);font-weight:400;font-size:20px;line-height:1.1}
+.crew-tile .ct-meta{font-size:13px;font-weight:700;opacity:.92}.crew-tile .ct-meta b{font:inherit}
+.crew-tile .bar{display:block;height:8px;border-radius:4px;background:rgba(0,0,0,.22);overflow:hidden}.crew-tile .bar i{display:block;height:100%;background:#fff;border-radius:4px}
+.crew-tile .crew-new{justify-self:start;background:#fff;color:var(--c-crew);font-style:normal;font-weight:800;font-size:12px;padding:2px 9px;border-radius:999px}
+.crew-tile .news-dot{top:-4px;right:-4px}
+.crew-empty{display:grid;gap:4px;padding:16px;border-radius:16px;border:2px dashed var(--line)}.crew-empty span{color:var(--muted);font-size:14px}
+.crew-acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}.crew-acts button{flex:1 1 200px;min-height:48px;font-size:16px;font-weight:800}
+.crew-msg{margin:10px 0 0}.crew-msg[data-kind="err"]{color:#B42318;font-weight:700}
+#crewOpen>.crumb{margin:0 0 6px}
 #view-mp:not([data-sub="crews"])>.crews-page{display:none}
 .view.in-room>.crumb{display:none}
 #view-blitz[data-sub="cpu"]:not(.in-room) #bzFriendCard,#view-blitz[data-sub="cpu"] #chPreview,#view-blitz[data-sub="cpu"] #chMine{display:none!important}
@@ -1450,7 +1472,8 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .crew-since{display:grid;gap:2px;margin:8px 0 0;padding:8px 12px;border-radius:12px;background:var(--callout);font-size:14px}.crew-since b{font-size:13px}
 .crew-pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:6px}
 .crew-pick label.crew-pzopt{display:grid;grid-template-columns:none;align-items:start;justify-items:stretch;margin:0;font-weight:400;font-size:inherit;gap:2px;width:auto}
-.t-crew .ic svg{width:80%;height:auto}
+.t-crew .ic svg{width:80%;height:auto}.race-ic svg{width:100%;height:100%;display:block}
+.race-hd{display:inline-grid;width:1.15em;height:1.15em;border-radius:50%;background:var(--c-together);vertical-align:-.18em;margin-right:.3em;overflow:hidden}.race-hd svg{width:100%;height:100%}   /* Race a Friend: two otters neck and neck (Steff, 8 Nov 2026) */
 .crew-pzopt{display:grid;gap:2px;padding:8px;border:2px solid var(--line);border-radius:14px;background:var(--page);cursor:pointer;text-align:left}
 .crew-pzopt input{position:absolute;opacity:0;pointer-events:none}.crew-pzopt:has(input:checked){border-color:var(--c-bloppit);box-shadow:0 0 0 2px var(--c-bloppit) inset}.crew-pzopt:has(input:focus-visible){outline:3px solid var(--hi)}
 .crew-pzopt svg{width:100%;height:auto;display:block;margin-bottom:4px}.crew-pzopt b{font-size:15px}.crew-pzopt em{font-style:normal;font-size:11px;font-weight:800;background:var(--c-bloppit);color:#fff;border-radius:999px;padding:1px 7px;margin-left:4px;vertical-align:2px}.crew-pzopt em.done{background:var(--ink)}.crew-pzopt span{font-size:13px;color:var(--muted);line-height:1.3}
@@ -1656,7 +1679,14 @@ body.film-on{overflow:hidden}
 .hm-grid.four .hm-tile:not(.wide) .ic{margin-bottom:0}
 .hm-grid.four .hm-tile:not(.wide) b{white-space:nowrap;font-size:clamp(15px,13cqw,26px);margin-top:12px}
 .hm-grid.four .hm-tile:not(.wide)>span:not(.ic){min-height:2.6em}
-@media (max-width:560px){.hm-grid.three{grid-template-columns:1fr 1fr}.hm-grid.three .t-quick{grid-column:1 / -1;min-height:104px}}
+/* the Together tiles line up the same way: picture at the top, the name on one line, a two-line line under it */
+.hm-grid.match .hm-tile:not(.wide){align-content:start;container-type:inline-size}
+.hm-grid.match .hm-tile:not(.wide) .ic{margin-bottom:0}
+.hm-grid.match .hm-tile:not(.wide) b{white-space:nowrap;font-size:clamp(16px,12cqw,26px);margin-top:12px}
+.hm-grid.match .hm-tile:not(.wide)>span:not(.ic){min-height:2.6em}
+@media (max-width:560px){.hm-grid.three{grid-template-columns:1fr 1fr}.hm-grid.three .t-quick{grid-column:1 / -1;min-height:104px}
+  #view-mp .hm-grid.three .t-join{grid-column:1/-1;min-height:104px;grid-template-columns:auto 1fr;align-items:center;align-content:center;column-gap:16px}
+  #view-mp .hm-grid.three .t-join .ic{grid-row:1/span 2;margin:0}#view-mp .hm-grid.three .t-join b{margin-top:0;align-self:end;grid-column:2}#view-mp .hm-grid.three .t-join>span:not(.ic){grid-column:2;align-self:start;min-height:0}}
 /* Yellow so Bloppit's red brick stands out */
 .hm-tile.t-quick .ic{background:rgba(255,255,255,.35)}
 .hm-tile.t-sea{--c:var(--c-bloppit)}
@@ -1812,6 +1842,9 @@ body.film-on{overflow:hidden}
 .hm-world .wt b .sub,.hm-world .wn small{color:rgba(255,255,255,.82)}
 .hm-world .wname{text-decoration-color:rgba(255,255,255,.55)}
 .hm-world .wt .bar{background:rgba(0,0,0,.22)}.hm-world .wt .bar i{background:#fff}
+/* no ▶ arrows on the menu cards (Steff, 8 Nov 2026): the whole card is the button, so the text gets the room */
+.hm-daily{grid-template-columns:88px minmax(0,1fr)}
+.hm-cont,.hm-cont:not(.first){grid-template-columns:minmax(0,1fr)}.hm-cont.first{grid-template-columns:auto minmax(0,1fr)}
 /* Quick Play is teal, everywhere: card, studs, tab, bolt, pop-up (Steff, 8 Nov 2026; teal is Quick Play's alone) */
 .hm-quick{background:var(--c-quick);color:#fff;border:0;box-shadow:inset 0 -5px 0 rgba(0,0,0,.18)}.hm-quick:hover{border-color:transparent;filter:brightness(1.05)}
 .hm-quick small,.hm-quick .go{color:rgba(255,255,255,.9)}
@@ -1963,10 +1996,10 @@ body.film-on{overflow:hidden}
     <img src="/art/bloppit-avatar.png" alt="" width="256" height="256">
     <div class="hm-bubble"><h2 id="hmHi">Hi there!</h2><p>What shall we build today?</p></div>
   </div>
-  <button class="hm-how hm-quick" id="hmQuick" type="button"><span class="pl" aria-hidden="true">⚡</span><span><b>Quick Play</b><small>A random puzzle, right now</small></span><span class="go" aria-hidden="true">▶</span></button>
+  <button class="hm-how hm-quick" id="hmQuick" type="button"><span class="pl" aria-hidden="true">⚡</span><span><b>Quick Play</b><small>A random puzzle, right now</small></span></button>
   <button class="hm-world" id="hmWorld" data-go="island" type="button" hidden></button>
-  <button class="hm-daily" data-go="daily" type="button"><img id="hmDailyImg" alt=""><span class="hd-txt"><span class="tag">Bibi’s Weekly Bloppit</span><b id="hmDailyT">This week’s puzzle</b><span id="hmDailyS">The same puzzle for everyone</span></span><span class="go" aria-hidden="true">▶</span><span class="hd-pills"><span>🔥 <b id="hdStreak">0</b> week streak</span><span><b id="hdTotal">0</b> built</span></span></button>
-  <button class="hm-cont" id="hmCont" type="button" hidden><img class="hc-pic" src="/art/bud-offer.png" alt="" width="300" height="398"><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span><span class="go" aria-hidden="true">▶</span></button>
+  <button class="hm-daily" data-go="daily" type="button"><img id="hmDailyImg" alt=""><span class="hd-txt"><span class="tag">Bibi’s Weekly Bloppit</span><b id="hmDailyT">This week’s puzzle</b><span id="hmDailyS">The same puzzle for everyone</span></span><span class="hd-pills"><span>🔥 <b id="hdStreak">0</b> week streak</span><span><b id="hdTotal">0</b> built</span></span></button>
+  <button class="hm-cont" id="hmCont" type="button" hidden><img class="hc-pic" src="/art/bud-offer.png" alt="" width="300" height="398"><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span></button>
   <button class="hm-how" id="hmHow" type="button"><span class="pl" aria-hidden="true">▶</span><span><b>How to Play</b><small>See how it works in 45 seconds</small></span></button>
 </div>
 <div class="hm-main">
@@ -1979,8 +2012,8 @@ body.film-on{overflow:hidden}
     <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>Blitz with<br>Swoop</b><small class="isl">Blitz Bay</small><span>20 races against Swoop</span></button>
   </div>
   <h3 class="hm-sec">Together</h3>
-  <div class="hm-grid">
-    <button class="hm-tile t-together" data-go="mp" type="button"><span class="ic" aria-hidden="true"><span class="two"><img src="/art/head-bloppit.png" alt="" width="256" height="256"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span></span><b>Play with Friends</b><span>Team Build or Race a Friend, with a code to share</span></button>
+  <div class="hm-grid match">
+    <button class="hm-tile t-together" data-go="mp" type="button"><span class="ic" aria-hidden="true"><span class="two"><img src="/art/head-bloppit.png" alt="" width="256" height="256"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span></span><b>Play with Friends</b><span>Team Build or Race a Friend</span></button>
     <button class="hm-tile t-join" data-go="code" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a Game</b><span>Got a code? Type it in to play</span></button>
     <button class="hm-tile t-crew wide" data-go="crew" type="button"><span class="ic" aria-hidden="true"></span><b>Your Crews</b><span>Crew Quick Game, Pass the Puzzle, Crew Mega Build</span></button>
   </div>
@@ -2222,30 +2255,42 @@ body.film-on{overflow:hidden}
 <div class="char-hero" data-hero="mp" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
   <div class="hub" data-hub>
     <h3 class="hm-sec hub-sec">Play with Friends</h3>
-    <div class="hm-grid hub-grid three">
+    <div class="hm-grid hub-grid three match">
       <button class="hm-tile t-together" data-sub="start" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="0" y="16" width="66" height="58"/><use href="#bh2" x="58" y="28" width="58" height="51"/><rect x="34" y="80" width="52" height="28" rx="5" fill="#D2352B"/><rect x="40" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="66" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="34" y="100" width="52" height="8" rx="4" fill="#B32A22"/><ellipse cx="34" cy="90" rx="8" ry="7" fill="#8A5A3B"/><ellipse cx="86" cy="90" rx="8" ry="7" fill="#C08A5E"/></svg></span><b>Team Build</b><span>One puzzle, taking turns with friends</span></button>
-      <button class="hm-tile t-friend" data-go-race type="button"><span class="ic" aria-hidden="true"><i class="di di-friend" style="width:64px;height:64px"></i></span><b>Race a Friend</b><span>Race live, or send a code to race later</span></button>
+      <button class="hm-tile t-friend" data-go-race type="button"><span class="ic race-ic" aria-hidden="true"><svg viewBox="0 0 60 60" aria-hidden="true" focusable="false"><g stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".85"><path d="M3 20h9"/><path d="M5 27h7"/><path d="M3 41h9"/><path d="M5 48h7"/></g><use href="#bh" x="11" y="9" width="28" height="25"/><use href="#bh" x="27" y="30" width="28" height="25"/></svg></span><b>Race a Friend</b><span>Race live, or send a code to race later</span></button>
       <button class="hm-tile t-join" data-sub="join" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a Game</b><span>Got a code? Type it in to play</span></button>
     </div>
-    <div class="hm-grid hub-grid">
-      <button class="hm-tile t-crew wide" data-sub="crews" type="button"><span class="ic" aria-hidden="true"></span><b>Your Crews</b><span>Crew Quick Game, Pass the Puzzle, Crew Mega Build</span></button>
-    </div>
   </div>
-  <div class="crews-page">
+  <div class="crews-page" data-mode="list">
   <button class="crumb" data-crews-up type="button">‹ Together</button>
     <div class="card crew-card" id="crewCard">
-      <div class="gm-head sub-head"><div><h2>Your Crews</h2><p class="note">A crew is your group of friends, over days and weeks. Inside each crew: a Crew Quick Game to play live, Pass the Puzzle (one model passed round, each building their pages in turn), and the Crew Mega Build that every brick anyone builds brings closer. You can be in up to six crews. Any player can make a crew; the maker lets each friend in. Crews only pass fixed phrases and stickers, under generated names.</p></div></div>
-      <div class="crew-list" id="crewList"></div>
-      <div class="crew-forms">
-        <div class="field"><span class="lbl" id="crewNameLab">Make a crew: pick its name</span><div class="crew-name" role="group" aria-labelledby="crewNameLab"><select class="inp" id="crewW0" aria-label="First word"></select><select class="inp" id="crewW1" aria-label="Second word"></select><select class="inp" id="crewW2" aria-label="Third word"></select><button class="ghost crew-dice" id="crewDice" type="button" aria-label="Another name" title="Another name">🎲</button></div><p class="crew-namesee">Your crew: <b id="crewNameSee"></b></p><span class="crew-picklab">Pick your crew’s Mega Build</span><div class="crew-pick" id="crewPick" role="radiogroup" aria-label="Crew puzzle"></div><button class="primary sm" id="crewMake" type="button" style="margin-top:8px">Make the crew</button></div>
-        <div class="field"><label for="crewCodeIn">Got a crew code?</label><div style="display:flex;gap:8px;flex-wrap:wrap"><input class="inp code" id="crewCodeIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC123" style="flex:1;min-width:140px"><button class="primary sm" id="crewJoin" type="button">Ask to join</button></div></div>
+      <div class="crew-v crew-v-list">
+        <h2>Your Crews</h2>
+        <p class="note crew-lead">Build with the same friends again and again. You can be in up to 6 crews.</p>
+        <h3 class="crew-count" id="crewCount" hidden></h3>
+        <div class="crew-list" id="crewList"></div>
+        <div class="crew-acts"><button class="primary" id="crewNew" type="button">+ Make a new crew</button><button class="ghost" id="crewHave" type="button">Join a crew with a code</button></div>
       </div>
-      <p class="note" id="crewMsg" hidden></p>
+      <div class="crew-v crew-v-make">
+        <button class="crumb" data-crew-back type="button">‹ Your Crews</button>
+        <h2>Make a new crew</h2>
+        <div class="field"><span class="lbl" id="crewNameLab">Pick your crew’s name</span><div class="crew-name" role="group" aria-labelledby="crewNameLab"><select class="inp" id="crewW0" aria-label="First word"></select><select class="inp" id="crewW1" aria-label="Second word"></select><select class="inp" id="crewW2" aria-label="Third word"></select><button class="ghost crew-dice" id="crewDice" type="button" aria-label="Another name" title="Another name">🎲</button></div><p class="crew-namesee">Your crew: <b id="crewNameSee"></b></p></div>
+        <div class="field"><span class="crew-picklab">Pick your crew’s Mega Build</span><div class="crew-pick" id="crewPick" role="radiogroup" aria-label="Crew puzzle"></div></div>
+        <button class="primary" id="crewMake" type="button">Make the crew</button>
+        <p class="note">You get a code to share. Each friend asks to join with it, and you let them in.</p>
+      </div>
+      <div class="crew-v crew-v-join">
+        <button class="crumb" data-crew-back type="button">‹ Your Crews</button>
+        <h2>Join a crew</h2>
+        <div class="field"><label for="crewCodeIn">The crew’s code</label><div style="display:flex;gap:8px;flex-wrap:wrap"><input class="inp code" id="crewCodeIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC123" style="flex:1;min-width:140px"><button class="primary" id="crewJoin" type="button">Ask to join</button></div></div>
+        <p class="note">Ask the friend who made the crew for its code. They let you in.</p>
+      </div>
     </div>
+    <p class="note crew-msg" id="crewMsg" hidden></p>
     <div class="card crew-open" id="crewOpen" hidden></div>
   </div>
   <button class="crumb" data-up type="button">‹ Together</button>
-  <div class="gm-head sub-head"><div><h2 id="mpHeadT">🧩 Team Build</h2><p class="note">Build one puzzle together on different phones, tablets or computers. Take turns placing a few bricks each. Everyone sees the model grow live. Friends join with the room code, and you let them in.</p></div></div>
+  <div class="gm-head sub-head"><div><h2 id="mpHeadT">🧩 Team Build</h2><p class="note" id="mpHeadN">Build one puzzle together on different phones, tablets or computers. Take turns placing a few bricks each. Everyone sees the model grow live. Friends join with the room code, and you let them in.</p></div></div>
   <div class="mp-off" id="mpOff" hidden></div>
   <div class="mp-forms" id="mpForms">
     <div class="card" id="mpStartCard">
@@ -2272,7 +2317,7 @@ body.film-on{overflow:hidden}
       <button class="primary" id="mpJoin" type="button">Join</button>
       <p class="note" id="mpRejoinNote" hidden></p>
     </div>
-    <p class="note" style="grid-column:1/-1;margin:0">Want a race instead? Try <a href="#blitz" id="mpToBlitz" style="color:inherit"><b>⚡ Blitz</b></a>.</p>
+    <p class="note" id="mpToRace" style="grid-column:1/-1;margin:0">Want a race instead? Try <a href="#blitz" id="mpToBlitz" style="color:inherit"><b>Race a Friend</b></a>.</p>
   </div>
   <div id="mpShared">
   <div class="card mp-waitbox" id="mpWaitBox" hidden>
@@ -2305,7 +2350,7 @@ body.film-on{overflow:hidden}
   <div class="hub" data-hub>
     <div class="hm-grid hub-grid">
       <button class="hm-tile t-blitz" data-sub="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>Blitz with Swoop</b><small class="isl">Blitz Bay</small><span>20 races against Swoop</span></button>
-      <button class="hm-tile t-friend" data-sub="friend" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="6" y="30" width="80" height="70"/><path d="M58 26 l52 -18 -16 50 -12 -16z" fill="#fff"/><path d="M82 42 l-8 18 6 -14z" fill="#E4D6F0"/><path d="M110 8 l-28 34" stroke="#C9B3E0" stroke-width="2"/><path d="M54 30 q-12 4 -16 14" stroke="#fff" stroke-width="3" stroke-dasharray="4 5" fill="none" stroke-linecap="round"/></svg></span><b>Race a Friend</b><span>Race live, or send a code to race later</span></button>
+      <button class="hm-tile t-friend" data-sub="friend" type="button"><span class="ic race-ic" aria-hidden="true"><svg viewBox="0 0 60 60" aria-hidden="true" focusable="false"><g stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".85"><path d="M3 20h9"/><path d="M5 27h7"/><path d="M3 41h9"/><path d="M5 48h7"/></g><use href="#bh" x="11" y="9" width="28" height="25"/><use href="#bh" x="27" y="30" width="28" height="25"/></svg></span><b>Race a Friend</b><span>Race live, or send a code to race later</span></button>
     </div>
   </div>
   <button class="crumb" data-up type="button">‹ Blitz Bay</button>
@@ -3603,7 +3648,7 @@ const HERO={
   brain:{who:'nora',art:'/art/char-nora.png',isle:'Brainpeak',title:'Nora’s Brain Trail',line:'A clever mind shines in the dark.',desc:'Nora tucks maths puzzles into the booklet: solve one to open its page. The last build is her Great Telescope.',c:['#4A6FC0','#1C2B57']},
   create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Build Anything with Bibi',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
   blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Blitz with Swoop',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Shortest time wins.',c:['#5DB4F2','#1F6FC4']},
-  mp:{who:['pup','pup'],art:'/art/hero-together.png',isle:'Friendship Harbour',title:'Together',line:'Every build is better with a friend!',desc:'Play with Friends: a Team Build or Race a Friend, with a code to share. Your Crews: friends you keep, with games of their own.',c:['#B9A2F7','#6E4FD6']}};
+  mp:{who:['pup','pup'],art:'/art/hero-together.png',isle:'Friendship Harbour',title:'Together',line:'Every build is better with a friend!',desc:'Play with Friends: a Team Build or Race a Friend, with a code to share.',c:['#B9A2F7','#6E4FD6']}};
 function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[data-hero="${t}"]`); if(!el) return;
   const key=t==='game'?subOf.game:t, H=HERO[key]; el.hidden=!H; if(!H) return;
   if(el.dataset.k===key) return; el.dataset.k=key;
@@ -3618,17 +3663,22 @@ function tabsSync(t){ const sec=sectionOf(t===undefined?tab:t), tr=typeof trail!
     // the Weekly Bloppit is Bibi's: the Brickyard Cove tab
     b.setAttribute('aria-selected',on); }); }
 function sectionOf(t){
+  if(t==='blitz'&&!mp&&!mpw&&subOf.blitz==='friend') return 'mp';   // Race a Friend lives in Together (Steff, 8 Nov 2026)
   if(t==='build'||t==='box'||t==='booklet'){ if(typeof welcomeOn==='function'&&welcomeOn()) return 'island'; if(game) return 'game'; if(typeof mysOn==='function'&&mysOn()) return 'island'; if(mp) return trialOn()&&mp.state.calm?'daily':mpHomeTab(); return 'create'; }
   return t==='home'?'':t;
 }
+const MP_TEAM_NOTE='Build one puzzle together on different phones, tablets or computers. Take turns placing a few bricks each. Everyone sees the model grow live. Friends join with the room code, and you let them in.',
+  MP_JOIN_NOTE='Got a code from a friend? Type it in to join their game: a Team Build, a race, Pass the Puzzle or a crew.';
 function syncSub(t){
   if(!SUB_OK[t]) return;
   let s=subOf[t];
   if(mp||mpw){ if(t==='blitz') s=mp&&mp.cpu?'cpu':'friend'; if(t==='mp') s='start'; }
   if(t==='game'&&s!=='hub') setTrail(s);
   const v=$('#view-'+t); v.dataset.sub=s; v.classList.toggle('in-room',!!(mp||mpw));
-  if(t==='blitz') $('#bzHeadT').textContent=s==='cpu'?'⚡ Blitz with Swoop':s==='friend'?'⚡ Race a Friend':'⚡ Blitz';
-  if(t==='mp') $('#mpHeadT').textContent=s==='join'?'🔑 Join a Game':'🧩 Team Build';
+  if(t==='blitz'){ if(s==='friend') $('#bzHeadT').innerHTML='<span class="race-hd" aria-hidden="true"><svg viewBox="0 0 60 60" aria-hidden="true" focusable="false"><g stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".85"><path d="M3 20h9"/><path d="M5 27h7"/><path d="M3 41h9"/><path d="M5 48h7"/></g><use href="#bh" x="11" y="9" width="28" height="25"/><use href="#bh" x="27" y="30" width="28" height="25"/></svg></span>Race a Friend'; else $('#bzHeadT').textContent=s==='cpu'?'⚡ Blitz with Swoop':'⚡ Blitz';
+    const up=$('#view-blitz>.crumb[data-up]'); if(up) up.textContent=s==='friend'?'‹ Together':'‹ Blitz Bay'; }
+  if(t==='mp'){ $('#mpHeadT').textContent=s==='join'?'🔑 Join a Game':'🧩 Team Build';
+    $('#mpHeadN').textContent=s==='join'?MP_JOIN_NOTE:MP_TEAM_NOTE; const tb=$('#mpToRace'); if(tb) tb.hidden=s==='join'; }
   if(t==='game'&&s==='hub'){ const st=playerStats(players.cur);
     $('#hubOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
     $('#hubBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} levels, a maths puzzle in each`;
@@ -3649,6 +3699,7 @@ function setTab(t,sub){ if(t!=='island'&&typeof ISL3!=='undefined') ISL3.thenCha
   ['home','create','build','box','booklet','game','mp','blitz','daily','island'].forEach(v=>$('#view-'+v).hidden=v!==t);
   if(t==='island') renderIsland();
   if(t==='create'){ renderDrawSaved(); qbWeeklySync(); }
+  if(t==='mp'&&sub==='crews'&&typeof crewMode==='function') crewMode('list');
   if(t==='mp'&&(sub==='crews'||!sub&&subOf.mp==='crews')) renderCrews(true);
   if(t!=='create'&&pickFor) pickFor=null;
   syncPick();
@@ -3742,7 +3793,9 @@ document.querySelectorAll('.tab[data-tab]').forEach(b=>b.addEventListener('click
 document.querySelectorAll('.view .hub [data-sub]').forEach(b=>b.addEventListener('click',()=>{ const t=b.closest('.view').id.slice(5); mpDoneLeave();
   if(t==='game'&&mp){ mpMsg(`Leave ${mpWhat()} first to play the Trails on your own.`); setTab(mpHomeTab()); return; }
   setTab(t,b.dataset.sub); if(t==='mp'&&b.dataset.sub==='join') requestAnimationFrame(()=>{ const i=$('#mpCodeIn'); if(i) i.focus(); }); }));
-document.querySelectorAll('.view>.crumb[data-up]').forEach(b=>b.addEventListener('click',()=>setTab(b.closest('.view').id.slice(5),'hub')));
+document.querySelectorAll('.view>.crumb[data-up]').forEach(b=>b.addEventListener('click',()=>{ const t=b.closest('.view').id.slice(5);
+  if(t==='blitz'&&subOf.blitz==='friend'){ setTab('mp','hub'); return; }   // Race a Friend goes back to Together
+  setTab(t,'hub'); }));
 document.querySelector('[data-crews-up]').addEventListener('click',()=>setTab('mp','hub'));
 let leaveArmed=false;
 function showToastLeave(){ const t=$('#tab-cove'); const o=t.innerHTML; t.innerHTML=t.querySelector('.n').outerHTML+'Tap again to leave'; setTimeout(()=>{t.innerHTML=o;},3000); }
@@ -7487,7 +7540,7 @@ async function joinSixCode(code){
   try{ const r=await fetch(API_BASE+'/api/challenge?code='+code,{cache:'no-store'}); kind=r.ok?'challenge':r.status===404?'crew':''; }
   catch(e){ mpMsg('Couldn’t reach Bloppit. Check your internet connection.','err'); return; }
   if(kind==='challenge'){ mpMsg(''); setTab('blitz','friend'); $('#bzCodeIn').value=code; chOpen(code); return; }
-  if(kind==='crew'){ mpMsg(''); setTab('mp','crews'); $('#crewCodeIn').value=code; $('#crewCard').scrollIntoView({block:'center'}); $('#crewJoin').click(); return; }
+  if(kind==='crew'){ mpMsg(''); setTab('mp','crews'); crewMode('join'); $('#crewCodeIn').value=code; $('#crewJoin').click(); return; }
   mpMsg('Bloppit didn’t answer. Please try again.','err');
 }
 $('#mpJoin').onclick=async()=>{
@@ -7537,7 +7590,7 @@ $('#bzJoin').onclick=async()=>{
   finally{ btn.disabled=false; }
 };
 $('#bzCodeIn').addEventListener('input',e=>{ e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
-$('#mpToBlitz').onclick=e=>{ e.preventDefault(); setTab('blitz'); };
+$('#mpToBlitz').onclick=e=>{ e.preventDefault(); homeGo('friend'); };
 
 /* ---------- Blitz: race the computer (everything happens on this device) ---------- */
 // The race uses the same rules and screens as a Blitz room, but the "room" lives here instead of on the server.
@@ -11808,6 +11861,7 @@ document.addEventListener('click',e=>{ if(e.target.closest('[data-go-race]')) ho
    pause the sender; a parent sees every crew and can take a player out from the Grown-ups corner. */
 // A crew's name: three words from fixed lists (the same lists as netlify/functions/group/logic.mjs CREW_WORDS, in the
 // same order: crews store the indexes). Every crew can have its own name, and nothing typed ever leaves the device.
+const CREW_MAX=6;   // crews a player can be in (MAX_GROUPS_PER_PUP on the server)
 const CREW_WORDS=[
   ['Brave','Happy','Speedy','Sunny','Clever','Mighty','Jolly','Lucky','Busy','Bright','Cosy','Tiny','Giant','Bouncy','Starry','Sparkly','Golden','Silver','Bold','Calm','Super','Wild','Snappy','Merry'],
   ['Otter','Puffin','Turtle','Frog','Penguin','Longtail','Lion','Heron','Dolphin','Octopus','Starfish','Crab','Seal','Whale','Seahorse','Brick','Lighthouse','Island','Harbour','Rocket','Rainbow','Comet','Coral','Moon'],
@@ -11848,7 +11902,8 @@ function crewPickHTML(sel,done){ done=done||[];
   return CREW_PUZZLES.map((P,i)=>`<label class="crew-pzopt"><input type="radio" name="crewPz" value="${i}"${i===sel?' checked':''}>${crewPuzzleSVG(i,1,P.name)}<b>${escapeHTML(P.name)}${i===0?' <em>Suggested</em>':''}${done.includes(i)?' <em class="done">Built ✓</em>':''}</b><span>${escapeHTML(P.blurb)}</span></label>`).join(''); }
 // The Crews tile: a crew puzzle, half built
 // Your Crews: a simple mark at this size (Steff, 7 Nov 2026: the half-built harbour was too much detail): three friends, one brick between them
-document.querySelectorAll('.t-crew .ic').forEach(el=>{ el.innerHTML='<svg viewBox="0 0 60 60" aria-hidden="true" focusable="false"><circle cx="13" cy="21" r="7.5" fill="#fff"/><circle cx="30" cy="19" r="8.5" fill="#fff"/><circle cx="47" cy="21" r="7.5" fill="#fff"/><rect x="14" y="38" width="32" height="14" rx="3" fill="#D62F2A"/><rect x="19" y="33" width="8" height="6" rx="1.5" fill="#E5463C"/><rect x="33" y="33" width="8" height="6" rx="1.5" fill="#E5463C"/></svg>'; });
+// Your Crews: bricks in the friends' colours stacked into one build (Steff, 8 Nov 2026)
+document.querySelectorAll('.t-crew .ic').forEach(el=>{ el.innerHTML='<svg viewBox="0 0 60 60" aria-hidden="true" focusable="false"><rect x="8" y="40" width="44" height="13" rx="2.5" fill="#fff"/><rect x="12" y="36" width="7" height="5" rx="1.5" fill="#fff"/><rect x="26.5" y="36" width="7" height="5" rx="1.5" fill="#fff"/><rect x="41" y="36" width="7" height="5" rx="1.5" fill="#fff"/><rect x="10" y="24" width="20" height="12" rx="2.5" fill="#7DBE2E"/><rect x="13" y="20" width="6" height="5" rx="1.5" fill="#7DBE2E"/><rect x="21" y="20" width="6" height="5" rx="1.5" fill="#7DBE2E"/><rect x="31" y="24" width="20" height="12" rx="2.5" fill="#F4BC22"/><rect x="34" y="20" width="6" height="5" rx="1.5" fill="#F4BC22"/><rect x="42" y="20" width="6" height="5" rx="1.5" fill="#F4BC22"/><rect x="20" y="8" width="20" height="12" rx="2.5" fill="#2F7FD0"/><rect x="23" y="4" width="6" height="5" rx="1.5" fill="#2F7FD0"/><rect x="31" y="4" width="6" height="5" rx="1.5" fill="#2F7FD0"/></svg>'; });
 /* Crew news (Steff, 7 Nov 2026): what's new in your crews since you last opened each one. This device remembers how
    each crew looked when you last opened it (nothing new is stored on the server); anything new since then puts a dot
    on the Together tab and the Crews tile, a New chip on the crew's row and a "Since you were last here" line on the crew. */
@@ -11878,7 +11933,7 @@ function crewNews(g){
 function crewDots(){
   const seen=crewSeenMine(); crewMine.forEach(g=>{ if(g.me&&!seen[g.code]) crewSeenSet(g); });
   const on=crewMine.some(g=>crewNews(g));
-  ['#tab-mp','.t-crew'].forEach(sel=>document.querySelectorAll(sel).forEach(el=>{ let d=el.querySelector(':scope>.news-dot');
+  ['.t-crew'].forEach(sel=>document.querySelectorAll(sel).forEach(el=>{ let d=el.querySelector(':scope>.news-dot');
     if(!d){ d=document.createElement('i'); d.className='news-dot'; d.setAttribute('aria-hidden','true'); el.appendChild(d); } d.hidden=!on;
     el.dataset.news=on?'1':''; }));
   const tile=document.querySelector('.t-crew'); if(tile) tile.setAttribute('aria-label',on?'Crews: something new in your crews':'Crews');
@@ -11889,6 +11944,8 @@ async function crewNewsCheck(){
   if(Date.now()-crewNewsAt<60000) { crewDots(); return; } crewNewsAt=Date.now();
   try{ const j=await crewApi('GET',null,'?mine=1'); crewMine=j.groups; crewMineAt=Date.now(); crewDots(); }catch(e){}
 }
+// Your Crews has four views (Steff, 8 Nov 2026): the list of your crews, Make a new crew, Join a crew, and one crew
+function crewMode(m){ const pg=$('.crews-page'); if(!pg) return; pg.dataset.mode=m; if(m!=='crew'){ $('#crewOpen').hidden=true; crewOpenCode=''; } if(m!=='list'||!crewMine.length) crewMsg(''); scrollTo(0,0); }
 function crewMsg(t,kind){ const el=$('#crewMsg'); el.hidden=!t; el.textContent=t||''; el.dataset.kind=kind||''; }
 async function renderCrews(force){
   if(!$('#crewW0').options.length){ [0,1,2].forEach(i=>{ $('#crewW'+i).innerHTML=CREW_WORDS[i].map((w,k)=>`<option value="${k}">${w}</option>`).join(''); }); crewNameRoll(); }
@@ -11896,15 +11953,23 @@ async function renderCrews(force){
   const me=curPlayer();
   // A player with builds whose save hasn't reached the server yet gets it there first (they used to be told to finish a build)
   if(me&&!me.pup&&worldCount(worldStore())>0){ try{ await pupSync(); }catch(e){} }
-  if(!me||!me.pup){ $('#crewList').innerHTML=''; crewMsg(me&&worldCount(worldStore())>0?'Couldn’t reach Bloppit just now. Check your internet connection and try again.':'Finish one build first; then you can make or join a crew.'); return; }
+  if(!me||!me.pup){ $('#crewList').innerHTML=''; $('#crewCount').hidden=true; ['#crewNew','#crewHave'].forEach(x=>$(x).disabled=true); crewMsg(me&&worldCount(worldStore())>0?'Couldn’t reach Bloppit just now. Check your internet connection and try again.':'Finish one build first; then you can make or join a crew.'); return; }
   if(!force&&Date.now()-crewMineAt<4000) return; crewMineAt=Date.now();
+  ['#crewNew','#crewHave'].forEach(x=>$(x).disabled=false);
   try{ const j=await crewApi('GET',null,'?mine=1'); crewMine=j.groups; crewMsg(''); }catch(e){ crewMsg(e.message,'err'); return; }
-  $('#crewList').innerHTML=crewMine.map(g=>`<div class="crew-row">${crewPuzzleSVG(g.puzzle,g.total/g.goal)}<div><b>${escapeHTML(g.name)}</b>${crewNews(g)?' <em class="crew-new">New</em>':''} <span class="note">· ${g.members.length} builder${g.members.length===1?'':'s'}${g.pendingMe?' · waiting to be let in':''}</span><div class="bar"><i style="width:${Math.max(2,g.pct)}%"></i></div><span class="note">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks${g.pending&&g.pending.length?` · <b>${g.pending.length} waiting to join</b>`:''}</span></div><button class="ghost" type="button" data-crew="${g.code}">Open</button></div>`).join('');
+  const n=crewMine.length, full=n>=CREW_MAX;
+  $('#crewCount').hidden=!n; $('#crewCount').textContent=`Your crews · ${n} of ${CREW_MAX}`;
+  $('#crewList').innerHTML=n?crewMine.map(g=>{ const P=CREW_PUZZLES[g.puzzle]||CREW_PUZZLES[0], news=crewNews(g);
+    return `<button class="crew-tile" type="button" data-crew="${g.code}">${crewPuzzleSVG(g.puzzle,g.total/g.goal)}<span class="ct-txt"><b>${escapeHTML(g.name)}</b>${news?'<em class="crew-new">New</em>':''}
+      <span class="ct-meta">${g.members.length} builder${g.members.length===1?'':'s'} · ${escapeHTML(P.name)}${g.pendingMe?' · waiting to be let in':''}${g.pending&&g.pending.length?` · <b>${g.pending.length} waiting to join</b>`:''}</span>
+      <span class="bar"><i style="width:${Math.max(2,g.pct)}%"></i></span><span class="ct-meta">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks</span></span></button>`; }).join('')
+    :`<div class="crew-empty"><b>No crews yet</b><span>A crew is a group of friends you build with again and again: a Crew Quick Game to play live, Pass the Puzzle round the crew, and a Crew Mega Build you all add bricks to.</span></div>`;
+  $('#crewNew').disabled=full; $('#crewNew').textContent=full?`You’re in ${CREW_MAX} crews, the most`:'+ Make a new crew';
   if(crewOpenCode){ const g=crewMine.find(x=>x.code===crewOpenCode); if(g) renderCrew(g); }
   crewDots();
 }
 function renderCrew(g){
-  crewOpenCode=g.code; const box=$('#crewOpen'); box.hidden=false;
+  crewOpenCode=g.code; const box=$('#crewOpen'); box.hidden=false; $('.crews-page').dataset.mode='crew'; crewMsg('');
   const mine=!!g.me, maker=mine&&g.me.creator, news=crewNews(g), P=CREW_PUZZLES[g.puzzle]||CREW_PUZZLES[0];
   // Crew Quick Game: a live room a member started; the others jump in (the host still lets each one in)
   const L=g.live, quick=!mine?'':`<section class="crew-game"><h3>Crew Quick Game</h3>
@@ -11928,9 +11993,9 @@ function renderCrew(g){
       <p class="note" style="margin:4px 0 0">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks · every brick anyone in the crew builds, in any game, goes here.</p>
       <div class="bar"><i style="width:${Math.max(2,g.pct)}%"></i></div></div></div>
     ${maker&&(g.pct>=100||!g.total)?`<div class="crew-next"><b>${g.pct>=100?'Pick the crew’s next Mega Build':'Change the crew’s Mega Build'}</b><span class="note">${g.pct>=100?'Well built, crew! Bricks built from now on go to the next one.':'You can change it until someone builds.'}</span><div class="crew-pick">${crewPickHTML(g.pct>=100?-1:g.puzzle,g.done.concat(g.pct>=100?[g.puzzle]:[]))}</div><button class="primary sm" type="button" data-crew-pz="1">${g.pct>=100?'Start this one':'Use this one'}</button></div>`:''}</section>`;
-  box.innerHTML=`<div class="crew-top"><div><h2>${escapeHTML(g.name)} <span class="cc">${g.code}</span></h2>
+  box.innerHTML=`<button class="crumb" id="crewClose" type="button">‹ Your Crews</button><div class="crew-top"><div><h2>${escapeHTML(g.name)} <span class="cc">${g.code}</span></h2>
       <p class="note" style="margin:4px 0 0">${g.members.length} builder${g.members.length===1?'':'s'} · ${g.builds} build${g.builds===1?'':'s'}${!mine?` · ${escapeHTML(P.name)} Mega Build`:''}</p></div>
-      <div class="win-btns" style="justify-content:flex-start">${mine?`<button class="ghost" type="button" data-crew-share="${g.code}">Share the code</button>`:g.pendingMe?'<span class="note">Waiting for the crew’s maker to let you in.</span>':`<button class="primary sm" type="button" data-crew-join="${g.code}">Ask to join</button>`}<button class="ghost" type="button" id="crewClose">Close</button></div></div>
+      <div class="win-btns" style="justify-content:flex-start">${mine?`<button class="ghost" type="button" data-crew-share="${g.code}">Share the code</button>`:g.pendingMe?'<span class="note">Waiting for the crew’s maker to let you in.</span>':`<button class="primary sm" type="button" data-crew-join="${g.code}">Ask to join</button>`}</div></div>
     ${news?`<p class="crew-since"><b>Since you were last here</b>${news.map(x=>`<span>${escapeHTML(x)}</span>`).join('')}</p>`:''}
     ${maker&&g.pending&&g.pending.length?`<div class="crew-pending"><b>Waiting to join</b>${g.pending.map(w=>`<div><span>🚪 ${escapeHTML(w.label)}</span><button class="primary sm" type="button" data-crew-ok="${w.k}">Let in</button><button class="ghost" type="button" data-crew-no="${w.k}">Not this time</button></div>`).join('')}</div>`:''}
     ${quick}${pass}${mega}
@@ -11940,10 +12005,13 @@ function renderCrew(g){
       <p class="note" style="margin:6px 0 0">Only these phrases and stickers can be sent. Report hides a post for you and tells the crew’s maker; three reports pause the sender.</p></div>`:''}`;
   if($('#crewPassModel')){ mpModelOptions('#crewPassModel'); const o=$('#crewPassModel').querySelector('optgroup[label="Medium"] option'); if(o) $('#crewPassModel').value=o.value; }
   passCredit(g);
-  box.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});
+  scrollTo(0,0);
   if(mine){ const i=crewMine.findIndex(x=>x.code===g.code); if(i>=0) crewMine[i]=g; crewSeenSet(g); crewDots(); }   // opened: it's all seen now
 }
-async function crewDo(body,ok){ try{ const j=await crewApi('POST',body); crewMineAt=0; await renderCrews(true); if(j.group) renderCrew(j.group); else { $('#crewOpen').hidden=true; crewOpenCode=''; } if(ok) ok(j); }catch(e){ crewMsg(e.message,'err'); } }
+async function crewDo(body,ok){ try{ const j=await crewApi('POST',body); crewMineAt=0; await renderCrews(true); if(j.group) renderCrew(j.group); else crewMode('list'); if(ok) ok(j); }catch(e){ crewMsg(e.message,'err'); } }
+$('#crewNew').onclick=()=>{ crewMode('make'); };
+$('#crewHave').onclick=()=>{ crewMode('join'); requestAnimationFrame(()=>$('#crewCodeIn').focus()); };
+document.querySelectorAll('[data-crew-back]').forEach(b=>b.addEventListener('click',()=>crewMode('list')));
 $('#crewMake').onclick=()=>{ track('crew_made'); const pz=document.querySelector('#crewPick input:checked'); crewDo({action:'create',name:crewNamePicked(),puzzle:pz?+pz.value:0}); };
 $('#crewJoin').onclick=async()=>{ const code=$('#crewCodeIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''); if(code.length!==6){ crewMsg('Crew codes have 6 letters and numbers.','err'); return; }
   try{ const j=await crewApi('GET',null,`?code=${code}`); renderCrew(j.group); }catch(e){ crewMsg(e.message,'err'); } };
@@ -11951,7 +12019,7 @@ $('#crewCodeIn').addEventListener('input',e=>{ e.target.value=e.target.value.toU
 $('#crewList').addEventListener('click',e=>{ const b=e.target.closest('[data-crew]'); if(!b) return; const g=crewMine.find(x=>x.code===b.dataset.crew); if(g) renderCrew(g); });
 $('#crewOpen').addEventListener('click',async e=>{
   const t=e.target.closest('button'); if(!t) return; const code=crewOpenCode;
-  if(t.id==='crewClose'){ $('#crewOpen').hidden=true; crewOpenCode=''; return; }
+  if(t.id==='crewClose'){ crewMode('list'); renderCrews(true); return; }
   if(t.dataset.crewShare){ if(APP&&!await gate.ask('Sharing sends your crew code to another app.')) return; const text=`Join my Bloppit crew! Code ${code}`, url=`https://bloppit.com/game/#together`; try{ if(navigator.share) await navigator.share({title:'Bloppit crew',text,url}); else { await navigator.clipboard.writeText(`${text} ${url}`); t.textContent='Copied!'; } }catch(x){} return; }
   if(t.dataset.crewJoin){ track('crew_join_asked'); crewDo({action:'join',code}); return; }
   if(t.dataset.crewOk){ crewDo({action:'approve',code,k:t.dataset.crewOk}); return; }
