@@ -510,7 +510,7 @@ body.on-build .appfoot{display:none}
 .qp-pzt{flex:1;min-width:0;display:grid}.qp-quick .qp-pzt b{font-size:1rem}.qp-quick .qp-pzt span{font-size:.82rem}
 .qp-pz #qpShuffle{flex:none;font-size:20px;padding:6px 10px}
 .qp-quick #qpQuick{width:100%;margin-top:4px}.qp-quick #qpPick{justify-self:center;font-size:.85rem}
-.qpdlg.solo #qpIsle{display:none}
+.qp-opt.isle:disabled{cursor:default;border-color:var(--line,#D9E1EA);opacity:.7}.qp-opt.isle:disabled img{filter:grayscale(.6)}   /* Pippa's island before her first puzzle washes ashore: shown, with why (Steff, 8 Nov 2026) */
 .ld-pz{display:flex;gap:12px;align-items:center;justify-content:center;margin:10px auto;text-align:left}.ld-pz img{width:64px;height:64px;border-radius:12px;background:#fff;object-fit:contain}
 .ld-pz b{display:block;font-family:var(--f-display);font-weight:400;font-size:20px}.ld-pz span{font-size:13px;font-weight:700;color:var(--muted)}
 .ld-strip{display:flex;gap:4px;justify-content:center;align-items:center;flex-wrap:wrap;margin:6px auto 2px;max-width:340px}
@@ -2496,7 +2496,7 @@ body.film-on{overflow:hidden}
 <dialog class="windlg qpdlg" id="qpDlg" aria-labelledby="qpT">
   <h2 id="qpT">Build Anything with Bibi</h2>
   <div class="qp-opts">
-    <button class="qp-opt isle" id="qpIsle" type="button"><img id="qpImg" src="/art/head-bibi.png" alt=""><b id="qpIsleT">🏝️ Play on Brickyard Cove</b><span>In Bloppitopia: every build grows the island and earns ★, XP and Galaxy Blocks.</span></button>
+    <button class="qp-opt isle" id="qpIsle" type="button"><img id="qpImg" src="/art/head-bibi.png" alt=""><b id="qpIsleT">🏝️ Play on Brickyard Cove</b><span id="qpIsleS">In Bloppitopia: every build grows the island and earns ★, XP and Galaxy Blocks.</span></button>
     <div class="qp-opt qp-quick" id="qpQuickCard"><span class="qp-ic" id="qpQuickIc" aria-hidden="true">⚡</span><b id="qpQuickT">Quick Play</b><span id="qpQuickS">Just build. Nothing is added to Bloppitopia.</span>
       <div class="qp-diff"><label for="qpDiff">How tricky? <b id="qpDiffT">🙂 Easy</b></label>
         <input type="range" id="qpDiff" min="1" max="5" step="1" value="2">
@@ -12352,7 +12352,7 @@ function quickGo(where){ quickPlaySet(true); track('quick_play:'+where);
 const QP_LV=['🐣 Tiny','🙂 Easy','🧱 Medium','🤔 Tricky','🔥 Super tricky'];
 const QP_LIB=[{size:6,shape:'flat',thick:.5,colors:2},{size:8,shape:'flat',thick:1,colors:3},{size:10,shape:'puffed',thick:1,colors:4},{size:13,shape:'puffed',thick:1,colors:6},{size:16,shape:'puffed',thick:1,colors:8}];
 const QP_SPEED={easy:'Warm-up',medium:'Steady',hard:'Full throttle'};
-QP_TILES.flip={who:'pippa',t:'Pippa’s Mirror Puzzles',solo:true};
+QP_TILES.flip={isle:'sunrise',who:'pippa',t:'Pippa’s Mirror Puzzles',sea:true};   // the island choice is Flipper Beach (Steff, 8 Nov 2026: every Solo tile has both choices)
 let qpCur=null;
 function qpDiffs(){ try{ return JSON.parse(localStorage.getItem('bloppit-qp-diff'))||{}; }catch(e){ return {}; } }
 function qpPool(where,d){
@@ -12395,13 +12395,25 @@ function playAsk(where,opt){ const T=QP_TILES[where]; if(!T||mp){ homeGo(where);
   $('#qpOther').hidden=!(opt&&opt.random); $('#qpOther').onclick=()=>quickRandom(where);
   let iname=''; try{ iname=ISLES[T.isle].name; }catch(e){}
   $('#qpT').textContent=T.t; $('#qpImg').src=`/art/head-${T.who}.png`; $('#qpIsleT').textContent=`🏝️ Play on ${iname||'Bloppitopia'}`;
-  const d=$('#qpDlg'); d.classList.toggle('solo',!!T.solo);
-  $('#qpQuickT').textContent=T.solo?'Pick how tricky':'Quick Play'; $('#qpQuickIc').textContent=T.solo?'🪞':'⚡';
-  $('#qpQuickS').textContent=T.solo?'Pippa finds a mirror puzzle to match.':where==='cpu'?'Just race. Nothing is added to Bloppitopia.':'Just build. Nothing is added to Bloppitopia.';
+  const d=$('#qpDlg');
+  // Pippa's island is Flipper Beach: its puzzles wash ashore as Bloppitopia grows. Before the first one has, the choice
+  // is still shown, greyed, saying when it comes (Steff, 8 Nov 2026); after that it's open (a new puzzle, or replays).
+  let isleS='In Bloppitopia: every build grows the island and earns ★, XP and Galaxy Blocks.', isleOn=true, isleGo=where;
+  if(T.sea){ isleGo='sea'; try{ const o=worldStore(), SB=bestOf(gameStore(),'sea'), N=SEA_LEVELS.length;
+    const ready=SEA_LEVELS.findIndex((_,i)=>!SB[i]&&seaWashed(i,o)), nx=SEA_LEVELS.findIndex((_,i)=>!seaWashed(i,o)), nb=nx>=0?seaBuildsTo(nx,o):0;
+    const more=`${nb} more build${nb===1?'':'s'} on the other islands`;
+    if(nx===0){ isleOn=false; isleS=`Not yet: Pippa’s first puzzle washes ashore when Bloppitopia reaches ${seaPct(0)}%. That’s ${more}.`; }
+    else if(ready>=0) isleS=`Puzzle ${ready+1} has washed ashore, ready to build! Every build grows Flipper Beach and earns ★, XP and Galaxy Blocks.`;
+    else if(nx<0) isleS=`All ${N} of Pippa’s Flipper Beach puzzles are built. Build them again for more ★.`;
+    else isleS=`Pippa’s next puzzle washes ashore at ${seaPct(nx)}% of Bloppitopia (${more}). Until then, build the ones already ashore again.`;
+  }catch(e){} }
+  $('#qpIsleS').textContent=isleS; $('#qpIsle').disabled=!isleOn;
+  $('#qpQuickT').textContent='Quick Play'; $('#qpQuickIc').textContent='⚡';
+  $('#qpQuickS').textContent=where==='flip'?'Pippa’s any-time mirror puzzles. Nothing is added to Bloppitopia.':where==='cpu'?'Just race. Nothing is added to Bloppitopia.':'Just build. Nothing is added to Bloppitopia.';
   qpCur={where,d:qpDiffs()[where]||2,pick:null}; qpSet(qpCur.d);
-  $('#qpIsle').onclick=()=>{ d.close(); quickPlaySet(false); track('quick_play_no:'+where); homeGo(where); };
+  $('#qpIsle').onclick=()=>{ if(!isleOn) return; d.close(); quickPlaySet(false); track('quick_play_no:'+where); homeGo(isleGo); };
   $('#qpQuick').onclick=()=>{ const P=qpCur&&qpCur.pick; d.close(); qpStart(where,P); };
-  $('#qpPick').onclick=()=>{ d.close(); if(T.solo){ quickPlaySet(false); homeGo(where); } else quickGo(where); };
+  $('#qpPick').onclick=()=>{ d.close(); if(where==='flip'){ quickPlaySet(false); homeGo(where); } else quickGo(where); };
   $('#qpX').onclick=()=>d.close();
   d.showModal(); }
 window.bloppitQP=()=>qpCur&&{where:qpCur.where,d:qpCur.d,i:qpCur.pick&&qpCur.pick.i,name:qpCur.pick&&qpCur.pick.L.name,pool:qpPool(qpCur.where,qpCur.d).map(x=>x.i)};   // for tests

@@ -1401,7 +1401,10 @@ test('Solo: Pippa’s Puzzles on the menu are her own mirror set, all open in an
   assert.match(await t.text('#hmSeaSub'), /^12 puzzles to mirror$/); assert.doesNotMatch(await t.text('#hmSeaSub'), /%/);
   await t.page.evaluate(() => document.querySelector('#view-home [data-go="flip"]').click()); await t.page.waitForTimeout(300);
   assert.equal(await t.page.evaluate(() => document.getElementById('qpDlg').open), true, 'the difficulty choice first');
-  assert.equal(await t.page.evaluate(() => getComputedStyle(document.getElementById('qpIsle')).display), 'none', 'no island behind it');
+  // the same two choices as the other Solo tiles: Flipper Beach (greyed until Pippa's first puzzle washes ashore, saying when) and Quick Play
+  const isle = await t.page.evaluate(() => { const b = document.getElementById('qpIsle'); return { shown: getComputedStyle(b).display !== 'none', off: b.disabled, t: b.textContent, q: document.getElementById('qpQuickT').textContent }; });
+  assert.ok(isle.shown, 'Flipper Beach is a choice too'); assert.equal(isle.off, true, 'not yet, with nothing built');
+  assert.match(isle.t, /Play on Flipper Beach/); assert.match(isle.t, /washes ashore when Bloppitopia reaches \d+%/); assert.equal(isle.q, 'Quick Play');
   await t.page.evaluate(() => document.getElementById('qpPick').click()); await t.page.waitForTimeout(800);
   assert.equal(await t.page.evaluate(() => document.getElementById('view-game').dataset.sub), 'flip');
   assert.match(await t.text('#gmTitle'), /Mirror Puzzles/); assert.doesNotMatch(await t.text('#gmLevels'), /ashore/);
