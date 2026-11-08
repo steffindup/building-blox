@@ -763,8 +763,8 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
       localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); } } });
     return t; };
   const a = await mkPlayer(), b = await mkPlayer();
-  // Your Crews is its own page, opened from the menu's tile; the Together tab (Play with Friends) has no crews
-  const hub = async (t) => { await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => { location.hash = '#together'; document.getElementById('tab-mp').click(); }); await t.page.waitForTimeout(800);
+  // Together has two halves: Play with Friends (no crews on it) and Your Crews (also the menu's tile)
+  const hub = async (t) => { await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => { location.hash = '#together'; document.getElementById('tab-mp').click(); document.getElementById('tgFriends').click(); }); await t.page.waitForTimeout(800);
     assert.equal(await t.page.evaluate(() => { const c = document.getElementById('crewCard'); return !!c && c.offsetParent === null; }), true, 'Play with Friends has no crews on it');
     assert.equal(await t.page.evaluate(() => [...document.querySelectorAll('#view-mp .t-crew')].some((e) => e.offsetParent)), false, 'and no Your Crews tile');
     await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="crew"]').click()); await t.page.waitForTimeout(1500);
@@ -797,7 +797,7 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   // Crew news: A sees a dot on the menu's Your Crews tile and a New chip, then what happened since; opening the crew clears it
   await hub(a);
   assert.equal(await a.page.evaluate(() => { const d = document.querySelector('.hm-tile[data-go="crew"] .news-dot'); return !!d && !d.hidden; }), true);
-  assert.equal(await a.page.evaluate(() => !document.querySelector('#tab-mp .news-dot')), true, 'not on the Together tab, which opens Play with Friends');
+  for (const sel of ['#tab-mp', '#tgCrews']) assert.equal(await a.page.evaluate((s) => { const d = document.querySelector(`${s} .news-dot`); return !!d && !d.hidden; }, sel), true, `and on ${sel}`);   // the Together tab and the switch's Your Crews half
   assert.match(await a.text('#crewList'), /New/);
   await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);
   const since = await a.text('#crewOpen .crew-since'); assert.match(since, /Since you were last here/); assert.match(since, /added 10 bricks/); assert.match(since, /1 new on the crew board/);
@@ -1175,7 +1175,7 @@ test('Build page: a tile asks Play on the island or Quick play; Quick play has n
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('the menu order: Quick play, Bloppitopia, the Weekly, Continue, How to play; Build Anything with Bibi sits in the middle of Solo, under the trails; Together is Play with Friends, Join a Game, Your Crews (phone)', { skip: skip() }, async () => {
+test('the menu order: Quick play, Bloppitopia, the Weekly, Continue, How to play; Build Anything with Bibi sits in the middle of Solo, under the trails; Together is Play with Friends and Your Crews (phone)', { skip: skip() }, async () => {
   const t = await open('?nosplash=1', { viewport: { width: 402, height: 874 }, touch: true, init: { fn: () => { localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); } } });
   await t.page.waitForTimeout(2500); assert.equal(await t.view(), 'view-home');
   const r = await t.page.evaluate(() => { const y = (s) => { const e = document.querySelector(s); return e && !e.hidden ? Math.round(e.getBoundingClientRect().top) : null; }, h = (s) => Math.round(document.querySelector(s).getBoundingClientRect().height);
@@ -1190,7 +1190,7 @@ test('the menu order: Quick play, Bloppitopia, the Weekly, Continue, How to play
   assert.deepEqual(r.secs, ['Solo', 'Together']);
   assert.deepEqual(r.solo, ['otter', 'brain', 'quick', 'flip', 'cpu']); assert.equal(r.wide, 'quick'); assert.ok(r.bibiBelow, 'between the trails and the puzzles on a phone');
   assert.equal(r.bibiSub, 'Photos, drawings or 60+ library models');
-  assert.match(r.together, /Play with Friends.*Join a Game.*Your Crews/s);
+  assert.match(r.together, /Play with Friends.*Your Crews/s); assert.doesNotMatch(r.together, /Join a Game/);   // Together: two halves (Join a Game is inside Play with Friends)
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
@@ -1718,7 +1718,7 @@ async function tMakeRoom(t, perTurn = 5) {
   return tCode(t);
 }
 async function tJoin(t, code) {
-  await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="code"]').click()); await t.page.waitForTimeout(500);
+  await t.page.evaluate(() => (document.querySelector('.hm-tile[data-go="mp"]').click(), document.querySelector('#view-mp .hub [data-sub="join"]').click())); await t.page.waitForTimeout(500);
   await t.page.fill('#mpCodeIn', code); await t.page.fill('#mpName2', 'Guest'); await t.page.evaluate(() => document.getElementById('mpJoin').click()); await t.page.waitForTimeout(1500);
 }
 async function tAdmitStart(host) {
@@ -1757,11 +1757,11 @@ test('Together: Join a game takes every code: a challenge code opens the challen
     await a.page.evaluate(() => { window.bloppitPlaceRight(); const b = document.getElementById('mpEndTurn'); if (b && !b.hidden) b.click(); }); await a.page.waitForTimeout(450); }
   const code = await a.page.evaluate(() => document.getElementById('trCode').textContent.trim()); assert.match(code, /^[A-Z0-9]{6}$/);
   const b = await open(T_OPEN);
-  await b.page.evaluate(() => document.querySelector('.hm-tile[data-go="code"]').click()); await b.page.waitForTimeout(500);
+  await b.page.evaluate(() => (document.querySelector('.hm-tile[data-go="mp"]').click(), document.querySelector('#view-mp .hub [data-sub="join"]').click())); await b.page.waitForTimeout(500);
   await b.page.fill('#mpCodeIn', code); assert.equal(await b.page.inputValue('#mpCodeIn'), code, 'all 6 letters fit');
   await b.page.evaluate(() => document.getElementById('mpJoin').click()); await b.page.waitForTimeout(3000);
   assert.match(await b.text('#chPreview'), /challenged you!/);
-  await b.page.evaluate(() => window.bloppitHome()); await b.page.evaluate(() => document.querySelector('.hm-tile[data-go="code"]').click()); await b.page.waitForTimeout(500);
+  await b.page.evaluate(() => window.bloppitHome()); await b.page.evaluate(() => (document.querySelector('.hm-tile[data-go="mp"]').click(), document.querySelector('#view-mp .hub [data-sub="join"]').click())); await b.page.waitForTimeout(500);
   await b.page.fill('#mpCodeIn', 'QQQQQ9'); await b.page.evaluate(() => document.getElementById('mpJoin').click()); await b.page.waitForTimeout(2500);
   assert.equal(await b.view(), 'view-mp'); assert.ok(await b.page.locator('#crewCard').isVisible(), 'tried as a crew code on the Crews card');
   assert.equal(await b.page.inputValue('#crewCodeIn'), 'QQQQQ9');
@@ -1829,7 +1829,7 @@ test('Together pages: Race a Friend stays in Together (tab lit, back to Together
   assert.match(await t.text('#bzHeadT'), /^Race a Friend$/); assert.match(await t.text('#view-blitz>.crumb[data-up]'), /Together/);
   await t.page.evaluate(() => document.querySelector('#view-blitz>.crumb[data-up]').click()); await t.page.waitForTimeout(600);
   assert.equal(await t.view(), 'view-mp'); assert.equal(await t.page.evaluate(() => document.getElementById('view-mp').dataset.sub), 'hub');
-  await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="code"]').click()); await t.page.waitForTimeout(600);
+  await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => (document.querySelector('.hm-tile[data-go="mp"]').click(), document.querySelector('#view-mp .hub [data-sub="join"]').click())); await t.page.waitForTimeout(600);
   assert.equal(await hero(), false, 'no banner on Join a Game'); assert.match(await t.text('#mpHeadN'), /^Got a code from a friend\?/); assert.equal(await t.page.locator('#mpToRace').isVisible(), false);
   // Blitz Bay's own pages keep Swoop's banner
   await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="cpu"]').click()); await t.page.waitForTimeout(800);
@@ -1858,6 +1858,26 @@ test('Your Crews: the list says how many of 6, each crew is a card that opens on
   await t.page.evaluate(() => document.getElementById('crewHave').click()); assert.equal(await mode(), 'join'); assert.ok(await t.page.locator('#crewCodeIn').isVisible());
   await t.page.evaluate(() => document.querySelector('.crew-v-join [data-crew-back]').click()); assert.equal(await mode(), 'list');
   await t.page.evaluate(() => document.querySelector('.crew-tile').click()); await t.page.waitForTimeout(800); assert.equal(await mode(), 'crew');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('Together is one category: the menu has Play with Friends and Your Crews, the Together page switches between them, the tab opens the half used last', { skip: skip() }, async () => {
+  const t = await open(T_OPEN, { viewport: { width: 402, height: 874 } });
+  const vis = (sel) => t.page.evaluate((s) => { const e = document.querySelector(s); return !!e && e.offsetParent !== null; }, sel);
+  const sub = () => t.page.evaluate(() => document.getElementById('view-mp').dataset.sub);
+  assert.deepEqual(await t.page.evaluate(() => [...[...document.querySelectorAll('#view-home .hm-sec')].pop().nextElementSibling.querySelectorAll('.hm-tile')].map((b) => b.dataset.go)), ['mp', 'crew']);
+  await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="mp"]').click()); await t.page.waitForTimeout(600);
+  assert.equal(await sub(), 'hub'); assert.ok(await vis('.tg-switch')); assert.ok(await vis('#view-mp>.char-hero'));
+  assert.equal(await t.page.evaluate(() => document.getElementById('tgFriends').getAttribute('aria-selected')), 'true');
+  await t.page.evaluate(() => document.getElementById('tgCrews').click()); await t.page.waitForTimeout(1200);
+  assert.equal(await sub(), 'crews'); assert.ok(await vis('.tg-switch'), 'the switch on Your Crews too'); assert.ok(await vis('#view-mp>.char-hero'));
+  assert.equal(await t.page.evaluate(() => document.getElementById('tab-mp').getAttribute('aria-selected')), 'true', 'Together is lit on both halves');
+  // the Together tab opens the half used last
+  await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => document.getElementById('tab-mp').click()); await t.page.waitForTimeout(800); assert.equal(await sub(), 'crews');
+  await t.page.evaluate(() => document.getElementById('tgFriends').click()); await t.page.waitForTimeout(500);
+  // pages under a half have their own heading and a way back, no switch
+  await t.page.evaluate(() => document.querySelector('#view-mp .hub [data-sub="start"]').click()); await t.page.waitForTimeout(500);
+  assert.equal(await vis('.tg-switch'), false); assert.equal(await vis('#view-mp>.char-hero'), false); assert.match(await t.text('#view-mp>.crumb[data-up]'), /Together/);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 

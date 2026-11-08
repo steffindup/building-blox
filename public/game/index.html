@@ -1313,14 +1313,24 @@ body.on-home .tabs{visibility:hidden}
 .hub-grid{max-width:720px;margin-top:6px}
 .crumb{justify-self:start;border:0;background:none;color:var(--muted);font:inherit;font-weight:700;font-size:14px;padding:2px 0;cursor:pointer}
 .crumb:hover{color:var(--ink)}
-.view[data-sub="hub"]>:not(.hub):not(.char-hero){display:none!important}   /* the character stays on top of every page of its tab (Steff, 5 Nov 2026) */
+.view[data-sub="hub"]>:not(.hub):not(.char-hero):not(.tg-switch){display:none!important}   /* the character stays on top of every page of its tab (Steff, 5 Nov 2026) */
 /* …except Together: its banner is on Play with Friends only, so each page below starts with its own heading (Steff, 8 Nov 2026) */
-#view-mp:not([data-sub="hub"])>.char-hero,#view-blitz[data-sub="friend"]>.char-hero{display:none!important}
+#view-blitz[data-sub="friend"]>.char-hero{display:none!important}
+/* Together is one category with two halves, Play with Friends and Your Crews (Steff, 8 Nov 2026): the banner and a
+   two-part switch sit on top of both; the pages below them (Team Build, Join a Game, a crew, Make, Join) don't show them */
+#view-mp:not([data-sub="hub"]):not([data-sub="crews"])>.char-hero,#view-mp:not([data-sub="hub"]):not([data-sub="crews"])>.tg-switch{display:none!important}
+#view-mp[data-sub="crews"]:has(.crews-page:not([data-mode="list"]))>.char-hero,#view-mp[data-sub="crews"]:has(.crews-page:not([data-mode="list"]))>.tg-switch{display:none!important}
+#view-mp.in-room>.tg-switch{display:none!important}
+.tg-switch{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:14px 0 4px;border-radius:999px;background:var(--page);border:1px solid var(--line);max-width:520px}
+.tg-switch button{position:relative;border:0;border-radius:999px;padding:10px 12px;font:inherit;font-weight:800;font-size:15px;background:none;color:var(--muted);cursor:pointer}
+.tg-switch button[aria-selected="true"]{background:var(--c-together);color:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.2)}
+.tg-switch #tgCrews[aria-selected="true"]{background:var(--c-crew)}
+.tg-switch .news-dot{top:4px;right:10px}
 .view:not([data-sub="hub"])>.hub{display:none}
 /* Your Crews is a page of its own on the Together tab (Steff, 8 Nov 2026) */
-#view-mp[data-sub="crews"]>:not(.crews-page):not(.char-hero){display:none!important}
+#view-mp[data-sub="crews"]>:not(.crews-page):not(.char-hero):not(.tg-switch){display:none!important}
 .crews-page .crew-v{display:none;gap:12px}.crews-page[data-mode="list"] .crew-v-list,.crews-page[data-mode="make"] .crew-v-make,.crews-page[data-mode="join"] .crew-v-join{display:grid}
-.crews-page[data-mode="crew"] #crewCard,.crews-page:not([data-mode="list"])>.crumb[data-crews-up]{display:none}
+.crews-page[data-mode="crew"] #crewCard{display:none}
 .crews-page:not([data-mode="crew"]) #crewOpen{display:none!important}
 .crew-v h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:28px}.crew-v>.crumb{justify-self:start;margin:0}
 .crew-count{margin:6px 0 -2px;font-family:var(--f-display);font-weight:400;font-size:19px}
@@ -2013,9 +2023,8 @@ body.film-on{overflow:hidden}
   </div>
   <h3 class="hm-sec">Together</h3>
   <div class="hm-grid match">
-    <button class="hm-tile t-together" data-go="mp" type="button"><span class="ic" aria-hidden="true"><span class="two"><img src="/art/head-bloppit.png" alt="" width="256" height="256"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span></span><b>Play with Friends</b><span>Team Build or Race a Friend</span></button>
-    <button class="hm-tile t-join" data-go="code" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a Game</b><span>Got a code? Type it in to play</span></button>
-    <button class="hm-tile t-crew wide" data-go="crew" type="button"><span class="ic" aria-hidden="true"></span><b>Your Crews</b><span>Crew Quick Game, Pass the Puzzle, Crew Mega Build</span></button>
+    <button class="hm-tile t-together" data-go="mp" type="button"><span class="ic" aria-hidden="true"><span class="two"><img src="/art/head-bloppit.png" alt="" width="256" height="256"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span></span><b>Play with Friends</b><span>A game now: Team Build, Race or Join</span></button>
+    <button class="hm-tile t-crew" data-go="crew" type="button"><span class="ic" aria-hidden="true"></span><b>Your Crews</b><span>Friends you build with again and again</span></button>
   </div>
 </div>
 </section>
@@ -2253,8 +2262,11 @@ body.film-on{overflow:hidden}
 
 <section class="view" id="view-mp" hidden>
 <div class="char-hero" data-hero="mp" hidden><img class="ch-art" src="" alt=""><div class="ch-txt"><span class="ch-isle"></span><h2 class="ch-title"></h2><q class="ch-line"></q><p class="ch-desc"></p></div></div>
+  <div class="tg-switch" role="tablist" aria-label="Together">
+    <button type="button" role="tab" id="tgFriends" data-tg="hub">Play with Friends</button>
+    <button type="button" role="tab" id="tgCrews" data-tg="crews">Your Crews</button>
+  </div>
   <div class="hub" data-hub>
-    <h3 class="hm-sec hub-sec">Play with Friends</h3>
     <div class="hm-grid hub-grid three match">
       <button class="hm-tile t-together" data-sub="start" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="0" y="16" width="66" height="58"/><use href="#bh2" x="58" y="28" width="58" height="51"/><rect x="34" y="80" width="52" height="28" rx="5" fill="#D2352B"/><rect x="40" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="66" y="73" width="14" height="10" rx="3" fill="#E5463C"/><rect x="34" y="100" width="52" height="8" rx="4" fill="#B32A22"/><ellipse cx="34" cy="90" rx="8" ry="7" fill="#8A5A3B"/><ellipse cx="86" cy="90" rx="8" ry="7" fill="#C08A5E"/></svg></span><b>Team Build</b><span>One puzzle, taking turns with friends</span></button>
       <button class="hm-tile t-friend" data-go-race type="button"><span class="ic race-ic" aria-hidden="true"><svg viewBox="0 0 60 60" aria-hidden="true" focusable="false"><g stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".85"><path d="M3 20h9"/><path d="M5 27h7"/><path d="M3 41h9"/><path d="M5 48h7"/></g><use href="#bh" x="11" y="9" width="28" height="25"/><use href="#bh" x="27" y="30" width="28" height="25"/></svg></span><b>Race a Friend</b><span>Race live, or send a code to race later</span></button>
@@ -2262,7 +2274,6 @@ body.film-on{overflow:hidden}
     </div>
   </div>
   <div class="crews-page" data-mode="list">
-  <button class="crumb" data-crews-up type="button">‹ Together</button>
     <div class="card crew-card" id="crewCard">
       <div class="crew-v crew-v-list">
         <h2>Your Crews</h2>
@@ -3648,7 +3659,7 @@ const HERO={
   brain:{who:'nora',art:'/art/char-nora.png',isle:'Brainpeak',title:'Nora’s Brain Trail',line:'A clever mind shines in the dark.',desc:'Nora tucks maths puzzles into the booklet: solve one to open its page. The last build is her Great Telescope.',c:['#4A6FC0','#1C2B57']},
   create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Build Anything with Bibi',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
   blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Blitz with Swoop',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Shortest time wins.',c:['#5DB4F2','#1F6FC4']},
-  mp:{who:['pup','pup'],art:'/art/hero-together.png',isle:'Friendship Harbour',title:'Together',line:'Every build is better with a friend!',desc:'Play with Friends: a Team Build or Race a Friend, with a code to share.',c:['#B9A2F7','#6E4FD6']}};
+  mp:{who:['pup','pup'],art:'/art/hero-together.png',isle:'Friendship Harbour',title:'Together',line:'Every build is better with a friend!',desc:'Play with Friends for a game right now, with a code. Your Crews for the friends you build with again and again.',c:['#B9A2F7','#6E4FD6']}};
 function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[data-hero="${t}"]`); if(!el) return;
   const key=t==='game'?subOf.game:t, H=HERO[key]; el.hidden=!H; if(!H) return;
   if(el.dataset.k===key) return; el.dataset.k=key;
@@ -3669,6 +3680,9 @@ function sectionOf(t){
 }
 const MP_TEAM_NOTE='Build one puzzle together on different phones, tablets or computers. Take turns placing a few bricks each. Everyone sees the model grow live. Friends join with the room code, and you let them in.',
   MP_JOIN_NOTE='Got a code from a friend? Type it in to join their game: a Team Build, a race, Pass the Puzzle or a crew.';
+function tgLast(){ try{ return localStorage.getItem('bloppit-tg')==='crews'?'crews':'hub'; }catch(e){ return 'hub'; } }
+function tgSync(s){ $('#tgFriends').setAttribute('aria-selected',s!=='crews'); $('#tgCrews').setAttribute('aria-selected',s==='crews');
+  if(s==='hub'||s==='crews'){ try{ localStorage.setItem('bloppit-tg',s); }catch(e){} } }
 function syncSub(t){
   if(!SUB_OK[t]) return;
   let s=subOf[t];
@@ -3677,7 +3691,7 @@ function syncSub(t){
   const v=$('#view-'+t); v.dataset.sub=s; v.classList.toggle('in-room',!!(mp||mpw));
   if(t==='blitz'){ if(s==='friend') $('#bzHeadT').innerHTML='<span class="race-hd" aria-hidden="true"><svg viewBox="0 0 60 60" aria-hidden="true" focusable="false"><g stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".85"><path d="M3 20h9"/><path d="M5 27h7"/><path d="M3 41h9"/><path d="M5 48h7"/></g><use href="#bh" x="11" y="9" width="28" height="25"/><use href="#bh" x="27" y="30" width="28" height="25"/></svg></span>Race a Friend'; else $('#bzHeadT').textContent=s==='cpu'?'⚡ Blitz with Swoop':'⚡ Blitz';
     const up=$('#view-blitz>.crumb[data-up]'); if(up) up.textContent=s==='friend'?'‹ Together':'‹ Blitz Bay'; }
-  if(t==='mp'){ $('#mpHeadT').textContent=s==='join'?'🔑 Join a Game':'🧩 Team Build';
+  if(t==='mp'){ tgSync(s); $('#mpHeadT').textContent=s==='join'?'🔑 Join a Game':'🧩 Team Build';
     $('#mpHeadN').textContent=s==='join'?MP_JOIN_NOTE:MP_TEAM_NOTE; const tb=$('#mpToRace'); if(tb) tb.hidden=s==='join'; }
   if(t==='game'&&s==='hub'){ const st=playerStats(players.cur);
     $('#hubOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
@@ -3788,7 +3802,8 @@ document.querySelectorAll('.tab[data-tab]').forEach(b=>b.addEventListener('click
   if(b.dataset.tab==='create'&&mp){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus(`You’re in ${mpWhat()}. Tap Brickyard Cove again to leave it.`,'err'); else showToastLeave(); return; } mpLeave(); }
   if(b.dataset.tab==='game'&&mp){ setTab(mpHomeTab()); mpMsg(`Leave ${mpWhat()} first to play the levels on your own.`); return; }
   if(b.dataset.tab==='create'&&game){ if(!leaveArmed){ leaveArmed=true; setTimeout(()=>leaveArmed=false,3000); if(tab==='build') setStatus('You’re in a Trail level. Tap Brickyard Cove again to leave it.','err'); else showToastLeave(); return; } endGame(); }
-  setTab(b.dataset.tab,b.dataset.sub&&!(mp||mpw)?b.dataset.sub:SUB_OK[b.dataset.tab]&&!(mp||mpw)?'hub':undefined);}));
+  setTab(b.dataset.tab,b.dataset.sub&&!(mp||mpw)?b.dataset.sub:b.dataset.tab==='mp'&&!(mp||mpw)?tgLast():SUB_OK[b.dataset.tab]&&!(mp||mpw)?'hub':undefined);}));
+document.querySelectorAll('.tg-switch [data-tg]').forEach(b=>b.addEventListener('click',()=>{ setTab('mp',b.dataset.tg); scrollTo(0,0); }));
 // Hub tiles and the "‹ Blitz" links
 document.querySelectorAll('.view .hub [data-sub]').forEach(b=>b.addEventListener('click',()=>{ const t=b.closest('.view').id.slice(5); mpDoneLeave();
   if(t==='game'&&mp){ mpMsg(`Leave ${mpWhat()} first to play the Trails on your own.`); setTab(mpHomeTab()); return; }
@@ -3796,7 +3811,6 @@ document.querySelectorAll('.view .hub [data-sub]').forEach(b=>b.addEventListener
 document.querySelectorAll('.view>.crumb[data-up]').forEach(b=>b.addEventListener('click',()=>{ const t=b.closest('.view').id.slice(5);
   if(t==='blitz'&&subOf.blitz==='friend'){ setTab('mp','hub'); return; }   // Race a Friend goes back to Together
   setTab(t,'hub'); }));
-document.querySelector('[data-crews-up]').addEventListener('click',()=>setTab('mp','hub'));
 let leaveArmed=false;
 function showToastLeave(){ const t=$('#tab-cove'); const o=t.innerHTML; t.innerHTML=t.querySelector('.n').outerHTML+'Tap again to leave'; setTimeout(()=>{t.innerHTML=o;},3000); }
 // Choosing a puzzle for Blitz: the Puzzle page shows a banner, and its main button hands the puzzle back to Blitz
@@ -11933,7 +11947,7 @@ function crewNews(g){
 function crewDots(){
   const seen=crewSeenMine(); crewMine.forEach(g=>{ if(g.me&&!seen[g.code]) crewSeenSet(g); });
   const on=crewMine.some(g=>crewNews(g));
-  ['.t-crew'].forEach(sel=>document.querySelectorAll(sel).forEach(el=>{ let d=el.querySelector(':scope>.news-dot');
+  ['#tab-mp','#tgCrews','.t-crew'].forEach(sel=>document.querySelectorAll(sel).forEach(el=>{ let d=el.querySelector(':scope>.news-dot');
     if(!d){ d=document.createElement('i'); d.className='news-dot'; d.setAttribute('aria-hidden','true'); el.appendChild(d); } d.hidden=!on;
     el.dataset.news=on?'1':''; }));
   const tile=document.querySelector('.t-crew'); if(tile) tile.setAttribute('aria-label',on?'Crews: something new in your crews':'Crews');
