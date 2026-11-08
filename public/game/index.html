@@ -1314,6 +1314,9 @@ body.on-home .tabs{visibility:hidden}
 .crumb:hover{color:var(--ink)}
 .view[data-sub="hub"]>:not(.hub):not(.char-hero){display:none!important}   /* the character stays on top of every page of its tab (Steff, 5 Nov 2026) */
 .view:not([data-sub="hub"])>.hub{display:none}
+/* Your Crews is a page of its own on the Together tab (Steff, 8 Nov 2026) */
+#view-mp[data-sub="crews"]>:not(.crews-page):not(.char-hero){display:none!important}
+#view-mp:not([data-sub="crews"])>.crews-page{display:none}
 .view.in-room>.crumb{display:none}
 #view-blitz[data-sub="cpu"]:not(.in-room) #bzFriendCard,#view-blitz[data-sub="cpu"] #chPreview,#view-blitz[data-sub="cpu"] #chMine{display:none!important}
 #view-blitz[data-sub="friend"]:not(.in-room) #bzCpuCard{display:none!important}
@@ -2212,6 +2215,12 @@ body.film-on{overflow:hidden}
       <button class="hm-tile t-friend" data-go-race type="button"><span class="ic" aria-hidden="true"><i class="di di-friend" style="width:64px;height:64px"></i></span><b>Race a Friend</b><span>Race live, or send a code to race later</span></button>
       <button class="hm-tile t-join" data-sub="join" type="button"><span class="ic" aria-hidden="true"><svg viewBox="0 0 120 120" aria-hidden="true" focusable="false"><use href="#bh" x="4" y="10" width="82" height="72"/><circle cx="78" cy="88" r="15" fill="#F4BC22"/><circle cx="78" cy="88" r="6" fill="#1B2A34"/><rect x="90" y="84" width="26" height="8" rx="3" fill="#F4BC22"/><rect x="104" y="92" width="5" height="9" rx="2" fill="#F4BC22"/><rect x="111" y="92" width="5" height="6" rx="2" fill="#F4BC22"/><ellipse cx="64" cy="92" rx="9" ry="8" fill="#8A5A3B"/></svg></span><b>Join a Game</b><span>Got a code? Type it in to play</span></button>
     </div>
+    <div class="hm-grid hub-grid">
+      <button class="hm-tile t-crew wide" data-sub="crews" type="button"><span class="ic" aria-hidden="true"></span><b>Your Crews</b><span>Crew Quick Game, Pass the Puzzle, Crew Mega Build</span></button>
+    </div>
+  </div>
+  <div class="crews-page">
+  <button class="crumb" data-crews-up type="button">‹ Together</button>
     <div class="card crew-card" id="crewCard">
       <div class="gm-head sub-head"><div><h2>Your Crews</h2><p class="note">A crew is your group of friends, over days and weeks. Inside each crew: a Crew Quick Game to play live, Pass the Puzzle (one model passed round, each building their pages in turn), and the Crew Mega Build that every brick anyone builds brings closer. You can be in up to six crews. Any player can make a crew; the maker lets each friend in. Crews only pass fixed phrases and stickers, under generated names.</p></div></div>
       <div class="crew-list" id="crewList"></div>
@@ -2222,8 +2231,6 @@ body.film-on{overflow:hidden}
       <p class="note" id="crewMsg" hidden></p>
     </div>
     <div class="card crew-open" id="crewOpen" hidden></div>
-    <div class="hm-grid hub-grid" hidden>
-    </div>
   </div>
   <button class="crumb" data-up type="button">‹ Together</button>
   <div class="gm-head sub-head"><div><h2 id="mpHeadT">🧩 Team Build</h2><p class="note">Build one puzzle together on different phones, tablets or computers. Take turns placing a few bricks each. Everyone sees the model grow live. Friends join with the room code, and you let them in.</p></div></div>
@@ -3572,7 +3579,7 @@ function niceName(n){ const b=String(n||'').replace(/\.[^.]+$/,'').trim();
 // Trails, Blitz and Together each have a hub page ('hub') and a page per game. setTab(t) keeps the page the
 // section was last on; setTab(t,'hub') or setTab('blitz','cpu') picks one.
 var subOf={game:'hub',blitz:'hub',mp:'hub'};
-const SUB_OK={game:['hub','otter','brain','sea','flip'],blitz:['hub','cpu','friend'],mp:['hub','start','join']};
+const SUB_OK={game:['hub','otter','brain','sea','flip'],blitz:['hub','cpu','friend'],mp:['hub','start','join','crews']};
 // Which top-bar game a page belongs to (the build screen belongs to whatever you're playing)
 // The top bar: one tab per character. Tiny’s Frog Trail and Nora’s Brain Trail are both the Trails page (their own level maps), and
 // Pippa's tab is her seaside puzzles (and her daily message in a bottle); the Weekly Bloppit is Bibi's, under Build anything.
@@ -3630,7 +3637,7 @@ function setTab(t,sub){ if(t!=='island'&&typeof ISL3!=='undefined') ISL3.thenCha
   ['home','create','build','box','booklet','game','mp','blitz','daily','island'].forEach(v=>$('#view-'+v).hidden=v!==t);
   if(t==='island') renderIsland();
   if(t==='create'){ renderDrawSaved(); qbWeeklySync(); }
-  if(t==='mp'&&(sub==='hub'||subOf.mp==='hub')) renderCrews(true);
+  if(t==='mp'&&(sub==='crews'||!sub&&subOf.mp==='crews')) renderCrews(true);
   if(t!=='create'&&pickFor) pickFor=null;
   syncPick();
   document.body.classList.toggle('on-home',t==='home');
@@ -3668,7 +3675,7 @@ const navHash=t=>SUB_HASH[t]?SUB_HASH[t][subOf[t]]:NAV_HASH[t];
 // Address → [page, part]
 function hashPage(h){
   for(const [t,m] of Object.entries(SUB_HASH)) for(const [s,hh] of Object.entries(m)) if(h===hh) return [t,s];
-  const t={photos:'create',create:'create',quick:'create',build:'build',booklet:'booklet',game:['game','hub'],'play-together':['mp','hub'],daily:'daily',island:'island'}[h];
+  const t={photos:'create',create:'create',quick:'create',build:'build',booklet:'booklet',game:['game','hub'],'play-together':['mp','hub'],crews:['mp','crews'],daily:'daily',island:'island'}[h];
   return Array.isArray(t)?t:[t||'home'];
 }
 var navReady=false, navFromBack=false;  // var: setTab runs during start-up, before this line
@@ -3724,6 +3731,7 @@ document.querySelectorAll('.view .hub [data-sub]').forEach(b=>b.addEventListener
   if(t==='game'&&mp){ mpMsg(`Leave ${mpWhat()} first to play the Trails on your own.`); setTab(mpHomeTab()); return; }
   setTab(t,b.dataset.sub); if(t==='mp'&&b.dataset.sub==='join') requestAnimationFrame(()=>{ const i=$('#mpCodeIn'); if(i) i.focus(); }); }));
 document.querySelectorAll('.view>.crumb[data-up]').forEach(b=>b.addEventListener('click',()=>setTab(b.closest('.view').id.slice(5),'hub')));
+document.querySelector('[data-crews-up]').addEventListener('click',()=>setTab('mp','hub'));
 let leaveArmed=false;
 function showToastLeave(){ const t=$('#tab-cove'); const o=t.innerHTML; t.innerHTML=t.querySelector('.n').outerHTML+'Tap again to leave'; setTimeout(()=>{t.innerHTML=o;},3000); }
 // Choosing a puzzle for Blitz: the Puzzle page shows a banner, and its main button hands the puzzle back to Blitz
@@ -7467,7 +7475,7 @@ async function joinSixCode(code){
   try{ const r=await fetch(API_BASE+'/api/challenge?code='+code,{cache:'no-store'}); kind=r.ok?'challenge':r.status===404?'crew':''; }
   catch(e){ mpMsg('Couldn’t reach Bloppit. Check your internet connection.','err'); return; }
   if(kind==='challenge'){ mpMsg(''); setTab('blitz','friend'); $('#bzCodeIn').value=code; chOpen(code); return; }
-  if(kind==='crew'){ mpMsg(''); setTab('mp','hub'); $('#crewCodeIn').value=code; $('#crewCard').scrollIntoView({block:'center'}); $('#crewJoin').click(); return; }
+  if(kind==='crew'){ mpMsg(''); setTab('mp','crews'); $('#crewCodeIn').value=code; $('#crewCard').scrollIntoView({block:'center'}); $('#crewJoin').click(); return; }
   mpMsg('Bloppit didn’t answer. Please try again.','err');
 }
 $('#mpJoin').onclick=async()=>{
@@ -12215,7 +12223,7 @@ function homeGo(where){ mpDoneLeave();
   if(where==='island'){ setTab('island'); return; }
   if(where==='blitz'){ setTab('blitz',mp?undefined:'hub'); return; }
   if(where==='mp'){ setTab('mp',mp?undefined:'hub'); return; }   // Play with Friends: choose Team Build or Race
-  if(where==='crew'){ setTab('mp','hub'); requestAnimationFrame(()=>{ const c=$('#crewCard'); if(c) c.scrollIntoView({block:'start',behavior:reduceMotion?'auto':'smooth'}); }); return; }   // Crews: on the Together page
+  if(where==='crew'){ setTab('mp','crews'); scrollTo(0,0); return; }   // Your Crews: its own page (Steff, 8 Nov 2026; it used to share Play with Friends' page)
   if(where==='code'){ setTab('mp',mp?undefined:'join'); if(!mp) requestAnimationFrame(()=>{ const i=$('#mpCodeIn'); if(i) i.focus(); }); return; }
   if(where==='cpu'&&!mp){ islandSetOff('blitzbay',()=>{ setTab('blitz','cpu'); scrollTo(0,0); }); return; }
   if(where==='cpu'||where==='friend'){ setTab('blitz',mp?undefined:where); if(!mp) scrollTo(0,0); return; }
