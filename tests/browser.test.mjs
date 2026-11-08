@@ -1144,20 +1144,21 @@ test('Build page: a tile asks Play on the island or Quick play; Quick play has n
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('the menu order: Quick play, Bloppitopia, the Weekly, Continue, How to play; Solo opens with Build Anything; Together is Play with Friends, Join a Game, Your Crews (phone)', { skip: skip() }, async () => {
+test('the menu order: Quick play, Bloppitopia, the Weekly, Continue, How to play; Build Anything with Bibi sits in the middle of Solo, under the trails; Together is Play with Friends, Join a Game, Your Crews (phone)', { skip: skip() }, async () => {
   const t = await open('?nosplash=1', { viewport: { width: 402, height: 874 }, touch: true, init: { fn: () => { localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); } } });
   await t.page.waitForTimeout(2500); assert.equal(await t.view(), 'view-home');
   const r = await t.page.evaluate(() => { const y = (s) => { const e = document.querySelector(s); return e && !e.hidden ? Math.round(e.getBoundingClientRect().top) : null; }, h = (s) => Math.round(document.querySelector(s).getBoundingClientRect().height);
     return { quick: y('#hmQuick'), world: y('#hmWorld'), daily: y('.hm-daily'), how: y('#hmHow'), qh: h('#hmQuick'), wh: h('#hmWorld'), dh: h('.hm-daily'),
       films: !!document.querySelector('#hmWorld #hmFilms'), streak: !!document.querySelector('.hm-daily #hdStreak'),
       secs: [...document.querySelectorAll('#view-home .hm-sec')].map((e) => e.textContent.trim()),
-      solo: [...document.querySelectorAll('#hmSolo + .hm-grid .hm-tile')].map((b) => b.dataset.go), wide: document.querySelector('#hmSolo + .hm-grid .hm-tile').classList.contains('wide'),
+      solo: [...document.querySelectorAll('#hmSolo + .hm-grid .hm-tile')].map((b) => b.dataset.go), wide: document.querySelector('#hmSolo + .hm-grid .hm-tile.wide')?.dataset.go, bibiBelow: (() => { const g = (s) => document.querySelector(`#hmSolo + .hm-grid [data-go="${s}"]`).getBoundingClientRect().top; return g('brain') < g('quick') && g('quick') < g('flip'); })(), bibiSub: document.getElementById('hmQuickSub').textContent,
       together: [...document.querySelectorAll('#view-home .hm-sec')].pop().nextElementSibling.textContent }; });
   assert.ok(r.quick < r.world && r.world < r.daily && r.daily < r.how, JSON.stringify(r));
   assert.ok(Math.abs(r.wh - 263) <= 2 && Math.abs(r.dh - 158) <= 2 && r.qh >= 68 && r.qh <= 74, JSON.stringify(r));
   assert.ok(r.films && r.streak);
   assert.deepEqual(r.secs, ['Solo', 'Together']);
-  assert.deepEqual(r.solo, ['quick', 'otter', 'brain', 'flip', 'cpu']); assert.ok(r.wide);
+  assert.deepEqual(r.solo, ['otter', 'brain', 'quick', 'flip', 'cpu']); assert.equal(r.wide, 'quick'); assert.ok(r.bibiBelow, 'between the trails and the puzzles on a phone');
+  assert.equal(r.bibiSub, 'Photos, drawings or 60+ library models');
   assert.match(r.together, /Play with Friends.*Join a Game.*Your Crews/s);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });

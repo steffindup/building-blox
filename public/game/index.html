@@ -1635,7 +1635,7 @@ body.film-on{overflow:hidden}
 .tab.play4[aria-selected="true"] .n{background:var(--hi);color:var(--hi-ink)}
 .hm-sec{font-size:22px;margin:6px 0 -6px}
 .hm-grid.three{grid-template-columns:repeat(3,1fr)}
-.hm-grid.four{grid-template-columns:repeat(4,1fr)}
+.hm-grid.four{grid-template-columns:repeat(4,1fr);grid-auto-flow:row dense}   /* Build Anything with Bibi sits between the trails and the puzzles on phones, under the four on wider screens */
 @media (max-width:760px){.hm-grid.four{grid-template-columns:1fr 1fr}}
 /* Solo tile names fit two lines whatever the tile's width (Steff, 7 Nov 2026: Pippa's Mirror Puzzles ran to three): the size follows the tile */
 .hm-grid.four .hm-tile{container-type:inline-size}
@@ -1649,8 +1649,8 @@ body.film-on{overflow:hidden}
 .hm-tile.t-crew{--c:var(--c-bloppit)}   /* Your Crews: Bloppit red (the main action), no character’s colour */
 /* Character colours (series bible; Steff, 6 Nov 2026: "each character should be associated with a specific colour").
    One colour per friend, used wherever that friend's face leads: menu tiles, the top bar, the trail picker, the Weekly.
-   Red is Bloppit’s and the main action (Quick Play too); yellow is Pippa’s and the stars’. Light colours carry dark text. */
-:root{--c-bloppit:#D62F2A;--c-tiny:#7DBE2E;--c-nora:#24407A;--c-pippa:#F4BC22;--c-swoop:#2F7FD0;--c-bibi:#E9772A;--c-lufu:#8A6FD1}
+   Red is Bloppit’s and the main action; teal is Quick Play’s; yellow is Pippa’s and the stars’. Light colours carry dark text. */
+:root{--c-quick:#1F9E8F;--c-bloppit:#D62F2A;--c-tiny:#7DBE2E;--c-nora:#24407A;--c-pippa:#F4BC22;--c-swoop:#2F7FD0;--c-bibi:#E9772A;--c-lufu:#8A6FD1}
 .hm-tile.t-quick{--c:var(--c-bibi);color:#14202C}                 /* Build anything: Bibi */
 .hm-tile.t-game{--c:var(--c-tiny);color:#14202C}                  /* Tiny’s Frog Trail: Tiny */
 .hm-tile.t-brain{--c:var(--c-nora)}                               /* Nora’s Brain Trail: Nora */
@@ -1729,7 +1729,7 @@ body.film-on{overflow:hidden}
 .tabs .tab[aria-selected="true"] .n{background:none}
 .tabs .tab[aria-selected="true"]::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:4px;border-radius:4px;background:var(--tc)}
 #tab-mp .n.n2{position:relative;width:40px!important}#tab-mp .n.n2 img{position:absolute;top:0;width:28px;height:28px}#tab-mp .n.n2 img:first-child{left:0}#tab-mp .n.n2 img:last-child{right:0;transform:scaleX(-1)}   /* Together: two Bloppits, facing each other */
-#tab-sea{--tc:var(--c-pippa)}#tab-quick{--tc:#F4BC22}#tab-cove{--tc:var(--c-bibi)}#tab-game{--tc:var(--c-tiny)}
+#tab-sea{--tc:var(--c-pippa)}#tab-cove{--tc:var(--c-bibi)}#tab-game{--tc:var(--c-tiny)}
 /* The character at the top of each page */
 .char-hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 20px;align-items:center;border-radius:20px;padding:14px 24px 14px 14px;background:linear-gradient(115deg,var(--h1),var(--h2));color:var(--hink,#fff);box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer;min-width:0;overflow:hidden}
 #view-create>.char-hero{grid-column:1/-1}
@@ -1781,11 +1781,15 @@ body.film-on{overflow:hidden}
 :root{--c-together:#6A3FB5;--accent:#D62F2A;--hi:#14202C;--hi-ink:#FFFFFF}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--hi:#E6EDF5;--hi-ink:#14202C;--accent:#EF5348}}
 :root[data-theme="dark"]{--hi:#E6EDF5;--hi-ink:#14202C;--accent:#EF5348}
-#tab-island{--tc:var(--c-bloppit)}#tab-quick{--tc:var(--c-bloppit)}#tab-mp{--tc:var(--c-together)}
+#tab-island{--tc:var(--c-bloppit)}#tab-quick{--tc:var(--c-quick)}#tab-mp{--tc:var(--c-together)}
 .hm-tile.t-together,.hm-tile.t-friend,.hm-tile.t-crew,.hm-tile.t-join{--c:var(--c-together)}
 /* no coloured outline on the menu cards (Steff, 7 Nov 2026: it clashed with the studs); the studs and the play pill carry the red */
 .hm-world .wt .bar i{background:var(--c-bloppit)}
-.hm-quick .pl{background:var(--c-bloppit);color:#fff}
+/* Quick Play is teal, everywhere: card, studs, tab, bolt, pop-up (Steff, 8 Nov 2026; teal is Quick Play's alone) */
+.hm-quick{background:var(--c-quick);color:#fff;border:0;box-shadow:inset 0 -5px 0 rgba(0,0,0,.18)}.hm-quick:hover{border-color:transparent;filter:brightness(1.05)}
+.hm-quick small,.hm-quick .go{color:rgba(255,255,255,.9)}
+.hm-quick .pl{background:#fff;color:var(--c-quick);box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}
+#qpQuickIc:has(.di-bolt){background:color-mix(in srgb,var(--c-quick) 18%,transparent)}
 .win-stars,.lvl .ls{color:#F4BC22}
 .crew-pzopt:has(input:checked){border-color:var(--c-together);box-shadow:0 0 0 2px var(--c-together) inset}.crew-pzopt em{background:var(--c-together)}
 .crew-row .bar i,.crew-head .bar i,.crew-open .bar i{background:var(--c-together)}
@@ -1795,7 +1799,7 @@ body.film-on{overflow:hidden}
   background:radial-gradient(circle at 13px 7px,var(--sc) 8.2px,var(--so,var(--sc)) 8.6px,var(--so,var(--sc)) 9px,transparent 9.5px) 0 0/34px 12px repeat-x;pointer-events:none;z-index:1}
 /* the studs are the card's own colour; a white card gets white studs with the card's outline (Steff, 8 Nov 2026).
    Bloppitopia's card keeps red studs: its top is the island picture. */
-.hm-how,.hm-quick{--sc:var(--page);--so:var(--line)}.hm-world{--sc:var(--c-bloppit)}.hm-daily{--sc:var(--c-bibi)}
+.hm-how{--sc:var(--page);--so:var(--line)}.hm-quick{--sc:var(--c-quick);--so:var(--c-quick)}.hm-world{--sc:var(--c-bloppit)}.hm-daily{--sc:var(--c-bibi)}
 .hm-cont{--sc:var(--hi)}.hm-cont.first{--sc:var(--c-bloppit)}
 .hm-side{row-gap:24px}
 /* the island each game lives on, under its name */
@@ -1810,7 +1814,7 @@ body.film-on{overflow:hidden}
 
 /* Drawn icons in place of emoji (Steff, 7 Nov 2026: "all drawn"). They look the same on every phone and computer. */
 .di{display:inline-block;width:1.2em;height:1.2em;vertical-align:-.22em;background:center/contain no-repeat;flex:none;font-style:normal}
-.di-bolt{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23D62F2A'/%3E%3Cpath d='M13.4 3.5 6.4 13.4h4.8l-1.4 7.1 7.8-10.4h-4.9z' fill='%23fff'/%3E%3C/svg%3E")}
+.di-bolt{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%231F9E8F'/%3E%3Cpath d='M13.4 3.5 6.4 13.4h4.8l-1.4 7.1 7.8-10.4h-4.9z' fill='%23fff'/%3E%3C/svg%3E")}
 .di-boltw{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14 1.5 4.6 14.5h6.4l-1.9 8 10.3-13.6h-6.5z' fill='%23fff'/%3E%3C/svg%3E")}
 .di-blitz{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%232F7FD0'/%3E%3Cpath d='M13.4 3.5 6.4 13.4h4.8l-1.4 7.1 7.8-10.4h-4.9z' fill='%23fff'/%3E%3C/svg%3E")}
 .di-isle{background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='50' cy='50' r='50' fill='%232FB8DC'/%3E%3Ccircle cx='50' cy='52' r='15' fill='%236CC04A' stroke='%23F2D594' stroke-width='4'/%3E%3Cg transform='translate%2850 52%29 scale%28.5%29' stroke='%239E2019' stroke-width='2' fill='%23D8342C'%3E%3Crect x='-20' y='-6' width='40' height='18' rx='2.5'/%3E%3Crect x='-15' y='-13' width='10' height='8' rx='2'/%3E%3Crect x='5' y='-13' width='10' height='8' rx='2'/%3E%3C/g%3E%3Ccircle cx='50.0' cy='19.0' r='8' fill='%239BD32C' stroke='%23F2D594' stroke-width='3'/%3E%3Ccircle cx='81.4' cy='41.8' r='8' fill='%2324407A' stroke='%23F2D594' stroke-width='3'/%3E%3Ccircle cx='69.4' cy='78.7' r='8' fill='%23F2C230' stroke='%23F2D594' stroke-width='3'/%3E%3Ccircle cx='30.6' cy='78.7' r='8' fill='%232F7FD0' stroke='%23F2D594' stroke-width='3'/%3E%3Ccircle cx='18.6' cy='41.8' r='8' fill='%23E9772A' stroke='%23F2D594' stroke-width='3'/%3E%3C/svg%3E")}
@@ -1864,7 +1868,7 @@ body.film-on{overflow:hidden}
 .di-think{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23F4BC22'/%3E%3Ccircle cx='8.5' cy='10' r='1.5' fill='%2314202C'/%3E%3Ccircle cx='15.5' cy='10' r='1.5' fill='%2314202C'/%3E%3Cpath d='M8.5 16q3-1.5 7 0' fill='none' stroke='%2314202C' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M5 7q2-2.5 4-1' fill='none' stroke='%2314202C' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E")}
 .di-sparkle{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z' fill='%23F4BC22'/%3E%3Cpath d='M19 15l.9 2.6 2.6.9-2.6.9L19 22l-.9-2.6-2.6-.9 2.6-.9z' fill='%23F4BC22'/%3E%3Cpath d='M5 16l.6 1.9 1.9.6-1.9.6L5 21l-.6-1.9L2.5 18.5l1.9-.6z' fill='%23F4BC22'/%3E%3C/svg%3E")}
 .di-bloppit{background-image:url('/art/head-bloppit.png');border-radius:50%}.di-swoop{background-image:url('/art/head-swoop.png');border-radius:50%}
-.hm-quick .pl .di{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14 1.5 4.6 14.5h6.4l-1.9 8 10.3-13.6h-6.5z' fill='%23fff'/%3E%3C/svg%3E");width:.9em;height:.9em}
+.hm-quick .pl .di{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14 1.5 4.6 14.5h6.4l-1.9 8 10.3-13.6h-6.5z' fill='%231F9E8F'/%3E%3C/svg%3E");width:.9em;height:.9em}
 .qb-ic .di{width:1.5em;height:1.5em}
 /* phones: the wordmark's bricks go with the word */
 @media (max-width:560px){.brand .wob{display:none}}
@@ -1895,7 +1899,7 @@ body.film-on{overflow:hidden}
     <button class="tab play4" role="tab" id="tab-sea" data-tab="game" data-sub="sea" aria-selected="false"><span class="n"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span>Flipper Beach</button>
     <button class="tab play3" role="tab" id="tab-blitz" data-tab="blitz" aria-selected="false"><span class="n"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span>Blitz Bay</button>
     <button class="tab play4" role="tab" id="tab-cove" data-tab="create" data-also="daily" aria-selected="false"><span class="n"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span>Brickyard Cove</button>
-    <button class="tab" type="button" id="tab-quick" aria-selected="false"><span class="n"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="48" fill="#D62F2A"/><path d="M56 14 26 56h20l-6 30 34-44H52z" fill="#fff"/></svg></span>Quick Play</button>
+    <button class="tab" type="button" id="tab-quick" aria-selected="false"><span class="n"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="48" fill="#1F9E8F"/><path d="M56 14 26 56h20l-6 30 34-44H52z" fill="#fff"/></svg></span>Quick Play</button>
     <button class="tab play2" role="tab" id="tab-mp" data-tab="mp" aria-selected="false"><span class="n n2"><img src="/art/head-bloppit.png" alt="" width="256" height="256"><img src="/art/head-bloppit.png" alt="" width="256" height="256"></span>Together</button>
   </nav><button class="tabs-arr r" type="button" tabindex="-1" aria-hidden="true">›</button></div>
   <button class="snd-top mus-top" id="musTop" type="button" aria-pressed="true" aria-label="Music" title="Music on or off"><span class="mus-ic" aria-hidden="true"></span></button>
@@ -1938,9 +1942,9 @@ body.film-on{overflow:hidden}
 <div class="hm-main">
   <h3 class="hm-sec" id="hmSolo">Solo</h3>
   <div class="hm-grid four">
-    <button class="hm-tile t-quick wide" data-go="quick" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span><b>Build Anything with Bibi</b><small class="isl">Brickyard Cove</small><span id="hmQuickSub">Photos, drawings or library models</span></button>
     <button class="hm-tile t-game" data-go="otter" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-tiny.png" alt="" width="256" height="256"></span><b>Tiny’s Frog Trail</b><small class="isl">Frog Forest</small><span id="hmOtterSub">Levels from tiny to tricky</span></button>
     <button class="hm-tile t-brain" data-go="brain" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-nora.png" alt="" width="256" height="256"></span><b>Nora’s Brain Trail</b><small class="isl">Brainpeak</small><span id="hmBrainSub">Levels with a maths puzzle in each</span></button>
+    <button class="hm-tile t-quick wide" data-go="quick" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-bibi.png" alt="" width="256" height="256"></span><b>Build Anything with Bibi</b><small class="isl">Brickyard Cove</small><span id="hmQuickSub">Photos, drawings or library models</span></button>
     <button class="hm-tile t-sea" data-go="flip" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-pippa.png" alt="" width="256" height="256"></span><b>Pippa’s Mirror Puzzles</b><small class="isl">Flipper Beach</small><span id="hmSeaSub">Pippa builds half, you build the rest</span></button>
     <button class="hm-tile t-blitz" data-go="cpu" type="button"><span class="ic" aria-hidden="true"><img src="/art/head-swoop.png" alt="" width="256" height="256"></span><b>Blitz with Swoop</b><small class="isl">Blitz Bay</small><span>20 races against Swoop</span></button>
   </div>
@@ -12167,7 +12171,7 @@ function renderHome(){
   if(homeCont){ $('#hmContT').textContent=homeCont.t; $('#hmContS').textContent=homeCont.s;
     $('#hmContBar').hidden=homeCont.p<0; $('#hmContBar i').style.width=Math.max(4,homeCont.p)+'%'; $('#hmCont').classList.toggle('first',!!homeCont.first); }
   const st=playerStats(players.cur);
-  { const q=$('#hmQuickSub'); if(q) q.textContent=`Photos, drawings or ${SAMPLES.filter(released).length} library models`; }
+  { const q=$('#hmQuickSub'); if(q) q.textContent='Photos, drawings or 60+ library models'; /* a growing count is 60+ (Steff, 8 Nov 2026) */ }
   $('#hmOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
   $('#hmBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} levels, a maths puzzle in each`;
   $('#hmSeaSub').textContent=st.flv?`${st.flv} of ${FLIP_LEVELS.length} any-time puzzles built`:`${FLIP_LEVELS.length} puzzles: Pippa builds half, you build the rest`;
@@ -12306,7 +12310,7 @@ navStart();  // from here on, each page change on the website is a step for the 
 })();
 
 /* Drawn icons in place of emoji: a fixed set of emoji in the game's own text becomes drawn icons (see .di in the styles),
-   whenever and wherever the game writes them. A ⚡ about racing is Swoop's blue Blitz bolt; any other ⚡ is the red go bolt. */
+   whenever and wherever the game writes them. A ⚡ about racing is Swoop's blue Blitz bolt; any other ⚡ is Quick Play's teal bolt. */
 (function(){
   const MAP=[['🏝️','isle'],['🏝','isle'],['⚡','bolt'],['📮','card'],['🎬','film'],['🔥','flame'],['📚','book'],['📷','camera'],['✏️','pencil'],['✏','pencil'],['🎨','palette'],['🧩','together'],['🔑','key'],['🤝','friend'],
     ['📦','box'],['📸','camera'],['📨','env'],['🔁','pass'],['📖','book'],['🔨','hammer'],['⛵','boat'],['💡','bulb'],['🌳','tree'],['🏁','flag'],['🚀','rocket'],['📅','cal'],['🐸','tiny'],['🧠','nora'],['🐧','pippa'],
@@ -12315,7 +12319,7 @@ navStart();  // from here on, each page change on the website is a step for the 
   const SKIP=new Set(['SCRIPT','STYLE','TEXTAREA','INPUT','OPTION','SELECT','TITLE','svg','text','KBD']);
   function swap(n){
     const s=n.nodeValue; if(!s||!ANY.test(s)) return; const p=n.parentNode; if(!p||SKIP.has(p.nodeName)||p.closest&&p.closest('svg,select,textarea,.no-di')) return;
-    const race=/Blitz|race|Race|Swoop|Grand Prix/.test((p.closest('button,h2,h3,b,span,div')||p).textContent);
+    const race=!!(p.closest&&p.closest('.go-card,#mpEndTitle'))||/Blitz|race|Race|Swoop|Grand Prix/.test((p.closest('button,h2,h3,b,span,div')||p).textContent);
     const f=document.createDocumentFragment(); let last=0; RE.lastIndex=0; let m;
     while((m=RE.exec(s))){ if(m.index>last) f.appendChild(document.createTextNode(s.slice(last,m.index)));
       let k=MAP.find(x=>m[1]===x[0])[1]; if(k==='bolt'&&race) k='blitz';
