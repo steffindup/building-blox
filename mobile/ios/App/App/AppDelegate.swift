@@ -1,4 +1,5 @@
 import UIKit
+import AVFoundation
 import Capacitor
 
 @UIApplicationMain
@@ -7,7 +8,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        // The game's sounds mix with the player's own music (Music, Spotify) instead of stopping it, and follow the
+        // silent switch. A film with sound switches the page to "playback" while it plays (navigator.audioSession).
+        try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: [])
         return true
     }
 

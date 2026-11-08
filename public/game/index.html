@@ -101,6 +101,13 @@
   <div class="sp-tag" aria-label="World of Bricks"><span>World</span><span>of</span><span>Bricks</span></div>
 </div>
 <script>
+// Sound plays alongside the player's own music (Music, Spotify): the game's sounds are "ambient", so they mix in and follow
+// the silent switch. A film with its sound on switches to "playback" while it plays (always heard; other music pauses),
+// then back. iPhone and iPad (app and Safari) know navigator.audioSession; elsewhere this does nothing.
+window.bloppitAudioType=function(t){ try{ var s=navigator.audioSession; if(s&&s.type!==t) s.type=t; }catch(x){} };
+window.bloppitAudioType('ambient');
+</script>
+<script>
 // Launch screen: once per visit, on the website and in the app (not again after switching player).
 // Skipped for links straight into a room, a challenge or a page.
 (function(){ var s=document.getElementById('splash'), nav='', inside=false;
@@ -4247,7 +4254,17 @@ const sfx=(()=>{
   function musicTick(){ const c=ac; if(!c||!M.playing) return; while(M.next<c.currentTime+.3){ musicNote(c,M.next,M.i); M.i++; M.next+=S16; } }
   const videoOn=()=>[...document.querySelectorAll('video')].some(v=>!v.paused&&!v.ended);   // a film on mute still keeps the music away
   const onIsland=()=>{ try{ return tab==='island'; }catch(e){ return false; } };   // the music belongs to Bloppitopia: every game itself is quiet
-  function musicLevel(){ if(!ac||!mbus) return; const want=on&&musicOn&&onIsland()&&!document.hidden&&!M.duck&&!videoOn()?.22:0, n=ac.currentTime;
+  // The player's own music (Music, Spotify) playing: the island music stays quiet so two songs never play at once; the
+  // sound effects still play over it. Only the app can tell (iOS's hint, via the OtherAudio plugin); it updates live.
+  let other=false;
+  try{ const C=window.Capacitor, P=C&&C.getPlatform&&C.getPlatform()==='ios'&&(C.registerPlugin?C.registerPlugin('OtherAudio'):C.Plugins&&C.Plugins.OtherAudio);
+    if(P){ const ask=()=>{ try{ P.isPlaying().then(r=>{ other=!!(r&&r.playing); musicLevel(); }).catch(()=>{}); }catch(e){} };
+      ask(); try{ const h=P.addListener&&P.addListener('change',r=>{ other=!!(r&&r.playing); musicLevel(); }); h&&h.catch&&h.catch(()=>{}); }catch(e){}
+      document.addEventListener('visibilitychange',()=>{ if(!document.hidden) ask(); }); addEventListener('focus',ask); } }catch(e){}
+  // A film with its sound on is always heard (even on silent, pausing other music); everything else stays ambient
+  const filmLoud=()=>[...document.querySelectorAll('video')].some(v=>!v.paused&&!v.ended&&!v.muted&&v.volume>0);
+  const sessionType=()=>window.bloppitAudioType&&window.bloppitAudioType(filmLoud()?'playback':'ambient');
+  function musicLevel(){ if(!ac||!mbus) return; const want=on&&musicOn&&onIsland()&&!document.hidden&&!M.duck&&!videoOn()&&!other?.22:0, n=ac.currentTime;
     mbus.gain.cancelScheduledValues(n); mbus.gain.setValueAtTime(mbus.gain.value,n); mbus.gain.linearRampToValueAtTime(want,n+(want?1.2:.35));
     if(want&&!M.playing){ M.playing=true; M.next=n+.1; M.timer=setInterval(musicTick,60); }
     else if(!want&&M.playing){ clearTimeout(M.stopT); M.stopT=setTimeout(()=>{ if(mbus.gain.value<.01){ M.playing=false; clearInterval(M.timer); } },500); } }
@@ -4257,7 +4274,7 @@ const sfx=(()=>{
   document.addEventListener('visibilitychange',()=>{ if(!document.hidden) wake(); musicLevel(); });
   addEventListener('pageshow',()=>{ wake(); musicLevel(); }); addEventListener('focus',()=>{ wake(); musicLevel(); });
   try{ const App=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.App; App&&App.addListener&&App.addListener('resume',()=>{ wake(); musicLevel(); }); }catch(e){}
-  ['play','playing','pause','ended','volumechange'].forEach(ev=>document.addEventListener(ev,()=>setTimeout(musicLevel,30),true));
+  ['play','playing','pause','ended','volumechange','emptied'].forEach(ev=>document.addEventListener(ev,()=>{ sessionType(); setTimeout(()=>{ sessionType(); musicLevel(); },30); },true));
 
   return {
     get on(){ return on; },
@@ -4268,6 +4285,7 @@ const sfx=(()=>{
     music(v){ musicOn=!!v; try{ localStorage.setItem('bloppit-music',musicOn?'on':'off'); }catch(e){} if(musicOn&&on) ctx(); musicLevel(); },
     duck(v){ M.duck=!!v; musicLevel(); },
     get musicGain(){ return mbus?+mbus.gain.value.toFixed(3):0; },
+    otherMusic(v){ if(v!==undefined){ other=!!v; musicLevel(); } return other; },   // test hook
     place(){ musicLevel(); },   // the page changed: music in Bloppitopia, quiet everywhere else
     // A brick snapping in: a crisp plastic click, then a marimba note a step higher than the last one
     snap(delay=0){ haptic('light',delay); const c=ok('snap',.04); if(!c) return; const t=c.currentTime+delay;
@@ -11302,6 +11320,7 @@ function isl3Film(f,then,opt){
   const go=()=>{ let p; try{ p=v.play(); }catch(e){ return end('fallback'); } if(p&&p.catch) p.catch(e=>{ if(done) return; if(e&&e.name==='NotAllowedError'&&!v.muted){ v.muted=true; go(); } else if(!(e&&e.name==='AbortError')) end('fallback'); }); };
   go(); track('film_start:'+f.id); }
 window.bloppitFilmOn=()=>ISL3.filmOn||null;   // for tests
+window.bloppitAudio=(other)=>({ type:navigator.audioSession?navigator.audioSession.type:null, other:sfx.otherMusic(other) });   // for tests: the sound mode now; bloppitAudio(true) acts as if other music is playing
 window.bloppitMusic=()=>sfx.musicGain;   // for tests: the island music's volume now (0 = quiet)
 function arr3Cap(A,txt){ const c=A.ov.querySelector('.cn-cap'); if(!txt){ c.classList.remove('on'); return; } c.textContent=txt; c.classList.add('on'); }
 // One frame of the film
