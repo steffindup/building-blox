@@ -1812,6 +1812,9 @@ body.film-on{overflow:hidden}
 .hm-world .wt b .sub,.hm-world .wn small{color:rgba(255,255,255,.82)}
 .hm-world .wname{text-decoration-color:rgba(255,255,255,.55)}
 .hm-world .wt .bar{background:rgba(0,0,0,.22)}.hm-world .wt .bar i{background:#fff}
+/* no ▶ arrows on the menu cards (Steff, 8 Nov 2026): the whole card is the button, so the text gets the room */
+.hm-daily{grid-template-columns:88px minmax(0,1fr)}
+.hm-cont,.hm-cont:not(.first){grid-template-columns:minmax(0,1fr)}.hm-cont.first{grid-template-columns:auto minmax(0,1fr)}
 /* Quick Play is teal, everywhere: card, studs, tab, bolt, pop-up (Steff, 8 Nov 2026; teal is Quick Play's alone) */
 .hm-quick{background:var(--c-quick);color:#fff;border:0;box-shadow:inset 0 -5px 0 rgba(0,0,0,.18)}.hm-quick:hover{border-color:transparent;filter:brightness(1.05)}
 .hm-quick small,.hm-quick .go{color:rgba(255,255,255,.9)}
@@ -1963,10 +1966,10 @@ body.film-on{overflow:hidden}
     <img src="/art/bloppit-avatar.png" alt="" width="256" height="256">
     <div class="hm-bubble"><h2 id="hmHi">Hi there!</h2><p>What shall we build today?</p></div>
   </div>
-  <button class="hm-how hm-quick" id="hmQuick" type="button"><span class="pl" aria-hidden="true">⚡</span><span><b>Quick Play</b><small>A random puzzle, right now</small></span><span class="go" aria-hidden="true">▶</span></button>
+  <button class="hm-how hm-quick" id="hmQuick" type="button"><span class="pl" aria-hidden="true">⚡</span><span><b>Quick Play</b><small>A random puzzle, right now</small></span></button>
   <button class="hm-world" id="hmWorld" data-go="island" type="button" hidden></button>
-  <button class="hm-daily" data-go="daily" type="button"><img id="hmDailyImg" alt=""><span class="hd-txt"><span class="tag">Bibi’s Weekly Bloppit</span><b id="hmDailyT">This week’s puzzle</b><span id="hmDailyS">The same puzzle for everyone</span></span><span class="go" aria-hidden="true">▶</span><span class="hd-pills"><span>🔥 <b id="hdStreak">0</b> week streak</span><span><b id="hdTotal">0</b> built</span></span></button>
-  <button class="hm-cont" id="hmCont" type="button" hidden><img class="hc-pic" src="/art/bud-offer.png" alt="" width="300" height="398"><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span><span class="go" aria-hidden="true">▶</span></button>
+  <button class="hm-daily" data-go="daily" type="button"><img id="hmDailyImg" alt=""><span class="hd-txt"><span class="tag">Bibi’s Weekly Bloppit</span><b id="hmDailyT">This week’s puzzle</b><span id="hmDailyS">The same puzzle for everyone</span></span><span class="hd-pills"><span>🔥 <b id="hdStreak">0</b> week streak</span><span><b id="hdTotal">0</b> built</span></span></button>
+  <button class="hm-cont" id="hmCont" type="button" hidden><img class="hc-pic" src="/art/bud-offer.png" alt="" width="300" height="398"><b id="hmContT">Continue building</b><span class="sub" id="hmContS"></span><span class="bar" id="hmContBar"><i></i></span></button>
   <button class="hm-how" id="hmHow" type="button"><span class="pl" aria-hidden="true">▶</span><span><b>How to Play</b><small>See how it works in 45 seconds</small></span></button>
 </div>
 <div class="hm-main">
