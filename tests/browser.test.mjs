@@ -1818,6 +1818,26 @@ test('Together: the menu has a Crews tile that opens the Crews card; Race a frie
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('Together pages: Race a Friend stays in Together (tab lit, back to Together), Join a Game has its own words, the banner is on Play with Friends only', { skip: skip() }, async () => {
+  const t = await open(T_OPEN, { viewport: { width: 402, height: 874 } });
+  const hero = () => t.page.evaluate(() => { const v = [...document.querySelectorAll('section.view')].find((x) => !x.hidden); const h = v.querySelector(':scope>.char-hero'); return !!h && h.offsetParent !== null; });
+  await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="mp"]').click()); await t.page.waitForTimeout(600);
+  assert.equal(await hero(), true, 'the Together banner on Play with Friends');
+  await t.page.evaluate(() => document.querySelector('#view-mp [data-go-race]').click()); await t.page.waitForTimeout(800);
+  assert.equal(await t.view(), 'view-blitz'); assert.equal(await hero(), false, 'no banner on Race a Friend');
+  assert.equal(await t.page.evaluate(() => document.getElementById('tab-mp').getAttribute('aria-selected')), 'true', 'the Together tab is lit');
+  assert.match(await t.text('#bzHeadT'), /^Race a Friend$/); assert.match(await t.text('#view-blitz>.crumb[data-up]'), /Together/);
+  await t.page.evaluate(() => document.querySelector('#view-blitz>.crumb[data-up]').click()); await t.page.waitForTimeout(600);
+  assert.equal(await t.view(), 'view-mp'); assert.equal(await t.page.evaluate(() => document.getElementById('view-mp').dataset.sub), 'hub');
+  await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="code"]').click()); await t.page.waitForTimeout(600);
+  assert.equal(await hero(), false, 'no banner on Join a Game'); assert.match(await t.text('#mpHeadN'), /^Got a code from a friend\?/); assert.equal(await t.page.locator('#mpToRace').isVisible(), false);
+  // Blitz Bay's own pages keep Swoop's banner
+  await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="cpu"]').click()); await t.page.waitForTimeout(800);
+  if (await t.page.evaluate(() => document.getElementById('qpDlg')?.open)) { await t.page.evaluate(() => document.getElementById('qpIsle').click()); await t.page.waitForTimeout(800); }
+  assert.equal(await t.view(), 'view-blitz'); assert.equal(await hero(), true, 'Swoop’s banner on Blitz with Swoop'); assert.match(await t.text('#view-blitz>.crumb[data-up]'), /Blitz Bay/);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('a crew: Pass the Puzzle goes round (first pages, then the next builder finishes it); a Crew Quick Game shows on the crew', { skip: skip() }, async () => {
   const mk = () => open('?nosplash=1&welcome=0&chars3d=0', { init: { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = [];
     for (let i = 0; i < 3; i++) { const k = `m:Model${i}:10`; builds[k] = { n: 10, s: 2, t: 1e12 + i, c: 1, k: 'quick' }; log.push(k); }

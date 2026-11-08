@@ -216,6 +216,7 @@ main{max-width:1640px;margin:0 auto;padding-block:20px 0}
 .note{font-size:13px;color:var(--muted);margin:0}
 .field{display:grid;gap:6px}
 .field label,.field .lbl{display:flex;justify-content:space-between;font-weight:700;font-size:14px}
+.field label:has(>small.note){flex-wrap:wrap;justify-content:flex-start}.field label>small.note{flex-basis:100%;font-weight:600}
 .field output{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
 input[type=range]{width:100%;accent-color:var(--accent)}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-flow:column;grid-auto-columns:1fr;border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -1313,6 +1314,8 @@ body.on-home .tabs{visibility:hidden}
 .crumb{justify-self:start;border:0;background:none;color:var(--muted);font:inherit;font-weight:700;font-size:14px;padding:2px 0;cursor:pointer}
 .crumb:hover{color:var(--ink)}
 .view[data-sub="hub"]>:not(.hub):not(.char-hero){display:none!important}   /* the character stays on top of every page of its tab (Steff, 5 Nov 2026) */
+/* …except Together: its banner is on Play with Friends only, so each page below starts with its own heading (Steff, 8 Nov 2026) */
+#view-mp:not([data-sub="hub"])>.char-hero,#view-blitz[data-sub="friend"]>.char-hero{display:none!important}
 .view:not([data-sub="hub"])>.hub{display:none}
 /* Your Crews is a page of its own on the Together tab (Steff, 8 Nov 2026) */
 #view-mp[data-sub="crews"]>:not(.crews-page):not(.char-hero){display:none!important}
@@ -1450,7 +1453,8 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .crew-since{display:grid;gap:2px;margin:8px 0 0;padding:8px 12px;border-radius:12px;background:var(--callout);font-size:14px}.crew-since b{font-size:13px}
 .crew-pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:6px}
 .crew-pick label.crew-pzopt{display:grid;grid-template-columns:none;align-items:start;justify-items:stretch;margin:0;font-weight:400;font-size:inherit;gap:2px;width:auto}
-.t-crew .ic svg{width:80%;height:auto}.race-ic svg{width:100%;height:100%;display:block}   /* Race a Friend: two otters neck and neck (Steff, 8 Nov 2026) */
+.t-crew .ic svg{width:80%;height:auto}.race-ic svg{width:100%;height:100%;display:block}
+.race-hd{display:inline-grid;width:1.15em;height:1.15em;border-radius:50%;background:var(--c-together);vertical-align:-.18em;margin-right:.3em;overflow:hidden}.race-hd svg{width:100%;height:100%}   /* Race a Friend: two otters neck and neck (Steff, 8 Nov 2026) */
 .crew-pzopt{display:grid;gap:2px;padding:8px;border:2px solid var(--line);border-radius:14px;background:var(--page);cursor:pointer;text-align:left}
 .crew-pzopt input{position:absolute;opacity:0;pointer-events:none}.crew-pzopt:has(input:checked){border-color:var(--c-bloppit);box-shadow:0 0 0 2px var(--c-bloppit) inset}.crew-pzopt:has(input:focus-visible){outline:3px solid var(--hi)}
 .crew-pzopt svg{width:100%;height:auto;display:block;margin-bottom:4px}.crew-pzopt b{font-size:15px}.crew-pzopt em{font-style:normal;font-size:11px;font-weight:800;background:var(--c-bloppit);color:#fff;border-radius:999px;padding:1px 7px;margin-left:4px;vertical-align:2px}.crew-pzopt em.done{background:var(--ink)}.crew-pzopt span{font-size:13px;color:var(--muted);line-height:1.3}
@@ -1661,7 +1665,9 @@ body.film-on{overflow:hidden}
 .hm-grid.match .hm-tile:not(.wide) .ic{margin-bottom:0}
 .hm-grid.match .hm-tile:not(.wide) b{white-space:nowrap;font-size:clamp(16px,12cqw,26px);margin-top:12px}
 .hm-grid.match .hm-tile:not(.wide)>span:not(.ic){min-height:2.6em}
-@media (max-width:560px){.hm-grid.three{grid-template-columns:1fr 1fr}.hm-grid.three .t-quick{grid-column:1 / -1;min-height:104px}}
+@media (max-width:560px){.hm-grid.three{grid-template-columns:1fr 1fr}.hm-grid.three .t-quick{grid-column:1 / -1;min-height:104px}
+  #view-mp .hm-grid.three .t-join{grid-column:1/-1;min-height:104px;grid-template-columns:auto 1fr;align-items:center;align-content:center;column-gap:16px}
+  #view-mp .hm-grid.three .t-join .ic{grid-row:1/span 2;margin:0}#view-mp .hm-grid.three .t-join b{margin-top:0;align-self:end;grid-column:2}#view-mp .hm-grid.three .t-join>span:not(.ic){grid-column:2;align-self:start;min-height:0}}
 /* Yellow so Bloppit's red brick stands out */
 .hm-tile.t-quick .ic{background:rgba(255,255,255,.35)}
 .hm-tile.t-sea{--c:var(--c-bloppit)}
@@ -2250,7 +2256,7 @@ body.film-on{overflow:hidden}
     <div class="card crew-open" id="crewOpen" hidden></div>
   </div>
   <button class="crumb" data-up type="button">‹ Together</button>
-  <div class="gm-head sub-head"><div><h2 id="mpHeadT">🧩 Team Build</h2><p class="note">Build one puzzle together on different phones, tablets or computers. Take turns placing a few bricks each. Everyone sees the model grow live. Friends join with the room code, and you let them in.</p></div></div>
+  <div class="gm-head sub-head"><div><h2 id="mpHeadT">🧩 Team Build</h2><p class="note" id="mpHeadN">Build one puzzle together on different phones, tablets or computers. Take turns placing a few bricks each. Everyone sees the model grow live. Friends join with the room code, and you let them in.</p></div></div>
   <div class="mp-off" id="mpOff" hidden></div>
   <div class="mp-forms" id="mpForms">
     <div class="card" id="mpStartCard">
@@ -2277,7 +2283,7 @@ body.film-on{overflow:hidden}
       <button class="primary" id="mpJoin" type="button">Join</button>
       <p class="note" id="mpRejoinNote" hidden></p>
     </div>
-    <p class="note" style="grid-column:1/-1;margin:0">Want a race instead? Try <a href="#blitz" id="mpToBlitz" style="color:inherit"><b>⚡ Blitz</b></a>.</p>
+    <p class="note" id="mpToRace" style="grid-column:1/-1;margin:0">Want a race instead? Try <a href="#blitz" id="mpToBlitz" style="color:inherit"><b>Race a Friend</b></a>.</p>
   </div>
   <div id="mpShared">
   <div class="card mp-waitbox" id="mpWaitBox" hidden>
@@ -3608,7 +3614,7 @@ const HERO={
   brain:{who:'nora',art:'/art/char-nora.png',isle:'Brainpeak',title:'Nora’s Brain Trail',line:'A clever mind shines in the dark.',desc:'Nora tucks maths puzzles into the booklet: solve one to open its page. The last build is her Great Telescope.',c:['#4A6FC0','#1C2B57']},
   create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Build Anything with Bibi',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
   blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Blitz with Swoop',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Shortest time wins.',c:['#5DB4F2','#1F6FC4']},
-  mp:{who:['pup','pup'],art:'/art/hero-together.png',isle:'Friendship Harbour',title:'Together',line:'Every build is better with a friend!',desc:'Play with Friends: a Team Build or Race a Friend, with a code to share. Your Crews: friends you keep, with games of their own.',c:['#B9A2F7','#6E4FD6']}};
+  mp:{who:['pup','pup'],art:'/art/hero-together.png',isle:'Friendship Harbour',title:'Together',line:'Every build is better with a friend!',desc:'Play with Friends: a Team Build or Race a Friend, with a code to share.',c:['#B9A2F7','#6E4FD6']}};
 function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[data-hero="${t}"]`); if(!el) return;
   const key=t==='game'?subOf.game:t, H=HERO[key]; el.hidden=!H; if(!H) return;
   if(el.dataset.k===key) return; el.dataset.k=key;
@@ -3623,17 +3629,22 @@ function tabsSync(t){ const sec=sectionOf(t===undefined?tab:t), tr=typeof trail!
     // the Weekly Bloppit is Bibi's: the Brickyard Cove tab
     b.setAttribute('aria-selected',on); }); }
 function sectionOf(t){
+  if(t==='blitz'&&!mp&&!mpw&&subOf.blitz==='friend') return 'mp';   // Race a Friend lives in Together (Steff, 8 Nov 2026)
   if(t==='build'||t==='box'||t==='booklet'){ if(typeof welcomeOn==='function'&&welcomeOn()) return 'island'; if(game) return 'game'; if(typeof mysOn==='function'&&mysOn()) return 'island'; if(mp) return trialOn()&&mp.state.calm?'daily':mpHomeTab(); return 'create'; }
   return t==='home'?'':t;
 }
+const MP_TEAM_NOTE='Build one puzzle together on different phones, tablets or computers. Take turns placing a few bricks each. Everyone sees the model grow live. Friends join with the room code, and you let them in.',
+  MP_JOIN_NOTE='Got a code from a friend? Type it in to join their game: a Team Build, a race, Pass the Puzzle or a crew.';
 function syncSub(t){
   if(!SUB_OK[t]) return;
   let s=subOf[t];
   if(mp||mpw){ if(t==='blitz') s=mp&&mp.cpu?'cpu':'friend'; if(t==='mp') s='start'; }
   if(t==='game'&&s!=='hub') setTrail(s);
   const v=$('#view-'+t); v.dataset.sub=s; v.classList.toggle('in-room',!!(mp||mpw));
-  if(t==='blitz') $('#bzHeadT').textContent=s==='cpu'?'⚡ Blitz with Swoop':s==='friend'?'⚡ Race a Friend':'⚡ Blitz';
-  if(t==='mp') $('#mpHeadT').textContent=s==='join'?'🔑 Join a Game':'🧩 Team Build';
+  if(t==='blitz'){ if(s==='friend') $('#bzHeadT').innerHTML='<span class="race-hd" aria-hidden="true"><svg viewBox="0 0 60 60" aria-hidden="true" focusable="false"><g stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".85"><path d="M3 20h9"/><path d="M5 27h7"/><path d="M3 41h9"/><path d="M5 48h7"/></g><use href="#bh" x="11" y="9" width="28" height="25"/><use href="#bh" x="27" y="30" width="28" height="25"/></svg></span>Race a Friend'; else $('#bzHeadT').textContent=s==='cpu'?'⚡ Blitz with Swoop':'⚡ Blitz';
+    const up=$('#view-blitz>.crumb[data-up]'); if(up) up.textContent=s==='friend'?'‹ Together':'‹ Blitz Bay'; }
+  if(t==='mp'){ $('#mpHeadT').textContent=s==='join'?'🔑 Join a Game':'🧩 Team Build';
+    $('#mpHeadN').textContent=s==='join'?MP_JOIN_NOTE:MP_TEAM_NOTE; const tb=$('#mpToRace'); if(tb) tb.hidden=s==='join'; }
   if(t==='game'&&s==='hub'){ const st=playerStats(players.cur);
     $('#hubOtterSub').textContent=st.lv?`${st.lv} of ${OTTER_LEVELS.length} levels done`:`${OTTER_LEVELS.length} levels, from tiny to tricky`;
     $('#hubBrainSub').textContent=st.blv?`${st.blv} of ${BRAIN_LEVELS.length} levels done`:`${BRAIN_LEVELS.length} levels, a maths puzzle in each`;
@@ -3747,7 +3758,9 @@ document.querySelectorAll('.tab[data-tab]').forEach(b=>b.addEventListener('click
 document.querySelectorAll('.view .hub [data-sub]').forEach(b=>b.addEventListener('click',()=>{ const t=b.closest('.view').id.slice(5); mpDoneLeave();
   if(t==='game'&&mp){ mpMsg(`Leave ${mpWhat()} first to play the Trails on your own.`); setTab(mpHomeTab()); return; }
   setTab(t,b.dataset.sub); if(t==='mp'&&b.dataset.sub==='join') requestAnimationFrame(()=>{ const i=$('#mpCodeIn'); if(i) i.focus(); }); }));
-document.querySelectorAll('.view>.crumb[data-up]').forEach(b=>b.addEventListener('click',()=>setTab(b.closest('.view').id.slice(5),'hub')));
+document.querySelectorAll('.view>.crumb[data-up]').forEach(b=>b.addEventListener('click',()=>{ const t=b.closest('.view').id.slice(5);
+  if(t==='blitz'&&subOf.blitz==='friend'){ setTab('mp','hub'); return; }   // Race a Friend goes back to Together
+  setTab(t,'hub'); }));
 document.querySelector('[data-crews-up]').addEventListener('click',()=>setTab('mp','hub'));
 let leaveArmed=false;
 function showToastLeave(){ const t=$('#tab-cove'); const o=t.innerHTML; t.innerHTML=t.querySelector('.n').outerHTML+'Tap again to leave'; setTimeout(()=>{t.innerHTML=o;},3000); }
@@ -7542,7 +7555,7 @@ $('#bzJoin').onclick=async()=>{
   finally{ btn.disabled=false; }
 };
 $('#bzCodeIn').addEventListener('input',e=>{ e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
-$('#mpToBlitz').onclick=e=>{ e.preventDefault(); setTab('blitz'); };
+$('#mpToBlitz').onclick=e=>{ e.preventDefault(); homeGo('friend'); };
 
 /* ---------- Blitz: race the computer (everything happens on this device) ---------- */
 // The race uses the same rules and screens as a Blitz room, but the "room" lives here instead of on the server.
