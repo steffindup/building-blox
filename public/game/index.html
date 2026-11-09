@@ -1817,9 +1817,11 @@ body.film-on{overflow:hidden}
 .tab .n{position:relative}
 .tab.bottle-on .n::after{content:"";position:absolute;top:-2px;right:-3px;width:10px;height:10px;border-radius:50%;background:#D62F2A;border:2px solid var(--bg)}
 .dy-sea{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;text-align:left;cursor:pointer;font:inherit;color:var(--ink)}.dy-sea img{width:52px;height:52px}.dy-sea b{display:block;font-family:var(--f-display);font-weight:400;font-size:20px}.dy-sea span span{font-size:13px;font-weight:700;color:var(--muted)}.dy-go{font-size:28px;color:var(--muted)}.dy-sea:hover{border-color:var(--accent)}#tab-brain{--tc:var(--c-nora)}#tab-blitz{--tc:var(--c-swoop)}
-/* The game tabs scroll sideways when they don't all fit: little arrows at either end show there are more, and tap to slide */
-.tabs-wrap{display:contents}.tabs-arr{display:none}
-@media (max-width:1240px){
+/* The game tabs scroll sideways when they don't all fit: little arrows at either end show there are more, and tap to slide.
+   At every width now: on a wide screen the eight tabs no longer fit beside the player, which wrapped to a second row (9 Nov 2026). */
+.tabs-arr{display:none}
+@media (min-width:1241px){.top{flex-wrap:nowrap}.top .tabs{flex-wrap:nowrap;overflow-x:auto;min-width:0;scrollbar-width:none}.top .tabs::-webkit-scrollbar{display:none}.top .who{flex:none}}
+@media all{
   .tabs-wrap{display:flex;position:relative;flex:1;min-width:0}
   .tabs-wrap>.tabs{flex:1;mask-image:none!important;-webkit-mask-image:none!important}
   .tabs-arr{position:absolute;top:50%;z-index:3;width:24px;height:30px;margin-top:-17px;padding:0 0 3px;border:1px solid var(--line);border-radius:999px;background:var(--page);color:var(--ink);font:800 20px/1 var(--f-body);cursor:pointer;box-shadow:0 2px 6px var(--shadow);place-items:center;opacity:0;pointer-events:none;transition:opacity .2s}
