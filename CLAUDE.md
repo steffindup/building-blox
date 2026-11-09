@@ -30,6 +30,12 @@ Bermuda), so time is short and decisions are his.
 - **Show, don't describe.** For anything visual, render it in the headless browser and send him the picture (a phone-
   sized screenshot; note that the test browser lacks the game fonts).
 - **Website vs app:** always say whether a change reaches the app. The app carries its own copy of the game (see below).
+- **"Don't change anything yet" / "brainstorm"** means propose only: no code changes.
+- **Website and app stay in step:** every change applies to both unless he says otherwise.
+- **One inconsistency means check everywhere:** when he points out one, find and fix every instance (browser and app).
+  He wants zero findings. Approved exceptions are listed in the consistency decisions (see the end); don't invent new ones.
+- **Never touch a build that's in App Store review.**
+- **He does the testing himself**, and the aim is to finish the whole game end to end before showing it widely.
 
 ## How changes reach players
 
@@ -100,7 +106,8 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   game and in `netlify/functions/challenge/logic.mjs`, kept in step). Scored on clean building, never time.
 - `WEEKLY_PLAN` maps a week (its Monday, `YYYY-MM-DD`) to a library model; the model carries `weekly:'that date'` and a
   `beat` story line. A Weekly should be 24–48 bricks (`WEEKLY_MAX` = 48). A Weekly joins the Library only after its
-  week is over. Unplanned weeks fall back to a hash pick from the Library.
+  week is over. Unplanned weeks fall back to a hash pick from the Library. The top-100 board is on by default (a
+  grown-up can switch it off).
 - **Every Sunday at 6:13 am Eastern a scheduled task reviews next week's Weekly** and sends Steff a strip (picture,
   step 1, halfway, finished) and the preview link. He approves or asks for changes there.
 - **Preview** any week before it's live: `https://bloppit.com/game/?weekly=next` or `?weekly=YYYY-MM-DD` (nothing
@@ -110,7 +117,7 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   (data only: the drawing as PNG plus settings); without it, app players get the built-in plan.
 - **Special pieces**: at most one per model, placed last as the "wow". `special:{kind,cx,cy,r}` (pixels in the drawing)
   leaves a 4-wide, 4-tall recess with a ledge in the front face; the piece is 4×1 at the base and 4 layers tall, prints
-  its face, matches only its own spot and can't be turned. Only kind so far: `dial` (Big Ben, the player's real time,
+  its face and matches only its own spot. It can be turned like any brick (Steff, 9 Nov). Only kind so far: `dial` (Big Ben, the player's real time,
   a bell "bong"). New kinds need an entry in `SPECIAL_NAME`, artwork in `printCanvas`, and optionally `specialIn`.
   Prints/special pieces show in solo builds; rooms, Blitz and Pass the Puzzle not yet tested with them.
 
@@ -151,17 +158,29 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
 
 ## Product decisions to respect
 
-- **Names and spelling**: "Bloppit: World of Bricks" everywhere (from 1.1). Tagline "Brick. Build. Bloppit." "Maths", never "Math" (the 7 Nov 2026
-  consistency sweep; Steff confirmed 9 Nov). lufu is always lowercase. Title Case for chapters, characters and tile names ("Moonstone Isle,
+- **Names and spelling**: "Bloppit: World of Bricks" everywhere (from 1.1); "Bloppit" alone under the app icon.
+  Subtitle "Build it. Grow your world."; sign-off "Brick. Build. Bloppit." (end cards, videos). "Maths", never "Math"
+  (the 7 Nov 2026 consistency sweep; Steff confirmed 9 Nov). lufu is always lowercase. Species are lowercase ("Swoop
+  the longtail", "Nora the night heron"); names keep capitals. "Nora's Brain Trail", never "The Nora's". Growing counts
+  are "60+" (library models), never an exact count. Galaxy Blocks are a 2-stud stackable block in galaxy colours, never
+  "gold bricks". Title Case for chapters, characters and tile names ("Moonstone Isle,
   Chapter 5: The Moon Gate"). "Crew" (not Tribe). "Player Unique ID" for the anonymous server identity; bringing a
   player to another device is a **link** (both devices play as the same player), not a transfer or copy.
-- **Characters**: Bloppit the Otter ("Let's bloppit!"), Tiny the Tree Frog (Frog Forest, Frog Trail), Nora the Night
-  Heron (Brainpeak, Brain Trail, math by US grade from the player's age), Pippa the Penguin (Flipper Beach, mirror
-  puzzles, message in a bottle), Swoop the Longtail (Blitz Bay), Bibi the Lion Cub (Brickyard Cove, the Weekly and
-  Build Anything), lufu (Moonstone Isle, silent until the finale). Characters are drawn "living" 2D puppets in game.
+- **Brand look**: the three bricks are World = yellow #F4BC22 with dark text #142022, of = white with blue #0369BD text,
+  Bricks = red #D62F2A. Brand blue #0369BD; wordmark and headings in Lilita One. "World of Bricks" shows only on the
+  website's front page and the game's home page, not deeper pages. Bloppit always holds the red 2-stud brick; outside
+  gameplay use the signature Bloppit picture. Audience wording: "enthusiastic brick builders", not "for kids".
+- **Launch screen**: winking Bloppit plus the "Bloppit" voice (Steff's two boys, mixed 50:50), on the website and the app.
+- **About us** is Steff's own text: light edits only.
+- **Characters**: Bloppit the otter (Home Island, the main character; "Let's bloppit!"), the Pup (the player's otter, named
+  and coloured before sailing to Bloppitopia), Tiny the tree frog (Frog Forest, Frog Trail), Nora the night heron
+  (Brainpeak, Brain Trail; Maths by US grade, from the age the player gives), Pippa the penguin (Flipper Beach, mirror
+  puzzles, message in a bottle; once Sunshine/Sunrise Shores), Swoop the longtail (Blitz Bay; the only longtail), Bibi
+  the lion cub (Brickyard Cove, the Weekly and Build Anything; once Lemmie), lufu (Moonstone Isle, silent until the
+  finale; bigger, in a separate mythical place, central to Chapter 2 but never a playable character). Characters are drawn "living" 2D puppets in game.
   Steff draws/approves all character art; don't invent new characters or redraw existing ones.
 - **Colour discipline** (7 Nov 2026): each character has one colour everywhere. Red = main action + Bloppitopia;
-  yellow = Pippa + stars only; one purple for Together; no teal. Drawn icons, not emoji, in the game UI. Brick-shaped
+  yellow = Pippa + stars only; one purple for Together; teal = Quick Play only; pink = Crews. Drawn icons, not emoji, in the game UI. Brick-shaped
   menu cards, pill buttons. A card's studs are its own colour.
 - **Online-only** (no kits, physical products or "build it for real"). Child-directed under COPPA: **no chat, no
   voice, no strangers talking to kids**; rooms are code-only; Crews need approval. Anonymous: names stay on the device;
@@ -170,7 +189,25 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
 - **Music** only in Bloppitopia; gameplay is silent apart from sound effects. The launch screen plays the "Bloppit"
   voice (Steff's two boys).
 - Story: Bloppitopia is Chapter 1 and ends with the pup and lufu finding each other (films 12–22, all eight sail to
-  lufu's world). Chapter 2 is "Bloppit builds lufu's world"; lufu stays mythical, never more than Bloppit.
+  lufu's world). Chapter 2 is "Bloppit builds lufu's world"; lufu stays mythical, never more than Bloppit. A closed
+  story: Chapter 1 ends after Moonstone Isle's 10 chapters, then lufu's world (enchanted, the galaxy ship beached, torch
+  coral, free builds, Chapter 2 "coming soon").
+- **Menus**: Bloppitopia is the hero. The game's home page has two clear actions, Quick Play and Bloppitopia, plus Bibi's Weekly Bloppit; "Play
+  Bloppit" on the website goes to /game/. The top tabs follow the home page's order, Quick Play first. After a build or
+  race the main button goes back to Bloppitopia (or the island). On an island, Play = that island's next play; a
+  finished island offers "Play anyway" or going back. The build page outside Bloppitopia keeps every option and a
+  difficulty slider; each Solo tile (Pippa's too) offers "Play on <island> in Bloppitopia" or "Just Play", and says when
+  the island option isn't available.
+- **Blitz**: a "Let's go" before the clock starts; a wrong brick adds 1 second; the race-o-meter. In Bloppitopia, a clear
+  next race that gets harder; the Grand Prix counts in the counter (race x of 20). Targets for a child: Warm-up won almost
+  always, Steady about 75%, Full throttle 50%, Grand Prix 40%. In Pippa's boss level the Pup still mirrors Pippa.
+- **Parts box**: each tap adds a brick to your hand, up to what the current booklet page needs; put back one or all (in
+  the build and in the box). The first brick gets a suggested spot but can go anywhere.
+- **Films** ship inside the app, except the Moonstone feature film, which streams from bloppit.com. Mid-island films use a
+  "next film ready" slot; the halfway lines run on their own cadence. Films always play with sound.
+- **Together** has two parts, each with its own page: Play with Friends and Your Crews. Crews pick their own puzzle (with
+  a suggestion) and name their crew.
+- **Business**: iOS 1.0 was a quiet soft launch; 1.1 is the version to market. US launch, no Bermuda publicity. Android through Bloppit LLC (Wyoming), which owns all the Bloppit IP.
 
 ## Stars and Galaxy Blocks (redone 9 Nov 2026, Steff): the only two reward numbers
 
@@ -200,12 +237,16 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
 - Brick heights: most code assumes 1 layer; tall pieces pass `h` to `brickGeo`/`edgeGeo`. Search all `brickGeo(` calls
   when adding geometry.
 - `weeklyPuzzle(week)` is cached (`weeklyCache`); clear it after changing the plan at runtime.
-- Comments reference `claude/consistency-decisions-2026-11-07.md`; that file isn't in the repo (it lived in a Claude
-  project). The rules are summarised above.
+- Comments reference `claude/consistency-decisions-2026-11-07.md`: it lives in the claude.ai Project "Bloppit", not the
+  repo (see below).
 - Commits: end with the `Co-Authored-By` / `Claude-Session` lines the session gives you; commit as
   `Claude <noreply@anthropic.com>` (a hook flags other committer emails as Unverified).
 
 ## Where else knowledge lives
+
+- The claude.ai Project **"Bloppit"** holds `claude/consistency-decisions-2026-11-07.md` (colours, names, shapes and the
+  approved exceptions, in detail), the dated `claude/build-status-*.md` notes and `claude/film-series-bible.md`. A
+  session attached to the Project reads them with the Projects tool.
 
 - Steff's Claude project "Bloxie" holds the long history (strategy rounds, character work). Its notes are summarised
   in Claude's memory under the project; chats inside that project can only be read from a session in that project.
