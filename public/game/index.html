@@ -12664,7 +12664,7 @@ async function weeklyPreview(week){
   const o=weeklyPuzzle(week); if(game) endGame(); if(mp) mpLeave(); weeklyLoad(o);
   const day=new Date(week+'T12:00:00Z').toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'});
   await trialStart({kind:'weekly',week,preview:true,label:'Weekly preview',title:o.name,calm:true},mpName()||curPlayer().name||'You');
-  const bar=$('#pvBar'); bar.innerHTML=`👀 <b>Preview</b>: the Weekly for ${day}, ${escapeHTML(o.name)}. Nothing is saved or counted.`; bar.hidden=false;
+  const bar=$('#pvBar'); bar.innerHTML=`<b>Preview</b>: the Weekly for ${day}, ${escapeHTML(o.name)}. Nothing is saved or counted.`; bar.hidden=false;
 }
 function homeRoute(){
   weeklySync();

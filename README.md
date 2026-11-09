@@ -17,7 +17,7 @@ build it on screen. The menu is game-first:
   hands spin to the player's time). **Preview** any Weekly before it's live at `/game/?weekly=next` or
   `?weekly=YYYY-MM-DD` (nothing is saved or counted). **The app gets its Weeklies from the site**: run
   `PLAYWRIGHT_CHROMIUM=… node tests/weekly-export.mjs` after changing `WEEKLY_PLAN` or a Weekly's model and commit
-  `public/weekly/` (data only: the picture as PNG plus settings). App 1.1 and later fetch it (`weeklySync()`).
+  `public/weekly/` (data only: the picture as PNG plus settings). App releases after 1.1.1 is built (9 Nov 2026 on) fetch it (`weeklySync()`).
 - **Pippa's Puzzles** (trail id `sea`, scores in `g.sbest`): twelve seaside builds that grow Flipper Beach. Puzzle *n*
   washes ashore at *n*/12 of `gameProgress()` (pieces built on Frog Forest, Brainpeak, Blitz Bay and Brickyard Cove,
   out of 61) and needs the one before it; the twelfth is the Festival Clock.

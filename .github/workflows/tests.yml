@@ -1,0 +1,64 @@
+# Runs Bloppit's tests on GitHub's computers on every push and pull request, so anyone (Steff, or a Claude session)
+# can see at a glance whether a change broke something: a green tick or a red cross next to each commit on GitHub.
+# The full browser suite is too heavy for the Claude sandbox, so this is where it runs in full.
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fast:
+    name: Server, math and films
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: node --test tests/server.test.mjs tests/math.test.mjs tests/films.test.mjs
+
+  weekly-data:
+    name: The app's Weekly data is up to date
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Keep the committed copy, then export again from the game
+        run: cp -r public/weekly /tmp/weekly-committed && node tests/weekly-export.mjs
+      # Compares the plan and every setting, not the picture bytes (PNG encoding can differ slightly between browsers).
+      # If this fails: run tests/weekly-export.mjs and commit public/weekly with the Weekly change.
+      - name: public/weekly matches WEEKLY_PLAN
+        run: node tests/weekly-check.mjs /tmp/weekly-committed public/weekly
+
+  browser:
+    name: Browser (end to end)
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Browser tests
+        env:
+          PLAYWRIGHT_ARGS: --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist
+        run: node --test --test-concurrency=1 --test-reporter=spec tests/browser.test.mjs
