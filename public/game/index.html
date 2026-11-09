@@ -1887,6 +1887,7 @@ body.film-on{overflow:hidden}
 /* the links under the menu */
 .who-link{margin:12px 0 0}.who-form .who-link{margin:0 0 10px}.linkbtn{border:0;background:none;padding:0;font:inherit;font-weight:800;color:var(--accent);text-decoration:underline;cursor:pointer}
 .part-row.special{outline:2px solid #D4A72C;outline-offset:-2px}.part-row.special .q{font-size:15px}.pc.special{outline:2px solid #D4A72C;outline-offset:-2px}
+.pv-bar{margin:0 0 10px;padding:10px 14px;border-radius:14px;background:#2A1A7A;color:#fff;font-weight:700;font-size:14px;line-height:1.35}
 .appfoot{text-align:center;margin-top:auto;padding-top:24px}.appfoot a{color:var(--muted);text-decoration:none;font-weight:700}.appfoot a:hover{color:var(--ink);text-decoration:underline}
 
 /* Drawn icons in place of emoji (Steff, 7 Nov 2026: "all drawn"). They look the same on every phone and computer. */
@@ -1985,6 +1986,7 @@ body.film-on{overflow:hidden}
 </header>
 
 <main>
+<div class="pv-bar" id="pvBar" role="status" hidden></div>
 <div class="gamebar" id="gameBar" hidden>
   <div class="gb-where" id="gbWhere"></div>
   <div class="gb-lvl"><span class="gb-badge" id="gbBadge">1</span><div><div class="tag">Level <span id="gbNum"></span></div><strong id="gbName"></strong></div></div>
@@ -7197,6 +7199,7 @@ function evStore(){ try{ return JSON.parse(localStorage.getItem(EV_KEY))||{}; }c
 function evStoreSet(o){ try{ localStorage.setItem(EV_KEY,JSON.stringify(o)); }catch(e){} }
 let evQueue=[], evTimer=null;
 function track(...names){
+  if(typeof cpu!=='undefined'&&cpu&&cpu.trial&&cpu.trial.preview) return;   // nothing from a Weekly preview reaches the stats
   for(const n of names) if(n&&!evQueue.includes(n)) evQueue.push(n);
   clearTimeout(evTimer); evTimer=setTimeout(evFlush,800);
 }
@@ -7210,6 +7213,7 @@ function evFlush(){
 const evChannel=()=>{ const c=evStore().channel; return c?':'+c:''; };
 // Called when the first brick of a build goes in (one count per build)
 function buildStarted(kind){
+  if(typeof cpu!=='undefined'&&cpu&&cpu.trial&&cpu.trial.preview) return;   // a Weekly preview counts nothing
   const o=evStore(); o.started=(o.started||0)+1; evStoreSet(o);
   track('build_started','build_started:'+kind);
   if(o.started===1) track('first_build_started');
@@ -7469,7 +7473,7 @@ async function mpEnter(res,isHost,name){
   mp.ping=setInterval(()=>{ if(mp) mpPost({action:'ping'}).then(j=>mpApply(j.state)).catch(()=>{}); },15000);
   try{ history.replaceState(null,'','?room='+res.code); }catch(e){}
 }
-function mpLeave(){ cpuGateGone();
+function mpLeave(){ cpuGateGone(); { const pv=document.getElementById('pvBar'); if(pv) pv.hidden=true; }
   if(!mp) return;
   // Tell the room (not a race against Swoop, which has no server): the others' turns skip this player from now on,
   // and if this was the host, the next player still in becomes the host. Sent with keepalive so it goes even as the page moves on.
@@ -8036,6 +8040,12 @@ function trialDialog(o){
 }
 async function trialEnd(){
   const info=cpu&&cpu.trial; if(!info) return;
+  if(info.preview){   // a Weekly preview: show how it went, save and count nothing
+    const r=trialResult(), clean=r.miss===0&&r.hint===0;
+    trialDialog({icon:'👀',title:clean?'Clean build! (preview)':'Preview finished',
+      rows:(clean?'<div class="tot"><span>Clean build</span><span>✓</span></div>':`<div><span>Misses / hints</span><span>${r.miss} / ${r.hint}</span></div>`)+`<div class="tot"><span>Your time</span><span>${fmtTime(totalMs(r))}</span></div>`,
+      note:'That was a preview of a Weekly that isn’t live yet. Nothing was saved or counted.'});
+    return; }
   buildFinished(info.kind==='weekly'?'weekly':'challenge'); if(info.kind==='weekly'){ const rr=trialResult(); track('weekly_completed'); if(rr.miss===0&&rr.hint===0) track('weekly_completed_clean'); }
   const r=trialResult(), t=totalMs(r), name=mp.state.players[0].name, timeRow=`<div class="tot"><span>Your time</span><span>${fmtTime(t)}</span></div>`;
   const missRow=(r.miss?`<div class="neg"><span>Misses (${r.miss} × 1 second)</span><span>+${r.miss}s</span></div>`:'')
@@ -12533,7 +12543,22 @@ window.bloppitChars3d=()=>({on:ch3On(),loaded:Object.keys(CH3.gltf),tiny:{model:
 $('#brandLink').addEventListener('click',e=>{ if(APP||tab==='home') return; e.preventDefault(); setTab('home'); });
 // Links straight to a page: /game/#photos, #library, #trails, #otter, #brain, #together, #blitz, #daily (anything else opens the menu).
 // Share links (bloppit.com/join/CODE, or the older /build/?room=CODE and ?ch=CODE) skip the menu and open the room or challenge.
+// A preview of a Weekly before it goes live (Steff, 8 Nov 2026): bloppit.com/game/?weekly=next (next week's) or
+// ?weekly=YYYY-MM-DD (the Monday of that week). An unlisted link, not a secret (the game's code is public): it plays the
+// real Weekly, with its booklet, special pieces and clean-build check, but nothing is saved or counted.
+function weeklyPreviewWeek(){
+  const q=(new URLSearchParams(location.search).get('weekly')||'').toLowerCase(); if(!q) return null;
+  if(q==='next'){ const d=new Date(weekOf()+'T00:00:00Z'); d.setUTCDate(d.getUTCDate()+7); return d.toISOString().slice(0,10); }
+  const d=new Date(q+'T00:00:00Z'); return /^\d{4}-\d{2}-\d{2}$/.test(q)&&!isNaN(d)&&d.getUTCDay()===1?q:null;
+}
+async function weeklyPreview(week){
+  const o=weeklyPuzzle(week); if(game) endGame(); if(mp) mpLeave(); weeklyLoad(o);
+  const day=new Date(week+'T12:00:00Z').toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'});
+  await trialStart({kind:'weekly',week,preview:true,label:'Weekly preview',title:o.name,calm:true},mpName()||curPlayer().name||'You');
+  const bar=$('#pvBar'); bar.innerHTML=`👀 <b>Preview</b>: the Weekly for ${day}, ${escapeHTML(o.name)}. Nothing is saved or counted.`; bar.hidden=false;
+}
 function homeRoute(){
+  const pw=weeklyPreviewWeek(); if(pw){ setTab('home'); setTimeout(()=>weeklyPreview(pw).catch(e=>console.warn(e)),300); return; }
   const h=location.hash.slice(1).toLowerCase();
   if(h==='photos'||h==='create') setTab('create');
   else if(h==='library') homeGo('library');
