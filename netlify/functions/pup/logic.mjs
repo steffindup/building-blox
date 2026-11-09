@@ -65,6 +65,8 @@ export function merge(server, incoming) {
     if (total) d.total = total;
     if (Object.keys(d).length) out[key] = d;
   }
+  // A build's ★ out of 10 (r); builds rated before 9 Nov 2026 have only s, out of 3 (3→10, 2→8, 1→6)
+  const rate = (b) => num(b.r) ?? ({ 3: 10, 2: 8, 1: 6 }[num(b.s)] || 0);
   // The world (Bloppitopia Lite): builds are joined keeping the best stars and the earliest finish; XP and bonus
   // stars take the higher count; decorations bought are joined; the pup's name (an index) is the latest set.
   if (a.world || b.world) {
@@ -73,7 +75,7 @@ export function merge(server, incoming) {
     for (const k of Object.keys(obj(wb.builds))) {
       const x = builds[k], y = wb.builds[k];
       if (!y || typeof y !== 'object') continue;
-      builds[k] = x ? { ...x, ...y, s: Math.max(num(x.s) ?? 0, num(y.s) ?? 0), t: Math.min(num(x.t) ?? Infinity, num(y.t) ?? Infinity), c: Math.max(num(x.c) ?? 1, num(y.c) ?? 1), ...((x.m || y.m) ? { m: 1 } : {}), ...((num(x.d) || num(y.d)) ? { d: Math.min(num(x.d) ?? Infinity, num(y.d) ?? Infinity) } : {}), ...((Number.isInteger(x.lv) || Number.isInteger(y.lv)) ? { lv: Math.min(2, Math.max(Number.isInteger(x.lv) ? x.lv : -1, Number.isInteger(y.lv) ? y.lv : -1)) } : {}) } : y;
+      builds[k] = x ? { ...x, ...y, s: Math.max(num(x.s) ?? 0, num(y.s) ?? 0), ...((num(x.r) != null || num(y.r) != null) ? { r: Math.max(rate(x), rate(y)) } : {}), t: Math.min(num(x.t) ?? Infinity, num(y.t) ?? Infinity), c: Math.max(num(x.c) ?? 1, num(y.c) ?? 1), ...((x.m || y.m) ? { m: 1 } : {}), ...((num(x.d) || num(y.d)) ? { d: Math.min(num(x.d) ?? Infinity, num(y.d) ?? Infinity) } : {}), ...((Number.isInteger(x.lv) || Number.isInteger(y.lv)) ? { lv: Math.min(2, Math.max(Number.isInteger(x.lv) ? x.lv : -1, Number.isInteger(y.lv) ? y.lv : -1)) } : {}) } : y;
     }
     const seen = new Set(), log = [];
     for (const k of [...(wa.log || []), ...(wb.log || [])]) if (builds[k] && !seen.has(k)) { seen.add(k); log.push(k); }

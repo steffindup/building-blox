@@ -151,7 +151,7 @@ window.bloppitAudioType('ambient');
 /* a Galaxy Block, the size of the text around it */
 .gb-ic{display:inline-block;width:1.35em;height:1.13em;vertical-align:-.22em;flex:none}
 .decor-grid .cost .gb-ic,.win-rows .gb-ic{width:1.35em!important;height:1.13em!important;margin:0!important;display:inline-block!important}
-.gb-stars{color:#F4BC22;letter-spacing:1px}.gb-stars i{font-style:normal;color:var(--line)}
+.gb-stars{color:#F4BC22;letter-spacing:1px;white-space:nowrap}.gb-stars i{font-style:normal;color:var(--line)}.gb-stars small{font-size:.55em;color:var(--muted);letter-spacing:0;margin:0 2px}
 html,body{min-height:100%}
 /* the page never slides sideways (iPhone web views let a slightly crooked vertical swipe drift the page left and right).
    clip, not hidden, so the sticky header keeps working; scrollers inside the page (tabs, chips) still scroll */
@@ -1131,7 +1131,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .world-toast .ws-stars i{font-style:normal;color:rgba(255,255,255,.3)}
 
 .wc-btns{flex-direction:column;align-items:stretch}.wc-btns button{width:100%}
-.win-stars{font-size:46px;letter-spacing:6px;color:var(--hi);line-height:1}
+.win-stars{font-size:28px;letter-spacing:1px;color:var(--hi);line-height:1;white-space:nowrap}
 .win-pic{display:block;margin:0 auto 6px;max-width:150px;max-height:110px;object-fit:contain;filter:drop-shadow(0 6px 10px rgba(0,0,0,.3));animation:rvBob 2.4s ease-in-out infinite}
 .win-pic[hidden]{display:none}
 /* Finished: the bricks go poof and the real thing pops out */
@@ -1991,7 +1991,7 @@ body.film-on{overflow:hidden}
 <div class="gamebar" id="gameBar" hidden>
   <div class="gb-where" id="gbWhere"></div>
   <div class="gb-lvl"><span class="gb-badge" id="gbBadge">1</span><div><div class="tag">Level <span id="gbNum"></span></div><strong id="gbName"></strong></div></div>
-  <div class="gb-score"><div class="tag">Stars for this build</div><b id="gbPts" class="gb-stars">★★★</b><span class="gb-of" id="gbOf"></span><span class="gb-flash" id="gbFlash"></span></div>
+  <div class="gb-score"><div class="tag">Stars for this build</div><b id="gbPts" class="gb-stars">10<small>/10</small>★</b><span class="gb-of" id="gbOf"></span><span class="gb-flash" id="gbFlash"></span></div>
   <div class="gb-costs" id="gbCosts"></div>
   <div class="gb-btns"><button class="ghost" id="gbMap" type="button">Level map</button></div>
 </div>
@@ -2251,10 +2251,10 @@ body.film-on{overflow:hidden}
     <div class="gm-total"><span class="tag" id="gmWho">Your stars</span><b id="gmTotal">0</b><span class="note" id="gmDone"></span><button class="ghost sm-link" id="gmSwitch" type="button">Switch player</button></div>
   </div>
   <div class="gm-rules">
-    <span>★ <b>Finish</b> the build</span>
-    <span>★ <b>No hints</b> or placed-for-you</span>
-    <span>★ <b>Perfect</b>: no help and no wrong bricks</span>
-    <span>Every ★ earns a Galaxy Block</span>
+    <span>Every build starts with <b>10 ★</b></span>
+    <span><b>−1 ★</b> for each brick that needed a hint, a placed-for-you or another try</span>
+    <span>A tricky brick only ever costs one ★</span>
+    <span>Every 3 ★ earn a Galaxy Block</span>
   </div>
   <div class="gm-math" id="gmMath">
     <b class="gm-mt">🧠 Maths puzzles</b>
@@ -4059,7 +4059,7 @@ playControls.addEventListener('end',()=>{ if(!sel||!ghostGroup.visible||camAnim)
   frameBuild(true); });
 const playGroup=new THREE.Group(), placedGroup=new THREE.Group(), ghostGroup=new THREE.Group(), hintGroup=new THREE.Group();
 playGroup.add(placedGroup,ghostGroup,hintGroup); playScene.add(playGroup);
-let floor=null, layerGrid=null, cur=0, viewPage=0, follow=true, placed=new Set(), sel=null, hintOn=false, drops=[], busy=false, lastAnchor=null, run={miss:0,hints:new Set(),auto:0,memory:null};
+let floor=null, layerGrid=null, cur=0, viewPage=0, follow=true, placed=new Set(), sel=null, hintOn=false, drops=[], busy=false, lastAnchor=null, run={miss:0,hints:new Set(),auto:0,memory:null,trouble:new Map()};
 // The model has no baseplate: the first brick goes anywhere and fixes where the model sits.
 // Until the first step is finished, `cands` holds every position the model could be in that fits what's been placed so far.
 let off=null, cands=[], placedN=0;
@@ -4177,7 +4177,7 @@ function resetBuild(){
   placedGroup.clear(); ghostGroup.clear(); hintGroup.clear();
   endReveal(true);
   placed=new Set(); off=null; cands=[]; placedN=0; placedBoxes=[]; cur=0; viewPage=0; follow=true; sel=null; drops=[]; busy=false; lastAnchor=null;
-  run={miss:0,hints:new Set(),auto:0,memory:null};  // this attempt's misses, hinted steps, placed-for-me bricks (the clean score) and whether it was built from memory
+  run={miss:0,hints:new Set(),auto:0,memory:null,trouble:new Map()};  // this attempt's misses, hinted steps, placed-for-me bricks (the clean score) and whether it was built from memory
   // A picture goes on its baseplate, so where each tile goes is fixed from the start
   if(model&&model.kind==='picture') off={x:0,z:0};
   if(model&&model.mirror){ off={x:0,z:0}; $('#trayNote').textContent=model.paint?'The finale, in your colours: Pippa builds her side first, then you mirror it on your side, flipped like a reflection. Pick up a brick and choose any colour under it: your side is yours to paint.':'Pippa builds her side first. Then build the same on your side of the glassy mirror line, flipped like a reflection: a brick on her far left goes on your far right. The glowing bricks in the booklet are the ones to copy.'; }   // a mirror build sits where Pippa starts it
@@ -4830,7 +4830,7 @@ function firstSpotTick(now){ const b=firstSpotBrick(), key=b?[b.x,b.z,b.sx,b.sz,
 function renderHints(){
   hintGroup.clear(); $('#hintBtn').setAttribute('aria-pressed',hintOn);
   if(!hintOn||!model||cur>=model.steps.length) return;
-  run.hints.add(cur); run.memory=false; if(!game&&mysOn()) updateGameBar();
+  if(!run.hints.has(cur)) troubleAdd('h'); run.hints.add(cur); run.memory=false; if(!game&&mysOn()) updateGameBar();
   { const g=game||mp; if(g&&!g.hintSteps.includes(cur)){ g.hintSteps.push(cur);
       if(mpBlitz()){ mpPost({action:'hint'}).then(j=>mpApply(j.state)).catch(()=>{}); if(!mp.state.calm) mpFlash('+2s'); }
       else charge('hint',5); } }
@@ -4902,6 +4902,7 @@ function tryPlace(){
   const s=model.steps[cur], {ax,az}=lastAnchor;
   const t=fitBrick(sel.c,sel.sx,sel.sz,ax,az,sel.sp);
   if(t){ if(cands.length===1) lock(); placeBrick(t,ax,az); return; }
+  if(!autoBusy) troubleAdd('m');
   if(mpBlitz()){ const o0=curOff(), u0=usedSet();
     const turn0=sel.sx!==sel.sz&&s.bricks.some(b=>!u0.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o0||Math.abs(b.x+o0.x-ax)<=2&&Math.abs(b.z+o0.z-az)<=2));
     const calm=mp.state&&mp.state.calm, wrong=wrongBrickMsg(); setStatus(calm?(wrong||(turn0?turnTip():'Not quite. Compare with the picture in the booklet.')):wrong?'Wrong brick! +1 second. '+wrong:turn0?'Miss! +1 second. Try turning it.':'Miss! +1 second','err'); sfx.bonk(); mpPost({action:'miss'}).then(j=>mpApply(j.state)).catch(()=>{});
@@ -4979,7 +4980,7 @@ function autoPlace(){
   const prev=held, prevSel=sel?{...sel}:null, n0=placedN;
   sel={sx:t.sx,sz:t.sz,c:t.c,sp:t.sp,h:t.h,print:t.print}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2};
   autoBusy=true; tryPlace(); autoBusy=false;
-  if(placedN>n0){ run.auto++; run.memory=false; if(!game&&mysOn()) updateGameBar(); }
+  if(placedN>n0){ run.auto++; troubleAdd('a',n0); run.memory=false; if(!game&&mysOn()) updateGameBar(); }
   if((game||mp)&&placedN>n0) charge('auto',10);
   lastAnchor=null; ghostGroup.visible=false;
   if(prev&&hand.includes(prev)){ held=prev; sel=prevSel; setGhost(); }
@@ -6714,14 +6715,24 @@ function levelCount(L){
   const m=buildModel(); photos=keepP; Object.assign(S,keepS);
   return L.count=m&&m.bricks?m.bricks.length:0;
 }
+// ★ ratings (Steff, 9 Nov 2026): a build starts with 10 ★ and loses one for each brick that gave trouble: a wrong try,
+// a hint or a "Place one for me". However many tries one brick takes, it costs one ★ (keyed by the brick being worked
+// on: the count placed so far). Never below 1: finishing always earns a ★. Builds rated on the old 3 ★ scale read as
+// 3→10, 2→8, 1→6. Records keep the old `s` (1–3) too, for app 1.1. Galaxy Blocks: one per 3 ★, rounded up (10 ★ = 4).
+const STAR_MAX=10, OLD_STARS={3:10,2:8,1:6};
+const rateOf=b=>!b?0:Number.isFinite(b.r)?b.r:(OLD_STARS[b.s]||0), oldScale=r=>r>=STAR_MAX?3:r>=7?2:r>0?1:0, gbOf=r=>Math.ceil((r||0)/3);
+function troubleAdd(t,k=placedN){ if(!run.trouble) run.trouble=new Map(); const e=run.trouble.get(k)||new Set(); e.add(t); run.trouble.set(k,e); if(game&&!mp) updateGameBar(); }
+function runRating(kind){ let n=0; for(const e of (run&&run.trouble||new Map()).values()) if(kind!=='welcome'||e.has('m')) n++; return Math.max(1,STAR_MAX-n); }
 const levelScore=()=>{ const L=levelsOf(gameTrail())[game.lvl], p=game.pen; return Math.max(Math.round(L.pts*.1), L.pts-p.hint*5-p.auto*10)+(game.math?game.math.pts:0); };
 const starsFor=(sc,L)=>sc>=L.pts*.9?3:sc>=L.pts*.6?2:1;   // the old points rule, only for levels finished before builds kept their ★
 // A level's ★: its best build on the island record (finished · no hints or placed-for-you · no wrong bricks)
-function levelStars(tr,i,o,best){ const L=levelsOf(tr)[i]; o=o||worldStore(); const b=L&&o.builds[`t:${tr}:${i}:${L.name}`]; return b&&b.s?b.s:best?starsFor(best,L):0; }
+function levelStars(tr,i,o,best){ const L=levelsOf(tr)[i]; o=o||worldStore(); const b=L&&o.builds[`t:${tr}:${i}:${L.name}`]; return rateOf(b)||(best?OLD_STARS[starsFor(best,L)]:0); }
 const trailStars=(tr,o)=>{ o=o||worldStore(); const B=bestOf(gameStore(),tr); return levelsOf(tr).reduce((a,_,i)=>a+(B[i]?levelStars(tr,i,o,B[i]):0),0); };
 // The ★ this attempt is on course for (shown in the level card as you build)
-const runStars=()=>{ const p=game?game.pen:{hint:0,auto:0}, noHelp=p.hint+p.auto===0; return 1+(noHelp?1:0)+(noHelp&&!(run&&run.miss)?1:0); };
-const starHTML=n=>'★'.repeat(n)+`<i>${'★'.repeat(3-n)}</i>`;
+const runStars=()=>runRating();
+// The game bar has room for a number, not ten stars: "8/10 ★"
+const starNum=n=>`${n}<small>/${STAR_MAX}</small>★`;
+const starHTML=n=>`<span class="st10" aria-label="${n} of ${STAR_MAX} stars">${'★'.repeat(n)}<i>${'★'.repeat(Math.max(0,STAR_MAX-n))}</i></span>`;
 function charge(kind,n){
   if(mp){ mp.pen[kind]++; mpSendPen(); }
   else { game.pen[kind]++; updateGameBar(); }
@@ -6736,7 +6747,7 @@ function updateGameBar(){
   if(mys){ const m=MYSTERY[mysCh], who={Everyone:'bloppit'}[m.who]||m.who.toLowerCase(), pic=['bloppit','pippa','swoop','tiny','bibi','nora','lufu'].includes(who)?who:'';   // lufu too: by Chapter 9 lufu has been seen, in film 20 (Steff, 5 Nov 2026)
     $('#gbWhere').innerHTML=`${pic?`<img src="/art/head-${pic}.png" alt="">`:''}<div><strong>Moonstone Isle</strong><small>${m.who==='you'?'Just you':m.who==='Everyone'?'With everyone':'With '+m.who}</small></div>`;
     $('#gbBadge').textContent=mysCh+1; $('#gbNum').textContent=`${mysCh+1} of ${MYSTERY.length}`; $('#gbName').textContent=mysteryTitle(m);
-    const help=run.hints.size+run.auto, st=1+(help?0:1)+(!help&&!run.miss?1:0); $('#gbPts').innerHTML=starHTML(st); $('#gbOf').textContent='';
+    const st=runRating(); $('#gbPts').innerHTML=starNum(st); $('#gbOf').textContent='';
     const bits=[]; if(run.hints.size) bits.push(`Hints ${run.hints.size}`); if(run.auto) bits.push(`Placed for you ${run.auto}`); if(run.miss) bits.push(`Wrong bricks ${run.miss}`);
     $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>'; return; }
   $('#hintBtn').textContent=(mp&&mp.state&&mp.state.mode==='blitz')?(mp.hintSteps.includes(cur)?'Hint':'Hint (+2s)'):mp?'Hint (−5)':'Hint';
@@ -6748,7 +6759,7 @@ function updateGameBar(){
     let iname=''; try{ iname=ISLES[isle].name; }catch(e){}
     $('#gbWhere').innerHTML=`${who?`<img src="/art/head-${who}.png" alt="">`:''}<div><strong>${escapeHTML(T.name)}</strong>${quickPlay?'<small>⚡ Quick Play</small>':iname?`<small>🏝️ ${escapeHTML(iname)}</small>`:''}</div>`; }
   $('#gbBadge').textContent=game.lvl+1; $('#gbNum').textContent=`${game.lvl+1} of ${LV.length}`; $('#gbName').textContent=L.name;
-  { const st=runStars(); $('#gbPts').innerHTML=starHTML(st); $('#gbOf').textContent=''; if(game.lastSt&&st<game.lastSt){ const f=$('#gbFlash'); f.textContent='−★'; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); } game.lastSt=st; }
+  { const st=runStars(); $('#gbPts').innerHTML=starNum(st); $('#gbOf').textContent=''; if(game.lastSt&&st<game.lastSt){ const f=$('#gbFlash'); f.textContent='−★'; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); } game.lastSt=st; }
   const bits=[]; if(p.hint) bits.push(`Hints ${p.hint}`); if(p.auto) bits.push(`Placed for you ${p.auto}`); if(run&&run.miss) bits.push(`Wrong bricks ${run.miss}`);
   if(game.math) bits.push(`Math ${game.math.solved.length} of ${game.math.locks.length} pages`);
   $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>';
@@ -6865,7 +6876,7 @@ function endReveal(instant){
 function winLevel(){
   if(!game) return;
   const LV=levelsOf(gameTrail()), i=game.lvl, L=LV[i], p=game.pen, sc=levelScore(), tr=gameTrail(), W=worldLast&&worldLast.key&&worldLast.key.startsWith('t:')?worldLast:null;
-  const noHelp=W?W.noHint:p.hint+p.auto===0, clean=W?W.clean:noHelp&&!run.miss, st=W?W.stars:1+(noHelp?1:0)+(clean?1:0);
+  const noHelp=W?W.noHint:p.hint+p.auto===0, clean=W?W.clean:noHelp&&!run.miss, st=W?W.stars:runRating();
   const g=gameStore(), B=bestOf(g,tr), prev=B[i]||0; if(sc>prev&&!(quickPlay&&tr!=='flip')){ B[i]=sc; gameStoreSet(g); }   // Quick play keeps nothing
   setTrail(tr); winLvl=i;
   $('#winStars').innerHTML=starHTML(st); worldSound();
@@ -6874,10 +6885,15 @@ function winLevel(){
     el.classList.toggle('three',tiny&&hasPup(o));
     if(reveal&&reveal.url) el.hidden=true; else if(hasPup(o)) cheer3(el,tiny?['bloppit','pup',fid]:['bloppit','pup'],tiny?['cheer','happy_hop',tc]:['cheer','happy_hop']); else cheer3(el,tiny?['bloppit',fid]:'bloppit',tiny?['cheer',tc]:'cheer'); }
   $('#winTitle').textContent=`${TRAILS[tr].icon} Level ${i+1} complete!`;
-  const rows=[[`Built ${/^Pippa/.test(L.name)?"":"the "}${L.name}`,true],[noHelp?'No hints or placed-for-you':`Help used (${p.hint+p.auto})`,noHelp],[clean?'Perfect: no help, no wrong bricks':run.miss?`Perfect: no wrong bricks (${run.miss} this time)`:'Perfect: no help, no wrong bricks',clean]];
-  $('#winRows').innerHTML=rows.map(([a,ok])=>`<div class="${ok?'':'neg'}"><span>${a}</span><span>${ok?'★':'–'}</span></div>`).join('')
+  // The card counts the ★ down: 10 for the build, one off for each brick that had help or a wrong try (one each, however many)
+  const T=[...(run.trouble||new Map()).values()], helpB=T.filter(e=>e.has('h')||e.has('a')).length, missB=T.length-helpB;
+  const rows=[[`Built ${/^Pippa/.test(L.name)?"":"the "}${L.name}`,`${STAR_MAX} ★`,true]];
+  if(helpB) rows.push([`Help used (${p.hint+p.auto})`,`−${helpB} ★`,false]);
+  if(missB) rows.push([`Tricky brick${missB===1?'':'s'}: ${missB} (${run.miss} wrong tr${run.miss===1?'y':'ies'})`,`−${missB} ★`,false]);
+  if(!helpB&&!missB) rows.push(['Perfect: every brick right first time','✨',true]);
+  $('#winRows').innerHTML=rows.map(([a,v,ok])=>`<div class="${ok?'':'neg'}"><span>${a}</span><span>${v}</span></div>`).join('')
     +`<div class="tot"><span>Galaxy Blocks</span><span>+${W?W.gained:0} ${gbIc()}</span></div>`;
-  { const o=worldStore(), ts=trailStars(tr,o), all=LV.length*3; $('#winBest').textContent=`${TRAILS[tr].name}: ${ts} of ${all} ★`; }
+  { const o=worldStore(), ts=trailStars(tr,o), all=LV.length*STAR_MAX; $('#winBest').textContent=`${TRAILS[tr].name}: ${ts} of ${all} ★`; }
   const last=i>=LV.length-1, wait=!last&&tr==='sea'&&!seaWashed(i+1);
   $('#winNext').innerHTML=last?'All levels done!':wait?`<img class="nb-pic" src="${levelThumb(LV[i+1])}" alt=""><span>Next puzzle<small>Washes ashore at ${seaPct(i+1)}% of Bloppitopia</small></span>`:`<img class="nb-pic" src="${levelThumb(LV[i+1])}" alt=""><span>Next<small>Level ${i+2}: ${escapeHTML(LV[i+1].name)}</small></span>`; $('#winNext').disabled=last||wait;
   { const isle={otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr]; $('#winIsland').textContent=`🏝️ Back to Bloppitopia`; $('#winIsland').title=isle&&ISLES[isle]?`See ${ISLES[isle].name} grow`:''; }
@@ -6899,7 +6915,7 @@ function renderGameMap(){
   const pct=trail==='sea'?progressPct(worldStore()):0;
   { const tip=quickPlay&&trail!=='flip'&&trail!=='sea'?`⚡ Quick Play: any level, in any order. Nothing is added to Bloppitopia. To grow ${ISLES[TRAIL_ISLE[trail]].name}, play it from the island.`:trail==='flip'?'Pippa builds one half of each puzzle, and you build the other half, flipped like a reflection. Twelve to try, in any order. (Flipper Beach in Bloppitopia has its own set.)':trail==='sea'?`You’re ${pct}% of the way through Bloppitopia. A new puzzle washes ashore about every 8%.`:'';   // the hero says the rest (no repeats, Steff 5 Nov 2026)
     $('#gmIntro').textContent=tip; $('#gmIntro').hidden=!tip; }
-  { const ts=trailStars(trail); $('#gmTotal').textContent=`${ts} ★`; $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} stars`; $('#gmDone').dataset.of=`${levelsOf(trail).length*3}`; } syncMathUI();
+  { const ts=trailStars(trail); $('#gmTotal').textContent=`${ts} ★`; $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} stars`; $('#gmDone').dataset.of=`${levelsOf(trail).length*STAR_MAX}`; } syncMathUI();
   $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} ${trail==='sea'?'Flipper Beach puzzles built':trail==='flip'?'any-time puzzles built':'levels done'}`;
   $('#gmLevels').innerHTML=levelsOf(trail).map((L,i)=>{
     const best=B[i], ashore=trail!=='sea'||seaWashed(i), open=trail==='flip'||quickPlay&&trail!=='sea'||i<=unlocked&&(ashore||!!best), cur_=game&&game.lvl===i&&gameTrail()===trail;
@@ -6908,7 +6924,7 @@ function renderGameMap(){
       <span class="ln">${i+1}</span>${cur_?'<span class="tagnew">Playing</span>':(i===unlocked&&!best?(wait?`<span class="tagnew tide">🌊 ${k} more build${k===1?'':'s'}</span>`:'<span class="tagnew">Next</span>'):'')}
       <img alt="" src="${levelThumb(L)}"><span class="lt">${L.boss?'👑 Boss: ':''}${L.name}</span>
       <span class="lm" data-c="${i}">${L.count?`${L.count} bricks`:'&nbsp;'}</span>
-      ${best?`<span class="ls">${starHTML(st)}</span><span class="lb">${st===3?'All three stars!':'Built ✓'}</span>`:open?'<span class="lb">Not played yet</span>':!ashore?`<span class="lb">🌊 Washes ashore at ${seaPct(i)}%</span>`:`<span class="lb">Finish level ${i} to unlock</span>`}
+      ${best?`<span class="ls">${starHTML(st)}</span><span class="lb">${st>=STAR_MAX?'All ten stars!':'Built ✓'}</span>`:open?'<span class="lb">Not played yet</span>':!ashore?`<span class="lb">🌊 Washes ashore at ${seaPct(i)}%</span>`:`<span class="lb">Finish level ${i} to unlock</span>`}
     </button>`; }).join('');
   // Work out brick counts a few at a time so the map appears straight away
   let k=0; (function next(){ if(tab!=='game'||k>=levelsOf(trail).length) return; const L=levelsOf(trail)[k], el=document.querySelector(`[data-c="${k}"]`); if(el&&!L.count){ levelCount(L); el.textContent=`${L.count} bricks`; } k++; setTimeout(next,0); })();
@@ -8170,7 +8186,7 @@ async function trialEnd(){
       if(!first){ trialDialog({icon:'📅',card:true,next:true,isle:'brickworks',title:clean?'Clean build!':'Nice practice!',rows:cleanRow,note:(clean&&!prev.clean?'That one counts as clean now. ':'')+'Come back on Monday for a new puzzle!'+streakNote()}); return; }
       trialDialog({icon:'📅',title:'Bibi’s Weekly Bloppit done!',rows:cleanRow,note:'Checking how everyone else did…'});
       try{
-        const j=await chApi('POST',{action:'weekly',week:info.week,ms:r.ms,miss:r.miss,hint:r.hint,nBricks:model.bricks.length,board:boardOn(),stars:worldLast?worldLast.stars:0});
+        const j=await chApi('POST',{action:'weekly',week:info.week,ms:r.ms,miss:r.miss,hint:r.hint,nBricks:model.bricks.length,board:boardOn(),stars:worldLast?worldLast.stars:0,scale:STAR_MAX});
         if(j.board) $('#dyBoardList').innerHTML=boardRows(j.board);
         weeklyPeek={week:info.week,n:j.n,clean:j.clean,pct:j.pct};
         W.weeks[info.week].n=j.n; W.weeks[info.week].pct=j.pct; weeklyStoreSet(W);
@@ -8558,8 +8574,8 @@ loadSample(0); setTab('create'); clearTimeout(timer); rebuild(); requestAnimatio
   } else saveOn=true;
 }
 /* ---------- Your world (Bloppitopia Lite): XP, stars, Galaxy Blocks and the pup ----------
-   One job each (30 Oct 2026). ★ say how well you built: up to three per model (finished · no hints or placed-for-you ·
-   perfect: no help and no wrong bricks), its best attempt, never spent. Galaxy Blocks are the pocket money: one per ★ earned, plus the Weekly,
+   One job each (30 Oct 2026). ★ say how well you built: out of 10 per model since 9 Nov 2026 (one off for each brick that
+   needed help or another try; see rateOf/runRating), its best attempt, never spent. Galaxy Blocks are the pocket money: one per 3 ★ earned, plus the Weekly,
    From Memory, the daily bottle and island finales; Bibi's shop sells decorations for them. XP (every new build, and
    the bottle) sets the Otter Level, which unlocks outfits and grows the otter (Splash at 4, Legend at 8). Nothing is bought, sold, traded or lost. The record lives per player on this device
    and under the pup on the server (the world field); nothing in it is typed by a child: the pup's name is an
@@ -8620,7 +8636,7 @@ function worldStore(){ try{ const o=JSON.parse(localStorage.getItem(pkey(WORLD_K
 // Join two world records (same rules as the server): best stars per model, higher XP, decorations and the name kept.
 function worldMerge(a,b){
   a=a||{}; b=b||{}; const builds={...(a.builds||{})};
-  for(const k of Object.keys(b.builds||{})){ const x=builds[k], y=b.builds[k]; builds[k]=x?{...x,...y,...((Number.isInteger(x.lv)||Number.isInteger(y.lv))?{lv:Math.max(Number.isInteger(x.lv)?x.lv:-1,Number.isInteger(y.lv)?y.lv:-1)}:{}),s:Math.max(x.s||0,y.s||0),t:Math.min(x.t||Infinity,y.t||Infinity),c:Math.max(x.c||1,y.c||1),...((x.m||y.m)?{m:1}:{}),...((x.d||y.d)?{d:Math.min(x.d||Infinity,y.d||Infinity)}:{})}:y; }
+  for(const k of Object.keys(b.builds||{})){ const x=builds[k], y=b.builds[k]; builds[k]=x?{...x,...y,...((Number.isInteger(x.lv)||Number.isInteger(y.lv))?{lv:Math.max(Number.isInteger(x.lv)?x.lv:-1,Number.isInteger(y.lv)?y.lv:-1)}:{}),s:Math.max(x.s||0,y.s||0),...((Number.isFinite(x.r)||Number.isFinite(y.r))?{r:Math.max(rateOf(x),rateOf(y))}:{}),t:Math.min(x.t||Infinity,y.t||Infinity),c:Math.max(x.c||1,y.c||1),...((x.m||y.m)?{m:1}:{}),...((x.d||y.d)?{d:Math.min(x.d||Infinity,y.d||Infinity)}:{})}:y; }
   const log=[]; for(const k of [...(a.log||[]),...(b.log||[]),...Object.keys(builds)]) if(builds[k]&&!log.includes(k)) log.push(k);
   // The name (typed or picked) and brick colour: whichever was set last (pupAt); a later 'no name yet' never wipes one
   const later=(b.pupAt||0)>(a.pupAt||0)?b:a, other=later===b?a:b, named=w=>(cleanPupText(w.pupText)||w.pupName>=0)?w:null, nw=named(later)||named(other)||{};
@@ -8642,9 +8658,9 @@ const buildXP=(k,b)=>(b.k==='blitz'?10:Math.max(sizeXP(b.n),(b.t||Infinity)<XP_S
 const BOTTLE_XP=5;   // Pippa's message in a bottle: one a day
 const worldXP=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+buildXP(k,b),0)+BOTTLE_XP*bottleDays(o).length;
 const bottleDays=o=>(Array.isArray(o.bottles)?o.bottles:[]).filter(d=>typeof d==='string'&&/^\d{4}-\d\d-\d\d$/.test(d));
-// Galaxy Blocks: the game's pocket money. A build earns one per ★ (its best), a Weekly and a From Memory build one more,
+// Galaxy Blocks: the game's pocket money. A build earns one per 3 ★ of its best rating, rounded up (gbOf), a Weekly and a From Memory build one more,
 // each daily bottle one, and a finished island 5 (the whole world 10 more). Decorations spend them; ★ ratings are never spent.
-const worldStarsEarned=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+(b.s||0)+(k.startsWith('w:')?1:0)+(b.m?1:0),0)+finaleStars(o)+bottleDays(o).length;
+const worldStarsEarned=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+gbOf(rateOf(b))+(k.startsWith('w:')?1:0)+(b.m?1:0),0)+finaleStars(o)+bottleDays(o).length;
 const gbIc=()=>'<svg class="gb-ic" viewBox="0 0 120 100" aria-hidden="true"><use href="#gbBlock"/></svg>';
 const gbN=n=>`${n} Galaxy Block${n===1?'':'s'}`;
 function finaleStars(o){ try{ if(typeof ISLES==='undefined') return 0; const n=islesComplete(o).length; return n*5+(n===ISLE_TOTAL?10:0); }catch(e){ return 0; } }
@@ -8654,7 +8670,7 @@ function awayMerge(a,b){ const o={...(a||{})}; for(const [k,v] of Object.entries
 const decorOut=o=>(o.decor||[]).filter(id=>!isAway(o,'decor:'+id));   // decorations on the island (not put away)   // decorations on the island (not put away)
 const worldStarsSpent=o=>(o.decor||[]).reduce((a,id)=>{ if((o.free||[]).includes(id)) return a; const d=DECOR.find(x=>x.id===id); return a+(d?d.cost:0); },0);
 const worldStars=o=>worldStarsEarned(o)-worldStarsSpent(o);   // Galaxy Blocks to spend
-const worldRating=o=>Object.values(o.builds||{}).reduce((a,b)=>a+(b.s||0),0);   // ★ earned, all builds
+const worldRating=o=>Object.values(o.builds||{}).reduce((a,b)=>a+rateOf(b),0);   // ★ earned, all builds
 const stageOf=(list,n)=>{ let k=0; list.forEach((st,i)=>{ if(n>=st.at) k=i; }); return k; };
 const pupHeld=o=>{ const n=Object.values(o.builds||{}).filter(b=>b&&(b.t||Infinity)<PUP_SWITCH).length; return n>=PUP_STAGES_OLD[2]?2:n>=PUP_STAGES_OLD[1]?1:0; };
 const pupByLevel=o=>{ const lv=otterLevel(o); let k=0; PUP_STAGES.forEach((st,i)=>{ if(lv>=st.lvl) k=i; }); return k; };
@@ -8686,13 +8702,13 @@ function worldFinish(kind){
   let place=0; if(mp&&mp.state&&mp.state.mode==='blitz'&&!mp.cpu){ const sc=mpScores(mp.state), me=sc.find(p=>p.i===mp.me); if(me&&sc.filter(p=>!p.left).length>1) place=1+sc.filter(p=>!p.left&&p.ms<me.ms).length; }   // a live race between friends
   const key=modelKey(), prev=o.builds[key], first=!prev;
   const noHint=hint+auto===0, clean=noHint&&miss===0;
-  const stars=blitz?1:1+(noHint?1:0)+(clean?1:0);
+  const stars=runRating(kind), was=rateOf(prev);
   let xp=first?(blitz?10:sizeXP(N)):0, bonus=0;
   if(kind==='weekly'&&first){ xp+=10; bonus=1; const d=DECOR.filter(x=>!o.decor.includes(x.id)&&decorOpen(x,o)).sort((a,b)=>a.cost-b.cost)[0]; if(d){ o.decor.push(d.id); o.free=[...(o.free||[]),d.id]; r_decor=d; } }
   const memory=!!run.memory&&!mp&&!blitz&&clean&&!(prev&&prev.m); if(memory){ xp+=5; bonus+=1; }
   const before={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
   let dur=0; try{ dur=(mp&&mp.state&&mp.state.mode==='blitz')?((mpScores(mp.state).find(x=>x.i===mp.me)||{}).ms||0):(run.t0?Date.now()-run.t0:0); }catch(e){}
-  const rec=prev?{...prev,s:Math.max(prev.s||0,stars),c:(prev.c||1)+1}:{n:N,s:stars,k:kind,t:Date.now(),c:1}; if(memory) rec.m=1;
+  const best=Math.max(was,stars), rec=prev?{...prev,r:best,s:oldScale(best),c:(prev.c||1)+1}:{n:N,r:stars,s:oldScale(stars),k:kind,t:Date.now(),c:1}; if(memory) rec.m=1;
   if(first&&typeof inLufu==='function'&&inLufu()) rec.realm='lufu';   // built in lufu's world: it stands there, not on Home Island
   if(blitz){ const lv=['easy','medium','hard'].indexOf(mp.state.cpuLevel); if(lv>=0) rec.lv=Math.max(prev&&Number.isInteger(prev.lv)?prev.lv:-1,lv); if(cpu&&cpu.boss) rec.boss=1; }   // which longtail was beaten; the Grand Prix
   if(dur>500&&dur<6*3600e3) rec.d=Math.round(prev&&prev.d?Math.min(prev.d,dur):dur);   // best time, in ms
@@ -8700,7 +8716,7 @@ function worldFinish(kind){
   worldSet(o);
   worldThumbSave(key); worldShapeSave(key);
   const after={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
-  const r={key,kind,place,stars,best:rec.s,gained:first?stars+bonus:Math.max(0,stars-(prev.s||0))+(memory?1:0),xp,bonus,first,clean,noHint,memory,miss,hint:hint+auto,before,after,
+  const r={key,kind,place,stars,best:rec.r,gained:first?gbOf(stars)+bonus:Math.max(0,gbOf(stars)-gbOf(was))+(memory?1:0),xp,bonus,first,clean,noHint,memory,miss,hint:hint+auto,before,after,
     pupUp:after.pup>before.pup,islandUp:after.island>before.island,total:worldStars(o),count:after.n,decor:r_decor};
   track('world_finish:'+stars+'star'+(first?'':'_again'), memory?'from_memory':'', r.pupUp?'pup_stage:'+PUP_STAGES[after.pup].name.toLowerCase():'', r.islandUp?'island_stage:'+ISLAND_STAGES[after.island].name.toLowerCase():'');
   return r;
@@ -8721,7 +8737,7 @@ function worldThumbSave(key){
   }catch(e){}
 }
 function worldThumb(key){ const t=worldThumbs()[key]; if(t) return t.u; const m=/^m:(.+):\d+$/.exec(key)||/^t:[a-z]+:\d+:(.+)$/.exec(key); if(m){ const smp=SAMPLES.find(x=>x.name===m[1]); if(smp){ if(!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png'); return smp.thumb; } } return ''; }
-const wsStars=n=>`<span class="ws-stars" aria-label="${n} of 3 stars">${'★'.repeat(n)}<i>${'★'.repeat(Math.max(0,3-n))}</i></span>`;
+const wsStars=n=>`<span class="ws-stars" aria-label="${n} of ${STAR_MAX} stars">${'★'.repeat(n)}<i>${'★'.repeat(Math.max(0,STAR_MAX-n))}</i></span>`;
 function worldStripHTML(r){
   if(!r) return '';
   const o=worldStore(), what=r.kind==='blitz'?(r.place>1?`${ordinal(r.place)} place`:'Race won'):r.clean?'Clean build!':r.noHint?'No hints!':'Finished!';
@@ -8737,8 +8753,8 @@ function worldStripHTML(r){
 function worldStrips(){ const h=worldStripHTML(worldLast); document.querySelectorAll('[data-ws]').forEach(el=>{ el.innerHTML=h; }); }
 // The stars ping in one by one when the finish screen shows them; the island or the pup growing adds a swell. Once per finish.
 function worldSound(){ const r=worldLast; if(!r||r.played) return; r.played=true;
-  for(let k=1;k<=r.stars;k++) setTimeout(()=>sfx.star(k),250+k*220);
-  if(r.pupUp||r.islandUp) setTimeout(()=>sfx.stage(),250+r.stars*220+500); }
+  for(let k=1;k<=r.stars;k++) setTimeout(()=>sfx.star(Math.ceil(k*3/STAR_MAX)),250+k*110);
+  if(r.pupUp||r.islandUp) setTimeout(()=>sfx.stage(),250+r.stars*110+500); }
 function worldToast(){
   const r=worldLast, el=$('#worldToast'); if(!r){ el.hidden=true; return; }
   el.innerHTML=worldStripHTML(r)+'<span class="ws-go">Island ▸</span>'; el.hidden=false; worldSound(); el.onclick=()=>{ el.hidden=true; setTab('island'); }; clearTimeout(worldToast.t); worldToast.t=setTimeout(()=>{ el.hidden=true; },7000);
@@ -9150,8 +9166,8 @@ function islandInfo(id,o){
     case 'model': { const f=modelFacts(arg,o), b=f.b, flagW=arg.startsWith('w:')&&!ISL3.ok, onIsle=shown.list.some(m=>m.key===arg)||flagW;
       const acts=[]; if(f.again) acts.push({label:'Build it again',fn:f.again,primary:true});
       if(!flagW&&!isHomeBuild(arg)) acts.push(onIsle?{label:'Put away',fn:()=>islandPut(arg,false)}:{label:'Put on Bloppitopia',fn:()=>islandPut(arg,true),off:shown.list.length>=shown.cap?`Bloppitopia is full (${shown.cap} stands). Put one away first.`:''});
-      return {title:f.name,hint:isHomeBuild(arg)?'Your first build: it became your home on Bloppitopia':`${'★'.repeat(b.s||0)}${'☆'.repeat(3-(b.s||0))} · ${f.from}`,icon:worldThumb(arg)?`<img src="${worldThumb(arg)}" alt="">`:'',
-        rows:[['From',f.from],['First built',fmtDay(b.t)||'—'],['Stars',`${'★'.repeat(b.s||0)}${'☆'.repeat(3-(b.s||0))} ${b.s>=3?'clean':b.s===2?'no hints':'finished'}${b.m?' · from memory 🧠':''}`],
+      return {title:f.name,hint:isHomeBuild(arg)?'Your first build: it became your home on Bloppitopia':`${rateOf(b)} of ${STAR_MAX} ★ · ${f.from}`,icon:worldThumb(arg)?`<img src="${worldThumb(arg)}" alt="">`:'',
+        rows:[['From',f.from],['First built',fmtDay(b.t)||'—'],['Stars',`${rateOf(b)} of ${STAR_MAX} ★${rateOf(b)>=STAR_MAX?' · perfect':''}${b.m?' · from memory 🧠':''}`],
           ['Best time',b.d?fmtDur(b.d):'Not timed yet'],['Bricks',String(b.n||'—')],['Built',`${b.c||1} time${(b.c||1)===1?'':'s'}`]],actions:acts}; }
   }
   return {title:'Bloppitopia',rows:[]};
@@ -10598,7 +10614,7 @@ function homeBuild(o,W){
   if(n>=2){ const gd=new THREE.Group(); gd.add(flowers3(0,0,1.0,10+Math.min(30,n),1)); for(let i=0;i<10;i++){ const a=i*Math.PI/5; gd.add(box3(.05,.35,.05,'#FFFFFF',Math.cos(a)*1.25,TOP3,Math.sin(a)*1.25)); } gd.position.set(HOME_AT.garden[0],0,HOME_AT.garden[1]); add(gd,'home:garden').userData.piece='garden'; }
   if(n>=5){ const s=shop3(); s.position.set(HOME_AT.shop[0],TOP3,HOME_AT.shop[1]); s.rotation.y=FACE3(...HOME_AT.shop); add(s,'home:shop').userData.piece='shop'; }
   if(n>=7){ const m=new THREE.Group(); m.add(box3(2.0,1.2,1.3,'#ECE6DA',0,0,0)); m.add(gable3(2.0,1.3,1.2,.5,'#81007B')); for(const x of [-.7,-.25,.25,.7]) m.add(cyl3(.07,.07,1.15,6,'#FFFFFF',x,0,.72)); m.add(box3(1.2,.22,.05,'#14202C',0,1.0,.76));
-    const fav=Object.entries(o.builds).filter(([k])=>!k.startsWith('w:')).sort((a,b)=>(b[1].s||0)-(a[1].s||0)||(b[1].c||1)-(a[1].c||1)).slice(0,3).map(([k])=>k);
+    const fav=Object.entries(o.builds).filter(([k])=>!k.startsWith('w:')).sort((a,b)=>rateOf(b[1])-rateOf(a[1])||(b[1].c||1)-(a[1].c||1)).slice(0,3).map(([k])=>k);
     fav.forEach((k,i)=>{ const p=plinth3(-.8+i*.8,1.2,k); p.position.y=0; p.scale.setScalar(.8); m.add(p); });
     m.position.set(HOME_AT.museum[0],TOP3,HOME_AT.museum[1]); m.rotation.y=FACE3(...HOME_AT.museum); add(m,'home:museum').userData.piece='museum'; }
   if(n>=10&&o.pick){ if(o.pick==='lighthouse'){ const l=lighthouse3(); l.position.set(HOME_AT.pick[0],TOP3,HOME_AT.pick[1]); add(l,'home:pick').userData.piece='pick'; }
@@ -11772,11 +11788,11 @@ $('#isDecor').onclick=()=>{ if($('#isDrawer')){ isDrawer(true,'shop'); return; }
 $('#isShopClose').onclick=()=>{ if($('#isDrawer')){ isDrawer(false); return; } $('#isShop').hidden=true; scrollTo({top:0,behavior:'smooth'}); };
 function renderBuilds(){
   const o=worldStore(), keys=[...o.log].reverse(), shownKeys=new Set(islandModelsAny(o).list.map(m=>m.key));
-  const B=Object.values(o.builds), clean=B.filter(b=>(b.s||0)>=3).length, nohint=B.filter(b=>(b.s||0)>=2).length, mem=B.filter(b=>b.m).length;
-  $('#isBuildsNote').innerHTML=keys.length?`${keys.length} model${keys.length===1?'':'s'} finished. Stars are the best of every try. <span class="mastery"><b>${clean}</b> clean · <b>${nohint}</b> no hints · <b>${mem}</b> from memory</span>`:'Nothing finished yet.';
+  const B=Object.values(o.builds), perfect=B.filter(b=>rateOf(b)>=STAR_MAX).length, mem=B.filter(b=>b.m).length;
+  $('#isBuildsNote').innerHTML=keys.length?`${keys.length} model${keys.length===1?'':'s'} finished. Stars are the best of every try. <span class="mastery"><b>${perfect}</b> perfect (all ten ★) · <b>${mem}</b> from memory</span>`:'Nothing finished yet.';
   $('#buildsGrid').innerHTML=keys.map(k=>{ const b=o.builds[k], u=worldThumb(k), nm=k.startsWith('w:')?'Bibi’s Weekly Bloppit':(/^m:(.+):\d+$/.exec(k)||/^t:[a-z]+:\d+:(.+)$/.exec(k)||[])[1]||'Your photo';
     const home=isHomeBuild(k), away=!home&&isAway(o,k), on=home||shownKeys.has(k)||(k.startsWith('w:')&&!ISL3.ok);
-    return `<button type="button" class="${on?'':'away'}" data-mkey="${escapeHTML(k)}" aria-label="${escapeHTML(modelFacts(k,o).name)}">${home?'<span class="on-isle" title="It became your home">🏠</span>':on?'<span class="on-isle" title="On Bloppitopia">🏝️</span>':''}${u?`<img src="${u}" alt="">`:'<span style="height:72px"></span>'}<span>${escapeHTML(modelFacts(k,o).name)}</span>${wsStars(b.s||0)}<small>${home?'Your home · ':''}${b.n} bricks${b.m?' · 🧠':''}${k.startsWith('w:')?' · 📅':''}${away?' · put away':''}</small></button>`; }).join('');
+    return `<button type="button" class="${on?'':'away'}" data-mkey="${escapeHTML(k)}" aria-label="${escapeHTML(modelFacts(k,o).name)}">${home?'<span class="on-isle" title="It became your home">🏠</span>':on?'<span class="on-isle" title="On Bloppitopia">🏝️</span>':''}${u?`<img src="${u}" alt="">`:'<span style="height:72px"></span>'}<span>${escapeHTML(modelFacts(k,o).name)}</span>${wsStars(rateOf(b))}<small>${home?'Your home · ':''}${b.n} bricks${b.m?' · 🧠':''}${k.startsWith('w:')?' · 📅':''}${away?' · put away':''}</small></button>`; }).join('');
 }
 $('#buildsGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-mkey]'); if(b) islandTip('model:'+b.dataset.mkey,b); });
 // The postcard: the island as a picture, no name, no photo, no location
@@ -12028,7 +12044,7 @@ const BOARD_KEY='bloppit-board-v1';
 function boardOn(){ try{ return localStorage.getItem(pkey(BOARD_KEY))!=='0'; }catch(e){ return true; } }   // on by default; off only once a grown-up switches it off
 function boardSet(on){ try{ localStorage.setItem(pkey(BOARD_KEY),on?'1':'0'); }catch(e){} track(on?'board_on':'board_off'); renderBoard(); }
 $('#grownBoard').addEventListener('change',e=>boardSet(e.target.checked));
-function boardRows(b){ return b.length?b.map(e=>`<div class="${e.me?'me':''}"><span class="rk">${e.rank}</span><span>${escapeHTML(e.name)}${e.me?' (you)':''}</span><span>${e.clean?'✨ clean':''}</span>${wsStars(e.stars)}</div>`).join(''):'<p class="note">Nobody on the board yet this week. Finish Bibi’s Weekly Bloppit to be first.</p>'; }
+function boardRows(b){ return b.length?b.map(e=>`<div class="${e.me?'me':''}"><span class="rk">${e.rank}</span><span>${escapeHTML(e.name)}${e.me?' (you)':''}</span><span>${e.clean?'✨ clean':''}</span>${wsStars(e.rating??OLD_STARS[e.stars]??0)}</div>`).join(''):'<p class="note">Nobody on the board yet this week. Finish Bibi’s Weekly Bloppit to be first.</p>'; }
 async function renderBoard(){
   const card=$('#dyBoard'); if(!boardOn()){ card.hidden=true; return; }
   card.hidden=false; const me=curPlayer(), pid=me&&me.pup;
@@ -12064,7 +12080,7 @@ async function passOpenTurn(crewCode){
   rebuildPlaced();
   for(const mv of j.moves) applyMoveCore(mv);
   while(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))) cur++;
-  reconcilePieces(); run={miss:0,hints:new Set(),auto:0,memory:false};
+  reconcilePieces(); run={miss:0,hints:new Set(),auto:0,memory:false,trouble:new Map()};
   const to=Math.min(Q.steps,Q.page+Q.chunk);
   pass={role:'turn',crew:crewCode,id:Q.id,from:Q.page,to,moves:[],title:Q.title};
   track('pass_turn'); setTab('build'); updateBuildUI(); frameBuild(false);
@@ -12331,7 +12347,7 @@ async function relayOpen(c,m){
     placedGroup.clear(); placedBoxes=[]; placed=new Set(); off=null; cands=[]; placedN=0; cur=0; drops=[]; busy=false;
     for(const mv of c.first.moves) applyMoveCore(mv);
     while(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))) cur++;
-    reconcilePieces(); run={miss:0,hints:new Set(),auto:0,memory:false};
+    reconcilePieces(); run={miss:0,hints:new Set(),auto:0,memory:false,trouble:new Map()};
     track('relay_joined'); setTab('build'); updateBuildUI(); frameBuild(false);
     setStatus(`${who} built pages 1 to ${c.half}. Your turn: pages ${c.half+1} to ${c.steps}.`,'ok');
   };

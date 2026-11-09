@@ -35,6 +35,14 @@ test('pup: world merge keeps best stars, earliest time, union of log/decor, the 
   assert.deepEqual(w.log, ['m:Tree:6', 'm:Duck:18', 'w:2026-10-26']);
   assert.deepEqual(w.decor, ['flag', 'crab']); assert.equal(w.pupName, 4);
 });
+test('pup: ★ out of 10 (r) merge with old 3-scale builds (3→10, 2→8, 1→6), keeping the best', () => {
+  const a = { world: { builds: { 'm:Tree:6': { n: 6, s: 2, t: 100, c: 1 }, 'm:Duck:18': { n: 18, s: 3, t: 200, c: 1 } }, log: ['m:Tree:6', 'm:Duck:18'] } };
+  const b = { world: { builds: { 'm:Tree:6': { n: 6, s: 3, r: 10, t: 90, c: 1 }, 'm:Duck:18': { n: 18, s: 2, r: 9, t: 300, c: 1 } }, log: ['m:Tree:6', 'm:Duck:18'] } };
+  const w = merge(a, cleanData(b)).world;
+  assert.equal(w.builds['m:Tree:6'].r, 10);
+  assert.equal(w.builds['m:Duck:18'].r, 10, 'an old perfect build (3 of 3) beats a 9 of 10');
+  assert.equal(merge({ world: { builds: { k: { n: 6, s: 2 } }, log: ['k'] } }, { world: { builds: { k: { n: 6, s: 1 } }, log: ['k'] } }).world.builds.k.r, undefined, 'old builds stay old until rebuilt');
+});
 test('pup: a set name is never overwritten by an unset one', () => {
   assert.equal(merge({ world: { pupName: 2 } }, { world: { pupName: -1 } }).world.pupName, 2);
 });
@@ -158,6 +166,15 @@ test('weekly board: entries only with the switch, generated names, clean first t
   assert.equal(r.body.n, 3); assert.equal(r.body.board.length, 2); assert.equal(r.body.board[0].me, true); assert.equal(r.body.board[0].clean, true); assert.equal(r.body.board[1].stars, 2);
   const g = await challenge('GET', { weekly: week, board: '1', pid: A }, null, store); assert.equal(g.body.board[1].me, true); assert.match(g.body.board[0].name, /^[A-Z][a-z]+ [A-Z][a-z]+ \d{3}$/);
   const plain = await challenge('GET', { weekly: week }, null, store); assert.equal(plain.body.board, undefined);
+});
+test('weekly board: ratings out of 10 (scale:10) rank with old out-of-3 entries, and both scales come back', async () => {
+  mem.clear();
+  const week = weekOf(Date.now()), A = 'a'.repeat(24), B = 'b'.repeat(24), C = 'c'.repeat(24);
+  await challenge('POST', { pid: A }, { action: 'weekly', week, ms: 60000, miss: 1, hint: 0, nBricks: 20, board: true, stars: 2 }, store);              // app 1.1: 2 of 3 = 8 of 10
+  await challenge('POST', { pid: B }, { action: 'weekly', week, ms: 60000, miss: 1, hint: 0, nBricks: 20, board: true, stars: 9, scale: 10 }, store);
+  const r = await challenge('POST', { pid: C }, { action: 'weekly', week, ms: 60000, miss: 3, hint: 0, nBricks: 20, board: true, stars: 7, scale: 10 }, store);
+  assert.deepEqual(r.body.board.map((e) => e.rating), [9, 8, 7]);
+  assert.deepEqual(r.body.board.map((e) => e.stars), [2, 2, 2], 'app 1.1 still gets stars out of 3');
 });
 
 test('family key: create → attach two pups → list → restore → delete one', async () => {

@@ -74,10 +74,15 @@ function publicRelay(c, mine) {
 
 const BOARD_MAX = 100;
 const cleanPid = (s) => /^[a-z0-9]{24}$/.test(String(s || '')) ? String(s) : '';
-const sortBoard = (b) => [...b].sort((x, y) => (y.clean - x.clean) || (y.stars - x.stars) || (x.at - y.at));
+// Stars: the game rates builds out of 10 since 9 Nov 2026 (entries with ten:1); older entries were out of 3 (3→10, 2→8, 1→6).
+// The board answers with both: rating (out of 10) for the game now, stars (out of 3) for app 1.1.
+const OLD_STARS = { 3: 10, 2: 8, 1: 6 };
+const ratingOf = (e) => e.ten ? (e.stars || 0) : (OLD_STARS[e.stars] || 0);
+const oldScale = (r) => r >= 10 ? 3 : r >= 7 ? 2 : r > 0 ? 1 : 0;
+const sortBoard = (b) => [...b].sort((x, y) => (y.clean - x.clean) || (ratingOf(y) - ratingOf(x)) || (x.at - y.at));
 function publicBoard(d, pid) {
   const b = sortBoard(d.board || []);
-  return b.map((e, i) => ({ rank: i + 1, name: labelFor(e.id), clean: !!e.clean, stars: e.stars, me: !!pid && e.id === pid }));
+  return b.map((e, i) => ({ rank: i + 1, name: labelFor(e.id), clean: !!e.clean, stars: oldScale(ratingOf(e)), rating: ratingOf(e), me: !!pid && e.id === pid }));
 }
 
 async function readChallenge(store, code) {
@@ -215,8 +220,8 @@ export async function handle(method, query, body, store) {
       const d = r ? r.data : { week, n: 0, clean: 0 };
       d.n += 1; if (clean) d.clean += 1;
       // The top-100 board (behind a parent switch on the device): generated names, clean first, ties by stars, then earliest.
-      const pid = cleanPid(query.pid), stars = Math.max(0, Math.min(3, Math.floor(Number(body.stars)) || 0));
-      if (body.board && pid) { d.board = (d.board || []).filter((e) => e.id !== pid); d.board.push({ id: pid, clean, stars, at: now }); d.board = sortBoard(d.board).slice(0, BOARD_MAX); }
+      const pid = cleanPid(query.pid), ten = Number(body.scale) === 10, stars = Math.max(0, Math.min(ten ? 10 : 3, Math.floor(Number(body.stars)) || 0));
+      if (body.board && pid) { d.board = (d.board || []).filter((e) => e.id !== pid); d.board.push({ id: pid, clean, stars, ...(ten ? { ten: 1 } : {}), at: now }); d.board = sortBoard(d.board).slice(0, BOARD_MAX); }
       const { modified } = await store.set(weekKey(week), d, r ? { onlyIfMatch: r.etag } : { onlyIfNew: true });
       if (modified) return { status: 200, body: { week, n: d.n, clean: d.clean, pct: Math.round(100 * d.clean / d.n), you: clean, ...(body.board && pid ? { board: publicBoard(d, pid) } : {}) } };
       await new Promise((res) => setTimeout(res, 40 + Math.random() * 120));

@@ -85,7 +85,7 @@ Find sections by their heading comments (`/* ---------- Name ---------- */`); li
   `trialEnd`.
 - **Weekly Bloppit**: `weekOf()`, `WEEKLY_PLAN`, `weeklyPuzzle(week)`, `weeklyLoad`, `renderDaily`, `weeklySync`
   (app fetch), `weeklyPreview` (`?weekly=next`), special pieces (`addSpecial`, `SPECIAL_NAME`, `dialHands`).
-- **Save progress**, **Your world** (XP, ★ stars = build rating, **Galaxy Blocks** = spendable currency), **Bloppitopia**
+- **Save progress**, **Your world** (XP, ★ stars = build rating out of 10, **Galaxy Blocks** = spendable currency), **Bloppitopia**
   2D and 3D, **characters** (drawn "living" characters; 3D GLBs for some), **lufu's world** (Chapter 2), **The end**,
   **My Bloppit** (otter level and outfit), **Share links / Weekly card / Family Link**, **Draw your own**, **Family
   key**, **Weekly top-100 board**, **Pass the Puzzle / Crews / Relay**, **Play Next**, **First session**, **Menu**.
@@ -171,6 +171,17 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   voice (Steff's two boys).
 - Story: Bloppitopia is Chapter 1 and ends with the pup and lufu finding each other (films 12–22, all eight sail to
   lufu's world). Chapter 2 is "Bloppit builds lufu's world"; lufu stays mythical, never more than Bloppit.
+
+## Stars (redone 9 Nov 2026, Steff)
+
+- Every build starts with **10 ★** and loses one for each brick that needed a hint, a "Place one for me" or another
+  try. However many tries one brick takes, it costs one ★ (`run.trouble`, keyed by how many bricks were placed;
+  `troubleAdd`, `runRating`). Never below 1. Blitz wins are rated the same way.
+- **Galaxy Blocks: one per 3 ★, rounded up** (`gbOf`: 10 ★ = 4, 7–9 = 3, 4–6 = 2, 1–3 = 1), plus the usual extras.
+- Records keep `r` (out of 10) and the old `s` (out of 3, for app 1.1). Builds from before only have `s`: read as
+  3→10, 2→8, 1→6 (`rateOf`). Merges (game and `pup/logic.mjs`) keep the best `r`. The Weekly board takes `scale:10`
+  and answers with `rating` (out of 10) and `stars` (out of 3, for app 1.1).
+- Stars don't drive XP, otter level, island growth or the Weekly board's "clean" (still no misses, no hints).
 
 ## Gotchas
 

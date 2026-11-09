@@ -1569,7 +1569,7 @@ test('stars, Galaxy Blocks and the Otter Level: one job each; the otter grows by
   let t = await open('?nosplash=1', { init: big });
   let w = await t.page.evaluate(() => window.bloppitWorld());
   assert.ok(w.level >= 8); assert.equal(w.stage, 'Legend');
-  assert.equal(w.stars, 26, '★ are never spent'); assert.equal(w.galaxy, 26 - 3, 'the flag cost 3 Galaxy Blocks');
+  assert.equal(w.stars, 13 * 8, '★ are never spent (each old 2 of 3 reads as 8 of 10)'); assert.equal(w.galaxy, 13 * 3 - 3, 'one Galaxy Block per 3 ★ (8 ★ = 3); the flag cost 3');
   await t.ctx.close();
   // 30 small builds from before the change: a Splash by builds keeps it, even at a low level
   const old = { fn: () => { const builds = {}, log = []; for (let i = 0; i < 30; i++) { builds['p:old' + i] = { n: 10, s: 1, k: 'quick', t: 1.7e12 }; log.push('p:old' + i); }
@@ -1577,15 +1577,15 @@ test('stars, Galaxy Blocks and the Otter Level: one job each; the otter grows by
     if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds, log, decor: [], free: [], pick: 'treehouse' })); } };
   t = await open('?nosplash=1', { init: old });
   w = await t.page.evaluate(() => window.bloppitWorld()); assert.equal(w.stage, 'Splash');
-  // a Frog Trail level with a hint: one ★ (finished), a Galaxy Block for it, no points anywhere
+  // a Frog Trail level with a hint: 9 of 10 ★ (one brick had help), 3 Galaxy Blocks for it, no points anywhere
   await t.page.evaluate(() => window.bloppitLevel('otter', 0)); await t.page.waitForTimeout(1200);
   assert.equal(await t.text('#hintBtn'), 'Hint'); assert.equal(await t.text('#autoBtn'), 'Place one for me');
   await t.page.evaluate(() => document.getElementById('hintBtn').click()); await t.page.waitForTimeout(200);
-  assert.equal(await t.page.evaluate(() => document.querySelectorAll('#gbPts i').length ? document.getElementById('gbPts').textContent.length - document.querySelector('#gbPts i').textContent.length : 3), 1);
+  assert.equal(await t.text('#gbPts'), '9/10★');
   for (let k = 0; k < 120; k++) { const d = await t.page.evaluate(() => { const m = /(\d+) of (\d+)/.exec(document.getElementById('progress').textContent); if (m && m[1] === m[2]) return true; window.bloppitPlaceRight(); return false; }); if (d) break; await t.page.waitForTimeout(150); }
   await t.page.waitForFunction(() => document.getElementById('winDlg').open, null, { timeout: 20000 });
-  const rows = await t.text('#winRows'); assert.match(rows, /Built the Heart/); assert.match(rows, /Help used \(1\)/); assert.match(rows, /Galaxy Blocks ?\+1/); assert.doesNotMatch(rows, /point/i);
-  assert.match(await t.text('#winBest'), /Frog Trail: 1 of 45 ★/);
+  const rows = await t.text('#winRows'); assert.match(rows, /Built the Heart/); assert.match(rows, /Help used \(1\)/); assert.match(rows, /Galaxy Blocks ?\+3/); assert.doesNotMatch(rows, /point/i);
+  assert.match(await t.text('#winBest'), /Frog Trail: 9 of 150 ★/);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
