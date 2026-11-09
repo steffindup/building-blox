@@ -1885,6 +1885,7 @@ body.film-on{overflow:hidden}
 .brand .wob i{font-style:normal;font-family:var(--f-body);font-weight:800;font-size:11px;line-height:1;padding:3px 5px 4px;border-radius:5px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.16)}
 .brand .wob i:nth-child(1){background:#F4BC22;color:#142022}.brand .wob i:nth-child(2){background:#fff;color:#0369BD;box-shadow:inset 0 0 0 1.5px #0369BD}.brand .wob i:nth-child(3){background:#D62F2A;color:#fff}
 /* the links under the menu */
+.who-link{margin:12px 0 0}.who-form .who-link{margin:0 0 10px}.linkbtn{border:0;background:none;padding:0;font:inherit;font-weight:800;color:var(--accent);text-decoration:underline;cursor:pointer}
 .appfoot{text-align:center;margin-top:auto;padding-top:24px}.appfoot a{color:var(--muted);text-decoration:none;font-weight:700}.appfoot a:hover{color:var(--ink);text-decoration:underline}
 
 /* Drawn icons in place of emoji (Steff, 7 Nov 2026: "all drawn"). They look the same on every phone and computer. */
@@ -2526,11 +2527,13 @@ body.film-on{overflow:hidden}
   <div class="who-list" id="whoList"></div>
   <form class="who-form" id="whoForm" hidden autocomplete="off">
     <h3 id="whoFormTitle">New player</h3>
+    <p class="note who-link" id="whoFormLink">Already playing on another device? <button class="linkbtn" id="whoFormLinkBtn" type="button">Link that player instead</button></p>
     <div class="field"><label for="whoNm">Name</label><input class="inp" id="whoNm" maxlength="16" required placeholder="e.g. Alex"></div>
     <div class="field"><label for="whoAge">Age</label><select class="inp" id="whoAge"><option value="">Rather not say</option></select></div>
     <div class="who-colors" id="whoColors" role="radiogroup" aria-label="Colour"></div>
     <div class="win-btns"><button class="ghost danger" id="whoDel" type="button" hidden>Remove player</button><button class="ghost" id="whoCancel" type="button">Cancel</button><button class="primary sm" type="submit" id="whoSave">Save</button></div>
   </form>
+  <p class="note who-link" id="whoLinkRow">Play Bloppit on another device too? <button class="linkbtn" id="whoLink" type="button">Link a player from there</button></p>
   <div class="win-btns" id="whoBtns"><button class="ghost" id="whoGrown" type="button">Grown-ups</button><button class="ghost" id="whoAdd" type="button">+ Add a player</button><button class="primary sm" id="whoDone" type="button">Done</button></div>
 </dialog>
 <dialog class="windlg whodlg" id="grownDlg" aria-labelledby="grownTitle">
@@ -2539,18 +2542,18 @@ body.film-on{overflow:hidden}
   <section class="grown-sec">
     <h3>Saved progress</h3>
     <p class="note" id="grownSaved"></p>
-    <p class="note">Bloppit saves scores and dates under an anonymous progress code. No name, age, photo or device details are ever stored. <a href="/privacy/" target="_blank" rel="noopener">Privacy policy</a></p>
+    <p class="note">Bloppit saves scores and dates under an anonymous Player Unique ID. No name, age, photo or device details are ever stored. <a href="/privacy/" target="_blank" rel="noopener">Privacy policy</a></p>
   </section>
   <section class="grown-sec">
-    <h3>Move this player to another device</h3>
-    <p class="note">Make a transfer code here, then on the other device open <b>Who’s playing → Grown-ups → Bring a player here</b> and type it in. A code works once and lasts 72 hours.</p>
-    <div class="win-btns" style="justify-content:flex-start"><button class="ghost" id="grownXfer" type="button">Make a transfer code</button></div>
+    <h3>Link this player to another device</h3>
+    <p class="note">Make a link code here, then on the other device open <b>Who’s playing → Link a player from there</b> and type it in. Both devices then play as the same player: progress and Crews stay in step. A code works once and lasts 72 hours.</p>
+    <div class="win-btns" style="justify-content:flex-start"><button class="ghost" id="grownXfer" type="button">Make a link code</button></div>
     <p class="gate-num" id="grownCode" hidden></p>
     <p class="note" id="grownXferNote" hidden></p>
   </section>
   <section class="grown-sec">
     <h3>Family key</h3>
-    <p class="note">A family key is your own 12-character key, shown once: keep it in your password manager. Players attached to it can be seen, brought to any device or deleted from the server with the key alone, with no transfer code. Nothing about you is stored, only which players belong together.</p>
+    <p class="note">A family key is your own 12-character key, shown once: keep it in your password manager. Players attached to it can be seen, brought to any device or deleted from the server with the key alone, with no link code. Nothing about you is stored, only which players belong together.</p>
     <div class="win-btns" style="justify-content:flex-start"><button class="ghost" id="famMake" type="button">Make a family key</button><button class="ghost" id="famAttach" type="button">Attach this player</button></div>
     <p class="gate-num" id="famKeyOut" hidden></p>
     <form class="mq-ans" id="famForm" autocomplete="off" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
@@ -2563,17 +2566,18 @@ body.film-on{overflow:hidden}
   </section>
   <section class="grown-sec">
     <h3>Family Link: send Bloppit to another device</h3>
-    <p class="note">Scan this with the child’s iPad, phone or Chromebook, or send the link. It opens Bloppit’s first build. Nothing personal crosses. To bring this player’s progress along too, make a transfer code above first; it is added to the link while it lasts.</p>
+    <p class="note">Scan this with the child’s iPad, phone or Chromebook, or send the link. It opens Bloppit’s first build. Nothing personal crosses. To link this player there too, make a link code above first; it is added to the link while it lasts.</p>
     <div class="family"><div class="qr" id="familyQr" aria-label="QR code for the Family Link"></div>
       <div class="family-txt"><code id="familyUrl">bloppit.com/p/start</code>
         <div class="win-btns" style="justify-content:flex-start"><button class="ghost" id="familyCopy" type="button">Copy link</button><button class="ghost" id="familyShare" type="button">Send link</button></div></div></div>
   </section>
-  <section class="grown-sec">
-    <h3>Bring a player here</h3>
+  <section class="grown-sec" id="grownLinkSec">
+    <h3>Link a player to this device</h3>
+    <p class="note">Already playing on another device? On that device, open <b>Who’s playing → Grown-ups → Link this player to another device</b> and make a link code, then type it here. This device then plays as that same player, with their progress and Crews.</p>
     <form class="mq-ans" id="grownClaimForm" autocomplete="off" style="display:flex;gap:8px;flex-wrap:wrap">
-      <label class="sr" for="grownClaimIn">Transfer code</label>
+      <label class="sr" for="grownClaimIn">Link code</label>
       <input class="inp" id="grownClaimIn" maxlength="9" placeholder="8-character code" autocapitalize="characters" spellcheck="false" style="flex:1;min-width:160px;text-transform:uppercase">
-      <button class="primary sm" type="submit" id="grownClaimGo">Bring here</button>
+      <button class="primary sm" type="submit" id="grownClaimGo">Link</button>
     </form>
     <p class="note" id="grownClaimNote" hidden></p>
   </section>
@@ -6972,7 +6976,7 @@ function renderWhoList(){
 }
 let whoEditing=null, whoColor=AV_COLORS[0];
 function whoForm(p){
-  whoEditing=p?p.id:null; $('#whoForm').hidden=false; $('#whoBtns').hidden=true; $('#whoList').hidden=true;
+  whoEditing=p?p.id:null; $('#whoForm').hidden=false; $('#whoBtns').hidden=true; $('#whoList').hidden=true; $('#whoLinkRow').hidden=true; $('#whoFormLink').hidden=!!p;
   $('#whoFormTitle').textContent=p?`Edit ${p.name}`:'New player';
   $('#whoNm').value=p?p.name:''; $('#whoAge').value=p&&p.age?String(p.age):'';
   whoColor=p?p.color:AV_COLORS[players.list.length%AV_COLORS.length];
@@ -6980,7 +6984,7 @@ function whoForm(p){
   $('#whoDel').hidden=!p||players.list.length<2;
   setTimeout(()=>$('#whoNm').focus(),30);
 }
-function whoFormClose(){ $('#whoForm').hidden=true; $('#whoBtns').hidden=false; $('#whoList').hidden=false; renderWhoList(); }
+function whoFormClose(){ $('#whoForm').hidden=true; $('#whoBtns').hidden=false; $('#whoLinkRow').hidden=false; $('#whoList').hidden=false; renderWhoList(); }
 function switchPlayer(id){
   if(id===players.cur){ $('#whoDlg').close(); return; }
   try{ saveNow(); }catch(e){}
@@ -7052,7 +7056,7 @@ async function pupSync(){
   }catch(e){ /* offline or busy: the local copy stands and the next finish tries again */ }
   finally{ pupBusy=false; if(pupAgain){ pupAgain=false; pupPush(); } renderGrown(); }
 }
-function pupStatus(){ const me=curPlayer(); return me&&me.pup?`Saved on Bloppit’s server as player …${me.pup.slice(-4)}.`:'Saved on this device only. The server copy starts with the first finished build.'; }
+function pupStatus(){ const me=curPlayer(); return me&&me.pup?`Saved on Bloppit’s server under Player Unique ID …${me.pup.slice(-4).toUpperCase()}.`:'Saved on this device only. The server copy starts with the first finished build.'; }
 function renderGrown(){ const el=$('#grownSaved'); if(el) el.textContent=pupStatus(); const w=$('#grownWho'); if(w){ const me=curPlayer(); w.textContent=`Settings for ${me?me.name:'this player'}.`; } }
 async function openGrown(){
   if(!(await gate.ask('The Grown-ups corner is for parents.'))) return;
@@ -7063,27 +7067,30 @@ async function openGrown(){
   $('#grownDlg').showModal();
 }
 $('#whoGrown').onclick=openGrown;
+// "Link a player from there": the same Grown-ups corner, opened at Link a player to this device (Steff, 8 Nov 2026)
+async function openLink(){ await openGrown(); if(!$('#grownDlg').open) return; const sec=$('#grownLinkSec'); sec.scrollIntoView({block:'start'}); $('#grownClaimIn').focus({preventScroll:true}); }
+$('#whoLink').onclick=openLink; $('#whoFormLinkBtn').onclick=openLink;
 $('#grownDone').onclick=()=>$('#grownDlg').close();
 $('#grownXfer').onclick=async()=>{
   const me=curPlayer(), note=$('#grownXferNote'), out=$('#grownCode'); note.hidden=false; out.hidden=true;
   try{
-    if(!me.pup){ await pupSync(); if(!me.pup){ note.textContent='Finish one build first, then make a code.'; return; } }
+    if(!me.pup){ await pupSync(); if(!me.pup){ note.textContent='Finish one build first, then make a link code.'; return; } }
     note.textContent='Making a code…';
     const j=await pupApi('POST',{action:'transfer'},me.pup); track('transfer_made');
     out.textContent=j.code; out.hidden=false; familyCode=j.code; renderFamily();
-    note.textContent=`Type this on the other device within 72 hours. It works once. The Family Link below now carries it too.`;
+    note.textContent=`On the other device, open Who’s playing → Link a player from there and type this within 72 hours. It works once. The Family Link below now carries it too.`;
   }catch(e){ note.textContent=e.message; }
 };
 $('#grownClaimForm').addEventListener('submit',async e=>{
   e.preventDefault(); const code=$('#grownClaimIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''), note=$('#grownClaimNote'); note.hidden=false;
-  if(code.length!==8){ note.textContent='A transfer code has 8 letters and numbers.'; return; }
-  $('#grownClaimGo').disabled=true; note.textContent='Bringing the player here…';
+  if(code.length!==8){ note.textContent='A link code has 8 letters and numbers.'; return; }
+  $('#grownClaimGo').disabled=true; note.textContent='Linking the player…';
   try{
     const j=await pupApi('POST',{action:'claim',code}); track('transfer_claimed');
-    if(players.list.some(p=>p.pup===j.pup)){ note.textContent='That player is already on this device.'; return; }
+    if(players.list.some(p=>p.pup===j.pup)){ note.textContent='That player is already linked on this device.'; return; }
     const id='p'+(++players.n+1), n=players.list.length+1;
     players.list.push({id,name:'Player '+n,age:null,color:AV_COLORS[(n-1)%AV_COLORS.length],pup:j.pup}); pupApply(id,j.data); playersSave();
-    note.textContent='Done. Give them their name under Edit, then tap their card to play.';
+    note.textContent='Linked. Progress and Crews now stay in step with the other device. Names stay on each device, so give them their name under Edit, then tap their card to play.';
     renderWhoList();
   }catch(err){ note.textContent=err.message; }
   finally{ $('#grownClaimGo').disabled=false; }

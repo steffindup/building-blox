@@ -153,9 +153,9 @@ export async function handle(method, query, body, store) {
   // Bring a pup to this device with a transfer code. Works once; the code is then gone.
   if (a === 'claim') {
     const code = cleanCode(body.code);
-    if (code.length !== 8) return { status: 400, body: { error: 'A transfer code has 8 letters and numbers.' } };
+    if (code.length !== 8) return { status: 400, body: { error: 'A link code has 8 letters and numbers.' } };
     const x = await store.get(xferKey(code));
-    if (!x || !x.data || now > x.data.exp) return { status: 404, body: { error: 'That code wasn’t found or has expired. Make a new one on the other device.' } };
+    if (!x || !x.data || now > x.data.exp) return { status: 404, body: { error: 'That link code wasn’t found or has expired. Make a new one on the other device.' } };
     await store.del(xferKey(code));
     const r = await readPup(store, x.data.pup);
     if (!r) return { status: 404, body: { error: 'That pup is no longer there.' } };
