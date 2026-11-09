@@ -108,14 +108,15 @@ window.bloppitAudioType=function(t){ try{ var s=navigator.audioSession; if(s&&s.
 window.bloppitAudioType('ambient');
 </script>
 <script>
-// Launch screen: once per visit, on the website and in the app (not again after switching player).
-// Skipped for links straight into a room, a challenge or a page.
-(function(){ var s=document.getElementById('splash'), nav='', inside=false;
-  // Same rule as the front page: show on arrival or refresh, not when coming from another bloppit.com page or going Back
+// Launch screen: once per visit, in the app and on the website, including when Play Bloppit on a website page brings you
+// in (Steff, 9 Nov 2026: it used to be skipped then, so browser players hardly ever saw it). Not again in the same visit
+// (Back, a refresh, or switching player), and skipped for links straight into a room, a challenge or a page.
+(function(){ var s=document.getElementById('splash'), nav='', seen=false;
   try{ var e=performance.getEntriesByType('navigation')[0]; nav=e?e.type:''; }catch(x){}
-  try{ inside=!!document.referrer&&new URL(document.referrer).origin===location.origin; }catch(x){}
-  var show=nav==='reload'||(!inside&&nav!=='back_forward');
+  try{ seen=sessionStorage.getItem('bloppit-splash')==='1'; }catch(x){}
+  var show=!seen&&nav!=='back_forward';
   if(!show||/[?&](room|ch|code)=/.test(location.search)||(location.hash&&location.hash!=='#home')){ s.remove(); return; }
+  try{ sessionStorage.setItem('bloppit-splash','1'); }catch(x){}
   window.BLOPPIT_SPLASH=Date.now();
   // The trademark sound: Stian and Elmar saying "Bloppit", timed so "-pit!" lands as Bloppit's eye shuts.
   // The app plays it straight away; a browser may block sound before the first tap, then a tap on the launch screen plays it.

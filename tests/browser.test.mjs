@@ -1590,6 +1590,19 @@ test('stars, Galaxy Blocks and the Otter Level: one job each; the otter grows by
 });
 
 
+test('launch screen: Play Bloppit on the website brings it in (once a visit: not again after a refresh or Back)', { skip: skip() }, async () => {
+  const ctx = await browser.newContext(); const page = await ctx.newPage();
+  await ctx.route('**/*', async (r) => { const u = r.request().url(); const f = ['three.min.js', 'OrbitControls.js', 'BufferGeometryUtils.js'].find((k) => u.endsWith(k));
+    if (f && !u.includes('/vendor/')) return r.fulfill({ status: 302, headers: { location: `http://localhost:${PORT}/vendor/${f}` } });
+    if (/fonts\.g/.test(u)) return r.fulfill({ status: 200, body: '', contentType: 'text/css' }); r.continue(); });
+  await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'load' });
+  await Promise.all([page.waitForNavigation({ waitUntil: 'load' }), page.click('a[href="/game/"]')]);
+  assert.ok(await page.evaluate(() => !!document.getElementById('splash')), 'the wink shows on the way in from the website');
+  await page.reload({ waitUntil: 'load' });
+  assert.equal(await page.evaluate(() => !!document.getElementById('splash')), false, 'not again in the same visit');
+  await ctx.close();
+});
+
 test('launch screen: the boys say "Bloppit" as Bloppit winks, and not when the sound is off', { skip: skip() }, async () => {
   for (const off of [false, true]) {
     const ctx = await browser.newContext(); const page = await ctx.newPage();
