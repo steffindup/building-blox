@@ -169,7 +169,8 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
 - **Brand look**: the three bricks are World = yellow #F4BC22 with dark text #142022, of = white with blue #0369BD text,
   Bricks = red #D62F2A. Brand blue #0369BD; wordmark and headings in Lilita One. "World of Bricks" shows only on the
   website's front page and the game's home page, not deeper pages. Bloppit always holds the red 2-stud brick; outside
-  gameplay use the signature Bloppit picture. Audience wording: "enthusiastic brick builders", not "for kids".
+  gameplay use the signature Bloppit picture. Audience wording: "enthusiastic brick builders", not "for kids"; Steff's "for kids and grown-ups who love
+  bricks" (front page) is fine.
 - **Launch screen**: winking Bloppit plus the "Bloppit" voice (Steff's two boys, mixed 50:50), on the website and the app.
 - **About us** is Steff's own text: light edits only.
 - **Characters**: Bloppit the otter (Home Island, the main character; "Let's bloppit!"), the Pup (the player's otter, named
@@ -184,7 +185,8 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   menu cards, pill buttons. A card's studs are its own colour.
 - **Online-only** (no kits, physical products or "build it for real"). Child-directed under COPPA: **no chat, no
   voice, no strangers talking to kids**; rooms are code-only; Crews need approval. Anonymous: names stay on the device;
-  the server only knows the Player Unique ID. Cosmetics are earned, never sold. No Bermuda publicity or school tie-ins.
+  the server only knows the Player Unique ID. Cosmetics are earned, never sold. No marketing aimed at Bermuda and no school tie-ins; Bermuda as part of the
+  creation story (About us, the website) is welcome (Steff, 9 Nov).
 - **Not in the App Store Kids category** (4+). Links out of the app go through the grown-ups gate (our choice).
 - **Music** only in Bloppitopia; gameplay is silent apart from sound effects. The launch screen plays the "Bloppit"
   voice (Steff's two boys).
@@ -207,7 +209,7 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   "next film ready" slot; the halfway lines run on their own cadence. Films always play with sound.
 - **Together** has two parts, each with its own page: Play with Friends and Your Crews. Crews pick their own puzzle (with
   a suggestion) and name their crew.
-- **Business**: iOS 1.0 was a quiet soft launch; 1.1 is the version to market. US launch, no Bermuda publicity. Android through Bloppit LLC (Wyoming), which owns all the Bloppit IP.
+- **Business**: iOS 1.0 was a quiet soft launch; 1.1 is the version to market. US launch, no direct marketing in Bermuda. Android through Bloppit LLC (Wyoming), which owns all the Bloppit IP.
 
 ## Stars and Galaxy Blocks (redone 9 Nov 2026, Steff): the only two reward numbers
 
