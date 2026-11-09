@@ -1886,6 +1886,7 @@ body.film-on{overflow:hidden}
 .brand .wob i:nth-child(1){background:#F4BC22;color:#142022}.brand .wob i:nth-child(2){background:#fff;color:#0369BD;box-shadow:inset 0 0 0 1.5px #0369BD}.brand .wob i:nth-child(3){background:#D62F2A;color:#fff}
 /* the links under the menu */
 .who-link{margin:12px 0 0}.who-form .who-link{margin:0 0 10px}.linkbtn{border:0;background:none;padding:0;font:inherit;font-weight:800;color:var(--accent);text-decoration:underline;cursor:pointer}
+.piece.special img{filter:drop-shadow(0 0 3px #D4A72C) drop-shadow(0 0 6px rgba(212,167,44,.7))}.piece.special{border-radius:50%}
 .part-row.special{outline:2px solid #D4A72C;outline-offset:-2px}.part-row.special .q{font-size:15px}.pc.special{outline:2px solid #D4A72C;outline-offset:-2px}
 .pv-bar{margin:0 0 10px;padding:10px 14px;border-radius:14px;background:#2A1A7A;color:#fff;font-weight:700;font-size:14px;line-height:1.35}
 .appfoot{text-align:center;margin-top:auto;padding-top:24px}.appfoot a{color:var(--muted);text-decoration:none;font-weight:700}.appfoot a:hover{color:var(--ink);text-decoration:underline}
@@ -3286,9 +3287,9 @@ const partName=p=>`${PALETTE[p.c][0]} ${PIECE()} ${p.a} × ${p.l}`;
 const brickLabel=(c,a,l)=>`${PALETTE[c][0]} ${Math.min(a,l)}×${Math.max(a,l)} ${PIECE()}`;
 const PAINT_C=PALETTE.findIndex(p=>p[0]==='White');   // the finale's booklet: your half is shapes only, the colours are yours
 const showC=(m,b)=>m&&m.paint&&m.steps[b.step]&&m.steps[b.step].kid?PAINT_C:b.c;   // Pippa's half keeps her colours
-const calloutHTML=list=>printsIn(list).map(([k])=>`<div class="pc special" title="${PRINT_NAME[k]||k} print"><img alt="${PRINT_NAME[k]||k} print" src="${printIcon(k)}"><b>✦</b></div>`).join('')+partsOf(model&&model.paint?list.map(b=>({...b,c:showC(model,b)})):list).map(p=>`<div class="pc" role="button" tabindex="0" data-name="${brickLabel(p.c,p.a,p.l)}" title="${brickLabel(p.c,p.a,p.l)}"><img alt="${brickLabel(p.c,p.a,p.l)}" src="${brickIcon(p.a,p.l,p.c)}"><b>${p.n}x</b></div>`).join('');
-const specialHTML=list=>printsIn(list).map(([k,n])=>`<div class="part-row special"><img alt="" src="${printIcon(k)}"><div><div class="q">✦ Special piece</div><div class="d">${PRINT_NAME[k]||k}<br>printed on ${n} of the bricks below</div></div></div>`).join('');
-const partsHTML=list=>specialHTML(list)+partsOf(list).map(p=>`<div class="part-row"><img alt="" src="${brickIcon(p.a,p.l,p.c)}"><div><div class="q">${p.n}x</div><div class="d">${PALETTE[p.c][0]}<br>${TILES?'Tile':'Brick'} ${p.a} × ${p.l}</div></div></div>`).join('');
+const calloutHTML=list=>list.filter(b=>b.sp).map(b=>`<div class="pc special" title="${SPECIAL_NAME[b.sp]||b.sp}"><img alt="${SPECIAL_NAME[b.sp]||b.sp}" src="${printIcon(b.sp)}"><b>1x</b></div>`).join('')+partsOf((l=>model&&model.paint?l.map(b=>({...b,c:showC(model,b)})):l)(list.filter(b=>!b.sp))).map(p=>`<div class="pc" role="button" tabindex="0" data-name="${brickLabel(p.c,p.a,p.l)}" title="${brickLabel(p.c,p.a,p.l)}"><img alt="${brickLabel(p.c,p.a,p.l)}" src="${brickIcon(p.a,p.l,p.c)}"><b>${p.n}x</b></div>`).join('');
+const specialHTML=list=>list.filter(b=>b.sp).map(b=>`<div class="part-row special"><img alt="" src="${printIcon(b.sp)}"><div><div class="q">1x ✦ Special piece</div><div class="d">${SPECIAL_NAME[b.sp]||b.sp}<br>goes on last</div></div></div>`).join('');
+const partsHTML=list=>specialHTML(list)+partsOf(list.filter(b=>!b.sp)).map(p=>`<div class="part-row"><img alt="" src="${brickIcon(p.a,p.l,p.c)}"><div><div class="q">${p.n}x</div><div class="d">${PALETTE[p.c][0]}<br>${TILES?'Tile':'Brick'} ${p.a} × ${p.l}</div></div></div>`).join('');
 
 /* ---------- Three.js scene ---------- */
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
@@ -3313,11 +3314,11 @@ const geoCache=new Map(), edgeCache=new Map(), matCache=new Map();
 // Pictures are made of flat tiles (no studs, a third of a brick tall) instead of bricks
 let TILES=false; const TILE_H=.4;
 const PIECE=()=>TILES?'tile':'brick';
-function brickGeo(sx,sz){
-  const k=(TILES?'t':'')+sx+'x'+sz; if(geoCache.has(k)) return geoCache.get(k);
+function brickGeo(sx,sz,h=1){
+  h=h||1; const k=(TILES?'t':'')+sx+'x'+sz+(h>1?'x'+h:''); if(geoCache.has(k)) return geoCache.get(k);
   if(TILES){ const g=new THREE.BoxGeometry(sx-.06,TILE_H,sz-.06); g.translate(sx/2,TILE_H/2,sz/2); g.computeBoundingSphere(); geoCache.set(k,g); return g; }
-  const parts=[]; const body=new THREE.BoxGeometry(sx-.04,1.18,sz-.04); body.translate(sx/2,.59,sz/2); parts.push(body);
-  for(let i=0;i<sx;i++)for(let j=0;j<sz;j++){const s=new THREE.CylinderGeometry(.3,.3,.18,16); s.translate(i+.5,1.2+.08,j+.5); parts.push(s);}
+  const H=1.2*h-.02, parts=[]; const body=new THREE.BoxGeometry(sx-.04,H,sz-.04); body.translate(sx/2,H/2,sz/2); parts.push(body);
+  for(let i=0;i<sx;i++)for(let j=0;j<sz;j++){const s=new THREE.CylinderGeometry(.3,.3,.18,16); s.translate(i+.5,1.2*h+.08,j+.5); parts.push(s);}
   const g=THREE.BufferGeometryUtils.mergeBufferGeometries(parts); g.computeBoundingSphere(); geoCache.set(k,g); return g;
 }
 // Special pieces (Steff, 8 Nov 2026): printed bricks. A library model can carry print:{kind,cx,cy,r} (a circle in its
@@ -3336,12 +3337,71 @@ function printCanvas(kind){
     g.strokeStyle='#1B2A34'; g.lineWidth=5; g.beginPath(); g.arc(R,R,140,0,7); g.stroke();
     g.fillStyle='#1B2A34';
     for(let i=0;i<60;i++){ const big=i%5===0; g.save(); g.translate(R,R); g.rotate(i*Math.PI/30); g.fillRect(big?-8:-2.5,-202,big?16:5,big?52:18); g.restore(); }
-    const hand=(deg,len,w)=>{ g.save(); g.translate(R,R); g.rotate(deg*Math.PI/180); g.beginPath(); g.moveTo(-w,26); g.lineTo(w,26); g.lineTo(w*.45,-len); g.lineTo(0,-len-14); g.lineTo(-w*.45,-len); g.closePath(); g.fill(); g.restore(); };
-    hand(305,112,15); hand(60,176,10);   // ten past ten
-    disc(18,'#D4A72C');
   }
-  printCanvases.set(kind,c); return c;
+  printCanvases.set(kind,c);
+  if(kind==='dial'){ c.face=g.getImageData(0,0,512,512); dialHands(c); }
+  return c;
 }
+// The dial's hands show the player's own time of day (Steff, 8 Nov 2026); dialSweep spins them round to it
+function dialHands(c,at){
+  const g=c.getContext('2d'), R=256; g.putImageData(c.face,0,0);
+  const d=new Date(), m=at!=null?at:d.getHours()%12*60+d.getMinutes()+d.getSeconds()/60;
+  const hand=(deg,len,w)=>{ g.save(); g.translate(R,R); g.rotate(deg*Math.PI/180); g.fillStyle='#1B2A34'; g.beginPath(); g.moveTo(-w,26); g.lineTo(w,26); g.lineTo(w*.45,-len); g.lineTo(0,-len-14); g.lineTo(-w*.45,-len); g.closePath(); g.fill(); g.restore(); };
+  hand(m/2,112,15); hand(m%60*6,176,10);
+  g.fillStyle='#D4A72C'; g.beginPath(); g.arc(R,R,18,0,7); g.fill();
+  const mt=printMats.get('dial'); if(mt) mt.map.needsUpdate=true;
+}
+setInterval(()=>{ const c=printCanvases.get('dial'); if(c&&!dialSweeping) dialHands(c); },20000);
+let dialSweeping=false;
+function dialSweep(){
+  const c=printCanvas('dial'); if(reduceMotion){ dialHands(c); return; }
+  const d=new Date(), end=d.getHours()%12*60+d.getMinutes()+d.getSeconds()/60, from=end-720, t0=performance.now(), T=1800; dialSweeping=true;
+  const step=now=>{ const k=Math.min(1,(now-t0)/T), e=1-Math.pow(1-k,3); dialHands(c,from+(end-from)*e); buildDirty=true; bookDirty=true;
+    if(k<1) requestAnimationFrame(step); else dialSweeping=false; };
+  requestAnimationFrame(step);
+}
+// Special pieces (Steff, 8 Nov 2026): one piece per model, placed last as the finishing touch. A library model carries
+// special:{kind,cx,cy,r} (where it goes, in its drawing's pixels). The model is built as usual, then a recess is
+// left in its front face, SP_COLS studs wide and SP_ROWS layers tall, with a ledge of bricks under it; the special piece
+// is an ordinary piece standing on the ledge's studs (4x1 at the bottom, 4 layers tall) with its face printed, and it is
+// the last step. It matches only its own spot, and only it fits there.
+const SPECIAL_NAME={dial:'Clock dial'}, SP_COLS=4, SP_ROWS=4, SP_W=96;
+function addSpecial(m){
+  if(!m||!m.bricks||!m.steps) return;
+  const f=photos.find(p=>p.view==='front')||photos[0], smp=f&&f.sample?SAMPLES.find(x=>x.name===f.name):null, P=smp&&smp.special;
+  if(!P||m.kind==='picture'||m.mirror||m.paint||!f.m||!f.m.bbox||m.W<SP_COLS+2||m.H<SP_ROWS+3) return;
+  const [x0b,y0b,x1b,y1b]=f.m.bbox, bw=x1b-x0b+1, bh=y1b-y0b+1, kx=m.W/bw, ky=1.2*m.H/bh;
+  const cx=(P.cx-x0b+.5)*kx, cy=(bh-(P.cy-y0b+.5))*ky;
+  const fz=Math.max(...m.bricks.map(b=>b.z+b.sz))-1;   // the front layer
+  const X0=clamp(Math.round(cx-SP_COLS/2),1,m.W-SP_COLS-1), Y0=clamp(Math.round(cy/1.2-SP_ROWS/2),1,m.H-SP_ROWS-1);
+  const inCols=(x,y)=>x>=X0&&x<X0+SP_COLS&&y>=Y0&&y<Y0+SP_ROWS, inHole=(x,y,z)=>z===fz&&inCols(x,y);
+  const cnt=new Map(); for(const b of m.bricks) cnt.set(b.c,(cnt.get(b.c)||0)+b.sx*b.sz);
+  const wallC=[...cnt].sort((a,b)=>b[1]-a[1])[0][0], holeC=nearest(149,138,115);   // the tower's own colour; the back of the hole in dark tan
+  // Take out the front bricks in the hole; what's left of each one goes back in as smaller bricks, same colour, same step.
+  // The bricks at the back of the hole are dark tan, so it reads as a hole waiting for its piece.
+  const keep=[], back=[];
+  for(const b of m.bricks){
+    let hit=false; for(let dz=0;dz<b.sz&&!hit;dz++)for(let dx=0;dx<b.sx&&!hit;dx++) if(inCols(b.x+dx,b.y)) hit=true;
+    if(!hit){ keep.push(b); continue; }
+    for(let dz=0;dz<b.sz;dz++){ let run=null;
+      for(let dx=0;dx<=b.sx;dx++){ const x=b.x+dx, z=b.z+dz, ok=dx<b.sx&&!inHole(x,b.y,z), c=ok&&inCols(x,b.y)?holeC:b.c;
+        if(ok&&run&&run.sx<4&&run.c===c) run.sx++; else { if(run) back.push(run); run=ok?{x,y:b.y,z,sx:1,sz:1,c,step:b.step}:null; if(!ok&&dx<b.sx){} } } }
+  }
+  // The ledge: a full row of bricks under the hole, so the piece has studs to stand on
+  const cellAt=new Set(); for(const b of [...keep,...back]) for(let dz=0;dz<b.sz;dz++)for(let dx=0;dx<b.sx;dx++) cellAt.add((b.x+dx)+','+b.y+','+(b.z+dz));
+  const ledgeStep=Math.max(0,...[...keep,...back].filter(b=>b.y===Y0-1).map(b=>b.step));
+  const ledgeC=([...keep,...back].find(b=>b.y===Y0-1&&b.z+b.sz>fz)||keep[0]).c;
+  for(let x=X0;x<X0+SP_COLS;x++) if(!cellAt.has(x+','+(Y0-1)+','+fz)) back.push({x,y:Y0-1,z:fz,sx:1,sz:1,c:ledgeC,step:ledgeStep});
+  // Steps: the same order, the leftovers in their brick's step, then the special piece last
+  const all=[...keep,...back], steps=[];
+  m.steps.forEach((st,i)=>{ const bs=all.filter(b=>b.step===i).sort((a,b)=>a.z-b.z||a.x-b.x); if(bs.length) steps.push({...st,bricks:bs}); });
+  const sp={x:X0,y:Y0,z:fz,sx:SP_COLS,sz:1,h:SP_ROWS,c:wallC,sp:P.kind,print:{kind:P.kind,cx:X0+SP_COLS/2,cy:Y0*1.2+SP_ROWS*.6,r:Math.min(SP_COLS,SP_ROWS*1.2)/2-.04}};
+  steps.push({layer:Y0,part:1,parts:1,bricks:[sp],special:true});
+  m.bricks=[]; steps.forEach((st,i)=>{ for(const b of st.bricks){ b.step=i; m.bricks.push(b); } });
+  m.steps=steps; m.special={kind:P.kind,n:1};
+}
+// The finishing touch going in: the bong, and the hands spin round to the time it is now
+function specialIn(t){ if(t.sp==='dial'){ sfx.bong&&sfx.bong(); dialSweep(); } }
 function printMat(kind){
   if(printMats.has(kind)) return printMats.get(kind);
   const t=new THREE.CanvasTexture(printCanvas(kind)); t.encoding=THREE.sRGBEncoding; t.anisotropy=4;
@@ -3351,7 +3411,7 @@ function printMat(kind){
 // The print on one brick's front face: a window onto the big print
 function printMesh(b){
   const p=b&&b.print; if(!p||TILES) return null;
-  const w=b.sx, h=1.2, g=new THREE.PlaneGeometry(w,h), L=p.cx-p.r, B=p.cy-p.r, S2=2*p.r;   // the whole face, so the gaps between bricks don't show through the print
+  const w=b.sx, h=1.2*(b.h||1), g=new THREE.PlaneGeometry(w,h), L=p.cx-p.r, B=p.cy-p.r, S2=2*p.r;   // the whole face, so the gaps between bricks don't show through the print
   const U=x=>(x-L)/S2, V=y=>(y-B)/S2, x0=b.x, x1=b.x+b.sx, y0=b.y*1.2, y1=b.y*1.2+h, uv=g.attributes.uv;
   uv.setXY(0,U(x0),V(y1)); uv.setXY(1,U(x1),V(y1)); uv.setXY(2,U(x0),V(y0)); uv.setXY(3,U(x1),V(y0)); uv.needsUpdate=true;
   g.translate(b.sx/2,h/2,b.sz-.012);
@@ -3378,9 +3438,9 @@ function addPrints(m){
 }
 const printIcon=kind=>{ try{ return printCanvas(kind).toDataURL('image/png'); }catch(e){ return ''; } };
 const printsIn=list=>{ const k=new Map(); for(const b of list) if(b.print) k.set(b.print.kind,(k.get(b.print.kind)||0)+1); return [...k]; };
-function edgeGeo(sx,sz){
-  const k=(TILES?'t':'')+sx+'x'+sz; if(edgeCache.has(k)) return edgeCache.get(k);
-  const hh=TILES?TILE_H:1.2, b=new THREE.BoxGeometry(sx-.02,hh,sz-.02); b.translate(sx/2,hh/2,sz/2);
+function edgeGeo(sx,sz,h=1){
+  h=h||1; const k=(TILES?'t':'')+sx+'x'+sz+(h>1?'x'+h:''); if(edgeCache.has(k)) return edgeCache.get(k);
+  const hh=TILES?TILE_H:1.2*h, b=new THREE.BoxGeometry(sx-.02,hh,sz-.02); b.translate(sx/2,hh/2,sz/2);
   const e=new THREE.EdgesGeometry(b); edgeCache.set(k,e); return e;
 }
 function mat(c){
@@ -3404,11 +3464,11 @@ function buildScene(m){
   if(m.kind==='picture'){ basePlate=makeBase(m); modelGroup.add(basePlate); }
   modelGroup.position.set(-m.W/2,0,-m.D/2);
   const groups=new Map();
-  for(const b of m.bricks){const k=b.sx+'x'+b.sz+'|'+showC(m,b); if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(b);}
+  for(const b of m.bricks){const k=b.sx+'x'+b.sz+'x'+(b.h||1)+'|'+showC(m,b); if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(b);}
   const M=new THREE.Matrix4();
   for(const list of groups.values()){
     list.sort((a,b)=>a.step-b.step);
-    const b0=list[0], im=new THREE.InstancedMesh(brickGeo(b0.sx,b0.sz),mat(showC(m,b0)),list.length);
+    const b0=list[0], im=new THREE.InstancedMesh(brickGeo(b0.sx,b0.sz,b0.h),mat(showC(m,b0)),list.length);
     list.forEach((b,i)=>{M.makeTranslation(b.x,b.y*1.2,b.z); im.setMatrixAt(i,M);});
     im.instanceMatrix.needsUpdate=true; im.frustumCulled=false;
     im.userData.steps=Int32Array.from(list,b=>b.step); im.userData.bricks=list;
@@ -3451,10 +3511,10 @@ function showStep(k,animate){
     return; }
   const doneB=k===cur?usedSet():null, part=!!doneB&&doneB.size>0&&model.steps[k].bricks.some(b=>!doneB.has(b));
   model.steps[k].bricks.forEach((b,i)=>{
-    if(part&&doneB.has(b)){ const ms=withPrint(new THREE.Mesh(brickGeo(b.sx,b.sz),mat(showC(model,b))),b); ms.position.set(b.x,b.y*1.2,b.z); ms.userData.ty=b.y*1.2; ms.userData.i=i; ms.userData.b=b; current.add(ms); return; }   // already in: shown like the rest of the model
-    if(part){ const hl=new THREE.Mesh(brickGeo(b.sx,b.sz),MIRROR_SRC_MAT); hl.scale.set(1.08,1.1,1.08); hl.position.set(b.x-b.sx*.04,b.y*1.2-.06,b.z-b.sz*.04); hl.userData.ty=hl.position.y; hl.userData.i=i; current.add(hl); }   // still to go: glowing
-    const bc=showC(model,b), ms=withPrint(new THREE.Mesh(brickGeo(b.sx,b.sz),hang?xrayMat(bc):mat(bc)),b); if(hang) ms.renderOrder=5;
-    ms.add(new THREE.LineSegments(edgeGeo(b.sx,b.sz),edgeMat));
+    if(part&&doneB.has(b)){ const ms=withPrint(new THREE.Mesh(brickGeo(b.sx,b.sz,b.h),mat(showC(model,b))),b); ms.position.set(b.x,b.y*1.2,b.z); ms.userData.ty=b.y*1.2; ms.userData.i=i; ms.userData.b=b; current.add(ms); return; }   // already in: shown like the rest of the model
+    if(part){ const hl=new THREE.Mesh(brickGeo(b.sx,b.sz,b.h),MIRROR_SRC_MAT); hl.scale.set(1.08,1.1,1.08); hl.position.set(b.x-b.sx*.04,b.y*1.2-.06,b.z-b.sz*.04); hl.userData.ty=hl.position.y; hl.userData.i=i; current.add(hl); }   // still to go: glowing
+    const bc=showC(model,b), ms=withPrint(new THREE.Mesh(brickGeo(b.sx,b.sz,b.h),hang?xrayMat(bc):mat(bc)),b); if(hang) ms.renderOrder=5;
+    ms.add(new THREE.LineSegments(edgeGeo(b.sx,b.sz,b.h),edgeMat));
     ms.position.set(b.x,b.y*1.2,b.z); ms.userData.ty=b.y*1.2; ms.userData.i=i; ms.userData.b=b;
     current.add(ms);
   });
@@ -3687,7 +3747,7 @@ function rebuild(){
   if(!m||m.error){ model=null; for(const im of instanced){modelGroup.remove(im);} instanced=[]; showStep(0);
     $('#stats').innerHTML=''; $('#partsList').innerHTML=''; $('#startBuild').disabled=true;
     if(m&&m.error) showMsg(m.error,'err'); if(photos.some(p=>!p.sample)) track('build_failure:creator'); return; }
-  addPrints(m); model=m; if(photos.some(p=>!p.sample)) track('creator_succeeded'); modelVersion++; buildStep=0; syncUseBar();
+  addPrints(m); addSpecial(m); model=m; if(photos.some(p=>!p.sample)) track('creator_succeeded'); modelVersion++; buildStep=0; syncUseBar();
   TILES=m.kind==='picture';
   buildScene(m);
   showStep(m.steps.length,false);
@@ -4118,14 +4178,15 @@ function resetBuild(){
 function setStatus(t,kind){const el=$('#status'); el.textContent=t||''; el.dataset.kind=kind||'';}
 const curOff=()=>off||(cands.length?cands[0]:null);
 const usedSet=()=>off?placed:(cands.length?cands[0].used:new Set());
-const sameType=(p,b)=>p.c===b.c&&p.a===Math.min(b.sx,b.sz)&&p.l===Math.max(b.sx,b.sz);
-const pieceName=p=>`${PALETTE[p.c][0]} ${p.a}×${p.l}`;
+const sameType=(p,b)=>(p.sp||'')===(b.sp||'')&&p.c===b.c&&p.a===Math.min(b.sx,b.sz)&&p.l===Math.max(b.sx,b.sz);
+const pieceName=p=>p.sp?`✦ ${SPECIAL_NAME[p.sp]||'Special piece'}`:`${PALETTE[p.c][0]} ${p.a}×${p.l}`;
+const pieceIcon=p=>p.sp?printIcon(p.sp):brickIcon(p.a,p.l,p.c);
 function stepNeeds(p){
   if(!model||cur>=model.steps.length) return false;
   const u=usedSet(); return model.steps[cur].bricks.some(b=>!u.has(b)&&sameType(p,b));
 }
 
-const sameKind=(p,q)=>p.a===q.a&&p.l===q.l&&p.c===q.c;
+const sameKind=(p,q)=>p.a===q.a&&p.l===q.l&&p.c===q.c&&(p.sp||'')===(q.sp||'');
 const PAINT_PICK=['Red','Orange','Yellow','Lime','Green','Medium Azure','Blue','Lavender','Magenta','White','Black'];
 function renderHand(){
   const slot=$('#handSlot'), done=!model||cur>=model.steps.length;
@@ -4133,13 +4194,13 @@ function renderHand(){
   $('#putBack').hidden=!held; $('#putAll').hidden=hand.length<2;
   // Other bricks in hand, grouped by kind. Tap one to hold that kind instead.
   const groups=[]; for(const p of hand){const g=groups.find(g=>sameKind(g.p,p)); if(g) g.n++; else groups.push({p,n:1});}
-  $('#handMore').innerHTML=hand.length>1?groups.map((g,i)=>`<button class="hm" type="button" data-i="${i}" aria-pressed="${!!held&&sameKind(g.p,held)}" title="${pieceName(g.p)}"><img alt="" src="${brickIcon(g.p.a,g.p.l,g.p.c)}">${g.n}x</button>`).join(''):'';
+  $('#handMore').innerHTML=hand.length>1?groups.map((g,i)=>`<button class="hm" type="button" data-i="${i}" aria-pressed="${!!held&&sameKind(g.p,held)}" title="${pieceName(g.p)}"><img alt="" src="${pieceIcon(g.p)}">${g.n}x</button>`).join(''):'';
   $('#handMore').querySelectorAll('.hm').forEach(b=>b.onclick=()=>{ const p=groups[+b.dataset.i].p; setActive(p); setStatus(`${pieceName(p)} in hand.`); lookAlikeWarn(); updateBuildUI(); });
   { const pr=$('#paintRow'), on=!!(model&&model.paint&&held&&model.steps[cur]&&model.steps[cur].kid); pr.hidden=!on;
     if(on){ pr.innerHTML='<span>Your colour:</span>'+PAINT_PICK.map(n=>{ const i=PALETTE.findIndex(p=>p[0]===n); return i<0?'':`<button type="button" data-pc="${i}" aria-label="${n}" aria-pressed="${held.c===i}" style="background:${PALETTE[i][1]}"></button>`; }).join('');
       pr.querySelectorAll('[data-pc]').forEach(b=>b.onclick=()=>{ const c=+b.dataset.pc; held.c=c; if(sel) sel.c=c; setGhost(); renderHand(); }); } }
   if(held){
-    slot.innerHTML=`<img alt="" src="${brickIcon(held.a,held.l,held.c)}">`;
+    slot.innerHTML=`<img alt="" src="${pieceIcon(held)}">`;
     $('#handTitle').textContent=`${pieceName(held)} in hand`;
     $('#handNote').textContent=mpBlitz()?`Move it where it goes, then ${placeWord().replace('✓ ','')}`+(held.a!==held.l?(noPad()?'. Tap Rotate if it needs turning.':'. Turn it if it needs turning.'):'.')+(hand.length>1?` You’re holding ${hand.length} bricks; tap one below to switch.`:''):(stepNeeds(held)?`Move it where it goes, then ${placeWord().replace('✓ ','')}`+(held.a!==held.l?(noPad()?'. Tap Rotate if it needs turning.':'. Turn it if it needs turning.'):'.'):`Step ${cur+1} doesn’t use this one. Check the booklet${hand.length>1?', switch to another brick below,':''} or put it back.`)+(hand.length>1?` You’re holding ${hand.length} bricks; tap one below to switch.`:'');
   } else {
@@ -4469,6 +4530,11 @@ const sfx=(()=>{
     // Wrong spot: a friendly cartoon "bwoing" that droops, never harsh
     bonk(){ haptic('warn'); const c=ok('bonk',.25); if(!c) return; const t=c.currentTime;
       slide(c,t,jit(330,.04),190,.32,.16,11,'triangle'); tone(c,t,140,.12,{vol:.12,to:90,att:.005}); },
+    // Big Ben's hour bell: a deep E with a bell's out-of-tune partials, a hard strike and a long ring (the clock dial going in)
+    bong(){ haptic('win'); const c=ok('bong',1.5); if(!c) return; const t=c.currentTime+.05, f=164.8;
+      noise(c,t,.05,{vol:.35,freq:1800,q:1.2});
+      for(const [k,v,d] of [[.5,.22,6],[1,.3,5.2],[1.19,.12,3.4],[1.5,.1,3],[2,.14,2.6],[2.52,.06,1.6],[3,.05,1.2],[4.07,.03,.8]]){
+        tone(c,t,f*k,d,{vol:v,att:.006}); tone(c,t,f*k*1.003,d*.9,{vol:v*.45,att:.006}); } },
     // Picking bricks up out of the parts box: a bright clatter of plastic
     rattle(n=1){ const c=ok('rattle',.12); if(!c) return; const t=c.currentTime, k=Math.min(2+n,6);
       for(let i=0;i<k;i++){ const d=t+i*.03+Math.random()*.015; noise(c,d,.02,{vol:.3,freq:jit(3800,.3),q:4}); tone(c,d,jit(2200,.25),.03,{type:'triangle',vol:.05}); } },
@@ -4657,8 +4723,8 @@ $('#bpFinal').onclick=()=>{ if(!model) return; follow=false; showPage(model.step
 function setActive(p){
   held=p||null;
   if(!p){ sel=null; ghostGroup.clear(); padSync(); return; }
-  const keepTurn=sel&&sel.c===p.c&&Math.min(sel.sx,sel.sz)===p.a&&Math.max(sel.sx,sel.sz)===p.l;
-  if(!keepTurn) sel={sx:p.l,sz:p.a,c:p.c};
+  const keepTurn=sel&&sel.c===p.c&&(sel.sp||'')===(p.sp||'')&&Math.min(sel.sx,sel.sz)===p.a&&Math.max(sel.sx,sel.sz)===p.l;
+  if(!keepTurn) sel=p.sp?{sx:p.l,sz:p.a,c:p.c,sp:p.sp,h:p.tall,print:p.print}:{sx:p.l,sz:p.a,c:p.c};
   setGhost();
 }
 // White and Light Grey (and other near colours) look alike on screen: warn as soon as the wrong one is in hand
@@ -4682,7 +4748,7 @@ function putAllBack(){
 }
 function setGhost(){
   ghostGroup.clear(); if(!sel){ padSync(); return; }
-  const g=new THREE.Mesh(brickGeo(sel.sx,sel.sz),ghostMat(sel.c)); g.add(new THREE.LineSegments(edgeGeo(sel.sx,sel.sz),ghostEdge));
+  const g=new THREE.Mesh(brickGeo(sel.sx,sel.sz,sel.h),ghostMat(sel.c)); g.add(new THREE.LineSegments(edgeGeo(sel.sx,sel.sz,sel.h),ghostEdge)); if(sel.sp&&sel.print) withPrint(g,{...sel,x:0,y:0,z:0,print:{...sel.print,cx:sel.sx/2,cy:1.2*sel.h/2}});
   g.position.y=ghostLift(); ghostGroup.add(g);
   if(lastAnchor) placeGhost(lastAnchor.px,lastAnchor.pz);
   else if(model&&cur<model.steps.length){ const c=ghostHome(); placeGhost(c.px,c.pz); }
@@ -4728,13 +4794,13 @@ const noPad=()=>PHONE_Q.matches;
 const placeWord=()=>noPad()?'tap it to put it down':'press ✓ Place';
 function padSync(){
   const on=tab==='build'&&!!sel&&!!model&&cur<model.steps.length;
-  $('#rotBtn').classList.toggle('hot',on&&!!sel&&sel.sx!==sel.sz);
+  $('#rotBtn').classList.toggle('hot',on&&!!sel&&sel.sx!==sel.sz&&!sel.sp);
   $('#placePad').hidden=!on;
   if(!on) return;
-  $('#ppTurn').hidden=!sel||sel.sx===sel.sz;
+  $('#ppTurn').hidden=!sel||sel.sx===sel.sz||!!sel.sp;
   $('#ppPlace').disabled=busy||!lastAnchor||!ghostGroup.visible;
 }
-function rotateSel(){ if(!sel||sel.sx===sel.sz) return; [sel.sx,sel.sz]=[sel.sz,sel.sx];
+function rotateSel(){ if(!sel||sel.sx===sel.sz||sel.sp) return;   // a special piece only faces one way [sel.sx,sel.sz]=[sel.sz,sel.sx];
   // Turn around the same middle point, so the brick doesn't jump
   if(lastAnchor){ const cx=lastAnchor.ax+sel.sz/2, cz=lastAnchor.az+sel.sx/2; lastAnchor={...lastAnchor,px:cx,pz:cz}; }
   setGhost(); }
@@ -4759,7 +4825,7 @@ function renderHints(){
       else charge('hint',5); } }
   const o=curOff()||{x:0,z:0}, u=usedSet();
   for(const b of model.steps[cur].bricks){ if(u.has(b)) continue;
-    const h=new THREE.Mesh(brickGeo(b.sx,b.sz),hintMat(b.c)); h.add(new THREE.LineSegments(edgeGeo(b.sx,b.sz),edgeMat));
+    const h=new THREE.Mesh(brickGeo(b.sx,b.sz,b.h),hintMat(b.c)); h.add(new THREE.LineSegments(edgeGeo(b.sx,b.sz,b.h),edgeMat));
     h.position.set(b.x+o.x,b.y*1.2,b.z+o.z); hintGroup.add(h); }
 }
 const ray=new THREE.Raycaster(), ndc=new THREE.Vector2(), hitPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0), hitP=new THREE.Vector3();
@@ -4784,9 +4850,9 @@ function lock(){ const c=cands[0]; off={x:c.x,z:c.z}; placed=c.used; cands=[]; }
 // interchangeable, so it fills ANY unplaced matching spot in the current step, never one particular brick.
 // The model also has no baseplate, so until step 1 is done every placement that fits is kept in `cands`.
 // Used for this device's own bricks and for everyone else's (Blitz, Together, Bloppit), so all agree.
-function fitBrick(c,sx,sz,ax,az){
+function fitBrick(c,sx,sz,ax,az,sp){
   const s=model&&model.steps[cur]; if(!s) return null;
-  const same=b=>(model.paint||b.c===c)&&b.sx===sx&&b.sz===sz;   // the finale: any colour you like
+  const same=b=>(model.paint||b.c===c)&&b.sx===sx&&b.sz===sz&&(b.sp||'')===(sp||'');   // the finale: any colour you like
   let t=null;
   if(off){
     t=s.bricks.find(b=>!placed.has(b)&&same(b)&&b.x+off.x===ax&&b.z+off.z===az)||null;
@@ -4805,6 +4871,9 @@ function fitBrick(c,sx,sz,ax,az){
 function wrongBrickMsg(){
   if(!sel||!model||cur>=model.steps.length) return null;
   const s=model.steps[cur], u=usedSet(), a=Math.min(sel.sx,sel.sz), l=Math.max(sel.sx,sel.sz);
+  { const spLeft=s.bricks.filter(b=>!u.has(b)&&b.sp);   // special pieces: the right one, in the right step
+    if(sel.sp) return spLeft.some(b=>b.sp===sel.sp)?null:`The ${SPECIAL_NAME[sel.sp]||'special piece'} goes on last, as the finishing touch. Put it back for now.`;
+    if(spLeft.length&&spLeft.length===s.bricks.filter(b=>!u.has(b)).length) return `This step is the ✦ ${SPECIAL_NAME[spLeft[0].sp]||'special piece'}. Find it in the parts box.`; }
   const size=b=>Math.min(b.sx,b.sz)===a&&Math.max(b.sx,b.sz)===l, left=s.bricks.filter(b=>!u.has(b));
   if(left.some(b=>b.c===sel.c&&size(b))) return null;
   const other=left.find(size);
@@ -4820,7 +4889,7 @@ function tryPlace(){
   if(mp&&mp.cpu&&Date.now()<mp.state.turnStart){ setStatus('Wait for Go!','err'); return; }
   if(mp&&mp.posting>=mpLeft(mp.state)){ setStatus(mpBlitz()&&(mp.state.players[mp.me].n||0)+mp.posting>=mp.state.quota?'That was your last brick. Wait for the others to finish.':'That was your last brick this turn.','ok'); return; }
   const s=model.steps[cur], {ax,az}=lastAnchor;
-  const t=fitBrick(sel.c,sel.sx,sel.sz,ax,az);
+  const t=fitBrick(sel.c,sel.sx,sel.sz,ax,az,sel.sp);
   if(t){ if(cands.length===1) lock(); placeBrick(t,ax,az); return; }
   if(mpBlitz()){ const o0=curOff(), u0=usedSet();
     const turn0=sel.sx!==sel.sz&&s.bricks.some(b=>!u0.has(b)&&b.c===sel.c&&b.sx===sel.sz&&b.sz===sel.sx&&(!o0||Math.abs(b.x+o0.x-ax)<=2&&Math.abs(b.z+o0.z-az)<=2));
@@ -4842,9 +4911,10 @@ function placeBrick(t,ax,az){
   if(pass) pass.moves.push({b:model.bricks.indexOf(t),x:ax,z:az});
   placedN++; placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz});
   const pc=model.paint&&sel?sel.c:t.c; if(model.paint) model.paint.set(t.x+','+t.y+','+t.z+','+t.sx+','+t.sz,pc);
-  const ms=withPrint(new THREE.Mesh(brickGeo(t.sx,t.sz),mat(pc)),t); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
+  const ms=withPrint(new THREE.Mesh(brickGeo(t.sx,t.sz,t.h),mat(pc)),t); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
   if(!reduceMotion){ const dir=model.steps[cur]&&model.steps[cur].hang?-1:1; ms.position.y+=2.2*dir; drops.push({m:ms,ty:t.y*1.2,t0:performance.now(),dir}); }
   sfx.snap(reduceMotion?0:.23);  // lands at the end of the drop
+  if(t.sp) specialIn(t);
   // Take the brick out of the box (from your hand if you were holding one like it).
   const a=Math.min(t.sx,t.sz), l=Math.max(t.sx,t.sz), match=p=>p.a===a&&p.l===l&&(model.paint?(pippaBusy||!held||p===held||p.c===pc):p.c===t.c);
   const used=pippaBusy?(pieces.find(p=>match(p)&&!p.hand&&!hand.includes(p))||pieces.find(p=>match(p)&&!hand.includes(p))):held&&match(held)?held:(hand.find(match)||pieces.find(p=>match(p)&&!p.hand)||pieces.find(match));
@@ -4878,7 +4948,7 @@ function pippaTurn(){ if(model&&model.paint&&!mp&&model.steps[cur]&&model.steps[
   const go=()=>{ pippaT=null; if(!model||!model.mirror||cur>=model.steps.length||!model.steps[cur].pippa||tab==='create') return; if(busy){ pippaT=setTimeout(go,180); return; }
     const s=model.steps[cur], t=s.bricks.find(b=>!placed.has(b)); if(!t) return;
     const prev=held, prevSel=sel?{...sel}:null, prevA=lastAnchor;
-    sel={sx:t.sx,sz:t.sz,c:t.c}; lastAnchor={ax:t.x,az:t.z,px:t.x+t.sx/2,pz:t.z+t.sz/2};
+    sel={sx:t.sx,sz:t.sz,c:t.c,sp:t.sp,h:t.h,print:t.print}; lastAnchor={ax:t.x,az:t.z,px:t.x+t.sx/2,pz:t.z+t.sz/2};
     autoBusy=true; pippaBusy=true; try{ tryPlace(); } finally{ autoBusy=false; pippaBusy=false; }
     lastAnchor=prevA; if(prev&&hand.includes(prev)){ held=prev; sel=prevSel; setGhost(); } else if(prevSel&&held){ sel=prevSel; setGhost(); } else { sel=null; ghostGroup.clear(); }
     if(s.bricks.every(b=>placed.has(b))&&model.paint) setStatus('🐧 Pippa built her side. Your turn: mirror it on your side, in any colours you like!','ok');
@@ -4896,7 +4966,7 @@ function autoPlace(){
   else { o={x:0,z:0}; t=s.bricks[0]; }
   if(!t) return;
   const prev=held, prevSel=sel?{...sel}:null, n0=placedN;
-  sel={sx:t.sx,sz:t.sz,c:t.c}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2};
+  sel={sx:t.sx,sz:t.sz,c:t.c,sp:t.sp,h:t.h,print:t.print}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2};
   autoBusy=true; tryPlace(); autoBusy=false;
   if(placedN>n0){ run.auto++; run.memory=false; if(!game&&mysOn()) updateGameBar(); }
   if((game||mp)&&placedN>n0) charge('auto',10);
@@ -4984,7 +5054,7 @@ window.bloppitPreview=L=>{ if(mp) mpLeave(); if(game) endGame(); photos=levelPho
   const smp=SAMPLES.find(x=>x.name===(L.sample||L.name)); return model?{bricks:model.bricks.length,steps:model.steps.length,mirror:!!model.mirror,kid:model.mirror?model.steps.filter(s=>s.kid).reduce((a,s)=>a+s.bricks.length,0):null,img:smp?smp.make()[0][1].toDataURL('image/png'):null}:null; };
 window.bloppitPlaceRight=(pc)=>{ if(busy||!model||cur>=model.steps.length) return false; const s=model.steps[cur]; let o,t;
   if(off){ o=off; t=s.bricks.find(b=>!placed.has(b)); } else if(cands.length){ o=cands[0]; t=s.bricks.find(b=>!o.used.has(b)); } else { o={x:0,z:0}; t=s.bricks[0]; }
-  if(!t) return false; const n0=placedN; sel={sx:t.sx,sz:t.sz,c:pc!=null&&model.paint?pc:t.c}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2}; tryPlace(); lastAnchor=null; ghostGroup.visible=false;
+  if(!t) return false; const n0=placedN; sel={sx:t.sx,sz:t.sz,c:pc!=null&&model.paint?pc:t.c,sp:t.sp,h:t.h,print:t.print}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2}; tryPlace(); lastAnchor=null; ghostGroup.visible=false;
   if(held) setGhost(); else { sel=null; ghostGroup.clear(); } return placedN>n0; };
 // For tests: hold a brick of this kind over the spot a brick of the current step fills (k), and try to place it
 // For recording the How to play video: where the parts box piece this step needs is, and where on screen the brick in hand goes
@@ -4998,7 +5068,7 @@ window.bloppitDemo={
 window.bloppitMirror=()=>model&&model.mirror?{paint:model.paint?[...model.paint.entries()]:null,W:model.W,steps:model.steps.map(s=>s.pippa?'P':s.kid?'K':'?').join(''),cur,bricks:model.bricks.map(b=>[b.x,b.y,b.z,b.sx,b.sz,b.c])}:null;   // for tests
 window.bloppitPeek=()=>{ if(!model||cur>=model.steps.length) return null; const u=usedSet(), t=model.steps[cur].bricks.find(b=>!u.has(b)); return t?{c:t.c,sx:t.sx,sz:t.sz,step:cur}:null; };
 window.bloppitTryBrick=(c,k=0)=>{ if(busy||!model||cur>=model.steps.length) return null; const s=model.steps[cur], u=usedSet(), o=curOff()||{x:0,z:0}, t=s.bricks.filter(b=>!u.has(b))[k]; if(!t) return null;
-  sel={sx:t.sx,sz:t.sz,c}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2}; const n0=placedN; tryPlace(); const ok=placedN>n0; lastAnchor=null; ghostGroup.visible=false;
+  sel={sx:t.sx,sz:t.sz,c,sp:t.sp,h:t.h,print:t.print}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2}; const n0=placedN; tryPlace(); const ok=placedN>n0; lastAnchor=null; ghostGroup.visible=false;
   if(held) setGhost(); else { sel=null; ghostGroup.clear(); } return {ok,status:$('#status').textContent}; };
 $('#fitBtn').onclick=()=>frameBuild(true);
 $('#openBox').onclick=openBox;
@@ -5041,7 +5111,7 @@ function iconDim(a,l){const co=Math.cos(Math.PI/6),u=11,pad=3; return [((l+a)*co
 function makePieces(){
   pieces=[]; bins=[]; held=null; hand=[]; chosen=new Set(); laidOut=false;
   for(const b of model.bricks){ const a=Math.min(b.sx,b.sz), l=Math.max(b.sx,b.sz), [w,h]=iconDim(a,l);
-    pieces.push({id:++pieceN,a,l,c:b.c,w,h,x:0,y:0,r:0,z:10000,bin:null,hand:false}); }
+    pieces.push(b.sp?{id:++pieceN,a,l,c:b.c,sp:b.sp,tall:b.h,print:b.print,w:SP_W,h:SP_W,x:0,y:0,r:0,z:10000,bin:null,hand:false}:{id:++pieceN,a,l,c:b.c,w,h,x:0,y:0,r:0,z:10000,bin:null,hand:false}); }
 }
 const pieceById=id=>pieces.find(p=>p.id===id);
 const binById=id=>bins.find(b=>b.id===id);
@@ -5090,7 +5160,7 @@ function renderBox(){
   board.innerHTML=bins.map(b=>`<div class="bin" data-b="${b.id}" style="--tint:${b.tint};left:${b.x}px;top:${b.y}px;width:${b.w}px;height:${b.h}px;z-index:${b.z}">
     <div class="bin-head"><span class="bin-grip" aria-hidden="true">⋮⋮</span><input data-bn="${b.id}" value="${escapeHTML(b.name)}" aria-label="Segment name" spellcheck="false"><span class="cnt" data-bc="${b.id}"></span><button class="bin-all" type="button" data-ba="${b.id}" title="Pick every brick in this segment">All</button><button class="bin-x" type="button" data-bx="${b.id}" aria-label="Remove segment">×</button></div>
     <div class="bin-rs" data-br="${b.id}"></div></div>`).join('')
-   +pieces.map(p=>`<button class="piece${p.hand?' hand':''}${chosen.has(p)?' picked':''}" type="button" data-p="${p.id}" aria-label="${pieceName(p)}${p.hand?', in hand':''}" style="width:${p.w}px;height:${p.h}px;transform:${tf(p)};z-index:${p.z}"><img alt="" src="${brickIcon(p.a,p.l,p.c)}"></button>`).join('')
+   +pieces.map(p=>`<button class="piece${p.sp?' special':''}${p.hand?' hand':''}${chosen.has(p)?' picked':''}" type="button" data-p="${p.id}" aria-label="${pieceName(p)}${p.hand?', in hand':''}" style="width:${p.w}px;height:${p.h}px;transform:${tf(p)};z-index:${p.z}"><img alt="" src="${pieceIcon(p)}"></button>`).join('')
    +(pieces.length?'':'<div class="box-empty">The box is empty</div>');
   binCounts(); fitBoard(); saveSoon();
 }
@@ -6055,7 +6125,7 @@ const SAMPLES=[
    x.fillStyle='#1B2A34'; x.rr(92,200,16,24,6);
    x.fillStyle='#1B2A34'; x.fillRect(40,224,120,10);
    return [['front',c]]; }},
- {name:'Big Ben',theme:'Landmarks',weekly:'2026-11-09',beat:'London’s great clock has stopped. Build it back before it strikes!',ws:{size:18,shape:'flat'},print:{kind:'dial',cx:80,cy:139,r:31},make(){ const [c,x]=sheet(160,260,'#BFE3F5');
+ {name:'Big Ben',theme:'Landmarks',weekly:'2026-11-09',beat:'London’s great clock has stopped. Build it back before it strikes!',ws:{size:18,shape:'flat'},special:{kind:'dial',cx:80,cy:139,r:31},make(){ const [c,x]=sheet(160,260,'#BFE3F5');
    x.fillStyle='#F2CD37'; x.fillRect(76,2,8,12);                          // the gilded tip
    x.poly([[80,10],[54,66],[106,66]],'#3E4C59');                         // the spire
    x.fillStyle='#F2CD37'; x.fillRect(54,66,52,6);                         // gold band under the spire
@@ -7338,7 +7408,7 @@ function mpEndSolo(){ if(game){ game=null; freeS=null; } hintOn=false; updateGam
 // A move's brick number only says what KIND of brick it was (see mpToken); where it went decides which spot it fills.
 function applyMoveCore(m){
   const t0=model.bricks[m.b]; if(!t0) return;
-  let t=fitBrick(t0.c,t0.sx,t0.sz,m.x,m.z);
+  let t=fitBrick(t0.c,t0.sx,t0.sz,m.x,m.z,t0.sp);
   if(t&&!off&&cands.length===1) lock();
   if(!t){
     // Bloppit filling in the leftover bricks at the end, or a move from an older app: put a brick of
@@ -7351,7 +7421,7 @@ function applyMoveCore(m){
   if(off) placed.add(t);
   placedN++;
   const o=curOff(), ax=t.x+o.x, az=t.z+o.z;
-  const ms=withPrint(new THREE.Mesh(brickGeo(t.sx,t.sz),mat(t.c)),t); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
+  const ms=withPrint(new THREE.Mesh(brickGeo(t.sx,t.sz,t.h),mat(t.c)),t); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
   if(!reduceMotion&&tab==='build'){ const dir=model.steps[t.step]&&model.steps[t.step].hang?-1:1; ms.position.y+=2.2*dir; drops.push({m:ms,ty:t.y*1.2,t0:performance.now(),dir}); }
   placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz});
   if(!off&&cands.length&&cands[0].used.size>=model.steps[cur].bricks.length) lock();
@@ -8389,7 +8459,7 @@ function applyProgress(o){
   placedGroup.clear(); placedBoxes=[]; drops=[];
   const o2=off||cands[0], list=off?[...placed]:(cands[0]?[...cands[0].used]:[]);
   for(const t of list){ const ax=t.x+o2.x, az=t.z+o2.z;
-    const ms=withPrint(new THREE.Mesh(brickGeo(t.sx,t.sz),mat(t.c)),t); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
+    const ms=withPrint(new THREE.Mesh(brickGeo(t.sx,t.sz,t.h),mat(t.c)),t); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
     placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz}); }
   // If the save was taken just as a step finished, move on to the next step
   const used=()=>off?placed:(cands[0]?cands[0].used:new Set());
