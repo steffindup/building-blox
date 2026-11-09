@@ -1886,6 +1886,7 @@ body.film-on{overflow:hidden}
 .brand .wob i:nth-child(1){background:#F4BC22;color:#142022}.brand .wob i:nth-child(2){background:#fff;color:#0369BD;box-shadow:inset 0 0 0 1.5px #0369BD}.brand .wob i:nth-child(3){background:#D62F2A;color:#fff}
 /* the links under the menu */
 .who-link{margin:12px 0 0}.who-form .who-link{margin:0 0 10px}.linkbtn{border:0;background:none;padding:0;font:inherit;font-weight:800;color:var(--accent);text-decoration:underline;cursor:pointer}
+.part-row.special{outline:2px solid #D4A72C;outline-offset:-2px}.part-row.special .q{font-size:15px}.pc.special{outline:2px solid #D4A72C;outline-offset:-2px}
 .appfoot{text-align:center;margin-top:auto;padding-top:24px}.appfoot a{color:var(--muted);text-decoration:none;font-weight:700}.appfoot a:hover{color:var(--ink);text-decoration:underline}
 
 /* Drawn icons in place of emoji (Steff, 7 Nov 2026: "all drawn"). They look the same on every phone and computer. */
@@ -3283,8 +3284,9 @@ const partName=p=>`${PALETTE[p.c][0]} ${PIECE()} ${p.a} × ${p.l}`;
 const brickLabel=(c,a,l)=>`${PALETTE[c][0]} ${Math.min(a,l)}×${Math.max(a,l)} ${PIECE()}`;
 const PAINT_C=PALETTE.findIndex(p=>p[0]==='White');   // the finale's booklet: your half is shapes only, the colours are yours
 const showC=(m,b)=>m&&m.paint&&m.steps[b.step]&&m.steps[b.step].kid?PAINT_C:b.c;   // Pippa's half keeps her colours
-const calloutHTML=list=>partsOf(model&&model.paint?list.map(b=>({...b,c:showC(model,b)})):list).map(p=>`<div class="pc" role="button" tabindex="0" data-name="${brickLabel(p.c,p.a,p.l)}" title="${brickLabel(p.c,p.a,p.l)}"><img alt="${brickLabel(p.c,p.a,p.l)}" src="${brickIcon(p.a,p.l,p.c)}"><b>${p.n}x</b></div>`).join('');
-const partsHTML=list=>partsOf(list).map(p=>`<div class="part-row"><img alt="" src="${brickIcon(p.a,p.l,p.c)}"><div><div class="q">${p.n}x</div><div class="d">${PALETTE[p.c][0]}<br>${TILES?'Tile':'Brick'} ${p.a} × ${p.l}</div></div></div>`).join('');
+const calloutHTML=list=>printsIn(list).map(([k])=>`<div class="pc special" title="${PRINT_NAME[k]||k} print"><img alt="${PRINT_NAME[k]||k} print" src="${printIcon(k)}"><b>✦</b></div>`).join('')+partsOf(model&&model.paint?list.map(b=>({...b,c:showC(model,b)})):list).map(p=>`<div class="pc" role="button" tabindex="0" data-name="${brickLabel(p.c,p.a,p.l)}" title="${brickLabel(p.c,p.a,p.l)}"><img alt="${brickLabel(p.c,p.a,p.l)}" src="${brickIcon(p.a,p.l,p.c)}"><b>${p.n}x</b></div>`).join('');
+const specialHTML=list=>printsIn(list).map(([k,n])=>`<div class="part-row special"><img alt="" src="${printIcon(k)}"><div><div class="q">✦ Special piece</div><div class="d">${PRINT_NAME[k]||k}<br>printed on ${n} of the bricks below</div></div></div>`).join('');
+const partsHTML=list=>specialHTML(list)+partsOf(list).map(p=>`<div class="part-row"><img alt="" src="${brickIcon(p.a,p.l,p.c)}"><div><div class="q">${p.n}x</div><div class="d">${PALETTE[p.c][0]}<br>${TILES?'Tile':'Brick'} ${p.a} × ${p.l}</div></div></div>`).join('');
 
 /* ---------- Three.js scene ---------- */
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
@@ -3299,6 +3301,7 @@ scene.add(new THREE.HemisphereLight(0xffffff,0x8a97a8,.75));
 const sun=new THREE.DirectionalLight(0xffffff,.85); sun.position.set(-1.2,2.4,1.6); scene.add(sun);
 const fillL=new THREE.DirectionalLight(0xffffff,.3); fillL.position.set(1.5,.6,-1); scene.add(fillL);
 const modelGroup=new THREE.Group(), current=new THREE.Group(); modelGroup.add(current); scene.add(modelGroup);
+const printGroup=new THREE.Group(); modelGroup.add(printGroup);   // the prints on printed bricks (special pieces)
 const sc=document.createElement('canvas'); sc.width=sc.height=128;
 {const g=sc.getContext('2d'),gr=g.createRadialGradient(64,64,4,64,64,64); gr.addColorStop(0,'rgba(0,0,0,.26)'); gr.addColorStop(1,'rgba(0,0,0,0)'); g.fillStyle=gr; g.fillRect(0,0,128,128);}
 const shadow=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(sc),transparent:true,depthWrite:false}));
@@ -3315,6 +3318,64 @@ function brickGeo(sx,sz){
   for(let i=0;i<sx;i++)for(let j=0;j<sz;j++){const s=new THREE.CylinderGeometry(.3,.3,.18,16); s.translate(i+.5,1.2+.08,j+.5); parts.push(s);}
   const g=THREE.BufferGeometryUtils.mergeBufferGeometries(parts); g.computeBoundingSphere(); geoCache.set(k,g); return g;
 }
+// Special pieces (Steff, 8 Nov 2026): printed bricks. A library model can carry print:{kind,cx,cy,r} (a circle in its
+// drawing's pixels). The bricks on the model's front face under that circle are printed: each one's front face shows its
+// own part of the one big print, so the dial appears piece by piece as the bricks go in. The bricks themselves don't
+// change (size, colour, place and step), so building, checking and the steps work exactly as before.
+// For now only a solo build (the Weekly, the Library) shows prints; rooms, Blitz and Pass the Puzzle come next.
+const PRINT_NAME={dial:'Clock dial'};
+const printCanvases=new Map(), printMats=new Map();
+function printCanvas(kind){
+  if(printCanvases.has(kind)) return printCanvases.get(kind);
+  const c=document.createElement('canvas'); c.width=c.height=512; const g=c.getContext('2d'), R=256;
+  if(kind==='dial'){
+    const disc=(r,f)=>{ g.fillStyle=f; g.beginPath(); g.arc(R,R,r,0,7); g.fill(); };
+    disc(252,'#D4A72C'); disc(236,'#B8891C'); disc(224,'#1B2A34'); disc(210,'#F6EFD9');   // gilded rim, dark ring, opal face
+    g.strokeStyle='#1B2A34'; g.lineWidth=5; g.beginPath(); g.arc(R,R,140,0,7); g.stroke();
+    g.fillStyle='#1B2A34';
+    for(let i=0;i<60;i++){ const big=i%5===0; g.save(); g.translate(R,R); g.rotate(i*Math.PI/30); g.fillRect(big?-8:-2.5,-202,big?16:5,big?52:18); g.restore(); }
+    const hand=(deg,len,w)=>{ g.save(); g.translate(R,R); g.rotate(deg*Math.PI/180); g.beginPath(); g.moveTo(-w,26); g.lineTo(w,26); g.lineTo(w*.45,-len); g.lineTo(0,-len-14); g.lineTo(-w*.45,-len); g.closePath(); g.fill(); g.restore(); };
+    hand(305,112,15); hand(60,176,10);   // ten past ten
+    disc(18,'#D4A72C');
+  }
+  printCanvases.set(kind,c); return c;
+}
+function printMat(kind){
+  if(printMats.has(kind)) return printMats.get(kind);
+  const t=new THREE.CanvasTexture(printCanvas(kind)); t.encoding=THREE.sRGBEncoding; t.anisotropy=4;
+  const m=new THREE.MeshStandardMaterial({map:t,transparent:true,alphaTest:.5,roughness:.35,metalness:0,polygonOffset:true,polygonOffsetFactor:-2});
+  printMats.set(kind,m); return m;
+}
+// The print on one brick's front face: a window onto the big print
+function printMesh(b){
+  const p=b&&b.print; if(!p||TILES) return null;
+  const w=b.sx, h=1.2, g=new THREE.PlaneGeometry(w,h), L=p.cx-p.r, B=p.cy-p.r, S2=2*p.r;   // the whole face, so the gaps between bricks don't show through the print
+  const U=x=>(x-L)/S2, V=y=>(y-B)/S2, x0=b.x, x1=b.x+b.sx, y0=b.y*1.2, y1=b.y*1.2+h, uv=g.attributes.uv;
+  uv.setXY(0,U(x0),V(y1)); uv.setXY(1,U(x1),V(y1)); uv.setXY(2,U(x0),V(y0)); uv.setXY(3,U(x1),V(y0)); uv.needsUpdate=true;
+  g.translate(b.sx/2,h/2,b.sz-.012);
+  const ms=new THREE.Mesh(g,printMat(p.kind)); ms.userData.print=true; return ms;
+}
+const withPrint=(ms,b)=>{ const pm=printMesh(b); if(pm) ms.add(pm); return ms; };
+// Mark the printed bricks of a model built from a library model that carries a print
+function addPrints(m){
+  if(!m||!m.bricks) return;
+  for(const b of m.bricks) delete b.print;
+  m.prints=[];
+  const f=photos.find(p=>p.view==='front')||photos[0], smp=f&&f.sample?SAMPLES.find(s=>s.name===f.name):null, P=smp&&smp.print;
+  if(!P||m.kind==='picture'||m.mirror||!f.m||!f.m.bbox) return;
+  const [x0,y0,x1,y1]=f.m.bbox, bw=x1-x0+1, bh=y1-y0+1, kx=m.W/bw, ky=1.2*m.H/bh;
+  const cx=(P.cx-x0+.5)*kx, cy=(bh-(P.cy-y0+.5))*ky, r=P.r*(kx+ky)/2;
+  const front=Math.max(...m.bricks.map(b=>b.z+b.sz));
+  let n=0;
+  for(const b of m.bricks){
+    if(b.z+b.sz!==front) continue;
+    const nx=clamp(cx,b.x,b.x+b.sx), ny=clamp(cy,b.y*1.2,b.y*1.2+1.2);
+    if((nx-cx)**2+(ny-cy)**2<r*r*.98){ b.print={kind:P.kind,cx,cy,r}; n++; }
+  }
+  if(n) m.prints.push({kind:P.kind,n});
+}
+const printIcon=kind=>{ try{ return printCanvas(kind).toDataURL('image/png'); }catch(e){ return ''; } };
+const printsIn=list=>{ const k=new Map(); for(const b of list) if(b.print) k.set(b.print.kind,(k.get(b.print.kind)||0)+1); return [...k]; };
 function edgeGeo(sx,sz){
   const k=(TILES?'t':'')+sx+'x'+sz; if(edgeCache.has(k)) return edgeCache.get(k);
   const hh=TILES?TILE_H:1.2, b=new THREE.BoxGeometry(sx-.02,hh,sz-.02); b.translate(sx/2,hh/2,sz/2);
@@ -3351,6 +3412,8 @@ function buildScene(m){
     im.userData.steps=Int32Array.from(list,b=>b.step); im.userData.bricks=list;
     instanced.push(im); modelGroup.add(im);
   }
+  for(const pm of printGroup.children) pm.geometry.dispose(); printGroup.clear();
+  for(const b of m.bricks){ const pm=printMesh(b); if(!pm) continue; pm.position.set(b.x,b.y*1.2,b.z); pm.userData.step=b.step; printGroup.add(pm); }
   shadow.scale.set(m.W*1.7+4,m.D*1.7+4,1);
   const size=new THREE.Vector3(m.W,m.kind==='picture'?TILE_H:m.H*1.2,m.D);
   frameInfo={center:new THREE.Vector3(0,size.y/2,0),r:m.kind==='picture'?Math.max(m.W,m.D*1.1)/2:size.length()/2};
@@ -3372,6 +3435,7 @@ const hangNote=s=>s&&s.hang?' · clip on underneath':'';
 function showStep(k,animate){
   sceneK=k;
   for(const im of instanced) im.count=below(im.userData.steps,k);
+  for(const pm of printGroup.children) pm.visible=pm.userData.step<k;
   while(current.children.length) current.remove(current.children[0]);
   anim=null;
   bookGrid(k);
@@ -3385,9 +3449,9 @@ function showStep(k,animate){
     return; }
   const doneB=k===cur?usedSet():null, part=!!doneB&&doneB.size>0&&model.steps[k].bricks.some(b=>!doneB.has(b));
   model.steps[k].bricks.forEach((b,i)=>{
-    if(part&&doneB.has(b)){ const ms=new THREE.Mesh(brickGeo(b.sx,b.sz),mat(showC(model,b))); ms.position.set(b.x,b.y*1.2,b.z); ms.userData.ty=b.y*1.2; ms.userData.i=i; ms.userData.b=b; current.add(ms); return; }   // already in: shown like the rest of the model
+    if(part&&doneB.has(b)){ const ms=withPrint(new THREE.Mesh(brickGeo(b.sx,b.sz),mat(showC(model,b))),b); ms.position.set(b.x,b.y*1.2,b.z); ms.userData.ty=b.y*1.2; ms.userData.i=i; ms.userData.b=b; current.add(ms); return; }   // already in: shown like the rest of the model
     if(part){ const hl=new THREE.Mesh(brickGeo(b.sx,b.sz),MIRROR_SRC_MAT); hl.scale.set(1.08,1.1,1.08); hl.position.set(b.x-b.sx*.04,b.y*1.2-.06,b.z-b.sz*.04); hl.userData.ty=hl.position.y; hl.userData.i=i; current.add(hl); }   // still to go: glowing
-    const bc=showC(model,b), ms=new THREE.Mesh(brickGeo(b.sx,b.sz),hang?xrayMat(bc):mat(bc)); if(hang) ms.renderOrder=5;
+    const bc=showC(model,b), ms=withPrint(new THREE.Mesh(brickGeo(b.sx,b.sz),hang?xrayMat(bc):mat(bc)),b); if(hang) ms.renderOrder=5;
     ms.add(new THREE.LineSegments(edgeGeo(b.sx,b.sz),edgeMat));
     ms.position.set(b.x,b.y*1.2,b.z); ms.userData.ty=b.y*1.2; ms.userData.i=i; ms.userData.b=b;
     current.add(ms);
@@ -3621,7 +3685,7 @@ function rebuild(){
   if(!m||m.error){ model=null; for(const im of instanced){modelGroup.remove(im);} instanced=[]; showStep(0);
     $('#stats').innerHTML=''; $('#partsList').innerHTML=''; $('#startBuild').disabled=true;
     if(m&&m.error) showMsg(m.error,'err'); if(photos.some(p=>!p.sample)) track('build_failure:creator'); return; }
-  model=m; if(photos.some(p=>!p.sample)) track('creator_succeeded'); modelVersion++; buildStep=0; syncUseBar();
+  addPrints(m); model=m; if(photos.some(p=>!p.sample)) track('creator_succeeded'); modelVersion++; buildStep=0; syncUseBar();
   TILES=m.kind==='picture';
   buildScene(m);
   showStep(m.steps.length,false);
@@ -4776,7 +4840,7 @@ function placeBrick(t,ax,az){
   if(pass) pass.moves.push({b:model.bricks.indexOf(t),x:ax,z:az});
   placedN++; placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz});
   const pc=model.paint&&sel?sel.c:t.c; if(model.paint) model.paint.set(t.x+','+t.y+','+t.z+','+t.sx+','+t.sz,pc);
-  const ms=new THREE.Mesh(brickGeo(t.sx,t.sz),mat(pc)); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
+  const ms=withPrint(new THREE.Mesh(brickGeo(t.sx,t.sz),mat(pc)),t); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
   if(!reduceMotion){ const dir=model.steps[cur]&&model.steps[cur].hang?-1:1; ms.position.y+=2.2*dir; drops.push({m:ms,ty:t.y*1.2,t0:performance.now(),dir}); }
   sfx.snap(reduceMotion?0:.23);  // lands at the end of the drop
   // Take the brick out of the box (from your hand if you were holding one like it).
@@ -5989,7 +6053,7 @@ const SAMPLES=[
    x.fillStyle='#1B2A34'; x.rr(92,200,16,24,6);
    x.fillStyle='#1B2A34'; x.fillRect(40,224,120,10);
    return [['front',c]]; }},
- {name:'Big Ben',theme:'Landmarks',weekly:'2026-11-09',beat:'London’s great clock has stopped. Build it back before it strikes!',ws:{size:18,shape:'flat'},make(){ const [c,x]=sheet(160,260,'#BFE3F5');
+ {name:'Big Ben',theme:'Landmarks',weekly:'2026-11-09',beat:'London’s great clock has stopped. Build it back before it strikes!',ws:{size:18,shape:'flat'},print:{kind:'dial',cx:80,cy:139,r:31},make(){ const [c,x]=sheet(160,260,'#BFE3F5');
    x.fillStyle='#F2CD37'; x.fillRect(76,2,8,12);                          // the gilded tip
    x.poly([[80,10],[54,66],[106,66]],'#3E4C59');                         // the spire
    x.fillStyle='#F2CD37'; x.fillRect(54,66,52,6);                         // gold band under the spire
@@ -7283,7 +7347,7 @@ function applyMoveCore(m){
   if(off) placed.add(t);
   placedN++;
   const o=curOff(), ax=t.x+o.x, az=t.z+o.z;
-  const ms=new THREE.Mesh(brickGeo(t.sx,t.sz),mat(t.c)); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
+  const ms=withPrint(new THREE.Mesh(brickGeo(t.sx,t.sz),mat(t.c)),t); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
   if(!reduceMotion&&tab==='build'){ const dir=model.steps[t.step]&&model.steps[t.step].hang?-1:1; ms.position.y+=2.2*dir; drops.push({m:ms,ty:t.y*1.2,t0:performance.now(),dir}); }
   placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz});
   if(!off&&cands.length&&cands[0].used.size>=model.steps[cur].bricks.length) lock();
@@ -8315,7 +8379,7 @@ function applyProgress(o){
   placedGroup.clear(); placedBoxes=[]; drops=[];
   const o2=off||cands[0], list=off?[...placed]:(cands[0]?[...cands[0].used]:[]);
   for(const t of list){ const ax=t.x+o2.x, az=t.z+o2.z;
-    const ms=new THREE.Mesh(brickGeo(t.sx,t.sz),mat(t.c)); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
+    const ms=withPrint(new THREE.Mesh(brickGeo(t.sx,t.sz),mat(t.c)),t); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
     placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz}); }
   // If the save was taken just as a step finished, move on to the next step
   const used=()=>off?placed:(cands[0]?cands[0].used:new Set());
