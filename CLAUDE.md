@@ -241,6 +241,8 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
 - Brick heights: most code assumes 1 layer; tall pieces pass `h` to `brickGeo`/`edgeGeo`. Search all `brickGeo(` calls
   when adding geometry.
 - `weeklyPuzzle(week)` is cached (`weeklyCache`); clear it after changing the plan at runtime.
+- Model shapes on the island (`bloppit-shapes-v1`) are kept per device, newest 40. A world opened elsewhere rebuilds the
+  game's own models in idle moments (`shapeRecipes`, `isl3ShapesLater`); the player's photos/drawings stay picture cards.
 - Comments reference `claude/consistency-decisions-2026-11-07.md`: it lives in the claude.ai Project "Bloppit", not the
   repo (see below).
 - Commits: end with the `Co-Authored-By` / `Claude-Session` lines the session gives you; commit as

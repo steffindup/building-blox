@@ -292,6 +292,16 @@ test('phone build page: no arrows or Place (tap the brick, Rotate turns it), the
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('a world from another device (no model shapes stored): the island rebuilds the game\'s models into bricks; own photos stay cards', { skip: skip() }, async () => {
+  const seed = { fn: () => { const t = Date.now() - 864e5; localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2,
+    builds: { 't:brain:1:Apple': { n: 12, l: 0, k: 'game', t, c: 1 }, 'm:Wizard hat:7': { n: 7, l: 0, k: 'blitz', t: t + 1000, c: 1 }, 'p:abc123': { n: 40, l: 0, k: 'free', t: t + 2000, c: 1 } },
+    log: ['t:brain:1:Apple', 'm:Wizard hat:7', 'p:abc123'], decor: [] })); localStorage.removeItem('bloppit-shapes-v1'); } };
+  const t = await open('?nosplash=1&welcome=0#island', { init: seed });
+  await t.page.waitForFunction(() => { const k = window.bloppitShapeKeys(); return k.includes('t:brain:1:Apple') && k.includes('m:Wizard hat:7'); }, null, { timeout: 60000 });
+  assert.equal((await t.page.evaluate(() => window.bloppitShapeKeys())).includes('p:abc123'), false, 'a photo build has no recipe to rebuild from');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('the 3D island has no welcome card on top (a world with builds that never saw the arrival); the drawn island\'s card has ✕', { skip: skip() }, async () => {
   const seed = { fn: () => { localStorage.setItem('bloppit-world-v1', JSON.stringify({ pupAsked: true, pupName: 2, builds: { 'm:Little house:12': { n: 12, s: 2, k: 'quick', t: Date.now() - 864e5, c: 1 } }, log: ['m:Little house:12'], decor: [] })); } };
   let t = await open('?nosplash=1&welcome=0#island', { viewport: { width: 393, height: 760 }, touch: true, init: seed });

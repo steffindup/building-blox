@@ -9340,6 +9340,60 @@ function worldShapeSave(key){
     const keys=Object.keys(t).sort((a,c)=>t[c].t-t[a].t).slice(0,40), keep={}; for(const k of keys) keep[k]=t[k];
     localStorage.setItem(SHAPE_KEY,JSON.stringify(keep)); }catch(e){}
 }
+// A model's shape is kept only on the device that built it, so a world opened elsewhere (a linked device, cleared site data)
+// would show its models as flat picture cards. Models that come from the game itself (Trail levels, Pippa's puzzles, Blitz
+// races, Moonstone chapters, the Weekly, Library models) are rebuilt from their picture and settings instead: one try at a
+// time, in idle moments while the island is open and still, then kept like any other shape (Steff, 9 Nov 2026). The
+// player's own photos and drawings can't be rebuilt elsewhere and stay as cards. A Library model's size was the player's
+// choice, so its sizes are tried until the brick count matches the record.
+const SHAPE_MISS=new Set();
+function shapeRecipes(key){
+  let m;
+  if((m=/^t:(\w+):(\d+):(.*)$/.exec(key))){ const L=levelsOf(m[1])[+m[2]]; return L&&L.name===m[3]?[{make:()=>levelMake(L),name:L.name,S:levelSettings(L)}]:[]; }
+  if((m=/^w:(\d{4}-\d\d-\d\d)$/.exec(key))){ const w=weeklyPuzzle(m[1]), smp=SAMPLES[w.i]; return smp?[{make:()=>smp.make(),name:smp.name,S:w.S,smp}]:[]; }
+  if((m=/^m:(.*):(\d+)$/.exec(key))){ const name=m[1], out=[], n=+m[2];
+    for(const L of [...BLITZ_PICKS,...MYSTERY.map(l=>({...l,sample:l.sample||l.name}))]) if(L.name===name) out.push({make:()=>levelMake(L),name,S:levelSettings(L),n});
+    const smp=SAMPLES.find(x=>x.name===name); if(smp){ const base={...LIB_S,...(smp.ws||{})};
+      for(const size of [...new Set([base.size,10,12,8,14,16,6,18,20,24,5,7,9,11,13,15,17,22,28,32])]) out.push({make:()=>smp.make(),name,S:{...base,size},smp,n}); }
+    return out; }
+  return [];
+}
+function shapeBuild(c){
+  const keepP=photos, keepS={...S}; let mm=null;
+  try{ Object.assign(S,c.S); photos=c.make().map(([view,cv])=>{ const d=canvasData(cv); return {id:++pid,name:c.name,d,m:null,view,sample:true}; });
+    photos.forEach(p=>p.m=computeMask(p.d,S.tol)); mm=buildModel(); if(mm&&c.smp&&c.smp.special) try{ addSpecial(mm); }catch(e){} }
+  finally{ photos=keepP; Object.assign(S,keepS); }
+  return mm&&mm.bricks&&mm.bricks.length&&(!c.n||mm.bricks.length===c.n)?mm:null;
+}
+function shapeKeep(key,mm,t){
+  try{ const b=[]; for(const r of mm.bricks) b.push(r.x,r.y,r.z,r.sx,r.sz,r.c);
+    const all=worldShapes(); all[key]={p:0,b,t:t||Date.now()};
+    const keys=Object.keys(all).sort((a,c)=>all[c].t-all[a].t).slice(0,40), keep={}; for(const k of keys) keep[k]=all[k];
+    localStorage.setItem(SHAPE_KEY,JSON.stringify(keep)); return !!keep[key]; }catch(e){ return false; }
+}
+function isl3ShapesLater(list){
+  const o=worldStore(), have=worldShapes();
+  const todo=list.filter(m=>!(have[m.key]&&have[m.key].b&&have[m.key].b.length>=6)&&!SHAPE_MISS.has(m.key)).map(m=>({key:m.key,tries:shapeRecipes(m.key)}));
+  for(const x of todo) if(!x.tries.length) SHAPE_MISS.add(x.key);
+  ISL3.shapeQ=todo.filter(x=>x.tries.length); if(!ISL3.shapeQ.length||ISL3.shapeOn) return; ISL3.shapeOn=1;
+  const later=f=>window.requestIdleCallback?requestIdleCallback(f,{timeout:2000}):setTimeout(f,150);
+  const step=()=>{ const q=ISL3.shapeQ||[], x=q[0];
+    if(!x){ ISL3.shapeOn=0; return; }
+    if(!ISL3.on){ setTimeout(()=>later(step),2000); return; }   // Bloppitopia not on screen: wait for it
+    if(ISL3.dragging||ISL3.down||ISL3.fly||ISL3.cine||ISL3.revealing||performance.now()-(ISL3.input||0)<800){ setTimeout(()=>later(step),600); return; }   // never while the island is being moved
+    const c=x.tries.shift(); let mm=null; try{ mm=shapeBuild(c); }catch(e){}
+    if(mm){ q.shift(); const rec=(o.builds||{})[x.key]; if(shapeKeep(x.key,mm,rec&&rec.t)) isl3SwapModel(x.key); }
+    else if(!x.tries.length){ q.shift(); SHAPE_MISS.add(x.key); }
+    later(step); };
+  later(step);
+}
+// Swap one model's picture card for its bricks, in place, with a little pop
+function isl3SwapModel(key){
+  let g=null; if(ISL3.world) ISL3.world.traverse(x=>{ if(!g&&x.userData&&x.userData.key===key&&x.userData.info==='model:'+key) g=x; });
+  if(!g) return; const ng=model3(key); while(g.children.length) g.remove(g.children[0]); while(ng.children.length) g.add(ng.children[0]);
+  ISL3.shadowDirty=true; try{ isl3Pop(g); }catch(e){}
+}
+window.bloppitShapeKeys=()=>Object.keys(worldShapes());   // for tests
 // Positions are kept as whole numbers 0..1000 (the record's format): world -20..20 → 0..1000
 const W2P=v=>Math.round((v+20)*25), P2W=v=>v/25-20;
 // The islands: soft blobs. Bloppitopia in the middle; the others around it.
@@ -10794,6 +10848,7 @@ function isl3BuildBloppitopia(o,W,add){
   const shown=islandModels3(o); ISL3.shown=shown;
   for(const [x,z,i] of shown.empty){ const g=new THREE.Group(); g.add(cyl3(.62,.68,.14,10,'#F2EDE3',0,TOP3,0)); add(g,'stand:'+i,x,z); }
   for(const m of shown.list){ const g=model3(m.key); g.userData.key=m.key; add(g,'model:'+m.key,m.x,m.z,m.ry||0); }
+  isl3ShapesLater(shown.list);   // models with no shape on this device: rebuilt in idle moments
   // Bloppit and your otter, where the time of day puts them
   isl3Characters(o,W);
   // the five islands: built up to their count, or waiting in the mist
@@ -11035,6 +11090,7 @@ function lufuBuild(o,W,add){ ISL3.lufu=1;
   const shown=lufuModels3(o); ISL3.shown=shown;
   for(const [x,z,i] of shown.empty){ const g=new THREE.Group(); g.add(cyl3(.62,.68,.14,10,'#DCD3F0',0,TOP3,0)); add(g,'stand:'+i,x,z); }
   for(const m of shown.list){ const g=model3(m.key); g.userData.key=m.key; add(g,'model:'+m.key,m.x,m.z,m.ry||0); }
+  isl3ShapesLater(shown.list);   // models with no shape on this device: rebuilt in idle moments
   // everyone, by the ship
   ISL3.obst=[]; ISL3.cast={};
   const place=(id,g,[x,z])=>{ g.position.set(x,0,z); g.rotation.y=Math.atan2(-x,8-z)*.2; W.add(g); };
