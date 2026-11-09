@@ -3571,7 +3571,7 @@ function loop(now){
 function resize(){ buildDirty=true;
   const el=renderer.domElement.parentElement; if(!el) return;
   const w=el.clientWidth,h=el.clientHeight; if(!w||!h) return;
-  renderer.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix(); playCam.aspect=w/h; playCam.updateProjectionMatrix();
+  renderer.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix(); playFit();
 }
 const bookR=new THREE.WebGLRenderer({antialias:true,alpha:true});
 bookR.setPixelRatio(Math.min(devicePixelRatio||1,matchMedia('(pointer: coarse)').matches?1.5:2)); bookR.outputEncoding=THREE.sRGBEncoding; bookR.setClearColor(0x000000,0);
@@ -4100,11 +4100,21 @@ function buildBox(){
   if(box.isEmpty()) box.set(new THREE.Vector3(-2,0,-2),new THREE.Vector3(2,1.4,2));
   return box;
 }
+// The build view's buttons (Booklet, Zoom, Rotate, Hint) sit over the top of the 3D view. Centre the picture in the clear
+// part below them, so the top of a tall build (where the next brick goes) is never hidden under a button (9 Nov 2026:
+// the hands-only test couldn't reach Big Ben's top layers). Returns how much of the frame's height is clear (0–1).
+function playFit(){
+  const r=renderer.domElement.getBoundingClientRect(), w=r.width, h=r.height; if(!w||!h){ playCam.updateProjectionMatrix(); return 1; }
+  const tl=document.querySelector('#buildStage .stage-tools'); let t=0;
+  if(tl&&tl.offsetParent){ const q=tl.getBoundingClientRect(); if(q.height) t=Math.max(0,q.bottom-r.top+6); if(t>h*.35) t=0; }
+  if(t){ playCam.aspect=w/(h+t); playCam.setViewOffset(w,h+t,0,0,w,h); } else { playCam.aspect=w/h; playCam.clearViewOffset(); }
+  playCam.updateProjectionMatrix(); return t?(h-t)/(h+t):1;
+}
 function frameBuild(animate){
   if(!model) return;
   const box=buildBox(), center=box.getCenter(new THREE.Vector3()), size=box.getSize(new THREE.Vector3());
-  const r=Math.max(size.length()/2,4);
-  const vh=THREE.MathUtils.degToRad(playCam.fov/2), hh=Math.atan(Math.tan(vh)*playCam.aspect);
+  const r=Math.max(size.length()/2,4), clear=playFit();
+  const vh0=THREE.MathUtils.degToRad(playCam.fov/2), vh=Math.atan(Math.tan(vh0)*clear), hh=Math.atan(Math.tan(vh0)*playCam.aspect);
   const dist=r/Math.sin(Math.min(vh,hh))*1.08;
   // Keep the angle you're looking from; only move in or out and re-centre
   let dir=playCam.position.clone().sub(playControls.target);
@@ -5072,6 +5082,11 @@ window.bloppitPeek=()=>{ if(!model||cur>=model.steps.length) return null; const 
 window.bloppitHold=(k=0)=>{ if(busy||!model||cur>=model.steps.length) return null; const t=model.steps[cur].bricks.filter(b=>!usedSet().has(b))[k]; if(!t) return null; const o=curOff()||{x:0,z:0};
   sel={sx:t.sx,sz:t.sz,c:t.c,sp:t.sp,h:t.h,print:t.print}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2}; setGhost(); return {sx:sel.sx,sz:sel.sz,sp:sel.sp||null}; };
 window.bloppitSel=()=>sel?{sx:sel.sx,sz:sel.sz,sp:sel.sp||null}:null;
+// For tests (read-only): the next brick to build, and where its middle is on screen, so a test can click there like a player
+window.bloppitSpot=()=>{ if(busy||!model||cur>=model.steps.length) return null; const s=model.steps[cur]; let o,t;
+  if(off){ o=off; t=s.bricks.find(b=>!placed.has(b)); } else if(cands.length){ o=cands[0]; t=s.bricks.find(b=>!o.used.has(b)); } else { o={x:0,z:0}; t=s.bricks[0]; }
+  if(!t) return null; const r=renderer.domElement.getBoundingClientRect(), v=new THREE.Vector3(t.x+o.x+t.sx/2+playGroup.position.x,s.layer*1.2+playGroup.position.y,t.z+o.z+t.sz/2+playGroup.position.z).project(playCam);
+  return {name:`${PALETTE[t.c][0]} ${Math.min(t.sx,t.sz)}×${Math.max(t.sx,t.sz)}`,sp:t.sp||null,sx:t.sx,sz:t.sz,x:r.left+(v.x+1)/2*r.width,y:r.top+(1-v.y)/2*r.height}; };
 window.bloppitTryBrick=(c,k=0)=>{ if(busy||!model||cur>=model.steps.length) return null; const s=model.steps[cur], u=usedSet(), o=curOff()||{x:0,z:0}, t=s.bricks.filter(b=>!u.has(b))[k]; if(!t) return null;
   sel={sx:t.sx,sz:t.sz,c,sp:t.sp,h:t.h,print:t.print}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2}; const n0=placedN; tryPlace(); const ok=placedN>n0; lastAnchor=null; ghostGroup.visible=false;
   if(held) setGhost(); else { sel=null; ghostGroup.clear(); } return {ok,status:$('#status').textContent}; };
@@ -6817,11 +6832,13 @@ function playReveal(then){
     requestAnimationFrame(()=>Object.assign(pos.style,{left:(sw/2-fw/2)+'px',top:((sh+60)/2-fh/2)+'px',width:fw+'px',height:fh+'px'}));
     later(quick?300:750,()=>{ pos.classList.remove('pop'); if(!quick) pos.classList.add('alive'); cap.classList.add('in'); });
   };
+  // The finish card waits until the "Ta-da!" has had its moment (it used to cover it under a second after it appeared,
+  // Steff 9 Nov 2026); a tap on the picture goes straight on to the card.
+  let fired=false; const fin=()=>{ if(fired||!reveal||reveal.el!==el) return; fired=true; el.onclick=()=>endReveal(); if(then) then(); };
   if(quick){ reveal.shrink=performance.now(); show(); }
   else { later(950,poof); later(1150,show); }
-  later(quick?900:2600,()=>{ if(!reveal||reveal.el!==el) return;
-    el.classList.add('tap'); el.onclick=()=>endReveal();
-    if(then) then(); });
+  later(quick?300:1150,()=>{ if(!reveal||reveal.el!==el) return; el.classList.add('tap'); el.onclick=fin; });
+  later(quick?1800:4600,fin);
 }
 function revealTick(now){
   if(!reveal) return;

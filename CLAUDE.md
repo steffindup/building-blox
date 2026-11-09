@@ -129,6 +129,11 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   - The tests use port 8799. Stop any dev server you started on 8799 first, or use another port for your own server.
   - A test that "sometimes fails" is worth a real look before rerunning it. "the Weekly: a brick of the wrong colour…"
     looked flaky for two days; it was a real bug (the game said Go! three seconds before you could place). Fixed 9 Nov.
+- **"Real hands" test** builds Big Ben with clicks only (parts box, Take, Rotate, click the spot), like a child. It found
+  that the last bricks sat under the tool buttons; `playFit()` now shifts the camera so the model stays clear of them.
+  Hooks that place bricks for you prove less: prefer real clicks for anything about the build controls.
+- After a build, the "Ta-da! The real …" picture shows for about 4.5 s before the finish card (a tap skips ahead);
+  tests must wait for the card (`waitForFunction`), not sleep a fixed time.
 - Your own checks: start `PORT=8799 node tests/devserver.mjs` and drive it with Playwright. The sandbox can't reach the
   CDNs: route `three.min.js`, `OrbitControls.js`, `BufferGeometryUtils.js` to `node_modules/three/…` and stub Google
   Fonts (see `tests/browser.test.mjs` `open()`, or `tests/weekly-export.mjs`). Install a fake clock with
@@ -136,7 +141,8 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
 - URL switches: `nosplash=1` (skip launch screen), `welcome=0` (skip the first-visit welcome), `films=0` (skip films),
   `lite3d=1` (light 3D for machines without a GPU), `island3d=0`, `weekly=next|YYYY-MM-DD` (Weekly preview).
 - Test hooks on `window`: `bloppitPlaceRight()` (place the next brick correctly, like a tap; Weekly builds hide the
-  "Place one for me" button), `bloppitHold(k)` / `bloppitSel()` (put a brick of the step in hand / read it), `bloppitLevels.lib()` (Library list), `bloppitWeeklyPlan()`, `bloppitWeeklyExport(w)`,
+  "Place one for me" button), `bloppitHold(k)` / `bloppitSel()` (put a brick of the step in hand / read it), `bloppitSpot()` (screen x,y of where
+  the brick in hand goes, for real clicks), `bloppitLevels.lib()` (Library list), `bloppitWeeklyPlan()`, `bloppitWeeklyExport(w)`,
   `bloppitWorld`, `bloppitPup`, and more (`grep -o "window\.bloppit[A-Za-z]*"`). The game's functions are otherwise
   not global.
 - Seed a returning player: `localStorage['bloppit-world-v1'] = {"arrived":1,"pupAsked":true,"pupName":2,"builds":{},

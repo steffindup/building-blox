@@ -208,6 +208,46 @@ test('a finger on the brick in hand slides the brick, and the view stays still',
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+// "Real hands": a whole build done only with clicks, like a player (Steff, 9 Nov 2026). Open the parts box, click the
+// brick, Take it, turn it with Rotate if it faces the wrong way, point at its spot and click. The only help from the game
+// is read-only: where the next brick's spot is on screen. Big Ben, so it includes turning bricks and the clock dial.
+test('Real hands: Big Ben built start to finish with clicks only (parts box, Take, Rotate, click the spot)', { skip: skip(), timeout: 900000 }, async () => {
+  const seed = { fn: () => { localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); } };
+  const t = await open('?nosplash=1&welcome=0&weekly=2026-11-09', { init: seed, viewport: { width: 1100, height: 850 } });
+  const { page } = t;
+  await page.waitForFunction(() => /^Go!/.test(document.getElementById('status').textContent), null, { timeout: 30000 });
+  const placed = () => page.evaluate(() => { const m = document.body.innerText.match(/(\d+) of (\d+) placed/i); return m ? [+m[1], +m[2]] : null; });
+  let turned = 0, dial = false;
+  for (let guard = 0; guard < 80; guard++) {
+    const [n, total] = await placed(); if (n >= total) break;
+    await page.waitForFunction(() => window.bloppitSpot(), null, { timeout: 20000 });
+    const spot = await page.evaluate(() => window.bloppitSpot());
+    // 1. the parts box: click a brick of that kind (one whose middle isn't under another brick), then Take
+    await page.click('#openBox'); await page.waitForTimeout(400);
+    const at = await page.evaluate((name) => { for (const el of document.querySelectorAll('#view-box .piece')) { if (!el.getAttribute('aria-label').startsWith(name)) continue; const r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2; el.scrollIntoView({ block: 'center' }); const r2 = el.getBoundingClientRect(), x2 = r2.left + r2.width / 2, y2 = r2.top + r2.height / 2; if (document.elementFromPoint(x2, y2)?.closest('.piece') === el) return { x: x2, y: y2 }; } return null; }, spot.sp ? '✦' : spot.name);
+    assert.ok(at, `a clickable ${spot.name} in the parts box`);
+    await page.mouse.click(at.x, at.y); await page.waitForTimeout(150);
+    await page.click('#takeBtn'); await page.waitForTimeout(500);
+    // 2. turn it if it faces the wrong way
+    const held = await page.evaluate(() => window.bloppitSel());
+    assert.ok(held, 'a brick in hand after Take');
+    if (held.sx !== spot.sx) { await page.click('#rotBtn'); turned++; await page.waitForTimeout(150); }
+    assert.deepEqual(await page.evaluate(() => { const s = window.bloppitSel(); return [s.sx, s.sz]; }), [spot.sx, spot.sz], 'Rotate turned it to fit');
+    if (spot.sp) dial = true;
+    // 3. point at the spot and click
+    const s2 = await page.evaluate(() => window.bloppitSpot());
+    await page.mouse.move(s2.x + 3, s2.y + 3); await page.mouse.move(s2.x, s2.y, { steps: 3 }); await page.waitForTimeout(100);
+    await page.mouse.click(s2.x, s2.y); await page.waitForTimeout(900);
+    const after = await placed();
+    assert.equal(after[0], n + 1, `the ${spot.name} went in (${await page.evaluate(() => document.getElementById('status').textContent)})`);
+  }
+  const [n, total] = await placed();
+  assert.equal(n, total, 'every brick placed');
+  assert.ok(turned > 0, 'at least one brick needed Rotate');
+  assert.ok(dial, 'the clock dial went on');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('Rotate turns the brick in hand, and the Weekly special piece turns too and still goes on last', { skip: skip() }, async () => {
   const seed = { fn: () => { localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); } };
   const t = await open('?nosplash=1&welcome=0&weekly=2026-11-09', { init: seed });   // Big Ben, as a preview (any date)
@@ -343,8 +383,7 @@ test('a Trail level finish shows the stars strip and counts a build', { skip: sk
   await t.page.evaluate(() => [...document.querySelectorAll('#view-game button')].find((x) => /Heart/.test(x.textContent) && x.offsetParent).click()); await t.page.waitForTimeout(800);
   await t.page.evaluate(() => [...document.querySelectorAll('button')].find((x) => /^(Play|Start|Build)/.test(x.textContent.trim()) && x.offsetParent)?.click()); await t.page.waitForTimeout(800);
   for (let i = 0; i < 40; i++) { await autoPlace(t.page, 1); if (await t.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; }
-  await t.page.waitForTimeout(4000);
-  assert.equal(await t.page.evaluate(() => document.getElementById('winDlg').open), true);
+  await t.page.waitForFunction(() => document.getElementById('winDlg').open, null, { timeout: 15000 });   // after the "Ta-da!" picture has had its moment
   assert.match(await t.text('#winDlg [data-ws]'), /\+10 XP/);
   assert.ok(await t.page.evaluate(() => { const e = document.getElementById('winChars'); return e.hidden || (e.__cv3?.insts || []).some((i) => i.id === 'tiny'); }), 'Tiny joins a Frog Trail finish (unless the real picture is shown)');
   assert.deepEqual(t.errors, []); await t.ctx.close();
@@ -767,8 +806,7 @@ test('a relay: one friend builds half, the other finishes, both islands get the 
   await b.page.evaluate(() => document.getElementById('relGo').click()); await b.page.waitForTimeout(1200);
   assert.equal(await b.view(), 'view-build'); assert.doesNotMatch(await b.text('#progress'), /^0 of/);
   for (let i = 0; i < 60; i++) { await autoPlace(b.page, 1); if (await b.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; }
-  await b.page.waitForTimeout(4500);
-  assert.match(await b.text('#trTitle'), /Finished together/);
+  await b.page.waitForFunction(() => document.getElementById('trialDlg').open && /Finished together/.test(document.getElementById('trTitle').textContent), null, { timeout: 15000 });
   const wb = JSON.parse(await b.page.evaluate(() => localStorage.getItem('bloppit-world-v1'))); assert.equal(wb.log.length, 1); assert.match(wb.log[0], /^r:/);
   assert.deepEqual(b.errors, []); await b.ctx.close();
   // the first player hears about it on the Blitz page
@@ -812,7 +850,7 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   await b.page.evaluate(() => [...document.querySelectorAll('#view-game button')].find((x) => /Heart/.test(x.textContent) && x.offsetParent).click()); await b.page.waitForTimeout(800);
   await b.page.evaluate(() => [...document.querySelectorAll('button')].find((x) => /^(Play|Start|Build)/.test(x.textContent.trim()) && x.offsetParent)?.click()); await b.page.waitForTimeout(800);
   for (let i = 0; i < 40; i++) { await autoPlace(b.page, 1); if (await b.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; }
-  await b.page.waitForTimeout(3500); await b.page.evaluate(() => document.getElementById('winDlg').close());
+  await b.page.waitForFunction(() => document.getElementById('winDlg').open, null, { timeout: 15000 }); await b.page.evaluate(() => document.getElementById('winDlg').close());
   await hub(b); await b.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await b.page.waitForTimeout(800);
   assert.match(await b.text('#crewOpen'), /10 of 2,000 bricks/);
   assert.match(await b.text('#crewOpen'), /Space Station: just started/);
