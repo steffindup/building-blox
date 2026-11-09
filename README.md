@@ -4,7 +4,7 @@ A brick-building game for anyone who loves bricks: build with Bloppit the otter,
 race Swoop the Longtail. A library model (or your own photo) becomes a build with a step-by-step instruction booklet, and you
 build it on screen. The menu is game-first:
 
-- **Weekly Bloppit**: one puzzle a week, the same for everyone, changing Monday 8 am US Eastern (`weekOf()` in the app
+- **Weekly Bloppit**: one puzzle a week, the same for everyone, changing at midnight US Eastern on Sunday night (`weekOf()` in the app
   and in `netlify/functions/challenge/logic.mjs` compute the same week key, a Monday date). It is scored on cleanness
   (no misses, no hints), never on time: the clock is hidden (`calm` trial). The first finish of the week sends only
   "finished" and "clean" to the server, which keeps two counts per week and answers "you and N% of this week's builders

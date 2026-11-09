@@ -64,12 +64,12 @@ test('pup: create → save (merge) → transfer → claim', async () => {
   const k = await pup('POST', {}, { action: 'claim', code: t.body.code }, store); assert.equal(k.body.pup, id); assert.equal(k.body.data.world.pupName, 3);
   const again = await pup('POST', {}, { action: 'claim', code: t.body.code }, store); assert.notEqual(again.status, 200);
 });
-test('weekly: the week key is the Monday, boundary at 08:00 New York', () => {
+test('weekly: the week key is the Monday, boundary at midnight New York (Sunday night)', () => {
   assert.equal(weekOf(new Date('2026-10-14T18:00:00Z')), '2026-10-12');
-  assert.equal(weekOf(new Date('2026-10-19T11:59:00Z')), '2026-10-12');   // Monday 07:59 EDT
-  assert.equal(weekOf(new Date('2026-10-19T12:01:00Z')), '2026-10-19');   // Monday 08:01 EDT
-  assert.equal(weekOf(new Date('2026-11-09T12:30:00Z')), '2026-11-02');   // after the DST change, 07:30 EST
-  assert.equal(weekOf(new Date('2026-11-09T13:01:00Z')), '2026-11-09');
+  assert.equal(weekOf(new Date('2026-10-19T03:59:00Z')), '2026-10-12');   // Sunday 23:59 EDT
+  assert.equal(weekOf(new Date('2026-10-19T04:01:00Z')), '2026-10-19');   // Monday 00:01 EDT
+  assert.equal(weekOf(new Date('2026-11-16T04:59:00Z')), '2026-11-09');   // after the DST change, Sunday 23:59 EST
+  assert.equal(weekOf(new Date('2026-11-16T05:01:00Z')), '2026-11-16');   // Monday 00:01 EST
 });
 
 import { handle as group, PHRASES } from '../netlify/functions/group/logic.mjs';

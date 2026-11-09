@@ -6096,7 +6096,7 @@ const SAMPLES=[
    x.fillStyle='#F4F4F4'; x.fillRect(110,124,30,8);
    return [['front',c]]; }},
  // ---- Authored Weeklies (Q4 2026 bank). `weekly` = the release week key: hidden from the library and from
- // the hash pick until that Monday 8 am ET, then they join the library like any other model.
+ // the hash pick until that Monday (midnight US Eastern), then they join the library like any other model.
  {name:'Jack-o’-lantern',theme:'Spooky',weekly:'2026-10-26',beat:'Pippa found the biggest pumpkin on Flipper Beach. Give it a grin!',ws:{shape:'flat',size:9},make(){ const [c,x]=sheet(220,200,'#ffffff');
    x.fillStyle='#3E9A3A'; x.rr(100,14,20,34,6); x.oval(132,30,18,8,-.4,'#4B9F4A');
    x.oval(110,118,92,72,0,'#FE8A18');
@@ -8222,13 +8222,14 @@ async function renderChMine(force){
 $('#chMineList').addEventListener('click',e=>{ const b=e.target.closest('[data-ch]'); if(b) chOpen(b.dataset.ch); });
 
 /* ---------- Weekly Bloppit ---------- */
-// One puzzle a week, the same for everybody, changing on Monday at 8 am US Eastern. A week is named by that
+// One puzzle a week, the same for everybody, changing at midnight US Eastern on Sunday night (it was Monday 8 am until
+// 9 Nov 2026: no more Monday-morning gap). A week is named by that
 // Monday's date; the server (netlify/functions/challenge/logic.mjs weekOf) computes the same key.
 // Scored on cleanness (no misses, no hints), never on time: the clock stays hidden.
 const ET_FMT=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hourCycle:'h23',weekday:'short',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit'});
 function weekOf(t=Date.now()){
   const p=Object.fromEntries(ET_FMT.formatToParts(t).map(x=>[x.type,x.value]));
-  const dow={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[p.weekday]; let back=(dow+6)%7; if(back===0&&+p.hour<8) back=7;
+  const dow={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[p.weekday]; let back=(dow+6)%7;
   const d=new Date(Date.UTC(+p.year,+p.month-1,+p.day)); d.setUTCDate(d.getUTCDate()-back); return d.toISOString().slice(0,10);
 }
 const weekBefore=w=>{ const d=new Date(w+'T00:00:00Z'); d.setUTCDate(d.getUTCDate()-7); return d.toISOString().slice(0,10); };

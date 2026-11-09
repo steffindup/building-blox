@@ -28,14 +28,13 @@ const chModelKey = (c) => `chmodel/${c}`;
 const weekKey = (w) => `weekly/${w}`;
 export const total = (r) => r.ms + r.miss * MISS_MS + (r.hint || 0) * HINT_MS;
 
-// The Weekly Bloppit changes on Monday at 8 am US Eastern. A week is named by that Monday's date (YYYY-MM-DD).
+// The Weekly Bloppit changes at midnight US Eastern on Sunday night (Monday 8 am until 9 Nov 2026). A week is named by that Monday's date (YYYY-MM-DD).
 // The app computes the same key (weekOf in public/game/index.html); keep the two in step.
 const ET = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hourCycle: 'h23', weekday: 'short', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit' });
 export function weekOf(t = Date.now()) {
   const p = Object.fromEntries(ET.formatToParts(t).map((x) => [x.type, x.value]));
   const dow = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }[p.weekday];
   let back = (dow + 6) % 7;
-  if (back === 0 && Number(p.hour) < 8) back = 7;   // Monday before 8 am ET still belongs to last week
   const d = new Date(Date.UTC(Number(p.year), Number(p.month) - 1, Number(p.day)));
   d.setUTCDate(d.getUTCDate() - back);
   return d.toISOString().slice(0, 10);
