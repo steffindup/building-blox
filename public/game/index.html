@@ -8245,6 +8245,44 @@ const WEEKLY_PLAN={
   '2026-12-14':'Gingerbread house',
   '2026-12-21':'Striped lighthouse',
 };
+// The app gets each Weekly from bloppit.com (Steff, 8 Nov 2026), so a new Weekly needs no app update. Data only, never
+// code: the model's picture(s) as PNG and its settings, published to public/weekly/ by tests/weekly-export.mjs. Only live
+// and past weeks are fetched (an upcoming one stays unspoiled). Offline, or if anything is missing, the built-in plan stands.
+// The website doesn't need it: it always has the latest game.
+const WEEKLY_WS_KEYS={size:'n',thick:'n',maxColors:'n',tol:'n',colors:'n',shape:['puffed','flat','relief']};
+function weeklyClean(d,week,name){
+  if(!d||d.name!==name||typeof name!=='string'||name.length>40||!Array.isArray(d.views)||!d.views.length||d.views.length>4) return null;
+  const ws={}; for(const [k,t] of Object.entries(WEEKLY_WS_KEYS)){ const v=d.ws&&d.ws[k]; if(t==='n'?Number.isFinite(v):Array.isArray(t)&&t.includes(v)) ws[k]=v; }
+  const sp=d.special&&SPECIAL_NAME[d.special.kind]&&['cx','cy','r'].every(k=>Number.isFinite(d.special[k]))?{kind:d.special.kind,cx:d.special.cx,cy:d.special.cy,r:d.special.r}:undefined;
+  const views=d.views.filter(v=>v&&['front','side','back'].includes(v.view)&&typeof v.png==='string'&&/^data:image\/png;base64,/.test(v.png)&&v.png.length<600000);
+  if(views.length!==d.views.length) return null;
+  return {name,theme:typeof d.theme==='string'?d.theme.slice(0,30):'Fantasy',beat:typeof d.beat==='string'?d.beat.slice(0,140):'',ws:Object.keys(ws).length?ws:undefined,special:sp,views};
+}
+let weeklySynced='';
+async function weeklySync(){
+  if(!APP||weeklySynced===weekOf()) return; const now=weekOf();
+  try{
+    const r=await fetch(API_BASE+'/weekly/index.json',{cache:'no-store'}); if(!r.ok) return; const ix=await r.json(); if(!ix||typeof ix.weeks!=='object') return;
+    let changed=false;
+    for(const [week,name] of Object.entries(ix.weeks)){
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(week)||week>now||typeof name!=='string') continue;
+      const have=SAMPLES.find(x=>x.name===name);
+      if(have){ if(have.weekly&&have.weekly!==week) have.weekly=week; if(WEEKLY_PLAN[week]!==name){ WEEKLY_PLAN[week]=name; changed=true; } continue; }
+      const f=await fetch(API_BASE+'/weekly/'+week+'.json',{cache:'no-store'}); if(!f.ok) continue;
+      const d=weeklyClean(await f.json(),week,name); if(!d) continue;
+      const pics=await Promise.all(d.views.map(v=>new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>{ const c=document.createElement('canvas'); c.width=im.naturalWidth; c.height=im.naturalHeight; c.getContext('2d').drawImage(im,0,0); res([v.view,c]); }; im.onerror=rej; im.src=v.png; })));
+      SAMPLES.push({name,theme:d.theme,weekly:week,beat:d.beat,ws:d.ws,special:d.special,fetched:true,
+        make(){ return pics.map(([view,c])=>{ const k=document.createElement('canvas'); k.width=c.width; k.height=c.height; k.getContext('2d').drawImage(c,0,0); return [view,k]; }); }});
+      WEEKLY_PLAN[week]=name; changed=true;
+    }
+    weeklySynced=now;
+    if(changed){ weeklyCache.clear(); try{ if(tab==='home') renderHome(); }catch(e){} }
+  }catch(e){}
+}
+// For tests/weekly-export.mjs: the plan, and one week's Weekly as data (the picture(s) as PNG, the settings)
+window.bloppitWeeklyPlan=()=>({...WEEKLY_PLAN});
+window.bloppitWeeklyExport=week=>{ const name=WEEKLY_PLAN[week], smp=name&&SAMPLES.find(x=>x.name===name); if(!smp) return null;
+  return {v:1,week,name,theme:smp.theme,beat:smp.beat||'',ws:smp.ws||null,special:smp.special||null,views:smp.make().map(([view,c])=>({view,png:c.toDataURL('image/png')}))}; };
 // The hash pick only draws from models already in the library, so an unreleased Weekly is never spoiled early.
 const WEEKLY_POOL=()=>SAMPLES.map((s,i)=>i).filter(i=>!SAMPLES[i].weekly&&!SAMPLES[i].hidden);
 const WEEKLY_MAX=48;  // a Weekly is 24–48 bricks: finishable in under ten minutes
@@ -8335,7 +8373,7 @@ function bottleSync(){ try{
 $('#btOpen').onclick=()=>{ const o=worldStore(), day=dayKey(); if(bottleDays(o).includes(day)) return bottleSync();
   o.bottles=[...bottleDays(o),day].sort(); o.xp=worldXP(o); worldSet(o); track('bottle');
   try{ sfx.chime(); }catch(e){} try{ sfx.voice('pippa'); }catch(e){} bottleSync(); };
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden) bottleSync(); });
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ bottleSync(); weeklySync(); } });   // back in the app: a new week's Weekly
 window.bloppitWorld=()=>{ const o=worldStore(); return {level:otterLevel(o),stage:PUP_STAGES[pupStage(o)].name,galaxy:worldStars(o),stars:worldRating(o),xp:worldXP(o)}; };   // for tests
 window.bloppitBottle=()=>({day:dayKey(),days:bottleDays(worldStore()),xp:worldXP(worldStore()),dot:$('#tab-sea').classList.contains('bottle-on')});   // for tests
 // Bibi's Weekly card on the Build anything page: this week's model and whether it's done
@@ -12628,6 +12666,7 @@ async function weeklyPreview(week){
   const bar=$('#pvBar'); bar.innerHTML=`👀 <b>Preview</b>: the Weekly for ${day}, ${escapeHTML(o.name)}. Nothing is saved or counted.`; bar.hidden=false;
 }
 function homeRoute(){
+  weeklySync();
   const pw=weeklyPreviewWeek(); if(pw){ setTab('home'); setTimeout(()=>weeklyPreview(pw).catch(e=>console.warn(e)),300); return; }
   const h=location.hash.slice(1).toLowerCase();
   if(h==='photos'||h==='create') setTab('create');

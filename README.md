@@ -11,6 +11,13 @@ build it on screen. The menu is game-first:
   finished clean". No names, no times, no ranks. The streak counts weeks, with one missed week in 13 forgiven.
   `WEEKLY_PLAN` maps a week key to an authored puzzle; weeks without one get a library pick from the hash.
   A finished Weekly counts as a creation on Brickyard Cove.
+  A Weekly joins the Library only once its week is over. A model can carry a **special piece** (`special:{kind,…}`,
+  e.g. Big Ben's clock dial): after it's built, a recess with a ledge is left in its front face and the special piece,
+  4×1 at the bottom and 4 layers tall, goes on the ledge as the last step (it matches only its spot; bell and the
+  hands spin to the player's time). **Preview** any Weekly before it's live at `/game/?weekly=next` or
+  `?weekly=YYYY-MM-DD` (nothing is saved or counted). **The app gets its Weeklies from the site**: run
+  `PLAYWRIGHT_CHROMIUM=… node tests/weekly-export.mjs` after changing `WEEKLY_PLAN` or a Weekly's model and commit
+  `public/weekly/` (data only: the picture as PNG plus settings). App 1.1 and later fetch it (`weeklySync()`).
 - **Pippa's Puzzles** (trail id `sea`, scores in `g.sbest`): twelve seaside builds that grow Flipper Beach. Puzzle *n*
   washes ashore at *n*/12 of `gameProgress()` (pieces built on Frog Forest, Brainpeak, Blitz Bay and Brickyard Cove,
   out of 61) and needs the one before it; the twelfth is the Festival Clock.

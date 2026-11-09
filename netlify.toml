@@ -49,6 +49,15 @@
   [headers.values]
     X-Robots-Tag = "noindex"
 
+# The Weekly as data for the app (public/weekly, made by tests/weekly-export.mjs): the app runs from
+# capacitor://localhost, so it needs CORS; the data is public anyway. Checked again every few minutes.
+[[headers]]
+  for = "/weekly/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Cache-Control = "public, max-age=300"
+    X-Robots-Tag = "noindex"
+
 [[headers]]
   for = "/sound/*"
   [headers.values]
