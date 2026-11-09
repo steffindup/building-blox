@@ -83,7 +83,8 @@ header nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;padding-b
 @media (max-width:640px){.page-head{padding-block:40px 24px;gap:16px}.page-head img{width:64px;height:64px}}
 main{padding-bottom:80px}
 .wrap .page-head+.actions{margin-top:8px}
-.stack{display:grid;gap:20px;max-width:860px}
+.stack{display:grid;gap:20px}
+.stack .card p,.stack .card ul,.stack .card ol{max-width:76ch}   /* cards line up with the header, the dark box and the footer; the text inside keeps a reading width (9 Nov 2026) */
 
 /* Cards */
 .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:30px;display:flow-root}
