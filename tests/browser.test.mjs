@@ -208,6 +208,30 @@ test('a finger on the brick in hand slides the brick, and the view stays still',
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('Rotate turns the brick in hand, and the Weekly special piece turns too and still goes on last', { skip: skip() }, async () => {
+  const seed = { fn: () => { localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); } };
+  const t = await open('?nosplash=1&welcome=0&weekly=2026-11-09', { init: seed });   // Big Ben, as a preview (any date)
+  await t.page.waitForFunction(() => document.getElementById('pvBar') && !document.getElementById('pvBar').hidden, null, { timeout: 30000 });
+  await t.page.waitForTimeout(3000);   // the 3-2-1 countdown
+  // a brick that isn't square: Rotate swaps its length and width, twice brings it back
+  const k = await t.page.evaluate(() => { for (let i = 0; i < 40; i++) { const h = window.bloppitHold(i); if (!h) return -1; if (h.sx !== h.sz) return i; } return -1; });
+  assert.ok(k >= 0, 'a non-square brick in the first step');
+  const a = await t.page.evaluate(() => window.bloppitSel());
+  await t.page.click('#rotBtn'); const b = await t.page.evaluate(() => window.bloppitSel());
+  assert.deepEqual([b.sx, b.sz], [a.sz, a.sx]);
+  await t.page.click('#rotBtn'); assert.deepEqual(await t.page.evaluate(() => window.bloppitSel()), a);
+  // build up to the clock dial, then turn it round and back, and put it on the ledge
+  for (let i = 0; i < 120; i++) { const left = await t.page.evaluate(() => { const m = document.body.innerText.match(/(\d+) of (\d+) placed/i); return m ? +m[2] - +m[1] : 99; }); if (left <= 1) break; await t.page.evaluate(() => window.bloppitPlaceRight()); await t.page.waitForTimeout(250); }
+  await t.page.waitForFunction(() => window.bloppitHold(0), null, { timeout: 15000 });   // the last step has opened
+  const dial = await t.page.evaluate(() => window.bloppitHold(0));
+  assert.equal(dial.sp, 'dial');
+  await t.page.click('#rotBtn'); assert.deepEqual(await t.page.evaluate(() => window.bloppitSel()), { sx: dial.sz, sz: dial.sx, sp: 'dial' });
+  await t.page.click('#rotBtn');
+  await t.page.evaluate(() => window.bloppitPlaceRight()); await t.page.waitForTimeout(1500);
+  assert.match(await t.page.evaluate(() => document.body.innerText), /(\d+) of \1 placed/i);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('phone build page: no arrows or Place (tap the brick, Rotate turns it), the build gets the room; yellow and blue table edges mark the same sides in the booklet and the build', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0', { viewport: { width: 390, height: 664 }, touch: true });
   await t.page.evaluate(() => { document.querySelector('[data-go="otter"]').click(); document.getElementById('qpIsle').click(); }); await t.page.waitForTimeout(400);

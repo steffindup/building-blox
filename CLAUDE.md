@@ -127,8 +127,8 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
     that `public/weekly` matches `WEEKLY_PLAN` (`tests/weekly-check.mjs`). Results show as a ✓/✗ next to each commit
     on GitHub (the sandbox's proxy blocks the Actions API; the commit's check-runs may still be readable).
   - The tests use port 8799. Stop any dev server you started on 8799 first, or use another port for your own server.
-  - Known flaky: "the Weekly: a brick of the wrong colour…" sometimes gets "Wait for Go!" (it places during the 3-2-1
-    countdown on a slow machine). Rerun it alone before treating it as a failure.
+  - A test that "sometimes fails" is worth a real look before rerunning it. "the Weekly: a brick of the wrong colour…"
+    looked flaky for two days; it was a real bug (the game said Go! three seconds before you could place). Fixed 9 Nov.
 - Your own checks: start `PORT=8799 node tests/devserver.mjs` and drive it with Playwright. The sandbox can't reach the
   CDNs: route `three.min.js`, `OrbitControls.js`, `BufferGeometryUtils.js` to `node_modules/three/…` and stub Google
   Fonts (see `tests/browser.test.mjs` `open()`, or `tests/weekly-export.mjs`). Install a fake clock with
@@ -136,7 +136,7 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
 - URL switches: `nosplash=1` (skip launch screen), `welcome=0` (skip the first-visit welcome), `films=0` (skip films),
   `lite3d=1` (light 3D for machines without a GPU), `island3d=0`, `weekly=next|YYYY-MM-DD` (Weekly preview).
 - Test hooks on `window`: `bloppitPlaceRight()` (place the next brick correctly, like a tap; Weekly builds hide the
-  "Place one for me" button), `bloppitLevels.lib()` (Library list), `bloppitWeeklyPlan()`, `bloppitWeeklyExport(w)`,
+  "Place one for me" button), `bloppitHold(k)` / `bloppitSel()` (put a brick of the step in hand / read it), `bloppitLevels.lib()` (Library list), `bloppitWeeklyPlan()`, `bloppitWeeklyExport(w)`,
   `bloppitWorld`, `bloppitPup`, and more (`grep -o "window\.bloppit[A-Za-z]*"`). The game's functions are otherwise
   not global.
 - Seed a returning player: `localStorage['bloppit-world-v1'] = {"arrived":1,"pupAsked":true,"pupName":2,"builds":{},
@@ -170,6 +170,9 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
 - The app bundles its own copy of `public/game`; a fix pushed to `main` reaches App Store players only after the next
   app release. Say so whenever it matters.
 - Old links point at `/build/`; it redirects to `/game/`. Some comments and old chats still say `/build`.
+- When appending a comment to an existing line, check the code after it didn't end up inside the comment (a
+  `// …` swallowed the Rotate button's swap on 8 Nov; nothing noticed until Steff did). Test names aren't proof either:
+  the "Rotate turns it" test never pressed Rotate.
 - Brick heights: most code assumes 1 layer; tall pieces pass `h` to `brickGeo`/`edgeGeo`. Search all `brickGeo(` calls
   when adding geometry.
 - `weeklyPuzzle(week)` is cached (`weeklyCache`); clear it after changing the plan at runtime.

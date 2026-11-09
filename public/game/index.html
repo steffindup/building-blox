@@ -4748,7 +4748,7 @@ function putAllBack(){
 }
 function setGhost(){
   ghostGroup.clear(); if(!sel){ padSync(); return; }
-  const g=new THREE.Mesh(brickGeo(sel.sx,sel.sz,sel.h),ghostMat(sel.c)); g.add(new THREE.LineSegments(edgeGeo(sel.sx,sel.sz,sel.h),ghostEdge)); if(sel.sp&&sel.print) withPrint(g,{...sel,x:0,y:0,z:0,print:{...sel.print,cx:sel.sx/2,cy:1.2*sel.h/2}});
+  const g=new THREE.Mesh(brickGeo(sel.sx,sel.sz,sel.h),ghostMat(sel.c)); g.add(new THREE.LineSegments(edgeGeo(sel.sx,sel.sz,sel.h),ghostEdge)); if(sel.sp&&sel.print&&sel.sx>=sel.sz) withPrint(g,{...sel,x:0,y:0,z:0,print:{...sel.print,cx:sel.sx/2,cy:1.2*sel.h/2}});
   g.position.y=ghostLift(); ghostGroup.add(g);
   if(lastAnchor) placeGhost(lastAnchor.px,lastAnchor.pz);
   else if(model&&cur<model.steps.length){ const c=ghostHome(); placeGhost(c.px,c.pz); }
@@ -4794,13 +4794,14 @@ const noPad=()=>PHONE_Q.matches;
 const placeWord=()=>noPad()?'tap it to put it down':'press ✓ Place';
 function padSync(){
   const on=tab==='build'&&!!sel&&!!model&&cur<model.steps.length;
-  $('#rotBtn').classList.toggle('hot',on&&!!sel&&sel.sx!==sel.sz&&!sel.sp);
+  $('#rotBtn').classList.toggle('hot',on&&!!sel&&sel.sx!==sel.sz);
   $('#placePad').hidden=!on;
   if(!on) return;
-  $('#ppTurn').hidden=!sel||sel.sx===sel.sz||!!sel.sp;
+  $('#ppTurn').hidden=!sel||sel.sx===sel.sz;
   $('#ppPlace').disabled=busy||!lastAnchor||!ghostGroup.visible;
 }
-function rotateSel(){ if(!sel||sel.sx===sel.sz||sel.sp) return;   // a special piece only faces one way [sel.sx,sel.sz]=[sel.sz,sel.sx];
+function rotateSel(){ if(!sel||sel.sx===sel.sz) return;
+  [sel.sx,sel.sz]=[sel.sz,sel.sx];
   // Turn around the same middle point, so the brick doesn't jump
   if(lastAnchor){ const cx=lastAnchor.ax+sel.sz/2, cz=lastAnchor.az+sel.sx/2; lastAnchor={...lastAnchor,px:cx,pz:cz}; }
   setGhost(); }
@@ -5067,6 +5068,10 @@ window.bloppitDemo={
 };
 window.bloppitMirror=()=>model&&model.mirror?{paint:model.paint?[...model.paint.entries()]:null,W:model.W,steps:model.steps.map(s=>s.pippa?'P':s.kid?'K':'?').join(''),cur,bricks:model.bricks.map(b=>[b.x,b.y,b.z,b.sx,b.sz,b.c])}:null;   // for tests
 window.bloppitPeek=()=>{ if(!model||cur>=model.steps.length) return null; const u=usedSet(), t=model.steps[cur].bricks.find(b=>!u.has(b)); return t?{c:t.c,sx:t.sx,sz:t.sz,step:cur}:null; };
+// For tests: put brick k of this step in hand (without placing it), and read the brick in hand
+window.bloppitHold=(k=0)=>{ if(busy||!model||cur>=model.steps.length) return null; const t=model.steps[cur].bricks.filter(b=>!usedSet().has(b))[k]; if(!t) return null; const o=curOff()||{x:0,z:0};
+  sel={sx:t.sx,sz:t.sz,c:t.c,sp:t.sp,h:t.h,print:t.print}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2}; setGhost(); return {sx:sel.sx,sz:sel.sz,sp:sel.sp||null}; };
+window.bloppitSel=()=>sel?{sx:sel.sx,sz:sel.sz,sp:sel.sp||null}:null;
 window.bloppitTryBrick=(c,k=0)=>{ if(busy||!model||cur>=model.steps.length) return null; const s=model.steps[cur], u=usedSet(), o=curOff()||{x:0,z:0}, t=s.bricks.filter(b=>!u.has(b))[k]; if(!t) return null;
   sel={sx:t.sx,sz:t.sz,c,sp:t.sp,h:t.h,print:t.print}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2}; const n0=placedN; tryPlace(); const ok=placedN>n0; lastAnchor=null; ghostGroup.visible=false;
   if(held) setGhost(); else { sel=null; ghostGroup.clear(); } return {ok,status:$('#status').textContent}; };
@@ -7468,7 +7473,7 @@ function mpApply(s){
   if(placedN!==n0){ reconcilePieces(); updateBuildUI(); if(cur!==cur0||n0===0) frameBuild(true); }
   if(s.started&&!s.finished&&mp.lastTurn!==s.turn){
     mp.lastTurn=s.turn;
-    if(s.solo) setStatus('Go! Your clock is running. Place every brick as fast as you can.','ok');
+    if(s.solo){ if(!(mp.cpu&&Date.now()<s.turnStart)) setStatus(s.calm?'Go! Take your time. Place every brick in the right spot.':'Go! Your clock is running. Place every brick as fast as you can.','ok'); }   // during the 3-2-1 the countdown says Go! itself (it said Go! ~3 s early, and placing was refused)
     else if(s.turn===mp.me) setStatus(s.mode==='blitz'?(mpLeft(s)<3?`Your turn! Your clock is running. Place ${mpLeft(s)===1?'your last brick':`up to ${mpLeft(s)} bricks`}.`:'Your turn! Your clock is running. Place 1, 2 or 3 bricks, then tap Done.'):`Your turn! Place ${s.perTurn} brick${s.perTurn>1?'s':''}.`,'ok');
     else setStatus(`${s.players[s.turn].name}’s turn. Get your next bricks ready in the parts box.`);
   }
