@@ -176,7 +176,8 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
 
 - **Stars are the one thing that grows; XP is gone from the screens.** A build starts with ★ by size: Easy (≤30 bricks)
   5, Medium (31–100) 8, Hard (100+) 10 (`starCap`, `tierOf`). Each brick that needed a hint, a "Place one for me" or
-  another try costs one ★, never more than one per brick, never below 1 (`run.trouble`, `troubleAdd`, `runLost`).
+  another try costs one ★, never more than one per brick, never below 2 (`STAR_FLOOR`; `run.trouble`, `troubleAdd`,
+  `runLost`). The Trail and Weekly finish cards count the ★ down row by row (`starRows`).
 - **Bonus ★** (`STAR_BONUS`): Weekly +3, From Memory +2, Blitz win +1, Pippa's bottle +1 a day, finished island +10,
   whole world +20. All ★ earned = `worldStarsEarned`. A fixed-content perfect run is about 820 ★; it keeps growing after.
 - **Otter Level from ★**: Level n at 6·n·(n−1) (L2 12, L5 120, L8 336, L11 660). No otter goes down: builds from before

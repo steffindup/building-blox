@@ -6738,7 +6738,7 @@ function levelCount(L){
 /* ★ Stars: the one thing that grows (Steff, 9 Nov 2026). Stars replace XP; Galaxy Blocks are the stars you can spend.
    A build starts with ★ by its size (Easy up to 30 bricks 5 ★, Medium up to 100 8 ★, Hard 10 ★) and loses one for each
    brick that gave trouble: a wrong try, a hint or a "Place one for me". However many tries one brick takes, it costs one ★
-   (keyed by the brick being worked on: the count placed so far). Never below 1. A record keeps `l`, the fewest ★ lost
+   (keyed by the brick being worked on: the count placed so far). Never below 2 (STAR_FLOOR). A record keeps `l`, the fewest ★ lost
    (its best try), so the rating always follows the size rule; `r` (the rating) and `s` (out of 3, for app 1.1) ride
    along. Older records: r out of 10 (9 Nov) → lost 10−r; s out of 3 → lost 0/2/4; old Blitz wins (a flat 1 ★) lost 0.
    Bonus ★: the Weekly +3, From Memory +2, a Blitz win +1, Pippa's bottle +1 a day, a finished island +10, the world +20.
@@ -6748,17 +6748,29 @@ const STAR_SWITCH=Date.UTC(2026,10,9,15), STAR_BONUS={weekly:3,memory:2,blitz:1,
 const starCap=n=>(n||0)<=30?5:n<=100?8:10, tierOf=n=>(n||0)<=30?'Easy':n<=100?'Medium':'Hard';
 const OLD_LOST={3:0,2:2,1:4};
 const lostOf=b=>Number.isFinite(b.l)?b.l:Number.isFinite(b.r)?Math.max(0,10-b.r):b.k==='blitz'?0:(OLD_LOST[b.s]??0);
-const rateOf=b=>!b?0:Math.max(1,starCap(b.n)-lostOf(b)), oldScale=(r,cap)=>r>=cap?3:r>=cap-3?2:r>0?1:0;
+const STAR_FLOOR=2;   // a finished build always earns at least 2 ★ (Steff, 9 Nov 2026)
+const rateOf=b=>!b?0:Math.max(STAR_FLOOR,starCap(b.n)-lostOf(b)), oldScale=(r,cap)=>r>=cap?3:r>=cap-3?2:r>0?1:0;
 const buildBonus=(k,b)=>(k.startsWith('w:')?STAR_BONUS.weekly:0)+(b.m?STAR_BONUS.memory:0)+(b.k==='blitz'?STAR_BONUS.blitz:0);
 function troubleAdd(t,k=placedN){ if(!run.trouble) run.trouble=new Map(); const e=run.trouble.get(k)||new Set(); e.add(t); run.trouble.set(k,e); if(game&&!mp) updateGameBar(); }
 function runLost(kind){ let n=0; for(const e of (run&&run.trouble||new Map()).values()) if(kind!=='welcome'||e.has('m')) n++; return n; }
 const runCap=()=>starCap(model?model.bricks.length:0);
-function runRating(kind){ return Math.max(1,runCap()-runLost(kind)); }
+// The finish card counts the ★ down: the build's ★ by size, one off for each brick that had help or a wrong try (one each,
+// however many), the floor of 2, and any bonus. Shared by the Trail card and the Weekly card.
+function starRows(what,W,c){
+  const T=[...(run.trouble||new Map()).values()], helpB=T.filter(e=>e.has('h')||e.has('a')).length, missB=T.length-helpB, cap=W&&W.cap||runCap(), st=W?W.stars:runRating();
+  const rows=[[`${what} · ${tierOf(model?model.bricks.length:0)}`,`${cap} ★`,true]];
+  if(helpB) rows.push([`Help used (${c.help||helpB})`,`−${helpB} ★`,false]);
+  if(missB) rows.push([`Tricky brick${missB===1?'':'s'}: ${missB}${c.miss?` (${c.miss} wrong tr${c.miss===1?'y':'ies'})`:''}`,`−${missB} ★`,false]);
+  if(st>cap-helpB-missB) rows.push(['Every finished build keeps at least 2 ★',`+${st-(cap-helpB-missB)} ★`,true]);
+  if(!helpB&&!missB) rows.push(['Perfect: every brick right first time','✨',true]);
+  if(W&&W.bonus) rows.push([W.kind==='weekly'?'Weekly bonus':W.memory?'From memory bonus':W.kind==='blitz'?'Race won bonus':'Bonus',`+${W.bonus} ★`,true]);
+  return rows.map(([a,v,ok])=>`<div class="${ok?'':'neg'}"><span>${a}</span><span>${v}</span></div>`).join(''); }
+function runRating(kind){ return Math.max(STAR_FLOOR,runCap()-runLost(kind)); }
 const levelScore=()=>{ const L=levelsOf(gameTrail())[game.lvl], p=game.pen; return Math.max(Math.round(L.pts*.1), L.pts-p.hint*5-p.auto*10)+(game.math?game.math.pts:0); };
 const starsFor=(sc,L)=>sc>=L.pts*.9?3:sc>=L.pts*.6?2:1;   // the old points rule, only for levels finished before builds kept their ★
 // A level's ★: its best build on the island record (finished · no hints or placed-for-you · no wrong bricks)
 function levelRec(tr,i,o){ const L=levelsOf(tr)[i]; return L&&(o||worldStore()).builds[`t:${tr}:${i}:${L.name}`]; }
-function levelStars(tr,i,o,best){ const b=levelRec(tr,i,o); return rateOf(b)||(best?Math.max(1,10-OLD_LOST[starsFor(best,levelsOf(tr)[i])]):0); }
+function levelStars(tr,i,o,best){ const b=levelRec(tr,i,o); return rateOf(b)||(best?Math.max(STAR_FLOOR,10-OLD_LOST[starsFor(best,levelsOf(tr)[i])]):0); }
 const levelCap=(tr,i,o)=>{ const b=levelRec(tr,i,o); return b?starCap(b.n):10; };
 const trailStars=(tr,o)=>{ o=o||worldStore(); const B=bestOf(gameStore(),tr); return levelsOf(tr).reduce((a,_,i)=>a+(B[i]?levelStars(tr,i,o,B[i]):0),0); };
 // The ★ this attempt is on course for (shown in the level card as you build)
@@ -6918,13 +6930,7 @@ function winLevel(){
     el.classList.toggle('three',tiny&&hasPup(o));
     if(reveal&&reveal.url) el.hidden=true; else if(hasPup(o)) cheer3(el,tiny?['bloppit','pup',fid]:['bloppit','pup'],tiny?['cheer','happy_hop',tc]:['cheer','happy_hop']); else cheer3(el,tiny?['bloppit',fid]:'bloppit',tiny?['cheer',tc]:'cheer'); }
   $('#winTitle').textContent=`${TRAILS[tr].icon} Level ${i+1} complete!`;
-  // The card counts the ★ down: 10 for the build, one off for each brick that had help or a wrong try (one each, however many)
-  const T=[...(run.trouble||new Map()).values()], helpB=T.filter(e=>e.has('h')||e.has('a')).length, missB=T.length-helpB;
-  const cap=W?W.cap:runCap(), rows=[[`Built ${/^Pippa/.test(L.name)?"":"the "}${L.name} · ${tierOf(model?model.bricks.length:0)}`,`${cap} ★`,true]];
-  if(helpB) rows.push([`Help used (${p.hint+p.auto})`,`−${helpB} ★`,false]);
-  if(missB) rows.push([`Tricky brick${missB===1?'':'s'}: ${missB} (${run.miss} wrong tr${run.miss===1?'y':'ies'})`,`−${missB} ★`,false]);
-  if(!helpB&&!missB) rows.push(['Perfect: every brick right first time','✨',true]);
-  $('#winRows').innerHTML=rows.map(([a,v,ok])=>`<div class="${ok?'':'neg'}"><span>${a}</span><span>${v}</span></div>`).join('')
+  $('#winRows').innerHTML=starRows(`Built ${/^Pippa/.test(L.name)?"":"the "}${L.name}`,W,{help:p.hint+p.auto,miss:run.miss})
     +`<div class="tot"><span>Galaxy Blocks</span><span>+${W?W.gained:0} ${gbIc()}</span></div>`;
   { const o=worldStore(), ts=trailStars(tr,o); $('#winBest').textContent=`${TRAILS[tr].name}: ${ts} ★ so far`; }
   const last=i>=LV.length-1, wait=!last&&tr==='sea'&&!seaWashed(i+1);
@@ -8214,7 +8220,8 @@ async function trialEnd(){
       const W=weeklyStore(), first=!W.weeks[info.week], clean=r.miss===0&&r.hint===0;
       const prev=W.weeks[info.week], best=prev?Math.min(prev.best,t):t;
       W.weeks[info.week]={...(prev||{}),best,first:prev?prev.first:t,at:Date.now(),clean:!!((prev&&prev.clean)||clean)}; if(first) W.total=weeklyTotal()+1; weeklyStoreSet(W);
-      const cleanRow=clean?'<div class="tot"><span>Clean build</span><span>✓</span></div>':`<div><span>Not clean yet</span><span>${r.miss?`${r.miss} miss${r.miss===1?'':'es'}`:''}${r.miss&&r.hint?', ':''}${r.hint?`${r.hint} hint${r.hint===1?'':'s'}`:''}</span></div>`;
+      let cleanRow=clean?'<div class="tot"><span>Clean build</span><span>✓</span></div>':`<div><span>Not clean yet</span><span>${r.miss?`${r.miss} miss${r.miss===1?'':'es'}`:''}${r.miss&&r.hint?', ':''}${r.hint?`${r.hint} hint${r.hint===1?'':'s'}`:''}</span></div>`;
+      { const rows=starRows(model?niceName(model.name||'Weekly'):'Weekly',worldLast,{miss:r.miss,help:r.hint}); cleanRow=cleanRow+rows; }
       const streakNote=()=>{ const k=weeklyStreak(); return k>1?` Streak: ${k} weeks 🔥.`:''; };
       if(!first){ trialDialog({icon:'📅',card:true,next:true,isle:'brickworks',title:clean?'Clean build!':'Nice practice!',rows:cleanRow,note:(clean&&!prev.clean?'That one counts as clean now. ':'')+'Come back on Monday for a new puzzle!'+streakNote()}); return; }
       trialDialog({icon:'📅',title:'Bibi’s Weekly Bloppit done!',rows:cleanRow,note:'Checking how everyone else did…'});
@@ -8736,7 +8743,7 @@ function worldFinish(kind){
   let place=0; if(mp&&mp.state&&mp.state.mode==='blitz'&&!mp.cpu){ const sc=mpScores(mp.state), me=sc.find(p=>p.i===mp.me); if(me&&sc.filter(p=>!p.left).length>1) place=1+sc.filter(p=>!p.left&&p.ms<me.ms).length; }   // a live race between friends
   const key=modelKey(), prev=o.builds[key], first=!prev;
   const noHint=hint+auto===0, clean=noHint&&miss===0;
-  const cap=starCap(N), lost=runLost(kind), stars=Math.max(1,cap-lost), was=rateOf(prev);
+  const cap=starCap(N), lost=runLost(kind), stars=Math.max(STAR_FLOOR,cap-lost), was=rateOf(prev);
   let bonus=0;
   if(kind==='weekly'&&first){ bonus=STAR_BONUS.weekly; const d=DECOR.filter(x=>!o.decor.includes(x.id)&&decorOpen(x,o)).sort((a,b)=>a.cost-b.cost)[0]; if(d){ o.decor.push(d.id); o.free=[...(o.free||[]),d.id]; r_decor=d; } }
   const memory=!!run.memory&&!mp&&!blitz&&clean&&!(prev&&prev.m); if(memory) bonus+=STAR_BONUS.memory;
@@ -8776,7 +8783,7 @@ function worldThumb(key){ const t=worldThumbs()[key]; if(t) return t.u; const m=
 const wsStars=(n,cap)=>cap?`<span class="ws-stars" aria-label="${n} of ${cap} stars">${'★'.repeat(n)}<i>${'★'.repeat(Math.max(0,cap-n))}</i></span>`:`<span class="ws-stars">${n} ★</span>`;
 function worldStripHTML(r){
   if(!r) return '';
-  const o=worldStore(), what=r.kind==='blitz'?(r.place>1?`${ordinal(r.place)} place`:'Race won'):r.clean?'Clean build!':r.noHint?'No hints!':'Finished!';
+  const o=worldStore(), what=r.kind==='blitz'?(r.place>1?`${ordinal(r.place)} place`:'Race won'):r.clean?'Clean build!':'Finished!';   // ("No hints!" read like a bonus; the card's rows say what the ★ were for)
   const parts=[wsStars(r.stars,r.cap),`<span>${what}</span>`];
   if(r.gained) parts.push(`<span class="ws-gb">+${r.gained} ★ = +${r.gained} ${gbIc()}</span>`); else if(!r.first) parts.push('<span>Built before · best kept</span>');
   if(r.lvUp) parts.push(`<span class="ws-up">⬆ Otter Level ${r.after.lv}!</span>`);
@@ -12403,7 +12410,7 @@ async function relayDone(){
 function relayCredit(c){
   if(!c||c.kind!=='relay'||!c.done||!c.first.me) return;
   const o=worldStore(), key='r:'+c.code; if(o.builds[key]) return;
-  const clean=c.first.miss===0&&c.first.hint===0, lost=(c.first.hint||0)+(c.first.miss?1:0), cap=starCap(c.nBricks), stars=Math.max(1,cap-lost);   // no brick-by-brick record from the other device: each hint, and the misses together, cost one
+  const clean=c.first.miss===0&&c.first.hint===0, lost=(c.first.hint||0)+(c.first.miss?1:0), cap=starCap(c.nBricks), stars=Math.max(STAR_FLOOR,cap-lost);   // no brick-by-brick record from the other device: each hint, and the misses together, cost one
   const before={pup:pupStage(o),island:islandStage(o)};
   o.builds[key]={n:c.nBricks,l:lost,r:stars,s:oldScale(stars,cap),k:'relay',t:Date.now(),c:1}; o.log.push(key); worldSet(o);
   const after={pup:pupStage(o),island:islandStage(o)};
