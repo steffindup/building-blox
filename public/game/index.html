@@ -1953,6 +1953,7 @@ body.film-on{overflow:hidden}
 .qb-ic .di{width:1.5em;height:1.5em}
 /* phones: the wordmark's bricks go with the word */
 @media (max-width:560px){.brand .wob{display:none}}
+body:not(.on-home) .brand .wob{display:none}   /* "World of Bricks" only on the game's home page (and the website): deeper pages need the room for the tabs (Steff, 9 Nov 2026) */
 /* the wide Build anything tile: the island sits under the name, the description under that */
 .hm-tile.wide{grid-template-rows:auto auto auto}.hm-tile.wide .ic{grid-row:1 / span 3}
 .hm-tile.wide b{align-self:end}.hm-tile.wide .isl{grid-column:2}.hm-tile.wide span:not(.ic){grid-column:2}
