@@ -4115,19 +4115,31 @@ function playFit(){
   if(t){ playCam.aspect=w/(h+t); playCam.setViewOffset(w,h+t,0,0,w,h); } else { playCam.aspect=w/h; playCam.clearViewOffset(); }
   playCam.updateProjectionMatrix(); return t?(h-t)/(h+t):1;
 }
-function frameBuild(animate){
+// Where the camera looks: the current step and a little around it (Steff, 9 Nov 2026: on a tall build it used to frame the
+// whole thing, so the layer being built sat small at the edge). Zoom to build (F) switches to the whole build and back.
+let frameWhole=false;
+function stepBox(){
+  if(!model||cur>=model.steps.length||!placedBoxes.length) return null;
+  const box=new THREE.Box3(), P=playGroup.position, v=new THREE.Vector3(), o=curOff()||{x:0,z:0};
+  for(const b of model.steps[cur].bricks){ box.expandByPoint(v.set(b.x+o.x+P.x,b.y*1.2-1.2,b.z+o.z+P.z)); box.expandByPoint(v.set(b.x+o.x+b.sx+P.x,b.y*1.2+1.4,b.z+o.z+b.sz+P.z)); }
+  box.expandByVector(new THREE.Vector3(1.5,1.2,1.5));   // the bricks just around it, and the layer underneath
+  return box.intersect(buildBox().expandByScalar(1.5));
+}
+window.bloppitCam=()=>({whole:frameWhole,step:!!stepBox(),y:+playControls.target.y.toFixed(2),dist:+playCam.position.distanceTo(playControls.target).toFixed(2)});   // for tests
+function frameBuild(animate,whole){
   if(!model) return;
-  const box=buildBox(), center=box.getCenter(new THREE.Vector3()), size=box.getSize(new THREE.Vector3());
-  const r=Math.max(size.length()/2,4), clear=playFit();
+  if(whole!==undefined) frameWhole=whole;
+  const all=buildBox(), sb=frameWhole?null:stepBox(), box=sb&&!sb.isEmpty()?sb:all, center=box.getCenter(new THREE.Vector3()), size=box.getSize(new THREE.Vector3());
+  const r=Math.max(size.length()/2,box===all?4:3.5), clear=playFit();
   const vh0=THREE.MathUtils.degToRad(playCam.fov/2), vh=Math.atan(Math.tan(vh0)*clear), hh=Math.atan(Math.tan(vh0)*playCam.aspect);
-  const dist=r/Math.sin(Math.min(vh,hh))*1.08;
+  const fitD=rr=>rr/Math.sin(Math.min(vh,hh))*1.08, wd=Math.max(size.x,size.z), dist=box===all?fitD(r):Math.max(6,(Math.max(size.y/2/Math.tan(vh),wd/2/Math.tan(hh))+wd/2)*1.25), distAll=fitD(Math.max(all.getSize(new THREE.Vector3()).length()/2,4));
   // Keep the angle you're looking from; only move in or out and re-centre
   let dir=playCam.position.clone().sub(playControls.target);
   if(dir.lengthSq()<1e-6) dir.set(-.62,.5,1); if(model&&model.mirror&&placedN===0) dir.set(0,.55,1);
   dir.normalize(); if(dir.y<.25){ dir.y=.25; dir.normalize(); }
   const p2=center.clone().addScaledVector(dir,dist);
   playCam.near=Math.max(.05,dist/100); playCam.far=dist*40; playCam.updateProjectionMatrix();
-  playControls.minDistance=dist*.4; playControls.maxDistance=dist*2.5;   // zoom stays around the build
+  playControls.minDistance=dist*.4; playControls.maxDistance=Math.max(dist*2.5,distAll*1.4);   // zoom stays around the build, and can always pull back to all of it
   if(animate&&!reduceMotion) camAnim={t0:performance.now(),t1:playControls.target.clone(),t2:center,p1:playCam.position.clone(),p2};
   else { camAnim=null; playControls.target.copy(center); playCam.position.copy(p2); playControls.update(); }
 }
@@ -4188,7 +4200,7 @@ function resetBuild(){
   if(model&&model.mirror){ off={x:0,z:0}; $('#trayNote').textContent=model.paint?'The finale, in your colours: Pippa builds her side first, then you mirror it on your side, flipped like a reflection. Pick up a brick and choose any colour under it: your side is yours to paint.':'Pippa builds her side first. Then build the same on your side of the glassy mirror line, flipped like a reflection: a brick on her far left goes on your far right. The glowing bricks in the booklet are the ones to copy.'; }   // a mirror build sits where Pippa starts it
   if(model) makePieces();
   setStatus(model?(TILES?'Open the parts box and pick up the tiles for row 1. Row 1 is the top of the picture, at the far edge.':'Open the parts box and pick up a brick to start.'):'');
-  updateBuildUI(); frameBuild(false);
+  updateBuildUI(); frameBuild(false,false);
 }
 function setStatus(t,kind){const el=$('#status'); el.textContent=t||''; el.dataset.kind=kind||'';}
 const curOff=()=>off||(cands.length?cands[0]:null);
@@ -4951,7 +4963,7 @@ function placeBrick(t,ax,az){
   setStatus(`Step ${cur+1} done!`,'ok'); updateBuildUI();
   setTimeout(()=>{ busy=false; if(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))) cur++; follow=true; if(game||mp) hintOn=false;
     setStatus(cur>=model.steps.length?'Every step complete. Great build!':`On to step ${cur+1}.${model.steps[cur].hang?' These clip on underneath the bricks above.':''}${held?'':' Open the parts box for the next brick.'}`, cur>=model.steps.length?'ok':'');
-    updateBuildUI(); frameBuild(true); pippaTurn();
+    updateBuildUI(); frameBuild(true,false); pippaTurn();   // each new step: back to looking at it
     if(relay&&relay.role==='first'&&cur>=relay.half&&cur<model.steps.length){ relayHalfDone(); return; }
     if(pass&&cur>=pass.to&&cur<model.steps.length){ passPagesDone(); return; }
     if(pass&&cur>=model.steps.length) passPagesDone();   // the last pages: the model is finished, for the whole crew
@@ -5096,7 +5108,7 @@ window.bloppitSpot=()=>{ if(busy||!model||cur>=model.steps.length) return null; 
 window.bloppitTryBrick=(c,k=0)=>{ if(busy||!model||cur>=model.steps.length) return null; const s=model.steps[cur], u=usedSet(), o=curOff()||{x:0,z:0}, t=s.bricks.filter(b=>!u.has(b))[k]; if(!t) return null;
   sel={sx:t.sx,sz:t.sz,c,sp:t.sp,h:t.h,print:t.print}; lastAnchor={ax:t.x+o.x,az:t.z+o.z,px:t.x+o.x+t.sx/2,pz:t.z+o.z+t.sz/2}; const n0=placedN; tryPlace(); const ok=placedN>n0; lastAnchor=null; ghostGroup.visible=false;
   if(held) setGhost(); else { sel=null; ghostGroup.clear(); } return {ok,status:$('#status').textContent}; };
-$('#fitBtn').onclick=()=>frameBuild(true);
+$('#fitBtn').onclick=()=>frameBuild(true,!frameWhole&&!!stepBox());   // the whole build, then back to the step
 $('#openBox').onclick=openBox;
 $('#putBack').onclick=putBack;
 $('#putAll').onclick=putAllBack;
@@ -5124,7 +5136,7 @@ document.addEventListener('keydown',e=>{ if(/INPUT|SELECT|TEXTAREA/.test(e.targe
   if(e.key==='Enter'&&sel&&!/BUTTON|A/.test(e.target.tagName)){ tryPlace(); e.preventDefault(); }
   if(e.key==='p'||e.key==='P'){openBox(); e.preventDefault();}
   if(e.key==='b'||e.key==='B'){toggleBook(); e.preventDefault();}
-  if(e.key==='f'||e.key==='F'){frameBuild(true); e.preventDefault();}
+  if(e.key==='f'||e.key==='F'){$('#fitBtn').click(); e.preventDefault();}
   if(e.key==='m'||e.key==='M'){toggleSound(); e.preventDefault();}
   if(e.key==='Escape') putBack(); });
 
