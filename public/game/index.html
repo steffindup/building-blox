@@ -2222,10 +2222,11 @@ body:not(.on-home) .brand .wob{display:none}   /* "World of Bricks" only on the 
         <span class="note" id="pickNote">Tap bricks to pick them up, as many as this page needs.</span>
         <button class="ghost" id="pickClear" type="button" title="Put them all back (Esc)" hidden>Clear <kbd>Esc</kbd></button>
         <button class="primary sm" id="takeBtn" type="button" title="Take the picked bricks to the build (Enter)" hidden>Take 0 to build</button>
+        <button class="ghost" id="boxPutAll" type="button" title="Put every brick in your hand back in the box" hidden>Put all back</button>
         <button class="ghost" id="boxBack" type="button">Back to build</button>
       </div>
       <div class="board-wrap" id="boardWrap"><div class="board" id="board"></div><div class="piece-tip" id="pieceTip" role="status" aria-live="polite" hidden></div></div>
-      <p class="note">Drag bricks into segments to sort them. Drag a segment by its name bar to move it with its bricks, and by the corner to resize. Tap bricks to pick them up: each tap adds one, up to as many as the booklet’s current page needs (tap a picked one to put it back). You can also drag a box around them with the mouse, or use All on a segment. Press Enter, or tap Take, to take them to the build.</p>
+      <p class="note">Drag bricks into segments to sort them. Drag a segment by its name bar to move it with its bricks, and by the corner to resize. Tap bricks to pick them up: each tap adds one, up to as many as the booklet’s current page needs (tap a picked one to put it back). Bricks already in your hand have a ring: tap one to put it back in the box, or Put all back. You can also drag a box around them with the mouse, or use All on a segment. Press Enter, or tap Take, to take them to the build.</p>
     </div>
   </div>
 </section>
@@ -5231,7 +5232,7 @@ function updatePick(){
   const n=chosen.size;
   $('#takeBtn').hidden=!n; $('#takeBtn').innerHTML=`Take ${n} to build <kbd>Enter</kbd>`;
   $('#pickClear').hidden=!n;
-  $('#boxBack').hidden=!!n;
+  $('#boxBack').hidden=!!n; $('#boxPutAll').hidden=!!n||!hand.length; $('#boxPutAll').textContent=hand.length>1?`Put all ${hand.length} back`:'Put it back';
   const cap=pickCap(), lim=cap===Infinity?'':` of ${cap}`;
   const why=pickCapWhy().why, full=why==='page'?' That’s all this page needs.':why==='last'?' That’s your last one: then your share of the race is done!':' That’s all you can place this turn.';
   $('#pickNote').textContent=n?`${n}${lim} picked: ${pickedSummary()}.${n<cap?' Tap more, or tap a picked one to put it back.':full+' Tap a picked one to put it back.'}`
@@ -5381,6 +5382,8 @@ board.addEventListener('click',e=>{
     let full=false; for(const p of list){ if(every) chosen.delete(p); else if(!pickAdd(p)){ full=true; break; } } updatePick(); if(full) pickFull(); return; }
   const pe=e.target.closest('.piece'); if(!pe||performance.now()<noClickUntil) return;
   const p=pieceById(+pe.dataset.p); if(!p) return;
+  // A brick already in your hand (ringed): a tap puts just that one back in the box (Steff, 9 Nov 2026)
+  if(p.hand&&!chosen.has(p)){ dropFromHand(p); sfx.rattle(1); renderBox(); showBox(); tipHide(); $('#pickNote').textContent=`${pieceName(p)} back in the box.`; return; }
   if(chosen.has(p)) chosen.delete(p); else if(!pickAdd(p)){ updatePick(); pickFull(); return; } else sfx.rattle(1);
   updatePick(); if(chosen.has(p)) tipShow(p); else if(tipHover!==p) tipHide();
 });
@@ -5394,6 +5397,7 @@ $('#tipOut').onclick=()=>{ const t=$('#tipOut');
   t.dataset.confirm='1'; t.textContent='Tap again to clear your segments';
   setTimeout(()=>{delete t.dataset.confirm; t.textContent='Tip everything out';},3000); };
 $('#boxBack').onclick=()=>setTab('build');
+$('#boxPutAll').onclick=()=>{ const n=hand.length; putAllBack(); renderBox(); showBox(); $('#pickNote').textContent=n>1?`All ${n} back in the box.`:'Back in the box.'; };
 $('#pickClear').onclick=()=>{ chosen.clear(); updatePick(); };
 $('#takeBtn').onclick=takeChosen;
 
