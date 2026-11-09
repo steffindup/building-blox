@@ -85,7 +85,7 @@ Find sections by their heading comments (`/* ---------- Name ---------- */`); li
   `trialEnd`.
 - **Weekly Bloppit**: `weekOf()`, `WEEKLY_PLAN`, `weeklyPuzzle(week)`, `weeklyLoad`, `renderDaily`, `weeklySync`
   (app fetch), `weeklyPreview` (`?weekly=next`), special pieces (`addSpecial`, `SPECIAL_NAME`, `dialHands`).
-- **Save progress**, **Your world** (XP, ★ stars = build rating out of 10, **Galaxy Blocks** = spendable currency), **Bloppitopia**
+- **Save progress**, **Your world** (★ stars = the one growing number, **Galaxy Blocks** = the ★ you spend), **Bloppitopia**
   2D and 3D, **characters** (drawn "living" characters; 3D GLBs for some), **lufu's world** (Chapter 2), **The end**,
   **My Bloppit** (otter level and outfit), **Share links / Weekly card / Family Link**, **Draw your own**, **Family
   key**, **Weekly top-100 board**, **Pass the Puzzle / Crews / Relay**, **Play Next**, **First session**, **Menu**.
@@ -172,16 +172,21 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
 - Story: Bloppitopia is Chapter 1 and ends with the pup and lufu finding each other (films 12–22, all eight sail to
   lufu's world). Chapter 2 is "Bloppit builds lufu's world"; lufu stays mythical, never more than Bloppit.
 
-## Stars (redone 9 Nov 2026, Steff)
+## Stars and Galaxy Blocks (redone 9 Nov 2026, Steff): the only two reward numbers
 
-- Every build starts with **10 ★** and loses one for each brick that needed a hint, a "Place one for me" or another
-  try. However many tries one brick takes, it costs one ★ (`run.trouble`, keyed by how many bricks were placed;
-  `troubleAdd`, `runRating`). Never below 1. Blitz wins are rated the same way.
-- **Galaxy Blocks: one per 3 ★, rounded up** (`gbOf`: 10 ★ = 4, 7–9 = 3, 4–6 = 2, 1–3 = 1), plus the usual extras.
-- Records keep `r` (out of 10) and the old `s` (out of 3, for app 1.1). Builds from before only have `s`: read as
-  3→10, 2→8, 1→6 (`rateOf`). Merges (game and `pup/logic.mjs`) keep the best `r`. The Weekly board takes `scale:10`
-  and answers with `rating` (out of 10) and `stars` (out of 3, for app 1.1).
-- Stars don't drive XP, otter level, island growth or the Weekly board's "clean" (still no misses, no hints).
+- **Stars are the one thing that grows; XP is gone from the screens.** A build starts with ★ by size: Easy (≤30 bricks)
+  5, Medium (31–100) 8, Hard (100+) 10 (`starCap`, `tierOf`). Each brick that needed a hint, a "Place one for me" or
+  another try costs one ★, never more than one per brick, never below 1 (`run.trouble`, `troubleAdd`, `runLost`).
+- **Bonus ★** (`STAR_BONUS`): Weekly +3, From Memory +2, Blitz win +1, Pippa's bottle +1 a day, finished island +10,
+  whole world +20. All ★ earned = `worldStarsEarned`. A fixed-content perfect run is about 820 ★; it keeps growing after.
+- **Otter Level from ★**: Level n at 6·n·(n−1) (L2 12, L5 120, L8 336, L11 660). No otter goes down: builds from before
+  `STAR_SWITCH` keep the level their old XP gave (`oldLevel`). Outfits and Pup/Splash/Legend follow the level.
+- **Galaxy Blocks = every ★ earned, minus the shop.** Shop prices went ×2.5 (flag 8 … top piece 125). Decorations
+  bought before cost the old price (`o.paid` records the price from now on; `OLD_COST` for older ones).
+- Records keep `l` (fewest ★ lost; the rating is worked out from `l` and the size, `rateOf`), plus `r` and `s` (out of
+  3, for app 1.1). Older records: `r` out of 10 → lost 10−r; only `s` → lost 0/2/4; old Blitz wins lost 0. Merges
+  (game `worldMerge` and `pup/logic.mjs`) keep the lowest `l` and the lowest price paid.
+- The Weekly board takes `scale:10` and answers `rating` and `stars` (out of 3, for app 1.1). "Clean" is unchanged.
 
 ## Gotchas
 

@@ -384,7 +384,7 @@ test('a Trail level finish shows the stars strip and counts a build', { skip: sk
   await t.page.evaluate(() => [...document.querySelectorAll('button')].find((x) => /^(Play|Start|Build)/.test(x.textContent.trim()) && x.offsetParent)?.click()); await t.page.waitForTimeout(800);
   for (let i = 0; i < 40; i++) { await autoPlace(t.page, 1); if (await t.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; }
   await t.page.waitForFunction(() => document.getElementById('winDlg').open, null, { timeout: 15000 });   // after the "Ta-da!" picture has had its moment
-  assert.match(await t.text('#winDlg [data-ws]'), /\+10 XP/);
+  assert.match(await t.text('#winDlg [data-ws]'), /\+\d+ ★ = \+\d+/);
   assert.ok(await t.page.evaluate(() => { const e = document.getElementById('winChars'); return e.hidden || (e.__cv3?.insts || []).some((i) => i.id === 'tiny'); }), 'Tiny joins a Frog Trail finish (unless the real picture is shown)');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
@@ -871,7 +871,7 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
 });
 
 test('island: tap anything for its card; drag a model anywhere on the grass; put away and back; the weekly board shows by default and a grown-up can switch it off', { skip: skip() }, async () => {
-  const t = await open('?nosplash=1#island', { init: { fn: () => { const builds = {}, log = []; for (let i = 0; i < 3; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 2, t: 1e12 + i, c: 1, d: 95000 }; log.push(k); }
+  const t = await open('?nosplash=1#island', { init: { fn: () => { const builds = {}, log = []; for (let i = 0; i < 3; i++) { const k = `m:Model${i}:${10 + i}`; builds[k] = { n: 10 + i, s: 3, t: 1e12 + i, c: 1, d: 95000 }; log.push(k); }
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: ['flag'], pupName: 3, pupAsked: true, isle: 1, arrived: 1 })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); } } });
   const models = () => t.page.evaluate(() => window.bloppitIsland3().shown.list.map((m) => m.key));
   assert.equal((await models()).length, 3);
@@ -1489,7 +1489,7 @@ test('Solo: Pippa’s Puzzles on the menu are her own mirror set, all open in an
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('Pippa’s tab: her puzzles and a message in a bottle once a day (+5 XP); the Weekly is Bibi’s, under Quick Bricks', { skip: skip() }, async () => {
+test('Pippa’s tab: her puzzles and a message in a bottle once a day (a bonus ★); the Weekly is Bibi’s, under Quick Bricks', { skip: skip() }, async () => {
   const seed = { fn: () => { localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 }));
     if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [], free: [] })); } };
   const t = await open('?nosplash=1#island', { init: seed });
@@ -1499,11 +1499,11 @@ test('Pippa’s tab: her puzzles and a message in a bottle once a day (+5 XP); t
   assert.equal(await t.view(), 'view-game'); assert.equal(await t.page.evaluate(() => document.getElementById('view-game').dataset.sub), 'sea');
   assert.equal(await t.page.evaluate(() => document.querySelector('.tab[aria-selected="true"]').id), 'tab-sea');
   assert.equal(await t.page.evaluate(() => getComputedStyle(document.getElementById('bottleCard')).display !== 'none'), true);
-  const xp0 = b.xp; await t.page.evaluate(() => document.getElementById('btOpen').click()); await t.page.waitForTimeout(300);
-  b = await t.page.evaluate(() => window.bloppitBottle()); assert.equal(b.xp, xp0 + 5); assert.deepEqual(b.days, [b.day]); assert.equal(b.dot, false);
+  const st0 = b.stars; await t.page.evaluate(() => document.getElementById('btOpen').click()); await t.page.waitForTimeout(300);
+  b = await t.page.evaluate(() => window.bloppitBottle()); assert.equal(b.stars, st0 + 1); assert.deepEqual(b.days, [b.day]); assert.equal(b.dot, false);
   assert.match(await t.text('#btMsg'), /\w/); assert.equal(await t.page.evaluate(() => document.getElementById('btOpen').hidden), true);
   // only one a day
-  await t.page.evaluate(() => document.getElementById('btOpen').click()); b = await t.page.evaluate(() => window.bloppitBottle()); assert.equal(b.xp, xp0 + 5);
+  await t.page.evaluate(() => document.getElementById('btOpen').click()); b = await t.page.evaluate(() => window.bloppitBottle()); assert.equal(b.stars, st0 + 1);
   // the bottle is only on Pippa's page, not the Frog Trail
   await t.page.evaluate(() => document.getElementById('tab-game').click()); await t.page.waitForTimeout(500);
   assert.equal(await t.page.evaluate(() => getComputedStyle(document.getElementById('bottleCard')).display), 'none');
@@ -1562,14 +1562,14 @@ test('the Galaxy shop: sections from little touches to showpieces; an island\'s 
 });
 
 test('stars, Galaxy Blocks and the Otter Level: one job each; the otter grows by level and never shrinks', { skip: skip() }, async () => {
-  // 13 big builds since the change: about 1,400 XP (Level 8) → a Legend, by level not builds
+  // 13 big builds since the ★ change (Hard, 10 ★ each, two lost): 104 ★ → Otter Level 4 (72 ★), a Splash
   const big = { fn: () => { const builds = {}, log = []; for (let i = 0; i < 13; i++) { builds['p:big' + i] = { n: 200, s: 2, k: 'quick', t: Date.now() }; log.push('p:big' + i); }
     localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 }));
     if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds, log, decor: ['flag'], free: [], pick: 'treehouse' })); } };
   let t = await open('?nosplash=1', { init: big });
   let w = await t.page.evaluate(() => window.bloppitWorld());
-  assert.ok(w.level >= 8); assert.equal(w.stage, 'Legend');
-  assert.equal(w.stars, 13 * 8, '★ are never spent (each old 2 of 3 reads as 8 of 10)'); assert.equal(w.galaxy, 13 * 3 - 3, 'one Galaxy Block per 3 ★ (8 ★ = 3); the flag cost 3');
+  assert.equal(w.level, 4); assert.equal(w.stage, 'Splash');
+  assert.equal(w.stars, 13 * 8, '★ are never spent'); assert.equal(w.galaxy, 13 * 8 - 3, 'every ★ is a Galaxy Block; the flag, bought before prices went up, cost its old 3');
   await t.ctx.close();
   // 30 small builds from before the change: a Splash by builds keeps it, even at a low level
   const old = { fn: () => { const builds = {}, log = []; for (let i = 0; i < 30; i++) { builds['p:old' + i] = { n: 10, s: 1, k: 'quick', t: 1.7e12 }; log.push('p:old' + i); }
@@ -1577,15 +1577,15 @@ test('stars, Galaxy Blocks and the Otter Level: one job each; the otter grows by
     if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds, log, decor: [], free: [], pick: 'treehouse' })); } };
   t = await open('?nosplash=1', { init: old });
   w = await t.page.evaluate(() => window.bloppitWorld()); assert.equal(w.stage, 'Splash');
-  // a Frog Trail level with a hint: 9 of 10 ★ (one brick had help), 3 Galaxy Blocks for it, no points anywhere
+  // a Frog Trail level with a hint: the Heart is Easy (5 ★), one brick had help: 4 ★ and 4 Galaxy Blocks, no points anywhere
   await t.page.evaluate(() => window.bloppitLevel('otter', 0)); await t.page.waitForTimeout(1200);
   assert.equal(await t.text('#hintBtn'), 'Hint'); assert.equal(await t.text('#autoBtn'), 'Place one for me');
   await t.page.evaluate(() => document.getElementById('hintBtn').click()); await t.page.waitForTimeout(200);
-  assert.equal(await t.text('#gbPts'), '9/10★');
+  assert.equal(await t.text('#gbPts'), '4/5★');
   for (let k = 0; k < 120; k++) { const d = await t.page.evaluate(() => { const m = /(\d+) of (\d+)/.exec(document.getElementById('progress').textContent); if (m && m[1] === m[2]) return true; window.bloppitPlaceRight(); return false; }); if (d) break; await t.page.waitForTimeout(150); }
   await t.page.waitForFunction(() => document.getElementById('winDlg').open, null, { timeout: 20000 });
-  const rows = await t.text('#winRows'); assert.match(rows, /Built the Heart/); assert.match(rows, /Help used \(1\)/); assert.match(rows, /Galaxy Blocks ?\+3/); assert.doesNotMatch(rows, /point/i);
-  assert.match(await t.text('#winBest'), /Frog Trail: 9 of 150 ★/);
+  const rows = await t.text('#winRows'); assert.match(rows, /Built the Heart/); assert.match(rows, /Help used \(1\)/); assert.match(rows, /Galaxy Blocks ?\+4/); assert.doesNotMatch(rows, /point/i);
+  assert.match(await t.text('#winBest'), /Frog Trail: 4 ★ so far/);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 

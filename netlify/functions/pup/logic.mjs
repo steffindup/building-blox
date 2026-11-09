@@ -65,8 +65,9 @@ export function merge(server, incoming) {
     if (total) d.total = total;
     if (Object.keys(d).length) out[key] = d;
   }
-  // A build's ★ out of 10 (r); builds rated before 9 Nov 2026 have only s, out of 3 (3→10, 2→8, 1→6)
-  const rate = (b) => num(b.r) ?? ({ 3: 10, 2: 8, 1: 6 }[num(b.s)] || 0);
+  // A build's ★: l = the fewest lost (its best try; the game works the rating out from l and the size). Older records:
+  // r out of 10 (lost 10 − r), or only s out of 3 (lost 0/2/4); old Blitz wins lost none. Same as lostOf in the game.
+  const lost = (b) => num(b.l) ?? (num(b.r) != null ? Math.max(0, 10 - b.r) : b.k === 'blitz' ? 0 : ({ 3: 0, 2: 2, 1: 4 }[num(b.s)] ?? 0));
   // The world (Bloppitopia Lite): builds are joined keeping the best stars and the earliest finish; XP and bonus
   // stars take the higher count; decorations bought are joined; the pup's name (an index) is the latest set.
   if (a.world || b.world) {
@@ -75,7 +76,7 @@ export function merge(server, incoming) {
     for (const k of Object.keys(obj(wb.builds))) {
       const x = builds[k], y = wb.builds[k];
       if (!y || typeof y !== 'object') continue;
-      builds[k] = x ? { ...x, ...y, s: Math.max(num(x.s) ?? 0, num(y.s) ?? 0), ...((num(x.r) != null || num(y.r) != null) ? { r: Math.max(rate(x), rate(y)) } : {}), t: Math.min(num(x.t) ?? Infinity, num(y.t) ?? Infinity), c: Math.max(num(x.c) ?? 1, num(y.c) ?? 1), ...((x.m || y.m) ? { m: 1 } : {}), ...((num(x.d) || num(y.d)) ? { d: Math.min(num(x.d) ?? Infinity, num(y.d) ?? Infinity) } : {}), ...((Number.isInteger(x.lv) || Number.isInteger(y.lv)) ? { lv: Math.min(2, Math.max(Number.isInteger(x.lv) ? x.lv : -1, Number.isInteger(y.lv) ? y.lv : -1)) } : {}) } : y;
+      builds[k] = x ? { ...x, ...y, s: Math.max(num(x.s) ?? 0, num(y.s) ?? 0), ...((num(x.l) != null || num(y.l) != null || num(x.r) != null || num(y.r) != null) ? { l: Math.min(lost(x), lost(y)), r: Math.max(num(x.r) ?? 0, num(y.r) ?? 0) } : {}), t: Math.min(num(x.t) ?? Infinity, num(y.t) ?? Infinity), c: Math.max(num(x.c) ?? 1, num(y.c) ?? 1), ...((x.m || y.m) ? { m: 1 } : {}), ...((num(x.d) || num(y.d)) ? { d: Math.min(num(x.d) ?? Infinity, num(y.d) ?? Infinity) } : {}), ...((Number.isInteger(x.lv) || Number.isInteger(y.lv)) ? { lv: Math.min(2, Math.max(Number.isInteger(x.lv) ? x.lv : -1, Number.isInteger(y.lv) ? y.lv : -1)) } : {}) } : y;
     }
     const seen = new Set(), log = [];
     for (const k of [...(wa.log || []), ...(wb.log || [])]) if (builds[k] && !seen.has(k)) { seen.add(k); log.push(k); }
@@ -102,6 +103,8 @@ export function merge(server, incoming) {
       // the island films already watched (each plays once): kept from both devices
       films: [...new Set([...(Array.isArray(wa.films) ? wa.films : []), ...(Array.isArray(wb.films) ? wb.films : [])].filter((d) => typeof d === 'string' && d.length <= 40))].slice(0, 40),
       free: [...new Set([...(wa.free || []), ...(wb.free || [])].filter((d) => typeof d === 'string' && d.length <= 20))],
+      // the price paid for each decoration (from 9 Nov 2026, when prices went ×2.5); the lower one if two devices differ
+      paid: (() => { const p = {}; for (const src of [wa.paid, wb.paid]) for (const [k, v] of Object.entries(obj(src))) if (typeof k === 'string' && k.length <= 20 && num(v) != null && v >= 0 && v <= 1000) p[k] = k in p ? Math.min(p[k], v) : v; return p; })(),
       // the days Pippa's message in a bottle was opened (one a day, +5 XP each): kept from both devices
       bottles: [...new Set([...(Array.isArray(wa.bottles) ? wa.bottles : []), ...(Array.isArray(wb.bottles) ? wb.bottles : [])].filter((d) => typeof d === 'string' && /^\d{4}-\d\d-\d\d$/.test(d)))].sort().slice(-4000),
       draw: [...new Map([...(Array.isArray(wb.draw) ? wb.draw : []), ...(Array.isArray(wa.draw) ? wa.draw : [])].filter((d) => d && typeof d.id === 'string' && typeof d.c === 'string' && d.c.length <= 2600).map((d) => [d.id, { id: d.id, c: d.c, t: num(d.t) ?? 0 }])).values()].sort((x, y) => y.t - x.t).slice(0, 12),

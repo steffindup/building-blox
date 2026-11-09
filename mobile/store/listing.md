@@ -68,7 +68,7 @@ WEEKLY BLOPPIT
 
 FINISH CLEAN, EARN STARS
 • Every build earns a star for finishing, one for no hints and one for a clean build
-• Your best stars on each model are kept, so you can always come back for all ten
+• Your best stars on each model are kept, so you can always come back for every star
 • Build from memory, with the booklet hidden, for a bonus star
 
 TRAILS

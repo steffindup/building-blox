@@ -1991,7 +1991,7 @@ body.film-on{overflow:hidden}
 <div class="gamebar" id="gameBar" hidden>
   <div class="gb-where" id="gbWhere"></div>
   <div class="gb-lvl"><span class="gb-badge" id="gbBadge">1</span><div><div class="tag">Level <span id="gbNum"></span></div><strong id="gbName"></strong></div></div>
-  <div class="gb-score"><div class="tag">Stars for this build</div><b id="gbPts" class="gb-stars">10<small>/10</small>★</b><span class="gb-of" id="gbOf"></span><span class="gb-flash" id="gbFlash"></span></div>
+  <div class="gb-score"><div class="tag">Stars for this build</div><b id="gbPts" class="gb-stars">5<small>/5</small>★</b><span class="gb-of" id="gbOf"></span><span class="gb-flash" id="gbFlash"></span></div>
   <div class="gb-costs" id="gbCosts"></div>
   <div class="gb-btns"><button class="ghost" id="gbMap" type="button">Level map</button></div>
 </div>
@@ -2243,7 +2243,7 @@ body.film-on{overflow:hidden}
   <button class="crumb" data-up type="button">‹ Trails</button>
   <div class="card bottle" id="bottleCard">
     <svg class="bt-art" viewBox="0 0 64 64" aria-hidden="true"><g transform="rotate(-28 32 32)"><rect x="27" y="4" width="10" height="9" rx="2" fill="#B07A4A"/><path d="M26 13h12v7c6 3 9 8 9 14v20a6 6 0 0 1-6 6H23a6 6 0 0 1-6-6V34c0-6 3-11 9-14z" fill="#9FE0D6" stroke="#2C8C82" stroke-width="2"/><rect x="24" y="30" width="16" height="22" rx="3" fill="#FFF4D8" stroke="#C9A97A"/><path d="M27 36h10M27 41h10M27 46h7" stroke="#C9A97A" stroke-width="1.6"/></g></svg>
-    <div class="bt-txt"><b id="btTitle">A message in a bottle!</b><span id="btSub">Pippa sends one every day. Open it for +5 XP.</span><q class="bt-msg" id="btMsg" hidden></q></div>
+    <div class="bt-txt"><b id="btTitle">A message in a bottle!</b><span id="btSub">Pippa sends one every day. Open it for a bonus ★.</span><q class="bt-msg" id="btMsg" hidden></q></div>
     <button class="primary sm" id="btOpen" type="button">Open it</button>
   </div>
   <div class="gm-head">
@@ -2251,10 +2251,10 @@ body.film-on{overflow:hidden}
     <div class="gm-total"><span class="tag" id="gmWho">Your stars</span><b id="gmTotal">0</b><span class="note" id="gmDone"></span><button class="ghost sm-link" id="gmSwitch" type="button">Switch player</button></div>
   </div>
   <div class="gm-rules">
-    <span>Every build starts with <b>10 ★</b></span>
+    <span>A build starts with <b>5 ★</b> (Easy), <b>8 ★</b> (Medium) or <b>10 ★</b> (Hard)</span>
     <span><b>−1 ★</b> for each brick that needed a hint, a placed-for-you or another try</span>
     <span>A tricky brick only ever costs one ★</span>
-    <span>Every 3 ★ earn a Galaxy Block</span>
+    <span>Your ★ grow your otter, and each one is a Galaxy Block to spend</span>
   </div>
   <div class="gm-math" id="gmMath">
     <b class="gm-mt">🧠 Maths puzzles</b>
@@ -2430,7 +2430,7 @@ body.film-on{overflow:hidden}
   <div class="card is-intro" id="isIntro" hidden>
     <button class="ii-x" id="iiX" type="button" aria-label="Close">✕</button>
     <div class="ii-head"><span class="ii-pup" id="iiPup"></span><div><h2 id="iiTitle">Welcome to Bloppitopia</h2><p id="iiTxt">Your otter lives here with Bloppit.</p></div></div>
-    <p style="margin:0">Every build you finish grows the island, and your models stand on it. Builds earn Galaxy Blocks, and Bibi’s shop sells decorations for them.</p>
+    <p style="margin:0">Every build you finish grows the island, and your models stand on it. Every ★ you earn is also a Galaxy Block, and Bibi’s shop sells decorations for them.</p>
     <ol class="ii-steps" id="iiSteps"></ol>
     <div class="ii-btns"><button class="primary sm" id="iiNext" type="button">Keep building</button><button class="ghost" id="iiWeekly" type="button">Bibi’s Weekly Bloppit</button><button class="ghost" id="iiLook" type="button">Look around</button></div>
   </div>
@@ -6715,24 +6715,37 @@ function levelCount(L){
   const m=buildModel(); photos=keepP; Object.assign(S,keepS);
   return L.count=m&&m.bricks?m.bricks.length:0;
 }
-// ★ ratings (Steff, 9 Nov 2026): a build starts with 10 ★ and loses one for each brick that gave trouble: a wrong try,
-// a hint or a "Place one for me". However many tries one brick takes, it costs one ★ (keyed by the brick being worked
-// on: the count placed so far). Never below 1: finishing always earns a ★. Builds rated on the old 3 ★ scale read as
-// 3→10, 2→8, 1→6. Records keep the old `s` (1–3) too, for app 1.1. Galaxy Blocks: one per 3 ★, rounded up (10 ★ = 4).
-const STAR_MAX=10, OLD_STARS={3:10,2:8,1:6};
-const rateOf=b=>!b?0:Number.isFinite(b.r)?b.r:(OLD_STARS[b.s]||0), oldScale=r=>r>=STAR_MAX?3:r>=7?2:r>0?1:0, gbOf=r=>Math.ceil((r||0)/3);
+/* ★ Stars: the one thing that grows (Steff, 9 Nov 2026). Stars replace XP; Galaxy Blocks are the stars you can spend.
+   A build starts with ★ by its size (Easy up to 30 bricks 5 ★, Medium up to 100 8 ★, Hard 10 ★) and loses one for each
+   brick that gave trouble: a wrong try, a hint or a "Place one for me". However many tries one brick takes, it costs one ★
+   (keyed by the brick being worked on: the count placed so far). Never below 1. A record keeps `l`, the fewest ★ lost
+   (its best try), so the rating always follows the size rule; `r` (the rating) and `s` (out of 3, for app 1.1) ride
+   along. Older records: r out of 10 (9 Nov) → lost 10−r; s out of 3 → lost 0/2/4; old Blitz wins (a flat 1 ★) lost 0.
+   Bonus ★: the Weekly +3, From Memory +2, a Blitz win +1, Pippa's bottle +1 a day, a finished island +10, the world +20.
+   The Otter Level comes from all ★ earned (Level n at 6·n·(n−1)); nobody's otter goes down: builds from before the
+   change keep the level their XP gave them (oldLevel). Galaxy Blocks: every ★ earned is one, less what the shop took. */
+const STAR_SWITCH=Date.UTC(2026,10,9,15), STAR_BONUS={weekly:3,memory:2,blitz:1,bottle:1,isle:10,world:20};
+const starCap=n=>(n||0)<=30?5:n<=100?8:10, tierOf=n=>(n||0)<=30?'Easy':n<=100?'Medium':'Hard';
+const OLD_LOST={3:0,2:2,1:4};
+const lostOf=b=>Number.isFinite(b.l)?b.l:Number.isFinite(b.r)?Math.max(0,10-b.r):b.k==='blitz'?0:(OLD_LOST[b.s]??0);
+const rateOf=b=>!b?0:Math.max(1,starCap(b.n)-lostOf(b)), oldScale=(r,cap)=>r>=cap?3:r>=cap-3?2:r>0?1:0;
+const buildBonus=(k,b)=>(k.startsWith('w:')?STAR_BONUS.weekly:0)+(b.m?STAR_BONUS.memory:0)+(b.k==='blitz'?STAR_BONUS.blitz:0);
 function troubleAdd(t,k=placedN){ if(!run.trouble) run.trouble=new Map(); const e=run.trouble.get(k)||new Set(); e.add(t); run.trouble.set(k,e); if(game&&!mp) updateGameBar(); }
-function runRating(kind){ let n=0; for(const e of (run&&run.trouble||new Map()).values()) if(kind!=='welcome'||e.has('m')) n++; return Math.max(1,STAR_MAX-n); }
+function runLost(kind){ let n=0; for(const e of (run&&run.trouble||new Map()).values()) if(kind!=='welcome'||e.has('m')) n++; return n; }
+const runCap=()=>starCap(model?model.bricks.length:0);
+function runRating(kind){ return Math.max(1,runCap()-runLost(kind)); }
 const levelScore=()=>{ const L=levelsOf(gameTrail())[game.lvl], p=game.pen; return Math.max(Math.round(L.pts*.1), L.pts-p.hint*5-p.auto*10)+(game.math?game.math.pts:0); };
 const starsFor=(sc,L)=>sc>=L.pts*.9?3:sc>=L.pts*.6?2:1;   // the old points rule, only for levels finished before builds kept their ★
 // A level's ★: its best build on the island record (finished · no hints or placed-for-you · no wrong bricks)
-function levelStars(tr,i,o,best){ const L=levelsOf(tr)[i]; o=o||worldStore(); const b=L&&o.builds[`t:${tr}:${i}:${L.name}`]; return rateOf(b)||(best?OLD_STARS[starsFor(best,L)]:0); }
+function levelRec(tr,i,o){ const L=levelsOf(tr)[i]; return L&&(o||worldStore()).builds[`t:${tr}:${i}:${L.name}`]; }
+function levelStars(tr,i,o,best){ const b=levelRec(tr,i,o); return rateOf(b)||(best?Math.max(1,10-OLD_LOST[starsFor(best,levelsOf(tr)[i])]):0); }
+const levelCap=(tr,i,o)=>{ const b=levelRec(tr,i,o); return b?starCap(b.n):10; };
 const trailStars=(tr,o)=>{ o=o||worldStore(); const B=bestOf(gameStore(),tr); return levelsOf(tr).reduce((a,_,i)=>a+(B[i]?levelStars(tr,i,o,B[i]):0),0); };
 // The ★ this attempt is on course for (shown in the level card as you build)
 const runStars=()=>runRating();
 // The game bar has room for a number, not ten stars: "8/10 ★"
-const starNum=n=>`${n}<small>/${STAR_MAX}</small>★`;
-const starHTML=n=>`<span class="st10" aria-label="${n} of ${STAR_MAX} stars">${'★'.repeat(n)}<i>${'★'.repeat(Math.max(0,STAR_MAX-n))}</i></span>`;
+const starNum=(n,cap)=>`${n}<small>/${cap}</small>★`;
+const starHTML=(n,cap)=>`<span class="st10" aria-label="${n} of ${cap} stars">${'★'.repeat(n)}<i>${'★'.repeat(Math.max(0,cap-n))}</i></span>`;
 function charge(kind,n){
   if(mp){ mp.pen[kind]++; mpSendPen(); }
   else { game.pen[kind]++; updateGameBar(); }
@@ -6747,7 +6760,7 @@ function updateGameBar(){
   if(mys){ const m=MYSTERY[mysCh], who={Everyone:'bloppit'}[m.who]||m.who.toLowerCase(), pic=['bloppit','pippa','swoop','tiny','bibi','nora','lufu'].includes(who)?who:'';   // lufu too: by Chapter 9 lufu has been seen, in film 20 (Steff, 5 Nov 2026)
     $('#gbWhere').innerHTML=`${pic?`<img src="/art/head-${pic}.png" alt="">`:''}<div><strong>Moonstone Isle</strong><small>${m.who==='you'?'Just you':m.who==='Everyone'?'With everyone':'With '+m.who}</small></div>`;
     $('#gbBadge').textContent=mysCh+1; $('#gbNum').textContent=`${mysCh+1} of ${MYSTERY.length}`; $('#gbName').textContent=mysteryTitle(m);
-    const st=runRating(); $('#gbPts').innerHTML=starNum(st); $('#gbOf').textContent='';
+    const st=runRating(); $('#gbPts').innerHTML=starNum(st,runCap()); $('#gbOf').textContent='';
     const bits=[]; if(run.hints.size) bits.push(`Hints ${run.hints.size}`); if(run.auto) bits.push(`Placed for you ${run.auto}`); if(run.miss) bits.push(`Wrong bricks ${run.miss}`);
     $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>'; return; }
   $('#hintBtn').textContent=(mp&&mp.state&&mp.state.mode==='blitz')?(mp.hintSteps.includes(cur)?'Hint':'Hint (+2s)'):mp?'Hint (−5)':'Hint';
@@ -6759,7 +6772,7 @@ function updateGameBar(){
     let iname=''; try{ iname=ISLES[isle].name; }catch(e){}
     $('#gbWhere').innerHTML=`${who?`<img src="/art/head-${who}.png" alt="">`:''}<div><strong>${escapeHTML(T.name)}</strong>${quickPlay?'<small>⚡ Quick Play</small>':iname?`<small>🏝️ ${escapeHTML(iname)}</small>`:''}</div>`; }
   $('#gbBadge').textContent=game.lvl+1; $('#gbNum').textContent=`${game.lvl+1} of ${LV.length}`; $('#gbName').textContent=L.name;
-  { const st=runStars(); $('#gbPts').innerHTML=starNum(st); $('#gbOf').textContent=''; if(game.lastSt&&st<game.lastSt){ const f=$('#gbFlash'); f.textContent='−★'; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); } game.lastSt=st; }
+  { const st=runStars(); $('#gbPts').innerHTML=starNum(st,runCap()); $('#gbOf').textContent=''; if(game.lastSt&&st<game.lastSt){ const f=$('#gbFlash'); f.textContent='−★'; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); } game.lastSt=st; }
   const bits=[]; if(p.hint) bits.push(`Hints ${p.hint}`); if(p.auto) bits.push(`Placed for you ${p.auto}`); if(run&&run.miss) bits.push(`Wrong bricks ${run.miss}`);
   if(game.math) bits.push(`Math ${game.math.solved.length} of ${game.math.locks.length} pages`);
   $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>';
@@ -6879,7 +6892,7 @@ function winLevel(){
   const noHelp=W?W.noHint:p.hint+p.auto===0, clean=W?W.clean:noHelp&&!run.miss, st=W?W.stars:runRating();
   const g=gameStore(), B=bestOf(g,tr), prev=B[i]||0; if(sc>prev&&!(quickPlay&&tr!=='flip')){ B[i]=sc; gameStoreSet(g); }   // Quick play keeps nothing
   setTrail(tr); winLvl=i;
-  $('#winStars').innerHTML=starHTML(st); worldSound();
+  $('#winStars').innerHTML=starHTML(st,W?W.cap:runCap()); worldSound();
   { const pic=reveal&&reveal.url; $('#winPic').hidden=!pic; if(pic){ $('#winPic').src=pic; $('#winPic').alt=`The real ${L.name}`; } }
   { const o=worldStore(), el=$('#winChars'), fid={otter:'tiny',brain:'nora',sea:'pippa',flip:'pippa'}[tr], tiny=!!fid&&ch3Ready(fid), tc=L.boss?'cheer':fid==='nora'?'aha':fid==='pippa'?'excited':'whistle';   // the trail's friend joins in: Tiny whistles you up his Frog Trail, Nora has an "aha!" on Nora’s Brain Trail (both cheer for their boss build)
     el.classList.toggle('three',tiny&&hasPup(o));
@@ -6887,13 +6900,13 @@ function winLevel(){
   $('#winTitle').textContent=`${TRAILS[tr].icon} Level ${i+1} complete!`;
   // The card counts the ★ down: 10 for the build, one off for each brick that had help or a wrong try (one each, however many)
   const T=[...(run.trouble||new Map()).values()], helpB=T.filter(e=>e.has('h')||e.has('a')).length, missB=T.length-helpB;
-  const rows=[[`Built ${/^Pippa/.test(L.name)?"":"the "}${L.name}`,`${STAR_MAX} ★`,true]];
+  const cap=W?W.cap:runCap(), rows=[[`Built ${/^Pippa/.test(L.name)?"":"the "}${L.name} · ${tierOf(model?model.bricks.length:0)}`,`${cap} ★`,true]];
   if(helpB) rows.push([`Help used (${p.hint+p.auto})`,`−${helpB} ★`,false]);
   if(missB) rows.push([`Tricky brick${missB===1?'':'s'}: ${missB} (${run.miss} wrong tr${run.miss===1?'y':'ies'})`,`−${missB} ★`,false]);
   if(!helpB&&!missB) rows.push(['Perfect: every brick right first time','✨',true]);
   $('#winRows').innerHTML=rows.map(([a,v,ok])=>`<div class="${ok?'':'neg'}"><span>${a}</span><span>${v}</span></div>`).join('')
     +`<div class="tot"><span>Galaxy Blocks</span><span>+${W?W.gained:0} ${gbIc()}</span></div>`;
-  { const o=worldStore(), ts=trailStars(tr,o), all=LV.length*STAR_MAX; $('#winBest').textContent=`${TRAILS[tr].name}: ${ts} of ${all} ★`; }
+  { const o=worldStore(), ts=trailStars(tr,o); $('#winBest').textContent=`${TRAILS[tr].name}: ${ts} ★ so far`; }
   const last=i>=LV.length-1, wait=!last&&tr==='sea'&&!seaWashed(i+1);
   $('#winNext').innerHTML=last?'All levels done!':wait?`<img class="nb-pic" src="${levelThumb(LV[i+1])}" alt=""><span>Next puzzle<small>Washes ashore at ${seaPct(i+1)}% of Bloppitopia</small></span>`:`<img class="nb-pic" src="${levelThumb(LV[i+1])}" alt=""><span>Next<small>Level ${i+2}: ${escapeHTML(LV[i+1].name)}</small></span>`; $('#winNext').disabled=last||wait;
   { const isle={otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr]; $('#winIsland').textContent=`🏝️ Back to Bloppitopia`; $('#winIsland').title=isle&&ISLES[isle]?`See ${ISLES[isle].name} grow`:''; }
@@ -6915,7 +6928,7 @@ function renderGameMap(){
   const pct=trail==='sea'?progressPct(worldStore()):0;
   { const tip=quickPlay&&trail!=='flip'&&trail!=='sea'?`⚡ Quick Play: any level, in any order. Nothing is added to Bloppitopia. To grow ${ISLES[TRAIL_ISLE[trail]].name}, play it from the island.`:trail==='flip'?'Pippa builds one half of each puzzle, and you build the other half, flipped like a reflection. Twelve to try, in any order. (Flipper Beach in Bloppitopia has its own set.)':trail==='sea'?`You’re ${pct}% of the way through Bloppitopia. A new puzzle washes ashore about every 8%.`:'';   // the hero says the rest (no repeats, Steff 5 Nov 2026)
     $('#gmIntro').textContent=tip; $('#gmIntro').hidden=!tip; }
-  { const ts=trailStars(trail); $('#gmTotal').textContent=`${ts} ★`; $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} stars`; $('#gmDone').dataset.of=`${levelsOf(trail).length*STAR_MAX}`; } syncMathUI();
+  { const ts=trailStars(trail); $('#gmTotal').textContent=`${ts} ★`; $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} stars`;  } syncMathUI();
   $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} ${trail==='sea'?'Flipper Beach puzzles built':trail==='flip'?'any-time puzzles built':'levels done'}`;
   $('#gmLevels').innerHTML=levelsOf(trail).map((L,i)=>{
     const best=B[i], ashore=trail!=='sea'||seaWashed(i), open=trail==='flip'||quickPlay&&trail!=='sea'||i<=unlocked&&(ashore||!!best), cur_=game&&game.lvl===i&&gameTrail()===trail;
@@ -6924,7 +6937,7 @@ function renderGameMap(){
       <span class="ln">${i+1}</span>${cur_?'<span class="tagnew">Playing</span>':(i===unlocked&&!best?(wait?`<span class="tagnew tide">🌊 ${k} more build${k===1?'':'s'}</span>`:'<span class="tagnew">Next</span>'):'')}
       <img alt="" src="${levelThumb(L)}"><span class="lt">${L.boss?'👑 Boss: ':''}${L.name}</span>
       <span class="lm" data-c="${i}">${L.count?`${L.count} bricks`:'&nbsp;'}</span>
-      ${best?`<span class="ls">${starHTML(st)}</span><span class="lb">${st>=STAR_MAX?'All ten stars!':'Built ✓'}</span>`:open?'<span class="lb">Not played yet</span>':!ashore?`<span class="lb">🌊 Washes ashore at ${seaPct(i)}%</span>`:`<span class="lb">Finish level ${i} to unlock</span>`}
+      ${best?`<span class="ls">${starHTML(st,levelCap(trail,i))}</span><span class="lb">${st>=levelCap(trail,i)?'Every star!':'Built ✓'}</span>`:open?'<span class="lb">Not played yet</span>':!ashore?`<span class="lb">🌊 Washes ashore at ${seaPct(i)}%</span>`:`<span class="lb">Finish level ${i} to unlock</span>`}
     </button>`; }).join('');
   // Work out brick counts a few at a time so the map appears straight away
   let k=0; (function next(){ if(tab!=='game'||k>=levelsOf(trail).length) return; const L=levelsOf(trail)[k], el=document.querySelector(`[data-c="${k}"]`); if(el&&!L.count){ levelCount(L); el.textContent=`${L.count} bricks`; } k++; setTimeout(next,0); })();
@@ -8186,7 +8199,7 @@ async function trialEnd(){
       if(!first){ trialDialog({icon:'📅',card:true,next:true,isle:'brickworks',title:clean?'Clean build!':'Nice practice!',rows:cleanRow,note:(clean&&!prev.clean?'That one counts as clean now. ':'')+'Come back on Monday for a new puzzle!'+streakNote()}); return; }
       trialDialog({icon:'📅',title:'Bibi’s Weekly Bloppit done!',rows:cleanRow,note:'Checking how everyone else did…'});
       try{
-        const j=await chApi('POST',{action:'weekly',week:info.week,ms:r.ms,miss:r.miss,hint:r.hint,nBricks:model.bricks.length,board:boardOn(),stars:worldLast?worldLast.stars:0,scale:STAR_MAX});
+        const j=await chApi('POST',{action:'weekly',week:info.week,ms:r.ms,miss:r.miss,hint:r.hint,nBricks:model.bricks.length,board:boardOn(),stars:worldLast?worldLast.stars:0,scale:10});
         if(j.board) $('#dyBoardList').innerHTML=boardRows(j.board);
         weeklyPeek={week:info.week,n:j.n,clean:j.clean,pct:j.pct};
         W.weeks[info.week].n=j.n; W.weeks[info.week].pct=j.pct; weeklyStoreSet(W);
@@ -8377,7 +8390,7 @@ async function renderDaily(){
   $('#dyMsg').hidden=true;
   weeklyFetch().then(j=>{ const el=$('#dyCount'); if(el&&tab==='daily'){ el.textContent=cleanLine(j,me); el.hidden=!el.textContent; } }).catch(()=>{});
 }
-/* ---------- Pippa's message in a bottle: one a day, +5 XP ----------
+/* ---------- Pippa's message in a bottle: one a day, a bonus ★ ----------
    It washes up on her puzzles page each new day (the player's own calendar day). Opening it keeps the day in the
    world record (o.bottles), and XP is worked out from those days like the builds, so two devices add up correctly. */
 const dayKey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -8405,7 +8418,7 @@ function bottleSync(){ try{
   const tb=$('#tab-sea'); if(tb) tb.classList.toggle('bottle-on',!got&&!!o.arrived);
   if(!card) return; card.classList.toggle('waiting',!got);
   $('#btTitle').textContent=got?'Pippa’s message':'A message in a bottle!';
-  $('#btSub').textContent=got?`+${BOTTLE_XP} XP and a Galaxy Block · another bottle washes up tomorrow`:`Pippa sends one every day. Open it for +${BOTTLE_XP} XP and a Galaxy Block.`;
+  $('#btSub').textContent=got?`+${STAR_BONUS.bottle} ★ (and a Galaxy Block) · another bottle washes up tomorrow`:`Pippa sends one every day. Open it for a bonus ★.`;
   $('#btMsg').hidden=!got; $('#btMsg').textContent=got?bottleLine(day):'';
   $('#btOpen').hidden=got;
 }catch(e){} }
@@ -8414,7 +8427,7 @@ $('#btOpen').onclick=()=>{ const o=worldStore(), day=dayKey(); if(bottleDays(o).
   try{ sfx.chime(); }catch(e){} try{ sfx.voice('pippa'); }catch(e){} bottleSync(); };
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ bottleSync(); weeklySync(); } });   // back in the app: a new week's Weekly
 window.bloppitWorld=()=>{ const o=worldStore(); return {level:otterLevel(o),stage:PUP_STAGES[pupStage(o)].name,galaxy:worldStars(o),stars:worldRating(o),xp:worldXP(o)}; };   // for tests
-window.bloppitBottle=()=>({day:dayKey(),days:bottleDays(worldStore()),xp:worldXP(worldStore()),dot:$('#tab-sea').classList.contains('bottle-on')});   // for tests
+window.bloppitBottle=()=>({day:dayKey(),days:bottleDays(worldStore()),xp:worldXP(worldStore()),stars:worldStarsEarned(worldStore()),dot:$('#tab-sea').classList.contains('bottle-on')});   // for tests
 // Bibi's Weekly card on the Build anything page: this week's model and whether it's done
 function qbWeeklySync(){ try{ const week=weekOf(), o=weeklyPuzzle(week), me=weeklyStore().weeks[week];
   $('#qbWkImg').src=o.thumb||'/art/head-bibi.png';
@@ -8573,11 +8586,10 @@ loadSample(0); setTab('create'); clearTimeout(timer); rebuild(); requestAnimatio
     $('#resume').hidden=false;
   } else saveOn=true;
 }
-/* ---------- Your world (Bloppitopia Lite): XP, stars, Galaxy Blocks and the pup ----------
-   One job each (30 Oct 2026). ★ say how well you built: out of 10 per model since 9 Nov 2026 (one off for each brick that
-   needed help or another try; see rateOf/runRating), its best attempt, never spent. Galaxy Blocks are the pocket money: one per 3 ★ earned, plus the Weekly,
-   From Memory, the daily bottle and island finales; Bibi's shop sells decorations for them. XP (every new build, and
-   the bottle) sets the Otter Level, which unlocks outfits and grows the otter (Splash at 4, Legend at 8). Nothing is bought, sold, traded or lost. The record lives per player on this device
+/* ---------- Your world (Bloppitopia Lite): stars, Galaxy Blocks and the pup ----------
+   Since 9 Nov 2026 just two things (see the ★ Stars note by rateOf): ★ grow (each model's best rating plus bonuses) and set
+   the Otter Level, which unlocks outfits and grows the otter (Splash at 4, Legend at 8); Galaxy Blocks are the ★ you can
+   spend in Bibi's shop. XP is still worked out (worldXP) only for older readers and for the levels of older worlds. Nothing is bought, sold, traded or lost. The record lives per player on this device
    and under the pup on the server (the world field); nothing in it is typed by a child: the pup's name is an
    index into a fixed list, and a photo build is keyed by a hash of its file name. */
 var WORLD_KEY='bloppit-world-v1', worldLast=null;
@@ -8618,30 +8630,31 @@ function pupFig(o,opt){ opt=opt||{};
 function cleanPupText(v){ return typeof v!=='string'?'':v.normalize('NFC').replace(/[^\p{L}\p{M} '\-]/gu,'').replace(/\s+/g,' ').trim().slice(0,14).trim(); }
 var ISLAND_STAGES=[{name:'Beach',at:0,slots:0},{name:'Hut',at:1,slots:1},{name:'Workshop',at:3,slots:3},{name:'Village',at:10,slots:12},
   {name:'Town',at:25,slots:12},{name:'Harbour Town',at:50,slots:12},{name:'Grand Isle',at:100,slots:12}];   // Town and up: Steff, 6 Nov 2026 (Village was the top, at 10)
-var DECOR=[{id:'flag',name:'Flag',cost:3},{id:'campfire',name:'Campfire',cost:3},{id:'bench',name:'Bench',cost:3},{id:'lantern',name:'Lantern',cost:5},{id:'signpost',name:'Signpost',cost:5},{id:'rockpool',name:'Rock pool',cost:5},
-  {id:'sandcastle',name:'Sandcastle',cost:5},{id:'hammock',name:'Hammock',cost:8},{id:'kite',name:'Kite',cost:5},{id:'palm',name:'Palm',cost:8},{id:'crab',name:'Crab',cost:3},{id:'buoy',name:'Buoy',cost:8,water:1},
+// Prices ×2.5 when ★ became Galaxy Blocks one for one (9 Nov 2026)
+var DECOR=[{id:'flag',name:'Flag',cost:8},{id:'campfire',name:'Campfire',cost:8},{id:'bench',name:'Bench',cost:8},{id:'lantern',name:'Lantern',cost:12},{id:'signpost',name:'Signpost',cost:12},{id:'rockpool',name:'Rock pool',cost:12},
+  {id:'sandcastle',name:'Sandcastle',cost:12},{id:'hammock',name:'Hammock',cost:20},{id:'kite',name:'Kite',cost:12},{id:'palm',name:'Palm',cost:20},{id:'crab',name:'Crab',cost:8},{id:'buoy',name:'Buoy',cost:20,water:1},
   // Bigger things (Oct 2026): Galaxy Blocks pile up much faster than the twelve little ones above use them, so there's always a next
   // thing to save for: bigger builds, a set from each island (it opens once that island is found) and three showpieces.
-  {id:'gazebo',name:'Gazebo',cost:12,tier:'mid'},{id:'windmill',name:'Windmill',cost:18,tier:'mid'},
-  {id:'frogstatue',name:'Frog statue',cost:10,isle:'otterwood'},{id:'lilypond',name:'Lily pond',cost:15,isle:'otterwood'},
-  {id:'telescope',name:'Telescope',cost:12,isle:'brainpeak'},{id:'globe',name:'Big globe',cost:18,isle:'brainpeak'},
-  {id:'umbrella',name:'Beach umbrella',cost:8,isle:'sunrise'},{id:'icecart',name:'Ice-cream cart',cost:15,isle:'sunrise'},
-  {id:'finish',name:'Finish line',cost:15,isle:'blitzbay'},{id:'podium',name:'Winners’ podium',cost:25,isle:'blitzbay'},
-  {id:'easel',name:'Paint easel',cost:10,isle:'brickworks'},{id:'bigbrick',name:'Giant brick',cost:20,isle:'brickworks'},
-  {id:'moonlamp',name:'Moon lamp',cost:15,isle:'moonstone'},{id:'crystal',name:'Star crystal',cost:25,isle:'moonstone'},
-  {id:'rainbow',name:'Rainbow',cost:35,tier:'show'},{id:'balloon',name:'Hot-air balloon',cost:40,tier:'show'},{id:'pirateship',name:'Pirate ship',cost:50,tier:'show',water:1}];
+  {id:'gazebo',name:'Gazebo',cost:30,tier:'mid'},{id:'windmill',name:'Windmill',cost:45,tier:'mid'},
+  {id:'frogstatue',name:'Frog statue',cost:25,isle:'otterwood'},{id:'lilypond',name:'Lily pond',cost:40,isle:'otterwood'},
+  {id:'telescope',name:'Telescope',cost:30,isle:'brainpeak'},{id:'globe',name:'Big globe',cost:45,isle:'brainpeak'},
+  {id:'umbrella',name:'Beach umbrella',cost:20,isle:'sunrise'},{id:'icecart',name:'Ice-cream cart',cost:40,isle:'sunrise'},
+  {id:'finish',name:'Finish line',cost:40,isle:'blitzbay'},{id:'podium',name:'Winners’ podium',cost:60,isle:'blitzbay'},
+  {id:'easel',name:'Paint easel',cost:25,isle:'brickworks'},{id:'bigbrick',name:'Giant brick',cost:50,isle:'brickworks'},
+  {id:'moonlamp',name:'Moon lamp',cost:40,isle:'moonstone'},{id:'crystal',name:'Star crystal',cost:60,isle:'moonstone'},
+  {id:'rainbow',name:'Rainbow',cost:90,tier:'show'},{id:'balloon',name:'Hot-air balloon',cost:100,tier:'show'},{id:'pirateship',name:'Pirate ship',cost:125,tier:'show',water:1}];
 // An island's set opens once that island is found
 const decorOpen=(d,o)=>!d.isle||(()=>{ try{ return isleCount(d.isle,o)>0; }catch(e){ return false; } })();
 function worldStore(){ try{ const o=JSON.parse(localStorage.getItem(pkey(WORLD_KEY))); if(o&&o.builds&&typeof o.builds==='object'){ for(const k of ['log','decor','free']) if(!Array.isArray(o[k])) o[k]=[]; if(typeof o.xp!=='number') o.xp=0; if(typeof o.bonus!=='number') o.bonus=0; seaMigrateW(o); return o; } }catch(e){} return {xp:0,bonus:0,builds:{},log:[],decor:[],free:[],pupName:-1,pupColor:-1}; }
 // Join two world records (same rules as the server): best stars per model, higher XP, decorations and the name kept.
 function worldMerge(a,b){
   a=a||{}; b=b||{}; const builds={...(a.builds||{})};
-  for(const k of Object.keys(b.builds||{})){ const x=builds[k], y=b.builds[k]; builds[k]=x?{...x,...y,...((Number.isInteger(x.lv)||Number.isInteger(y.lv))?{lv:Math.max(Number.isInteger(x.lv)?x.lv:-1,Number.isInteger(y.lv)?y.lv:-1)}:{}),s:Math.max(x.s||0,y.s||0),...((Number.isFinite(x.r)||Number.isFinite(y.r))?{r:Math.max(rateOf(x),rateOf(y))}:{}),t:Math.min(x.t||Infinity,y.t||Infinity),c:Math.max(x.c||1,y.c||1),...((x.m||y.m)?{m:1}:{}),...((x.d||y.d)?{d:Math.min(x.d||Infinity,y.d||Infinity)}:{})}:y; }
+  for(const k of Object.keys(b.builds||{})){ const x=builds[k], y=b.builds[k]; builds[k]=x?{...x,...y,...((Number.isInteger(x.lv)||Number.isInteger(y.lv))?{lv:Math.max(Number.isInteger(x.lv)?x.lv:-1,Number.isInteger(y.lv)?y.lv:-1)}:{}),s:Math.max(x.s||0,y.s||0),...((Number.isFinite(x.l)||Number.isFinite(y.l)||Number.isFinite(x.r)||Number.isFinite(y.r))?{l:Math.min(lostOf(x),lostOf(y)),r:Math.max(rateOf(x),rateOf(y))}:{}),t:Math.min(x.t||Infinity,y.t||Infinity),c:Math.max(x.c||1,y.c||1),...((x.m||y.m)?{m:1}:{}),...((x.d||y.d)?{d:Math.min(x.d||Infinity,y.d||Infinity)}:{})}:y; }
   const log=[]; for(const k of [...(a.log||[]),...(b.log||[]),...Object.keys(builds)]) if(builds[k]&&!log.includes(k)) log.push(k);
   // The name (typed or picked) and brick colour: whichever was set last (pupAt); a later 'no name yet' never wipes one
   const later=(b.pupAt||0)>(a.pupAt||0)?b:a, other=later===b?a:b, named=w=>(cleanPupText(w.pupText)||w.pupName>=0)?w:null, nw=named(later)||named(other)||{};
   const pn=typeof nw.pupName==='number'&&nw.pupName>=0?nw.pupName:null, pc=[later.pupColor,other.pupColor].find(v=>Number.isInteger(v)&&v>=0);
-  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,films:[...new Set([...(a.films||[]),...(b.films||[])])],bottles:[...new Set([...bottleDays(a),...bottleDays(b)])].sort(),decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},pos:{...(a.pos||{}),...(b.pos||{})},away:awayMerge(a.away,b.away),draw:[...new Map([...(b.draw||[]),...(a.draw||[])].map(d=>[d.id,d])).values()].sort((x,y)=>(y.t||0)-(x.t||0)).slice(0,12),pupName:pn==null?-1:pn,pupText:cleanPupText(nw.pupText),pupAt:Math.max(a.pupAt||0,b.pupAt||0),pupColor:pc==null?-1:pc,...(pc===PUP_MIX&&[later.pupHex,other.pupHex].find(pupHexOk)?{pupHex:[later.pupHex,other.pupHex].find(pupHexOk)}:{}),isle:(a.isle||b.isle)?1:0,arrived:(a.arrived||b.arrived)?1:0,pick:a.pick||b.pick||undefined,...(((b.wearAt||0)>(a.wearAt||0)?b:a).wear?{wear:((b.wearAt||0)>(a.wearAt||0)?b:a).wear,wearAt:Math.max(a.wearAt||0,b.wearAt||0)}:{}),pupAsked:!!(a.pupAsked||b.pupAsked)};
+  return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,films:[...new Set([...(a.films||[]),...(b.films||[])])],bottles:[...new Set([...bottleDays(a),...bottleDays(b)])].sort(),decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],paid:(()=>{ const p={...(a.paid||{})}; for(const [k,v] of Object.entries(b.paid||{})) p[k]=k in p?Math.min(p[k],v):v; return p; })(),free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},pos:{...(a.pos||{}),...(b.pos||{})},away:awayMerge(a.away,b.away),draw:[...new Map([...(b.draw||[]),...(a.draw||[])].map(d=>[d.id,d])).values()].sort((x,y)=>(y.t||0)-(x.t||0)).slice(0,12),pupName:pn==null?-1:pn,pupText:cleanPupText(nw.pupText),pupAt:Math.max(a.pupAt||0,b.pupAt||0),pupColor:pc==null?-1:pc,...(pc===PUP_MIX&&[later.pupHex,other.pupHex].find(pupHexOk)?{pupHex:[later.pupHex,other.pupHex].find(pupHexOk)}:{}),isle:(a.isle||b.isle)?1:0,arrived:(a.arrived||b.arrived)?1:0,pick:a.pick||b.pick||undefined,...(((b.wearAt||0)>(a.wearAt||0)?b:a).wear?{wear:((b.wearAt||0)>(a.wearAt||0)?b:a).wear,wearAt:Math.max(a.wearAt||0,b.wearAt||0)}:{}),pupAsked:!!(a.pupAsked||b.pupAsked)};
 }
 function worldSet(o){ try{ localStorage.setItem(pkey(WORLD_KEY),JSON.stringify(o)); }catch(e){} pupPush(); }
 const worldCount=o=>o.log.length;                                   // distinct models finished
@@ -8658,26 +8671,27 @@ const buildXP=(k,b)=>(b.k==='blitz'?10:Math.max(sizeXP(b.n),(b.t||Infinity)<XP_S
 const BOTTLE_XP=5;   // Pippa's message in a bottle: one a day
 const worldXP=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+buildXP(k,b),0)+BOTTLE_XP*bottleDays(o).length;
 const bottleDays=o=>(Array.isArray(o.bottles)?o.bottles:[]).filter(d=>typeof d==='string'&&/^\d{4}-\d\d-\d\d$/.test(d));
-// Galaxy Blocks: the game's pocket money. A build earns one per 3 ★ of its best rating, rounded up (gbOf), a Weekly and a From Memory build one more,
-// each daily bottle one, and a finished island 5 (the whole world 10 more). Decorations spend them; ★ ratings are never spent.
-const worldStarsEarned=o=>Object.entries(o.builds).reduce((a,[k,b])=>a+gbOf(rateOf(b))+(k.startsWith('w:')?1:0)+(b.m?1:0),0)+finaleStars(o)+bottleDays(o).length;
+// All ★ earned: each model's best rating and its bonus, the daily bottles, and the island finales (see the ★ Stars note)
+const worldStarsEarned=o=>Object.entries(o.builds||{}).reduce((a,[k,b])=>a+rateOf(b)+buildBonus(k,b),0)+finaleStars(o)+STAR_BONUS.bottle*bottleDays(o).length;
 const gbIc=()=>'<svg class="gb-ic" viewBox="0 0 120 100" aria-hidden="true"><use href="#gbBlock"/></svg>';
 const gbN=n=>`${n} Galaxy Block${n===1?'':'s'}`;
-function finaleStars(o){ try{ if(typeof ISLES==='undefined') return 0; const n=islesComplete(o).length; return n*5+(n===ISLE_TOTAL?10:0); }catch(e){ return 0; } }
+function finaleStars(o){ try{ if(typeof ISLES==='undefined') return 0; const n=islesComplete(o).length; return n*STAR_BONUS.isle+(n===ISLE_TOTAL?STAR_BONUS.world:0); }catch(e){ return 0; } }
 // Put away / put back: the time it was put away, or minus the time it came back; on a merge the latest choice wins (old 1/0 lose to any timed one)
 const isAway=(o,k)=>((o.away||{})[k]||0)>0, awayMark=back=>back?-Date.now():Date.now();
 function awayMerge(a,b){ const o={...(a||{})}; for(const [k,v] of Object.entries(b||{})) if(!(k in o)||Math.abs(+v||0)>Math.abs(+o[k]||0)) o[k]=v; return o; }
 const decorOut=o=>(o.decor||[]).filter(id=>!isAway(o,'decor:'+id));   // decorations on the island (not put away)   // decorations on the island (not put away)
-const worldStarsSpent=o=>(o.decor||[]).reduce((a,id)=>{ if((o.free||[]).includes(id)) return a; const d=DECOR.find(x=>x.id===id); return a+(d?d.cost:0); },0);
-const worldStars=o=>worldStarsEarned(o)-worldStarsSpent(o);   // Galaxy Blocks to spend
-const worldRating=o=>Object.values(o.builds||{}).reduce((a,b)=>a+rateOf(b),0);   // ★ earned, all builds
+// What the shop took: the price paid (o.paid), or for decorations bought before prices went ×2.5 (9 Nov 2026), the old price
+const OLD_COST={8:3,12:5,20:8,25:10,30:12,40:15,45:18,50:20,60:25,90:35,100:40,125:50};
+const worldStarsSpent=o=>(o.decor||[]).reduce((a,id)=>{ if((o.free||[]).includes(id)) return a; const d=DECOR.find(x=>x.id===id), p=(o.paid||{})[id]; return a+(Number.isFinite(p)?p:d?(OLD_COST[d.cost]??d.cost):0); },0);
+const worldStars=o=>Math.max(0,worldStarsEarned(o)-worldStarsSpent(o));   // Galaxy Blocks to spend: every ★ earned, less the shop
+const worldRating=o=>worldStarsEarned(o);   // ★ earned, everything
 const stageOf=(list,n)=>{ let k=0; list.forEach((st,i)=>{ if(n>=st.at) k=i; }); return k; };
 const pupHeld=o=>{ const n=Object.values(o.builds||{}).filter(b=>b&&(b.t||Infinity)<PUP_SWITCH).length; return n>=PUP_STAGES_OLD[2]?2:n>=PUP_STAGES_OLD[1]?1:0; };
 const pupByLevel=o=>{ const lv=otterLevel(o); let k=0; PUP_STAGES.forEach((st,i)=>{ if(lv>=st.lvl) k=i; }); return k; };
 const pupByBuildsBefore=o=>stageOf(PUP_STAGES,Object.values(o.builds||{}).filter(b=>b&&(b.t||Infinity)<GROW_SWITCH).length);
 const pupStage=o=>Math.max(pupByLevel(o),pupByBuildsBefore(o),pupHeld(o)), islandStage=o=>stageOf(ISLAND_STAGES,worldCount(o));
 // How far to the next stage (0–100); an otter that kept a stage early starts its bar from where it is
-const pupPct=(o,ps)=>{ const xp=worldXP(o), nx=PUP_STAGES[ps+1]; if(!nx) return 100; const to=levelXP(nx.lvl), from=Math.min(levelXP(PUP_STAGES[ps].lvl),xp); return Math.max(0,Math.min(100,Math.round(100*(xp-from)/Math.max(1,to-from)))); };
+const pupPct=(o,ps)=>{ const xp=worldStarsEarned(o), nx=PUP_STAGES[ps+1]; if(!nx) return 100; const to=levelXP(nx.lvl), from=Math.min(levelXP(PUP_STAGES[ps].lvl),xp); return Math.max(0,Math.min(100,Math.round(100*(xp-from)/Math.max(1,to-from)))); };
 const pupName=o=>cleanPupText(o.pupText)||(o.pupName>=0&&PUP_NAMES[o.pupName])||'';
 function hash32(str){ let h=2166136261; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0).toString(36); }
 // A model's key: catalogue models by name, photo models by a hash (the file name never leaves the device)
@@ -8702,21 +8716,23 @@ function worldFinish(kind){
   let place=0; if(mp&&mp.state&&mp.state.mode==='blitz'&&!mp.cpu){ const sc=mpScores(mp.state), me=sc.find(p=>p.i===mp.me); if(me&&sc.filter(p=>!p.left).length>1) place=1+sc.filter(p=>!p.left&&p.ms<me.ms).length; }   // a live race between friends
   const key=modelKey(), prev=o.builds[key], first=!prev;
   const noHint=hint+auto===0, clean=noHint&&miss===0;
-  const stars=runRating(kind), was=rateOf(prev);
-  let xp=first?(blitz?10:sizeXP(N)):0, bonus=0;
-  if(kind==='weekly'&&first){ xp+=10; bonus=1; const d=DECOR.filter(x=>!o.decor.includes(x.id)&&decorOpen(x,o)).sort((a,b)=>a.cost-b.cost)[0]; if(d){ o.decor.push(d.id); o.free=[...(o.free||[]),d.id]; r_decor=d; } }
-  const memory=!!run.memory&&!mp&&!blitz&&clean&&!(prev&&prev.m); if(memory){ xp+=5; bonus+=1; }
-  const before={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
+  const cap=starCap(N), lost=runLost(kind), stars=Math.max(1,cap-lost), was=rateOf(prev);
+  let bonus=0;
+  if(kind==='weekly'&&first){ bonus=STAR_BONUS.weekly; const d=DECOR.filter(x=>!o.decor.includes(x.id)&&decorOpen(x,o)).sort((a,b)=>a.cost-b.cost)[0]; if(d){ o.decor.push(d.id); o.free=[...(o.free||[]),d.id]; r_decor=d; } }
+  const memory=!!run.memory&&!mp&&!blitz&&clean&&!(prev&&prev.m); if(memory) bonus+=STAR_BONUS.memory;
+  if(blitz&&first) bonus+=STAR_BONUS.blitz;
+  const before={pup:pupStage(o),island:islandStage(o),n:worldCount(o),lv:otterLevel(o)};
   let dur=0; try{ dur=(mp&&mp.state&&mp.state.mode==='blitz')?((mpScores(mp.state).find(x=>x.i===mp.me)||{}).ms||0):(run.t0?Date.now()-run.t0:0); }catch(e){}
-  const best=Math.max(was,stars), rec=prev?{...prev,r:best,s:oldScale(best),c:(prev.c||1)+1}:{n:N,r:stars,s:oldScale(stars),k:kind,t:Date.now(),c:1}; if(memory) rec.m=1;
+  const rec=prev?{...prev,l:Math.min(lostOf(prev),lost),c:(prev.c||1)+1}:{n:N,l:lost,k:kind,t:Date.now(),c:1}; if(memory) rec.m=1;
+  rec.r=rateOf(rec); rec.s=oldScale(rec.r,starCap(rec.n));
   if(first&&typeof inLufu==='function'&&inLufu()) rec.realm='lufu';   // built in lufu's world: it stands there, not on Home Island
   if(blitz){ const lv=['easy','medium','hard'].indexOf(mp.state.cpuLevel); if(lv>=0) rec.lv=Math.max(prev&&Number.isInteger(prev.lv)?prev.lv:-1,lv); if(cpu&&cpu.boss) rec.boss=1; }   // which longtail was beaten; the Grand Prix
   if(dur>500&&dur<6*3600e3) rec.d=Math.round(prev&&prev.d?Math.min(prev.d,dur):dur);   // best time, in ms
-  o.builds[key]=rec; if(first) o.log.push(key); o.xp=worldXP(o); o.bonus=worldStarsEarned(o)-Object.values(o.builds).reduce((a,b)=>a+(b.s||0),0);  // kept for older readers; derived
+  o.builds[key]=rec; if(first) o.log.push(key); o.xp=worldXP(o); o.bonus=0;  // xp kept for older readers (app 1.1); derived
   worldSet(o);
   worldThumbSave(key); worldShapeSave(key);
-  const after={pup:pupStage(o),island:islandStage(o),n:worldCount(o)};
-  const r={key,kind,place,stars,best:rec.r,gained:first?gbOf(stars)+bonus:Math.max(0,gbOf(stars)-gbOf(was))+(memory?1:0),xp,bonus,first,clean,noHint,memory,miss,hint:hint+auto,before,after,
+  const after={pup:pupStage(o),island:islandStage(o),n:worldCount(o),lv:otterLevel(o)};
+  const r={key,kind,place,stars,cap,lvUp:after.lv>before.lv,best:rec.r,gained:(first?stars:Math.max(0,rec.r-was))+bonus,xp:0,bonus,first,clean,noHint,memory,miss,hint:hint+auto,before,after,
     pupUp:after.pup>before.pup,islandUp:after.island>before.island,total:worldStars(o),count:after.n,decor:r_decor};
   track('world_finish:'+stars+'star'+(first?'':'_again'), memory?'from_memory':'', r.pupUp?'pup_stage:'+PUP_STAGES[after.pup].name.toLowerCase():'', r.islandUp?'island_stage:'+ISLAND_STAGES[after.island].name.toLowerCase():'');
   return r;
@@ -8737,13 +8753,13 @@ function worldThumbSave(key){
   }catch(e){}
 }
 function worldThumb(key){ const t=worldThumbs()[key]; if(t) return t.u; const m=/^m:(.+):\d+$/.exec(key)||/^t:[a-z]+:\d+:(.+)$/.exec(key); if(m){ const smp=SAMPLES.find(x=>x.name===m[1]); if(smp){ if(!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png'); return smp.thumb; } } return ''; }
-const wsStars=n=>`<span class="ws-stars" aria-label="${n} of ${STAR_MAX} stars">${'★'.repeat(n)}<i>${'★'.repeat(Math.max(0,STAR_MAX-n))}</i></span>`;
+const wsStars=(n,cap)=>cap?`<span class="ws-stars" aria-label="${n} of ${cap} stars">${'★'.repeat(n)}<i>${'★'.repeat(Math.max(0,cap-n))}</i></span>`:`<span class="ws-stars">${n} ★</span>`;
 function worldStripHTML(r){
   if(!r) return '';
   const o=worldStore(), what=r.kind==='blitz'?(r.place>1?`${ordinal(r.place)} place`:'Race won'):r.clean?'Clean build!':r.noHint?'No hints!':'Finished!';
-  const parts=[wsStars(r.stars),`<span>${what}</span>`];
-  if(r.gained) parts.push(`<span class="ws-gb">+${r.gained} ${gbIc()}</span>`);
-  if(r.xp) parts.push(`<span>+${r.xp} XP</span>`); else if(!r.first&&!r.gained) parts.push('<span>Built before · best kept</span>');
+  const parts=[wsStars(r.stars,r.cap),`<span>${what}</span>`];
+  if(r.gained) parts.push(`<span class="ws-gb">+${r.gained} ★ = +${r.gained} ${gbIc()}</span>`); else if(!r.first) parts.push('<span>Built before · best kept</span>');
+  if(r.lvUp) parts.push(`<span class="ws-up">⬆ Otter Level ${r.after.lv}!</span>`);
   if(r.memory) parts.push('<span>🧠 From memory!</span>');
   if(r.decor) parts.push(`<span class="ws-up">🏝️ A ${r.decor.name.toLowerCase()} for your island</span>`);
   if(r.pupUp) parts.push(`<span class="ws-up">${pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'})}${escapeHTML(pupName(o))||'Your otter'} is a ${PUP_STAGES[r.after.pup].name}!</span>`);
@@ -8753,7 +8769,7 @@ function worldStripHTML(r){
 function worldStrips(){ const h=worldStripHTML(worldLast); document.querySelectorAll('[data-ws]').forEach(el=>{ el.innerHTML=h; }); }
 // The stars ping in one by one when the finish screen shows them; the island or the pup growing adds a swell. Once per finish.
 function worldSound(){ const r=worldLast; if(!r||r.played) return; r.played=true;
-  for(let k=1;k<=r.stars;k++) setTimeout(()=>sfx.star(Math.ceil(k*3/STAR_MAX)),250+k*110);
+  for(let k=1;k<=r.stars;k++) setTimeout(()=>sfx.star(Math.ceil(k*3/(r.cap||10))),250+k*110);
   if(r.pupUp||r.islandUp) setTimeout(()=>sfx.stage(),250+r.stars*110+500); }
 function worldToast(){
   const r=worldLast, el=$('#worldToast'); if(!r){ el.hidden=true; return; }
@@ -8876,7 +8892,7 @@ function renderHomeWorld(){
       <span class="hw-chips">${is>=3?'<span class="hw-chip" id="hwCard" role="button" tabindex="0">📮 Postcard</span>':''}<span class="hw-chip" id="hmFilms" role="button" tabindex="0" hidden>🎬 My films <i class="n" id="hmFilmsN"></i><small class="sr-only" id="hmFilmsS">Watch your films again</small></span></span></span>
     <span class="hw-strip"><span class="pup ps-${PUP_STAGES[ps].name.toLowerCase()}">${pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'})}</span>
       <span class="wt">${nm?`<b>${escapeHTML(nm)} <span class="sub">· Level ${otterLevel(o)}</span></b>`:`<span class="wname" id="wName" role="button" tabindex="0">Name your otter</span>`}<span class="bar" title="${next?`Grows into a ${next.name} at Level ${next.lvl}`:'Legend of Bloppitopia'}"><i style="width:${Math.max(4,pct)}%"></i></span></span>
-      <span class="wn"><span>${n} <small>build${n===1?'':'s'}</small></span><span class="st">${gbIc()} ${worldStars(o)}</span><span>${worldXP(o)} <small>XP</small></span></span></span>`;
+      <span class="wn"><span>${n} <small>build${n===1?'':'s'}</small></span><span class="st">${gbIc()} ${worldStars(o)}</span><span>${worldStarsEarned(o)} <small>★</small></span></span></span>`;
   const hc=$('#hwCard'); if(hc){ const go=e=>{ e.stopPropagation(); e.preventDefault(); $('#isCard').onclick(); }; hc.onclick=go; hc.onkeydown=e=>{ if(e.key==='Enter'||e.key===' ') go(e); }; }   // the postcard, straight from the menu
   const w=$('#wName'); if(w){ w.onclick=e=>{ e.stopPropagation(); pupOpen(); }; w.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); e.stopPropagation(); pupOpen(); } }; }
   const fm=$('#hmFilms'); if(fm){ const go=e=>{ e.stopPropagation(); e.preventDefault(); filmsShow(); }; fm.onclick=go; fm.onkeydown=e=>{ if(e.key==='Enter'||e.key===' ') go(e); }; }   // My films, inside the Bloppitopia tile (Steff, 4 Nov 2026)
@@ -9160,14 +9176,14 @@ function islandInfo(id,o){
     case 'pup': { const nm=pupName(o), ps=pupStage(o), nx=PUP_STAGES[ps+1], c=PUP_COLORS[pupColorOf(o)];
       const lv=otterLevel(o), nl=levelXP(lv+1), nAcc=ACC.find(a=>!a.legend&&!a.finale&&a.lvl>lv);
       return {title:nm||'Your otter',hint:`Level ${lv} ${PUP_STAGES[ps].name} · ${ps+1} stud${ps?'s':''} on its brick`,icon:pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'}),
-        rows:[['Otter Level',`${lv} · ${nl-worldXP(o)} XP to Level ${lv+1}`],...(nAcc?[['Next outfit',`${nAcc.name} at Level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at Level ${nx.lvl}: another stud`:'A Legend. That’s the top']],
+        rows:[['Otter Level',`${lv} · ${Math.max(0,nl-worldStarsEarned(o))} ★ to Level ${lv+1}`],...(nAcc?[['Next outfit',`${nAcc.name} at Level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at Level ${nx.lvl}: another stud`:'A Legend. That’s the top']],
         bar:nx?{pct:Math.max(4,pupPct(o,ps)),label:`${nx.at-n} more build${nx.at-n===1?'':'s'} to ${nx.name}`}:null,
         actions:[{label:'👕 Wardrobe',fn:()=>wardrobeOpen(),primary:true},{label:nm?'Name or colour':'Name your otter',fn:()=>pupOpen()}]}; }
     case 'model': { const f=modelFacts(arg,o), b=f.b, flagW=arg.startsWith('w:')&&!ISL3.ok, onIsle=shown.list.some(m=>m.key===arg)||flagW;
       const acts=[]; if(f.again) acts.push({label:'Build it again',fn:f.again,primary:true});
       if(!flagW&&!isHomeBuild(arg)) acts.push(onIsle?{label:'Put away',fn:()=>islandPut(arg,false)}:{label:'Put on Bloppitopia',fn:()=>islandPut(arg,true),off:shown.list.length>=shown.cap?`Bloppitopia is full (${shown.cap} stands). Put one away first.`:''});
-      return {title:f.name,hint:isHomeBuild(arg)?'Your first build: it became your home on Bloppitopia':`${rateOf(b)} of ${STAR_MAX} ★ · ${f.from}`,icon:worldThumb(arg)?`<img src="${worldThumb(arg)}" alt="">`:'',
-        rows:[['From',f.from],['First built',fmtDay(b.t)||'—'],['Stars',`${rateOf(b)} of ${STAR_MAX} ★${rateOf(b)>=STAR_MAX?' · perfect':''}${b.m?' · from memory 🧠':''}`],
+      return {title:f.name,hint:isHomeBuild(arg)?'Your first build: it became your home on Bloppitopia':`${rateOf(b)} of ${starCap(b.n)} ★ · ${f.from}`,icon:worldThumb(arg)?`<img src="${worldThumb(arg)}" alt="">`:'',
+        rows:[['From',f.from],['First built',fmtDay(b.t)||'—'],['Stars',`${rateOf(b)} of ${starCap(b.n)} ★ (${tierOf(b.n)})${rateOf(b)>=starCap(b.n)?' · perfect':''}${b.m?' · from memory 🧠':''}`],
           ['Best time',b.d?fmtDur(b.d):'Not timed yet'],['Bricks',String(b.n||'—')],['Built',`${b.c||1} time${(b.c||1)===1?'':'s'}`]],actions:acts}; }
   }
   return {title:'Bloppitopia',rows:[]};
@@ -11188,7 +11204,7 @@ function finaleCard(id){
     const crown=ACC.find(a=>a.id==='moon'); if(crown&&accOwned(crown,o)&&!(seenGet()||[]).includes('acc:moon')){ ISL3.pending_acc=(ISL3.pending_acc||[]).filter(a=>a.id!=='moon'); accOffer(crown,()=>setTimeout(end,500)); return; }
     end(); return; }
   if(id==='final:all'){ const n=worldCount(o), bricks=B.reduce((a,[,b])=>a+(b.n||0),0);
-    trialDialog({icon:'🌟',title:'You built a whole world!',quick:true,rows:`<div><span>Builds finished</span><span>${nf(n)}</span></div><div><span>Bricks placed</span><span>${nf(bricks)}</span></div><div><span>Islands complete</span><span>${ISLE_TOTAL} of ${ISLE_TOTAL}</span></div><div><span>Moonstone crown</span><span>👑</span></div><div class="tot"><span>Bonus Galaxy Blocks</span><span>+10 ${gbIc()}</span></div>`,
+    trialDialog({icon:'🌟',title:'You built a whole world!',quick:true,rows:`<div><span>Builds finished</span><span>${nf(n)}</span></div><div><span>Bricks placed</span><span>${nf(bricks)}</span></div><div><span>Islands complete</span><span>${ISLE_TOTAL} of ${ISLE_TOTAL}</span></div><div><span>Moonstone crown</span><span>👑</span></div><div class="tot"><span>Bonus stars</span><span>+20 ★</span></div><div><span>Galaxy Blocks</span><span>+20 ${gbIc()}</span></div>`,
       note:`Every island in Bloppitopia is finished, and lufu has given ${pupName(o)||'your otter'} the Moonstone crown! A new Bibi’s Weekly Bloppit still comes every Monday, so keep building.`}); return; }
   const isle=id.split(':')[1], N=ISLES[isle]; if(!N){ setTimeout(()=>isl3AfterReveal(worldStore()),0); return; }
   const line={otterwood:()=>`All ${OTTER_LEVELS.length} Tiny’s Frog Trail levels, boss and all: ${nf(sum(k=>k.startsWith('t:otter:')))} bricks`,
@@ -11197,7 +11213,7 @@ function finaleCard(id){
     blitzbay:()=>`${B.filter(([,b])=>b.k==='blitz').length} Blitz wins, and the Grand Prix against Swoop`,
     brickworks:()=>`${isleCount('brickworks',o)} creations: your own, the library and Bibi’s Weekly Bloppit`,
     moonstone:()=>`The mystery solved: all ${MYSTERY.length} chapters, and lufu found`}[isle];
-  trialDialog({icon:isle==='moonstone'?'⛵':'🏆',title:isle==='moonstone'?'The Galaxy Ship sets sail!':`${N.name} is complete!`,quick:true,rows:`<div><span>${escapeHTML(line?line():'')}</span><span></span></div><div><span>${escapeHTML(N.milestone)}</span><span>✓</span></div><div class="tot"><span>Bonus Galaxy Blocks</span><span>+5 ${gbIc()}</span></div>`,
+  trialDialog({icon:isle==='moonstone'?'⛵':'🏆',title:isle==='moonstone'?'The Galaxy Ship sets sail!':`${N.name} is complete!`,quick:true,rows:`<div><span>${escapeHTML(line?line():'')}</span><span></span></div><div><span>${escapeHTML(N.milestone)}</span><span>✓</span></div><div class="tot"><span>Bonus stars</span><span>+10 ★</span></div><div><span>Galaxy Blocks</span><span>+10 ${gbIc()}</span></div>`,
     note:(isle==='moonstone'?`All eight of you are aboard: Bloppit and ${pupName(o)||'your otter'} at the bow, the friends beside them, and lufu by the lantern, watching the way home. The ship sails for lufu’s own world. `:'')+(islesComplete(o).length<ISLE_TOTAL?`${islesComplete(o).length} of ${ISLE_TOTAL} islands complete. ${ISLE_TOTAL-islesComplete(o).length===1?'One to go!':'Keep going!'}`:'Every island is complete!')});
 }
 function revealText(id,o){ const [k,a,b]=id.split(':');
@@ -11362,11 +11378,14 @@ window.bloppitMidWhy=()=>{ const o=worldStore(), n=worldCount(o), seen=new Set(s
 window.bloppitBeat=()=>({hold:!!ISL3.hold,say:(ISL3.box&&ISL3.box.querySelector('.is3-say:not([hidden])')||{}).textContent||'',banner:(ISL3.box&&ISL3.box.querySelector('.is3-banner:not([hidden])')||{}).textContent||''});   // for tests
 
 /* ---------- My Bloppit: your otter's level and outfit ----------
-   Otter Level comes from XP (every finished build). Outfits never change how puzzles play: a scarf and a beanie
+   Otter Level comes from ★ earned (see otterLevel). Outfits never change how puzzles play: a scarf and a beanie
    from the start, then one more every few levels, and a crown for a Legend. The child picks the colour. What's
    worn is kept in the world record as small ids and colour numbers (wear: { neck:['scarf',2], head:[...] }). */
-const otterLevel=o=>{ const xp=worldXP(o); let n=1; while(25*(n+1)*n<=xp) n++; return n; };          // L2 at 50 XP, L3 at 150, L5 at 500, L10 at 2,250
-const levelXP=n=>25*n*(n-1);
+// The Otter Level: from all ★ earned (L2 at 12, L5 at 120, L8 at 336, L11 at 660). A world from before the ★ change keeps
+// at least the level its XP gave it then (builds and bottles before STAR_SWITCH), so no otter ever goes down.
+const levelXP=n=>6*n*(n-1);
+const oldLevel=o=>{ const day=new Date(STAR_SWITCH).toISOString().slice(0,10), xp=Object.entries(o.builds||{}).filter(([,b])=>(b.t||Infinity)<STAR_SWITCH).reduce((a,[k,b])=>a+buildXP(k,b),0)+BOTTLE_XP*bottleDays(o).filter(d=>d<day).length; let n=1; while(25*(n+1)*n<=xp) n++; return n; };
+const otterLevel=o=>{ const st=worldStarsEarned(o); let n=1; while(levelXP(n+1)<=st) n++; return Math.max(n,oldLevel(o)); };
 const ACC=[
   {id:'scarf',name:'Scarf',slot:'neck',lvl:1},
   {id:'beanie',name:'Beanie',slot:'head',lvl:1},
@@ -11770,9 +11789,9 @@ function renderDecorShop(){
 $('#decorGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-decor]'); if(!b||b.disabled) return;
   const d=DECOR.find(x=>x.id===b.dataset.decor); if(!d) return;
   if(b.dataset.back){ decorPut(d.id,true); return; }
-  if(!b.dataset.confirm){ b.dataset.confirm='1'; b.classList.add('confirm'); b.querySelector('.cost').textContent=`Tap again to buy`; setTimeout(()=>{ delete b.dataset.confirm; if(b.isConnected){ b.classList.remove('confirm'); b.querySelector('.cost').textContent=`Buy · ★ ${d.cost}`; } },3000); return; }
+  if(!b.dataset.confirm){ b.dataset.confirm='1'; b.classList.add('confirm'); b.querySelector('.cost').textContent=`Tap again to buy`; setTimeout(()=>{ delete b.dataset.confirm; if(b.isConnected){ b.classList.remove('confirm'); b.querySelector('.cost').innerHTML=`Buy · ${gbIc()} ${d.cost}`; } },3000); return; }
   const o=worldStore(); if(o.decor.includes(d.id)||worldStars(o)<d.cost) return;
-  o.decor.push(d.id);
+  o.decor.push(d.id); o.paid={...(o.paid||{}),[d.id]:d.cost};   // the price paid: decorations bought before the ★ change cost the old price (OLD_COST)
   if(!d.water&&ISL3.ok&&ISL3.obst&&DECOR3[d.id]&&!(o.pos||{})['decor:'+d.id]){ try{ const [x,z]=clearSpot3(DECOR3[d.id][0],DECOR3[d.id][1],(DECOR_R[d.id]||.5)+.15); o.pos={...(o.pos||{}),['decor:'+d.id]:[W2P(x),W2P(z)]}; }catch(e){} }
   worldSet(o); track('decor_bought:'+d.id); sfx.chime(); islandShown=-1; renderIsland(); decorPlaced(d); });
 // Put a decoration away (it stays yours, in the Decorate list) or back out where it was
@@ -11788,11 +11807,11 @@ $('#isDecor').onclick=()=>{ if($('#isDrawer')){ isDrawer(true,'shop'); return; }
 $('#isShopClose').onclick=()=>{ if($('#isDrawer')){ isDrawer(false); return; } $('#isShop').hidden=true; scrollTo({top:0,behavior:'smooth'}); };
 function renderBuilds(){
   const o=worldStore(), keys=[...o.log].reverse(), shownKeys=new Set(islandModelsAny(o).list.map(m=>m.key));
-  const B=Object.values(o.builds), perfect=B.filter(b=>rateOf(b)>=STAR_MAX).length, mem=B.filter(b=>b.m).length;
-  $('#isBuildsNote').innerHTML=keys.length?`${keys.length} model${keys.length===1?'':'s'} finished. Stars are the best of every try. <span class="mastery"><b>${perfect}</b> perfect (all ten ★) · <b>${mem}</b> from memory</span>`:'Nothing finished yet.';
+  const B=Object.values(o.builds), perfect=B.filter(b=>rateOf(b)>=starCap(b.n)).length, mem=B.filter(b=>b.m).length;
+  $('#isBuildsNote').innerHTML=keys.length?`${keys.length} model${keys.length===1?'':'s'} finished. Stars are the best of every try. <span class="mastery"><b>${perfect}</b> perfect (every ★) · <b>${mem}</b> from memory</span>`:'Nothing finished yet.';
   $('#buildsGrid').innerHTML=keys.map(k=>{ const b=o.builds[k], u=worldThumb(k), nm=k.startsWith('w:')?'Bibi’s Weekly Bloppit':(/^m:(.+):\d+$/.exec(k)||/^t:[a-z]+:\d+:(.+)$/.exec(k)||[])[1]||'Your photo';
     const home=isHomeBuild(k), away=!home&&isAway(o,k), on=home||shownKeys.has(k)||(k.startsWith('w:')&&!ISL3.ok);
-    return `<button type="button" class="${on?'':'away'}" data-mkey="${escapeHTML(k)}" aria-label="${escapeHTML(modelFacts(k,o).name)}">${home?'<span class="on-isle" title="It became your home">🏠</span>':on?'<span class="on-isle" title="On Bloppitopia">🏝️</span>':''}${u?`<img src="${u}" alt="">`:'<span style="height:72px"></span>'}<span>${escapeHTML(modelFacts(k,o).name)}</span>${wsStars(rateOf(b))}<small>${home?'Your home · ':''}${b.n} bricks${b.m?' · 🧠':''}${k.startsWith('w:')?' · 📅':''}${away?' · put away':''}</small></button>`; }).join('');
+    return `<button type="button" class="${on?'':'away'}" data-mkey="${escapeHTML(k)}" aria-label="${escapeHTML(modelFacts(k,o).name)}">${home?'<span class="on-isle" title="It became your home">🏠</span>':on?'<span class="on-isle" title="On Bloppitopia">🏝️</span>':''}${u?`<img src="${u}" alt="">`:'<span style="height:72px"></span>'}<span>${escapeHTML(modelFacts(k,o).name)}</span>${wsStars(rateOf(b),starCap(b.n))}<small>${home?'Your home · ':''}${b.n} bricks${b.m?' · 🧠':''}${k.startsWith('w:')?' · 📅':''}${away?' · put away':''}</small></button>`; }).join('');
 }
 $('#buildsGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-mkey]'); if(b) islandTip('model:'+b.dataset.mkey,b); });
 // The postcard: the island as a picture, no name, no photo, no location
@@ -12364,11 +12383,11 @@ async function relayDone(){
 function relayCredit(c){
   if(!c||c.kind!=='relay'||!c.done||!c.first.me) return;
   const o=worldStore(), key='r:'+c.code; if(o.builds[key]) return;
-  const clean=c.first.miss===0&&c.first.hint===0, stars=1+(c.first.hint===0?1:0)+(clean?1:0);
+  const clean=c.first.miss===0&&c.first.hint===0, lost=(c.first.hint||0)+(c.first.miss?1:0), cap=starCap(c.nBricks), stars=Math.max(1,cap-lost);   // no brick-by-brick record from the other device: each hint, and the misses together, cost one
   const before={pup:pupStage(o),island:islandStage(o)};
-  o.builds[key]={n:c.nBricks,s:stars,k:'relay',t:Date.now(),c:1}; o.log.push(key); worldSet(o);
+  o.builds[key]={n:c.nBricks,l:lost,r:stars,s:oldScale(stars,cap),k:'relay',t:Date.now(),c:1}; o.log.push(key); worldSet(o);
   const after={pup:pupStage(o),island:islandStage(o)};
-  worldLast={key,kind:'relay',stars,best:stars,gained:stars,xp:buildXP(key,o.builds[key]),bonus:0,first:true,clean,noHint:c.first.hint===0,before,after,pupUp:after.pup>before.pup,islandUp:after.island>before.island,total:worldStars(o),count:worldCount(o)};
+  worldLast={key,kind:'relay',stars,cap,best:stars,gained:stars,xp:0,bonus:0,first:true,clean,noHint:c.first.hint===0,before,after,pupUp:after.pup>before.pup,islandUp:after.island>before.island,total:worldStars(o),count:worldCount(o)};
   track('relay_finished_first'); worldStrips(); trialDialog({icon:'🔁',title:'Your passed puzzle is finished!',note:`${escapeHTML(c.second.label)} built the rest of the ${escapeHTML(c.title)}. It’s on your island now.`,card:false}); worldSound(); renderHome();
 }
 $('#bzRelayGo').onclick=()=>{ try{ relayStart($('#bzModel').value); }catch(e){ mpMsg(e.message,'err'); } };
@@ -12645,12 +12664,12 @@ function playAsk(where,opt){ const T=QP_TILES[where]; if(!T||mp){ homeGo(where);
   const d=$('#qpDlg');
   // Pippa's island is Flipper Beach: its puzzles wash ashore as Bloppitopia grows. Before the first one has, the choice
   // is still shown, greyed, saying when it comes (Steff, 8 Nov 2026); after that it's open (a new puzzle, or replays).
-  let isleS='In Bloppitopia: every build grows the island and earns ★, XP and Galaxy Blocks.', isleOn=true, isleGo=where;
+  let isleS='In Bloppitopia: every build grows the island and earns ★ (and Galaxy Blocks).', isleOn=true, isleGo=where;
   if(T.sea){ isleGo='sea'; try{ const o=worldStore(), SB=bestOf(gameStore(),'sea'), N=SEA_LEVELS.length;
     const ready=SEA_LEVELS.findIndex((_,i)=>!SB[i]&&seaWashed(i,o)), nx=SEA_LEVELS.findIndex((_,i)=>!seaWashed(i,o)), nb=nx>=0?seaBuildsTo(nx,o):0;
     const more=`${nb} more build${nb===1?'':'s'} on the other islands`;
     if(nx===0){ isleOn=false; isleS=`Not yet: Pippa’s first puzzle washes ashore when Bloppitopia reaches ${seaPct(0)}%. That’s ${more}.`; }
-    else if(ready>=0) isleS=`Puzzle ${ready+1} has washed ashore, ready to build! Every build grows Flipper Beach and earns ★, XP and Galaxy Blocks.`;
+    else if(ready>=0) isleS=`Puzzle ${ready+1} has washed ashore, ready to build! Every build grows Flipper Beach and earns ★ (and Galaxy Blocks).`;
     else if(nx<0) isleS=`All ${N} of Pippa’s Flipper Beach puzzles are built. Build them again for more ★.`;
     else isleS=`Pippa’s next puzzle washes ashore at ${seaPct(nx)}% of Bloppitopia (${more}). Until then, build the ones already ashore again.`;
   }catch(e){} }

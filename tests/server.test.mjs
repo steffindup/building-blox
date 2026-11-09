@@ -35,13 +35,15 @@ test('pup: world merge keeps best stars, earliest time, union of log/decor, the 
   assert.deepEqual(w.log, ['m:Tree:6', 'm:Duck:18', 'w:2026-10-26']);
   assert.deepEqual(w.decor, ['flag', 'crab']); assert.equal(w.pupName, 4);
 });
-test('pup: ★ out of 10 (r) merge with old 3-scale builds (3→10, 2→8, 1→6), keeping the best', () => {
+test('pup: ★ merge keeps the fewest lost (l), reading older records (r out of 10, s out of 3) the same way', () => {
   const a = { world: { builds: { 'm:Tree:6': { n: 6, s: 2, t: 100, c: 1 }, 'm:Duck:18': { n: 18, s: 3, t: 200, c: 1 } }, log: ['m:Tree:6', 'm:Duck:18'] } };
-  const b = { world: { builds: { 'm:Tree:6': { n: 6, s: 3, r: 10, t: 90, c: 1 }, 'm:Duck:18': { n: 18, s: 2, r: 9, t: 300, c: 1 } }, log: ['m:Tree:6', 'm:Duck:18'] } };
+  const b = { world: { builds: { 'm:Tree:6': { n: 6, l: 0, r: 5, s: 3, t: 90, c: 1 }, 'm:Duck:18': { n: 18, l: 1, r: 4, s: 2, t: 300, c: 1 } }, log: ['m:Tree:6', 'm:Duck:18'] } };
   const w = merge(a, cleanData(b)).world;
-  assert.equal(w.builds['m:Tree:6'].r, 10);
-  assert.equal(w.builds['m:Duck:18'].r, 10, 'an old perfect build (3 of 3) beats a 9 of 10');
-  assert.equal(merge({ world: { builds: { k: { n: 6, s: 2 } }, log: ['k'] } }, { world: { builds: { k: { n: 6, s: 1 } }, log: ['k'] } }).world.builds.k.r, undefined, 'old builds stay old until rebuilt');
+  assert.equal(w.builds['m:Tree:6'].l, 0);
+  assert.equal(w.builds['m:Duck:18'].l, 0, 'an old perfect build (3 of 3) beats one star lost');
+  assert.equal(merge({ world: { builds: { k: { n: 6, r: 9 } }, log: ['k'] } }, { world: { builds: { k: { n: 6, l: 3 } }, log: ['k'] } }).world.builds.k.l, 1, '9 out of 10 = one lost');
+  assert.equal(merge({ world: { builds: { k: { n: 6, s: 2 } }, log: ['k'] } }, { world: { builds: { k: { n: 6, s: 1 } }, log: ['k'] } }).world.builds.k.l, undefined, 'old builds stay old until rebuilt');
+  assert.deepEqual(merge({ world: { decor: ['bench'], paid: { bench: 8 } } }, { world: { decor: ['bench', 'palm'], paid: { bench: 3, palm: 20, x: 'no' } } }).world.paid, { bench: 3, palm: 20 }, 'prices paid: the lower one');
 });
 test('pup: a set name is never overwritten by an unset one', () => {
   assert.equal(merge({ world: { pupName: 2 } }, { world: { pupName: -1 } }).world.pupName, 2);
