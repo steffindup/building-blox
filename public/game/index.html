@@ -5978,7 +5978,7 @@ const SAMPLES=[
    x.fillStyle='#F4F4F4'; x.fillRect(30,166,162,8);
    x.fillStyle='#0055BF'; x.rr(4,196,212,20,8);
    return [['front',c]]; }},
- {name:'Striped lighthouse',theme:'Ocean',weekly:'2026-11-09',beat:'The light went out. Finish it before dark.',ws:{size:10},make(){ const [c,x]=sheet(200,240,'#BFE3F5');
+ {name:'Striped lighthouse',theme:'Ocean',weekly:'2026-12-21',beat:'The light went out. Finish it before dark.',ws:{size:10},make(){ const [c,x]=sheet(200,240,'#BFE3F5');
    x.poly([[100,8],[66,48],[134,48]],'#C91A09');
    x.fillStyle='#1B2A34'; x.fillRect(70,48,60,8); x.fillRect(70,84,60,8); x.fillRect(72,56,6,28); x.fillRect(122,56,6,28);
    x.fillStyle='#F2CD37'; x.fillRect(78,56,44,28);
@@ -5988,6 +5988,21 @@ const SAMPLES=[
    x.poly([[68,172],[132,172],[136,196],[64,196]],'#C91A09');
    x.fillStyle='#1B2A34'; x.rr(92,200,16,24,6);
    x.fillStyle='#1B2A34'; x.fillRect(40,224,120,10);
+   return [['front',c]]; }},
+ {name:'Big Ben',theme:'Landmarks',weekly:'2026-11-09',beat:'London’s great clock has stopped. Build it back before it strikes!',ws:{size:16},make(){ const [c,x]=sheet(160,260,'#BFE3F5');
+   x.poly([[80,4],[62,58],[98,58]],'#3E4C59');                          // the spire
+   x.fillStyle='#F2CD37'; x.fillRect(77,4,6,10);                         // the gilded tip
+   x.fillStyle='#E4CD9E'; x.fillRect(60,58,40,22);                       // the belfry
+   x.fillStyle='#3E4C59'; x.rr(66,62,8,14,3); x.rr(86,62,8,14,3);         // belfry arches
+   x.fillStyle='#958A73'; x.fillRect(54,80,52,6);                        // ledge
+   x.fillStyle='#E4CD9E'; x.fillRect(54,86,52,56);                       // the clock stage
+   x.dot(80,114,24,'#F2CD37'); x.dot(80,114,19,'#F4F4F4');                // gold rim, white face
+   x.fillStyle='#1B2A34'; x.fillRect(78,98,4,18); x.fillRect(80,112,14,4); // hands at ten past twelve-ish
+   x.dot(80,114,3,'#1B2A34');
+   x.fillStyle='#958A73'; x.fillRect(54,142,52,6);                       // ledge
+   x.fillStyle='#E4CD9E'; x.fillRect(58,148,44,92);                      // the long shaft
+   x.fillStyle='#958A73'; for(const X of [66,78,90]) x.fillRect(X,154,4,80);   // stone ribs
+   x.fillStyle='#958A73'; x.fillRect(46,240,68,14);                      // the base
    return [['front',c]]; }},
  {name:'Curled-up pup',theme:'Animals',weekly:'2026-11-16',beat:'A little otter fell asleep on the beach.',ws:{shape:'flat',size:8},make(){ const [c,x]=sheet(240,180,'#ffffff');
    x.oval(120,112,98,58,0,'#8B5A2B');
@@ -6321,7 +6336,8 @@ const SAMPLES=[
    return [['front',c]]; }}
 ];
 // A Weekly's model stays out of the library until its week has started.
-const released=s=>!s.hidden&&(!s.weekly||s.weekly<=weekOf());  // hidden: the first-session build, not in the library
+// A Weekly joins the Library once its week is over, not while it's the Weekly (Steff, 8 Nov 2026). hidden: the first-session build, not in the library
+const released=s=>!s.hidden&&(!s.weekly||s.weekly<weekOf());
 let sampleIdx=0;
 function loadSample(i){
   sampleIdx=i; const s=SAMPLES[i];
@@ -8077,12 +8093,13 @@ function dayHash(day){ let h=2166136261; for(const ch of 'bloppit-weekly:'+day){
 const WEEKLY_PLAN={
   '2026-10-26':'Jack-o’-lantern',
   '2026-11-02':'Red boat',
-  '2026-11-09':'Striped lighthouse',
+  '2026-11-09':'Big Ben',   // Steff, 8 Nov 2026 (the Striped lighthouse moved to 21 Dec)
   '2026-11-16':'Curled-up pup',
   '2026-11-23':'Hot-air balloon',
   '2026-11-30':'Snowman',
   '2026-12-07':'Christmas tree',
   '2026-12-14':'Gingerbread house',
+  '2026-12-21':'Striped lighthouse',
 };
 // The hash pick only draws from models already in the library, so an unreleased Weekly is never spoiled early.
 const WEEKLY_POOL=()=>SAMPLES.map((s,i)=>i).filter(i=>!SAMPLES[i].weekly&&!SAMPLES[i].hidden);
