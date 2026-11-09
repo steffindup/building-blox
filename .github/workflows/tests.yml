@@ -57,8 +57,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      # Google Chrome (already on the runner), not Playwright's own Chromium: that one can't play the island films
+      # (.mp4), so the film tests failed and the page loads after them timed out (9 Nov 2026).
       - name: Browser tests
         env:
+          PLAYWRIGHT_CHROMIUM: /usr/bin/google-chrome
           PLAYWRIGHT_ARGS: --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist
         run: node --test --test-concurrency=1 --test-reporter=spec tests/browser.test.mjs

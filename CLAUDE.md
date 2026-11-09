@@ -124,7 +124,8 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   - **The full suite (~90 tests) overloads the sandbox** (it left 90 Chrome processes and a load average of 35). Run
     only the relevant tests with `--test-name-pattern="Weekly|Library|Blitz|…"`. GitHub Actions runs everything on
     every push and pull request (`.github/workflows/tests.yml`): the fast tests, the full browser suite, and a check
-    that `public/weekly` matches `WEEKLY_PLAN` (`tests/weekly-check.mjs`). Results show as a ✓/✗ next to each commit
+    that `public/weekly` matches `WEEKLY_PLAN` (`tests/weekly-check.mjs`). CI uses the runner's Google Chrome: Playwright's own Chromium can't
+    play the .mp4 films, and with it nearly every browser test failed. Results show as a ✓/✗ next to each commit
     on GitHub (the sandbox's proxy blocks the Actions API; the commit's check-runs may still be readable).
   - The tests use port 8799. Stop any dev server you started on 8799 first, or use another port for your own server.
   - A test that "sometimes fails" is worth a real look before rerunning it. "the Weekly: a brick of the wrong colour…"
