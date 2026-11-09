@@ -173,6 +173,8 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   bricks" (front page) is fine.
 - **Launch screen**: winking Bloppit plus the "Bloppit" voice (Steff's two boys, mixed 50:50), on the website and the app.
 - **About us** is Steff's own text: light edits only.
+- **Contractions** (it's, don't, can't): the game and website use them for a friendly tone with kids, which Steff
+  accepts though he doesn't like them himself (9 Nov). The privacy policy and the classroom activity page stay more formal.
 - **Characters**: Bloppit the otter (Home Island, the main character; "Let's bloppit!"), the Pup (the player's otter, named
   and coloured before sailing to Bloppitopia), Tiny the tree frog (Frog Forest, Frog Trail), Nora the night heron
   (Brainpeak, Brain Trail; Maths by US grade, from the age the player gives), Pippa the penguin (Flipper Beach, mirror
