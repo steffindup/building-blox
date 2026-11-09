@@ -6806,7 +6806,7 @@ function updateGameBar(){
   $('#gbBadge').textContent=game.lvl+1; $('#gbNum').textContent=`${game.lvl+1} of ${LV.length}`; $('#gbName').textContent=L.name;
   { const st=runStars(); $('#gbPts').innerHTML=starNum(st,runCap()); $('#gbOf').textContent=''; if(game.lastSt&&st<game.lastSt){ const f=$('#gbFlash'); f.textContent='−★'; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); } game.lastSt=st; }
   const bits=[]; if(p.hint) bits.push(`Hints ${p.hint}`); if(p.auto) bits.push(`Placed for you ${p.auto}`); if(run&&run.miss) bits.push(`Wrong bricks ${run.miss}`);
-  if(game.math) bits.push(`Math ${game.math.solved.length} of ${game.math.locks.length} pages`);
+  if(game.math) bits.push(`Maths ${game.math.solved.length} of ${game.math.locks.length} pages`);
   $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>';
 }
 window.bloppitLevels={otter:OTTER_LEVELS,brain:BRAIN_LEVELS,sea:SEA_LEVELS,flip:FLIP_LEVELS,blitz:BLITZ_PICKS,mystery:()=>MYSTERY,progress:()=>gameProgress(worldStore()),lib:()=>SAMPLES.filter(released).map(s=>s.name),weekly:w=>weeklyPuzzle(w),count:L=>{ delete L.count; return levelCount(L); },pic:n=>{ const S=SAMPLES.find(x=>x.name===n); return S?S.make()[0][1].toDataURL():null; },thumb:L=>levelThumb(L)};   // for tests and tuning

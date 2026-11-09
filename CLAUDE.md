@@ -151,8 +151,8 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
 
 ## Product decisions to respect
 
-- **Names and spelling**: "Bloppit: World of Bricks" everywhere (from 1.1). Tagline "Brick. Build. Bloppit." "Math",
-  never "Maths". lufu is always lowercase. Title Case for chapters, characters and tile names ("Moonstone Isle,
+- **Names and spelling**: "Bloppit: World of Bricks" everywhere (from 1.1). Tagline "Brick. Build. Bloppit." "Maths", never "Math" (the 7 Nov 2026
+  consistency sweep; Steff confirmed 9 Nov). lufu is always lowercase. Title Case for chapters, characters and tile names ("Moonstone Isle,
   Chapter 5: The Moon Gate"). "Crew" (not Tribe). "Player Unique ID" for the anonymous server identity; bringing a
   player to another device is a **link** (both devices play as the same player), not a transfer or copy.
 - **Characters**: Bloppit the Otter ("Let's bloppit!"), Tiny the Tree Frog (Frog Forest, Frog Trail), Nora the Night
