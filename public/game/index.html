@@ -1587,7 +1587,7 @@ body.end-on .the-end{padding-bottom:calc(22px + env(safe-area-inset-bottom,0px))
 .is3-banner{pointer-events:none;max-width:90%;text-align:center;padding:8px 16px;border-radius:999px;background:rgba(20,32,44,.86);color:#fff;font-family:var(--f-display);font-size:18px;box-shadow:0 4px 14px rgba(0,0,0,.2);animation:is3-in .4s ease both}
 .is3-banner.big{font-size:22px;background:var(--c-bloppit)}
 .is3-banner.soon{background:linear-gradient(135deg,rgba(110,53,184,.92),rgba(59,44,155,.92));font-size:15px;margin-top:150px!important}@media (max-width:559px){.is3-banner.soon{margin-top:160px!important;font-size:13px}}
-@media (max-width:559px){.is3-play{min-width:0;font-size:16px;padding:8px 18px}.is3-play small{font-size:11px}.is3-banner{font-size:15px}.is3-banner.big{font-size:18px}}
+@media (max-width:559px){.is3-play{min-width:0;font-size:16px;padding:8px 18px}.is3-play small{font-size:11px;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;text-align:center;line-height:1.25}   /* a long line wraps to two rather than being cut off (Steff, 10 Nov) */.is3-banner{font-size:15px}.is3-banner.big{font-size:18px}}
 @keyframes is3-in{from{transform:translateY(-10px)}to{transform:none}}
 .is3-views{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);display:flex;align-items:center;gap:4px;pointer-events:auto;padding:4px;border-radius:999px;background:rgba(20,32,44,.72);color:#fff;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 3px 10px rgba(0,0,0,.2)}
 .is3-views .v-world{background:#fff;color:#14202C;font-size:20px;padding:0;overflow:hidden}.is3-views .v-world svg{display:block;width:100%;height:100%}   /* the world map: home in the middle, the five islands around it in their colours */
@@ -12635,10 +12635,10 @@ const isleFrac=(id,o)=>{ const P=PIECES[id]; return Math.min(1,isleCount(id,o)/P
 function nextCandidates(){
   const g=gameStore(), o=worldStore(), out=[];
   for(const tr of ['otter','brain','sea']){ const LV=levelsOf(tr), B=bestOf(g,tr), i=LV.findIndex((_,k)=>!B[k]);
-    if(i>=0&&(tr!=='sea'||seaWashed(i,o))){ const L=LV[i]; out.push({kind:tr,isle:{otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr],t:tr==='sea'?`🐧 Pippa’s puzzle ${i+1}: ${L.name}`:`${L.boss?'👑 Boss: ':''}${tr==='otter'?'Tiny’s Frog':'Nora’s Brain'} Trail level ${i+1}: ${L.name}`,s:'',thumb:levelThumb(L),go:()=>{ setTrail(tr); if(mp) mpLeave(); startLevel(i); }}); } }
+    if(i>=0&&(tr!=='sea'||seaWashed(i,o))){ const L=LV[i]; out.push({kind:tr,isle:{otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr],t:tr==='sea'?`🐧 Pippa’s puzzle ${i+1}: ${L.name}`:L.boss?`👑 ${tr==='otter'?'Tiny’s Frog':'Nora’s Brain'} Trail boss: ${L.name}`:`${tr==='otter'?'Tiny’s Frog':'Nora’s Brain'} Trail level ${i+1}: ${L.name}`   /* fits the Play button on a phone */,s:'',thumb:levelThumb(L),go:()=>{ setTrail(tr); if(mp) mpLeave(); startLevel(i); }}); } }
   { const i=ladderStep(o);   // Blitz Bay's ladder: the next race, Swoop faster every five, then the Grand Prix
     if(i>=0){ const L=BLITZ_PICKS[i], gp=i>=LADDER_N, lvl=gp?'hard':L.lv;
-      out.push({kind:'blitz',isle:'blitzbay',t:gp?`🏆 Blitz Bay race ${BLITZ_RACES} of ${BLITZ_RACES}: the Grand Prix against Swoop`:`⚡ Blitz Bay race ${i+1} of ${BLITZ_RACES}: ${L.name} (Swoop at ${CPU_LEVELS[lvl].speed})`,s:'',thumb:levelThumb(L),go:()=>ladderGo(true)}); } }
+      out.push({kind:'blitz',isle:'blitzbay',t:gp?`🏆 Blitz Bay race ${BLITZ_RACES} of ${BLITZ_RACES}: the Grand Prix`:`⚡ Blitz Bay race ${i+1} of ${BLITZ_RACES}: ${L.name}`   /* Swoop's speed is on the race card (Steff, 10 Nov: the Play button's line was too long) */,s:'',thumb:levelThumb(L),go:()=>ladderGo(true)}); } }
   { const smp=SAMPLES.find(x=>released(x)&&!Object.keys(o.builds).some(k=>k.startsWith(`m:${x.name}:`)));
     if(smp){ if(!smp.thumb) smp.thumb=smp.make()[0][1].toDataURL('image/png'); const i=SAMPLES.indexOf(smp);
       out.push({kind:'library',isle:'brickworks',t:`From the library: ${smp.name}`,s:'',thumb:smp.thumb,go:()=>{ if(mp) mpLeave(); if(game) endGame(); libDefaults(); loadSample(i); clearTimeout(timer); rebuild(); setTab('build'); }}); } }
