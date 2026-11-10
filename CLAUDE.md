@@ -152,6 +152,8 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
     that `public/weekly` matches `WEEKLY_PLAN` (`tests/weekly-check.mjs`). CI uses the runner's Google Chrome: Playwright's own Chromium can't
     play the .mp4 films, and with it nearly every browser test failed. Results show as a ✓/✗ next to each commit
     on GitHub (the sandbox's proxy blocks the Actions API; the commit's check-runs may still be readable).
+  - The workflow runs on `ubuntu-24.04`, pinned: on `ubuntu-latest` (26.04 from 10 Nov 2026) Playwright can't install
+    its Chromium, so the Weekly data check failed.
   - Each browser test starts its own browser (`beforeEach`). With one shared browser, a browser that stopped answering
     on GitHub's machine made every later test time out, so no run had passed (fixed 10 Nov).
   - The tests use port 8799. Stop any dev server you started on 8799 first, or use another port for your own server.

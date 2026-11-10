@@ -16,7 +16,7 @@ concurrency:
 jobs:
   fast:
     name: Server, math and films
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04   # pinned: on ubuntu-latest (26.04, Nov 2026) Playwright can't install its Chromium
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +29,7 @@ jobs:
 
   weekly-data:
     name: The app's Weekly data is up to date
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04   # pinned: on ubuntu-latest (26.04, Nov 2026) Playwright can't install its Chromium
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -48,7 +48,7 @@ jobs:
 
   browser:
     name: Browser (end to end)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04   # pinned: on ubuntu-latest (26.04, Nov 2026) Playwright can't install its Chromium
     timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
