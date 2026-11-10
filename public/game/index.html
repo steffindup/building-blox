@@ -4419,7 +4419,7 @@ function filmToGo(f,o){ const at=f.at||'', far=50, mo=()=>{ try{ return mysteryO
   }catch(e){}
   return far*2; }
 function filmsShow(pick){ const d=$('#filmsDlg'); if(d.open) return; const o=worldStore(), open=filmsOpen(o); if(!open.length) return;
-  const locked=FILMS.filter(f=>!open.includes(f)).map((f,i)=>({f,i,n:filmToGo(f,o)})).sort((a,b)=>a.n-b.n||a.i-b.i).map(x=>Object.assign(Object.create(x.f),{toGo:x.n}));   // the closest first
+  const locked=FILMS.filter(f=>!open.includes(f)&&!filmSeen(f.id,o)).map((f,i)=>({f,i,n:filmToGo(f,o)})).sort((a,b)=>a.n-b.n||a.i-b.i).map(x=>Object.assign(Object.create(x.f),{toGo:x.n}));   // the closest first
   $('#filmList').innerHTML=open.map(f=>`<button type="button" data-film="${f.id}" aria-pressed="false"><img src="${vidUrl(f.file,'jpg')}" alt="" loading="lazy"><b>${f.no} · ${escapeHTML(f.name)}</b><small>${escapeHTML(f.place)}</small></button>`).join('')
     +locked.slice(0,1).map(f=>`<button type="button" disabled><span class="lock" aria-hidden="true">🔒</span><b>${f.no} · ???</b><small>${escapeHTML(f.hint||'Keep building to unlock')}${f.toGo>1&&f.toGo<20?` · ${f.toGo} more`:''}</small></button>`).join('');
   $('#filmList').querySelectorAll('button[data-film]').forEach(b=>b.onclick=()=>filmShow(FILMS.find(f=>f.id===b.dataset.film),true));
