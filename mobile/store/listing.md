@@ -67,14 +67,13 @@ WEEKLY BLOPPIT
 • Keep your streak going, one week at a time
 
 FINISH CLEAN, EARN STARS
-• Every build earns a star for finishing, one for no hints and one for a clean build
-• Your best stars on each model are kept, so you can always come back for every star
-• Build from memory, with the booklet hidden, for a bonus star
+• Every build starts with a full set of stars
+• A brick that needs a hint or another try costs one star, and you always keep at least two
+• Build from memory, with the booklet hidden, for bonus stars
 
 TRAILS
 • Tiny’s Frog Trail: 15 levels, from a tiny heart to Tiny’s Lily-pad Palace
 • Nora’s Brain Trail: 15 different levels with maths puzzles matched to the player’s age
-• Pippa’s Mirror Puzzles: 12 more mirror puzzles to play any time: Pippa builds one half, you build the reflection
 • Separate players on one device, each with their own progress
 
 THE LIBRARY
@@ -91,7 +90,7 @@ TOGETHER
 MADE FOR FAMILIES
 • No ads, no in-app purchases, no accounts, no tracking
 • No chat and no voice anywhere in Bloppit; players in a room only place bricks
-• Progress is saved under an anonymous code, and a grown-up can move it to another device
+• Progress is saved under an anonymous code, and a grown-up can link another device
 • Racing Swoop, the Trails and the library work offline
 
 Bloppit is an independent project and is not affiliated with any toy brick brand.
@@ -112,8 +111,8 @@ In `screenshots/`: seven per device, captioned, ready to upload in this order. `
 |---|---|---|---|
 | 1 | `*-1-island` | Every build you finish grows Bloppitopia. | Bloppitopia: Home Island with the otter, Bloppit and the islands found so far |
 | 2 | `*-2-arrival` | A little otter is coming home. | A frame of the arrival film (9 s): the boat, Bloppit waiting on the jetty, cropped to fill the screen |
-| 3 | `*-3-build` | Snap bricks into place, page by page. | A build in progress with Bloppit |
-| 4 | `*-4-finish` | Finish clean. Earn three stars. | The finish card: stars, See Bloppitopia, Play next |
+| 3 | `*-3-build` | Snap bricks into place, page by page. | A build in progress with Bloppit (the 8 Nov shot shows the old phone layout, bubble over the build; retake next time) |
+| 4 | `*-4-finish` | Finish clean. Earn three stars. (out of date since the 9 Nov stars; next retake: "Build clean. Keep your stars.") | The finish card: stars, See Bloppitopia, Play next |
 | 5 | `*-5-weekly` | A new puzzle every week. See how many built it clean. | The Weekly page |
 | 6 | `*-6-blitz` | Race Swoop in Blitz Bay. | A race against Swoop |
 | 7 | `*-7-menu` | Your otter grows with every build. | The menu with the Bloppitopia card |
@@ -129,7 +128,18 @@ follow Bloppit. Apple’s limits: 15–30 s, at most 30 fps, footage from the ap
 the arrival made in the game): upload these with 1.1. Set the poster frame to Bloppit holding his red brick on the
 jetty (about 7 s in).
 
-## What’s New (1.1.1)
+## What’s New (1.1.2, submitted 10 Nov 2026)
+
+1.1.1 was withdrawn, so this goes to players coming from 1.1 and covers what 1.1.1 added. No emoji.
+
+Building on phones is fixed: your model now sits above the messages and Bloppit's bubble, so every brick is easy to reach, even on smaller iPhones.
+• Simpler stars: every build starts with a full set, and you always keep at least two
+• Bibi's Weekly Bloppit: new puzzles, some finishing with a special piece
+• Play with Friends and Your Crews: race a friend, Pass the Puzzle and build together
+• Pippa's Quick Play now uses her Flipper Beach puzzles, like the other islands
+• Smaller fixes all over
+
+## What’s New (1.1.1, withdrawn)
 
 Together, and a tidier Bloppit.
 • Play with Friends: a Team Build or Race a Friend, with a code to share
@@ -151,6 +161,8 @@ Bloppitopia comes to life!
 
 Paste as is: one paragraph per topic, no line breaks inside a paragraph.
 
+For 1.1.2 only, first paragraph: We withdrew version 1.1.1 after finding a layout bug on iPhone: the step message and the character's speech bubble could cover the building area, so some bricks could not be placed. Version 1.1.2 fixes this. The model is now framed above those messages on every iPhone size, and we have tested every game mode on iPhone SE, mini and Pro Max sizes. 1.1.2 includes everything from 1.1.1, plus small fixes. The notes below are unchanged.
+
 Bloppit is a brick-building puzzle game for families and anyone who loves bricks. No account or login is needed.
 
 To try it quickly: on the menu tap the Start here card. Pick the otter’s colour and name it (type a name or tap Pick a name), then tap Set sail, or just tap Pick later. A short film shows the otter arriving by boat (Skip at the top right ends it). Tap Build our first home and tap the faded brick to place each piece of the 12-brick house; the home then appears on the island. Then on the menu tap Blitz with Swoop (under Solo), then Play on Blitz Bay (its short film can be skipped) and Start the race (works offline).
@@ -159,9 +171,9 @@ Films: Bloppit’s films are short clips built into the app (no streaming, excep
 
 Challenges: on the menu tap Play with Friends (under Together), then Race a Friend, then Make a challenge, build the puzzle, and you get a 6-letter code; type that code into Join a Game (Got a code?) on another device (the website bloppit.com/game works too) to race the same puzzle.
 
-Bibi’s Weekly Bloppit: tap Bibi’s Weekly Bloppit on the menu. Only a finish and whether it was clean are counted (two counts per week, no name); the time and misses are sent only to check it’s a real finish and aren’t kept. Counts are deleted after 8 weeks.
+Bibi’s Weekly Bloppit: tap Bibi’s Weekly Bloppit on the menu. Each week we count finishes and clean finishes (no names), and a top-100 board shows generated names only (a grown-up can switch it off). The time and misses are sent only to check it's a real finish and aren't kept. Counts are deleted after 8 weeks.
 
-Progress (scores, finished models, stars, outfits, the otter’s name as a number from a fixed list) is saved under an anonymous progress code minted by our server. A name the player types for the otter stays on the device and is never sent. Grown-ups corner (behind the parental gate) shows the transfer code and the Family Link QR, and can delete the record.
+Progress (scores, finished models, stars, outfits, the otter’s name as a number from a fixed list) is saved under an anonymous progress code minted by our server. A name the player types for the otter stays on the device and is never sent. Grown-ups corner (behind the parental gate) shows the link code and the Family Link QR, and can delete the record.
 
 Usage counts: the app adds one to a daily count for a few events (a build started or finished, the arrival seen) with the country from the request and whether it was the app or the website. There is no identifier for the player or the device, and nothing is shared with anyone.
 

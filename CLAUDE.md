@@ -13,7 +13,7 @@ Target: kids 8–13 and their families, US-weighted, online-only. Steff is a sol
 Bermuda), so time is short and decisions are his.
 
 - Website and game: https://bloppit.com (game at `/game/`). Hosted on Netlify (site `bloppit`), deployed from `main`.
-- iOS app: App Store "Bloppit: World of Bricks" (id 6821449219, bundle `com.bloppit.app`). Live on the App Store: 1.1 (6 Nov 2026). 1.1.1 is in App Store review (build 213, submitted 9 Nov, manual release); the repo is at 1.1.2, for bug fixes (Steff, 10 Nov).
+- iOS app: App Store "Bloppit: World of Bricks" (id 6821449219, bundle `com.bloppit.app`). Live on the App Store: 1.1 (6 Nov 2026). 1.1.1 (build 213) was withdrawn for the phone overlay bug. 1.1.2 (build 218) is in App Store review (submitted 10 Nov, automatic release, phased release off; `mobile/store/submission-1.1.2.md`). A push to `public/game/` or `mobile/` makes a new TestFlight build but never touches the one in review.
 - Android/Google Play: in progress (Wyoming company Bloppit LLC being set up to own the IP and the Play account).
 - Contact: hello@bloppit.com. Socials: @playbloppit (TikTok, Instagram, X), @bloppit (YouTube), facebook.com/playbloppit.
 
