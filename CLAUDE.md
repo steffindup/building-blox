@@ -121,8 +121,11 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   (size in studs and layers, own colour, printed or not, what shows behind it): `dial` (4×4, Big Ben, the player's real
   time, a bell "bong"), and from 1.1.2 `brick` (Bloppit's red 2-stud brick, plain red, sparkle) and `fan` (12×5, a
   turkey's printed tail feathers, standing behind the model: `behind` puts it in the back layer and clears the feather
-  colours in front of it, so the head stays in front; fanfare). A new kind needs an entry there, artwork in `printCanvas` (also its parts-box
-  icon) and a sound in `specialIn`.
+  colours in front of it, so the head stays in front; fanfare). A kind can have its own outline (`shape`, drawn by `shapeGeo`;
+  `pieceGeo`/`pieceEdge` replace `brickGeo`/`edgeGeo` wherever a model brick is drawn): the fan is a half-oval with a bump
+  per feather. The clock dial is a square block that looks round only because the tower around it is the same colour
+  (Steff, 10 Nov: special pieces should be unique shapes). A new kind needs an entry there, artwork in `printCanvas`
+  (also its parts-box icon) and a sound in `specialIn`.
 - **Parallel Weeklies (Steff, 10 Nov):** one model per week carries the special piece. An app that doesn't know the kind
   (1.1.1) drops it and builds the same picture from ordinary bricks, so 1.1.1 players get a plain version automatically
   (checked in build 213's code). Draw the piece in the picture so the plain build still shows it. From 30 Nov every

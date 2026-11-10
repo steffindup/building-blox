@@ -3326,6 +3326,22 @@ function brickGeo(sx,sz,h=1){
   for(let i=0;i<sx;i++)for(let j=0;j<sz;j++){const s=new THREE.CylinderGeometry(.3,.3,.18,16); s.translate(i+.5,1.2*h+.08,j+.5); parts.push(s);}
   const g=THREE.BufferGeometryUtils.mergeBufferGeometries(parts); g.computeBoundingSphere(); geoCache.set(k,g); return g;
 }
+// A special piece can have its own outline (Steff, 10 Nov 2026: "the whole idea is to make it unique"): the fan is a
+// half-oval with one bump per feather, as wide as the piece and as tall, stood on its base; the print fills it.
+function shapeGeo(kind,sx,sz,h){
+  const k='shape:'+kind+':'+sx+'x'+sz+'x'+h; if(geoCache.has(k)) return geoCache.get(k);
+  const H=1.2*h-.02, rx=sx/2-.02, sh=new THREE.Shape(), N=9, steps=N*6;
+  sh.moveTo(sx/2-rx,0);
+  for(let i=0;i<=steps;i++){ const t=i/steps, a=Math.PI*(1-t), f=t*N%1, bump=1-.1*Math.pow(Math.abs(Math.cos(Math.PI*f)),3);   // the feather tips
+    sh.lineTo(sx/2+Math.cos(a)*rx*bump, Math.sin(a)*H*bump); }
+  sh.lineTo(sx/2+rx,0); sh.lineTo(sx/2-rx,0);
+  const g=new THREE.ExtrudeGeometry(sh,{depth:sz-.04,bevelEnabled:false,curveSegments:4}); g.translate(0,0,.02); g.computeBoundingSphere();
+  geoCache.set(k,g); return g;
+}
+const pieceShape=b=>b&&b.sp&&SPECIAL_KINDS[b.sp]&&SPECIAL_KINDS[b.sp].shape;
+const pieceGeo=b=>pieceShape(b)?shapeGeo(SPECIAL_KINDS[b.sp].shape,b.sx,b.sz,b.h||1):brickGeo(b.sx,b.sz,b.h);
+function pieceEdge(b){ if(!pieceShape(b)) return edgeGeo(b.sx,b.sz,b.h); const k='edge:'+b.sp+':'+b.sx+'x'+b.sz+'x'+(b.h||1);
+  if(!edgeCache.has(k)) edgeCache.set(k,new THREE.EdgesGeometry(pieceGeo(b),30)); return edgeCache.get(k); }
 // Special pieces (Steff, 8 Nov 2026): printed bricks. A library model can carry print:{kind,cx,cy,r} (a circle in its
 // drawing's pixels). The bricks on the model's front face under that circle are printed: each one's front face shows its
 // own part of the one big print, so the dial appears piece by piece as the bricks go in. The bricks themselves don't
@@ -3343,7 +3359,6 @@ function printCanvas(kind){
   if(kind==='fan'){   // the turkey's fanned tail: feathers from the middle of the bottom edge, red, orange and yellow
     const cols=['#C91A09','#FE8A18','#F2CD37','#FE8A18','#C91A09','#FE8A18','#F2CD37','#FE8A18','#C91A09'];
     const K=SPECIAL_KINDS.fan, half=256*K.rows*1.2/Math.max(K.cols,K.rows*1.2), Y=256+half, top=256-half;   // the band of the square print its face shows
-    g.fillStyle='#582A12'; g.fillRect(0,top,512,2*half);
     cols.forEach((col,i)=>{ const a=(i-(cols.length-1)/2)*(Math.PI*.98/(cols.length-1)); g.save(); g.translate(R,Y); g.rotate(a);   // a = 0 is straight up
       g.fillStyle=col; g.beginPath(); const L=2*half*.97; g.ellipse(0,-L/2,L*.16,L/2,0,0,7); g.fill(); g.fillStyle='rgba(88,42,18,.5)'; g.fillRect(-3,-L*.92,6,L*.82); g.restore(); });
     g.fillStyle='#582A12'; g.beginPath(); g.arc(R,Y,half*.4,Math.PI,0); g.fill();
@@ -3388,7 +3403,7 @@ function dialSweep(){
 const SPECIAL_KINDS={
   dial:{name:'Clock dial',cols:4,rows:4,print:true},
   brick:{name:'Bloppit’s red brick',cols:2,rows:1,colour:[201,26,9],back:'around'},
-  fan:{name:'Tail feathers',cols:12,rows:5,print:true,colour:[88,42,18],behind:true,clear:[[201,26,9],[254,138,24],[242,205,55]]},   // stands at the back; the feathers in front of it come away so it shows
+  fan:{name:'Tail feathers',cols:12,rows:5,print:true,shape:'fan',colour:[88,42,18],behind:true,clear:[[201,26,9],[254,138,24],[242,205,55]]},   // stands at the back; the feathers in front of it come away so it shows
 };
 const SPECIAL_NAME=Object.fromEntries(Object.entries(SPECIAL_KINDS).map(([k,v])=>[k,v.name])), SP_W=96;
 function addSpecial(m){
@@ -3497,11 +3512,11 @@ function buildScene(m){
   if(m.kind==='picture'){ basePlate=makeBase(m); modelGroup.add(basePlate); }
   modelGroup.position.set(-m.W/2,0,-m.D/2);
   const groups=new Map();
-  for(const b of m.bricks){const k=b.sx+'x'+b.sz+'x'+(b.h||1)+'|'+showC(m,b); if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(b);}
+  for(const b of m.bricks){const k=b.sx+'x'+b.sz+'x'+(b.h||1)+'|'+showC(m,b)+'|'+(pieceShape(b)?b.sp:''); if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(b);}
   const M=new THREE.Matrix4();
   for(const list of groups.values()){
     list.sort((a,b)=>a.step-b.step);
-    const b0=list[0], im=new THREE.InstancedMesh(brickGeo(b0.sx,b0.sz,b0.h),mat(showC(m,b0)),list.length);
+    const b0=list[0], im=new THREE.InstancedMesh(pieceGeo(b0),mat(showC(m,b0)),list.length);
     list.forEach((b,i)=>{M.makeTranslation(b.x,b.y*1.2,b.z); im.setMatrixAt(i,M);});
     im.instanceMatrix.needsUpdate=true; im.frustumCulled=false;
     im.userData.steps=Int32Array.from(list,b=>b.step); im.userData.bricks=list;
@@ -3544,10 +3559,10 @@ function showStep(k,animate){
     return; }
   const doneB=k===cur?usedSet():null, part=!!doneB&&doneB.size>0&&model.steps[k].bricks.some(b=>!doneB.has(b));
   model.steps[k].bricks.forEach((b,i)=>{
-    if(part&&doneB.has(b)){ const ms=withPrint(new THREE.Mesh(brickGeo(b.sx,b.sz,b.h),mat(showC(model,b))),b); ms.position.set(b.x,b.y*1.2,b.z); ms.userData.ty=b.y*1.2; ms.userData.i=i; ms.userData.b=b; current.add(ms); return; }   // already in: shown like the rest of the model
-    if(part){ const hl=new THREE.Mesh(brickGeo(b.sx,b.sz,b.h),MIRROR_SRC_MAT); hl.scale.set(1.08,1.1,1.08); hl.position.set(b.x-b.sx*.04,b.y*1.2-.06,b.z-b.sz*.04); hl.userData.ty=hl.position.y; hl.userData.i=i; current.add(hl); }   // still to go: glowing
-    const bc=showC(model,b), ms=withPrint(new THREE.Mesh(brickGeo(b.sx,b.sz,b.h),hang?xrayMat(bc):mat(bc)),b); if(hang) ms.renderOrder=5;
-    ms.add(new THREE.LineSegments(edgeGeo(b.sx,b.sz,b.h),edgeMat));
+    if(part&&doneB.has(b)){ const ms=withPrint(new THREE.Mesh(pieceGeo(b),mat(showC(model,b))),b); ms.position.set(b.x,b.y*1.2,b.z); ms.userData.ty=b.y*1.2; ms.userData.i=i; ms.userData.b=b; current.add(ms); return; }   // already in: shown like the rest of the model
+    if(part){ const hl=new THREE.Mesh(pieceGeo(b),MIRROR_SRC_MAT); hl.scale.set(1.08,1.1,1.08); hl.position.set(b.x-b.sx*.04,b.y*1.2-.06,b.z-b.sz*.04); hl.userData.ty=hl.position.y; hl.userData.i=i; current.add(hl); }   // still to go: glowing
+    const bc=showC(model,b), ms=withPrint(new THREE.Mesh(pieceGeo(b),hang?xrayMat(bc):mat(bc)),b); if(hang) ms.renderOrder=5;
+    ms.add(new THREE.LineSegments(pieceEdge(b),edgeMat));
     ms.position.set(b.x,b.y*1.2,b.z); ms.userData.ty=b.y*1.2; ms.userData.i=i; ms.userData.b=b;
     current.add(ms);
   });
@@ -4803,7 +4818,7 @@ function putAllBack(){
 }
 function setGhost(){
   ghostGroup.clear(); if(!sel){ padSync(); return; }
-  const g=new THREE.Mesh(brickGeo(sel.sx,sel.sz,sel.h),ghostMat(sel.c)); g.add(new THREE.LineSegments(edgeGeo(sel.sx,sel.sz,sel.h),ghostEdge)); if(sel.sp&&sel.print&&sel.sx>=sel.sz) withPrint(g,{...sel,x:0,y:0,z:0,print:{...sel.print,cx:sel.sx/2,cy:1.2*sel.h/2}});
+  const g=new THREE.Mesh(pieceGeo(sel),ghostMat(sel.c)); g.add(new THREE.LineSegments(pieceEdge(sel),ghostEdge)); if(sel.sp&&sel.print&&sel.sx>=sel.sz) withPrint(g,{...sel,x:0,y:0,z:0,print:{...sel.print,cx:sel.sx/2,cy:1.2*sel.h/2}});
   g.position.y=ghostLift(); ghostGroup.add(g);
   if(lastAnchor) placeGhost(lastAnchor.px,lastAnchor.pz);
   else if(model&&cur<model.steps.length){ const c=ghostHome(); placeGhost(c.px,c.pz); }
@@ -4881,7 +4896,7 @@ function renderHints(){
       else charge('hint',5); } }
   const o=curOff()||{x:0,z:0}, u=usedSet();
   for(const b of model.steps[cur].bricks){ if(u.has(b)) continue;
-    const h=new THREE.Mesh(brickGeo(b.sx,b.sz,b.h),hintMat(b.c)); h.add(new THREE.LineSegments(edgeGeo(b.sx,b.sz,b.h),edgeMat));
+    const h=new THREE.Mesh(pieceGeo(b),hintMat(b.c)); h.add(new THREE.LineSegments(pieceEdge(b),edgeMat));
     h.position.set(b.x+o.x,b.y*1.2,b.z+o.z); hintGroup.add(h); }
 }
 const ray=new THREE.Raycaster(), ndc=new THREE.Vector2(), hitPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0), hitP=new THREE.Vector3();
@@ -4968,7 +4983,7 @@ function placeBrick(t,ax,az){
   if(pass) pass.moves.push({b:model.bricks.indexOf(t),x:ax,z:az});
   placedN++; placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz});
   const pc=model.paint&&sel?sel.c:t.c; if(model.paint) model.paint.set(t.x+','+t.y+','+t.z+','+t.sx+','+t.sz,pc);
-  const ms=withPrint(new THREE.Mesh(brickGeo(t.sx,t.sz,t.h),mat(pc)),t); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
+  const ms=withPrint(new THREE.Mesh(pieceGeo(t),mat(pc)),t); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
   if(!reduceMotion){ const dir=model.steps[cur]&&model.steps[cur].hang?-1:1; ms.position.y+=2.2*dir; drops.push({m:ms,ty:t.y*1.2,t0:performance.now(),dir}); }
   sfx.snap(reduceMotion?0:.23);  // lands at the end of the drop
   if(t.sp) specialIn(t);
@@ -7545,7 +7560,7 @@ function applyMoveCore(m){
   if(off) placed.add(t);
   placedN++;
   const o=curOff(), ax=t.x+o.x, az=t.z+o.z;
-  const ms=withPrint(new THREE.Mesh(brickGeo(t.sx,t.sz,t.h),mat(t.c)),t); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
+  const ms=withPrint(new THREE.Mesh(pieceGeo(t),mat(t.c)),t); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
   if(!reduceMotion&&tab==='build'){ const dir=model.steps[t.step]&&model.steps[t.step].hang?-1:1; ms.position.y+=2.2*dir; drops.push({m:ms,ty:t.y*1.2,t0:performance.now(),dir}); }
   placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz});
   if(!off&&cands.length&&cands[0].used.size>=model.steps[cur].bricks.length) lock();
@@ -8681,7 +8696,7 @@ function applyProgress(o){
   placedGroup.clear(); placedBoxes=[]; drops=[];
   const o2=off||cands[0], list=off?[...placed]:(cands[0]?[...cands[0].used]:[]);
   for(const t of list){ const ax=t.x+o2.x, az=t.z+o2.z;
-    const ms=withPrint(new THREE.Mesh(brickGeo(t.sx,t.sz,t.h),mat(t.c)),t); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
+    const ms=withPrint(new THREE.Mesh(pieceGeo(t),mat(t.c)),t); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
     placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz}); }
   // If the save was taken just as a step finished, move on to the next step
   const used=()=>off?placed:(cands[0]?cands[0].used:new Set());
