@@ -732,7 +732,7 @@ test('Brain Trail math: age 9 in October is 4th grade, later levels stay in 4th 
 });
 
 test('the Weekly bank: each planned Monday shows its model', { skip: skip() }, async () => {
-  for (const [when, name] of [['2026-10-26T13:00:00Z', 'Jack-o’-lantern'], ['2026-11-02T14:00:00Z', 'Red boat'], ['2026-11-23T14:00:00Z', 'Hot-air balloon'], ['2026-12-14T14:00:00Z', 'Gingerbread house']]) {
+  for (const [when, name] of [['2026-10-26T13:00:00Z', 'Jack-o’-lantern'], ['2026-11-02T14:00:00Z', 'Red boat'], ['2026-11-16T14:00:00Z', 'Bloppit and the red brick'], ['2026-11-23T14:00:00Z', 'Thanksgiving turkey'], ['2026-12-14T14:00:00Z', 'Gingerbread house']]) {
     const t = await open('?nosplash=1&welcome=0', { at: when });
     assert.match(await t.text('#hmDailyT'), new RegExp(name)); assert.deepEqual(t.errors, []); await t.ctx.close();
   }
