@@ -221,7 +221,13 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   race the main button goes back to Bloppitopia (or the island). On an island, Play = that island's next play; a
   finished island offers "Play anyway" or going back. The build page outside Bloppitopia keeps every option and a
   difficulty slider; each Solo tile (Pippa's too) offers "Play on <island> in Bloppitopia" or "Just Play", and says when
-  the island option isn't available.
+  the island option isn't available. Quick Play on a Solo tile plays that island's own puzzles in any order and keeps
+  nothing; Pippa's too (her Flipper Beach puzzles, all open; the tide only applies on the island). The separate
+  "any-time" mirror set (`FLIP_LEVELS`, trail `flip`) is no longer offered (Steff, 10 Nov 2026: same rules as the others).
+- **Phones (build area 760px wide or less)**: the camera frames the build above the message and Bloppit (`bottomCover`
+  in `playFit`) and below the race banner; Bloppit's words are hidden (his reactions stay; a "Play next" bubble still
+  shows); a long message folds to one line after 4.5 s. Mirror puzzles frame both halves.
+- **My films**: an island's arrival film is listed once the island is found, even if it played on setting off.
 - **Blitz**: a "Let's go" before the clock starts; a wrong brick adds 1 second; the race-o-meter. In Bloppitopia, a clear
   next race that gets harder; the Grand Prix counts in the counter (race x of 20). Targets for a child: Warm-up won almost
   always, Steady about 75%, Full throttle 50%, Grand Prix 40%. In Pippa's boss level the Pup still mirrors Pippa.
