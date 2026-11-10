@@ -119,8 +119,9 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   leaves a 4-wide, 4-tall recess with a ledge in the front face; the piece is 4×1 at the base and 4 layers tall, prints
   its face and matches only its own spot. It can be turned like any brick (Steff, 9 Nov). Kinds live in `SPECIAL_KINDS`
   (size in studs and layers, own colour, printed or not, what shows behind it): `dial` (4×4, Big Ben, the player's real
-  time, a bell "bong"), and from 1.1.2 `brick` (Bloppit's red 2-stud brick, plain red, sparkle) and `fan` (8×3, a
-  turkey's printed tail feathers, fanfare). A new kind needs an entry there, artwork in `printCanvas` (also its parts-box
+  time, a bell "bong"), and from 1.1.2 `brick` (Bloppit's red 2-stud brick, plain red, sparkle) and `fan` (12×5, a
+  turkey's printed tail feathers, standing behind the model: `behind` puts it in the back layer and clears the feather
+  colours in front of it, so the head stays in front; fanfare). A new kind needs an entry there, artwork in `printCanvas` (also its parts-box
   icon) and a sound in `specialIn`.
 - **Parallel Weeklies (Steff, 10 Nov):** one model per week carries the special piece. An app that doesn't know the kind
   (1.1.1) drops it and builds the same picture from ordinary bricks, so 1.1.1 players get a plain version automatically

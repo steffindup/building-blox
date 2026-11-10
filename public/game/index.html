@@ -3342,11 +3342,11 @@ function printCanvas(kind){
   }
   if(kind==='fan'){   // the turkey's fanned tail: feathers from the middle of the bottom edge, red, orange and yellow
     const cols=['#C91A09','#FE8A18','#F2CD37','#FE8A18','#C91A09','#FE8A18','#F2CD37','#FE8A18','#C91A09'];
-    const Y=372;   // the piece is 8 wide and 3 layers tall: its face shows the band y 140–372 of the square print
-    g.fillStyle='#582A12'; g.fillRect(0,140,512,232);
+    const K=SPECIAL_KINDS.fan, half=256*K.rows*1.2/Math.max(K.cols,K.rows*1.2), Y=256+half, top=256-half;   // the band of the square print its face shows
+    g.fillStyle='#582A12'; g.fillRect(0,top,512,2*half);
     cols.forEach((col,i)=>{ const a=(i-(cols.length-1)/2)*(Math.PI*.98/(cols.length-1)); g.save(); g.translate(R,Y); g.rotate(a);   // a = 0 is straight up
-      g.fillStyle=col; g.beginPath(); g.ellipse(0,-114,38,114,0,0,7); g.fill(); g.fillStyle='rgba(88,42,18,.5)'; g.fillRect(-3,-212,6,190); g.restore(); });
-    g.fillStyle='#582A12'; g.beginPath(); g.arc(R,Y,60,Math.PI,0); g.fill();
+      g.fillStyle=col; g.beginPath(); const L=2*half*.97; g.ellipse(0,-L/2,L*.16,L/2,0,0,7); g.fill(); g.fillStyle='rgba(88,42,18,.5)'; g.fillRect(-3,-L*.92,6,L*.82); g.restore(); });
+    g.fillStyle='#582A12'; g.beginPath(); g.arc(R,Y,half*.4,Math.PI,0); g.fill();
   }
   if(kind==='dial'){
     const disc=(r,f)=>{ g.fillStyle=f; g.beginPath(); g.arc(R,R,r,0,7); g.fill(); };
@@ -3388,7 +3388,7 @@ function dialSweep(){
 const SPECIAL_KINDS={
   dial:{name:'Clock dial',cols:4,rows:4,print:true},
   brick:{name:'Bloppit’s red brick',cols:2,rows:1,colour:[201,26,9],back:'around'},
-  fan:{name:'Tail feathers',cols:8,rows:3,print:true,colour:[88,42,18],back:'keep'},
+  fan:{name:'Tail feathers',cols:12,rows:5,print:true,colour:[88,42,18],behind:true,clear:[[201,26,9],[254,138,24],[242,205,55]]},   // stands at the back; the feathers in front of it come away so it shows
 };
 const SPECIAL_NAME=Object.fromEntries(Object.entries(SPECIAL_KINDS).map(([k,v])=>[k,v.name])), SP_W=96;
 function addSpecial(m){
@@ -3396,12 +3396,13 @@ function addSpecial(m){
   const f=photos.find(p=>p.view==='front')||photos[0], smp=f&&f.sample?SAMPLES.find(x=>x.name===f.name):null, P=smp&&smp.special;
   const K=P&&SPECIAL_KINDS[P.kind]; if(!K) return; const SP_COLS=K.cols, SP_ROWS=K.rows;
   const DIAL=P.kind==='dial';   // the dial keeps its exact old placement (Big Ben)
-  if(m.kind==='picture'||m.mirror||m.paint||!f.m||!f.m.bbox||m.W<SP_COLS+2||m.H<SP_ROWS+(DIAL?3:2)) return;
+  if(m.kind==='picture'||m.mirror||m.paint||!f.m||!f.m.bbox||m.W<SP_COLS+(K.behind?0:2)||m.H<SP_ROWS+(DIAL?3:2)) return;
   const [x0b,y0b,x1b,y1b]=f.m.bbox, bw=x1b-x0b+1, bh=y1b-y0b+1, kx=m.W/bw, ky=1.2*m.H/bh;
   const cx=(P.cx-x0b+.5)*kx, cy=(bh-(P.cy-y0b+.5))*ky;
-  const fz=Math.max(...m.bricks.map(b=>b.z+b.sz))-1;   // the front layer
+  const fz=K.behind?Math.min(...m.bricks.map(b=>b.z)):Math.max(...m.bricks.map(b=>b.z+b.sz))-1;   // the front layer (or the back one, for a piece that stands behind)
+  const clearC=new Set((K.clear||[]).map(c=>nearest(...c)));
   const X0=clamp(Math.round(cx-SP_COLS/2),DIAL?1:0,m.W-SP_COLS-(DIAL?1:0)), Y0=clamp(Math.round(cy/1.2-SP_ROWS/2),1,m.H-SP_ROWS-(DIAL?1:0));
-  const inCols=(x,y)=>x>=X0&&x<X0+SP_COLS&&y>=Y0&&y<Y0+SP_ROWS, inHole=(x,y,z)=>z===fz&&inCols(x,y);
+  const inCols=(x,y)=>x>=X0&&x<X0+SP_COLS&&y>=Y0&&y<Y0+SP_ROWS, inHole=(x,y,z,c)=>(z===fz||clearC.has(c))&&inCols(x,y);
   const cnt=new Map(); for(const b of m.bricks) cnt.set(b.c,(cnt.get(b.c)||0)+b.sx*b.sz);
   const wallC=[...cnt].sort((a,b)=>b[1]-a[1])[0][0];   // the model's own colour
   // behind the piece: dark tan (a hole waiting for its piece), or the colour just above the hole (a brick held against a tummy)
@@ -3414,14 +3415,14 @@ function addSpecial(m){
     let hit=false; for(let dz=0;dz<b.sz&&!hit;dz++)for(let dx=0;dx<b.sx&&!hit;dx++) if(inCols(b.x+dx,b.y)) hit=true;
     if(!hit){ keep.push(b); continue; }
     for(let dz=0;dz<b.sz;dz++){ let run=null;
-      for(let dx=0;dx<=b.sx;dx++){ const x=b.x+dx, z=b.z+dz, ok=dx<b.sx&&!inHole(x,b.y,z), c=ok&&inCols(x,b.y)&&holeC!=null?holeC:b.c;
+      for(let dx=0;dx<=b.sx;dx++){ const x=b.x+dx, z=b.z+dz, ok=dx<b.sx&&!inHole(x,b.y,z,b.c), c=ok&&inCols(x,b.y)&&holeC!=null&&!K.behind?holeC:b.c;
         if(ok&&run&&run.sx<4&&run.c===c) run.sx++; else { if(run) back.push(run); run=ok?{x,y:b.y,z,sx:1,sz:1,c,step:b.step}:null; if(!ok&&dx<b.sx){} } } }
   }
   // The ledge: a full row of bricks under the hole, so the piece has studs to stand on
   const cellAt=new Set(); for(const b of [...keep,...back]) for(let dz=0;dz<b.sz;dz++)for(let dx=0;dx<b.sx;dx++) cellAt.add((b.x+dx)+','+b.y+','+(b.z+dz));
   const ledgeStep=Math.max(0,...[...keep,...back].filter(b=>b.y===Y0-1).map(b=>b.step));
   const ledgeC=([...keep,...back].find(b=>b.y===Y0-1&&b.z+b.sz>fz)||keep[0]).c;
-  for(let x=X0;x<X0+SP_COLS;x++) if(!cellAt.has(x+','+(Y0-1)+','+fz)) back.push({x,y:Y0-1,z:fz,sx:1,sz:1,c:ledgeC,step:ledgeStep});
+  if(!K.behind) for(let x=X0;x<X0+SP_COLS;x++) if(!cellAt.has(x+','+(Y0-1)+','+fz)) back.push({x,y:Y0-1,z:fz,sx:1,sz:1,c:ledgeC,step:ledgeStep});
   // Steps: the same order, the leftovers in their brick's step, then the special piece last
   const all=[...keep,...back], steps=[];
   m.steps.forEach((st,i)=>{ const bs=all.filter(b=>b.step===i).sort((a,b)=>a.z-b.z||a.x-b.x); if(bs.length) steps.push({...st,bricks:bs}); });
@@ -6227,10 +6228,10 @@ const SAMPLES=[
    x.fillStyle='#1B2A34'; x.rr(64,90,18,4,2);
    x.fillStyle='#C91A09'; x.rr(96,92,10,40,4);
    return [['front',c]]; }},
- {name:'Thanksgiving turkey',theme:'Animals',weekly:'2026-11-23',beat:'Bibi’s turkey is shy. Build it up, and its tail fans out last!',ws:{size:12,shape:'flat',maxColors:6},special:{kind:'fan',cx:60,cy:18,r:40},make(){
-   // Drawn stud by stud. The top three rows (8 studs wide) are the tail: the special piece, printed with fanned
-   // feathers, goes in last (app 1.1.2 on). An app without the kind builds the tail from ordinary bricks.
-   return studSheet(['..YYYYYYYY..','.OOYYYYYYOO.','RROOOOOOOORR','RRRRBBBBRRRR','.RRBKBBKBRR.','..RBBOOBBR..','...BBBRBB...','...BBBRBB...','..BBBBBBBB..','...BBBBBB...','....O..O....','...OO..OO...'],
+ {name:'Thanksgiving turkey',theme:'Animals',weekly:'2026-11-23',beat:'Bibi’s turkey is shy. Build it up, and its tail fans out last!',ws:{size:12,shape:'flat',maxColors:6},special:{kind:'fan',cx:60,cy:30,r:60},make(){
+   // Drawn stud by stud. The top five rows are the tail: the special piece, printed with fanned feathers, stands
+   // behind the turkey's head and goes in last (app 1.1.2 on). An app without the kind builds the tail from ordinary bricks.
+   return studSheet(['..YYYYYYYY..','.OOYYYYYYOO.','RROOOOOOOORR','RRROBBBBORRR','.RRBKBBKBRR.','..RBBOOBBR..','...BBBRBB...','...BBBRBB...','..BBBBBBBB..','...BBBBBB...','....O..O....','...OO..OO...'],
      {R:'#C91A09',O:'#FE8A18',Y:'#F2CD37',B:'#AA7D55',K:'#1B2A34'}); }},
  {name:'Hot-air balloon',theme:'Vehicles',weekly:'2027-01-04',beat:'Pippa’s new way to travel. Fill it before it floats off.',ws:{shape:'puffed',size:11},make(){ const [c,x]=sheet(200,260,'#BFE3F5');
    x.dot(100,86,78,'#C91A09');
