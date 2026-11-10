@@ -120,6 +120,13 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   its face and matches only its own spot. It can be turned like any brick (Steff, 9 Nov). Only kind so far: `dial` (Big Ben, the player's real time,
   a bell "bong"). New kinds need an entry in `SPECIAL_NAME`, artwork in `printCanvas`, and optionally `specialIn`.
   Prints/special pieces show in solo builds; rooms, Blitz and Pass the Puzzle not yet tested with them.
+- **What a Weekly can change in the app without a release** (checked against build 213): the picture as PNG, `ws`
+  settings, name, theme and `beat`, and a `special` only of a kind the app knows (just `dial` in 1.1.1). Ordinary bricks
+  go up to 2×4, one layer tall. A new special kind waits for an app release (Steff: redesign the Weeklies in 1.1.2). A
+  name the app already has built in uses its built-in model, so a reworked Weekly needs a new name to reach the app.
+- **Steps go bottom-up by layer**, so whatever is alone at the top of the picture goes on last: a "wow" finish without a
+  special piece. `studSheet(rows, colours)` draws a picture stud by stud; with `ws.size` = the number of rows the model
+  comes out exactly as drawn ("Bloppit and the red brick", 16 Nov: his red 2-stud brick goes on last).
 
 ## Testing
 

@@ -5488,6 +5488,10 @@ $('#pages').addEventListener('click',e=>{
 // margin, so each cell becomes a brick-sized block and nothing blurs (the way the Well and the Constellation Cube are drawn)
 function cellSheet(rows,pal){ const w=rows[0].length, [c,x]=sheet(20+w*20,20+rows.length*24,'#ffffff');
   rows.forEach((r,j)=>[...r].forEach((k,i)=>{ if(pal[k]){ x.fillStyle=pal[k]; x.fillRect(10+i*20,10+j*24,20.5,24.5); } })); return c; }
+// A picture drawn stud by stud: each letter is one stud (10×12 px, a brick seen from the front), '.' is empty.
+// With ws.size = the number of rows, the model comes out exactly as drawn.
+function studSheet(rows,cols){ const [c,x]=sheet(rows[0].length*10,rows.length*12,'#ffffff');
+  rows.forEach((r,j)=>[...r].forEach((k,i)=>{ if(cols[k]){ x.fillStyle=cols[k]; x.fillRect(i*10,j*12,10,12); } })); return [['front',c]]; }
 function sheet(w,h,bg){const c=document.createElement('canvas'); c.width=w; c.height=h; const x=c.getContext('2d'); x.fillStyle=bg; x.fillRect(0,0,w,h);
   x.rr=(X,Y,W,H,r)=>{x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+W,Y,X+W,Y+H,r);x.arcTo(X+W,Y+H,X,Y+H,r);x.arcTo(X,Y+H,X,Y,r);x.arcTo(X,Y,X+W,Y,r);x.closePath();x.fill();};
   x.poly=(pts,f)=>{x.fillStyle=f;x.beginPath();pts.forEach(([a,b],i)=>i?x.lineTo(a,b):x.moveTo(a,b));x.closePath();x.fill();};
@@ -6181,7 +6185,12 @@ const SAMPLES=[
    x.fillStyle='#958A73'; for(const X of [60,77,94]) x.fillRect(X,186,6,48); // stone ribs
    x.fillStyle='#958A73'; x.fillRect(36,238,88,18);                       // the base
    return [['front',c]]; }},
- {name:'Curled-up pup',theme:'Animals',weekly:'2026-11-16',beat:'A little otter fell asleep on the beach.',ws:{shape:'flat',size:8},make(){ const [c,x]=sheet(240,180,'#ffffff');
+ {name:'Bloppit and the red brick',theme:'Animals',weekly:'2026-11-16',beat:'Bloppit has found the red brick! Build him, then hand it to him last.',ws:{size:15,shape:'flat',thick:.5,maxColors:6},make(){
+   // Drawn stud by stud (one letter = one stud), so the build matches the picture exactly. Bloppit faces you and holds
+   // his red 2-stud brick up high: it's the top layer on its own, so it goes on last (no special piece needed).
+   return studSheet(['........RR.','........BB.','.D.....D.B.','.BBBBBBB.B.','.BKBBBKB.B.','.BBCDCBB.B.','..BCCCB..B.','...BBB..BB.','..BBBBBBB..','.BBCCCBB...','.BBCCCBB...','.BBCCCBB...','..BCCCB....','..BBBBB.DDD','..DD.DD....'],
+     {B:'#AA7D55',D:'#582A12',C:'#F6D7B3',K:'#1B2A34',R:'#C91A09'}); }},
+ {name:'Curled-up pup',theme:'Animals',weekly:'2026-12-28',beat:'A little otter fell asleep on the beach.',ws:{shape:'flat',size:8},make(){ const [c,x]=sheet(240,180,'#ffffff');
    x.oval(120,112,98,58,0,'#8B5A2B');
    x.oval(196,130,30,18,-.5,'#8B5A2B'); x.oval(206,140,16,10,-.5,'#D9B98B');
    x.oval(126,120,62,34,0,'#D9B98B');
@@ -8321,12 +8330,13 @@ const WEEKLY_PLAN={
   '2026-10-26':'Jack-o’-lantern',
   '2026-11-02':'Red boat',
   '2026-11-09':'Big Ben',   // Steff, 8 Nov 2026 (the Striped lighthouse moved to 21 Dec)
-  '2026-11-16':'Curled-up pup',
+  '2026-11-16':'Bloppit and the red brick',
   '2026-11-23':'Hot-air balloon',
   '2026-11-30':'Snowman',
   '2026-12-07':'Christmas tree',
   '2026-12-14':'Gingerbread house',
   '2026-12-21':'Striped lighthouse',
+  '2026-12-28':'Curled-up pup',
 };
 // The app gets each Weekly from bloppit.com (Steff, 8 Nov 2026), so a new Weekly needs no app update. Data only, never
 // code: the model's picture(s) as PNG and its settings, published to public/weekly/ by tests/weekly-export.mjs. Only live
