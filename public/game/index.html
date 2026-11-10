@@ -6185,10 +6185,10 @@ const SAMPLES=[
    x.fillStyle='#958A73'; for(const X of [60,77,94]) x.fillRect(X,186,6,48); // stone ribs
    x.fillStyle='#958A73'; x.fillRect(36,238,88,18);                       // the base
    return [['front',c]]; }},
- {name:'Bloppit and the red brick',theme:'Animals',weekly:'2026-11-16',beat:'Bloppit has found the red brick! Build him, then hand it to him last.',ws:{size:15,shape:'flat',thick:.5,maxColors:6},make(){
-   // Drawn stud by stud (one letter = one stud), so the build matches the picture exactly. Bloppit faces you and holds
-   // his red 2-stud brick up high: it's the top layer on its own, so it goes on last (no special piece needed).
-   return studSheet(['........RR.','........BB.','.D.....D.B.','.BBBBBBB.B.','.BKBBBKB.B.','.BBCDCBB.B.','..BCCCB..B.','...BBB..BB.','..BBBBBBB..','.BBCCCBB...','.BBCCCBB...','.BBCCCBB...','..BCCCB....','..BBBBB.DDD','..DD.DD....'],
+ {name:'Bloppit and the red brick',theme:'Animals',weekly:'2026-11-16',beat:'Bloppit has found the red brick, and he’s holding on tight. Build him!',ws:{size:13,shape:'flat',maxColors:6},make(){
+   // Drawn stud by stud (one letter = one stud), so the build matches the picture exactly.
+   // Bloppit faces you, holding his red 2-stud brick in front of him with both paws (Steff, 10 Nov).
+   return studSheet(['..D....D....','..BBBBBB....','.BBKBBKBB...','.BBBDDBBB...','..BCCCCB....','...BBBB.....','..BBBBBB....','.BBCCCCBB...','.BBDRRDBB...','..BCCCCB....','..BCCCCB.DD.','..BBBBBBDD..','..DD..DD....'],
      {B:'#AA7D55',D:'#582A12',C:'#F6D7B3',K:'#1B2A34',R:'#C91A09'}); }},
  {name:'Curled-up pup',theme:'Animals',weekly:'2026-12-28',beat:'A little otter fell asleep on the beach.',ws:{shape:'flat',size:8},make(){ const [c,x]=sheet(240,180,'#ffffff');
    x.oval(120,112,98,58,0,'#8B5A2B');

@@ -126,7 +126,7 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   name the app already has built in uses its built-in model, so a reworked Weekly needs a new name to reach the app.
 - **Steps go bottom-up by layer**, so whatever is alone at the top of the picture goes on last: a "wow" finish without a
   special piece. `studSheet(rows, colours)` draws a picture stud by stud; with `ws.size` = the number of rows the model
-  comes out exactly as drawn ("Bloppit and the red brick", 16 Nov: his red 2-stud brick goes on last).
+  comes out exactly as drawn ("Bloppit and the red brick", 16 Nov).
 
 ## Testing
 
