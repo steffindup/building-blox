@@ -1322,9 +1322,11 @@ test('Build page: the difficulty slider picks a puzzle to match, and Build it st
   await tile('cpu'); q = await slide(1); await t.page.evaluate(() => document.getElementById('qpQuick').click()); await t.page.waitForTimeout(800);
   assert.equal(await t.view(), 'view-blitz'); assert.equal(await t.page.evaluate(() => document.getElementById('bzModel').value), 'p' + q.i);
   assert.equal(await t.page.evaluate(() => document.querySelector('input[name=bzLevel]:checked').value), 'easy');
-  // Pippa's Puzzles: no island choice, the puzzle starts as a mirror build (not Quick play: it still earns)
-  await tile('flip'); q = await slide(2); await t.page.evaluate(() => document.getElementById('qpQuick').click()); await t.page.waitForTimeout(1500);
-  assert.equal(await t.view(), 'view-build'); assert.equal(await t.text('#gbName'), q.name); assert.equal(await t.page.evaluate(() => window.bloppitQuickPlay()), false);
+  // Pippa: one of her Flipper Beach puzzles, as Quick Play like the others (Steff, 10 Nov 2026)
+  await tile('flip'); q = await slide(2); assert.match(await t.text('#qpPzInfo'), /Puzzle \d+ · \d+ bricks/);
+  await t.page.evaluate(() => document.getElementById('qpQuick').click()); await t.page.waitForTimeout(1500);
+  assert.equal(await t.view(), 'view-build'); assert.equal(await t.text('#gbName'), q.name); assert.equal(await t.page.evaluate(() => window.bloppitQuickPlay()), true);
+  assert.ok(await t.page.evaluate((n) => window.bloppitLevels.sea.some((L) => L.name === n), q.name), 'a Flipper Beach puzzle');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
@@ -1474,36 +1476,28 @@ test('Mystery Island label: "N islands to go!" and a bar that counts every piece
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('Solo: Pippa’s Puzzles on the menu are her own mirror set, all open in any order; Flipper Beach keeps its tide', { skip: skip() }, async () => {
+test('Solo: Pippa’s tile plays her Flipper Beach puzzles; Quick Play has them all open in any order and keeps nothing; the island keeps its tide', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0&films=0');
-  const L = await t.page.evaluate(() => ({ flip: window.bloppitLevels.flip.map((l) => l.sample), sea: window.bloppitLevels.sea.map((l) => l.sample) }));
-  assert.equal(L.flip.length, 12); assert.deepEqual(L.flip.filter((n) => L.sea.includes(n)), [], 'none of Flipper Beach’s puzzles');
-  assert.match(await t.text('#hmSeaSub'), /^12 puzzles to mirror$/); assert.doesNotMatch(await t.text('#hmSeaSub'), /%/);
+  assert.match(await t.text('#hmSeaSub'), /^15 puzzles to mirror$/); assert.doesNotMatch(await t.text('#hmSeaSub'), /%/);
   await t.page.evaluate(() => document.querySelector('#view-home [data-go="flip"]').click()); await t.page.waitForTimeout(300);
   assert.equal(await t.page.evaluate(() => document.getElementById('qpDlg').open), true, 'the difficulty choice first');
   // the same two choices as the other Solo tiles: Flipper Beach (greyed until Pippa's first puzzle washes ashore, saying when) and Quick Play
-  const isle = await t.page.evaluate(() => { const b = document.getElementById('qpIsle'); return { shown: getComputedStyle(b).display !== 'none', off: b.disabled, t: b.textContent, q: document.getElementById('qpQuickT').textContent }; });
+  const isle = await t.page.evaluate(() => { const b = document.getElementById('qpIsle'); return { shown: getComputedStyle(b).display !== 'none', off: b.disabled, t: b.textContent, q: document.getElementById('qpQuickT').textContent, qs: document.getElementById('qpQuickS').textContent }; });
   assert.ok(isle.shown, 'Flipper Beach is a choice too'); assert.equal(isle.off, true, 'not yet, with nothing built');
   assert.match(isle.t, /Play on Flipper Beach/); assert.match(isle.t, /washes ashore when Bloppitopia reaches \d+%/); assert.equal(isle.q, 'Quick Play');
+  assert.match(isle.qs, /Nothing is added to Bloppitopia/);
   await t.page.evaluate(() => document.getElementById('qpPick').click()); await t.page.waitForTimeout(800);
-  assert.equal(await t.page.evaluate(() => document.getElementById('view-game').dataset.sub), 'flip');
-  assert.match(await t.text('#gmTitle'), /Mirror Puzzles/); assert.doesNotMatch(await t.text('#gmLevels'), /ashore/);
-  assert.equal(await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="0"]').disabled), false, 'the first is open with nothing built');
-  assert.equal(await t.page.evaluate(() => [...document.querySelectorAll('#gmLevels .lvl')].filter((b) => b.disabled).length), 0, 'any of them, in any order');
-  assert.equal(await t.page.evaluate(() => getComputedStyle(document.getElementById('bottleCard')).display), 'none');
-  // every one is a true mirror build
-  const sym = await t.page.evaluate(() => window.bloppitLevels.flip.map((L, i) => { window.bloppitLevel('flip', i); const M = window.bloppitMirror(); if (!M) return `${L.name}: not a mirror build`;
-    const set = new Set(M.bricks.map((b) => b.join(','))); return M.bricks.some(([x, y, z, sx, sz, c]) => !set.has([M.W - x - sx, y, z, sx, sz, c].join(','))) ? `${L.name}: bricks without a twin` : ''; }));
-  assert.deepEqual(sym.filter(Boolean), []);
-  // build the first: it counts on the menu, opens the second, and Flipper Beach doesn't grow
-  await t.page.evaluate(() => window.bloppitLevel('flip', 0)); await t.page.waitForTimeout(300);
-  for (let i = 0; i < 300; i++) { const M = await t.page.evaluate(() => window.bloppitMirror()); if (!M || M.cur >= M.steps.length) break; if (M.steps[M.cur] === 'K') await t.page.evaluate(() => window.bloppitPlaceRight()); await t.page.waitForTimeout(150); }
+  assert.equal(await t.page.evaluate(() => document.getElementById('view-game').dataset.sub), 'sea'); assert.equal(await t.page.evaluate(() => window.bloppitQuickPlay()), true);
+  assert.equal(await t.page.evaluate(() => document.querySelectorAll('#gmLevels .lvl').length), 15);
+  assert.equal(await t.page.evaluate(() => [...document.querySelectorAll('#gmLevels .lvl')].filter((b) => b.disabled).length), 0, 'any of them, in any order, with nothing built');
+  // build one: nothing is kept, and Flipper Beach doesn't grow
+  await t.page.evaluate(() => document.querySelector('#gmLevels .lvl[data-i="0"]').click()); await t.page.waitForTimeout(1500);
+  assert.equal(await t.page.evaluate(() => window.bloppitQuickPlay()), true);
+  for (let i = 0; i < 400; i++) { const M = await t.page.evaluate(() => window.bloppitMirror()); if (!M || M.cur >= M.steps.length) break; if (M.steps[M.cur] === 'K') await t.page.evaluate(() => window.bloppitPlaceRight()); await t.page.waitForTimeout(120); }
   await t.page.waitForFunction(() => document.getElementById('winDlg').open, null, { timeout: 30000 });
-  assert.match(await t.text('#winBest'), /Mirror Puzzles/); assert.match(await t.text('#winNext'), /Level 2: Headphones/);
-  const g = await t.page.evaluate(() => JSON.parse(Object.entries(localStorage).find(([k]) => k.includes('building-blox-game-v1'))[1]));
-  assert.equal(Object.keys(g.fbest || {}).length, 1); assert.equal(Object.keys(g.sbest || {}).length, 0, 'Flipper Beach is untouched');
-  await t.page.evaluate(() => { document.getElementById('winDlg').close(); document.getElementById('brandLink').click(); }); await t.page.waitForTimeout(800);
-  assert.match(await t.text('#hmSeaSub'), /^1 of 12 puzzles built$/);
+  const kept = await t.page.evaluate(() => { const g = JSON.parse(Object.entries(localStorage).find(([k]) => k.includes('building-blox-game-v1'))?.[1] || '{}'), w = JSON.parse(Object.entries(localStorage).find(([k]) => k.includes('bloppit-world-v1'))?.[1] || '{}');
+    return { sea: Object.keys(g.sbest || {}).length, builds: Object.keys(w.builds || {}).length }; });
+  assert.deepEqual(kept, { sea: 0, builds: 0 }, 'Quick Play keeps nothing');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 

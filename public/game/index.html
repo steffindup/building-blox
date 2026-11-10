@@ -4179,7 +4179,8 @@ function bottomCover(r){
 }
 // When the message or the bubble grows or shrinks a lot, frame the build again so it stays in view
 function coverChanged(){ clearTimeout(coverT); coverT=setTimeout(()=>{ if(!model||!renderer||!document.body.classList.contains('on-build')) return;
-  const r=renderer.domElement.getBoundingClientRect(); if(Math.abs(Math.min(bottomCover(r),r.height*.5)-fitCover)>24) frameBuild(true); },150); }
+  if(mp) return;   // races and rooms: the camera is framed at each turn (re-framing mid-turn upset the race's timing)
+  const r=renderer.domElement.getBoundingClientRect(); if(Math.min(bottomCover(r),r.height*.5)-fitCover>24) frameBuild(true); },150); }   // only when more of the build would be hidden
 // Where the camera looks: the current step and a little around it (Steff, 9 Nov 2026: on a tall build it used to frame the
 // whole thing, so the layer being built sat small at the edge). Zoom to build (F) switches to the whole build and back.
 let frameWhole=false;
@@ -7044,7 +7045,7 @@ function renderGameMap(){
   $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} ${trail==='sea'?'Flipper Beach puzzles built':trail==='flip'?'any-time puzzles built':'levels done'}`;
   $('#gmLevels').innerHTML=levelsOf(trail).map((L,i)=>{
     const best=B[i], ashore=trail!=='sea'||seaWashed(i), open=trail==='flip'||quickPlay||i<=unlocked&&(ashore||!!best), cur_=game&&game.lvl===i&&gameTrail()===trail;
-    const st=best?levelStars(trail,i,null,best):0, wait=!best&&!ashore, k=wait?seaBuildsTo(i):0;   // a Pippa puzzle still out at sea: tap it to hear how to bring it in
+    const st=best?levelStars(trail,i,null,best):0, wait=!best&&!ashore&&!quickPlay, k=wait?seaBuildsTo(i):0;   // Quick Play: no tide   // a Pippa puzzle still out at sea: tap it to hear how to bring it in
     return `<button class="lvl${i===unlocked&&!best&&!wait?' next':''}${wait?' wait':''}" type="button" data-i="${i}" ${wait?'data-wait="1"':''} ${open||wait?'':'disabled'}>
       <span class="ln">${i+1}</span>${cur_?'<span class="tagnew">Playing</span>':(i===unlocked&&!best?(wait?`<span class="tagnew tide">🌊 ${k} more build${k===1?'':'s'}</span>`:'<span class="tagnew">Next</span>'):'')}
       <img alt="" src="${levelThumb(L)}"><span class="lt">${L.boss?'👑 Boss: ':''}${L.name}</span>
