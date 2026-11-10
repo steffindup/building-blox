@@ -124,8 +124,9 @@ test('first visit: with ?film=0 the arrival made in the game plays instead of th
   // "Pick later" sets sail too, and the card doesn't come back after the trip
   await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 10000 });
   await t.page.evaluate(() => document.getElementById('pupLater').click());
-  await t.page.waitForFunction(() => window.bloppitIsland3 && window.bloppitIsland3().cine, null, { timeout: 10000 }); await t.page.waitForTimeout(1500);
-  assert.equal(await t.page.evaluate(() => !document.querySelector('.is3-cine video') && window.bloppitIsland3().cine.t > 0.5), true);
+  // wait for the arrival to be under way (not a fixed 1.5 s: GitHub's machine is slower, 10 Nov), then check it is the made-in-game one
+  await t.page.waitForFunction(() => window.bloppitIsland3 && window.bloppitIsland3().cine && window.bloppitIsland3().cine.t > 0.5, null, { timeout: 15000 });
+  assert.equal(await t.page.evaluate(() => !document.querySelector('.is3-cine video')), true);
   await t.page.evaluate(() => document.querySelector('#isWorld .is3-cine .cn-skip').click());
   await t.page.waitForFunction(() => /Build our first home/.test(document.querySelector('#isWorld .is3-play')?.textContent || ''), null, { timeout: 8000 });
   assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), false);
@@ -1715,7 +1716,7 @@ test('mid-island films: every 15 builds a slot opens, and the next build on an i
   const add = (k) => t.page.evaluate((k) => { const o = JSON.parse(localStorage.getItem('bloppit-world-v1')); o.builds[k] = { n: 10, s: 2, t: Date.now(), c: 1, k: k.startsWith('m:') ? 'quick' : 'trail' }; o.log.push(k); localStorage.setItem('bloppit-world-v1', JSON.stringify(o));
     const m = k.match(/^t:otter:(\d+):/); if (m) { const g = JSON.parse(localStorage.getItem('building-blox-game-v1')); g.best[m[1]] = 3; localStorage.setItem('building-blox-game-v1', JSON.stringify(g)); } }, k);
   const away = async () => { await t.page.evaluate(() => document.getElementById('tab-game').click()); await t.page.waitForTimeout(500); await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close())); await t.page.evaluate(() => document.getElementById('tab-island').click()); };
-  const beat = async (re) => { let got = ''; for (let i = 0; i < 100 && !got; i++) { await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close())); const b = await t.page.evaluate(() => window.bloppitBeat()); if (b.hold && re.test(b.say + ' ' + b.banner)) got = b.say + b.banner; await t.page.waitForTimeout(300); } return got; };
+  const beat = async (re) => { let got = ''; for (let i = 0; i < 200 && !got; i++) { await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close())); const b = await t.page.evaluate(() => window.bloppitBeat()); if (b.hold && re.test(b.say + ' ' + b.banner)) got = b.say + b.banner; await t.page.waitForTimeout(300); } return got; };
   // build 15, on Frog Forest: its mid moment (Tiny), not the visit that 15 would bring
   await add('t:otter:1:Duck'); await away();
   assert.ok(await beat(/Did you see the lanterns\?/), 'Tiny’s mid-island line at build 15');
@@ -1774,7 +1775,7 @@ test('story beats in the middle of Chapter 1: the lavender light at 10 builds, a
   await t.page.evaluate(() => { const k = Object.keys(localStorage).find((x) => /seen3/.test(x)); if (k) { const s = JSON.parse(localStorage.getItem(k)); s.push('half:brickworks'); localStorage.setItem(k, JSON.stringify(s)); } });
   const add = (name, extra) => t.page.evaluate(([name, extra]) => { const o = JSON.parse(localStorage.getItem('bloppit-world-v1')); const k = `m:${name}:10`; o.builds[k] = { n: 10, s: 2, t: Date.now(), c: 1, k: 'quick', ...extra }; o.log.push(k); localStorage.setItem('bloppit-world-v1', JSON.stringify(o)); }, [name, extra || {}]);
   const away = async () => { await t.page.evaluate(() => document.getElementById('tab-game').click()); await t.page.waitForTimeout(500); await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close())); await t.page.evaluate(() => document.getElementById('tab-island').click()); };
-  const beat = async (re) => { let got = ''; for (let i = 0; i < 100 && !got; i++) { await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close())); const b = await t.page.evaluate(() => window.bloppitBeat()); if (b.hold && re.test(b.say + ' ' + b.banner)) got = b.say + b.banner; await t.page.waitForTimeout(300); } return got; };
+  const beat = async (re) => { let got = ''; for (let i = 0; i < 200 && !got; i++) { await t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close())); const b = await t.page.evaluate(() => window.bloppitBeat()); if (b.hold && re.test(b.say + ' ' + b.banner)) got = b.say + b.banner; await t.page.waitForTimeout(300); } return got; };
   // build 10: the light
   await add('Robot'); await away();
   const light = await beat(/Bloppit: .*lavender light/); assert.ok(light, 'the light at 10 builds');
