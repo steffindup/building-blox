@@ -547,7 +547,14 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
 @keyframes bud-ping{0%{transform:scale(1);color:inherit}30%{transform:scale(1.35);color:var(--accent)}100%{transform:scale(1)}}
 @keyframes bud-burst{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
 #buildStage .status{max-width:calc(100% - 430px)}
-@container (max-width:760px){#buildStage .status{max-width:calc(100% - 24px);bottom:124px;left:12px}}
+@container (max-width:760px){#buildStage .status{max-width:calc(100% - 24px);bottom:124px;left:12px}
+  /* phones (Steff, 10 Nov 2026: the messages covered the bricks): the parts list is already in the booklet, and the
+     message folds to one line after a few seconds, coming back in full when it changes */
+  #buildStage .buddy .bud-say{display:none}   /* Bloppit still reacts; his words are in the message */
+  #buildStage .buddy .bud-say:has(.bud-next){display:block;font-size:12.5px;padding:5px 8px;margin-bottom:12px}
+  #buildStage .buddy .bud-say:has(.bud-next) .callout{display:none}
+  #buildStage .status{bottom:12px;max-width:calc(100% - 100px)}
+  #buildStage .status.brief{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 /* Racing Bloppit: a banner says whose turn it is, and Bloppit steps up (bigger) on his own turns */
 .turn-banner{position:absolute;left:12px;top:62px;z-index:3;display:flex;align-items:center;gap:10px;padding:6px 16px 6px 6px;border-radius:999px;border:2px solid #1B1410;font-family:var(--f-display);font-size:22px;line-height:1;pointer-events:none;box-shadow:0 3px 0 var(--shadow);max-width:calc(100% - 24px)}
 .turn-banner[hidden]{display:none}
@@ -4155,9 +4162,24 @@ function playFit(){
   const r=renderer.domElement.getBoundingClientRect(), w=r.width, h=r.height; if(!w||!h){ playCam.updateProjectionMatrix(); return 1; }
   const tl=document.querySelector('#buildStage .stage-tools'); let t=0;
   if(tl&&tl.offsetParent){ const q=tl.getBoundingClientRect(); if(q.height) t=Math.max(0,q.bottom-r.top+6); if(t>h*.35) t=0; }
-  if(t){ playCam.aspect=w/(h+t); playCam.setViewOffset(w,h+t,0,0,w,h); } else { playCam.aspect=w/h; playCam.clearViewOffset(); }
-  playCam.updateProjectionMatrix(); return t?(h-t)/(h+t):1;
+  { const tb=document.getElementById('turnBanner'); if(tb&&!tb.hidden&&tb.offsetParent&&r.width<=760){ const q=tb.getBoundingClientRect(); if(q.height&&q.bottom-r.top+6<h*.4) t=Math.max(t,q.bottom-r.top+6); } }
+  // On a phone the message and Bloppit's bubble sit over the bottom of the build area (Steff, 10 Nov 2026: in Pippa's
+  // puzzles they covered the bricks being built): the build is framed in the space above them.
+  let b=bottomCover(r); if(b>h*.5) b=h*.5; if(t+b>h*.7) b=Math.max(0,h*.7-t); fitCover=b;
+  if(t||b){ playCam.aspect=w/(h+t+b); playCam.setViewOffset(w,h+t+b,0,b,w,h); } else { playCam.aspect=w/h; playCam.clearViewOffset(); }
+  playCam.updateProjectionMatrix(); return t||b?(h-t-b)/(h+t+b):1;
 }
+let fitCover=0, coverT=null;
+function bottomCover(r){
+  if(!r||r.width>760) return 0;   // a wide build area keeps its messages in the corners
+  let b=0; for(const e of document.querySelectorAll('#buildStage #status,#buildStage .buddy')){
+    if(!e.offsetParent||(e.id==='status'&&!e.textContent.trim())) continue;
+    const q=e.getBoundingClientRect(); if(q.height&&q.top<r.bottom&&q.bottom>r.top) b=Math.max(b,r.bottom-q.top+8); }
+  return b;
+}
+// When the message or the bubble grows or shrinks a lot, frame the build again so it stays in view
+function coverChanged(){ clearTimeout(coverT); coverT=setTimeout(()=>{ if(!model||!renderer||!document.body.classList.contains('on-build')) return;
+  const r=renderer.domElement.getBoundingClientRect(); if(Math.abs(Math.min(bottomCover(r),r.height*.5)-fitCover)>24) frameBuild(true); },150); }
 // Where the camera looks: the current step and a little around it (Steff, 9 Nov 2026: on a tall build it used to frame the
 // whole thing, so the layer being built sat small at the edge). Zoom to build (F) switches to the whole build and back.
 let frameWhole=false;
@@ -4172,7 +4194,8 @@ window.bloppitCam=()=>({whole:frameWhole,step:!!stepBox(),y:+playControls.target
 function frameBuild(animate,whole){
   if(!model) return;
   if(whole!==undefined) frameWhole=whole;
-  const all=buildBox(), sb=frameWhole?null:stepBox(), box=sb&&!sb.isEmpty()?sb:all, center=box.getCenter(new THREE.Vector3()), size=box.getSize(new THREE.Vector3());
+  const all=buildBox(), sb=frameWhole||model.mirror?null:stepBox(),   // a mirror puzzle shows both halves: you copy Pippa's side
+    box=sb&&!sb.isEmpty()?sb:all, center=box.getCenter(new THREE.Vector3()), size=box.getSize(new THREE.Vector3());
   const r=Math.max(size.length()/2,box===all?4:3.5), clear=playFit();
   const vh0=THREE.MathUtils.degToRad(playCam.fov/2), vh=Math.atan(Math.tan(vh0)*clear), hh=Math.atan(Math.tan(vh0)*playCam.aspect);
   const fitD=rr=>rr/Math.sin(Math.min(vh,hh))*1.08, wd=Math.max(size.x,size.z), dist=box===all?fitD(r):Math.max(6,(Math.max(size.y/2/Math.tan(vh),wd/2/Math.tan(hh))+wd/2)*1.25), distAll=fitD(Math.max(all.getSize(new THREE.Vector3()).length()/2,4));
@@ -4245,7 +4268,9 @@ function resetBuild(){
   setStatus(model?(TILES?'Open the parts box and pick up the tiles for row 1. Row 1 is the top of the picture, at the far edge.':'Open the parts box and pick up a brick to start.'):'');
   updateBuildUI(); frameBuild(false,false);
 }
-function setStatus(t,kind){const el=$('#status'); el.textContent=t||''; el.dataset.kind=kind||'';}
+let statusBriefT=null;
+function setStatus(t,kind){const el=$('#status'); el.textContent=t||''; el.dataset.kind=kind||''; el.classList.remove('brief');
+  clearTimeout(statusBriefT); if(t&&t.length>60) statusBriefT=setTimeout(()=>{ el.classList.add('brief'); coverChanged(); },4500); coverChanged();}
 const curOff=()=>off||(cands.length?cands[0]:null);
 const usedSet=()=>off?placed:(cands.length?cands[0].used:new Set());
 const sameType=(p,b)=>(p.sp||'')===(b.sp||'')&&p.c===b.c&&p.a===Math.min(b.sx,b.sz)&&p.l===Math.max(b.sx,b.sz);
@@ -4310,7 +4335,7 @@ const FILMS=[
   {id:'arrival',no:'01',name:'Welcome to Bloppitopia',place:'Home Island',file:'arrival',open:o=>!!o.arrived||worldCount(o)>0,
     say:[{t:6,who:'bloppit',text:'Welcome to Home Island, {name}!'}]},
   // at: the island moment that plays it (see isl3Reveal): an island rising from the mist, or an island complete
-  {id:'frog-arrival',no:'02',name:'Arrival',place:'Frog Forest',file:'frog-forest-arrival',at:'isle:otterwood',open:o=>filmSeen('frog-arrival',o)||isleCount('otterwood',o)>0,hint:'Set off for Frog Forest',
+  {id:'frog-arrival',no:'02',name:'Arrival',place:'Frog Forest',file:'frog-forest-arrival',at:'isle:otterwood',open:o=>isleCount('otterwood',o)>0,hint:'Set off for Frog Forest',
     say:[{t:12,who:'tiny',text:'Welcome to Frog Forest, {name}!'}]},
   {id:'frog-mid',no:'2½',name:'Midway',place:'Frog Forest',file:'frog-forest-mid',mid:'otterwood',open:o=>filmSeen('frog-mid',o)||(seenGet()||[]).includes('mid:otterwood'),hint:'Keep building on Frog Forest',say:[]},
   {id:'frog-complete',no:'03',name:'Complete',place:'Frog Forest',file:'frog-forest-complete',at:'done:otterwood',open:o=>isleComplete('otterwood',o),hint:'Finish every Tiny’s Frog Trail level',
@@ -4321,7 +4346,8 @@ const FILMS=[
       ['08','09','blitzbay','Blitz Bay','blitz-bay','Race Swoop','Win the Grand Prix','swoop',19,20],
       ['10','11','brickworks','Brickyard Cove','brickworks','Set off for Brickyard Cove','Fill Brickyard Cove with your own builds','bibi',2,20]]
     .flatMap(([a,c,isle,place,file,ha,hc,who,ta,tc])=>[
-      {id:isle+'-arrival',no:a,name:'Arrival',place,file:file+'-arrival',at:'isle:'+isle,open:o=>filmSeen(isle+'-arrival',o)||isleCount(isle,o)>0,hint:ha,
+      {id:isle+'-arrival',no:a,name:'Arrival',place,file:file+'-arrival',at:'isle:'+isle,open:o=>isleCount(isle,o)>0,hint:ha,   // in My films once the island is found (it may have played on setting off)
+       
         say:[{t:ta,who,text:`Welcome to ${place}, {name}!`}]},
       {id:isle+'-mid',no:a.replace(/^0/,'')+'½',name:'Midway',place,file:file+'-mid',mid:isle,open:o=>filmSeen(isle+'-mid',o)||(seenGet()||[]).includes('mid:'+isle),hint:`Keep building on ${place}`,say:[]},
       {id:isle+'-complete',no:c,name:'Complete',place,file:file+'-complete',at:'done:'+isle,open:o=>isleComplete(isle,o),hint:hc,
@@ -4748,7 +4774,7 @@ function budBurst(){
   }
 }
 function budPing(){ const e=$('#bpStep'); e.classList.remove('bud-ping'); void e.offsetWidth; if(!reduceMotion) e.classList.add('bud-ping'); }
-function budSay(cls,html){ const b=$('#buddy'); b.classList.remove('point','cheer','hop','think','oops','offer','hug','reach'); if(cls) b.classList.add(cls); $('#budSay').innerHTML=html; }
+function budSay(cls,html){ const b=$('#buddy'); b.classList.remove('point','cheer','hop','think','oops','offer','hug','reach'); if(cls) b.classList.add(cls); $('#budSay').innerHTML=html; coverChanged(); }
 function buddyUpdate(){
   const b=$('#buddy');
   if(!model){ b.hidden=true; return; }
@@ -7431,7 +7457,8 @@ function buildStarted(kind){
 // Called when a build is finished (every build, any mode)
 // Quick play keeps nothing for builds that would grow an island: Build anything, a Trail level, a race against Swoop.
 // The Weekly, challenges, relays and Pippa's own mirror puzzles count as always.
-function quickKeepsNothing(kind){ return !!quickPlay&&!welcomeOn()&&(kind==='quick'||kind==='blitz'||(kind==='trail'&&!!game&&gameTrail()!=='flip')); }
+function quickKeepsNothing(kind){ if(kind==='trail'&&!!game&&gameTrail()==='flip') return true;   // Pippa's any-time puzzles: her level map keeps its ★, Bloppitopia gets nothing (as the Quick Play card says)
+  return !!quickPlay&&!welcomeOn()&&(kind==='quick'||kind==='blitz'||(kind==='trail'&&!!game&&gameTrail()!=='flip')); }
 function buildFinished(kind){
   const o=evStore(); o.finished=(o.finished||0)+1; evStoreSet(o);
   try{ worldLast=quickKeepsNothing(kind)?null:worldFinish(welcomeOn()?'welcome':kind); worldStrips(); if(model) crewContribute(model.bricks.length); }catch(e){ console.warn('world',e); }
@@ -9324,7 +9351,7 @@ function islandInfo(id,o){
       const lv=otterLevel(o), nl=levelXP(lv+1), nAcc=ACC.find(a=>!a.legend&&!a.finale&&a.lvl>lv);
       return {title:nm||'Your otter',hint:`Level ${lv} ${PUP_STAGES[ps].name} · ${ps+1} stud${ps?'s':''} on its brick`,icon:pupFig(o,{vb:PUP_ROUND,par:'xMidYMid slice'}),
         rows:[['Otter Level',`${lv} · ${Math.max(0,nl-worldStarsEarned(o))} ★ to Level ${lv+1}`],...(nAcc?[['Next outfit',`${nAcc.name} at Level ${nAcc.lvl}`]]:[]),['Stage',`${PUP_STAGES[ps].name} (${ps+1} of 3)`],['Its brick',`${c.n}, ${ps+1} stud${ps?'s':''}`],['Builds',String(n)],['Next',nx?`${nx.name} at Level ${nx.lvl}: another stud`:'A Legend. That’s the top']],
-        bar:nx?{pct:Math.max(4,pupPct(o,ps)),label:`${nx.at-n} more build${nx.at-n===1?'':'s'} to ${nx.name}`}:null,
+        bar:nx?{pct:Math.max(4,pupPct(o,ps)),label:`${Math.max(1,levelXP(nx.lvl)-worldStarsEarned(o))} more ★ to ${nx.name}`}:null,   // stages follow the level, which follows ★
         actions:[{label:'👕 Wardrobe',fn:()=>wardrobeOpen(),primary:true},{label:nm?'Name or colour':'Name your otter',fn:()=>pupOpen()}]}; }
     case 'model': { const f=modelFacts(arg,o), b=f.b, flagW=arg.startsWith('w:')&&!ISL3.ok, onIsle=shown.list.some(m=>m.key===arg)||flagW;
       const acts=[]; if(f.again) acts.push({label:'Build it again',fn:f.again,primary:true});
