@@ -38,12 +38,26 @@ export function cleanData(d) {
 }
 
 const num = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
+// Pippa's puzzles went from 12 to 15 on 5 Nov 2026 and the old ones moved (same as seaMigrateG in the game). A record
+// without seaV:2 still has the old order: move its Pippa scores before merging, so old and new puzzle numbers never mix.
+const SEA_V2_MAP = [0, 1, 2, 4, 5, 7, 8, 9, 10, 12, 13, 14], SEA_V2_NEW = [3, 6, 11];
+export function seaMigrate(g) {
+  if (!g || typeof g !== 'object' || g.seaV >= 2) return g;
+  const out = { ...g }, b = g.sbest;
+  if (b && typeof b === 'object' && Object.keys(b).length) {
+    const nb = {};
+    for (const [k, v] of Object.entries(b)) { if (/^\d+$/.test(k)) { const j = SEA_V2_MAP[+k]; if (j != null) nb[j] = v; } else nb[k] = v; }
+    if (b[11] > 0) for (const i of SEA_V2_NEW) if (!nb[i]) nb[i] = 1;
+    out.sbest = nb;
+  }
+  out.seaV = 2; return out;
+}
 // Merge a record coming from a device with the one on the server, keeping the best of each:
 // trail scores keep the higher score; Daily/Weekly days are joined, keeping the earlier first time and the faster best.
 export function merge(server, incoming) {
   const a = server || {}, b = incoming || {}, out = { ...a, ...b };
   for (const key of ['game']) {
-    const ga = a[key] || {}, gb = b[key] || {}, g = { ...ga, ...gb };
+    const ga = seaMigrate(a[key]) || {}, gb = seaMigrate(b[key]) || {}, g = { ...ga, ...gb };
     for (const bk of ['best', 'bbest', 'sbest', 'fbest']) {
       const x = ga[bk] || {}, y = gb[bk] || {}, m = { ...x };
       for (const lvl of Object.keys(y)) m[lvl] = Math.max(num(x[lvl]) ?? -Infinity, num(y[lvl]) ?? -Infinity);

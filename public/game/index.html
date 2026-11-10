@@ -6711,7 +6711,9 @@ let trail=(()=>{ try{ return trailOk(localStorage.getItem('bloppit-trail')); }ca
 function setTrail(t){ trail=trailOk(t); try{ localStorage.setItem('bloppit-trail',trail); }catch(e){} }
 const bestOf=(g,tr)=>tr==='brain'?(g.bbest||(g.bbest={})):tr==='sea'?(g.sbest||(g.sbest={})):tr==='flip'?(g.fbest||(g.fbest={})):(g.best||(g.best={}));
 const gameTrail=()=>game?trailOk(game.trail):'otter';
-function gameStore(id){ try{ return seaMigrateG(JSON.parse(localStorage.getItem(keyFor(id||players.cur,GAME_KEY)))||{best:{}}); }catch(e){ return {best:{}}; } }
+function gameStore(id){ try{ const k=keyFor(id||players.cur,GAME_KEY), raw=JSON.parse(localStorage.getItem(k)), old=raw&&!(raw.seaV>=2), g=seaMigrateG(raw||{best:{}});
+    if(old) try{ localStorage.setItem(k,JSON.stringify(g)); }catch(e){}   // an older save is moved to the new order once and kept that way (so its sync never sends the old order)
+    return g; }catch(e){ return {best:{}}; } }
 // Pippa's puzzles went from 12 to 15 (Steff, 5 Nov 2026): three new ones slot in, so a save from before has its puzzles
 // moved to their new places (kept with the save as seaV:2, so it happens once). Finished Flipper Beach stays finished:
 // the new three count as built for anyone who had already built the Festival Clock.
@@ -7259,11 +7261,13 @@ async function pupApi(method,body,pid){
 function pupLocal(id){
   const d={}; for(const k of PUP_FIELDS){ try{ const v=JSON.parse(localStorage.getItem(keyFor(id||players.cur,{game:GAME_KEY,daily:DAILY_KEY,weekly:WEEKLY_KEY,world:WORLD_KEY}[k]))); if(v) d[k]=v; }catch(e){} }
   if(d.world&&d.world.pupText){ d.world={...d.world}; delete d.world.pupText; }   // a name the child typed stays on this device
+  if(d.game) d.game=seaMigrateG(d.game);   // Pippa's puzzles always go out in the new order
   return d;
 }
 function pupApply(id,d){
   if(!d) return;
   if(d.world) d={...d,world:worldMerge(worldStore(),d.world)};  // what this device did since the push wins
+  if(d.game) d={...d,game:seaMigrateG({...d.game})};   // a record from an older device: Pippa's puzzles in the new order
   for(const k of PUP_FIELDS){ if(d[k]) try{ localStorage.setItem(keyFor(id||players.cur,{game:GAME_KEY,daily:DAILY_KEY,weekly:WEEKLY_KEY,world:WORLD_KEY}[k]),JSON.stringify(d[k])); }catch(e){} }
 }
 function pupHasProgress(d){ if(d.world&&d.world.builds&&Object.keys(d.world.builds).length) return true; return !!((d.game&&((d.game.best&&Object.keys(d.game.best).length)||(d.game.bbest&&Object.keys(d.game.bbest).length)||(d.game.sbest&&Object.keys(d.game.sbest).length)||(d.game.fbest&&Object.keys(d.game.fbest).length)))||(d.daily&&Object.keys(d.daily.days||{}).length)||(d.weekly&&Object.keys(d.weekly.days||{}).length)); }

@@ -13,7 +13,7 @@ Target: kids 8–13 and their families, US-weighted, online-only. Steff is a sol
 Bermuda), so time is short and decisions are his.
 
 - Website and game: https://bloppit.com (game at `/game/`). Hosted on Netlify (site `bloppit`), deployed from `main`.
-- iOS app: App Store "Bloppit: World of Bricks" (id 6821449219, bundle `com.bloppit.app`). Live on the App Store: 1.1 (6 Nov 2026); the repo is at 1.1.1, the next release.
+- iOS app: App Store "Bloppit: World of Bricks" (id 6821449219, bundle `com.bloppit.app`). Live on the App Store: 1.1 (6 Nov 2026). 1.1.1 is in App Store review (build 213, submitted 9 Nov, manual release); the repo is at 1.1.2, for bug fixes (Steff, 10 Nov).
 - Android/Google Play: in progress (Wyoming company Bloppit LLC being set up to own the IP and the Play account).
 - Contact: hello@bloppit.com. Socials: @playbloppit (TikTok, Instagram, X), @bloppit (YouTube), facebook.com/playbloppit.
 
@@ -123,7 +123,7 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
 
 ## Testing
 
-- Fast tests: `node --test tests/math.test.mjs tests/server.test.mjs` (59 tests, seconds). Run them always.
+- Fast tests: `node --test tests/math.test.mjs tests/server.test.mjs` (62 tests, seconds). Run them always.
 - Browser tests: `PLAYWRIGHT_CHROMIUM=<chrome> PLAYWRIGHT_ARGS="--use-gl=angle --use-angle=swiftshader
   --enable-unsafe-swiftshader --ignore-gpu-blocklist" node --test --test-concurrency=1 tests/browser.test.mjs`.
   - In the Claude cloud sandbox Chromium is at `/opt/pw-browsers/chromium-1243/real/chrome-linux64/chrome` (older
@@ -134,6 +134,8 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
     that `public/weekly` matches `WEEKLY_PLAN` (`tests/weekly-check.mjs`). CI uses the runner's Google Chrome: Playwright's own Chromium can't
     play the .mp4 films, and with it nearly every browser test failed. Results show as a ✓/✗ next to each commit
     on GitHub (the sandbox's proxy blocks the Actions API; the commit's check-runs may still be readable).
+  - Each browser test starts its own browser (`beforeEach`). With one shared browser, a browser that stopped answering
+    on GitHub's machine made every later test time out, so no run had passed (fixed 10 Nov).
   - The tests use port 8799. Stop any dev server you started on 8799 first, or use another port for your own server.
   - A test that "sometimes fails" is worth a real look before rerunning it. "the Weekly: a brick of the wrong colour…"
     looked flaky for two days; it was a real bug (the game said Go! three seconds before you could place). Fixed 9 Nov.

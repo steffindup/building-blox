@@ -1,7 +1,7 @@
 // Server logic, no network: node --test tests/
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { merge, cleanData, handle as pup } from '../netlify/functions/pup/logic.mjs';
+import { merge, cleanData, seaMigrate, handle as pup } from '../netlify/functions/pup/logic.mjs';
 import { weekOf } from '../netlify/functions/challenge/logic.mjs';
 import { handle as room } from '../netlify/functions/room/logic.mjs';
 import { store, mem } from './devserver.mjs';
@@ -281,4 +281,15 @@ test('room: a full room counts only the players still in', async () => {
   const r = await roomWith('classic', 4); await r.start(); await r.leave(3);
   const j = await room('POST', {}, { action: 'join', code: r.code, name: 'New' }, store);
   assert.equal(j.body.waiting, true);
+});
+
+test('pup: Pippa’s puzzles from an older save (no seaV) move to their new places before merging, never mixing orders', () => {
+  const old = { game: { sbest: { 0: 3, 3: 2, 11: 1 } } }, neu = { game: { seaV: 2, sbest: { 1: 3 } } };
+  for (const [a, b] of [[old, neu], [neu, old]]) {
+    const g = merge(a, cleanData(b)).game;
+    assert.equal(g.seaV, 2);
+    assert.deepEqual(g.sbest, { 0: 3, 1: 3, 3: 1, 4: 2, 6: 1, 11: 1, 14: 1 }, 'old 3 → 4, old 11 → 14; a finished beach keeps the three new ones');
+  }
+  assert.deepEqual(seaMigrate({ seaV: 2, sbest: { 3: 1 } }).sbest, { 3: 1 }, 'a new-order save is left alone');
+  assert.deepEqual(seaMigrate({ best: { 1: 2 } }), { best: { 1: 2 }, seaV: 2 }, 'no Pippa scores: just marked');
 });
