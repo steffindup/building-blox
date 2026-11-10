@@ -1778,7 +1778,9 @@ test('story beats in the middle of Chapter 1: the lavender light at 10 builds, a
   // the same visit again: nothing new
   await away(); await t.page.waitForTimeout(4000); assert.equal((await t.page.evaluate(() => window.bloppitBeat())).hold, false);
   // build 15: a friend you've met (Bibi: Brickyard Cove has builds) visits and talks about your Dinosaur
-  for (let i = 11; i < 15; i++) await add('Filler' + i); await away(); await t.page.waitForTimeout(3000); await t.page.waitForFunction(() => !window.bloppitBeat().hold, null, { timeout: 20000 });
+  for (let i = 11; i < 15; i++) await add('Filler' + i);
+  // let any moment the fillers bring play out first: visit until one passes quietly (a slow machine starts them later, 10 Nov)
+  for (let v = 0; v < 6; v++) { await away(); await t.page.waitForTimeout(4000); if (!(await t.page.evaluate(() => window.bloppitBeat())).hold) break; await t.page.waitForFunction(() => !window.bloppitBeat().hold, null, { timeout: 30000 }); }
   // build 15 opens a mid-island slot, but Brickyard Cove is now complete (15 of 15), so no mid film: the visit comes instead
   await add('Dinosaur'); await away();
   const visit = await beat(/dinosaur/); assert.ok(visit, 'a friend talks about the dinosaur');
