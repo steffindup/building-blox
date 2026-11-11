@@ -159,6 +159,14 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   - The tests use port 8799. Stop any dev server you started on 8799 first, or use another port for your own server.
   - A test that "sometimes fails" is worth a real look before rerunning it. "the Weekly: a brick of the wrong colour…"
     looked flaky for two days; it was a real bug (the game said Go! three seconds before you could place). Fixed 9 Nov.
+- **Four tests that passed and failed on the same code (fixed 11 Nov)**; none was a bug in the game, all were the test
+  guessing a time or reading something stale. The patterns to avoid: (1) a fixed sleep before checking that something
+  has gone or arrived: the film's layer is removed by a timer that ran up to 5 s late on a busy machine, and the Weekly
+  board comes from the server, so wait with `waitForFunction`; (2) reading a value that is still on the page from
+  before: a second room in one test read the last room's (hidden) code, so the guest knocked on the old room:
+  `tMakeRoom` now waits for a new code; (3) checking a random animation at one instant: Bloppit's blink takes 1/6 s
+  every 3 to 6 s, so "eyes open after 30 s" failed about one run in eight: `bloppitLids` now lets a blink finish first.
+  They hid a real failure on 11 Nov (shared drawings), so a red run on GitHub must be read, not waved through.
 - **"Real hands" test** builds Big Ben with clicks only (parts box, Take, Rotate, click the spot), like a child. It found
   that the last bricks sat under the tool buttons; `playFit()` now shifts the camera so the model stays clear of them.
   Hooks that place bricks for you prove less: prefer real clicks for anything about the build controls.
@@ -248,8 +256,6 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
     converted anything that wasn't flagged as a drawing, and the flag isn't sent, so shared and saved drawings were
     rebuilt wrongly. An app from before this (1.1.2 and older) rebuilds a shared photo picture at 24 tiles wide or
     more, so it gets a slightly different picture until the next app release.
-  - Known flaky tests (each passes and fails on the same code): "Together: tied scores share a medal…" (the guest's
-    knock sometimes never reaches the host's second room) and "Bloppit: his eyes never stick shut…". Both need a real look.
 - **How to Play video** (`public/video/how-to-play*.mp4`: website, app, app upright; the app has them built in, so a new
   video reaches app players with the next release). Re-recorded 11 Nov 2026: the first one was filmed in real time in the
   slow test browser, so its game footage showed only about 6 new pictures a second. `tests/howto/` records it frame by

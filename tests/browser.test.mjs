@@ -73,8 +73,10 @@ test('films on a phone cover the whole page (above the menu bar) and offer ⛶ F
     assert.deepEqual(await t.page.evaluate(() => window.bloppitFilmBig()), { page: true, parent: true, full: true }, JSON.stringify(viewport));
     const r = await t.page.evaluate(() => { const b = document.querySelector('.is3-cine').getBoundingClientRect(), top = document.elementFromPoint(innerWidth / 2, 20); return { w: b.width, h: b.height, top: !!top?.closest('.is3-cine') }; });
     assert.ok(r.w >= viewport.width - 1 && r.h >= viewport.height - 1 && r.top, 'the film is over the whole page, menu bar too');
-    await t.page.evaluate(() => document.querySelector('.is3-cine .cn-skip').click()); await t.page.waitForTimeout(1600);
-    assert.equal(await t.page.evaluate(() => document.body.classList.contains('film-on') || !!document.querySelector('.is3-cine.page')), false);
+    // the film's layer is taken away 0.8 s after Skip by a timer; on a busy machine that timer ran up to 5 s late, so a
+    // fixed 1.6 s wait failed about one run in six. Wait for it to go, and fail only if it never does.
+    await t.page.evaluate(() => document.querySelector('.is3-cine .cn-skip').click());
+    await t.page.waitForFunction(() => !document.body.classList.contains('film-on') && !document.querySelector('.is3-cine.page'), null, { timeout: 20000 });
     assert.deepEqual(t.errors, []); await t.ctx.close();
   }
 });
@@ -988,6 +990,7 @@ test('island: tap anything for its card; drag a model anywhere on the grass; put
   // the board on the Weekly page (Bibi's, through Quick Bricks)
   await t.page.evaluate(() => { document.getElementById('tab-cove').click(); document.getElementById('qbWeekly').click(); }); await t.page.waitForTimeout(1200);
   assert.equal(await t.page.evaluate(() => document.getElementById('dyBoard').hidden), false);
+  await t.page.waitForFunction(() => document.getElementById('dyBoardList').textContent.trim().length > 0, null, { timeout: 15000 });   // the board comes from the server
   assert.match(await t.text('#dyBoardList'), /Nobody on the board yet/);
   // the grown-up switch turns it off (and it stays off)
   assert.equal(await t.page.evaluate(() => { const c = document.getElementById('grownBoard'); c.checked = false; c.dispatchEvent(new Event('change')); return document.getElementById('dyBoard').hidden; }), true, 'off hides the board');
@@ -1842,8 +1845,11 @@ const T_OPEN = '?nosplash=1&welcome=0&chars3d=0&island3d=0';
 const tCode = (t) => t.page.evaluate(() => document.getElementById('mpBigCode')?.textContent.trim() || '');
 async function tMakeRoom(t, perTurn = 5) {
   await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="mp"]').click()); await t.page.waitForTimeout(600);
+  // a second room in the same test: the (hidden) code of the last room is still on the page until the new room arrives,
+  // so wait for a code that is new. Before, the guest was sometimes sent to the old, finished room and never knocked.
+  const old = await tCode(t);
   await t.page.evaluate((pt) => { document.getElementById('mpName1').value = 'Host'; document.getElementById('pt' + pt)?.click(); document.getElementById('mpCreate').click(); }, perTurn);
-  await t.page.waitForFunction(() => /^[A-Z0-9]{5}$/.test(document.getElementById('mpBigCode')?.textContent.trim() || ''), null, { timeout: 15000 });
+  await t.page.waitForFunction((old) => { const c = document.getElementById('mpBigCode')?.textContent.trim() || ''; return /^[A-Z0-9]{5}$/.test(c) && c !== old; }, old, { timeout: 15000 });
   return tCode(t);
 }
 async function tJoin(t, code) {

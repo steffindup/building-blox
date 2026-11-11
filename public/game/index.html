@@ -13011,7 +13011,9 @@ setTimeout(()=>{ try{ ch3Warm(); }catch(e){} },1200);
 new MutationObserver(()=>buddy3()).observe($('#buddy'),{attributes:true,attributeFilter:['class','hidden']});
 // for tests and review: a character as a picture, in a chosen clip and moment (who, frame 'full'|'bust', px, {ci, wear, clip, t})
 window.bloppitLids=async(dt,secs,clip,noBlink)=>{ await ch3Get('bloppit'); await ch3Model('bloppit'); const i=ch3Make('bloppit'), c=i.ctl; if(clip) c.play(clip); if(noBlink) c.nextBlink=1e9; const out=[];   // for tests: lid weights after running at a frame rate
-  for(let t=0;t<secs;t+=dt){ c.update(dt); if(noBlink) c.nextBlink=1e9; } for(const o of c.lids){ const d=o.morphTargetDictionary, a=o.morphTargetInfluences; out.push([o.name,+a[d.Half].toFixed(2),+a[d.Closed].toFixed(2)]); } c.dispose(); return out; };
+  for(let t=0;t<secs;t+=dt){ c.update(dt); if(noBlink) c.nextBlink=1e9; }
+  c.nextBlink=1e9; for(let t=0;t<.5;t+=dt) c.update(dt);   // let a blink that is under way finish (it takes 1/6 s): the check is for eyes that STAY shut. Without this the test caught him mid-blink about one run in eight
+  for(const o of c.lids){ const d=o.morphTargetDictionary, a=o.morphTargetInfluences; out.push([o.name,+a[d.Half].toFixed(2),+a[d.Closed].toFixed(2)]); } c.dispose(); return out; };
 window.bloppitGrip=async()=>{ await ch3Get('bloppit'); await ch3Model('bloppit'); const i=ch3Make('bloppit'), r=i.ctl.gripInfo||i.ctl.gripErr||null; i.ctl.dispose(); return r; };   // for tests
 window.bloppitCharShot=async(id,frame,px,opt)=>{ opt=opt||{}; await ch3Get(id); if(opt.model) await ch3Model(id); if(opt.exp) M3.exp.value=opt.exp; const r=cv3R(), sc=new THREE.Scene(), cam=new THREE.PerspectiveCamera(24,1,.05,60), i=ch3Make(id); sc.add(i.root); cv3Lights(sc);
   ch3Dress(i,{log:[]},{ci:opt.ci!=null?opt.ci:0,wear:opt.wear||{}}); i.ctl.update(.6); if(opt.clip){ i.ctl.play(opt.clip); i.ctl.update(0); i.ctl.update(opt.t||0); }
