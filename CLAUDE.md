@@ -239,7 +239,17 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   "Zoom in" slider and dragging on the photo choose the part to build (`picCrop`); a new photo replaces the last one.
   Before, a default photo was about 1,160 tiles and fewer than half were recognisable. It works for one clear thing on a
   plain background; faces and busy scenes don't come out at a size a child can build, so it's a "try it" extra, not a
-  headline feature. A drawing (`drawing:true`) is still built stud for stud by the old code in `buildPicture`.
+  headline feature.
+  - **How it travels (don't break this):** rooms, links, Crews and saved builds carry a puzzle as its picture (PNG) plus
+    `S`, and every device rebuilds from those. So the photo is first turned into a small flat picture, one square per
+    tile (`photoGrid`), and that picture replaces the photo as the puzzle's image, with `S.pw` = its width and `S.psec`
+    = tiles per step; the old exact code in `buildPicture` then builds it, as it does a drawing. The photo itself stays
+    in `p.orig`, on this device only, for Size and Zoom. The first version (live from 11 Nov, 8:35 am Eastern)
+    converted anything that wasn't flagged as a drawing, and the flag isn't sent, so shared and saved drawings were
+    rebuilt wrongly. An app from before this (1.1.2 and older) rebuilds a shared photo picture at 24 tiles wide or
+    more, so it gets a slightly different picture until the next app release.
+  - Known flaky tests (each passes and fails on the same code): "Together: tied scores share a medal…" (the guest's
+    knock sometimes never reaches the host's second room) and "Bloppit: his eyes never stick shut…". Both need a real look.
 - **Parts box**: each tap adds a brick to your hand, up to what the current booklet page needs; put back one or all (in
   the build and in the box). The first brick gets a suggested spot but can go anywhere.
 - **Films** ship inside the app, except the Moonstone feature film, which streams from bloppit.com. Mid-island films use a

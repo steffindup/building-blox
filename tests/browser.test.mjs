@@ -1042,6 +1042,15 @@ test('a photo becomes a picture a child can finish: Small by default, three size
   // a new photo replaces the last one and starts Small again, with the whole photo
   await add('wide.png', 800, 600); const next = await st();
   assert.equal(next.photos, '1 photo'); assert.equal(next.size, '20'); assert.match(next.stats, /20×15 TILES/i); assert.equal(await t.text('#pzoomOut'), 'whole photo');
+  // a build that is saved and opened again (a room, a link and a Crew carry the same things: the picture and the settings)
+  // comes back as exactly the same tiles: the photo was replaced by its flat tile picture, so nothing is converted twice
+  await t.page.evaluate(() => document.getElementById('startBuild').click()); await t.page.waitForTimeout(1500);
+  assert.equal(await t.view(), 'view-build'); const prog = await t.text('#progress'); assert.match(prog, new RegExp(`0 of ${next.n} placed`, 'i'));
+  await t.page.evaluate(() => window.bloppitPlaceRight()); await t.page.waitForTimeout(900);
+  await t.page.reload({ waitUntil: 'load' }); await t.page.waitForTimeout(3000);
+  await t.page.evaluate(() => (document.getElementById('resumeBtn') || document.getElementById('hmCont')).click());
+  await t.page.waitForFunction(() => !document.getElementById('view-build').hidden && /of \d+ placed/i.test(document.getElementById('progress').textContent), null, { timeout: 30000 });
+  assert.match(await t.text('#progress'), new RegExp(`1 of ${next.n} placed`, 'i'), 'the saved photo build has the same tiles');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 

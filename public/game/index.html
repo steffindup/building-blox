@@ -2117,7 +2117,7 @@ body:not(.on-home) .brand .wob{display:none}   /* "World of Bricks" only on the 
         <p class="note" style="margin:0">Drag on the photo to choose the part to build.</p>
       </div>
       <div hidden>
-        <input type="range" id="pw" min="8" max="96" step="1" value="20"><output id="pwOut"></output>
+        <input type="range" id="pw" min="8" max="96" step="1" value="48"><output id="pwOut"></output>
         <input type="range" id="pcol" min="2" max="43" step="1" value="24"><output id="pcolOut"></output>
       </div>
       <div class="field model-only">
@@ -2884,7 +2884,7 @@ function nearest(r,g,b,all){
 }
 
 /* ---------- Settings & state ---------- */
-const S = { size:16, shape:'puffed', thick:1, tol:48, maxColors:8, gray:true, kind:'model', pw:48, pcol:24, pzoom:1, pcx:.5, pcy:.5 };
+const S = { size:16, shape:'puffed', thick:1, tol:48, maxColors:8, gray:true, kind:'model', pw:48, pcol:24, psize:20, pzoom:1, pcx:.5, pcy:.5, psec:0 };
 let photos = [];       // {id,name,d,m,view,sample}
 let model = null, modelVersion = 0, buildStep = 0, tab = 'create', homeSeen = false;
 let pid = 0;
@@ -3000,8 +3000,12 @@ function puff(on,W,H,thick){
 // Colours are chosen in Lab space and gently dithered (error diffusion), so in-between shades read from a distance.
 // A photo as a picture a child can finish (Steff, 11 Nov 2026): three sizes, at most 8 flat colours and no speckle,
 // so plain areas become long tiles. 50 test photos came to about 1,160 tiles each the old way; Small is now about 130.
+// The photo is first turned into a small flat picture, one square per tile (photoGrid). That picture then REPLACES the
+// photo as the puzzle's image (like a drawing), and S.pw becomes its width: rooms, links, Crews and saved builds send
+// the image and S and rebuild from them, so every device gets the same tiles. The photo itself stays in p.orig, only
+// on this device, for the Size and Zoom controls.
 const PIC_SIZES=[20,28,40], PIC_COLOURS=8;
-const picW=()=>S.pw<=24?20:S.pw<=34?28:40;
+const picW=()=>PIC_SIZES.includes(+S.psize)?+S.psize:PIC_SIZES[0];
 // The part of the photo to build: zoomed in around a chosen point, never taller than 4:3 or wider than 2:1
 function picCrop(d){
   const z=clamp(+S.pzoom||1,1,3); let cw=d.w/z, ch=d.h/z;
@@ -3009,10 +3013,10 @@ function picCrop(d){
   const cx=clamp((S.pcx==null?.5:S.pcx)*d.w,cw/2,d.w-cw/2), cy=clamp((S.pcy==null?.5:S.pcy)*d.h,ch/2,d.h-ch/2);
   return [Math.max(0,Math.round(cx-cw/2)),Math.max(0,Math.round(cy-ch/2)),Math.min(d.w-1,Math.round(cx+cw/2)-1),Math.min(d.h-1,Math.round(cy+ch/2)-1)];
 }
-function photoPicture(front,d){
+function photoGrid(d){
   // A size is a number of tiles, whatever the photo's shape: Small is 20×15 lying down and 15×20 standing up
   const bb=picCrop(d), asp=(bb[2]-bb[0]+1)/(bb[3]-bb[1]+1), area=picW()*picW()*.75;
-  const Wt=clamp(Math.round(Math.sqrt(area*asp)),8,56), Ht=clamp(Math.round(Wt/asp),6,56), n=Wt*Ht, P=PLAB.length;
+  const Wt=clamp(Math.round(Math.sqrt(area*asp)),8,56), Ht=clamp(Math.round(Wt/asp),8,56), n=Wt*Ht, P=PLAB.length;
   const g=sampleGrid(d,{mask:new Uint8Array(d.w*d.h).fill(1),bbox:bb},Wt,Ht);
   // How far every tile is from every brick colour (colours a touch stronger, so the picture stays lively)
   const D=new Float32Array(n*P), cnt=new Int32Array(P);
@@ -3038,27 +3042,21 @@ function photoPicture(front,d){
     if(nb.includes(c)) continue;
     let m=nb[0],mc=0; for(const v of nb){ const k=nb.filter(q=>q===v).length; if(k>mc){mc=k;m=v;} }
     if(mc>=2&&dist2(PLAB[c],PLAB[m])<900) idx[i]=m; }
-  // Runs of one colour along a row become 1×2, 1×3 and 1×4 tiles; a step is one row (or half a row of a wide picture)
-  const bricks=[], steps=[], nSec=Math.ceil(Wt/24), SEC=Math.ceil(Wt/nSec);
-  for(let z=0;z<Ht;z++) for(let sct=0;sct<nSec;sct++){
-    const xa=sct*SEC, xb=Math.min(Wt,xa+SEC), chunk=[];
-    for(let x=xa;x<xb;){ const c=idx[x+z*Wt]; let len=1; while(len<4&&x+len<xb&&idx[x+len+z*Wt]===c) len++;
-      chunk.push({x,y:0,z,sx:len,sz:1,c}); x+=len; }
-    const id=steps.length; chunk.forEach(b=>{b.step=id;bricks.push(b);});
-    steps.push({layer:0,row:z,part:sct+1,parts:nSec,bricks:chunk});
-  }
-  return {kind:'picture',W:Wt,H:1,D:Ht,bricks,steps,name:niceName(front.name)};
+  const u=5, c=document.createElement('canvas'); c.width=Wt*u; c.height=Ht*u; const x=c.getContext('2d');
+  for(let i=0;i<n;i++){ x.fillStyle=PALETTE[idx[i]][1]; x.fillRect((i%Wt)*u,Math.floor(i/Wt)*u,u,u); }
+  return {d:canvasData(c),W:Wt,D:Ht};
 }
 // The finished picture as a small image (the "Use this puzzle" bar shows what you'll build, not the photo)
 function picURL(m){ const u=6, c=document.createElement('canvas'); c.width=m.W*u; c.height=m.D*u; const x=c.getContext('2d'); x.fillStyle='#2B2F33'; x.fillRect(0,0,c.width,c.height);
   for(const b of m.bricks){ x.fillStyle=PALETTE[b.c][1]; x.fillRect(b.x*u+.5,b.z*u+.5,b.sx*u-1,b.sz*u-1); } return c.toDataURL('image/png'); }
 function buildPicture(front){
+  // a photo added on this device: make its flat picture for the chosen size and zoom, and carry on with that
+  if(front.orig){ const g=photoGrid(front.orig); front.d=g.d; front.png=null; front.m=computeMask(g.d,S.tol); S.pw=g.W; S.pcol=32; S.psec=Math.ceil(g.W/Math.ceil(g.W/24)); }
   let d=front.d; const Wt=S.pw, Ht=clamp(Math.round(Wt*d.h/d.w),8,128);
   // See-through parts of a photo (like the ready-made samples) become a soft white background
   if(d.px.some((v,i)=>(i&3)===3&&v<250)){ const px=new Uint8ClampedArray(d.px);
     for(let i=0;i<px.length;i+=4){ const a=px[i+3]/255; px[i]=px[i]*a+244*(1-a); px[i+1]=px[i+1]*a+244*(1-a); px[i+2]=px[i+2]*a+244*(1-a); px[i+3]=255; }
     d={w:d.w,h:d.h,px}; }
-  if(!front.drawing) return photoPicture(front,d);   // a drawing is built stud for stud, exactly as painted
   const all={mask:new Uint8Array(d.w*d.h).fill(1),bbox:[0,0,d.w-1,d.h-1]};
   const g=sampleGrid(d,all,Wt,Ht), n=Wt*Ht;
   const L=new Float32Array(n*3);
@@ -3078,7 +3076,7 @@ function buildPicture(front){
   }
   // Merge runs of the same colour along each row into 1×2, 1×3 and 1×4 tiles; one row (or part of a row) per step
   // Each step is one row of one 16-tile-wide section, so a booklet page stays readable
-  const bricks=[], steps=[], SEC=16, nSec=Math.ceil(Wt/SEC);
+  const bricks=[], steps=[], SEC=S.psec>0?S.psec:16, nSec=Math.ceil(Wt/SEC);   // S.psec: a photo picture up to 24 wide is one step a row
   for(let z=0;z<Ht;z++) for(let sct=0;sct<nSec;sct++){
     const xa=sct*SEC, xb=Math.min(Wt,xa+SEC), chunk=[];
     for(let x=xa;x<xb;){ const c=idx[x+z*Wt]; let len=1; while(len<4&&x+len<xb&&idx[x+len+z*Wt]===c) len++;
@@ -3827,7 +3825,7 @@ function addFiles(files){
   track('creator_started');
   photos=[];   // a photo becomes one picture, so a new photo replaces the last one (before, it was added as a "side" and nothing changed)
   // start Small, with the whole photo
-  S.pcx=S.pcy=.5; for(const [id,v] of [['pzoom',1],['pw',PIC_SIZES[0]]]){ const el=$('#'+id); el.value=v; el.dispatchEvent(new Event('input')); }
+  S.psize=PIC_SIZES[0]; S.pcx=S.pcy=.5; { const el=$('#pzoom'); el.value=1; el.dispatchEvent(new Event('input')); }
   // Q4: a photo becomes a brick picture (a mosaic made on this device). 3D photo models are off for now.
   if(S.kind!=='picture'){ S.kind='picture'; syncKind(); refreshHint(); }
   let left=imgs.length;
@@ -3835,7 +3833,7 @@ function addFiles(files){
     const url=URL.createObjectURL(f), img=new Image();
     img.onload=()=>{const d=imageToData(img); URL.revokeObjectURL(url);
       const used=new Set(photos.map(p=>p.view)); const view=['front','side','back'].find(v=>!used.has(v))||'front';
-      photos.push({id:++pid,name:f.name||'photo',d,m:computeMask(d,S.tol),view});
+      photos.push({id:++pid,name:f.name||'photo',d,orig:d,m:computeMask(d,S.tol),view});
       if(--left===0){renderPhotos(); schedule(0);}};
     img.onerror=()=>{URL.revokeObjectURL(url); showMsg(`Couldn’t read ${f.name}. Try a JPG or PNG.`,'err'); if(--left===0){renderPhotos(); schedule(0);}};
     img.src=url;
@@ -3858,12 +3856,12 @@ bindRange('colors','maxColors',v=>`up to ${v}`);
 bindRange('pw','pw',v=>`${v} tiles wide · ${Math.round(v*.8)} cm`);
 bindRange('pcol','pcol',v=>`up to ${v}`);
 bindRange('pzoom','pzoom',v=>v>1?`${(+v).toFixed(1)}×`:'whole photo');
-document.querySelectorAll('input[name=psize]').forEach(r=>r.addEventListener('change',()=>{ const el=$('#pw'); el.value=r.value; el.dispatchEvent(new Event('input')); }));
+document.querySelectorAll('input[name=psize]').forEach(r=>r.addEventListener('change',()=>{ S.psize=+r.value; schedule(); }));
 // The photo with the part to build marked; drag to move it
-function picFront(){ const p=photos.find(q=>q.view==='front')||photos[0]; return p&&p.d&&!p.drawing?p:null; }
+function picFront(){ const p=photos.find(q=>q.view==='front')||photos[0]; return p&&p.orig?p:null; }   // only a photo added here has Size and Zoom
 function drawCrop(){ const cv=$('#pcrop'), p=picFront(); if(!cv||!p||S.kind!=='picture') return;
-  const w=300, h=Math.round(w*p.d.h/p.d.w); if(cv.width!==w||cv.height!==h){ cv.width=w; cv.height=h; }
-  const x=cv.getContext('2d'), k=w/p.d.w, bb=picCrop(p.d); x.drawImage(p.d.canvas,0,0,w,h);
+  const o=p.orig, w=300, h=Math.round(w*o.h/o.w); if(cv.width!==w||cv.height!==h){ cv.width=w; cv.height=h; }
+  const x=cv.getContext('2d'), k=w/o.w, bb=picCrop(o); x.drawImage(o.canvas,0,0,w,h);
   x.fillStyle='rgba(20,32,44,.55)'; x.beginPath(); x.rect(0,0,w,h); x.rect(bb[0]*k,bb[1]*k,(bb[2]-bb[0]+1)*k,(bb[3]-bb[1]+1)*k); x.fill('evenodd');
   x.lineWidth=3; x.strokeStyle='#F4BC22'; x.strokeRect(bb[0]*k+1.5,bb[1]*k+1.5,(bb[2]-bb[0]+1)*k-3,(bb[3]-bb[1]+1)*k-3); }
 { const cv=$('#pcrop'); let drag=false;
@@ -4103,7 +4101,7 @@ function syncUseBar(){
   $('#ubName').textContent=niceName(model.name||'Your puzzle');
   $('#ubInfo').textContent=`${model.bricks.length} ${model.kind==='picture'?'tile':'brick'}${model.bricks.length===1?'':'s'} · ${model.steps.length} steps`;
   const p0=photos.find(p=>p.view==='front')||photos[0];
-  if(model.kind==='picture'&&p0&&!p0.drawing) $('#ubImg').src=picURL(model);
+  if(model.kind==='picture'&&p0&&p0.orig) $('#ubImg').src=picURL(model);
   else if(p0&&p0.d){ if(!p0.png) p0.png=p0.d.canvas.toDataURL('image/png'); $('#ubImg').src=p0.png; }
   $('#ubGo').textContent=pickFor==='blitz'?'Use this puzzle ⚡':pickFor==='together'?'Use this puzzle 🧩':'Use this puzzle ▶';
 }
@@ -8781,7 +8779,7 @@ function loadPng(src){ return new Promise((res,rej)=>{ const img=new Image(); im
 function setControls(s){
   libTuned=false;
   Object.assign(S,s); S.mirror=!!s.mirror; S.paint=!!s.paint;   // only Pippa's puzzles are mirror builds
-  S.kind=s.kind||'model'; if(s.pw==null) S.pw=48; if(s.pcol==null) S.pcol=24;
+  S.kind=s.kind||'model'; if(s.pw==null) S.pw=48; if(s.pcol==null) S.pcol=24; S.psec=s.psec>0?s.psec:0;   // psec belongs to the puzzle, never left over from the last one
   for(const [id,k] of [['size','size'],['thick','thick'],['tol','tol'],['colors','maxColors'],['pw','pw'],['pcol','pcol']]){ const el=$('#'+id); el.value=S[k]; el.dispatchEvent(new Event('input')); }
   syncKind();
   const r=document.querySelector(`input[name=shape][value="${S.shape}"]`); if(r) r.checked=true;
