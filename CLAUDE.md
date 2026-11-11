@@ -250,6 +250,15 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
     more, so it gets a slightly different picture until the next app release.
   - Known flaky tests (each passes and fails on the same code): "Together: tied scores share a medal…" (the guest's
     knock sometimes never reaches the host's second room) and "Bloppit: his eyes never stick shut…". Both need a real look.
+- **How to Play video** (`public/video/how-to-play*.mp4`: website, app, app upright; the app has them built in, so a new
+  video reaches app players with the next release). Re-recorded 11 Nov 2026: the first one was filmed in real time in the
+  slow test browser, so its game footage showed only about 6 new pictures a second. `tests/howto/` records it frame by
+  frame instead (run from that folder): `rec.mjs` plays a first visit on a fake clock, one 1/30 s step and one
+  screenshot per video frame (`DSF=1.7 EVERY=1 OUT=x/final node rec.mjs`, about 45 minutes; `FROM=762` fast-forwards to
+  a later scene for drafts); `cards.mjs` draws the opening and ending cards with the current logo; `compose.py x/final
+  x/out` puts the footage into the phone in the existing video and keeps its captions, Bloppit drawings, fades and
+  sound, so the scene timing in `rec.mjs` (video frame numbers) must stay. CSS animations don't follow the fake clock:
+  the recorder freezes them and steps them by hand. Copy `x/out/*.mp4` to `public/video/` and remake the `.jpg` posters.
 - **Parts box**: each tap adds a brick to your hand, up to what the current booklet page needs; put back one or all (in
   the build and in the box). The first brick gets a suggested spot but can go anywhere.
 - **Films** ship inside the app, except the Moonstone feature film, which streams from bloppit.com. Mid-island films use a
