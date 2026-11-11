@@ -270,6 +270,10 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 
 /* Build view */
 #settings[data-kind="picture"] .model-only,#settings:not([data-kind="picture"]) .pic-only{display:none}
+.usebar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:0 0 12px}
+.usebar img{width:120px;max-height:160px;object-fit:contain;border-radius:8px;flex:none}
+.usebar .ub-txt{display:grid;gap:2px;flex:1;min-width:110px;font-size:14px} .usebar .ub-txt b{font-size:17px}
+#pcrop{display:block;width:100%;max-width:300px;border-radius:10px;touch-action:none;cursor:grab;background:#EEF2F7}
 .build-grid{display:grid;grid-template-columns:minmax(260px,3fr) minmax(0,9fr);gap:16px;align-items:start}
 .build-grid.no-book{grid-template-columns:minmax(0,1fr)}
 .build-grid.no-book .bookpane{display:none}
@@ -2095,16 +2099,26 @@ body:not(.on-home) .brand .wob{display:none}   /* "World of Bricks" only on the 
           <input type="radio" name="kind" id="kd-model" value="model" checked><label for="kd-model">3D model</label>
           <input type="radio" name="kind" id="kd-picture" value="picture"><label for="kd-picture">Picture</label>
         </div>
-        <p class="note pic-only" style="margin:6px 0 0">A flat mosaic of tiles that looks like your photo, made on this device. The more tiles, the more lifelike.</p>
+        <p class="note pic-only" style="margin:6px 0 0">A flat picture made of tiles, made on this device. One clear thing on a plain background works best.</p>
         <p class="note photo-only" id="photo3dNote" style="margin:6px 0 0" hidden>Photos become brick pictures for now. 3D photo models are coming to Brickyard Cove.</p>
       </div>
-      <div class="field pic-only">
-        <label for="pw">Detail <output id="pwOut"></output></label>
-        <input type="range" id="pw" min="24" max="96" step="4" value="48">
+      <div class="field pic-only" id="picSizeF">
+        <span class="lbl">Size <output id="picInfo"></output></span>
+        <div class="seg" role="radiogroup" aria-label="Picture size">
+          <input type="radio" name="psize" id="ps-20" value="20" checked><label for="ps-20">Small</label>
+          <input type="radio" name="psize" id="ps-28" value="28"><label for="ps-28">Medium</label>
+          <input type="radio" name="psize" id="ps-40" value="40"><label for="ps-40">Big</label>
+        </div>
       </div>
-      <div class="field pic-only">
-        <label for="pcol">Tile colours <output id="pcolOut"></output></label>
-        <input type="range" id="pcol" min="4" max="43" step="1" value="24">
+      <div class="field pic-only" id="picCropF">
+        <label for="pzoom">Zoom in <output id="pzoomOut"></output></label>
+        <input type="range" id="pzoom" min="1" max="3" step="0.1" value="1">
+        <canvas id="pcrop" aria-label="Your photo. Drag to choose the part to build."></canvas>
+        <p class="note" style="margin:0">Drag on the photo to choose the part to build.</p>
+      </div>
+      <div hidden>
+        <input type="range" id="pw" min="8" max="96" step="1" value="20"><output id="pwOut"></output>
+        <input type="range" id="pcol" min="2" max="43" step="1" value="24"><output id="pcolOut"></output>
       </div>
       <div class="field model-only">
         <label for="size">Height <output id="sizeOut"></output></label>
@@ -2870,7 +2884,7 @@ function nearest(r,g,b,all){
 }
 
 /* ---------- Settings & state ---------- */
-const S = { size:16, shape:'puffed', thick:1, tol:48, maxColors:8, gray:true, kind:'model', pw:48, pcol:24 };
+const S = { size:16, shape:'puffed', thick:1, tol:48, maxColors:8, gray:true, kind:'model', pw:48, pcol:24, pzoom:1, pcx:.5, pcy:.5 };
 let photos = [];       // {id,name,d,m,view,sample}
 let model = null, modelVersion = 0, buildStep = 0, tab = 'create', homeSeen = false;
 let pid = 0;
@@ -2984,12 +2998,67 @@ function puff(on,W,H,thick){
 /* ---------- Picture (flat tile mosaic) ---------- */
 // The whole photo becomes a grid of tiles lying face-up, like a brick art portrait.
 // Colours are chosen in Lab space and gently dithered (error diffusion), so in-between shades read from a distance.
+// A photo as a picture a child can finish (Steff, 11 Nov 2026): three sizes, at most 8 flat colours and no speckle,
+// so plain areas become long tiles. 50 test photos came to about 1,160 tiles each the old way; Small is now about 130.
+const PIC_SIZES=[20,28,40], PIC_COLOURS=8;
+const picW=()=>S.pw<=24?20:S.pw<=34?28:40;
+// The part of the photo to build: zoomed in around a chosen point, never taller than 4:3 or wider than 2:1
+function picCrop(d){
+  const z=clamp(+S.pzoom||1,1,3); let cw=d.w/z, ch=d.h/z;
+  if(ch>cw*4/3) ch=cw*4/3; if(cw>ch*2) cw=ch*2;
+  const cx=clamp((S.pcx==null?.5:S.pcx)*d.w,cw/2,d.w-cw/2), cy=clamp((S.pcy==null?.5:S.pcy)*d.h,ch/2,d.h-ch/2);
+  return [Math.max(0,Math.round(cx-cw/2)),Math.max(0,Math.round(cy-ch/2)),Math.min(d.w-1,Math.round(cx+cw/2)-1),Math.min(d.h-1,Math.round(cy+ch/2)-1)];
+}
+function photoPicture(front,d){
+  // A size is a number of tiles, whatever the photo's shape: Small is 20×15 lying down and 15×20 standing up
+  const bb=picCrop(d), asp=(bb[2]-bb[0]+1)/(bb[3]-bb[1]+1), area=picW()*picW()*.75;
+  const Wt=clamp(Math.round(Math.sqrt(area*asp)),8,56), Ht=clamp(Math.round(Wt/asp),6,56), n=Wt*Ht, P=PLAB.length;
+  const g=sampleGrid(d,{mask:new Uint8Array(d.w*d.h).fill(1),bbox:bb},Wt,Ht);
+  // How far every tile is from every brick colour (colours a touch stronger, so the picture stays lively)
+  const D=new Float32Array(n*P), cnt=new Int32Array(P);
+  for(let i=0;i<n;i++){ const v=lab(g.rgb[i*3],g.rgb[i*3+1],g.rgb[i*3+2]); v[1]*=1.12; v[2]*=1.12; let best=0,bd=1e9;
+    for(let c=0;c<P;c++){ const q=dist2(v,PLAB[c]); D[i*P+c]=q; if(q<bd){bd=q;best=c;} } cnt[best]++; }
+  // The colours the photo uses most; then swap one in if it rescues a small bright detail (a red nose, a yellow beak)
+  const keep=[...cnt.keys()].filter(c=>cnt[c]).sort((a,b)=>cnt[b]-cnt[a]).slice(0,PIC_COLOURS), K=keep.length, cur=new Float32Array(n);
+  for(let round=0;round<3&&K===PIC_COLOURS;round++){
+    for(let i=0;i<n;i++){ let m=1e9; for(const c of keep){ const q=D[i*P+c]; if(q<m) m=q; } cur[i]=m; }
+    let gain=0,cIn=-1;
+    for(let c=0;c<P;c++){ if(keep.includes(c)) continue; let t=0; for(let i=0;i<n;i++){ const q=cur[i]-D[i*P+c]; if(q>0) t+=q; } if(t>gain){gain=t;cIn=c;} }
+    if(cIn<0) break;
+    let loss=1e18,jOut=-1;
+    for(let j=0;j<K;j++){ let t=0; for(let i=0;i<n;i++){ let m=1e9; for(let k=0;k<K;k++){ if(k===j) continue; const q=D[i*P+keep[k]]; if(q<m) m=q; } t+=m-cur[i]; } if(t<loss){loss=t;jOut=j;} }
+    if(gain>loss*1.5) keep[jOut]=cIn; else break;
+  }
+  const raw=new Int16Array(n);
+  for(let i=0;i<n;i++){ let best=keep[0],bd=1e9; for(const c of keep){ const q=D[i*P+c]; if(q<bd){bd=q;best=c;} } raw[i]=best; }
+  // A lone tile takes its neighbours' colour, unless it is very different (so eyes and noses stay)
+  const idx=raw.slice();
+  for(let y=0;y<Ht;y++)for(let x=0;x<Wt;x++){ const i=x+y*Wt, c=raw[i], nb=[];
+    if(y>0) nb.push(raw[i-Wt]); if(y<Ht-1) nb.push(raw[i+Wt]); if(x>0) nb.push(raw[i-1]); if(x<Wt-1) nb.push(raw[i+1]);
+    if(nb.includes(c)) continue;
+    let m=nb[0],mc=0; for(const v of nb){ const k=nb.filter(q=>q===v).length; if(k>mc){mc=k;m=v;} }
+    if(mc>=2&&dist2(PLAB[c],PLAB[m])<900) idx[i]=m; }
+  // Runs of one colour along a row become 1×2, 1×3 and 1×4 tiles; a step is one row (or half a row of a wide picture)
+  const bricks=[], steps=[], nSec=Math.ceil(Wt/24), SEC=Math.ceil(Wt/nSec);
+  for(let z=0;z<Ht;z++) for(let sct=0;sct<nSec;sct++){
+    const xa=sct*SEC, xb=Math.min(Wt,xa+SEC), chunk=[];
+    for(let x=xa;x<xb;){ const c=idx[x+z*Wt]; let len=1; while(len<4&&x+len<xb&&idx[x+len+z*Wt]===c) len++;
+      chunk.push({x,y:0,z,sx:len,sz:1,c}); x+=len; }
+    const id=steps.length; chunk.forEach(b=>{b.step=id;bricks.push(b);});
+    steps.push({layer:0,row:z,part:sct+1,parts:nSec,bricks:chunk});
+  }
+  return {kind:'picture',W:Wt,H:1,D:Ht,bricks,steps,name:niceName(front.name)};
+}
+// The finished picture as a small image (the "Use this puzzle" bar shows what you'll build, not the photo)
+function picURL(m){ const u=6, c=document.createElement('canvas'); c.width=m.W*u; c.height=m.D*u; const x=c.getContext('2d'); x.fillStyle='#2B2F33'; x.fillRect(0,0,c.width,c.height);
+  for(const b of m.bricks){ x.fillStyle=PALETTE[b.c][1]; x.fillRect(b.x*u+.5,b.z*u+.5,b.sx*u-1,b.sz*u-1); } return c.toDataURL('image/png'); }
 function buildPicture(front){
   let d=front.d; const Wt=S.pw, Ht=clamp(Math.round(Wt*d.h/d.w),8,128);
   // See-through parts of a photo (like the ready-made samples) become a soft white background
   if(d.px.some((v,i)=>(i&3)===3&&v<250)){ const px=new Uint8ClampedArray(d.px);
     for(let i=0;i<px.length;i+=4){ const a=px[i+3]/255; px[i]=px[i]*a+244*(1-a); px[i+1]=px[i+1]*a+244*(1-a); px[i+2]=px[i+2]*a+244*(1-a); px[i+3]=255; }
     d={w:d.w,h:d.h,px}; }
+  if(!front.drawing) return photoPicture(front,d);   // a drawing is built stud for stud, exactly as painted
   const all={mask:new Uint8Array(d.w*d.h).fill(1),bbox:[0,0,d.w-1,d.h-1]};
   const g=sampleGrid(d,all,Wt,Ht), n=Wt*Ht;
   const L=new Float32Array(n*3);
@@ -3754,9 +3823,11 @@ function refreshHint(){
 const escapeHTML=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function addFiles(files){
   usePicked=true;
-  const imgs=[...files].filter(f=>f.type.startsWith('image/')); if(!imgs.length) return;
+  const imgs=[...files].filter(f=>f.type.startsWith('image/')).slice(0,1); if(!imgs.length) return;
   track('creator_started');
-  photos=photos.filter(p=>!p.sample);
+  photos=[];   // a photo becomes one picture, so a new photo replaces the last one (before, it was added as a "side" and nothing changed)
+  // start Small, with the whole photo
+  S.pcx=S.pcy=.5; for(const [id,v] of [['pzoom',1],['pw',PIC_SIZES[0]]]){ const el=$('#'+id); el.value=v; el.dispatchEvent(new Event('input')); }
   // Q4: a photo becomes a brick picture (a mosaic made on this device). 3D photo models are off for now.
   if(S.kind!=='picture'){ S.kind='picture'; syncKind(); refreshHint(); }
   let left=imgs.length;
@@ -3786,8 +3857,25 @@ bindRange('tol','tol',v=>v?`${v}`:'off');
 bindRange('colors','maxColors',v=>`up to ${v}`);
 bindRange('pw','pw',v=>`${v} tiles wide · ${Math.round(v*.8)} cm`);
 bindRange('pcol','pcol',v=>`up to ${v}`);
+bindRange('pzoom','pzoom',v=>v>1?`${(+v).toFixed(1)}×`:'whole photo');
+document.querySelectorAll('input[name=psize]').forEach(r=>r.addEventListener('change',()=>{ const el=$('#pw'); el.value=r.value; el.dispatchEvent(new Event('input')); }));
+// The photo with the part to build marked; drag to move it
+function picFront(){ const p=photos.find(q=>q.view==='front')||photos[0]; return p&&p.d&&!p.drawing?p:null; }
+function drawCrop(){ const cv=$('#pcrop'), p=picFront(); if(!cv||!p||S.kind!=='picture') return;
+  const w=300, h=Math.round(w*p.d.h/p.d.w); if(cv.width!==w||cv.height!==h){ cv.width=w; cv.height=h; }
+  const x=cv.getContext('2d'), k=w/p.d.w, bb=picCrop(p.d); x.drawImage(p.d.canvas,0,0,w,h);
+  x.fillStyle='rgba(20,32,44,.55)'; x.beginPath(); x.rect(0,0,w,h); x.rect(bb[0]*k,bb[1]*k,(bb[2]-bb[0]+1)*k,(bb[3]-bb[1]+1)*k); x.fill('evenodd');
+  x.lineWidth=3; x.strokeStyle='#F4BC22'; x.strokeRect(bb[0]*k+1.5,bb[1]*k+1.5,(bb[2]-bb[0]+1)*k-3,(bb[3]-bb[1]+1)*k-3); }
+{ const cv=$('#pcrop'); let drag=false;
+  const aim=e=>{ const r=cv.getBoundingClientRect(); S.pcx=clamp((e.clientX-r.left)/r.width,0,1); S.pcy=clamp((e.clientY-r.top)/r.height,0,1); drawCrop(); schedule(120); };
+  cv.addEventListener('pointerdown',e=>{ e.preventDefault(); drag=true; try{cv.setPointerCapture(e.pointerId);}catch(_){ } aim(e); });
+  cv.addEventListener('pointermove',e=>{ if(drag) aim(e); });
+  const up=()=>{ drag=false; }; cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up);
+  $('#pzoom').addEventListener('input',drawCrop); }
 function syncKind(){ $('#settings').dataset.kind=S.kind; const r=document.querySelector(`input[name=kind][value="${S.kind}"]`); if(r) r.checked=true;
-  const photo=photos.some(p=>!p.sample); $('#kd-model').disabled=photo; const n=$('#photo3dNote'); if(n) n.hidden=!photo; }
+  const photo=photos.some(p=>!p.sample); $('#kd-model').disabled=photo; const n=$('#photo3dNote'); if(n) n.hidden=!photo;
+  const pf=!!picFront(); $('#picSizeF').hidden=!pf; $('#picCropF').hidden=!pf;   // a drawing is built as painted: no size or zoom
+  const ps=$('#ps-'+picW()); if(ps) ps.checked=true; if(pf) drawCrop(); }
 document.querySelectorAll('input[name=kind]').forEach(r=>r.addEventListener('change',()=>{S.kind=r.value; syncKind(); refreshHint(); schedule(60);}));
 syncKind();
 document.querySelectorAll('input[name=shape]').forEach(r=>r.addEventListener('change',()=>{S.shape=r.value;schedule();}));
@@ -3803,7 +3891,7 @@ function rebuild(){
     $('#stats').innerHTML=''; $('#partsList').innerHTML=''; $('#startBuild').disabled=true;
     if(m&&m.error) showMsg(m.error,'err'); if(photos.some(p=>!p.sample)) track('build_failure:creator'); return; }
   addPrints(m); addSpecial(m); model=m; if(photos.some(p=>!p.sample)) track('creator_succeeded'); modelVersion++; buildStep=0; syncUseBar();
-  TILES=m.kind==='picture';
+  TILES=m.kind==='picture'; $('#picInfo').textContent=TILES?`${m.bricks.length} tiles`:'';
   buildScene(m);
   showStep(m.steps.length,false);
   setupPlay(m);
@@ -4013,8 +4101,10 @@ function syncUseBar(){
   bar.hidden=!on; document.body.classList.toggle('ub-on',tab==='create'&&usePicked&&!!model);
   if(!on) return;
   $('#ubName').textContent=niceName(model.name||'Your puzzle');
-  $('#ubInfo').textContent=`${model.bricks.length} ${PIECE()}${model.bricks.length===1?'':'s'} · ${model.steps.length} steps`;
-  const p0=photos.find(p=>p.view==='front')||photos[0]; if(p0&&p0.d){ if(!p0.png) p0.png=p0.d.canvas.toDataURL('image/png'); $('#ubImg').src=p0.png; }
+  $('#ubInfo').textContent=`${model.bricks.length} ${model.kind==='picture'?'tile':'brick'}${model.bricks.length===1?'':'s'} · ${model.steps.length} steps`;
+  const p0=photos.find(p=>p.view==='front')||photos[0];
+  if(model.kind==='picture'&&p0&&!p0.drawing) $('#ubImg').src=picURL(model);
+  else if(p0&&p0.d){ if(!p0.png) p0.png=p0.d.canvas.toDataURL('image/png'); $('#ubImg').src=p0.png; }
   $('#ubGo').textContent=pickFor==='blitz'?'Use this puzzle ⚡':pickFor==='together'?'Use this puzzle 🧩':'Use this puzzle ▶';
 }
 $('#ubGo').onclick=()=>$('#startBuild').click();

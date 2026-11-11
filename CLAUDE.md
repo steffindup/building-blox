@@ -233,6 +233,13 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
 - **Blitz**: a "Let's go" before the clock starts; a wrong brick adds 1 second; the race-o-meter. In Bloppitopia, a clear
   next race that gets harder; the Grand Prix counts in the counter (race x of 20). Targets for a child: Warm-up won almost
   always, Steady about 75%, Full throttle 50%, Grand Prix 40%. In Pippa's boss level the Pup still mirrors Pippa.
+- **Photo to build** (Build Anything, "Add a photo"; redone 11 Nov 2026 after a 50-photo test): a photo becomes a flat tile
+  picture in three sizes, Small (about 135 tiles, the default), Medium (about 250), Big (about 490): the size is a number
+  of tiles, so a tall photo and a wide one are the same build. At most 8 flat colours, no speckle (`photoPicture`); a
+  "Zoom in" slider and dragging on the photo choose the part to build (`picCrop`); a new photo replaces the last one.
+  Before, a default photo was about 1,160 tiles and fewer than half were recognisable. It works for one clear thing on a
+  plain background; faces and busy scenes don't come out at a size a child can build, so it's a "try it" extra, not a
+  headline feature. A drawing (`drawing:true`) is still built stud for stud by the old code in `buildPicture`.
 - **Parts box**: each tap adds a brick to your hand, up to what the current booklet page needs; put back one or all (in
   the build and in the box). The first brick gets a suggested spot but can go anywhere.
 - **Films** ship inside the app, except the Moonstone feature film, which streams from bloppit.com. Mid-island films use a

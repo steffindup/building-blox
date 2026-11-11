@@ -1017,6 +1017,34 @@ test('family key: make, attach a player, bring the player to another device', { 
   assert.deepEqual(b.errors, []); await b.ctx.close();
 });
 
+test('a photo becomes a picture a child can finish: Small by default, three sizes, at most 8 colours, zoom, and a new photo replaces the last', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0#photos');
+  await t.page.evaluate(() => document.querySelector('[data-qb-go="photo"]').click()); await t.page.waitForTimeout(300);
+  // a made-up "photo": a speckled sky, grass and a red ball (speckle is what used to turn into hundreds of single tiles)
+  const png = (w, h) => t.page.evaluate(([w, h]) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d');
+    const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#7db7e8'); g.addColorStop(.6, '#cfe6f7'); g.addColorStop(.61, '#4f9a3c'); g.addColorStop(1, '#2f6e27'); x.fillStyle = g; x.fillRect(0, 0, w, h);
+    let s = 7; for (let i = 0; i < 6000; i++) { s = (s * 16807) % 2147483647; const px = s % w; s = (s * 16807) % 2147483647; const py = s % h; x.fillStyle = `rgba(${s % 255},${(s >> 8) % 255},${(s >> 16) % 255},.25)`; x.fillRect(px, py, 3, 3); }
+    x.fillStyle = '#d6221c'; x.beginPath(); x.arc(w * .5, h * .55, Math.min(w, h) * .25, 0, 7); x.fill(); return c.toDataURL('image/png').split(',')[1]; }, [w, h]);
+  const add = async (name, w, h) => { await t.page.setInputFiles('#file', { name, mimeType: 'image/png', buffer: Buffer.from(await png(w, h), 'base64') });
+    await t.page.waitForFunction((n) => document.getElementById('ubName').textContent.toLowerCase() === n && /tiles/.test(document.getElementById('picInfo').textContent), name.replace(/\.png$/, ''), { timeout: 30000 }); await t.page.waitForTimeout(400); };
+  const st = () => t.page.evaluate(() => ({ n: +document.getElementById('picInfo').textContent.match(/\d+/)[0], stats: document.getElementById('stats').innerText.replace(/\s+/g, ' '), bar: document.getElementById('ubInfo').textContent,
+    size: document.querySelector('input[name=psize]:checked').value, photos: document.getElementById('photoCount').textContent, img: document.getElementById('ubImg').src.slice(0, 22) }));
+  await add('ball.png', 600, 800);
+  const small = await st(); assert.equal(small.size, '20'); assert.match(small.stats, /15×20 TILES WIDE × TALL/i);   // a tall photo: the same number of tiles as a wide one
+  assert.ok(small.n >= 40 && small.n <= 200, `Small is a short build (${small.n} tiles)`); assert.match(small.bar, /^\d+ tiles · 20 steps$/); assert.match(small.img, /^data:image\/png/);
+  assert.ok(+small.stats.match(/(\d+) COLOURS/i)[1] <= 8, small.stats);
+  await t.page.evaluate(() => document.getElementById('ps-28').click()); await t.page.waitForFunction((n) => +document.getElementById('picInfo').textContent.match(/\d+/)[0] > n, small.n); const med = await st();
+  await t.page.evaluate(() => document.getElementById('ps-40').click()); await t.page.waitForFunction((n) => +document.getElementById('picInfo').textContent.match(/\d+/)[0] > n, med.n); const big = await st();
+  assert.ok(big.n > med.n && big.n <= 700, `Big stays buildable (${big.n} tiles)`); assert.match(big.stats, /30×40 TILES/i);
+  // zoom in: still the same size of picture, of a smaller part of the photo
+  await t.page.evaluate(() => { const e = document.getElementById('pzoom'); e.value = 2; e.dispatchEvent(new Event('input', { bubbles: true })); }); await t.page.waitForTimeout(900);
+  assert.equal(await t.text('#pzoomOut'), '2.0×'); assert.match((await st()).stats, /30×40 TILES/i);
+  // a new photo replaces the last one and starts Small again, with the whole photo
+  await add('wide.png', 800, 600); const next = await st();
+  assert.equal(next.photos, '1 photo'); assert.equal(next.size, '20'); assert.match(next.stats, /20×15 TILES/i); assert.equal(await t.text('#pzoomOut'), 'whole photo');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('draw your own: paint, build as a picture, save with the pup, send as a link', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0#photos');
   await t.page.evaluate(() => document.querySelector('[data-qb-go="draw"]').click()); await t.page.waitForTimeout(300);   // Quick Bricks: the Draw your own tile opens its screen
