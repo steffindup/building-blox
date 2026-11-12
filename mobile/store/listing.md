@@ -111,8 +111,8 @@ In `screenshots/`: seven per device, captioned, ready to upload in this order. `
 |---|---|---|---|
 | 1 | `*-1-island` | Every build you finish grows Bloppitopia. | Bloppitopia: Home Island with the otter, Bloppit and the islands found so far |
 | 2 | `*-2-arrival` | A little otter is coming home. | A frame of the arrival film (9 s): the boat, Bloppit waiting on the jetty, cropped to fill the screen |
-| 3 | `*-3-build` | Snap bricks into place, page by page. | A build in progress with Bloppit (the 8 Nov shot shows the old phone layout, bubble over the build; retake next time) |
-| 4 | `*-4-finish` | Finish clean. Earn three stars. (out of date since the 9 Nov stars; next retake: "Build clean. Keep your stars.") | The finish card: stars, See Bloppitopia, Play next |
+| 3 | `*-3-build` | Snap bricks into place, page by page. | A build in progress with Bloppit |
+| 4 | `*-4-finish` | Build clean. Keep your stars. | The finish card: stars, See Bloppitopia, Play next |
 | 5 | `*-5-weekly` | A new puzzle every week. See how many built it clean. | The Weekly page |
 | 6 | `*-6-blitz` | Race Swoop in Blitz Bay. | A race against Swoop |
 | 7 | `*-7-menu` | Your otter grows with every build. | The menu with the Bloppitopia card |
@@ -128,7 +128,16 @@ follow Bloppit. Apple’s limits: 15–30 s, at most 30 fps, footage from the ap
 the arrival made in the game): upload these with 1.1. Set the poster frame to Bloppit holding his red brick on the
 jetty (about 7 s in).
 
-## What’s New (1.1.2, submitted 10 Nov 2026)
+## What’s New (1.1.3)
+
+No emoji.
+
+A fresh How to Play video: smooth, and showing the game as it looks today.
+• Photo puzzles you can finish: pick Small, Medium or Big, zoom in on the part you want, and see your brick picture before you start
+• Photo and drawing puzzles you share look the same on every device
+• Smaller fixes
+
+## What’s New (1.1.2, live 12 Nov 2026)
 
 1.1.1 was withdrawn, so this goes to players coming from 1.1 and covers what 1.1.1 added. No emoji.
 
@@ -160,8 +169,6 @@ Bloppitopia comes to life!
 ## App Review notes
 
 Paste as is: one paragraph per topic, no line breaks inside a paragraph.
-
-For 1.1.2 only, first paragraph: We withdrew version 1.1.1 after finding a layout bug on iPhone: the step message and the character's speech bubble could cover the building area, so some bricks could not be placed. Version 1.1.2 fixes this. The model is now framed above those messages on every iPhone size, and we have tested every game mode on iPhone SE, mini and Pro Max sizes. 1.1.2 includes everything from 1.1.1, plus small fixes. The notes below are unchanged.
 
 Bloppit is a brick-building puzzle game for families and anyone who loves bricks. No account or login is needed.
 

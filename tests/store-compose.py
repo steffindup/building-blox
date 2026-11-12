@@ -14,7 +14,7 @@ BLUE, SHADOW = (3, 105, 189), (2, 80, 150)
 SHOTS = [('island', 'Every build you finish grows Bloppitopia.'),
          ('arrival', 'A little otter is coming home.'),
          ('build', 'Snap bricks into place, page by page.'),
-         ('finish', 'Finish clean. Earn three stars.'),
+         ('finish', 'Build clean. Keep your stars.'),
          ('weekly', 'A new puzzle every week. See how many built it clean.'),
          ('blitz', 'Race Swoop in Blitz Bay.'),
          ('menu', 'Your otter grows with every build.')]

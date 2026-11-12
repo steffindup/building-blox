@@ -6,7 +6,7 @@ const OUT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../mobile/s
 const FONTS=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../node_modules/@fontsource');
 const FONT_CSS=[['Lilita One','lilita-one/files/lilita-one-latin-400-normal.woff2',400],['Nunito','nunito/files/nunito-latin-400-normal.woff2',400],['Nunito','nunito/files/nunito-latin-700-normal.woff2',700],['Nunito','nunito/files/nunito-latin-800-normal.woff2',800]]
   .map(([fam,file,w])=>`@font-face{font-family:'${fam}';font-weight:${w};font-display:block;src:url(http://fonts.local/${file}) format('woff2')}`).join('');
-const b = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM || undefined, args: ['--use-gl=swiftshader'] });
+const b = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM || undefined, args: (process.env.PLAYWRIGHT_ARGS || '--use-gl=swiftshader').split(/\s+/) });   // the cloud sandbox needs the same PLAYWRIGHT_ARGS as the browser tests
 // Places the next brick as a player tapping the right spot would (unlike "Place one for me", nothing counts as help),
 // so a Trail level finishes clean with three stars
 const clean = async (p,n)=>{ for(let i=0;i<n;i++){ await p.evaluate(()=>window.bloppitPlaceRight()); await p.waitForTimeout(1100); } };
