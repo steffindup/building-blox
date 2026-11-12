@@ -62,6 +62,10 @@ the **Weekly** (see below) is fetched from the site by app 1.1.1 and later (not 
 - `tests/`: `server.test.mjs`, `math.test.mjs`, `films.test.mjs` (fast, no browser); `browser.test.mjs` (~90 end-to-end
   tests in headless Chromium); `devserver.mjs` (local server with in-memory Blobs); `weekly-export.mjs` (see Weekly).
 - `design/characters/`: character reference art.
+- `public/press/`: the press page (bloppit.com/press, made 12 Nov 2026): fact sheet, press images (`images/`, with
+  `thumbs/` and `bloppit-press-images.zip`, which must be rebuilt when an image changes) and the launch video. Update
+  its "Current version" line with each App Store release. No lufu and no Moonstone Isle beyond the mist (Steff's launch
+  rule). `marketing/launch-video/`: the locked 25-second launch videos and how they were made (its README).
 - `netlify.toml`: redirects (`/build` → `/game/`, `/join/CODE`, `/p/CODE` share links, `/go/CHANNEL`), headers.
 
 ## Map of `public/game/index.html`
@@ -256,6 +260,8 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
     converted anything that wasn't flagged as a drawing, and the flag isn't sent, so shared and saved drawings were
     rebuilt wrongly. An app from before this (1.1.2 and older) rebuilds a shared photo picture at 24 tiles wide or
     more, so it gets a slightly different picture until the next app release.
+- **Launch marketing (Steff, 12 Nov 2026)**: nothing shown to the public mentions lufu; Moonstone Isle appears only in
+  its mist (no "Mystery Island" label, a lavender glow is fine). The launch video has music only (no brick sounds).
 - **How to Play video** (`public/video/how-to-play*.mp4`: website, app, app upright; the app has them built in, so a new
   video reaches app players with the next release). Re-recorded 11 Nov 2026: the first one was filmed in real time in the
   slow test browser, so its game footage showed only about 6 new pictures a second. `tests/howto/` records it frame by
