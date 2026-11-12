@@ -9,7 +9,9 @@
 
 The launch (13, 16 and 21 Nov) runs on 1.1.2 and does not wait for this.
 
-- [ ] Build: the newest **1.1.3** build in TestFlight (the first one after the version bump is pushed).
+- [ ] Build: the newest **1.1.3** build in TestFlight. The first one (from the version bump, 12 Nov) uploaded without
+      problems and should be build 219; a later push to `mobile/` (the new screenshots) makes a newer one with the same
+      game inside. Either is fine: pick the newest.
 - [ ] Play-test on your phone (5 minutes):
   1. Menu, How to Play: the video is smooth and ends with the Bloppit and World of Bricks logo.
   2. Build Anything, Add a photo: it starts Small, shows the brick picture and the number of tiles; Medium and Big
@@ -19,7 +21,8 @@ The launch (13, 16 and 21 Nov) runs on 1.1.2 and does not wait for this.
   5. One Frog Trail level and this week's Weekly, as a general check.
 - [ ] What's New: from `listing.md` (1.1.3).
 - [ ] Review notes: from `listing.md` (the paragraph about 1.1.1 is gone).
-- [ ] Screenshots: the new set in `screenshots/` (no. 3 shows today's build screen; no. 4 is the new stars, caption
-      "Build clean. Keep your stars.").
+- [ ] Screenshots: the new set in `screenshots/`, retaken 12 Nov (no. 3 shows today's build screen; no. 4 is the new
+      stars, caption "Build clean. Keep your stars."). No. 5 shows Big Ben, the Weekly of 9 Nov; that is fine as an
+      example after the week has changed.
 - [ ] Description, promotional text, keywords, age rating, App Privacy: unchanged.
 - [ ] Release automatically after approval; phased release off.

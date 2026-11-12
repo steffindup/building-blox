@@ -40,6 +40,9 @@ for (const [tag, vp, dsf] of [['iphone',{width:440,height:956},3],['ipad',{width
   for(let i=0;i<20;i++){ await auto(page,1); if(await page.evaluate(()=>/You built your home/.test(document.querySelector('#isWorld .is3-banner')?.textContent||''))) break; }
   await page.waitForTimeout(1200);
   await page.waitForTimeout(4000); await page.evaluate(() => document.querySelector('#isWorld .is3-play').click()); await page.waitForTimeout(1500);
+  // setting off for Frog Forest plays its arrival film over the whole page: skip it, or it stays behind the build and the finish card
+  for (let i=0;i<8;i++){ if (await page.evaluate(() => { const s=document.querySelector('.is3-cine.page .cn-skip'); if(s){ s.click(); return true; } return false; })) break; await page.waitForTimeout(500); }
+  await page.waitForFunction(() => !document.querySelector('.is3-cine.page') && !document.body.classList.contains('film-on'), null, { timeout: 20000 }).catch(()=>{}); await page.waitForTimeout(1200);
   // play next through a few Trail levels for real thumbnails
   let shotFinish = false;
   for (let k=0;k<6;k++){ if (k) { await page.evaluate(() => document.getElementById('budNext')?.click()); await page.waitForTimeout(1500); }
