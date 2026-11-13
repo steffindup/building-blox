@@ -7730,7 +7730,7 @@ function mpApply(s){
   if(s.started&&!mp.entered){ mp.entered=true; if(tab!=='build'&&tab!=='box') setTab('build'); }
   document.title=(mpMyTurn()?'● Your turn · ':'')+'Bloppit';
   updateMpBar(); if(tab==='mp'||tab==='blitz') renderMpView(); renderChat(); renderKnock(); voSync(s);
-  if(s.finished&&!mp.ended){ mp.ended=true; if(!mp.cpu) buildFinished(s.mode==='blitz'?'blitz':'room'); setStatus(s.mode==='blitz'?'Finished! Let’s see who was quickest.':'Finished! You built it together.','ok'); setTimeout(mpShowEnd,1000); }
+  if(s.finished&&!mp.ended){ mp.ended=true; if(!mp.cpu) buildFinished(s.mode==='blitz'?'blitz':'room'); setStatus(s.mode==='blitz'?(s.solo&&s.calm?'Finished! Let’s see how clean it was.':'Finished! Let’s see who was quickest.'):'Finished! You built it together.','ok'); /* the Weekly is scored on clean building, never speed (Steff, 13 Nov) */ setTimeout(mpShowEnd,1000); }
 }
 function updateMpBar(){
   const s=mp&&mp.state;

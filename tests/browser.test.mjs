@@ -604,8 +604,11 @@ test('a finished Weekly stands on the 3D island, and can be put away and back', 
   const t = await open('?nosplash=1#daily', { init: world });
   await t.page.evaluate(() => document.getElementById('dyGo').click());
   await t.page.waitForFunction(() => (s => /Go!/.test(s) && !/Wait for Go/.test(s))(document.getElementById('status').textContent), null, { timeout: 20000 });
+  await t.page.evaluate(() => { window.__said = []; const el = document.getElementById('status'); new MutationObserver(() => window.__said.push(el.textContent)).observe(el, { childList: true, characterData: true, subtree: true }); });
   for (let i = 0; i < 200; i++) { const more = await t.page.evaluate(() => window.bloppitPlaceRight()); if (!more && await t.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; await t.page.waitForTimeout(150); }
   await t.page.waitForTimeout(3000);
+  const said = await t.page.evaluate(() => window.__said.filter((x) => /Finished!/.test(x)));   // the Weekly is scored on clean building: its last message is not about speed
+  assert.ok(said.length && said.every((x) => /how clean it was/.test(x) && !/quickest/.test(x)), 'the Weekly finishes with "how clean it was": ' + JSON.stringify(said));
   const key = await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1')).log.find((k) => k.startsWith('w:')));
   assert.ok(key, 'the Weekly was recorded');
   await t.page.goto(new URL('/game/?nosplash=1&lite3d=1#island', 'http://localhost:8799').href); await t.page.waitForTimeout(3000);
