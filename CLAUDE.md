@@ -263,6 +263,10 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
     more, so it gets a slightly different picture until the next app release.
 - **Launch marketing (Steff, 12 Nov 2026)**: nothing shown to the public mentions lufu; Moonstone Isle appears only in
   its mist (no "Mystery Island" label, a lavender glow is fine). The launch video has music only (no brick sounds).
+- **Link previews** (13 Nov 2026): every website page carries the full set (title, description, `og:*`, `twitter:*`); the
+  share image is `public/og-bloppit-world-of-bricks.png` (the game page still uses the same picture as `og-image.png`).
+  X and others cache a page's card for days: after changing a card, rename the image so it is fetched again, and expect
+  an already-posted address to show the old card for a while (a new address, such as `/go/x`, gets a fresh card).
 - **How to Play video** (`public/video/how-to-play*.mp4`: website, app, app upright; the app has them built in, so a new
   video reaches app players with the next release). Re-recorded 11 Nov 2026: the first one was filmed in real time in the
   slow test browser, so its game footage showed only about 6 new pictures a second. `tests/howto/` records it frame by
