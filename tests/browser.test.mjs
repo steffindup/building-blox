@@ -2057,3 +2057,27 @@ test('a crew: Pass the Puzzle goes round (first pages, then the next builder fin
   assert.match(await b.text('#crewOpen'), /started a game/);
   assert.deepEqual(a.errors, []); assert.deepEqual(b.errors, []); await a.ctx.close(); await b.ctx.close();
 });
+
+test('Link a player: a code works once; tapping Link again with the code that just worked says it worked, not "expired" (15 Nov 2026)', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0');
+  // another device's player on the server, and a link code for it
+  const code = await t.page.evaluate(async () => {
+    const post = (b, pid) => fetch('/api/pup', { method: 'POST', headers: { 'content-type': 'application/json', ...(pid ? { 'x-pup': pid } : {}) }, body: JSON.stringify(b) }).then((r) => r.json());
+    const c = await post({ action: 'create', data: { world: { arrived: 1, pupName: 2, builds: {}, log: [] } } });
+    return (await post({ action: 'transfer' }, c.pup)).code;
+  });
+  assert.match(code, /^[A-Z0-9]{8}$/);
+  const link = async (c) => { await t.page.evaluate((c) => { const d = document.getElementById('grownDlg'); if (!d.open) d.showModal(); document.getElementById('grownClaimIn').value = c; document.getElementById('grownClaimGo').click(); }, c);
+    await t.page.waitForFunction(() => { const n = document.getElementById('grownClaimNote'); return !n.hidden && !/Linking the player/.test(n.textContent) && !document.getElementById('grownClaimGo').disabled; }, null, { timeout: 10000 }); return t.text('#grownClaimNote'); };
+  const n0 = await t.page.evaluate(() => (JSON.parse(localStorage.getItem('bloppit-players-v1')) || { list: [0] }).list.length);   // nothing saved yet = the one first player
+  assert.match(await link(code), /^Linked\./);
+  assert.equal(await t.page.evaluate(() => document.getElementById('grownClaimIn').value), '', 'the box is emptied after a link');
+  assert.equal(await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-players-v1')).list.length), n0 + 1);
+  // the same code again (typed or pasted a second time): no "wasn't found or has expired", and no second player
+  const again = await link(code);
+  assert.match(again, /the player is linked on this device/); assert.doesNotMatch(again, /expired/);
+  assert.equal(await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-players-v1')).list.length), n0 + 1);
+  // a code that was never made still says so
+  assert.match(await link('ZZZZ2222'), /wasn’t found or has expired/);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});

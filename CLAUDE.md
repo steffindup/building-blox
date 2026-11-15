@@ -316,6 +316,10 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   game's own models in idle moments (`shapeRecipes`, `isl3ShapesLater`); the player's photos/drawings stay picture cards.
 - Comments reference `claude/consistency-decisions-2026-11-07.md`: it lives in the claude.ai Project "Bloppit", not the
   repo (see below).
+- A link code works once. "It says expired" right after making one usually means it already worked and Link was tapped
+  again (15 Nov 2026: the server log showed a 200, then a 404 nine seconds later). The form now empties the box after a
+  link and answers the same code with "it worked". To check a report, read the `pup` function's requests with the
+  Netlify connector: the app's requests have no "Safari" in the user agent and no referrer.
 - Commits: end with the `Co-Authored-By` / `Claude-Session` lines the session gives you; commit as
   `Claude <noreply@anthropic.com>` (a hook flags other committer emails as Unverified).
 

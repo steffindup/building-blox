@@ -7487,12 +7487,16 @@ $('#grownXfer').onclick=async()=>{
     note.textContent=`On the other device, open Who’s playing → Link a player from there and type this within 72 hours. It works once. The Family Link below now carries it too.`;
   }catch(e){ note.textContent=e.message; }
 };
+const claimedCodes=new Set();   // link codes this page has already used
 $('#grownClaimForm').addEventListener('submit',async e=>{
   e.preventDefault(); const code=$('#grownClaimIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''), note=$('#grownClaimNote'); note.hidden=false;
   if(code.length!==8){ note.textContent='A link code has 8 letters and numbers.'; return; }
+  // A code works once. A second tap with the code that just worked used to answer "wasn't found or has expired",
+  // which read as a failure (Steff, 15 Nov 2026): the box is now emptied after a link, and the same code again says it worked.
+  if(claimedCodes.has(code)){ $('#grownClaimIn').value=''; note.textContent='That code has done its job: the player is linked on this device. A code works once, so there is nothing more to do.'; return; }
   $('#grownClaimGo').disabled=true; note.textContent='Linking the player…';
   try{
-    const j=await pupApi('POST',{action:'claim',code}); track('transfer_claimed');
+    const j=await pupApi('POST',{action:'claim',code}); track('transfer_claimed'); claimedCodes.add(code); $('#grownClaimIn').value='';
     if(players.list.some(p=>p.pup===j.pup)){ note.textContent='That player is already linked on this device.'; return; }
     const id='p'+(++players.n+1), n=players.list.length+1;
     players.list.push({id,name:'Player '+n,age:null,color:AV_COLORS[(n-1)%AV_COLORS.length],pup:j.pup}); pupApply(id,j.data); playersSave();
