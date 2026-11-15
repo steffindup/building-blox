@@ -1389,9 +1389,10 @@ test('living characters: on the island (dressed pup, the friends, tap for a reac
   // the friends on their islands are living drawings too
   assert.equal(await t.page.evaluate(() => Object.values(window.bloppitIsland3().cast).filter((K) => K.i3).length), 4);
   // tap Bloppit: a reaction and a word
-  { const p = await t.page.evaluate(() => window.bloppitIslandPoint('bloppit')); await t.page.mouse.click(p.x, p.y); await t.page.waitForTimeout(500); }
-  assert.notEqual(await t.page.evaluate(() => window.bloppitChars3d().island.clips[0]), 'idle');
-  assert.equal(await t.page.evaluate(() => document.querySelector('#isWorld .is3-say').hidden), false);
+  // (his word shows for 2 seconds: on a busy machine, three separate looks could take longer than that and find it gone.
+  // That made this test fail now and then, 15 Nov 2026. One look from inside the page, as soon as both are there.)
+  { const p = await t.page.evaluate(() => window.bloppitIslandPoint('bloppit')); await t.page.mouse.click(p.x, p.y);
+    await t.page.waitForFunction(() => window.bloppitChars3d().island.clips[0] !== 'idle' && !document.querySelector('#isWorld .is3-say').hidden, null, { timeout: 5000, polling: 50 }); }
   // the pup's card → the wardrobe: a 3D preview, outfits named for its age, shoes and its toy
   await t.page.waitForTimeout(2500);
   for (let i = 0; i < 3 && !(await t.page.evaluate(() => /Wardrobe/.test(document.getElementById('isTip').textContent) && !document.getElementById('isTip').hidden)); i++) {
