@@ -2589,11 +2589,11 @@ body:not(.on-home) .brand .wob{display:none}   /* "World of Bricks" only on the 
   <section class="grown-sec">
     <h3>Saved progress</h3>
     <p class="note" id="grownSaved"></p>
-    <p class="note">Bloppit saves scores and dates under an anonymous Player Unique ID. No name, age, photo or device details are ever stored. <a href="/privacy/" target="_blank" rel="noopener">Privacy policy</a></p>
+    <p class="note">Bloppit saves scores and dates under an anonymous Player Unique ID. No age, photo or device details are ever stored, and no name is kept with the progress. A name only travels with a link code you make, and is deleted with the code. <a href="/privacy/" target="_blank" rel="noopener">Privacy policy</a></p>
   </section>
   <section class="grown-sec">
     <h3>Link this player to another device</h3>
-    <p class="note">Make a link code here, then on the other device open <b>Who’s playing → Link a player from there</b> and type it in. Both devices then play as the same player: progress and Crews stay in step. A code works once and lasts 72 hours.</p>
+    <p class="note">Make a link code here, then on the other device open <b>Who’s playing → Link a player from there</b> and type it in. Both devices then play as the same player: progress and Crews stay in step. A code works once and lasts 72 hours. It takes this player’s name and their otter’s name along; they are kept with the code only, and deleted with it.</p>
     <div class="win-btns" style="justify-content:flex-start"><button class="ghost" id="grownXfer" type="button">Make a link code</button></div>
     <p class="gate-num" id="grownCode" hidden></p>
     <p class="note" id="grownXferNote" hidden></p>
@@ -7491,6 +7491,15 @@ function pupLocal(id){
 }
 // A linked player arrives without a name (names stay on each device): the first "Player N" not already on this device
 function newPlayerName(){ for(let n=players.list.length+1;;n++){ const nm='Player '+n; if(!players.list.some(p=>(p.name||'').trim().toLowerCase()===nm.toLowerCase())) return nm; } }
+// A player arriving on this device (link code, Family Link, family key): a new profile, with its own progress only.
+// A link code can carry the player's name and a typed otter name (Steff, 15 Nov 2026); a family key carries none.
+function linkedAdd(j){ const id='p'+(++players.n+1), n=players.list.length+1, N=j.names||{};
+  const nm=typeof N.player==='string'?N.player.replace(/\s+/g,' ').trim().slice(0,16):'', taken=nm&&players.list.some(p=>(p.name||'').trim().toLowerCase()===nm.toLowerCase());
+  players.list.push({id,name:nm&&!taken?nm:newPlayerName(),age:null,color:AV_COLORS[(n-1)%AV_COLORS.length],pup:j.pup});
+  let d=j.data; const ot=cleanPupText(N.otter); if(ot&&d&&d.world&&!(d.world.pupName>=0)) d={...d,world:{...d.world,pupText:ot,pupName:-1}};
+  pupApply(id,d); playersSave(); return id; }
+// What a link code takes along: the player's name (not a "Player 2" placeholder) and the otter's name if it was typed
+function linkNames(me){ const nm=(me&&me.name||'').trim(), o=worldStore(); return {...(nm&&!/^Player \d+$/.test(nm)?{name:nm.slice(0,16)}:{}),...(cleanPupText(o.pupText)?{otter:cleanPupText(o.pupText)}:{})}; }
 function pupApply(id,d){
   if(!d) return;
   // What this device did since the push wins: joined with that player's own world on this device. It used to be joined with
@@ -7542,8 +7551,8 @@ $('#grownXfer').onclick=async()=>{
     note.textContent='Making a code…';
     // The server copy can be gone while this device still has the player (deleted or removed on a linked device): it used to
     // answer "That pup wasn't found" (Steff, 15 Nov 2026). Save the player again from this device, then make the code.
-    let j; try{ j=await pupApi('POST',{action:'transfer'},me.pup); }
-    catch(e){ if(e.status!==404) throw e; note.textContent='Saving this player again…'; await pupSync(); j=await pupApi('POST',{action:'transfer'},me.pup); }
+    const ask={action:'transfer',...linkNames(me)}; let j; try{ j=await pupApi('POST',ask,me.pup); }
+    catch(e){ if(e.status!==404) throw e; note.textContent='Saving this player again…'; await pupSync(); j=await pupApi('POST',ask,me.pup); }
     track('transfer_made');
     out.textContent=j.code; out.hidden=false; familyCode=j.code; renderFamily();
     note.textContent=`On the other device, open Who’s playing → Link a player from there and type this within 72 hours. It works once. The Family Link below now carries it too.`;
@@ -7560,9 +7569,10 @@ $('#grownClaimForm').addEventListener('submit',async e=>{
   try{
     const j=await pupApi('POST',{action:'claim',code}); track('transfer_claimed'); claimedCodes.add(code); $('#grownClaimIn').value='';
     if(players.list.some(p=>p.pup===j.pup)){ note.textContent='That player is already linked on this device.'; return; }
-    const id='p'+(++players.n+1), n=players.list.length+1;
-    players.list.push({id,name:newPlayerName(),age:null,color:AV_COLORS[(n-1)%AV_COLORS.length],pup:j.pup}); pupApply(id,j.data); playersSave();
-    note.textContent='Linked. Progress and Crews now stay in step with the other device. Names stay on each device, so give them their name under Edit, then tap their card to play.';
+    const id=linkedAdd(j);
+    const got=players.list.find(p=>p.id===id), named=!!(j.names&&j.names.player&&got&&got.name===j.names.player);
+    note.textContent=named?`Linked: ${got.name} now plays on this device too. Progress and Crews stay in step with the other device. Tap their card to play.`
+      :`Linked as ${got?got.name:'a new player'}. Progress and Crews now stay in step with the other device. Give them their name under Edit, then tap their card to play.`;
     renderWhoList();
   }catch(err){ note.textContent=err.message; }
   finally{ $('#grownClaimGo').disabled=false; }
@@ -12364,8 +12374,7 @@ async function shareClaim(code){
   code=String(code||'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(code.length!==8) return;
   try{ const j=await pupApi('POST',{action:'claim',code}); track('transfer_claimed:family');
     if(players.list.some(p=>p.pup===j.pup)) return;
-    const id='p'+(++players.n+1), n=players.list.length+1;
-    players.list.push({id,name:newPlayerName(),age:null,color:AV_COLORS[(n-1)%AV_COLORS.length],pup:j.pup}); pupApply(id,j.data); playersSave(); switchPlayer(id);
+    const id=linkedAdd(j); switchPlayer(id);
   }catch(e){}
 }
 // The Weekly card: this week's model, the shared-achievement line, the otter, and the link
@@ -12477,7 +12486,7 @@ async function famList(key){
 }
 $('#famList').addEventListener('click',async e=>{
   const key=$('#famKeyIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''), b=e.target.closest('button'); if(!b) return;
-  if(b.dataset.famBring){ b.disabled=true; try{ const j=await pupApi('POST',{action:'family-restore',key,pup:b.dataset.famBring}); if(!players.list.some(p=>p.pup===j.pup)){ const id='p'+(++players.n+1), n=players.list.length+1; players.list.push({id,name:newPlayerName(),age:null,color:AV_COLORS[(n-1)%AV_COLORS.length],pup:j.pup}); pupApply(id,j.data); playersSave(); renderWhoList(); } track('family_restored'); famList(key); }catch(x){ famNote(x.message,'err'); b.disabled=false; } return; }
+  if(b.dataset.famBring){ b.disabled=true; try{ const j=await pupApi('POST',{action:'family-restore',key,pup:b.dataset.famBring}); if(!players.list.some(p=>p.pup===j.pup)){ linkedAdd(j); renderWhoList(); } track('family_restored'); famList(key); }catch(x){ famNote(x.message,'err'); b.disabled=false; } return; }
   if(b.dataset.famDel){ if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent='Tap again to delete'; setTimeout(()=>{ delete b.dataset.confirm; b.textContent='Delete'; },3000); return; }
     try{ await pupApi('POST',{action:'family-delete',key,pup:b.dataset.famDel}); players.list.forEach(p=>{ if(p.pup===b.dataset.famDel) delete p.pup; }); playersSave(); track('family_deleted'); famList(key); }catch(x){ famNote(x.message,'err'); } }
 });

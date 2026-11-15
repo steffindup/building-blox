@@ -2070,7 +2070,7 @@ test('Link a player: a code works once; tapping Link again with the code that ju
   const link = async (c) => { await t.page.evaluate((c) => { const d = document.getElementById('grownDlg'); if (!d.open) d.showModal(); document.getElementById('grownClaimIn').value = c; document.getElementById('grownClaimGo').click(); }, c);
     await t.page.waitForFunction(() => { const n = document.getElementById('grownClaimNote'); return !n.hidden && !/Linking the player/.test(n.textContent) && !document.getElementById('grownClaimGo').disabled; }, null, { timeout: 10000 }); return t.text('#grownClaimNote'); };
   const n0 = await t.page.evaluate(() => (JSON.parse(localStorage.getItem('bloppit-players-v1')) || { list: [0] }).list.length);   // nothing saved yet = the one first player
-  assert.match(await link(code), /^Linked\./);
+  assert.match(await link(code), /^Linked as Player \d+\./);
   assert.equal(await t.page.evaluate(() => document.getElementById('grownClaimIn').value), '', 'the box is emptied after a link');
   assert.equal(await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-players-v1')).list.length), n0 + 1);
   // the same code again (typed or pasted a second time): no "wasn't found or has expired", and no second player
@@ -2151,7 +2151,7 @@ test('a linked player arrives with its own progress and otter only, under a name
   const code = await t.page.evaluate(async (world) => { const post = (b, pid) => fetch('/api/pup', { method: 'POST', headers: { 'content-type': 'application/json', ...(pid ? { 'x-pup': pid } : {}) }, body: JSON.stringify(b) }).then((r) => r.json());
     const c = await post({ action: 'create', data: { world } }); return (await post({ action: 'transfer' }, c.pup)).code; }, theirs);
   await t.page.evaluate((c) => { document.getElementById('grownDlg').showModal(); document.getElementById('grownClaimIn').value = c; document.getElementById('grownClaimGo').click(); }, code);
-  await t.page.waitForFunction(() => /^Linked\./.test(document.getElementById('grownClaimNote').textContent), null, { timeout: 10000 });
+  await t.page.waitForFunction(() => /^Linked as Player 3\./.test(document.getElementById('grownClaimNote').textContent), null, { timeout: 10000 });
   const got = await t.page.evaluate(() => { const P = JSON.parse(localStorage.getItem('bloppit-players-v1')), n = P.list[1]; return { names: P.list.map((p) => p.name), world: JSON.parse(localStorage.getItem('bloppit-world-v1:' + n.id)), mine: JSON.parse(localStorage.getItem('bloppit-world-v1:p2')) }; });
   assert.deepEqual(got.names, ['Player 2', 'Player 3'], 'no second "Player 2"');
   assert.deepEqual(Object.keys(got.world.builds), ['m:Red Boat:20'], 'only its own build'); assert.equal(got.world.pupName, 5, 'its own otter name'); assert.deepEqual(got.world.decor, []);
@@ -2217,4 +2217,31 @@ test('How mirror puzzles work: before Pippa’s first brick of a player’s firs
   await t.page.evaluate(() => window.bloppitLevel('sea', 0)); await t.page.waitForTimeout(1500);
   assert.equal(await t.page.evaluate(() => document.getElementById('introDlg').open), false);
   assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('a link code takes the player’s name and a typed otter name to the other device; the server keeps them with the code only (15 Nov 2026)', { skip: skip() }, async () => {
+  // the first device: Steff, whose otter was named Blueberry by typing
+  const world = { arrived: 1, pupAsked: true, pupName: -1, pupText: 'Blueberry', pupAt: 1e12, xp: 20, bonus: 0, builds: { 'm:Cottage:12': { n: 12, s: 2, t: 1e12, c: 1 } }, log: ['m:Cottage:12'], decor: [] };
+  const a = await open('?nosplash=1&welcome=0', { init: { fn: (w) => { if (localStorage.getItem('bloppit-players-v1')) return;
+    localStorage.setItem('bloppit-players-v1', JSON.stringify({ cur: 'p1', n: 1, list: [{ id: 'p1', name: 'Steff', age: null, color: '#D62F2A' }] })); localStorage.setItem('bloppit-world-v1', JSON.stringify(w)); }, arg: world } });
+  await a.page.evaluate(() => { document.getElementById('grownDlg').showModal(); document.getElementById('grownXfer').click(); });
+  await a.page.waitForFunction(() => !document.getElementById('grownCode').hidden, null, { timeout: 15000 });
+  const code = await a.text('#grownCode'); assert.match(code, /^[A-Z0-9]{8}$/);
+  const pup = await a.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-players-v1')).list[0].pup);
+  // the player's own record on the server has no name in it
+  const rec = await a.page.evaluate((pid) => fetch('/api/pup', { headers: { 'x-pup': pid } }).then((r) => r.text()), pup); assert.doesNotMatch(rec, /Steff|Blueberry/);
+  await a.ctx.close();
+  // the second device already has a "Player 2" with an otter from the list (Bubbles)
+  const b = await open('?nosplash=1&welcome=0', { init: { fn: () => { if (localStorage.getItem('bloppit-players-v1')) return;
+    localStorage.setItem('bloppit-players-v1', JSON.stringify({ cur: 'p2', n: 2, list: [{ id: 'p2', name: 'Player 2', age: null, color: '#2F7FD0' }] }));
+    localStorage.setItem('bloppit-world-v1:p2', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 3, pupAt: 2e12, xp: 30, bonus: 0, builds: {}, log: [], decor: [] })); } } });
+  await b.page.evaluate((c) => { document.getElementById('grownDlg').showModal(); document.getElementById('grownClaimIn').value = c; document.getElementById('grownClaimGo').click(); }, code);
+  await b.page.waitForFunction(() => /^Linked/.test(document.getElementById('grownClaimNote').textContent), null, { timeout: 10000 });
+  assert.match(await b.text('#grownClaimNote'), /^Linked: Steff now plays on this device too/);
+  const got = await b.page.evaluate(() => { const P = JSON.parse(localStorage.getItem('bloppit-players-v1')), n = P.list[1], w = JSON.parse(localStorage.getItem('bloppit-world-v1:' + n.id)); return { names: P.list.map((p) => p.name), otter: w.pupText, builds: Object.keys(w.builds), other: JSON.parse(localStorage.getItem('bloppit-world-v1:p2')).pupName }; });
+  assert.deepEqual(got, { names: ['Player 2', 'Steff'], otter: 'Blueberry', builds: ['m:Cottage:12'], other: 3 });
+  // used once: the code and the names it carried are gone from the server
+  const again = await b.page.evaluate((c) => fetch('/api/pup', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'claim', code: c }) }).then(async (r) => ({ status: r.status, text: await r.text() })), code);
+  assert.equal(again.status, 404); assert.doesNotMatch(again.text, /Steff|Blueberry/);
+  assert.deepEqual(b.errors, []); await b.ctx.close();
 });

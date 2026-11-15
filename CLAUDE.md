@@ -221,8 +221,8 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   yellow = Pippa + stars only; one purple for Together; teal = Quick Play only; pink = Crews. Drawn icons, not emoji, in the game UI. Brick-shaped
   menu cards, pill buttons. A card's studs are its own colour.
 - **Online-only** (no kits, physical products or "build it for real"). Child-directed under COPPA: **no chat, no
-  voice, no strangers talking to kids**; rooms are code-only; Crews need approval. Anonymous: names stay on the device;
-  the server only knows the Player Unique ID. Cosmetics are earned, never sold. No marketing aimed at Bermuda and no school tie-ins; Bermuda as part of the
+  voice, no strangers talking to kids**; rooms are code-only; Crews need approval. Anonymous: names stay on the device
+  (one exception, if Steff approves it: a link code carries them for its 72 hours, see Gotchas); the server only knows the Player Unique ID. Cosmetics are earned, never sold. No marketing aimed at Bermuda and no school tie-ins; Bermuda as part of the
   creation story (About us, the website) is welcome (Steff, 9 Nov).
 - **Not in the App Store Kids category** (4+). Links out of the app go through the grown-ups gate (our choice).
 - **Music** only in Bloppitopia; gameplay is silent apart from sound effects. The launch screen plays the "Bloppit"
@@ -343,8 +343,15 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   world with the current player's, so the new player got the current player's builds, stars and otter name (and would
   have saved the mix to the server once played). It now joins only with that player's own world on the device. Same
   fix for the three ways a player arrives (link code, Family Link, family key). A linked player's default name is the
-  first unused "Player N". By design the player's name and a typed otter name never leave the device, so they do not
-  carry; an otter name picked from the list does. Steff asked why (15 Nov); carrying names is his decision, not made.
+  first unused "Player N". An otter name picked from the list carries with the progress (it is a number).
+- **Names travel with a link code** (Steff's idea, 15 Nov 2026; built that day, **waiting for his go-ahead to push**,
+  as its own commit so it can be left out). Making a code sends the player's name and a typed otter name; the server
+  keeps them in the code's own record only (`xfer/CODE`, never in the player's record) until the code is used, and
+  deletes an unused one with the expired code (daily cleanup, or the first try after 72 hours). The other device uses
+  them for the linked player (`linkedAdd`). It changes a promise ("names never leave the device"): the privacy policy
+  and the Grown-ups corner say so in the same commit, but `mobile/store/listing.md` (review notes, lines about typed
+  names) and the App Store and Google Play privacy answers ("not collected") still say names are never sent. They are
+  Steff's to decide and must be settled before an app with this ships. A family key carries no names.
 - The "living characters: on the island…" browser test failed twice and passed three times on the same code in the
   sandbox (15 Nov 2026), not looked into yet: read it before waving a red run through.
 - Island cards (`islandTip`) are kept inside the screen and scroll inside themselves if taller than it (15 Nov 2026: on a

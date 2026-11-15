@@ -74,6 +74,22 @@ test('pup: create → save (merge) → transfer → claim', async () => {
   const k = await pup('POST', {}, { action: 'claim', code: t.body.code }, store); assert.equal(k.body.pup, id); assert.equal(k.body.data.world.pupName, 3);
   const again = await pup('POST', {}, { action: 'claim', code: t.body.code }, store); assert.notEqual(again.status, 200);
 });
+test('pup: a link code carries the player’s name and a typed otter name, kept with the code only and gone once it is used (15 Nov 2026)', async () => {
+  mem.clear();
+  const c = await pup('POST', {}, { action: 'create', data: { world: { xp: 10, builds: {}, log: [], decor: [], pupName: -1 } } }, store), id = c.body.pup;
+  const t = await pup('POST', { pid: id }, { action: 'transfer', name: '  Steff <b>7</b>  ', otter: 'Blue-berry 9!' }, store); assert.equal(t.status, 200);
+  assert.deepEqual(JSON.parse(mem.get(`xfer/${t.body.code}`).d).names, { player: 'Steff b7b', otter: 'Blue-berry' }, 'letters, numbers, spaces, hyphens only; an otter name has no numbers');
+  assert.equal(mem.get(`pup/${id}`).d.includes('Steff'), false, 'never in the player’s own record');
+  const k = await pup('POST', {}, { action: 'claim', code: t.body.code }, store); assert.deepEqual(k.body.names, { player: 'Steff b7b', otter: 'Blue-berry' });
+  assert.equal(mem.has(`xfer/${t.body.code}`), false, 'the names go with the code');
+  assert.equal([...mem.values()].some((v) => v.d.includes('Steff')), false, 'nothing on the server still holds the name');
+  // no names sent (an older app): none kept, none returned
+  const t2 = await pup('POST', { pid: id }, { action: 'transfer' }, store); assert.equal('names' in JSON.parse(mem.get(`xfer/${t2.body.code}`).d), false);
+  assert.equal('names' in (await pup('POST', {}, { action: 'claim', code: t2.body.code }, store)).body, false);
+  // a code that ran out is deleted the moment someone tries it, names and all
+  const t3 = await pup('POST', { pid: id }, { action: 'transfer', name: 'Steff' }, store); await store.set(`xfer/${t3.body.code}`, { ...JSON.parse(mem.get(`xfer/${t3.body.code}`).d), exp: Date.now() - 1 });
+  assert.equal((await pup('POST', {}, { action: 'claim', code: t3.body.code }, store)).status, 404); assert.equal(mem.has(`xfer/${t3.body.code}`), false);
+});
 test('weekly: the week key is the Monday, boundary at midnight New York (Sunday night)', () => {
   assert.equal(weekOf(new Date('2026-10-14T18:00:00Z')), '2026-10-12');
   assert.equal(weekOf(new Date('2026-10-19T03:59:00Z')), '2026-10-12');   // Sunday 23:59 EDT

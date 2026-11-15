@@ -3,7 +3,8 @@
 //
 // What a pup record holds: numbers and dates only. No name, no age, no photo, no device identifier.
 // The pup id is minted here and is the only credential: it travels in the x-pup header, never in a URL.
-// A transfer code moves a pup to another device once, within 72 hours, and then stops working.
+// A transfer code moves a pup to another device once, within 72 hours, and then stops working. The code's own record
+// may carry the player's name and a typed otter name for that trip (see cleanNames); the pup's record never does.
 //
 // Kept free of Netlify imports so it can be tested locally. A store adapter must provide:
 //   get(key)                      -> { data, etag } | null
@@ -23,6 +24,12 @@ const newId = () => rand(24, ID_CHARS);
 const newCode = () => rand(8, CODE_CHARS);
 const cleanId = (s) => /^[a-z0-9]{24}$/.test(String(s || '')) ? String(s) : '';
 const cleanCode = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+// Names that travel with a link code (Steff, 15 Nov 2026): the player's name and a typed otter name, so the other
+// device doesn't make "Player 3" with a nameless otter. They are kept in the code's own record only (xfer/CODE), never in
+// the player's record, and go when the code is used, or with the expired code (room-cleanup, daily). Letters, numbers,
+// spaces, ' - and . only; 16 characters for a player, 14 letters for an otter (the game's own limits).
+const cleanName = (v, n, letters) => typeof v !== 'string' ? '' : v.normalize('NFC').replace(letters ? /[^\p{L}\p{M} '\-]/gu : /[^\p{L}\p{M}\p{N} '\-.]/gu, '').replace(/\s+/g, ' ').trim().slice(0, n).trim();
+export const cleanNames = (b) => { const player = cleanName(b && b.name, 16), otter = cleanName(b && b.otter, 14, true); return player || otter ? { ...(player ? { player } : {}), ...(otter ? { otter } : {}) } : null; };
 const pupKey = (id) => `pup/${id}`;
 const xferKey = (c) => `xfer/${c}`;
 const familyKey = (k) => `family/${k}`;
@@ -175,11 +182,12 @@ export async function handle(method, query, body, store) {
     const code = cleanCode(body.code);
     if (code.length !== 8) return { status: 400, body: { error: 'A link code has 8 letters and numbers.' } };
     const x = await store.get(xferKey(code));
+    if (x && x.data && now > x.data.exp) await store.del(xferKey(code));   // an expired code goes at once, with any names it carried
     if (!x || !x.data || now > x.data.exp) return { status: 404, body: { error: 'That link code wasn’t found or has expired. Make a new one on the other device.' } };
     await store.del(xferKey(code));
     const r = await readPup(store, x.data.pup);
     if (!r) return { status: 404, body: { error: 'That player is no longer on Bloppit’s server.' } };
-    return { status: 200, body: { pup: x.data.pup, data: r.data.data || {}, ver: r.data.ver || 0 } };
+    return { status: 200, body: { pup: x.data.pup, data: r.data.data || {}, ver: r.data.ver || 0, ...(x.data.names ? { names: x.data.names } : {}) } };
   }
 
   // A family key: a parent's own credential (12 characters, shown once) that pups attach to, so a parent can
@@ -239,9 +247,10 @@ export async function handle(method, query, body, store) {
   if (a === 'transfer') {
     const r = await readPup(store, id);
     if (!r) return { status: 404, body: { error: 'That player wasn’t found on Bloppit’s server.' } };
+    const names = cleanNames(body);
     for (let i = 0; i < 10; i++) {
       const code = newCode();
-      const { modified } = await store.set(xferKey(code), { pup: id, exp: now + XFER_TTL_MS }, { onlyIfNew: true });
+      const { modified } = await store.set(xferKey(code), { pup: id, exp: now + XFER_TTL_MS, ...(names ? { names } : {}) }, { onlyIfNew: true });
       if (modified) return { status: 200, body: { code, exp: now + XFER_TTL_MS } };
     }
     return { status: 500, body: { error: 'Couldn’t make a code. Please try again.' } };
