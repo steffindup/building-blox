@@ -2245,3 +2245,29 @@ test('a link code takes the player’s name and a typed otter name to the other 
   assert.equal(again.status, 404); assert.doesNotMatch(again.text, /Steff|Blueberry/);
   assert.deepEqual(b.errors, []); await b.ctx.close();
 });
+
+test('races against Swoop have an even number of bricks, half each, and the first races give at least two turns each; a puzzle shared with a friend is not changed (Steff, 15 Nov 2026)', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0');
+  const c = await t.page.evaluate(() => window.bloppitLevels.blitz.map((p) => ({ name: p.name, plain: window.bloppitLevels.count({ ...p }), race: window.bloppitLevels.count({ ...p, even: true }) })));
+  assert.deepEqual(c.filter((x) => x.race % 2).map((x) => x.name), [], 'every race is an even number of bricks');
+  assert.deepEqual(c.filter((x) => x.race !== x.plain + x.plain % 2).map((x) => x.name), [], 'evening up adds one brick to an odd puzzle and nothing to an even one');
+  assert.ok(c.slice(0, 7).every((x) => x.race >= 10), 'the Warm-up races: 5 bricks each or more, so at least two turns: ' + JSON.stringify(c.slice(0, 7)));
+  assert.equal(c[0].name, 'Wizard hat'); assert.equal(c[19].race, 40);
+  for (let i = 1; i < 7; i++) assert.ok(c[i].race >= c[i - 1].race, 'the Warm-up races grow: ' + c[i].name);
+  // race 2 (the Astronaut, 9 bricks as a puzzle) is 10 bricks against Swoop: 5 each, nothing left over
+  await t.page.evaluate(() => { document.querySelector('[data-go="cpu"]').click(); document.getElementById('qpIsle')?.click(); }); await t.page.waitForTimeout(400);
+  await t.page.evaluate(() => { const s = document.getElementById('bzModel'); s.value = 'p1'; s.dispatchEvent(new Event('change')); document.getElementById('bzEasy').click(); document.getElementById('bzName').value = 'Tester'; });
+  assert.match(await t.text('#bzPzInfo'), /10 bricks/);
+  await t.page.evaluate(() => document.getElementById('bzCpuGo').click());
+  await t.page.waitForSelector('#buildStage .go-gate .go-btn', { timeout: 20000 });
+  assert.deepEqual(await t.page.evaluate(() => { const f = window.bloppitRaceFF(); return [f.nBricks, f.quota, f.even]; }), [10, 5, true]);
+  // the same puzzle in a live room with a friend is the puzzle as it always was (an older app builds the same bricks)
+  await t.page.evaluate(() => document.querySelector('#mpBar .ghost, #mpLeave')?.click()); await t.page.waitForTimeout(300);
+  await t.page.goto(BASE + '?nosplash=1&welcome=0&intros=0&lite3d=1&films=0', { waitUntil: 'load' }); await t.page.waitForTimeout(2500);
+  const shared = await t.page.evaluate(async () => { let sent = null; const f = window.fetch; window.fetch = (u, o) => { if (String(u).includes('/api/room') && o && o.body) { const b = JSON.parse(o.body); if (b.action === 'create') sent = { n: b.nBricks, even: !!b.model.S.even }; } return f(u, o); };
+    document.querySelector('[data-go="cpu"]').click(); document.getElementById('qpIsle')?.click(); await new Promise((r) => setTimeout(r, 400));
+    const s = document.getElementById('bzModel'); s.value = 'p1'; s.dispatchEvent(new Event('change')); document.getElementById('bzName').value = 'Tester'; document.getElementById('bzMake').click();
+    for (let i = 0; i < 50 && !sent; i++) await new Promise((r) => setTimeout(r, 100)); return sent; });
+  assert.deepEqual(shared, { n: 9, even: false });
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});

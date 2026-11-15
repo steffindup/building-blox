@@ -27,6 +27,7 @@ build it on screen. The menu is game-first:
 - **Solo**: **Quick Build** (pick Library or Your photo, build at your own pace), **Frog Trail** (the 14 levels) and
   **Brain Trail** (the same levels, with math puzzles locking booklet pages). Each trail keeps its own scores
   (`best` and `bbest` in the game save).
+- **Blitz against Swoop** always has an even number of bricks, half each (an odd puzzle has one brick cut in two, `S.even`; never for a puzzle shared with a friend), and the first races are 10 bricks or more, so each racer gets at least two turns.
 - **Blitz** races are kept short: a puzzle picked for Blitz is shrunk to at most 30 bricks (`BLITZ_MAX`), opening Blitz
   without a small puzzle starts on the Toadstool Trail level, each wrong brick adds 1 second (`MISS_MS`) and each hint 2 seconds (`HINT_MS`, charged once per step).
 - **Blitz**: **vs Swoop** (the Longtail, at Warm-up, Race or Full throttle speed; take turns, 1 to 3 bricks a turn;

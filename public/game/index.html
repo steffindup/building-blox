@@ -3343,6 +3343,15 @@ function buildModel(){
     for(const s0 of steps){ const P=s0.bricks.filter(b=>seg(b.x)!==2), K=P.filter(b=>seg(b.x)===0).map(b=>twin.get(kb(W-b.x-b.sx,b))).filter(Boolean);   // your step: exactly the reflections of Pippa's
       for(const [list,who] of [[P,'pippa'],[K,'kid']]) if(list.length){ const idx=st2.length; list.forEach(b=>{ b.step=idx; br2.push(b); }); st2.push({...s0,bricks:list,[who]:true}); } }
     return {W,H,D,bricks:br2,steps:st2,mirror:{axis:W/2},paint:S.paint?new Map():null,name:niceName(front.name)}; }
+  // A race against Swoop has an even number of bricks, so each racer places exactly half and nothing is left over for
+  // Swoop to put in (Steff, 15 Nov 2026). With an odd count, the biggest brick of the last page that has one bigger than a
+  // single stud is cut in two (a 1×4 becomes two 1×2s, a 2×3 a 2×2 and a 1×2). Only when S.even is set, and that is only
+  // set for a race against Swoop on this device: a puzzle shared with another device is built as before, so an older app
+  // builds the same bricks.
+  if(S.even&&bricks.length%2){ let t=null;
+    for(let k=steps.length-1;k>=0&&!t;k--) for(const b of steps[k].bricks) if(b.sx*b.sz>1&&!b.sp&&(!t||b.sx*b.sz>t.sx*t.sz)) t=b;
+    if(t){ let n; if(t.sx>=t.sz){ const a=Math.ceil(t.sx/2); n={...t,x:t.x+a,sx:t.sx-a}; t.sx=a; } else { const a=Math.ceil(t.sz/2); n={...t,z:t.z+a,sz:t.sz-a}; t.sz=a; }
+      bricks.splice(bricks.indexOf(t)+1,0,n); const sb=steps[t.step].bricks; sb.splice(sb.indexOf(t)+1,0,n); } }
   return {W,H,D,bricks,steps,name:niceName(front.name)};
 }
 function partsOf(list){
@@ -6874,17 +6883,20 @@ const seaWashed=(i,o)=>gameProgress(o)+1e-9>=(i+1)/SEA_LEVELS.length;      // ha
 const progressPct=o=>Math.floor(gameProgress(o)*100);
 const levelsOf=tr=>tr==='brain'?BRAIN_LEVELS:tr==='sea'?SEA_LEVELS:tr==='flip'?FLIP_LEVELS:OTTER_LEVELS;
 // Ready-made Blitz races, small enough to be quick (Blitz keeps races to 30 bricks or fewer). Blitz Bay has its own
-// puzzles: none of these is a Tiny’s Frog Trail, Nora’s Brain Trail, Pippa or mystery build. Brick counts: 9/11/12, 18/19/21, 26/28/30.
+// puzzles: none of these is a Tiny’s Frog Trail, Nora’s Brain Trail, Pippa or mystery build.
+// Brick counts against Swoop (Steff, 15 Nov 2026: the first races were 7 bricks, one turn each and over; now at least two
+// turns each, and always an even number, see S.even): 10 10 10 12 14 14 16 · 12 16 18 18 18 20 22 · 16 18 26 28 30 · 40.
+// sizeWas is a race's size before that day, so a race won then still stands on the island as it was built.
 // The Blitz races, in Blitz Bay's order (Oct 2026): fifteen, smallest first, and Swoop faster every five (lv: Warm-up,
 // Race, Full throttle). Through Bloppitopia they're a ladder, one race after another; the Blitz page offers any of them.
 const BLITZ_PICKS=[
- {name:'Wizard hat',     sample:'Wizard hat',      size:6,  shape:'flat',   thick:.5, colors:4, diff:'Easy',   lv:'easy'},
- {name:'Astronaut',      sample:'Astronaut',       size:6,  shape:'flat',   thick:.5, colors:4, diff:'Easy',   lv:'easy'},
- {name:'Ice lolly',      sample:'Ice lolly',       size:7,  shape:'flat',   thick:.5, colors:4, diff:'Easy',   lv:'easy'},     // new (Steff, 5 Nov 2026)
- {name:'Trophy',         sample:'Trophy',          size:6,  shape:'flat',   thick:.5, colors:3, diff:'Easy',   lv:'easy'},
- {name:'Alien',          sample:'Alien',           size:6,  shape:'flat',   thick:.5, colors:4, diff:'Easy',   lv:'easy'},
- {name:'Cactus',         sample:'Cactus',          size:7,  shape:'flat',   thick:1,  colors:4, diff:'Easy',   lv:'easy'},     // new
- {name:'Basketball',     sample:'Basketball',      size:6,  shape:'flat',   thick:.5, colors:3, diff:'Easy',   lv:'easy'},
+ {name:'Wizard hat',     sample:'Wizard hat',      size:8,  shape:'flat',   thick:.5, colors:4, diff:'Easy',   lv:'easy', sizeWas:6},
+ {name:'Astronaut',      sample:'Astronaut',       size:7,  shape:'flat',   thick:.5, colors:4, diff:'Easy',   lv:'easy', sizeWas:6},
+ {name:'Ice lolly',      sample:'Ice lolly',       size:9,  shape:'flat',   thick:.5, colors:4, diff:'Easy',   lv:'easy', sizeWas:7},     // new (Steff, 5 Nov 2026)
+ {name:'Cactus',         sample:'Cactus',          size:9,  shape:'flat',   thick:1,  colors:4, diff:'Easy',   lv:'easy', sizeWas:7},     // new
+ {name:'Trophy',         sample:'Trophy',          size:7,  shape:'flat',   thick:.5, colors:3, diff:'Easy',   lv:'easy', sizeWas:6},
+ {name:'Alien',          sample:'Alien',           size:8,  shape:'flat',   thick:.5, colors:4, diff:'Easy',   lv:'easy', sizeWas:6},
+ {name:'Basketball',     sample:'Basketball',      size:7,  shape:'flat',   thick:.5, colors:3, diff:'Easy',   lv:'easy', sizeWas:6},
  {name:'Cupcake',        sample:'Cupcake',         size:8,  shape:'flat',   thick:1,  colors:4, diff:'Medium', lv:'medium'},
  {name:'Donut',          sample:'Donut',           size:6,  shape:'flat',   thick:.5, colors:4, diff:'Medium', lv:'medium'},
  {name:'Kite',           sample:'Kite',            size:9,  shape:'flat',   thick:.5, colors:6, diff:'Medium', lv:'medium'},   // new
@@ -6952,7 +6964,7 @@ function seaMigrateW(o){ if(o.seaV>=2) return; const fix=k=>{ const m=/^t:sea:(\
 function gameStoreSet(g){ if(leavingPlayer) return; try{ localStorage.setItem(pkey(GAME_KEY),JSON.stringify(g)); }catch(e){} pupPush(); }
 function levelMake(L){ return L.art?levelArt(L.art):SAMPLES.find(s=>s.name===L.sample).make(); }
 function levelThumb(L){ if(!L.thumb) L.thumb=levelMake(L)[0][1].toDataURL('image/png'); return L.thumb; }
-function levelSettings(L){ return {size:L.size,shape:L.shape,thick:L.thick,tol:48,maxColors:L.colors,gray:true,mirror:!!L.mirror,paint:!!L.paint}; }
+function levelSettings(L){ return {size:L.size,shape:L.shape,thick:L.thick,tol:48,maxColors:L.colors,gray:true,mirror:!!L.mirror,paint:!!L.paint,even:!!L.even}; }
 function levelPhotos(L){ return levelMake(L).map(([view,c])=>{const d=canvasData(c); return {id:++pid,name:L.name,d,m:null,view,sample:true};}); }
 function levelCount(L){
   if(L.count) return L.count;
@@ -8019,6 +8031,7 @@ $('#mpEndNew').onclick=()=>{ $('#mpEndDlg').close(); if(mpEndNext){ const f=mpEn
 $('#mpEndIsland').onclick=()=>{ track('finish_next:island'); $('#mpEndDlg').close(); mpLeave(); setTab('island'); };   // the recommended way on, win or lose
 // Load what to build: a level, or whatever is on Photos & model now
 function mpUseModel(choice){
+  if(S.even){ S.even=false; if(choice==='cur'&&model){ clearTimeout(timer); rebuild(); } }   // a puzzle that may be shared is never the evened-up one (older apps would build one brick fewer)
   if(choice!=='cur'){ const L=pickOf(choice); mpEndSolo(); photos=levelPhotos(L); setControls(levelSettings(L)); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild(); }
   if(!model) throw new Error('Pick something to build first.');
   return choice!=='cur'?pickOf(choice).name:model.name;
@@ -8227,7 +8240,7 @@ function cpuFFCheck(){ const s=cpu&&cpu.s; if(!s||s.ff||s.finished||(s.players[0
     if(cpu.aimM) cpu.aimT=setTimeout(()=>{ if(cpu&&cpu.s===s&&s.turn===1&&!s.finished) cpuAim(cpu.aimM,cpu.aimW); },Math.max(0,rem-300)); }
   cpuSend(); }
 setInterval(()=>{ if(cpu&&cpu.s&&!cpu.s.finished&&!cpu.s.ff) cpuFFCheck(); },400);   // it can become decided mid-turn, as his clock runs past yours
-window.bloppitRaceFF=()=>{ const s=cpu&&cpu.s; if(!s) return null; const L=raceLead(s); return {ff:s.ff||1,due:cpu.due?Math.round(cpu.due-Date.now()):null,fire:!!cpu.fire,timer:!!cpu.timer,left:cpu.left,n:s.players[0].n,sw:s.players[1].n,quota:s.quota,turn:s.turn,gate:!!document.querySelector('#buildStage .turn-gate'),decided:!!(L&&L.decided),lead:L&&L.lead&&L.lead.i}; };   // for tests
+window.bloppitRaceFF=()=>{ const s=cpu&&cpu.s; if(!s) return null; const L=raceLead(s); return {nBricks:s.nBricks,even:!!S.even,ff:s.ff||1,due:cpu.due?Math.round(cpu.due-Date.now()):null,fire:!!cpu.fire,timer:!!cpu.timer,left:cpu.left,n:s.players[0].n,sw:s.players[1].n,quota:s.quota,turn:s.turn,gate:!!document.querySelector('#buildStage .turn-gate'),decided:!!(L&&L.decided),lead:L&&L.lead&&L.lead.i}; };   // for tests
 const cpuShareDone=i=>(cpu.s.players[i].n||0)>=cpu.s.quota;
 // What Swoop says as his turn ends: "your turn" only when it really is yours (once you've placed all yours, he carries on)
 function cpuHandOver(){ const s=cpu.s; if(s.finished) return; cpuSay('point',s.turn===mp.me?'Your turn. Go go go!':'You’re done! My turn again. Zoom!'); }
@@ -8373,6 +8386,7 @@ $('#bzCpuGo').onclick=async()=>{
   try{
     if(mp) mpLeave();
     const title=mpUseModel($('#bzModel').value);
+    if(model.bricks.length%2){ S.even=true; clearTimeout(timer); rebuild(); }   // an even number of bricks: half each
     if(model.bricks.length<2) throw new Error('This model is too small for a race. Pick a bigger one.');
     const boss=$('#bzModel').value===GP_PICK, lvl=boss?'hard':bzLevel(), me=curPlayer(), pl=(nm,color)=>({name:nm,color,pen:{},stale:false,ms:0,miss:0,hint:0,n:0});
     cpu={timer:null,left:0,boss,s:{code:'VS',ver:1,started:true,finished:false,perTurn:3,mode:'blitz',cpuLevel:lvl,nBricks:model.bricks.length,title,level:null,host:0,
@@ -8393,7 +8407,7 @@ function renderBzPuzzle(){
   if(v==='cur'||v===''){ const p0=photos[0];
     name=model?niceName(model.name):'No puzzle yet'; info=model?`${model.bricks.length} bricks`:'Pick one from the library or use a photo';
     if(p0) thumb=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png')); }
-  else { const L=pickOf(v); name=L.name; thumb=levelThumb(L); info=`${L.diff} race · ${levelCount(L)} bricks`; }
+  else { const L=pickOf(v); name=L.name; thumb=levelThumb(L); const n=levelCount(L), vs=!!$('#bzCpuCard').offsetParent; info=`${L.diff} race · ${vs?n+n%2:n} bricks`; }   // against Swoop a race is evened up
   $('#bzPzName').textContent=name; $('#bzPzInfo').textContent=info; const im=$('#bzThumb'); im.hidden=!thumb; if(thumb) im.src=thumb;
 }
 $('#bzModel').addEventListener('change',renderBzPuzzle);
@@ -8892,6 +8906,7 @@ function loadPng(src){ return new Promise((res,rej)=>{ const img=new Image(); im
 function setControls(s){
   libTuned=false;
   Object.assign(S,s); S.mirror=!!s.mirror; S.paint=!!s.paint;   // only Pippa's puzzles are mirror builds
+  S.even=!!s.even;   // only a race against Swoop is evened up (see buildModel)
   S.kind=s.kind||'model'; if(s.pw==null) S.pw=48; if(s.pcol==null) S.pcol=24; S.psec=s.psec>0?s.psec:0;   // psec belongs to the puzzle, never left over from the last one
   for(const [id,k] of [['size','size'],['thick','thick'],['tol','tol'],['colors','maxColors'],['pw','pw'],['pcol','pcol']]){ const el=$('#'+id); el.value=S[k]; el.dispatchEvent(new Event('input')); }
   syncKind();
@@ -9647,7 +9662,7 @@ function shapeRecipes(key){
   if((m=/^t:(\w+):(\d+):(.*)$/.exec(key))){ const L=levelsOf(m[1])[+m[2]]; return L&&L.name===m[3]?[{make:()=>levelMake(L),name:L.name,S:levelSettings(L)}]:[]; }
   if((m=/^w:(\d{4}-\d\d-\d\d)$/.exec(key))){ const w=weeklyPuzzle(m[1]), smp=SAMPLES[w.i]; return smp?[{make:()=>smp.make(),name:smp.name,S:w.S,smp}]:[]; }
   if((m=/^m:(.*):(\d+)$/.exec(key))){ const name=m[1], out=[], n=+m[2];
-    for(const L of [...BLITZ_PICKS,...MYSTERY.map(l=>({...l,sample:l.sample||l.name}))]) if(L.name===name) out.push({make:()=>levelMake(L),name,S:levelSettings(L),n});
+    for(const L of [...BLITZ_PICKS,...MYSTERY.map(l=>({...l,sample:l.sample||l.name}))]) if(L.name===name) for(const size of [L.size,...(L.sizeWas?[L.sizeWas]:[])]) for(const even of [false,true]) out.push({make:()=>levelMake(L),name,S:{...levelSettings({...L,size}),even},n});   // a race against Swoop is evened up; a race won before 15 Nov 2026 had its old size
     const smp=SAMPLES.find(x=>x.name===name); if(smp){ const base={...LIB_S,...(smp.ws||{})};
       for(const size of [...new Set([base.size,10,12,8,14,16,6,18,20,24,5,7,9,11,13,15,17,22,28,32])]) out.push({make:()=>smp.make(),name,S:{...base,size},smp,n}); }
     return out; }
@@ -10369,7 +10384,7 @@ for(const [id,m] of Object.entries(MODEL3)) RIG[id].glb=m.glb;
 const M3={wait:{}};
 function ch3Script(src){ return M3.wait[src]||(M3.wait[src]=new Promise((ok,no)=>{ const s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=()=>{ delete M3.wait[src]; no(new Error('could not load '+src)); }; document.head.appendChild(s); })); }
 function ch3Model(id){ const R=RIG[id], G=CH3.gltf[id]; if(!R||!R.glb||!G) return Promise.reject(new Error('no model for '+id)); if(G.model) return Promise.resolve(G.model);
-  return M3.wait[id]||(M3.wait[id]=(async()=>{ if(!THREE.GLTFLoader) await Promise.all([ch3Script('/3d/GLTFLoader.js?v=2'),ch3Script('/3d/meshopt_decoder.js?v=0.22')]);
+  return M3.wait[id]||(M3.wait[id]=(async()=>{ if(!THREE.GLTFLoader||!window.MeshoptDecoder) await Promise.all([ch3Script('/3d/GLTFLoader.js?v=2'),ch3Script('/3d/meshopt_decoder.js?v=0.22')]);   // both, every time: a second character asked for while the two files were still arriving found the loader but not the decoder and failed (15 Nov 2026; it made tests fail now and then)
     const gltf=await new Promise((ok,no)=>new THREE.GLTFLoader().setMeshoptDecoder(window.MeshoptDecoder).load(R.glb+'?v='+MODEL3[id].v,ok,undefined,no)), sc=gltf.scene;
     sc.traverse(m=>{ if(m.isMesh){ m.castShadow=m.receiveShadow=false; m.frustumCulled=false; [].concat(m.material).forEach(ch3Filmic); } });   // the island's shadows are baked once; a soft pool under the feet instead
     sc.updateMatrixWorld(true); const box=new THREE.Box3(), v=new THREE.Vector3(), clips={};   // his size at rest (three's own box would include every pose's morphs)
@@ -10788,7 +10803,8 @@ function isleCount(id,o){
   o=o||worldStore(); const B=Object.entries(o.builds);
   { const tr={otterwood:'otter',brainpeak:'brain',sunrise:'sea'}[id];   // levels finished (that still exist)
     if(tr){ const b=bestOf(gameStore(),tr), L=levelsOf(tr).length; return Object.keys(b).filter(k=>/^\d+$/.test(k)&&+k<L&&b[k]>0).length; } }
-  if(id==='blitzbay'){ const w=B.filter(([,b])=>b.k==='blitz'); return w.some(([,b])=>b.boss)?LADDER_N+1:Math.min(LADDER_N,w.length); }   // the ladder's wins, then the Grand Prix (which completes it, even for a save from before the four new races)
+  if(id==='blitzbay'){ const w=B.filter(([,b])=>b.k==='blitz'), names=new Set(BLITZ_PICKS.map(L=>L.name)), n=new Set(w.map(([k])=>names.has(k.split(':')[1])?'m:'+k.split(':')[1]:k)).size;   // a ladder race counts once, whatever size it was won at (the races grew on 15 Nov 2026)
+    return w.some(([,b])=>b.boss)?LADDER_N+1:Math.min(LADDER_N,n); }   // the ladder's wins, then the Grand Prix (which completes it, even for a save from before the four new races)
   if(id==='brickworks') return (o.draw||[]).length+B.filter(([k,b])=>k.startsWith('p:')||k.startsWith('w:')||(k.startsWith('m:')&&(b.k==='quick'||!b.k)&&!MYSTERY_NAMES.has(k.split(':')[1]))).length;
   if(id==='moonstone') return mysteryDone(o);
   return 0;
@@ -12883,7 +12899,7 @@ try{ const u=new URL(location.href); if(u.searchParams.get('rewind')==='moonston
 // Blitz Bay through Bloppitopia: the next race on the ladder, shown as one card with one button (no puzzle, speed or
 // name to choose; that's all on the Blitz page for races outside the story)
 function ladderGo(){ const o=worldStore(), i=ladderStep(o); if(i<0){ homeGo('cpu'); return; }
-  const L=BLITZ_PICKS[i], gp=i>=LADDER_N, lvl=gp?'hard':L.lv, n=levelCount(L), each=Math.floor(n/2), d=$('#ladderDlg');
+  const L=BLITZ_PICKS[i], gp=i>=LADDER_N, lvl=gp?'hard':L.lv, n0=levelCount(L), n=n0+n0%2, each=n/2, d=$('#ladderDlg');   // evened up for the race
   $('#ldTag').textContent=gp?'Blitz Bay · the final race':`Blitz Bay · Swoop at ${CPU_LEVELS[lvl].speed}`;
   $('#ldT').textContent=gp?`🏆 Race ${BLITZ_RACES} of ${BLITZ_RACES}: the Grand Prix`:`⚡ Race ${i+1} of ${BLITZ_RACES}`;
   $('#ldImg').src=levelThumb(L); $('#ldName').textContent=gp?'Race car':L.name; $('#ldInfo').textContent=`${n} bricks · ${each} each`;

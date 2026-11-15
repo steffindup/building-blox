@@ -222,7 +222,7 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   menu cards, pill buttons. A card's studs are its own colour.
 - **Online-only** (no kits, physical products or "build it for real"). Child-directed under COPPA: **no chat, no
   voice, no strangers talking to kids**; rooms are code-only; Crews need approval. Anonymous: names stay on the device
-  (one exception, if Steff approves it: a link code carries them for its 72 hours, see Gotchas); the server only knows the Player Unique ID. Cosmetics are earned, never sold. No marketing aimed at Bermuda and no school tie-ins; Bermuda as part of the
+  (one exception, approved 15 Nov 2026: a link code carries them for its 72 hours, see Gotchas); the server only knows the Player Unique ID. Cosmetics are earned, never sold. No marketing aimed at Bermuda and no school tie-ins; Bermuda as part of the
   creation story (About us, the website) is welcome (Steff, 9 Nov).
 - **Not in the App Store Kids category** (4+). Links out of the app go through the grown-ups gate (our choice).
 - **Music** only in Bloppitopia; gameplay is silent apart from sound effects. The launch screen plays the "Bloppit"
@@ -244,15 +244,20 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   opens before Pippa's first brick of their first mirror puzzle. A player who has raced or mirrored before is not
   shown it. They stay reachable: a button on the Blitz page's Race Swoop card, on the Blitz Bay race card, and on
   Pippa's page. `?intros=0` switches them off (the browser tests add it; a test about a guide passes `intros=1`).
-  Steff also asked about a video: the guide is the quick version, a recorded one is his call.
+  No recorded video: Steff said the picture guide is fine (15 Nov 2026).
 - **Pippa's words** (`PIPPA_SAYS`): short, in her voice, the thing to do first: "Watch me!", "Copy me! Do what I just
   did, on your side of the mirror line." The mirror line is a solid blue strip with posts and a rail, the table says
   PIPPA on her side and YOU on yours, and her bricks still to copy glow yellow on the table (`mirrorGlowSync`), not
   only in the booklet.
 - **No Skip button over the build** while Swoop finishes his bricks (Steff, 15 Nov 2026). The scoreboard above the
   build keeps its "Skip to the end" (shown once you have won).
-- The first three Blitz Bay races have 7 bricks: 3 each, so one turn each and Swoop places the odd one. Steff found
-  that too quick (15 Nov 2026); making the first races longer is his decision, asked, not yet answered.
+- **Races against Swoop: an even number of bricks, and longer first races** (Steff, 15 Nov 2026: a first race of 7
+  bricks was one turn each and over). Against Swoop the counts are 10 10 10 12 14 14 16 · 12 16 18 18 18 20 22 · 16 18
+  26 28 30 · 40 (the Grand Prix). The seven Warm-up races were made bigger (`sizeWas` keeps the old size, so a race won
+  before stands on the island as it was built) and the Cactus moved ahead of the Trophy. An odd puzzle is evened up by
+  cutting one brick in two (`S.even` in `buildModel`), **only for a race against Swoop on this device**: a puzzle
+  shared with a friend (room, challenge, Pass the Puzzle) is built as before, because an older app would otherwise
+  build one brick fewer and the race would break. `mpUseModel` clears `S.even`; keep it that way.
 - **Phones (build area 760px wide or less)**: the camera frames the build above the message and Bloppit (`bottomCover`
   in `playFit`) and below the race banner; Bloppit's words are hidden (his reactions stay; a "Play next" bubble still
   shows); a long message folds to one line after 4.5 s. Mirror puzzles frame both halves.
@@ -344,16 +349,17 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   have saved the mix to the server once played). It now joins only with that player's own world on the device. Same
   fix for the three ways a player arrives (link code, Family Link, family key). A linked player's default name is the
   first unused "Player N". An otter name picked from the list carries with the progress (it is a number).
-- **Names travel with a link code** (Steff's idea, 15 Nov 2026; built that day, **waiting for his go-ahead to push**,
-  as its own commit so it can be left out). Making a code sends the player's name and a typed otter name; the server
+- **Names travel with a link code** (Steff's idea, approved and live on the website 15 Nov 2026). Making a code sends the player's name and a typed otter name; the server
   keeps them in the code's own record only (`xfer/CODE`, never in the player's record) until the code is used, and
   deletes an unused one with the expired code (daily cleanup, or the first try after 72 hours). The other device uses
   them for the linked player (`linkedAdd`). It changes a promise ("names never leave the device"): the privacy policy
   and the Grown-ups corner say so in the same commit, but `mobile/store/listing.md` (review notes, lines about typed
   names) and the App Store and Google Play privacy answers ("not collected") still say names are never sent. They are
   Steff's to decide and must be settled before an app with this ships. A family key carries no names.
-- The "living characters: on the island…" browser test failed twice and passed three times on the same code in the
-  sandbox (15 Nov 2026), not looked into yet: read it before waving a red run through.
+- The "living characters: on the island…" browser test passes on its own and sometimes fails ("true !== false") in a
+  long batch on the busy sandbox (15 Nov 2026); which check, not found yet. One real cause of now-and-then failures
+  was found and fixed that day: a second 3D character asked for while the loader's two files were still arriving
+  found the loader but not its decoder (`ch3Model` now waits for both).
 - Island cards (`islandTip`) are kept inside the screen and scroll inside themselves if taller than it (15 Nov 2026: on a
   phone Mystery Island's card opened below the bottom edge).
 - Commits: end with the `Co-Authored-By` / `Claude-Session` lines the session gives you; commit as
