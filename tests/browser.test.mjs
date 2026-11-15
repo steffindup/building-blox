@@ -2140,3 +2140,21 @@ test('Remove player takes the player off this device only: the server copy stays
   const code = await post({ action: 'transfer' }, made.pup); assert.equal(code.status, 200); assert.match(code.code, /^[A-Z0-9]{8}$/);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
+
+test('a linked player arrives with its own progress and otter only, under a name not already used: nothing of the player who was playing (15 Nov 2026)', { skip: skip() }, async () => {
+  // this device: one player called "Player 2" (the first was removed), otter Bubbles (name 3), one build
+  const mine = { arrived: 1, pupAsked: true, pupName: 3, pupAt: 2e12, xp: 30, bonus: 0, builds: { 'm:Cottage:12': { n: 12, s: 2, t: 1e12, c: 1 } }, log: ['m:Cottage:12'], decor: ['flag'] };
+  const t = await open('?nosplash=1&welcome=0', { init: { fn: (w) => { if (localStorage.getItem('bloppit-players-v1')) return;
+    localStorage.setItem('bloppit-players-v1', JSON.stringify({ cur: 'p2', n: 2, list: [{ id: 'p2', name: 'Player 2', age: null, color: '#2F7FD0' }] })); localStorage.setItem('bloppit-world-v1:p2', JSON.stringify(w)); }, arg: mine } });
+  // the other device's player: otter Finn (name 5), a different build
+  const theirs = { arrived: 1, pupAsked: true, pupName: 5, pupAt: 1e12, xp: 50, bonus: 0, builds: { 'm:Red Boat:20': { n: 20, s: 3, t: 1e12, c: 1 } }, log: ['m:Red Boat:20'], decor: [] };
+  const code = await t.page.evaluate(async (world) => { const post = (b, pid) => fetch('/api/pup', { method: 'POST', headers: { 'content-type': 'application/json', ...(pid ? { 'x-pup': pid } : {}) }, body: JSON.stringify(b) }).then((r) => r.json());
+    const c = await post({ action: 'create', data: { world } }); return (await post({ action: 'transfer' }, c.pup)).code; }, theirs);
+  await t.page.evaluate((c) => { document.getElementById('grownDlg').showModal(); document.getElementById('grownClaimIn').value = c; document.getElementById('grownClaimGo').click(); }, code);
+  await t.page.waitForFunction(() => /^Linked\./.test(document.getElementById('grownClaimNote').textContent), null, { timeout: 10000 });
+  const got = await t.page.evaluate(() => { const P = JSON.parse(localStorage.getItem('bloppit-players-v1')), n = P.list[1]; return { names: P.list.map((p) => p.name), world: JSON.parse(localStorage.getItem('bloppit-world-v1:' + n.id)), mine: JSON.parse(localStorage.getItem('bloppit-world-v1:p2')) }; });
+  assert.deepEqual(got.names, ['Player 2', 'Player 3'], 'no second "Player 2"');
+  assert.deepEqual(Object.keys(got.world.builds), ['m:Red Boat:20'], 'only its own build'); assert.equal(got.world.pupName, 5, 'its own otter name'); assert.deepEqual(got.world.decor, []);
+  assert.deepEqual(Object.keys(got.mine.builds), ['m:Cottage:12']); assert.equal(got.mine.pupName, 3);   // and the player who was playing is untouched
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});

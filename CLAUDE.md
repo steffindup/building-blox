@@ -325,6 +325,14 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   found" to Make a link code. The server copy now goes only with Grown-ups → Delete saved progress (or a family key), or
   after a year unplayed, as the privacy policy says. Make a link code saves the player again from the device if the
   server copy is gone; the server's messages say "player", never "pup". Apps up to 1.1.3 still delete on Remove player.
+- **A linked player used to arrive mixed with whoever was playing** (fixed 15 Nov 2026): `pupApply` joined the incoming
+  world with the current player's, so the new player got the current player's builds, stars and otter name (and would
+  have saved the mix to the server once played). It now joins only with that player's own world on the device. Same
+  fix for the three ways a player arrives (link code, Family Link, family key). A linked player's default name is the
+  first unused "Player N". By design the player's name and a typed otter name never leave the device, so they do not
+  carry; an otter name picked from the list does. Steff asked why (15 Nov); carrying names is his decision, not made.
+- The "living characters: on the island…" browser test failed twice and passed three times on the same code in the
+  sandbox (15 Nov 2026), not looked into yet: read it before waving a red run through.
 - Island cards (`islandTip`) are kept inside the screen and scroll inside themselves if taller than it (15 Nov 2026: on a
   phone Mystery Island's card opened below the bottom edge).
 - Commits: end with the `Co-Authored-By` / `Claude-Session` lines the session gives you; commit as

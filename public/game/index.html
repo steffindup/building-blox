@@ -7438,9 +7438,15 @@ function pupLocal(id){
   if(d.game) d.game=seaMigrateG(d.game);   // Pippa's puzzles always go out in the new order
   return d;
 }
+// A linked player arrives without a name (names stay on each device): the first "Player N" not already on this device
+function newPlayerName(){ for(let n=players.list.length+1;;n++){ const nm='Player '+n; if(!players.list.some(p=>(p.name||'').trim().toLowerCase()===nm.toLowerCase())) return nm; } }
 function pupApply(id,d){
   if(!d) return;
-  if(d.world) d={...d,world:worldMerge(worldStore(),d.world)};  // what this device did since the push wins
+  // What this device did since the push wins: joined with that player's own world on this device. It used to be joined with
+  // the world of whoever was playing, so a newly linked player got the current player's builds, stars and otter name
+  // (Steff, 15 Nov 2026: linking "Steff" made a second "Player 2" with the other player's otter, Bubbles).
+  if(d.world){ let mine=null; if(!id||id===players.cur) mine=worldStore(); else try{ const o=JSON.parse(localStorage.getItem(keyFor(id,WORLD_KEY))); if(o&&o.builds&&typeof o.builds==='object') mine=o; }catch(e){}
+    if(mine) d={...d,world:worldMerge(mine,d.world)}; }
   if(d.game) d={...d,game:seaMigrateG({...d.game})};   // a record from an older device: Pippa's puzzles in the new order
   for(const k of PUP_FIELDS){ if(d[k]) try{ localStorage.setItem(keyFor(id||players.cur,{game:GAME_KEY,daily:DAILY_KEY,weekly:WEEKLY_KEY,world:WORLD_KEY}[k]),JSON.stringify(d[k])); }catch(e){} }
 }
@@ -7504,7 +7510,7 @@ $('#grownClaimForm').addEventListener('submit',async e=>{
     const j=await pupApi('POST',{action:'claim',code}); track('transfer_claimed'); claimedCodes.add(code); $('#grownClaimIn').value='';
     if(players.list.some(p=>p.pup===j.pup)){ note.textContent='That player is already linked on this device.'; return; }
     const id='p'+(++players.n+1), n=players.list.length+1;
-    players.list.push({id,name:'Player '+n,age:null,color:AV_COLORS[(n-1)%AV_COLORS.length],pup:j.pup}); pupApply(id,j.data); playersSave();
+    players.list.push({id,name:newPlayerName(),age:null,color:AV_COLORS[(n-1)%AV_COLORS.length],pup:j.pup}); pupApply(id,j.data); playersSave();
     note.textContent='Linked. Progress and Crews now stay in step with the other device. Names stay on each device, so give them their name under Edit, then tap their card to play.';
     renderWhoList();
   }catch(err){ note.textContent=err.message; }
@@ -12271,7 +12277,7 @@ async function shareClaim(code){
   try{ const j=await pupApi('POST',{action:'claim',code}); track('transfer_claimed:family');
     if(players.list.some(p=>p.pup===j.pup)) return;
     const id='p'+(++players.n+1), n=players.list.length+1;
-    players.list.push({id,name:'Player '+n,age:null,color:AV_COLORS[(n-1)%AV_COLORS.length],pup:j.pup}); pupApply(id,j.data); playersSave(); switchPlayer(id);
+    players.list.push({id,name:newPlayerName(),age:null,color:AV_COLORS[(n-1)%AV_COLORS.length],pup:j.pup}); pupApply(id,j.data); playersSave(); switchPlayer(id);
   }catch(e){}
 }
 // The Weekly card: this week's model, the shared-achievement line, the otter, and the link
@@ -12383,7 +12389,7 @@ async function famList(key){
 }
 $('#famList').addEventListener('click',async e=>{
   const key=$('#famKeyIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''), b=e.target.closest('button'); if(!b) return;
-  if(b.dataset.famBring){ b.disabled=true; try{ const j=await pupApi('POST',{action:'family-restore',key,pup:b.dataset.famBring}); if(!players.list.some(p=>p.pup===j.pup)){ const id='p'+(++players.n+1), n=players.list.length+1; players.list.push({id,name:'Player '+n,age:null,color:AV_COLORS[(n-1)%AV_COLORS.length],pup:j.pup}); pupApply(id,j.data); playersSave(); renderWhoList(); } track('family_restored'); famList(key); }catch(x){ famNote(x.message,'err'); b.disabled=false; } return; }
+  if(b.dataset.famBring){ b.disabled=true; try{ const j=await pupApi('POST',{action:'family-restore',key,pup:b.dataset.famBring}); if(!players.list.some(p=>p.pup===j.pup)){ const id='p'+(++players.n+1), n=players.list.length+1; players.list.push({id,name:newPlayerName(),age:null,color:AV_COLORS[(n-1)%AV_COLORS.length],pup:j.pup}); pupApply(id,j.data); playersSave(); renderWhoList(); } track('family_restored'); famList(key); }catch(x){ famNote(x.message,'err'); b.disabled=false; } return; }
   if(b.dataset.famDel){ if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent='Tap again to delete'; setTimeout(()=>{ delete b.dataset.confirm; b.textContent='Delete'; },3000); return; }
     try{ await pupApi('POST',{action:'family-delete',key,pup:b.dataset.famDel}); players.list.forEach(p=>{ if(p.pup===b.dataset.famDel) delete p.pup; }); playersSave(); track('family_deleted'); famList(key); }catch(x){ famNote(x.message,'err'); } }
 });
