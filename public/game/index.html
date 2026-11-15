@@ -1540,7 +1540,7 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .island [data-info]:not([data-info^="land:"]):hover,.island [data-info]:not([data-info^="land:"]):focus-visible{filter:drop-shadow(0 0 5px #fff) drop-shadow(0 0 2px #fff)}
 .island [data-info]:focus{outline:none}
 .island g.is-model{cursor:grab}
-.is-tip{position:absolute;z-index:60;background:var(--page);color:var(--ink);border:2px solid var(--ink);border-radius:16px;box-shadow:0 6px 0 var(--ink);padding:14px 14px 12px;display:grid;gap:10px;font-size:14px}
+.is-tip{position:absolute;z-index:60;background:var(--page);color:var(--ink);border:2px solid var(--ink);border-radius:16px;box-shadow:0 6px 0 var(--ink);padding:14px 14px 12px;display:grid;gap:10px;font-size:14px;max-height:calc(100vh - 30px);max-height:calc(100dvh - 30px);overflow-y:auto;overscroll-behavior:contain}   /* never taller than the screen: a long card scrolls inside itself (15 Nov 2026) */
 .is-tip .tt-x{position:absolute;top:6px;right:8px;width:32px;height:32px;border-radius:50%;border:0;background:var(--bg);font-size:20px;line-height:1;cursor:pointer;color:var(--ink)}
 .is-tip .tt-head{display:flex;gap:10px;align-items:center;padding-right:30px}
 .is-tip .tt-head b{font-family:var(--f-display);font-weight:400;font-size:22px;line-height:1.1;display:block}
@@ -7482,7 +7482,11 @@ $('#grownXfer').onclick=async()=>{
   try{
     if(!me.pup){ await pupSync(); if(!me.pup){ note.textContent='Finish one build first, then make a link code.'; return; } }
     note.textContent='Making a code…';
-    const j=await pupApi('POST',{action:'transfer'},me.pup); track('transfer_made');
+    // The server copy can be gone while this device still has the player (deleted or removed on a linked device): it used to
+    // answer "That pup wasn't found" (Steff, 15 Nov 2026). Save the player again from this device, then make the code.
+    let j; try{ j=await pupApi('POST',{action:'transfer'},me.pup); }
+    catch(e){ if(e.status!==404) throw e; note.textContent='Saving this player again…'; await pupSync(); j=await pupApi('POST',{action:'transfer'},me.pup); }
+    track('transfer_made');
     out.textContent=j.code; out.hidden=false; familyCode=j.code; renderFamily();
     note.textContent=`On the other device, open Who’s playing → Link a player from there and type this within 72 hours. It works once. The Family Link below now carries it too.`;
   }catch(e){ note.textContent=e.message; }
@@ -9473,6 +9477,8 @@ function islandTip(id,anchor){
   let top=r.bottom+8; if(!anchor.below&&top+t.offsetHeight>innerHeight-12&&r.top-t.offsetHeight-8>12) top=r.top-t.offsetHeight-8;
   if(anchor.side){ const vw=document.documentElement.clientWidth; let l=r.right+18; if(l+w>vw-12) l=r.left-w-18;   // beside what the camera just flew to
     if(l>=12){ t.style.left=(l+scrollX)+'px'; t.style.top=(Math.max(12,Math.min(innerHeight-t.offsetHeight-12,r.top-t.offsetHeight/2))+scrollY)+'px'; islandTip.anchor=anchor; track('island_tip:'+id.split(':')[0]); t.querySelector('.tt-x').focus({preventScroll:true}); return; } }
+  // a tall card low on a phone ran off the bottom of the screen (Mystery Island, Steff, 15 Nov 2026): keep all of it on the screen, over the thing if need be
+  top=Math.min(top,innerHeight-t.offsetHeight-18);
   t.style.left=(left+scrollX)+'px'; t.style.top=(Math.max(12,top)+scrollY)+'px';
   islandTip.anchor=anchor; track('island_tip:'+id.split(':')[0]);
   t.querySelector('.tt-x').focus({preventScroll:true});

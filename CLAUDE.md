@@ -320,6 +320,13 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   again (15 Nov 2026: the server log showed a 200, then a 404 nine seconds later). The form now empties the box after a
   link and answers the same code with "it worked". To check a report, read the `pup` function's requests with the
   Netlify connector: the app's requests have no "Safari" in the user agent and no referrer.
+- **Remove player deletes the server copy too**, for every linked device (the `whoDel` button; when it is the current
+  player the page reloads at once, so the log shows the request as 499). 15 Nov 2026: Steff removed a linked player in
+  Safari and the app then answered "That pup wasn't found" to Make a link code. Make a link code now saves the player
+  again from the device and carries on; the server's messages say "player", never "pup". Whether Remove player should
+  only take the player off that device is Steff's decision (asked 15 Nov, not yet answered).
+- Island cards (`islandTip`) are kept inside the screen and scroll inside themselves if taller than it (15 Nov 2026: on a
+  phone Mystery Island's card opened below the bottom edge).
 - Commits: end with the `Co-Authored-By` / `Claude-Session` lines the session gives you; commit as
   `Claude <noreply@anthropic.com>` (a hook flags other committer emails as Unverified).
 

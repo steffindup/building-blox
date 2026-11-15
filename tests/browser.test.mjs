@@ -2081,3 +2081,44 @@ test('Link a player: a code works once; tapping Link again with the code that ju
   assert.match(await link('ZZZZ2222'), /wasn’t found or has expired/);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
+
+test('island cards stay on a phone screen: Mystery Island’s long card is all on the screen, close button and Back button too (15 Nov 2026)', { skip: skip() }, async () => {
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const k = 'm:Cottage:12';
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds: { [k]: { n: 12, s: 2, t: 1e12, c: 1, k: 'welcome' } }, log: [k], decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1 }));
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 1, finished: 1, welcome: 1 })); } };
+  for (const viewport of [{ width: 393, height: 740 }]) {   // an iPhone in Safari
+    const t = await open('?nosplash=1&hour=11#island', { viewport, touch: true, init: seed });
+    await t.page.waitForFunction(() => !!document.querySelector('.is3-myst'), null, { timeout: 30000 });
+    await t.page.waitForFunction(() => !window.bloppitIsland3().fly, null, { timeout: 20000, polling: 100 });
+    await t.page.evaluate(() => document.querySelector('#isWorld .is3-views .v-world').click()); await t.page.waitForTimeout(300);   // the whole map, so the island is in sight
+    await t.page.waitForFunction(() => !window.bloppitIsland3().fly, null, { timeout: 20000, polling: 100 }); await t.page.waitForTimeout(300);
+    const c = await t.page.evaluate(() => window.bloppitIslandPoint('isle:moonstone')); assert.ok(c, 'Mystery Island is on the map'); await t.page.mouse.click(c.x, c.y);
+    await t.page.waitForFunction(() => !document.getElementById('isTip').hidden && /Mystery Island/.test(document.getElementById('isTip').textContent), null, { timeout: 15000, polling: 100 });
+    await t.page.waitForFunction(() => !window.bloppitIsland3().fly, null, { timeout: 20000, polling: 100 }); await t.page.waitForTimeout(400);
+    const r = await t.page.evaluate(() => { const b = document.getElementById('isTip').getBoundingClientRect(); return { top: b.top, bottom: b.bottom, left: b.left, right: b.right, vh: innerHeight, vw: document.documentElement.clientWidth }; });
+    assert.ok(r.top >= 0 && r.left >= 0 && r.right <= r.vw && r.bottom <= r.vh, 'the card is inside the screen: ' + JSON.stringify(r));
+    assert.ok(await t.page.evaluate(() => parseFloat(getComputedStyle(document.getElementById('isTip')).maxHeight) <= innerHeight), 'on a shorter screen the card scrolls inside itself');
+    if (process.env.SHOT) await t.page.screenshot({ path: `${process.env.SHOT}-${viewport.width}.png` });
+    assert.deepEqual(t.errors, []); await t.ctx.close();
+  }
+});
+
+test('Make a link code when the server copy is gone (deleted on a linked device): the player is saved again and the code is made, no "pup wasn’t found" (15 Nov 2026)', { skip: skip() }, async () => {
+  const world = { arrived: 1, pupAsked: true, pupName: 2, builds: { 'm:Cottage:12': { n: 12, s: 2, t: 1e12, c: 1 } }, log: ['m:Cottage:12'], decor: [] };
+  const t = await open('?nosplash=1&welcome=0', { init: { fn: (w) => { if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify(w)); }, arg: world } });
+  const post = (b, pid) => t.page.evaluate(([b, pid]) => fetch('/api/pup', { method: 'POST', headers: { 'content-type': 'application/json', ...(pid ? { 'x-pup': pid } : {}) }, body: JSON.stringify(b) }).then(async (r) => ({ status: r.status, ...(await r.json()) })), [b, pid]);
+  // this device's player has a server copy…
+  const made = await post({ action: 'create', data: { world } });
+  await t.page.evaluate((pup) => localStorage.setItem('bloppit-players-v1', JSON.stringify({ cur: 'p1', n: 1, list: [{ id: 'p1', name: 'Steff', age: null, color: '#D62F2A', pup }] })), made.pup);
+  await t.page.reload({ waitUntil: 'load' }); await t.page.waitForTimeout(4000);   // the save on opening has gone through
+  // …and then it is deleted from another device
+  assert.equal((await post({ action: 'delete' }, made.pup)).status, 200);
+  const gone = await post({ action: 'transfer' }, made.pup); assert.equal(gone.status, 404); assert.match(gone.error, /player wasn’t found/); assert.doesNotMatch(gone.error, /pup/);
+  await t.page.evaluate(() => { document.getElementById('grownDlg').showModal(); document.getElementById('grownXfer').click(); });
+  await t.page.waitForFunction(() => !document.getElementById('grownCode').hidden, null, { timeout: 15000 });
+  assert.match(await t.text('#grownCode'), /^[A-Z0-9]{8}$/); assert.match(await t.text('#grownXferNote'), /type this within 72 hours/);
+  // the code brings the player, with its build, to another device
+  const pup2 = await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-players-v1')).list[0].pup); assert.notEqual(pup2, made.pup);
+  const k = await post({ action: 'claim', code: await t.text('#grownCode') }); assert.equal(k.pup, pup2); assert.deepEqual(k.data.world.log, ['m:Cottage:12']);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
