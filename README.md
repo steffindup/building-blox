@@ -28,7 +28,7 @@ build it on screen. The menu is game-first:
   **Brain Trail** (the same levels, with math puzzles locking booklet pages). Each trail keeps its own scores
   (`best` and `bbest` in the game save).
 - **Blitz** races are kept short: a puzzle picked for Blitz is shrunk to at most 30 bricks (`BLITZ_MAX`), opening Blitz
-  without a small puzzle starts on the Toadstool Trail level, each wrong brick adds 1 second (`MISS_MS`) and each hint 5 seconds (`HINT_MS`, charged once per step).
+  without a small puzzle starts on the Toadstool Trail level, each wrong brick adds 1 second (`MISS_MS`) and each hint 2 seconds (`HINT_MS`, charged once per step).
 - **Blitz**: **vs Swoop** (the Longtail, at Warm-up, Race or Full throttle speed; take turns, 1 to 3 bricks a turn;
   Bloppit himself is never the opponent) and **vs Friend**:
   *Make a challenge* builds the whole puzzle against the clock and gives a 6-character code; friends type it into

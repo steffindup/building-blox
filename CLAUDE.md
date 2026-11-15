@@ -239,6 +239,20 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   the island option isn't available. Quick Play on a Solo tile plays that island's own puzzles in any order and keeps
   nothing; Pippa's too (her Flipper Beach puzzles, all open; the tide only applies on the island). The separate
   "any-time" mirror set (`FLIP_LEVELS`, trail `flip`) is no longer offered (Steff, 10 Nov 2026: same rules as the others).
+- **"How it works" guides (Steff, 15 Nov 2026)**: four pictures with a line each (`INTROS`, `introShow`). "How Blitz
+  works" opens once per player before their first race against Swoop (then the race starts); "How mirror puzzles work"
+  opens before Pippa's first brick of their first mirror puzzle. A player who has raced or mirrored before is not
+  shown it. They stay reachable: a button on the Blitz page's Race Swoop card, on the Blitz Bay race card, and on
+  Pippa's page. `?intros=0` switches them off (the browser tests add it; a test about a guide passes `intros=1`).
+  Steff also asked about a video: the guide is the quick version, a recorded one is his call.
+- **Pippa's words** (`PIPPA_SAYS`): short, in her voice, the thing to do first: "Watch me!", "Copy me! Do what I just
+  did, on your side of the mirror line." The mirror line is a solid blue strip with posts and a rail, the table says
+  PIPPA on her side and YOU on yours, and her bricks still to copy glow yellow on the table (`mirrorGlowSync`), not
+  only in the booklet.
+- **No Skip button over the build** while Swoop finishes his bricks (Steff, 15 Nov 2026). The scoreboard above the
+  build keeps its "Skip to the end" (shown once you have won).
+- The first three Blitz Bay races have 7 bricks: 3 each, so one turn each and Swoop places the odd one. Steff found
+  that too quick (15 Nov 2026); making the first races longer is his decision, asked, not yet answered.
 - **Phones (build area 760px wide or less)**: the camera frames the build above the message and Bloppit (`bottomCover`
   in `playFit`) and below the race banner; Bloppit's words are hidden (his reactions stay; a "Play next" bubble still
   shows); a long message folds to one line after 4.5 s. Mirror puzzles frame both halves.

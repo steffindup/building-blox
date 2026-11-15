@@ -499,6 +499,16 @@ body.on-build .appfoot{display:none}
 .hm-cont.first .hc-pic.c3-wrap{width:64px}.windlg .wc-pic.c3-wrap{width:106px}.pupfig3d{width:100%;height:100%;object-fit:cover;display:block}
 .win-chars{display:block;width:210px;height:150px;margin:-4px auto 0}
 /* Blitz Bay's ladder (from Bloppitopia): the next race, nothing to set up */
+.windlg.introdlg{text-align:left;max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;padding-top:18px}
+.windlg.introdlg .how-x{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;border:0;background:var(--bg);color:var(--ink);font-size:24px;line-height:1;cursor:pointer}
+.in-head{display:flex;gap:12px;align-items:center;margin:0 40px 12px 0}.in-head img{width:72px;height:72px;object-fit:contain;flex:none}
+.windlg.introdlg h2{font-size:26px;line-height:1.1;margin:2px 0 0}
+.in-steps{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:8px}
+.in-steps li{display:grid;grid-template-columns:92px 1fr;gap:12px;align-items:center;background:var(--bg);border-radius:14px;padding:8px 12px 8px 8px}
+.in-steps svg{width:92px;height:60px;display:block;background:#fff;border-radius:10px}
+.in-steps b{display:block;font-family:var(--f-display);font-weight:400;font-size:18px;line-height:1.15;margin-bottom:2px}
+.in-steps span{display:block;font-size:14px;font-weight:700;line-height:1.3;color:var(--muted)}
+.in-open{justify-self:start;font-size:14px;padding:7px 14px;margin-top:6px}
 .ladderdlg{text-align:center}.ld-tag{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .qp-opts{display:grid;gap:10px;margin:12px 0 4px}
 .qp-opt{display:grid;grid-template-columns:52px minmax(0,1fr);gap:4px 12px;align-items:center;text-align:left;padding:12px 14px;border-radius:16px;border:2px solid var(--line,#D9E1EA);background:var(--page,#fff);color:var(--ink);font:inherit;cursor:pointer}
@@ -864,7 +874,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .rm-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--f-display);font-size:24px;line-height:1.1}
 .rm-top .rm-crown{width:28px;height:23px;flex:none}.rm-top.lead-me{color:#F4BC22}.rm-top.lead-them{color:#8EC5FF}.rm-top.even{color:#fff}
 .rm-top small{font-family:var(--f-body,inherit);font-size:13px;font-weight:700;color:rgba(255,255,255,.75)}
-.rm-top .rm-skip{font-family:var(--f-body,inherit);font-size:13px;font-weight:800;padding:5px 12px;border-radius:999px;margin-left:4px}
+.rm-top .rm-skip{font-family:var(--f-body,inherit);font-size:13px;font-weight:800;padding:5px 12px;border-radius:999px;margin-left:4px;background:#fff;color:#14202C;border-color:#fff}   /* readable on the winner's dark bar (it was see-through, 15 Nov 2026) */
 .rm-chips{display:flex;gap:8px;flex-wrap:wrap}
 .rm-chip{display:flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border-radius:999px;background:rgba(0,0,0,.22);font-weight:800;font-size:13px}
 .rm-chip.lead{background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 2px #F4BC22}.rm-chip.now .rm-face{box-shadow:0 0 0 3px #fff}
@@ -893,7 +903,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .blitz-tag{display:inline-block;background:#F4BC22;color:#1B1410;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:800;margin-right:6px;vertical-align:middle}
 .mpbar.blitz #mpEndTurn{background:var(--accent);color:#fff;border-color:var(--accent)}
 .mpbar.tb-on #mpTurn,.mpbar.tb-on #mpEndTurn{display:none!important}
-.turn-banner .tb-skip{display:block;margin-top:6px;font:inherit;font-weight:800;font-size:13px;padding:5px 12px;border-radius:999px;border:0;background:#fff;color:#14202C;cursor:pointer}   /* vs Swoop: one turn bar (on the stage), not two */
+   /* vs Swoop: one turn bar (on the stage), not two */
 .mp-pl b{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:800}
 .mpbar .gb-flash{left:auto;right:40%;top:8px}
 #view-mp{gap:16px}
@@ -2273,7 +2283,7 @@ body:not(.on-home) .brand .wob{display:none}   /* "World of Bricks" only on the 
     <button class="primary sm" id="btOpen" type="button">Open it</button>
   </div>
   <div class="gm-head">
-    <div><h2 id="gmTitle">Tiny’s Frog Trail</h2><p class="note" id="gmIntro">Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, and Tiny cheers you all the way.</p></div>
+    <div><h2 id="gmTitle">Tiny’s Frog Trail</h2><p class="note" id="gmIntro">Hop up the trail one level at a time, with Tiny the tree frog. The levels start tiny and get bigger, and Tiny cheers you all the way.</p><button class="ghost in-open" id="gmHow" type="button" hidden>How mirror puzzles work</button></div>
     <div class="gm-total"><span class="tag" id="gmWho">Your stars</span><b id="gmTotal">0</b><span class="note" id="gmDone"></span><button class="ghost sm-link" id="gmSwitch" type="button">Switch player</button></div>
   </div>
   <div class="gm-rules">
@@ -2413,6 +2423,7 @@ body:not(.on-home) .brand .wob{display:none}   /* "World of Bricks" only on the 
       <div class="card bz-card" id="bzCpuCard">
         <h2><span aria-hidden="true">🐦</span>Race Swoop</h2>
         <p class="note" style="margin:0">Take turns placing 1, 2 or 3 bricks, then tap Done. Your clock only runs on your turn. Works without internet.</p>
+        <button class="ghost in-open" id="bzHow" type="button">How Blitz works</button>
         <div class="field"><span class="lbl">How fast is Swoop?</span>
           <div class="seg bz-speed" style="grid-template-columns:repeat(3,1fr)" role="radiogroup" aria-label="How fast is Swoop?">
             <input type="radio" name="bzLevel" id="bzEasy" value="easy"><label for="bzEasy"><span class="spd" aria-hidden="true">🐢</span>Warm-up</label>
@@ -2524,7 +2535,13 @@ body:not(.on-home) .brand .wob{display:none}   /* "World of Bricks" only on the 
   <div class="ld-pz"><img id="ldImg" alt="" width="64" height="64"><div><b id="ldName"></b><span id="ldInfo"></span></div></div>
   <div class="ld-strip" id="ldStrip" aria-hidden="true"></div>
   <p class="win-best" id="ldNote"></p>
-  <div class="win-btns"><button class="primary sm" id="ldGo" type="button" autofocus>▶ Start the race</button><button class="ghost" id="ldLater" type="button">Not now</button></div>
+  <div class="win-btns"><button class="primary sm" id="ldGo" type="button" autofocus>▶ Start the race</button><button class="ghost" id="ldHow" type="button">How Blitz works</button><button class="ghost" id="ldLater" type="button">Not now</button></div>
+</dialog>
+<dialog class="windlg introdlg" id="introDlg" aria-labelledby="inT">
+  <button class="how-x" id="inX" type="button" aria-label="Close">×</button>
+  <div class="in-head"><img id="inWho" alt="" width="256" height="256"><div><div class="ld-tag" id="inTag"></div><h2 id="inT"></h2></div></div>
+  <ol class="in-steps" id="inSteps"></ol>
+  <div class="win-btns"><button class="primary sm" id="inGo" type="button" autofocus>Got it</button></div>
 </dialog>
 <dialog class="windlg qpdlg" id="qpDlg" aria-labelledby="qpT">
   <h2 id="qpT">Build Anything with Bibi</h2>
@@ -4312,14 +4329,37 @@ function placeSides(g,o){ const m=model;
 window.bloppitSides=()=>({book:bookSides.visible?bookSides.children.map(s=>[s.userData.k,+s.position.x.toFixed(2),+s.position.z.toFixed(2)]):null,play:playSides.visible?playSides.children.map(s=>[s.userData.k,+s.position.x.toFixed(2),+s.position.z.toFixed(2)]):null});   // for tests
 // The mirror line: a glassy wall down the middle of a mirror build, on the table and in the booklet
 let mirrorWall=null, bookMirror=null;
-function mirrorMesh(m){ const h=(m.H+1)*1.2, g=new THREE.Group(), w=new THREE.Mesh(new THREE.PlaneGeometry(m.D+2,h),new THREE.MeshBasicMaterial({color:0x7FD3F5,transparent:true,opacity:.16,depthWrite:false,side:THREE.DoubleSide}));
+// (Steff, 15 Nov 2026: the line was too faint to see, face on it was one thin pale edge.) Now a solid blue strip on the
+// table with a rail above it and stronger glass between, and on the table each side says whose it is: PIPPA and YOU.
+function mirrorLabel(text,bg,fg){ const c=document.createElement('canvas'); c.width=256; c.height=80; const x=c.getContext('2d');
+  x.fillStyle=bg; x.beginPath(); if(x.roundRect) x.roundRect(4,4,248,72,36); else x.rect(4,4,248,72); x.fill();
+  x.fillStyle=fg; x.font='800 44px "Lilita One",Nunito,system-ui,sans-serif'; x.textAlign='center'; x.textBaseline='middle'; x.fillText(text,128,43);
+  const t=new THREE.CanvasTexture(c); return new THREE.MeshBasicMaterial({map:t,transparent:true,depthWrite:false}); }
+function mirrorMesh(m,sides){ const h=(m.H+1)*1.2, g=new THREE.Group(), w=new THREE.Mesh(new THREE.PlaneGeometry(m.D+2,h),new THREE.MeshBasicMaterial({color:0x4DB8F0,transparent:true,opacity:.26,depthWrite:false,side:THREE.DoubleSide}));
   w.rotation.y=Math.PI/2; w.position.set(m.W/2,h/2,m.D/2); g.add(w);
   const P=[m.W/2,.02,-1,m.W/2,.02,m.D+1, m.W/2,h,-1,m.W/2,h,m.D+1], lg=new THREE.BufferGeometry(); lg.setAttribute('position',new THREE.Float32BufferAttribute(P,3));
-  g.add(new THREE.LineSegments(lg,new THREE.LineDashedMaterial({color:0x2F9FD6,dashSize:.5,gapSize:.35}))); g.children[1].computeLineDistances(); return g; }
+  g.add(new THREE.LineSegments(lg,new THREE.LineDashedMaterial({color:0x2F9FD6,dashSize:.5,gapSize:.35}))); g.children[1].computeLineDistances();
+  const solid=new THREE.MeshBasicMaterial({color:0x1479C9}), bar=(sx,sy,sz,x,y,z)=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),solid); b.position.set(x,y,z); g.add(b); };
+  bar(.24,.07,m.D+3,m.W/2,.035,m.D/2);                 // the line on the table: a solid strip, a little longer than the model
+  bar(.12,.12,m.D+2,m.W/2,h,m.D/2);                    // the rail along the top of the glass
+  bar(.12,h,.12,m.W/2,h/2,-1); bar(.12,h,.12,m.W/2,h/2,m.D+1);   // a post at each end
+  if(sides){ const lw=Math.max(3.6,Math.min(7,m.W/2-.3)), lab=(mat,x)=>{ const q=new THREE.Mesh(new THREE.PlaneGeometry(lw,lw*80/256),mat); q.rotation.x=-Math.PI/2; q.position.set(x,.03,m.D+1.2+lw*.16); q.renderOrder=2; g.add(q); };
+    lab(mirrorLabel('PIPPA','#F4BC22','#14202C'),m.W/2-.35-lw/2); lab(mirrorLabel('YOU','#14202C','#FFFFFF'),m.W/2+.35+lw/2); }
+  return g; }
+// What to copy, glowing on the table too (it used to glow in the booklet only): Pippa's bricks of this turn whose twin
+// on your side is not in yet. "Do what I just did" needs to show what she just did.
+const mirrorGlowG=new THREE.Group(); const MIRROR_GLOW_MAT=new THREE.MeshBasicMaterial({color:0xFFD84A,transparent:true,opacity:.55,depthWrite:false});
+function mirrorGlowSync(){ if(!mirrorGlowG.parent) playGroup.add(mirrorGlowG); mirrorGlowG.clear();
+  if(!model||!model.mirror||mp||cur>=model.steps.length||!model.steps[cur].kid) return;
+  const src=model.steps[cur-1]&&model.steps[cur-1].pippa?model.steps[cur-1].bricks:[], mine=model.steps[cur].bricks;
+  for(const b of src){ const twin=mine.find(t=>t.y===b.y&&t.z===b.z&&t.sx===b.sx&&t.sz===b.sz&&t.x===model.W-(b.x+b.sx)); if(twin&&placed.has(twin)) continue;
+    const ms=new THREE.Mesh(brickGeo(b.sx,b.sz),MIRROR_GLOW_MAT); ms.scale.set(1.06,1.08,1.06); ms.add(new THREE.LineSegments(edgeGeo(b.sx,b.sz),MIRROR_EDGE_MAT));
+    ms.position.set(b.x-b.sx*.03,b.y*1.2-.04,b.z-b.sz*.03); ms.renderOrder=4; mirrorGlowG.add(ms); } }
 function setupPlay(m){
   playGroup.position.set(-m.W/2,0,-m.D/2);
   if(mirrorWall){ playGroup.remove(mirrorWall); mirrorWall=null; } if(bookMirror){ modelGroup.remove(bookMirror); bookMirror=null; }
-  if(m.mirror){ mirrorWall=mirrorMesh(m); playGroup.add(mirrorWall); bookMirror=mirrorMesh(m); bookMirror.visible=false; modelGroup.add(bookMirror); }
+  mirrorGlowG.clear();
+  if(m.mirror){ mirrorWall=mirrorMesh(m,true); playGroup.add(mirrorWall); bookMirror=mirrorMesh(m); bookMirror.visible=false; modelGroup.add(bookMirror); }
   if(floor) playGroup.remove(floor);
   if(layerGrid) playGroup.remove(layerGrid);
   // A table top with a faint stud grid, so you can see where bricks snap. No plate.
@@ -4352,7 +4392,7 @@ function resetBuild(){
   run={miss:0,hints:new Set(),auto:0,memory:null,trouble:new Map()};  // this attempt's misses, hinted steps, placed-for-me bricks (the clean score) and whether it was built from memory
   // A picture goes on its baseplate, so where each tile goes is fixed from the start
   if(model&&model.kind==='picture') off={x:0,z:0};
-  if(model&&model.mirror){ off={x:0,z:0}; $('#trayNote').textContent=model.paint?'The finale, in your colours: Pippa builds her side first, then you mirror it on your side, flipped like a reflection. Pick up a brick and choose any colour under it: your side is yours to paint.':'Pippa builds her side first. Then build the same on your side of the glassy mirror line, flipped like a reflection: a brick on her far left goes on your far right. The glowing bricks in the booklet are the ones to copy.'; }   // a mirror build sits where Pippa starts it
+  if(model&&model.mirror){ off={x:0,z:0}; $('#trayNote').textContent=model.paint?'The finale, in your colours: Pippa builds first, then copy her on your side, flipped like a reflection. Pick up a brick and choose any colour under it: your side is yours to paint.':'Pippa builds first, on her side of the blue mirror line. Then copy her on your side: do what she just did, flipped like a reflection. Her glowing bricks are the ones to copy.'; }   // a mirror build sits where Pippa starts it
   if(model) makePieces();
   setStatus(model?(TILES?'Open the parts box and pick up the tiles for row 1. Row 1 is the top of the picture, at the far edge.':'Open the parts box and pick up a brick to start.'):'');
   updateBuildUI(); frameBuild(false,false);
@@ -4526,6 +4566,7 @@ $('#howBtn').onclick=()=>howOpen('build');
 function howSync(){ let n=0; try{ n=worldCount(worldStore()); }catch(e){} $('#howBtn').hidden=n>=HOW_UNTIL||!!mp; }
 function updateBuildUI(){
   if(!model) return;
+  mirrorGlowSync();
   howSync();
   padSync();
   const N=model.steps.length, done=cur>=N, s=done?null:model.steps[cur];
@@ -5069,7 +5110,7 @@ function tryPlace(){
   if(!sel||!lastAnchor||busy) return;
   if(isLocked(cur)){ setStatus('This page is locked. Solve Bloppit’s maths puzzle to open it.','err'); openMath(cur); return; }
   if(mp&&!mpMyTurn()){ setStatus(mpTurnText(),'err'); return; }
-  if(model.mirror&&model.steps[cur]&&model.steps[cur].pippa&&!pippaBusy){ setStatus('🐧 Wait a moment: Pippa is building her side.'); return; }
+  if(model.mirror&&model.steps[cur]&&model.steps[cur].pippa&&!pippaBusy){ setStatus('🐧 Pippa: “Wait for me! I’m still building my side.”'); return; }
   if(relay&&relay.role==='first'&&cur>=relay.half){ setStatus('That page is your friend’s. Your half is done!','err'); relayHalfDone(); return; }
   if(pass&&cur>=pass.to&&pass.to<model.steps.length){ setStatus('Those pages are for the rest of your crew. Yours are done!','err'); passPagesDone(); return; }
   if(mp&&mp.cpu&&Date.now()<mp.state.turnStart){ setStatus('Wait for Go!','err'); return; }
@@ -5129,8 +5170,17 @@ function placeBrick(t,ax,az){
 }
 // Pippa's half of a mirror build: she places her bricks herself (free, never a hint), then it's your turn to reflect them
 let pippaT=null, pippaBusy=false;
-function pippaTurn(){ if(model&&model.paint&&!mp&&model.steps[cur]&&model.steps[cur].kid) setStatus(`🎨 Your turn: build the same as Pippa’s glowing bricks on your side of the mirror line, flipped like a reflection, in any colours you like (pick a colour under your brick).${held?'':' Open the parts box.'}`,'ok');
-  else if(model&&model.mirror&&!mp&&model.steps[cur]&&model.steps[cur].kid) setStatus(`🪞 Your turn: build the same as Pippa’s glowing bricks on your side of the mirror line, flipped like a reflection.${held?'':' Open the parts box.'}`,'ok');
+// What Pippa says (Steff, 15 Nov 2026: the instructions felt lacking; say "copy me", "do what I just did"). Short, hers,
+// and the thing to do comes first, so it still reads when a phone folds the message to one line.
+const PIPPA_SAYS={watch:'🐧 Pippa: “Watch me! I’m building my side.”',
+  copy:'🐧 Pippa: “Copy me! Do what I just did, on your side of the mirror line.”',
+  copyPaint:'🐧 Pippa: “Copy me, in any colours you like!” Do what she just did, on your side of the mirror line. Pick a colour under your brick.'};
+function pippaTurn(){
+  if(model&&model.mirror&&!mp&&cur===0&&placedN===0&&introDue('pippa')){ introShow('pippa',()=>pippaTurn()); return; }   // the first mirror puzzle: how it works, before she starts
+  if($('#introDlg').open) return;
+  mirrorGlowSync();
+  if(model&&model.paint&&!mp&&model.steps[cur]&&model.steps[cur].kid) setStatus(`${PIPPA_SAYS.copyPaint}${held?'':' Open the parts box.'}`,'ok');
+  else if(model&&model.mirror&&!mp&&model.steps[cur]&&model.steps[cur].kid) setStatus(`${PIPPA_SAYS.copy}${held?'':' Open the parts box.'}`,'ok');
   if(pippaT||!model||!model.mirror||mp||cur>=model.steps.length||!model.steps[cur].pippa) return;
   const go=()=>{ pippaT=null; if(!model||!model.mirror||cur>=model.steps.length||!model.steps[cur].pippa||tab==='create') return; if(busy){ pippaT=setTimeout(go,180); return; }
     const s=model.steps[cur], t=s.bricks.find(b=>!placed.has(b)); if(!t) return;
@@ -5138,11 +5188,11 @@ function pippaTurn(){ if(model&&model.paint&&!mp&&model.steps[cur]&&model.steps[
     sel={sx:t.sx,sz:t.sz,c:t.c,sp:t.sp,h:t.h,print:t.print}; lastAnchor={ax:t.x,az:t.z,px:t.x+t.sx/2,pz:t.z+t.sz/2};
     autoBusy=true; pippaBusy=true; try{ tryPlace(); } finally{ autoBusy=false; pippaBusy=false; }
     lastAnchor=prevA; if(prev&&hand.includes(prev)){ held=prev; sel=prevSel; setGhost(); } else if(prevSel&&held){ sel=prevSel; setGhost(); } else { sel=null; ghostGroup.clear(); }
-    if(s.bricks.every(b=>placed.has(b))&&model.paint) setStatus('🐧 Pippa built her side. Your turn: mirror it on your side, in any colours you like!','ok');
-    else if(s.bricks.every(b=>placed.has(b))) setStatus(`🐧 Pippa built her side. Your turn: build the same on your side of the mirror line, flipped like a reflection.`,'ok');
+    if(s.bricks.every(b=>placed.has(b))&&model.paint) setStatus(`${PIPPA_SAYS.copyPaint} Open the parts box.`,'ok');
+    else if(s.bricks.every(b=>placed.has(b))) setStatus(`${PIPPA_SAYS.copy} Open the parts box.`,'ok');
     else pippaT=setTimeout(go,reduceMotion?60:280);
     updateBuildUI(); };
-  setStatus('🐧 Pippa is building her side…'); pippaT=setTimeout(go,reduceMotion?100:500); }
+  setStatus(PIPPA_SAYS.watch); pippaT=setTimeout(go,reduceMotion?100:500); }
 function autoPlace(){
   if(busy||!model||cur>=model.steps.length||mpBlitz()) return;
   if(isLocked(cur)){ setStatus('This page is locked. Solve Bloppit’s maths puzzle to open it.','err'); openMath(cur); return; }
@@ -5252,6 +5302,7 @@ window.bloppitDemo={
     const v=new THREE.Vector3(t.x+o.x+t.sx/2+playGroup.position.x,s.layer*1.2,t.z+o.z+t.sz/2+playGroup.position.z).project(playCam), r=renderer.domElement.getBoundingClientRect();
     return {x:r.left+(v.x+1)/2*r.width,y:r.top+(1-v.y)/2*r.height,turn:t.sx!==sel.sx}; },
 };
+window.bloppitMirrorGlow=()=>mirrorGlowG.children.length;   // for tests: how many of Pippa's bricks glow on the table
 window.bloppitMirror=()=>model&&model.mirror?{paint:model.paint?[...model.paint.entries()]:null,W:model.W,steps:model.steps.map(s=>s.pippa?'P':s.kid?'K':'?').join(''),cur,bricks:model.bricks.map(b=>[b.x,b.y,b.z,b.sx,b.sz,b.c])}:null;   // for tests
 window.bloppitPeek=()=>{ if(!model||cur>=model.steps.length) return null; const u=usedSet(), t=model.steps[cur].bricks.find(b=>!u.has(b)); return t?{c:t.c,sx:t.sx,sz:t.sz,step:cur}:null; };
 // For tests: put brick k of this step in hand (without placing it), and read the brick in hand
@@ -6999,7 +7050,7 @@ function startLevel(i,noAsk){
   if(trail==='brain'&&model) game.math={v:2,tier:mathRung(mp_.grade,i,mathAdj(),mathUp()),grade:mp_.grade,locks:mathLocks(i,model.steps.length),solved:[],pts:0,q:{},right:0,miss:0};
   setTab('build'); updateGameBar();
   if(model&&model.mirror){ setTimeout(pippaTurn,700); }
-  if(model&&model.paint) setStatus(`🎨 The Festival Clock, in your colours! Pippa builds her side first, and you mirror it in any colours you like.`,'ok'); else if(model&&model.mirror) setStatus(`🐧 Pippa’s puzzle ${i+1}: a mirror build! Pippa builds one side, and you build the other side, flipped like a reflection.`,'ok'); else setStatus(trail==='sea'?`🐧 Pippa’s puzzle ${i+1}: build ${/^Pippa/.test(L.name)?'':'the '}${L.name}! Open the parts box to pick up bricks.`:`${TRAILS[trail].icon} Level ${i+1}: build the ${L.name}! Open the parts box to pick up bricks.`,'ok');
+  if(model&&model.paint) setStatus(`🎨 The Festival Clock, in your colours! Pippa builds her side first, and you mirror it in any colours you like.`,'ok'); else if(model&&model.mirror) setStatus(`🐧 Pippa’s puzzle ${i+1}: a mirror build! Pippa builds her side, then you copy her on yours.`,'ok'); else setStatus(trail==='sea'?`🐧 Pippa’s puzzle ${i+1}: build ${/^Pippa/.test(L.name)?'':'the '}${L.name}! Open the parts box to pick up bricks.`:`${TRAILS[trail].icon} Level ${i+1}: build the ${L.name}! Open the parts box to pick up bricks.`,'ok');
   saveNow();
 }
 function endGame(){
@@ -7128,7 +7179,7 @@ function renderGameMap(){
   $('#gmTitle').textContent=`${T.icon} ${T.name}`;
   const pct=trail==='sea'?progressPct(worldStore()):0;
   { const tip=quickPlay&&trail!=='flip'?`⚡ Quick Play: any ${trail==='sea'?'puzzle':'level'}, in any order. Nothing is added to Bloppitopia. To grow ${ISLES[TRAIL_ISLE[trail]].name}, play it from the island.`:trail==='flip'?'Pippa builds one half of each puzzle, and you build the other half, flipped like a reflection. Twelve to try, in any order. (Flipper Beach in Bloppitopia has its own set.)':trail==='sea'?`You’re ${pct}% of the way through Bloppitopia. A new puzzle washes ashore about every 8%.`:'';   // the hero says the rest (no repeats, Steff 5 Nov 2026)
-    $('#gmIntro').textContent=tip; $('#gmIntro').hidden=!tip; }
+    $('#gmIntro').textContent=tip; $('#gmIntro').hidden=!tip; $('#gmHow').hidden=!(trail==='sea'||trail==='flip'); }
   { const ts=trailStars(trail); $('#gmTotal').textContent=`${ts} ★`; $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} stars`;  } syncMathUI();
   $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} ${trail==='sea'?'Flipper Beach puzzles built':trail==='flip'?'any-time puzzles built':'levels done'}`;
   $('#gmLevels').innerHTML=levelsOf(trail).map((L,i)=>{
@@ -8018,6 +8069,42 @@ $('#mpCopy').onclick=async()=>{ const url=APP?`https://bloppit.com/join/${mp.cod
   try{ if(navigator.share) await navigator.share({title:'Bloppit',text:`Build with me! Room ${mp.code}`,url}); else { await navigator.clipboard.writeText(url); $('#mpCopy').textContent='Copied!'; setTimeout(()=>$('#mpCopy').textContent='Copy invite link',2000); } }catch(e){} };
 document.addEventListener('visibilitychange',()=>{ if(mp&&document.visibilityState==='visible'){ mp.ver=0; mpPoll(); } });
 
+/* ---------- How it works: a short guide before a player's first Blitz race and first mirror puzzle ----------
+   (Steff, 15 Nov 2026: a first Blitz was "a confusing rush", and Pippa needed an introduction too.) Four pictures with a
+   line each. It opens once per player, before their first race against Swoop and before Pippa's first brick; after
+   that it is behind "How Blitz works" (the Blitz page and the Blitz Bay race card) and "How mirror puzzles work"
+   (Pippa's page). A player who has raced or mirrored before today is not shown it. ?intros=0 switches it off (tests). */
+const INTRO_KEY='bloppit-intro-v1', INTROS_OFF=new URLSearchParams(location.search).get('intros')==='0';
+const inBrick=(x,y,n,c,o)=>`<g${o?` opacity="${o}"`:''}><rect x="${x}" y="${y}" width="${n*9}" height="11" rx="2" fill="${c}"/>${Array.from({length:n},(_,i)=>`<rect x="${x+1.5+i*9}" y="${y-3}" width="6" height="4" rx="1.5" fill="${c}"/>`).join('')}</g>`;
+const IN_LINE='<path d="M48 6V54" stroke="#1479C9" stroke-width="4" stroke-linecap="round"/>';
+const INTROS={
+  blitz:{who:'/art/head-swoop.png',tag:'Blitz Bay · racing Swoop',title:'How Blitz works',go:'▶ Start the race',steps:[
+    ['Take turns','You and Swoop build one model together, turn by turn.',`${inBrick(10,28,3,'#D62F2A')}${inBrick(59,28,3,'#2F7FD0')}<path d="M41 26h14m-4-4 4 4-4 4M55 40H41m4-4-4 4 4 4" fill="none" stroke="#14202C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`],
+    ['Place 1, 2 or 3 bricks','Then tap Done. Fewer bricks is fine if you can’t find the next one.',`${inBrick(8,14,2,'#D62F2A')}${inBrick(30,14,2,'#D62F2A')}${inBrick(52,14,2,'#D62F2A',.35)}<rect x="24" y="34" width="48" height="19" rx="9.5" fill="#2E9E4F"/><path d="M40 43.5l4 4 9-9" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`],
+    ['Your clock only runs on your turn','It starts when you tap “Your turn!”. A brick in the wrong spot adds 1 second, a hint adds 2.',`<circle cx="30" cy="31" r="17" fill="#fff" stroke="#14202C" stroke-width="3"/><path d="M30 20v11l7 5" fill="none" stroke="#D62F2A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><rect x="56" y="22" width="32" height="18" rx="9" fill="#14202C"/><text x="72" y="35" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" font-family="Nunito,system-ui,sans-serif">+1s</text>`],
+    ['Shortest time wins','You each place the same number of bricks. When yours are in, Swoop finishes his.',`<path d="M33 22l4-12 7 8 4-11 4 11 7-8 4 12z" fill="#F4BC22" stroke="#B9860C" stroke-width="2" stroke-linejoin="round"/><rect x="10" y="32" width="34" height="18" rx="9" fill="#D62F2A"/><text x="27" y="45" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" font-family="Nunito,system-ui,sans-serif">0:21</text><rect x="52" y="32" width="34" height="18" rx="9" fill="#9AA3AD"/><text x="69" y="45" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" font-family="Nunito,system-ui,sans-serif">0:29</text>`]]},
+  pippa:{who:'/art/head-pippa.png',tag:'Flipper Beach · Pippa’s Mirror Puzzles',title:'How mirror puzzles work',go:'▶ Let’s build',steps:[
+    ['Pippa goes first','She builds a few bricks on her side of the blue mirror line.',`${IN_LINE}${inBrick(14,38,3,'#24407A')}${inBrick(23,27,2,'#24407A')}`],
+    ['Then you copy her','Do what she just did, on your side of the line.',`${IN_LINE}${inBrick(14,38,3,'#24407A')}${inBrick(23,27,2,'#24407A')}${inBrick(55,38,3,'#24407A')}${inBrick(55,27,2,'#24407A')}`],
+    ['Flipped, like a mirror','A brick on her far left goes on your far right. Same brick, same colour.',`${IN_LINE}${inBrick(8,30,2,'#D62F2A')}${inBrick(70,30,2,'#D62F2A')}<path d="M30 35h12m-4-4 4 4-4 4M66 35H54m4-4-4 4 4 4" fill="none" stroke="#14202C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`],
+    ['Her glowing bricks show you','They glow yellow until you’ve copied them. Then it’s her turn again.',`${IN_LINE}<rect x="11" y="24" width="33" height="20" rx="5" fill="#FFE27A" stroke="#F4BC22" stroke-width="2"/>${inBrick(14,30,3,'#24407A')}${inBrick(55,30,3,'#24407A',.3)}`]]}};
+function introSeen(){ try{ return JSON.parse(localStorage.getItem(pkey(INTRO_KEY)))||{}; }catch(e){ return {}; } }
+function introMark(kind){ const o=introSeen(); if(o[kind]) return; o[kind]=1; try{ localStorage.setItem(pkey(INTRO_KEY),JSON.stringify(o)); }catch(e){} }
+// Has this player played it before (on this device, or brought here by a link)?
+function introPlayed(kind){ try{
+  if(kind==='blitz'){ const v=JSON.parse(localStorage.getItem(pkey(PACE_KEY))); if(v&&v.n>0) return true; return Object.values(worldStore().builds||{}).some(b=>b&&b.k==='blitz'); }
+  const g=JSON.parse(localStorage.getItem(pkey(GAME_KEY)))||{}; return ['sbest','fbest'].some(k=>g[k]&&Object.keys(g[k]).length>0); }catch(e){ return false; } }
+function introDue(kind){ return !INTROS_OFF&&!introSeen()[kind]&&!introPlayed(kind); }
+let introThen=null;
+function introShow(kind,then){ const I=INTROS[kind], d=$('#introDlg'); if(!I) return; introMark(kind); introThen=then||null;
+  $('#inWho').src=I.who; $('#inTag').textContent=I.tag; $('#inT').textContent=I.title; $('#inGo').textContent=then?I.go:'Got it';
+  $('#inSteps').innerHTML=I.steps.map(([t,x,pic])=>`<li><svg viewBox="0 0 96 60" aria-hidden="true" focusable="false">${pic}</svg><div><b>${escapeHTML(t)}</b><span>${escapeHTML(x)}</span></div></li>`).join('');
+  track('intro:'+kind+(then?':first':':again')); if(!d.open) d.showModal(); d.scrollTop=0; }
+$('#inGo').onclick=()=>$('#introDlg').close(); $('#inX').onclick=()=>$('#introDlg').close();
+$('#introDlg').addEventListener('close',()=>{ const f=introThen; introThen=null; if(f) setTimeout(f,0); });   // however it is closed, what it was waiting for carries on
+$('#bzHow').onclick=()=>introShow('blitz'); $('#gmHow').onclick=()=>introShow('pippa');
+$('#ldHow').onclick=()=>introShow('blitz');
+
 /* ---------- Blitz page ---------- */
 $('#bzMake').onclick=async()=>{
   const name=$('#bzName').value.trim(); if(!name){ mpMsg('Type your name first.','err'); bzNameEdit=true; bzNameSync(); $('#bzName').focus(); return; }
@@ -8101,7 +8188,7 @@ const GULL_ART={easy:'swoop',medium:'swoop',hard:'swoop'};
 function GULL_HEAD(lvl){ const id=LT3[lvl]||'swoop', u=cv3Snap(id,null,'bust',160); if(!u&&ch3On()) ch3Get(id).catch(()=>{}); return `<img src="${u||`/art/head-${id}.png`}" alt="" width="256" height="256">`; }
 let bannerKey='';
 $('#turnBanner').addEventListener('click',e=>{ if(e.target.closest('#tbDone')&&!$('#mpEndTurn').hidden) $('#mpEndTurn').click();
-  if(e.target.closest('.tb-skip')){ const r=$('#mpPlayers [data-rush]'); if(r) r.click(); e.target.closest('.tb-skip').remove(); } });
+});   // (the banner had its own "Skip to the end" over the build until 15 Nov 2026: Steff took it out; the scoreboard keeps one)
 function turnBanner(s){
   const el=$('#turnBanner'), on=!!(s&&mp&&mp.cpu&&s.started&&!s.finished&&!s.calm);
   $('#buildStage').classList.toggle('cpu-turn',on&&s.turn===1); $('#mpBar').classList.toggle('cpu-turn',on&&s.turn===1);
@@ -8109,7 +8196,7 @@ function turnBanner(s){
   const bot=s.turn===1, p=s.players[s.turn], left=mpLeft(s), key=bot+'|'+s.turnPlaced+'|'+(s.ff||1);
   el.hidden=false; el.className='turn-banner '+(bot?'cpu':'you');
   if(s.solo){ el.innerHTML=`<span class="tb-av"><i style="background:${escapeHTML(p.color)}"></i></span><span class="tb-txt">Go go go!<small>${p.n||0} of ${s.quota} placed</small></span><b class="clk" data-clk="0">${fmtTime(mpTime(s,0))}</b>`; bannerKey=key; return; }
-  el.innerHTML=bot?`<span class="tb-av">${GULL_HEAD(s.cpuLevel)}</span><span class="tb-txt">${escapeHTML(p.name)}’s turn<small>${(s.players[mp.me]||{}).n>=s.quota?(s.ff>1?`You win! ⏩ Fast-forward ×${s.ff} while he finishes.`:'You’re done! Now he finishes his bricks. Fastest time wins.')+'<button class="tb-skip" type="button" data-rush>Skip to the end ›</button>':s.turnPlaced?`${s.turnPlaced} placed. Get your next bricks ready!`:'He’s choosing. Get your next bricks ready!'}</small></span><b class="clk" data-clk="1">${fmtTime(mpTime(s,1))}</b>`
+  el.innerHTML=bot?`<span class="tb-av">${GULL_HEAD(s.cpuLevel)}</span><span class="tb-txt">${escapeHTML(p.name)}’s turn<small>${(s.players[mp.me]||{}).n>=s.quota?(s.ff>1?`You win! ⏩ Fast-forward ×${s.ff} while he finishes.`:'You’re done! Now he finishes his bricks. Fastest time wins.'):s.turnPlaced?`${s.turnPlaced} placed. Get your next bricks ready!`:'He’s choosing. Get your next bricks ready!'}</small></span><b class="clk" data-clk="1">${fmtTime(mpTime(s,1))}</b>`
     :`<span class="tb-av"><i style="background:${escapeHTML(p.color)}"></i></span><span class="tb-txt">Your turn!<small>${s.turnPlaced?(left>0?`${s.turnPlaced} placed. Place ${left===1?'1 more':`up to ${left} more`}, or tap Done`:'That’s all for this turn'):left<3?`Place up to ${left} (your last ${left===1?'one':'ones'})`:'Place 1, 2 or 3 bricks, then tap Done'}</small></span><b class="clk" data-clk="0">${fmtTime(mpTime(s,0))}</b>${s.turnPlaced>0&&left>0?'<button class="tb-done" id="tbDone" type="button" title="Give the turn to Bloppit">Done ✓</button>':''}`;
   if(bannerKey.split('|')[0]!==String(bot)&&!reduceMotion){ el.classList.add('pop'); if(bannerKey&&bot) sfx.voice('longtail'); }
   bannerKey=key;
@@ -8142,7 +8229,7 @@ function cpuNextTurn(){ const s=cpu.s; cpuStopClock();
 function cpuTurnGate(s){ if(!cpu||cpu.s!==s||!mp||!mp.cpu||s.finished||s.turn!==mp.me) return; cpuSend();
   const st=$('#buildStage'); st.querySelector('.go-gate')?.remove(); const L=raceLead(s), sc=L.sc, me=sc[mp.me], them=sc.find(p=>p.i!==mp.me);
   const what=them.done?`${escapeHTML(them.name)} finished in ${fmtTime(them.ms)}`:`${escapeHTML(them.name)} placed brick ${them.n}`;
-  const card=p=>`<div class="tg-p${L.lead&&!L.even&&!L.decided&&L.lead.i===p.i||L.decided&&L.lead.i===p.i?' lead':''}">${rmFace(s,p)}<b>${p.i===mp.me?'You':escapeHTML(p.name)}</b>${rmBricks(s,p)}<span class="clk">${fmtTime(p.ms)}</span>${p.miss||p.hint?`<span class="rm-pen">+${p.miss+p.hint*5}s</span>`:''}</div>`;
+  const card=p=>`<div class="tg-p${L.lead&&!L.even&&!L.decided&&L.lead.i===p.i||L.decided&&L.lead.i===p.i?' lead':''}">${rmFace(s,p)}<b>${p.i===mp.me?'You':escapeHTML(p.name)}</b>${rmBricks(s,p)}<span class="clk">${fmtTime(p.ms)}</span>${p.miss||p.hint?`<span class="rm-pen">+${p.miss*MISS_MS/1000+p.hint*HINT_MS/1000}s</span>`:''}</div>`;
   const mine=L.lead&&L.lead.i===mp.me;
   const mid=!L.decided&&them.done?`<div class="tg-mid lead-them"><b>Beat ${fmtTime(them.ms)}</b><span class="tg-gap">${((them.ms-me.ms)/1000).toFixed(1)}s</span><small>to spare for your last ${s.quota-me.n===1?'brick':`${s.quota-me.n} bricks`}</small></div>`:L.decided?`<div class="tg-mid ${mine?'lead-me':'lead-them'}">${RM_CROWN}<b>${mine?'You win!':`${escapeHTML(L.lead.name)} wins`}</b><small>${mine?'':'Finish your bricks anyway!'}</small></div>`
     :!L.k?`<div class="tg-mid"><b>Ready, set…</b></div>`:L.even?`<div class="tg-mid"><b>Neck and neck!</b><small>at brick ${L.k}</small></div>`
@@ -8271,6 +8358,7 @@ function cpuCountdown(){
 }
 $('#bzCpuGo').onclick=async()=>{
   const name=$('#bzName').value.trim(); if(!name){ mpMsg('Type your name first.','err'); bzNameEdit=true; bzNameSync(); $('#bzName').focus(); return; }
+  if(introDue('blitz')){ document.body.classList.remove('bz-jump'); introShow('blitz',()=>$('#bzCpuGo').click()); return; }   // a first race: how Blitz works, then the race
   const btn=$('#bzCpuGo'); btn.disabled=true; mpMsg('');
   try{
     if(mp) mpLeave();

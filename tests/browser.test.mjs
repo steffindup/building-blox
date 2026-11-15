@@ -33,7 +33,7 @@ async function open(url, { viewport = { width: 1000, height: 800 }, init, at, to
   const page = await ctx.newPage(); const errors = []; page.on('pageerror', (e) => { errors.push(e.message); if (process.env.STACKS) console.log('STACK', e.stack); });
   if (init) await page.addInitScript(init.fn, init.arg);
   if (at) await page.clock.setFixedTime(new Date(at));
-  const u = url.replace(/^([^#]*)/, (m) => m + (m.includes('?') ? '&' : '?') + 'lite3d=1' + (/films=/.test(m) ? '' : '&films=0'));   // a light 3D world: the test machine has no GPU; the island films only in the tests about them
+  const u = url.replace(/^([^#]*)/, (m) => m + (m.includes('?') ? '&' : '?') + 'lite3d=1' + (/films=/.test(m) ? '' : '&films=0') + (/intros=/.test(m) ? '' : '&intros=0'));   // and no first-time "how it works" guides, except in the tests about them   // a light 3D world: the test machine has no GPU; the island films only in the tests about them
   await page.goto(BASE + u, { waitUntil: 'load' }); await page.waitForTimeout(2500);
   return { page, ctx, errors, view: () => page.evaluate(() => [...document.querySelectorAll('section.view')].find((v) => !v.hidden)?.id), text: (sel) => page.evaluate((s) => document.querySelector(s)?.textContent.replace(/\s+/g, ' ').trim(), sel) };
 }
@@ -2156,5 +2156,65 @@ test('a linked player arrives with its own progress and otter only, under a name
   assert.deepEqual(got.names, ['Player 2', 'Player 3'], 'no second "Player 2"');
   assert.deepEqual(Object.keys(got.world.builds), ['m:Red Boat:20'], 'only its own build'); assert.equal(got.world.pupName, 5, 'its own otter name'); assert.deepEqual(got.world.decor, []);
   assert.deepEqual(Object.keys(got.mine.builds), ['m:Cottage:12']); assert.equal(got.mine.pupName, 3);   // and the player who was playing is untouched
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('How Blitz works: offered before a player’s first race against Swoop, then never in the way again; a button on the Blitz page brings it back; no Skip button over the build (15 Nov 2026)', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0&intros=1');
+  await t.page.evaluate(() => { document.querySelector('[data-go="cpu"]').click(); document.getElementById('qpIsle')?.click(); }); await t.page.waitForTimeout(400);
+  await t.page.evaluate(() => { document.getElementById('bzEasy').click(); document.getElementById('bzName').value = 'Tester'; document.getElementById('bzCpuGo').click(); });
+  await t.page.waitForFunction(() => document.getElementById('introDlg').open, null, { timeout: 5000 });
+  assert.equal(await t.text('#inT'), 'How Blitz works'); assert.equal(await t.page.evaluate(() => document.querySelectorAll('#inSteps li').length), 4);
+  assert.match(await t.text('#inSteps'), /Take turns.*Place 1, 2 or 3 bricks.*Your clock only runs on your turn.*a hint adds 2.*Shortest time wins/);
+  assert.match(await t.text('#inGo'), /Start the race/); assert.equal(await t.page.evaluate(() => !!window.bloppitRaceFF()), false, 'the race has not started behind the guide');
+  await t.page.evaluate(() => document.getElementById('inGo').click());
+  await t.page.waitForSelector('#buildStage .go-gate .go-btn', { timeout: 20000 });   // the race it was started for
+  await t.page.evaluate(() => document.querySelector('#buildStage .go-btn').click()); await t.page.waitForTimeout(4200);
+  // play your bricks; once they are in and Swoop is finishing, the banner over the build has no Skip button
+  let done = false;
+  for (let i = 0; i < 400 && !done; i++) {
+    if (await t.page.evaluate(() => /Finished/.test(document.getElementById('mpTurn').textContent))) break;
+    if (await t.page.evaluate(() => !!document.querySelector('#buildStage .turn-gate .go-btn'))) { await t.page.evaluate(() => document.querySelector('#buildStage .turn-gate .go-btn').click()); await t.page.waitForTimeout(200); continue; }
+    const f = await t.page.evaluate(() => window.bloppitRaceFF());
+    if (f && f.n >= f.quota && f.turn === 1) { done = true; assert.match(await t.text('#turnBanner'), /Swoop’s turn/); assert.equal(await t.page.evaluate(() => !!document.querySelector('#turnBanner button')), false, 'nothing to tap over the build while Swoop finishes'); break; }
+    if (await t.page.evaluate(() => !document.getElementById('turnBanner').hidden && /Your turn/.test(document.getElementById('turnBanner').textContent) && !document.querySelector('#buildStage .go-gate'))) { await t.page.evaluate(() => window.bloppitPlaceRight()); await t.page.waitForTimeout(200); continue; }
+    await t.page.waitForTimeout(150);
+  }
+  assert.ok(done, 'saw Swoop finishing after your bricks were in');
+  // a second race: straight in, no guide
+  await t.page.evaluate(() => { document.getElementById('mpLeave')?.click(); }); await t.page.waitForTimeout(300);
+  await t.page.goto(BASE + '?nosplash=1&welcome=0&intros=1&lite3d=1&films=0', { waitUntil: 'load' }); await t.page.waitForTimeout(2500);
+  await t.page.evaluate(() => { document.querySelector('[data-go="cpu"]').click(); document.getElementById('qpIsle')?.click(); }); await t.page.waitForTimeout(400);
+  await t.page.evaluate(() => { document.getElementById('bzName').value = 'Tester'; document.getElementById('bzCpuGo').click(); });
+  await t.page.waitForSelector('#buildStage .go-gate .go-btn', { timeout: 20000 }); assert.equal(await t.page.evaluate(() => document.getElementById('introDlg').open), false);
+  await t.page.evaluate(() => document.getElementById('mpLeave')?.click()); await t.page.waitForTimeout(300);
+  // and it can be read again from the Blitz page
+  await t.page.goto(BASE + '?nosplash=1&welcome=0&intros=1&lite3d=1&films=0', { waitUntil: 'load' }); await t.page.waitForTimeout(2500);
+  await t.page.evaluate(() => { document.querySelector('[data-go="cpu"]').click(); document.getElementById('qpIsle')?.click(); }); await t.page.waitForTimeout(400);
+  await t.page.evaluate(() => document.getElementById('bzHow').click()); await t.page.waitForTimeout(200);
+  assert.equal(await t.page.evaluate(() => document.getElementById('introDlg').open), true); assert.equal(await t.text('#inGo'), 'Got it');
+  await t.page.evaluate(() => document.getElementById('inGo').click()); await t.page.waitForTimeout(300);
+  assert.equal(await t.page.evaluate(() => !!window.bloppitRaceFF()), false, 'reading it again starts nothing');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('How mirror puzzles work: before Pippa’s first brick of a player’s first mirror puzzle; then Pippa says “Watch me”, “Copy me”, and her bricks to copy glow on the table (15 Nov 2026)', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0&intros=1');
+  await t.page.evaluate(() => window.bloppitLevel('sea', 1));
+  await t.page.waitForFunction(() => document.getElementById('introDlg').open, null, { timeout: 8000 });
+  assert.equal(await t.text('#inT'), 'How mirror puzzles work'); assert.match(await t.text('#inSteps'), /Pippa goes first.*Then you copy her.*Flipped, like a mirror.*glowing bricks/);
+  await t.page.waitForTimeout(1500); assert.equal(await t.page.evaluate(() => window.bloppitMirror().cur), 0, 'Pippa waits while the guide is open');
+  await t.page.evaluate(() => document.getElementById('inGo').click());
+  await t.page.waitForFunction(() => /Watch me/.test(document.getElementById('status').textContent), null, { timeout: 5000 });
+  await t.page.waitForFunction(() => { const m = window.bloppitMirror(); return m.steps[m.cur] === 'K'; }, null, { timeout: 30000 });
+  await t.page.waitForFunction(() => /Copy me! Do what I just did, on your side of the mirror line/.test(document.getElementById('status').textContent), null, { timeout: 5000 });
+  const g0 = await t.page.evaluate(() => window.bloppitMirrorGlow()); assert.ok(g0 > 0, 'her bricks to copy glow on the table');
+  // copy them all: the glow goes brick by brick, and she builds again
+  for (let i = 0; i < 12 && await t.page.evaluate(() => { const m = window.bloppitMirror(); return m.steps[m.cur] === 'K'; }); i++) { const before = await t.page.evaluate(() => window.bloppitMirrorGlow());
+    await t.page.evaluate(() => window.bloppitPlaceRight()); await t.page.waitForTimeout(900);
+    if (await t.page.evaluate(() => { const m = window.bloppitMirror(); return m.steps[m.cur] === 'K'; })) assert.equal(await t.page.evaluate(() => window.bloppitMirrorGlow()), before - 1); }
+  // the next mirror puzzle starts without the guide; Pippa's page has the way back to it
+  await t.page.evaluate(() => window.bloppitLevel('sea', 0)); await t.page.waitForTimeout(1500);
+  assert.equal(await t.page.evaluate(() => document.getElementById('introDlg').open), false);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
