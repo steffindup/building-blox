@@ -2623,7 +2623,7 @@ body:not(.on-home) .brand .wob{display:none}   /* "World of Bricks" only on the 
   </section>
   <section class="grown-sec">
     <h3>Delete saved progress</h3>
-    <p class="note">Removes everything Bloppit’s server holds for this player. Scores on this device stay until you remove the player.</p>
+    <p class="note">Removes everything Bloppit’s server holds for this player, for every linked device. Scores on this device stay until you remove the player. Removing a player only takes them off this device: the server copy stays until you delete it here.</p>
     <div class="win-btns" style="justify-content:flex-start"><button class="ghost danger" id="grownDel" type="button">Delete from the server</button></div>
   </section>
   <div class="win-btns"><button class="primary sm" id="grownDone" type="button">Done</button></div>
@@ -7408,10 +7408,11 @@ $('#whoForm').addEventListener('submit',e=>{ e.preventDefault();
   if(whoEditing){ const p=players.list.find(q=>q.id===whoEditing); Object.assign(p,{name,age,color:whoColor}); playersSave(); renderWho(); syncMathUI(); if(tab==='game') renderGameMap(); whoFormClose(); return; }
   const id='p'+(++players.n+1); players.list.push({id,name,age,color:whoColor,fresh:1}); playersSave(); switchPlayer(id); });
 $('#whoDel').onclick=()=>{ const b=$('#whoDel'), p=players.list.find(q=>q.id===whoEditing); if(!p) return;
-  if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent=`Tap again to remove ${p.name} and their scores`; setTimeout(()=>{delete b.dataset.confirm; b.textContent='Remove player';},3000); return; }
+  if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent=`Tap again to remove ${p.name} and their scores from this device`; setTimeout(()=>{delete b.dataset.confirm; b.textContent='Remove player';},3000); return; }
   delete b.dataset.confirm; b.textContent='Remove player';
   try{ localStorage.removeItem(keyFor(p.id,GAME_KEY)); localStorage.removeItem(keyFor(p.id,SAVE_KEY)); localStorage.removeItem(keyFor(p.id,DAILY_KEY)); }catch(e){}
-  if(p.pup) pupApi('POST',{action:'delete'},p.pup).catch(()=>{});
+  // Remove player only takes the player off this device (Steff, 15 Nov 2026). It used to delete the server copy too, which
+  // took the player away from every linked device. The server copy goes with Grown-ups → Delete saved progress, or after a year unplayed.
   players.list=players.list.filter(q=>q!==p);
   if(players.cur===p.id){ leavingPlayer=true; players.cur=players.list[0].id; playersSave(); location.reload(); return; }
   playersSave(); whoFormClose(); };

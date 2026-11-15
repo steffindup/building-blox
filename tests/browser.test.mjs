@@ -2122,3 +2122,21 @@ test('Make a link code when the server copy is gone (deleted on a linked device)
   const k = await post({ action: 'claim', code: await t.text('#grownCode') }); assert.equal(k.pup, pup2); assert.deepEqual(k.data.world.log, ['m:Cottage:12']);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
+
+test('Remove player takes the player off this device only: the server copy stays for a linked device (Steff, 15 Nov 2026)', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0');
+  const post = (b, pid) => t.page.evaluate(([b, pid]) => fetch('/api/pup', { method: 'POST', headers: { 'content-type': 'application/json', ...(pid ? { 'x-pup': pid } : {}) }, body: JSON.stringify(b) }).then(async (r) => ({ status: r.status, ...(await r.json()) })), [b, pid]);
+  const made = await post({ action: 'create', data: { world: { arrived: 1, pupName: 2, builds: {}, log: ['m:Cottage:12'] } } });
+  // a second player on this device, linked to that server copy
+  await t.page.evaluate((pup) => localStorage.setItem('bloppit-players-v1', JSON.stringify({ cur: 'p1', n: 2, list: [{ id: 'p1', name: 'Steff', age: null, color: '#D62F2A' }, { id: 'p2', name: 'Blueberry', age: null, color: '#2F7FD0', pup }] })), made.pup);
+  await t.page.reload({ waitUntil: 'load' }); await t.page.waitForTimeout(2500);
+  await t.page.evaluate(() => document.getElementById('whoBtn').click()); await t.page.waitForSelector('#whoList [data-edit="p2"]', { state: 'attached', timeout: 5000 });
+  await t.page.evaluate(() => document.querySelector('#whoList [data-edit="p2"]').click());
+  await t.page.evaluate(() => document.getElementById('whoDel').click());
+  assert.match(await t.text('#whoDel'), /remove Blueberry and their scores from this device/);
+  await t.page.evaluate(() => document.getElementById('whoDel').click());
+  await t.page.waitForFunction(() => JSON.parse(localStorage.getItem('bloppit-players-v1')).list.length === 1, null, { timeout: 5000 }); await t.page.waitForTimeout(1500);
+  // gone from this device, still on the server: a link code can still be made for it
+  const code = await post({ action: 'transfer' }, made.pup); assert.equal(code.status, 200); assert.match(code.code, /^[A-Z0-9]{8}$/);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
