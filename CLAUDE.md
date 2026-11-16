@@ -67,8 +67,8 @@ the **Weekly** (see below) is fetched from the site by app 1.1.1 and later (not 
   its "Current version" line with each App Store release. No lufu and no Moonstone Isle beyond the mist (Steff's launch
   rule). `marketing/launch-video/`: the locked 25-second launch videos and how they were made (its README).
   `marketing/carousel-2026-11-13/`: the six final Instagram carousel images for 13 Nov.
-  `marketing/weekly-video-2026-11-16/`: the Weekly video (version 2, upright and wide) posted on 16 Nov; its
-  carousel images are not in the repo.
+  `marketing/weekly-video-2026-11-16/`: the Weekly video (version 2, upright and wide) posted on 16 Nov;
+  `marketing/weekly-carousel-2026-11-16/`: its six carousel images.
 - `netlify.toml`: redirects (`/build` → `/game/`, `/join/CODE`, `/p/CODE` share links, `/go/CHANNEL`), headers.
 
 ## Map of `public/game/index.html`
