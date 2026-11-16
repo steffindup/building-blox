@@ -2272,3 +2272,25 @@ test('races against Swoop have an even number of bricks, half each, and the firs
   assert.deepEqual(shared, { n: 9, even: false });
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
+
+test('the turn row never lies over the build: “Your turn!” and “Swoop’s turn” sit in a row of their own under the build, on a phone and on a wide screen, and never widen the page (Steff, 15 Nov 2026)', { skip: skip() }, async () => {
+  for (const viewport of [{ width: 393, height: 740 }, { width: 1280, height: 800 }]) {
+    const t = await open('?nosplash=1&welcome=0', { viewport, touch: viewport.width < 500 });
+    await t.page.evaluate(() => { document.querySelector('[data-go="cpu"]').click(); document.getElementById('qpIsle')?.click(); }); await t.page.waitForTimeout(400);
+    await t.page.evaluate(() => { document.getElementById('bzEasy').click(); document.getElementById('bzName').value = 'Tester'; document.getElementById('bzCpuGo').click(); });
+    await t.page.waitForSelector('#buildStage .go-gate .go-btn', { timeout: 20000 });
+    await t.page.evaluate(() => document.querySelector('#buildStage .go-btn').click()); await t.page.waitForTimeout(4200);
+    const look = () => t.page.evaluate(() => { const b = document.getElementById('turnBanner').getBoundingClientRect(), s = document.getElementById('buildStage').getBoundingClientRect(), st = document.getElementById('status');
+      return { text: document.getElementById('turnBanner').textContent, over: b.bottom > s.top + 1 && b.top < s.bottom - 1 && b.right > s.left && b.left < s.right, inside: !!document.querySelector('#buildStage #turnBanner'), below: b.top >= s.bottom - 1,
+        wide: document.documentElement.scrollWidth > innerWidth + 1, w: Math.round(b.width), status: !!st.offsetParent, done: !!document.querySelector('#turnBanner #tbDone') }; });
+    await t.page.waitForFunction(() => /Your turn/.test(document.getElementById('turnBanner').textContent) && !document.getElementById('turnBanner').hidden, null, { timeout: 10000 });
+    const mine = await look(); assert.deepEqual([mine.over, mine.inside, mine.below, mine.wide], [false, false, true, false], 'your turn: ' + JSON.stringify(mine));
+    await t.page.evaluate(() => window.bloppitPlaceRight()); await t.page.waitForTimeout(500);
+    assert.equal((await look()).done, true, 'Done is in the row once a brick is in');
+    await t.page.evaluate(() => document.getElementById('tbDone').click());
+    await t.page.waitForFunction(() => /Swoop’s turn/.test(document.getElementById('turnBanner').textContent), null, { timeout: 10000 }); await t.page.waitForTimeout(300);
+    const his = await look(); assert.deepEqual([his.over, his.inside, his.below, his.wide], [false, false, true, false], 'Swoop’s turn: ' + JSON.stringify(his));
+    if (viewport.width < 500) assert.equal(his.status, false, 'on a phone no message lies over the build while Swoop builds');
+    assert.deepEqual(t.errors, []); await t.ctx.close();
+  }
+});

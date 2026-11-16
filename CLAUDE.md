@@ -249,8 +249,12 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   did, on your side of the mirror line." The mirror line is a solid blue strip with posts and a rail, the table says
   PIPPA on her side and YOU on yours, and her bricks still to copy glow yellow on the table (`mirrorGlowSync`), not
   only in the booklet.
-- **No Skip button over the build** while Swoop finishes his bricks (Steff, 15 Nov 2026). The scoreboard above the
-  build keeps its "Skip to the end" (shown once you have won).
+- **Never block the build screen** (Steff, 15 Nov 2026, said twice: "don't ever block the build screen"). The turn row
+  ("Your turn!" / "Swoop's turn", the clock and Done) is a row of its own between the build and the hand, not a banner
+  over the bricks; on a phone no message shows over the build during Swoop's turn (he stood on top of it, and it only
+  repeated the turn row); no Skip button over the build while Swoop finishes (the scoreboard keeps its "Skip to the
+  end" once you have won). Still over the bottom edge of the build on a phone: the message and Bloppit on your own
+  turn (the camera frames the model above them) and the tool buttons along the top. Put nothing new over the build.
 - **Races against Swoop: an even number of bricks, and longer first races** (Steff, 15 Nov 2026: a first race of 7
   bricks was one turn each and over). Against Swoop the counts are 10 10 10 12 14 14 16 · 12 16 18 18 18 20 22 · 16 18
   26 28 30 · 40 (the Grand Prix). The seven Warm-up races were made bigger (`sizeWas` keeps the old size, so a race won
@@ -259,7 +263,7 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   shared with a friend (room, challenge, Pass the Puzzle) is built as before, because an older app would otherwise
   build one brick fewer and the race would break. `mpUseModel` clears `S.even`; keep it that way.
 - **Phones (build area 760px wide or less)**: the camera frames the build above the message and Bloppit (`bottomCover`
-  in `playFit`) and below the race banner; Bloppit's words are hidden (his reactions stay; a "Play next" bubble still
+  in `playFit`); Bloppit's words are hidden (his reactions stay; a "Play next" bubble still
   shows); a long message folds to one line after 4.5 s. Mirror puzzles frame both halves.
 - **My films**: an island's arrival film is listed once the island is found, even if it played on setting off.
 - **Blitz**: a "Let's go" before the clock starts; a wrong brick adds 1 second; the race-o-meter. In Bloppitopia, a clear
