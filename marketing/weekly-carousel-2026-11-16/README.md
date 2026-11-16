@@ -11,3 +11,9 @@ Slide 4 was cropped a little tighter on 16 Nov (Steff: Bloppit's head showed in 
 The lines Steff approved for the slides (16 Nov): 1 "Bibi's Weekly Bloppit." · 2 "A new puzzle every Monday. The
 same one for everyone." · 3 "This week: Bloppit himself." · 4 "The last piece is his red brick." · 5 "Let's
 bloppit!" · 6 "On iPhone and iPad. Link in bio." The post's caption is in the Docs "Bloppit Launch Pack", Sweep 2.
+
+`with-lines/` holds the six as posted: each with its line written on in Lilita One (Steff, 16 Nov: "put them on
+the pictures"). Lettering colours he approved: white with a soft dark shadow on pictures, ink #142022 on light
+backgrounds (as the video does); no brand blue for lines. The plain six above are the originals.
+Scheduled 16 Nov through Meta Business Suite for 9:00 pm Bermuda, Instagram only; the Reel went to Facebook and
+Instagram at 4:30 pm from the same place (Instagram was connected to Business Suite that morning).
