@@ -2,6 +2,7 @@
 // Needs the playwright dev dependency and a Chromium (PLAYWRIGHT_CHROMIUM=/path/to/chrome, or playwright's own).
 import { test, before, after, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { start } from './devserver.mjs';
 let chromium; try { ({ chromium } = await import('playwright')); } catch { chromium = null; }
 
@@ -2152,6 +2153,47 @@ test('Remove player takes the player off this device only: the server copy stays
   await t.page.waitForFunction(() => JSON.parse(localStorage.getItem('bloppit-players-v1')).list.length === 1, null, { timeout: 5000 }); await t.page.waitForTimeout(1500);
   // gone from this device, still on the server: a link code can still be made for it
   const code = await post({ action: 'transfer' }, made.pup); assert.equal(code.status, 200); assert.match(code.code, /^[A-Z0-9]{8}$/);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('Remove player takes everything of theirs off the device, and the only player can be removed: a new Player 1 meets the welcome card (Steff, 16 Nov 2026)', { skip: skip() }, async () => {
+  // every key the game keeps per player is in the list Remove player clears (the first player's keys can only be cleared by name)
+  const src = readFileSync(new URL('../public/game/index.html', import.meta.url), 'utf8');
+  const wipe = src.match(/function playerWipe\(id\)\{\s*const keys=\[([^\]]+)\]/)[1].split(',').map((k) => k.trim());
+  const used = [...new Set([...src.matchAll(/pkey\(([A-Z_]+)\)/g)].map((m) => m[1]))];
+  assert.ok(used.length >= 15); for (const k of used) assert.ok(wipe.includes(k), `${k} is kept per player but Remove player doesn't clear it`);
+  // this device: Steff (the first player, playing) and Blueberry, each with an island, an otter and a Weekly record;
+  // and what a player removed before this fix left behind (p3)
+  const world = (n) => ({ arrived: 1, pupAsked: true, pupName: n, xp: 30, bonus: 0, builds: { 'm:Cottage:12': { n: 12, s: 2, t: 1e12, c: 1 } }, log: ['m:Cottage:12'], decor: [] });
+  const t = await open('?nosplash=1&films=0', { init: { fn: (w) => { if (localStorage.getItem('bloppit-players-v1')) return;
+    localStorage.setItem('bloppit-players-v1', JSON.stringify({ cur: 'p1', n: 3, list: [{ id: 'p1', name: 'Steff', age: null, color: '#D62F2A' }, { id: 'p2', name: 'Blueberry', age: null, color: '#2F7FD0' }] }));
+    for (const [id, n] of [['', 2], [':p2', 3], [':p3', 4]]) { localStorage.setItem('bloppit-world-v1' + id, JSON.stringify(w[n])); localStorage.setItem('bloppit-weekly-v1' + id, JSON.stringify({ weeks: { '2026-11-09': { l: 0 } } })); localStorage.setItem('bloppit-intro-v1' + id, '{"blitz":1}'); }
+    localStorage.setItem('building-blox-name', 'Steff'); localStorage.setItem('bloppit-sound', '0'); }, arg: { 2: world(2), 3: world(3), 4: world(4) } } });
+  const remove = async (id, name) => {
+    await t.page.evaluate(() => document.getElementById('whoBtn').click()); await t.page.waitForSelector(`#whoList [data-edit="${id}"]`, { state: 'attached', timeout: 5000 });
+    await t.page.evaluate((id) => document.querySelector(`#whoList [data-edit="${id}"]`).click(), id);
+    assert.equal(await t.page.evaluate(() => document.getElementById('whoDel').hidden), false);
+    await t.page.evaluate(() => document.getElementById('whoDel').click());
+    assert.match(await t.text('#whoDel'), new RegExp(`remove ${name} and their scores from this device`));
+    await t.page.evaluate(() => document.getElementById('whoDel').click()); };
+  const keys = () => t.page.evaluate(() => Object.keys(localStorage).sort());
+  // Blueberry goes: nothing of hers is left, Steff's things are untouched
+  await remove('p2', 'Blueberry');
+  await t.page.waitForFunction(() => JSON.parse(localStorage.getItem('bloppit-players-v1')).list.length === 1, null, { timeout: 5000 });
+  let k = await keys(); assert.deepEqual(k.filter((x) => x.endsWith(':p2')), []); assert.ok(k.includes('bloppit-world-v1') && k.includes('bloppit-weekly-v1') && k.includes('bloppit-world-v1:p3'));
+  await t.page.evaluate(() => document.getElementById('whoDlg').close());
+  // Steff is the only player now, and can be removed too
+  await Promise.all([t.page.waitForNavigation({ waitUntil: 'load', timeout: 15000 }), remove('p1', 'Steff')]);
+  await t.page.waitForFunction(() => /Start here: meet your otter/.test(document.getElementById('hmCont')?.textContent || ''), null, { timeout: 15000 });   // the home page of a first visit
+  await t.page.evaluate(() => document.getElementById('hmCont').click()); await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 10000 });
+  assert.match(await t.text('#pupTitle'), /Meet your otter/);
+  const pl = await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-players-v1')));
+  assert.equal(pl.cur, 'p1'); assert.equal(pl.n, 1); assert.equal(pl.list.length, 1); assert.equal(pl.list[0].name, 'Player 1'); assert.equal(pl.list[0].pup, undefined);
+  assert.equal(await t.text('#whoName'), 'Player 1');
+  k = await keys(); assert.deepEqual(k.filter((x) => /:p\d+$/.test(x)), [], 'what earlier players left behind is gone');
+  const w = await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1') || 'null')); assert.ok(!w || (!w.arrived && !(w.log || []).length), 'the new player has no island yet');
+  assert.equal(await t.page.evaluate(() => localStorage.getItem('bloppit-weekly-v1')), null); assert.equal(await t.page.evaluate(() => localStorage.getItem('building-blox-name')), null);
+  assert.equal(await t.page.evaluate(() => localStorage.getItem('bloppit-sound')), '0', 'the device keeps its sound setting');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
