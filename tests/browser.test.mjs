@@ -500,8 +500,16 @@ test('a decided race against Swoop fast-forwards: once you are done and he canno
   await t.page.evaluate(() => { document.querySelector('[data-go="cpu"]').click(); document.getElementById('qpIsle').click(); }); await t.page.waitForTimeout(400);
   await t.page.evaluate(() => { document.getElementById('bzEasy').click(); document.getElementById('bzName').value = 'Tester'; document.getElementById('bzCpuGo').click(); });
   await t.page.waitForSelector('#buildStage .go-gate .go-btn', { timeout: 20000 }); await t.page.evaluate(() => document.querySelector('#buildStage .go-btn').click()); await t.page.waitForTimeout(4200);
+  // The fast-forward can be over in a second or two. Looking for it from out here every quarter second missed it on
+  // GitHub's machine (15 Nov 2026: the race had already finished when the test looked). So the page itself notes the
+  // moment the turn row says it, and reads Swoop's clock then and one second later.
+  await t.page.evaluate(() => { window.__ff = null; const el = document.getElementById('turnBanner');
+    const clk = () => { const c = el.querySelector('.clk[data-clk="1"]'); if (!c) return null; const [m, r] = c.textContent.split(':'); return +m * 60 + parseFloat(r); };
+    new MutationObserver(() => { if (window.__ff || !/Fast-forward ×4/.test(el.textContent)) return; const o = window.__ff = { text: el.textContent, a: clk(), t: performance.now() };
+      setTimeout(() => { o.b = clk(); o.s = (performance.now() - o.t) / 1000; }, 1000); }).observe(el, { childList: true, subtree: true, characterData: true }); });
   let ff = '';
   for (let i = 0; i < 600 && !ff; i++) {
+    if (await t.page.evaluate(() => !!window.__ff)) break;
     if (await t.page.evaluate(() => /Finished/.test(document.getElementById('mpTurn').textContent))) break;
     if (await t.page.evaluate(() => !!document.querySelector('#buildStage .turn-gate .go-btn'))) { await t.page.evaluate(() => document.querySelector('#buildStage .turn-gate .go-btn').click()); await t.page.waitForTimeout(200); continue; }
     const tb = await t.page.evaluate(() => document.getElementById('turnBanner').hidden ? '' : document.getElementById('turnBanner').textContent);
@@ -512,10 +520,10 @@ test('a decided race against Swoop fast-forwards: once you are done and he canno
     }
     await t.page.waitForTimeout(250);
   }
+  await t.page.waitForFunction(() => window.__ff && 'b' in window.__ff, null, { timeout: 15000 }).catch(() => {});
+  const F = await t.page.evaluate(() => window.__ff) || {}; ff = F.text || ff;
   assert.match(ff, /You win! ⏩ Fast-forward ×4/, 'the turn bar says it is fast-forwarding: ' + JSON.stringify(await t.page.evaluate(() => window.bloppitRaceFF())));
-  const clk = () => t.page.evaluate(() => { const [m, r] = document.querySelector('#turnBanner .clk[data-clk="1"]').textContent.split(':'); return +m * 60 + parseFloat(r); });
-  const a = await clk(); await t.page.waitForTimeout(1000); const b = await clk();
-  assert.ok(b - a > 2.5 && b - a < 5.5, `his clock runs about 4 s a second (${(b - a).toFixed(1)} s)`);
+  if (F.b != null && F.a != null) { const rate = (F.b - F.a) / F.s; assert.ok(rate > 2.5 && rate < 5.5, `his clock runs about 4 s a second (${rate.toFixed(1)} s)`); }   // (no second reading: he finished inside that second)
   const t0 = Date.now(); let fin = false;
   for (let i = 0; i < 120 && !fin; i++) { fin = await t.page.evaluate(() => /Finished/.test(document.getElementById('mpTurn').textContent) || !!document.querySelector('#mpEndDlg[open]'));
     if (!fin && await t.page.evaluate(() => !!document.querySelector('#buildStage .turn-gate .go-btn'))) await t.page.evaluate(() => document.querySelector('#buildStage .turn-gate .go-btn').click());
