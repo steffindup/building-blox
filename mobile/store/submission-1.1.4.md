@@ -13,8 +13,8 @@ live on bloppit.com since 15 Nov:
 - Remove player only takes the player off that device;
 - island cards stay on a phone screen.
 
-- [ ] Build: the newest **1.1.4** build in TestFlight (read its number there).
-- [ ] Play-test on your phone (10 minutes):
+- [x] Build: **224** (the newest 1.1.4 build, with the turn row under the build; 223 was the first). Attached 16 Nov 2026.
+- [x] Play-test on your phone (10 minutes; Steff played it, 16 Nov 2026):
   1. A new player, Blitz Bay or Quick Play, Race Swoop: the guide opens first, then the race; 10 bricks, 5 each; after
      your last brick there is no Skip over the build.
   2. Blitz page: "How Blitz works" opens the guide again and starts nothing.
@@ -24,9 +24,14 @@ live on bloppit.com since 15 Nov:
      name, otter and stars, and the code box is empty afterwards.
   5. Remove that player on the second device: the first device still plays and can make a new code.
   6. Bloppitopia on the phone, tap Mystery Island: the whole card is on the screen.
-- [ ] What's New: from `listing.md` (1.1.4).
-- [ ] Review notes: from `listing.md` (the lines about typed names changed).
-- [ ] **App Privacy: decide the Name row** (`listing.md`, under the privacy label), and the same for Google Play's Data
-      safety when that listing is made. The privacy policy already says it (15 Nov 2026).
-- [ ] Screenshots, description, promotional text, keywords, age rating: unchanged.
-- [ ] Release: your choice (1.1.3 was automatic after approval, phased release off).
+- [x] What's New: from `listing.md` (1.1.4), approved by Steff and pasted 16 Nov 2026.
+- [x] Review notes: **the notes already in App Store Connect were kept** (they differ from `listing.md`: a Rewards
+      paragraph, more on the Weekly, older tile names) with three changes for 1.1.4: the typed-name sentence now gives
+      the link-code exception, "typed names never leave the device" became "are never shown to other players or sent
+      to a room", and a line says the How Blitz works guide opens before a first race. Next time start from the notes
+      in App Store Connect, not from `listing.md`.
+- [x] App Privacy: **left as it is** (Steff, 16 Nov 2026: only a profile name travels, in a use-once temporary
+      code, so no real contact information is shared). The same answer applies to Google Play's Data safety.
+- [x] Screenshots, description, promotional text, keywords, age rating: unchanged.
+- [x] Release: automatic after approval, to all users at once (phased release off).
+- [ ] **Add for Review, then Submit**: Steff's to press. The version page was saved on 16 Nov 2026 with everything above.

@@ -232,7 +232,10 @@ deleted 3 days after their last activity, challenges 30 days after the last play
 
 Everything else (contact info, identifiers, location, diagnostics, etc.): **Not collected**.
 
-**To decide before 1.1.4 is submitted (Steff):** from 1.1.4 a link code carries the player's name and a typed otter
+**Decided 16 Nov 2026 (Steff): leave the table as it is.** His view: only a profile name travels, in a use-once
+temporary code, so no real contact information is shared. The note below is kept as the record of what was weighed.
+
+**Was to decide before 1.1.4 is submitted (Steff):** from 1.1.4 a link code carries the player's name and a typed otter
 name, kept on our server with the code for at most 72 hours (see the privacy policy, 15 Nov 2026). The table above
 does not cover that. Proposed extra row, if you agree it counts as collected:
 
