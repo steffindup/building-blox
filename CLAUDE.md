@@ -366,7 +366,10 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   loader's two files were still arriving found the loader but not its decoder (`ch3Model` now waits for both).
 - GitHub's full browser run of the 1.1.4 push failed on one test, "a decided race against Swoop fast-forwards" (15 Nov
   2026): the fast-forward lasts a second or two and the test looked for it from outside every quarter second, so on a
-  slow machine it was over before the test looked. The page now notes the moment itself. `gh run view --repo
+  slow machine it was over before the test looked. The page now notes the moment itself. The next run failed the same
+  test differently ("his clock runs about 4 s a second (2.1 s)"): the repair read his clock "one second later", and he
+  had finished inside that second. The test now times his clock only over readings taken while he is still building,
+  and says so when the fast-forward was too short to time. The game was right both times. `gh run view --repo
   steffindup/building-blox --job <check-run id> --log-failed` reads a failed run's log from the sandbox.
 - **A TestFlight upload that fails at "Publishing"** ("Failed to publish App.ipa to App Store Connect") while the .ipa
   built means Apple has approved that version and takes no more builds for it: every build of 15 Nov 2026 failed that
