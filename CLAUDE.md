@@ -13,7 +13,7 @@ Target: kids 8–13 and their families, US-weighted, online-only. Steff is a sol
 Bermuda), so time is short and decisions are his.
 
 - Website and game: https://bloppit.com (game at `/game/`). Hosted on Netlify (site `bloppit`), deployed from `main`.
-- iOS app: App Store "Bloppit: World of Bricks" (id 6821449219, bundle `com.bloppit.app`). Live on the App Store: 1.1.2 (build 218, 12 Nov 2026; 1.1.1 was withdrawn for the phone overlay bug). **1.1.3 (build 222) was submitted for review on 13 Nov 2026** (automatic release, phased release off): the new How to Play video, the improved photo to build, the Weekly's "how clean it was" message (`mobile/store/submission-1.1.3.md`). Don't touch it while it is in review; when it is approved, update the press page's version line and bump the repo to 1.1.4. Build numbers can't be guessed (the first 1.1.3 build was 221): read them in TestFlight. Once a version is approved Apple takes no more builds for it (the TestFlight upload fails), so bump the version straight after a release. A push to `public/game/` or `mobile/` makes a new TestFlight build but never touches a build in review. Launch: 13 Nov (Bloppit and Bloppitopia), 16 Nov (the Weeklies), 21 Nov (before Thanksgiving).
+- iOS app: App Store "Bloppit: World of Bricks" (id 6821449219, bundle `com.bloppit.app`). Live on the App Store: **1.1.3** (build 222, approved 15 Nov 2026, automatic release; 1.1.2 was build 218, 12 Nov; 1.1.1 was withdrawn for the phone overlay bug). **The repo is on 1.1.4** (bumped 15 Nov 2026): it carries everything of 15 Nov (the guides, the Blitz and Pippa changes, the linking fixes, names with a link code) and is not submitted yet; the checklist is `mobile/store/submission-1.1.4.md`, and its open point is the App Privacy answer about names. When a version is approved, update the press page's version line and bump the repo to the next one. Build numbers can't be guessed (the first 1.1.3 build was 221): read them in TestFlight. Once a version is approved Apple takes no more builds for it (the TestFlight upload fails), so bump the version straight after a release. A push to `public/game/` or `mobile/` makes a new TestFlight build but never touches a build in review. Launch: 13 Nov (Bloppit and Bloppitopia), 16 Nov (the Weeklies), 21 Nov (before Thanksgiving).
 - Android/Google Play: in progress (Wyoming company Bloppit LLC being set up to own the IP and the Play account).
 - Contact: hello@bloppit.com. Socials: @playbloppit (TikTok, Instagram, X), @bloppit (YouTube), facebook.com/playbloppit.
 
@@ -353,19 +353,17 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   keeps them in the code's own record only (`xfer/CODE`, never in the player's record) until the code is used, and
   deletes an unused one with the expired code (daily cleanup, or the first try after 72 hours). The other device uses
   them for the linked player (`linkedAdd`). It changes a promise ("names never leave the device"): the privacy policy
-  and the Grown-ups corner say so in the same commit, but `mobile/store/listing.md` (review notes, lines about typed
-  names) and the App Store and Google Play privacy answers ("not collected") still say names are never sent. They are
-  Steff's to decide and must be settled before an app with this ships. A family key carries no names.
+  and the Grown-ups corner say so in the same commit, `mobile/store/listing.md`'s review notes say it from 1.1.4, and a proposed "Name" row for the App
+  Store privacy label and Google Play's Data safety is written there for Steff to decide before 1.1.4 is submitted. A family key carries no names.
 - The "living characters: on the island…" browser test failed now and then in a long run (15 Nov 2026, the one failure
   in the full run of 105): Bloppit's word shows for 2 seconds after a tap, and the test took three separate looks,
   which on a busy machine could take longer. It now waits once, inside the page, for the reaction and the word together.
   The same day a real cause of now-and-then failures in the game was fixed: a second 3D character asked for while the
   loader's two files were still arriving found the loader but not its decoder (`ch3Model` now waits for both).
-- **Every TestFlight build of 15 Nov 2026 failed at "Publishing"** ("Failed to publish App.ipa to App Store Connect"),
-  from the first push of the day on; the .ipa itself built. That is what happens once Apple has approved a version
-  (here 1.1.3): check App Store Connect, and if so do the release steps at the top of this file (press page version
-  line, bump to 1.1.4). Not confirmed from the sandbox; Steff was told. Read the check-runs with
-  `gh api repos/steffindup/building-blox/commits/<sha>/check-runs`: that works from the sandbox.
+- **A TestFlight upload that fails at "Publishing"** ("Failed to publish App.ipa to App Store Connect") while the .ipa
+  built means Apple has approved that version and takes no more builds for it: every build of 15 Nov 2026 failed that
+  way until the repo moved from 1.1.3 to 1.1.4. Read a commit's check-runs with
+  `gh api repos/steffindup/building-blox/commits/<sha>/check-runs` (that works from the sandbox).
 - Island cards (`islandTip`) are kept inside the screen and scroll inside themselves if taller than it (15 Nov 2026: on a
   phone Mystery Island's card opened below the bottom edge).
 - Commits: end with the `Co-Authored-By` / `Claude-Session` lines the session gives you; commit as

@@ -77,6 +77,9 @@ The phone screenshots are the iPhone ones with a little more brand blue at the s
   - **App activity › App interactions:** collected (daily counts of a few events by country and app/website; no
     identifier), not shared, purpose Analytics.
   - Everything else (location, personal info, contacts, device or other IDs, diagnostics): **not collected**.
+  - **To decide (Steff), from 1.1.4:** a link code carries the player's name and a typed otter name, kept with the code
+    for at most 72 hours. Proposed: **Personal info › Name:** collected, optional, not shared, purpose App
+    functionality, deleted with the code. See the same note in `listing.md`.
 - **Government app / financial / health / news:** No to all.
 
 ## Android-specific notes

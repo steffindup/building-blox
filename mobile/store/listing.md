@@ -128,7 +128,18 @@ follow Bloppit. Apple’s limits: 15–30 s, at most 30 fps, footage from the ap
 the arrival made in the game): upload these with 1.1. Set the poster frame to Bloppit holding his red brick on the
 jetty (about 7 s in).
 
-## What’s New (1.1.3)
+## What’s New (1.1.4)
+
+No emoji. Draft, 15 Nov 2026: Steff to approve.
+
+New to Blitz or to Pippa's Mirror Puzzles? A short picture guide now shows how each works before your first go, and it is always there to read again.
+• Blitz against Swoop: longer first races and an even number of bricks, so you each place exactly half
+• Pippa's Mirror Puzzles: a clear blue mirror line, your side and hers marked, her bricks to copy glow, and she tells you what to do
+• Playing on two devices: a link code now brings the player's name and their otter's name along, and a linked player keeps only their own progress
+• Removing a player from one device no longer removes them from your other devices
+• Smaller fixes
+
+## What’s New (1.1.3, live 15 Nov 2026)
 
 No emoji.
 
@@ -180,11 +191,11 @@ Challenges: on the menu tap Play with Friends (under Together), then Race a Frie
 
 Bibi’s Weekly Bloppit: tap Bibi’s Weekly Bloppit on the menu. Each week we count finishes and clean finishes (no names), and a top-100 board shows generated names only (a grown-up can switch it off). The time and misses are sent only to check it's a real finish and aren't kept. Counts are deleted after 8 weeks.
 
-Progress (scores, finished models, stars, outfits, the otter’s name as a number from a fixed list) is saved under an anonymous progress code minted by our server. A name the player types for the otter stays on the device and is never sent. Grown-ups corner (behind the parental gate) shows the link code and the Family Link QR, and can delete the record.
+Progress (scores, finished models, stars, outfits, the otter’s name as a number from a fixed list) is saved under an anonymous progress code minted by our server. A name the player types for the otter stays on the device, with one exception from 1.1.4: when a parent makes a link code in the Grown-ups corner, the player's name and the typed otter name travel with that code to the parent's other device. Our server keeps them with the code only, never with the progress, and deletes them when the code is used or with the expired code (72 hours). Grown-ups corner (behind the parental gate) shows the link code and the Family Link QR, and can delete the record.
 
 Usage counts: the app adds one to a daily count for a few events (a build started or finished, the arrival seen) with the country from the request and whether it was the app or the website. There is no identifier for the player or the device, and nothing is shared with anyone.
 
-Rooms (Team Build, live races): friends join with a 5-letter code and the host lets them in. Players appear under generated labels ("Brave Otter 214"); typed names never leave the device. Pass the Puzzle: one friend builds half a model, the other finishes it from a code; inside a crew, the same model goes round every member in turn. Crews (Together page, up to six per player): a group of friends the maker lets in one by one, with a live Crew Quick Game, Pass the Puzzle and a Crew Mega Build (a big puzzle every member’s bricks go to); the board only takes fixed phrases and stickers under generated names.
+Rooms (Team Build, live races): friends join with a 5-letter code and the host lets them in. Players appear under generated labels ("Brave Otter 214"); typed names are never shown to other players or sent to a room. Pass the Puzzle: one friend builds half a model, the other finishes it from a code; inside a crew, the same model goes round every member in turn. Crews (Together page, up to six per player): a group of friends the maker lets in one by one, with a live Crew Quick Game, Pass the Puzzle and a Crew Mega Build (a big puzzle every member’s bricks go to); the board only takes fixed phrases and stickers under generated names.
 
 There is no chat and no voice: players in a room only place bricks. Links out of the app and sharing an invite are behind a parental gate (type a number written in words as digits).
 
@@ -220,6 +231,12 @@ deleted 3 days after their last activity, challenges 30 days after the last play
 | Usage Data › Product Interaction (daily counts of a few events, by country and app/website; no identifier) | Yes | No | No | Analytics |
 
 Everything else (contact info, identifiers, location, diagnostics, etc.): **Not collected**.
+
+**To decide before 1.1.4 is submitted (Steff):** from 1.1.4 a link code carries the player's name and a typed otter
+name, kept on our server with the code for at most 72 hours (see the privacy policy, 15 Nov 2026). The table above
+does not cover that. Proposed extra row, if you agree it counts as collected:
+
+| Contact Info › Name (the player's name and a typed otter name, only while a link code made by a parent is waiting to be used, 72 hours at most) | Yes | No | No | App Functionality |
 
 ## Updating the app
 
