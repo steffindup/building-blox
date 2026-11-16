@@ -17,3 +17,6 @@ the pictures"). Lettering colours he approved: white with a soft dark shadow on 
 backgrounds (as the video does); no brand blue for lines. The plain six above are the originals.
 Scheduled 16 Nov through Meta Business Suite for 9:00 pm Bermuda, Instagram only; the Reel went to Facebook and
 Instagram at 4:30 pm from the same place (Instagram was connected to Business Suite that morning).
+Facebook got the carousel too (Steff, 16 Nov: "why not FB too?"): the same six as a photo post on the Page at
+9:00 pm, with `with-lines/bloppit-weekly-6-three-bricks-facebook.png` as slide 6 ("On iPhone and iPad, and at
+bloppit.com."; a Page has no bio link) and the App Store link in the text.
