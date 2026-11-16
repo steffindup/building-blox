@@ -7456,7 +7456,7 @@ function whoForm(p){
   $('#whoNm').value=p?p.name:''; $('#whoAge').value=p&&p.age?String(p.age):'';
   whoColor=p?p.color:AV_COLORS[players.list.length%AV_COLORS.length];
   $('#whoColors').innerHTML=AV_COLORS.map(c=>`<button type="button" role="radio" aria-checked="${c===whoColor}" aria-label="Colour" style="background:${c}" data-c="${c}"></button>`).join('');
-  $('#whoDel').hidden=!p||players.list.length<2;
+  $('#whoDel').hidden=!p;   // the only player can be removed too: the device then starts again with a new player (Steff, 16 Nov 2026)
   setTimeout(()=>$('#whoNm').focus(),30);
 }
 function whoFormClose(){ $('#whoForm').hidden=true; $('#whoBtns').hidden=false; $('#whoLinkRow').hidden=false; $('#whoList').hidden=false; renderWhoList(); }
@@ -7478,14 +7478,36 @@ $('#whoForm').addEventListener('submit',e=>{ e.preventDefault();
   const name=$('#whoNm').value.trim().slice(0,16); if(!name) return; const age=+$('#whoAge').value||null;
   if(whoEditing){ const p=players.list.find(q=>q.id===whoEditing); Object.assign(p,{name,age,color:whoColor}); playersSave(); renderWho(); syncMathUI(); if(tab==='game') renderGameMap(); whoFormClose(); return; }
   const id='p'+(++players.n+1); players.list.push({id,name,age,color:whoColor,fresh:1}); playersSave(); switchPlayer(id); });
+// Everything a player keeps on this device. A key read or written with pkey(…) must be in this list (a test checks it).
+// The first player's keys have no player id in them, so they can only be cleared by name; the others end in ":" + id.
+function playerWipe(id){
+  const keys=[GAME_KEY,SAVE_KEY,DAILY_KEY,WEEKLY_KEY,WORLD_KEY,MYS_SAVE_KEY,INTRO_KEY,PACE_KEY,BZ_LEVEL_KEY,CH_KEY,SEEN_KEY,REALM_KEY,LUFU_HI_KEY,LASTSEEN_KEY,BOARD_KEY,NEXT_KEY];
+  try{ for(const k of keys) localStorage.removeItem(keyFor(id,k));
+    if(id!=='p1') for(const k of Object.keys(localStorage)) if(k.endsWith(':'+id)) localStorage.removeItem(k); }catch(e){}
+}
 $('#whoDel').onclick=()=>{ const b=$('#whoDel'), p=players.list.find(q=>q.id===whoEditing); if(!p) return;
   if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent=`Tap again to remove ${p.name} and their scores from this device`; setTimeout(()=>{delete b.dataset.confirm; b.textContent='Remove player';},3000); return; }
   delete b.dataset.confirm; b.textContent='Remove player';
-  try{ localStorage.removeItem(keyFor(p.id,GAME_KEY)); localStorage.removeItem(keyFor(p.id,SAVE_KEY)); localStorage.removeItem(keyFor(p.id,DAILY_KEY)); }catch(e){}
   // Remove player only takes the player off this device (Steff, 15 Nov 2026). It used to delete the server copy too, which
   // took the player away from every linked device. The server copy goes with Grown-ups → Delete saved progress, or after a year unplayed.
+  // It takes everything of theirs off the device (16 Nov 2026): until then the island, the otter and its name, and the
+  // Weekly record stayed in storage, unseen.
+  const last=players.list.length<2, wasCur=players.cur===p.id;
+  if(wasCur) leavingPlayer=true;   // nothing of theirs is saved again on the way out
+  playerWipe(p.id);
+  try{ if(p.pup){ const seen=JSON.parse(localStorage.getItem(CREW_SEEN_K))||{}; if(seen[p.pup]){ delete seen[p.pup]; localStorage.setItem(CREW_SEEN_K,JSON.stringify(seen)); } } }catch(e){}
   players.list=players.list.filter(q=>q!==p);
-  if(players.cur===p.id){ leavingPlayer=true; players.cur=players.list[0].id; playersSave(); location.reload(); return; }
+  if(last){
+    // The only player (Steff, 16 Nov 2026): the device starts again as on a first visit, with a new "Player 1" who meets
+    // the welcome card. Whatever earlier players left behind goes too (a player removed before 16 Nov left their island
+    // in storage), and so do the things kept once per device that came from playing: pictures of builds, the island
+    // picture, a room in progress, the name typed for a room. Sound, music and a family key are the device's and stay.
+    try{ playerWipe('p1'); for(const k of Object.keys(localStorage)) if(/:p\d+$/.test(k)) localStorage.removeItem(k);
+      for(const k of [THUMB_KEY,SHAPE_KEY,MP_KEY,CREW_SEEN_K,'bloppit-island-v1','building-blox-name']) localStorage.removeItem(k); }catch(e){}
+    players.n=1; players.list=[{id:'p1',name:'Player 1',age:null,color:AV_COLORS[0],fresh:1}]; players.cur='p1';
+    playersSave(); location.reload(); return;
+  }
+  if(wasCur){ players.cur=players.list[0].id; playersSave(); location.reload(); return; }
   playersSave(); whoFormClose(); };
 renderWho();
 
