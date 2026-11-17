@@ -7181,7 +7181,7 @@ function winLevel(){
   { const o=worldStore(), ts=trailStars(tr,o); $('#winBest').textContent=`${TRAILS[tr].name}: ${ts} ★ so far`; }
   const last=i>=LV.length-1, wait=!last&&tr==='sea'&&!seaWashed(i+1);
   $('#winNext').innerHTML=last?'All levels done!':wait?`<img class="nb-pic" src="${levelThumb(LV[i+1])}" alt=""><span>Next puzzle<small>Washes ashore at ${seaPct(i+1)}% of Bloppitopia</small></span>`:`<img class="nb-pic" src="${levelThumb(LV[i+1])}" alt=""><span>Next<small>Level ${i+2}: ${escapeHTML(LV[i+1].name)}</small></span>`; $('#winNext').disabled=last||wait;
-  { const isle={otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr]; $('#winIsland').textContent=`🏝️ Back to Bloppitopia`; $('#winIsland').title=isle&&ISLES[isle]?`See ${ISLES[isle].name} grow`:''; }
+  { const isle={otter:'otterwood',brain:'brainpeak',sea:'sunrise'}[tr]; $('#winIsland').title=isle&&ISLES[isle]?`See ${ISLES[isle].name} grow`:''; finishMainText($('#winIsland'),'🏝️ Back to Bloppitopia'); }
   game=null; updateGameBar(); storeClear();
   $('#winDlg').showModal(); $('#winIsland').focus();
 }
@@ -7189,7 +7189,7 @@ $('#winNext').onclick=()=>{ $('#winDlg').close(); startLevel(winLvl+1); };
 $('#winDlg').addEventListener('close',()=>endReveal());
 $('#winReplay').onclick=()=>{ $('#winDlg').close(); startLevel(winLvl); };
 $('#winMap').onclick=()=>{ $('#winDlg').close(); setTab('game'); };
-$('#winIsland').onclick=()=>{ track('finish_next:island'); $('#winDlg').close(); setTab('island'); };   // the recommended way on: see the island grow
+$('#winIsland').onclick=()=>{ $('#winDlg').close(); finishMainGo(); };   // the recommended way on: see the island grow
 $('#gbMap').onclick=()=>{ if(!game&&mysOn()){ setTab('island'); return; } if(game) setTrail(gameTrail()); setTab('game'); };
 function renderGameMap(){
   const g=gameStore(), B=bestOf(g,trail), done=Object.keys(B).map(Number), unlocked=done.length?Math.max(...done)+1:0;
@@ -7863,7 +7863,7 @@ function updateMpBar(){
   if(bz){ $('#hintBtn').textContent=s.calm?'Hint':mp.hintSteps.includes(cur)?'Hint':'Hint (+2s)'; $('#hintBtn').disabled=done||(!mpMyTurn()&&!hintOn); }
   $('#mpBar').classList.toggle('calm',!!s.calm);
   $('#mpBar').classList.toggle('blitz',bz);
-  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?(cpu&&cpu.ladder!=null?(cpu.ladder>=LADDER_N?`Blitz Bay · Race ${BLITZ_RACES} of ${BLITZ_RACES}: the Grand Prix`:`Blitz Bay · Race ${cpu.ladder+1} of ${BLITZ_RACES} · ${CPU_LEVELS[s.cpuLevel].speed}`):`Blitz with Swoop · ${CPU_LEVELS[s.cpuLevel].speed}`):'Room'; $('#mpRoomBtn').textContent=mp.cpu&&s.finished?'🏝️ Back to Bloppitopia':mp.cpu?($('#mpRoomBtn').dataset.confirm?'Tap again to leave':s.solo?'Leave':'Leave race'):'Room'; $('#mpRoomBtn').classList.toggle('primary',!!(mp.cpu&&s.finished)); $('#mpRoomBtn').classList.toggle('ghost',!(mp.cpu&&s.finished)); $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
+  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?(cpu&&cpu.ladder!=null?(cpu.ladder>=LADDER_N?`Blitz Bay · Race ${BLITZ_RACES} of ${BLITZ_RACES}: the Grand Prix`:`Blitz Bay · Race ${cpu.ladder+1} of ${BLITZ_RACES} · ${CPU_LEVELS[s.cpuLevel].speed}`):`Blitz with Swoop · ${CPU_LEVELS[s.cpuLevel].speed}`):'Room'; $('#mpRoomBtn').textContent=mp.cpu&&s.finished?(finishNew()?'Back to the menu':'🏝️ Back to Bloppitopia'):mp.cpu?($('#mpRoomBtn').dataset.confirm?'Tap again to leave':s.solo?'Leave':'Leave race'):'Room'; $('#mpRoomBtn').classList.toggle('primary',!!(mp.cpu&&s.finished)); $('#mpRoomBtn').classList.toggle('ghost',!(mp.cpu&&s.finished)); $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
   const cp=s.players[s.turn], mine=s.turn===mp.me, left=mpLeft(s), el=$('#mpTurn');
   el.classList.toggle('mine',mine&&!s.finished&&s.started);
   if(bz&&s.solo&&s.calm) el.innerHTML=s.finished?'Finished!<small>Let’s see how clean it was</small>':`Build it clean<small>${(s.players[0].n||0)} of ${s.quota} placed</small>`;
@@ -8053,12 +8053,12 @@ function mpShowBlitzEnd(){
   $('#mpEndNote').textContent=`${s.title}: everyone placed ${s.quota} brick${s.quota===1?'':'s'}${extra?`, and Swoop put in the last ${extra===1?'one':extra}`:''}. Shortest total time wins. Each clock only ran during that player’s own turns, every miss added 1 second and every hint 2 seconds.${mp.cpu?(w.i===mp.me?(s.cpuLevel==='hard'?' You beat Swoop at full throttle. Amazing!':' Ready to race Swoop at a faster speed?'):' Practice makes perfect. Try again?'):''}`;
   { const o=worldStore(), won=w.i===mp.me; if(mp.cpu) cheer3($('#mpEndChars'),hasPup(o)?['pup',LT3[s.cpuLevel]||'swoop']:['bloppit',LT3[s.cpuLevel]||'swoop'],won?['cheer','surprised_jump']:['look_at_you','cheer']);
     else cheer3($('#mpEndChars'),'bloppit','cheer'); }
-  $('#mpEndDlg').showModal(); $('#mpEndIsland').focus();
+  finishMainText($('#mpEndIsland'),'🏝️ Back to Bloppitopia'); $('#mpEndDlg').showModal(); $('#mpEndIsland').focus();
 }
 $('#mpEndClose').onclick=()=>{ $('#mpEndDlg').close(); setTab('build'); };
 let mpEndNext=null;
 $('#mpEndNew').onclick=()=>{ $('#mpEndDlg').close(); if(mpEndNext){ const f=mpEndNext; mpEndNext=null; f(); return; } const to=mpHomeTab(); mpLeave(); setTab(to); };
-$('#mpEndIsland').onclick=()=>{ track('finish_next:island'); $('#mpEndDlg').close(); mpLeave(); setTab('island'); };   // the recommended way on, win or lose
+$('#mpEndIsland').onclick=()=>{ $('#mpEndDlg').close(); mpLeave(); finishMainGo(); };   // the recommended way on, win or lose
 // Load what to build: a level, or whatever is on Photos & model now
 function mpUseModel(choice){
   if(S.even){ S.even=false; if(choice==='cur'&&model){ clearTimeout(timer); rebuild(); } }   // a puzzle that may be shared is never the evened-up one (older apps would build one brick fewer)
@@ -8108,7 +8108,7 @@ $('#mpWaitStop').onclick=()=>{ mpWaitStop(true); renderMpView(); };
 $('#mpCodeIn').addEventListener('input',e=>{ e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
 $('#mpStart').onclick=()=>mpPost({action:'start'}).then(j=>mpApply(j.state)).catch(e=>mpMsg(e.message,'err'));
 $('#mpGoBuild').onclick=()=>setTab('build');
-$('#mpRoomBtn').onclick=()=>{ if(mpDoneLeave()){ setTab('island'); return; }
+$('#mpRoomBtn').onclick=()=>{ if(mpDoneLeave()){ setTab(finishNew()?'home':'island'); return; }
   // vs Swoop (or a timed build), mid-race: Leave race, and a second tap to be sure (a race left doesn't count)
   const b=$('#mpRoomBtn'); if(mp&&mp.cpu&&mp.state&&!mp.state.finished){ if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent='Tap again to leave'; b.title='This race won’t count'; setStatus('Tap Leave again to stop this race. It won’t count.'); clearTimeout(b._t); b._t=setTimeout(()=>{ delete b.dataset.confirm; b.title=''; if(mp&&mp.state) b.textContent=mp.state.solo?'Leave':'Leave race'; },3500); return; }
     delete b.dataset.confirm; clearTimeout(b._t); b.title=''; track('race_leave'); const t=mpHomeTab(); mpLeave(); setTab(t); return; }
@@ -8509,6 +8509,12 @@ async function chShare(code,kind){
   const url=chShareUrl(code), text=kind==='relay'?`I built half. Can you finish it? Bloppit Pass the Puzzle code ${code}`:`Can you beat my Bloppit time? Challenge code ${code}`;
   try{ if(navigator.share) await navigator.share({title:'Blitz challenge',text,url}); else { await navigator.clipboard.writeText(`${text} ${url}`); $('#trShare').textContent='Copied!'; setTimeout(()=>$('#trShare').textContent='Share the code',2000); } }catch(e){}
 }
+// A new player (no otter yet, never sailed to Bloppitopia) who starts with the Weekly, a Trail level or a race: the finish
+// card's main button goes back to the menu, not to an island they have never seen. The otter is met there, once, and
+// the arrival film waits until they tap "Start here" or Bloppitopia (Steff, 16 Nov 2026). Everyone else: the island.
+function finishNew(){ try{ const o=worldStore(); return !o.arrived&&!pupName(o); }catch(e){ return false; } }
+function finishMainText(b,label){ b.textContent=finishNew()?'Back to the menu':label; if(finishNew()) b.title=''; }
+function finishMainGo(){ const nw=finishNew(); track(nw?'finish_next:menu':'finish_next:island'); setTab(nw?'home':'island'); }
 let trialDone=null;
 function trialDialog(o){
   $('#trIcon').textContent=o.icon||'⚡'; $('#trTitle').textContent=o.title; $('#trRows').innerHTML=o.rows||''; $('#trRows').hidden=!o.rows;
@@ -8516,7 +8522,7 @@ function trialDialog(o){
   $('#trShare').hidden=!o.code; $('#trCard').hidden=!o.card; $('#trRetry').hidden=!o.retry; trialDone=o;
   // What next: see the island grow, or straight on to the next puzzle (Done stays, as the quiet choice)
   const nx=o.next?nextBuild():null; $('#trIsland').hidden=!o.next; $('#trNext').hidden=!nx;
-  if(o.next) $('#trIsland').textContent=o.isle&&ISLES[o.isle]?`🏝️ See ${ISLES[o.isle].name} grow`:'🏝️ See Bloppitopia';
+  if(o.next) finishMainText($('#trIsland'),o.isle&&ISLES[o.isle]?`🏝️ See ${ISLES[o.isle].name} grow`:'🏝️ See Bloppitopia');
   if(nx) $('#trNext').textContent='▶ '+nx.t; $('#trDone').className=o.next?'ghost':'primary sm';
   const d=$('#trialDlg'); if(!d.open) d.showModal(); if(o.card) worldSound();
 }
@@ -8576,7 +8582,7 @@ async function trialEnd(){
 $('#trRetry').onclick=()=>{ if(trialDone&&trialDone.relayRetry) relayHalfDone(); else if(cpu&&cpu.trial) trialEnd(); };
 $('#trShare').onclick=()=>{ if(trialDone&&trialDone.code) chShare(trialDone.code,trialDone.relay?'relay':''); };
 const trLeave=()=>{ $('#trialDlg').close(); if(cpu&&cpu.trial) mpLeave(); };
-$('#trIsland').onclick=()=>{ track('finish_next:island'); trLeave(); setTab('island'); };
+$('#trIsland').onclick=()=>{ trLeave(); finishMainGo(); };
 $('#trNext').onclick=()=>{ const n=nextBuild(); track('finish_next:play'); trLeave(); if(n) n.go(); else homeGo('quick'); };
 $('#trDone').onclick=()=>{ if(trialDone&&trialDone.quick){ $('#trialDlg').close(); return; } $('#trialDlg').close(); const weekly=cpu&&cpu.trial&&cpu.trial.kind==='weekly', rel=trialDone&&(trialDone.relay||trialDone.card===false); if(rel){ setTab('blitz'); renderChMine(true); return; } mpLeave(); setTab(weekly?'daily':'blitz'); };
 
@@ -12026,7 +12032,7 @@ function arr3Bit(A,spark,x,y,z,v,life,s0,s1){ const m=new THREE.SpriteMaterial({
   const sp=new THREE.Sprite(m); sp.position.set(x,y,z); sp.scale.setScalar(s0); ISL3.sc.add(sp); A.bits.push({sp,v,life,s0,s1,t0:A.t,op:spark?1:.7}); }
 // The first trip: the player picks the otter's colour and name first, then it sails to Home Island (the film)
 function isl3Sail(o){ if(ISL3.cine||ISL3.arrive) return;
-  if(ISL3.preNamed||pupName(o)){ isl3Arrive(o); return; }
+  if(ISL3.preNamed||pupName(o)||o.pupAsked){ ISL3.preNamed=true; isl3Arrive(o); return; }   // met already (named or "Pick later", e.g. on the menu after a first Weekly): no second card
   if($('#pupDlg').open) return;
   pupOpen(()=>{ ISL3.preNamed=true; if(ISL3.on&&ISL3.arrival==='boat'&&tab==='island') isl3Arrive(worldStore()); else renderIsland(); },{arrival:true,sail:true}); }
 function isl3Arrive(o){
@@ -13051,7 +13057,7 @@ function renderHome(){
   homeCont=homeContinue(); $('#hmCont').hidden=!homeCont;
   { const c=$('#hmCont'), q=$('#hmQuick'), h=$('#hmHow'), w=homeCont&&homeCont.first?q:h; if(c.nextElementSibling!==w) w.parentNode.insertBefore(c,w); }   // first visit: "Start here" leads, above Quick play
   renderHomeWorld(); renderFilmsTile(); setTimeout(()=>{ try{ crewNewsCheck(); }catch(e){} },0);   // after start-up: the crew code below is ready by then
-  if(tab==='home') pupMaybe();  // the first finish anywhere (a Trail level, a race) meets the pup on the way back to the menu
+  if(tab==='home') pupMaybe(()=>{});  // the first finish anywhere (the Weekly, a Trail level, a race) meets the pup on the way back to the menu, and stays on the menu (Steff, 16 Nov 2026)
   if(homeCont){ $('#hmContT').textContent=homeCont.t; $('#hmContS').textContent=homeCont.s;
     $('#hmContBar').hidden=homeCont.p<0; $('#hmContBar i').style.width=Math.max(4,homeCont.p)+'%'; $('#hmCont').classList.toggle('first',!!homeCont.first); }
   const st=playerStats(players.cur);

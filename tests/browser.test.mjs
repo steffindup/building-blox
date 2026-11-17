@@ -464,7 +464,9 @@ test('Nora is a real 3D model (v1) with her nine clips', { skip: skip() }, async
 });
 
 test('a finished race against Swoop lets go: the banner offers Back to Bloppitopia, and a Trail (Pippa) opens straight away; the parts box says when it is your last brick', { skip: skip() }, async () => {
-  const t = await open('?nosplash=1&welcome=0');
+  // a player with an otter (a new player's banner says "Back to the menu" instead: Steff, 16 Nov 2026)
+  const otter = { fn: () => { if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); } };
+  const t = await open('?nosplash=1&welcome=0', { init: otter });
   await t.page.evaluate(() => { document.querySelector('[data-go="cpu"]').click(); document.getElementById('qpIsle').click(); }); await t.page.waitForTimeout(400);
   await t.page.evaluate(() => { document.getElementById('bzEasy').click(); document.getElementById('bzName').value = 'Tester'; document.getElementById('bzCpuGo').click(); });
   await t.page.waitForSelector('#buildStage .go-gate .go-btn', { timeout: 20000 }); await t.page.evaluate(() => document.querySelector('#buildStage .go-btn').click()); await t.page.waitForTimeout(4200);
@@ -612,6 +614,29 @@ test('the Weekly: a brick of the wrong colour says which colour the step needs, 
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('a new player who starts with the Weekly: the finish card goes back to the menu, the otter is met once there, and the film waits for Bloppitopia', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1#daily');   // a fresh device: no otter, never sailed
+  await t.page.evaluate(() => document.getElementById('dyGo').click());
+  await t.page.waitForFunction(() => (s => /Go!/.test(s) && !/Wait for Go/.test(s))(document.getElementById('status').textContent), null, { timeout: 20000 });
+  for (let i = 0; i < 200; i++) { const more = await t.page.evaluate(() => window.bloppitPlaceRight()); if (!more && await t.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; await t.page.waitForTimeout(150); }
+  await t.page.waitForFunction(() => document.getElementById('trialDlg').open && !document.getElementById('trIsland').hidden, null, { timeout: 30000 });
+  assert.equal(await t.text('#trIsland'), 'Back to the menu');   // not an island they have never seen
+  await t.page.evaluate(() => document.getElementById('trIsland').click());
+  await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 10000 });
+  assert.equal(await t.view(), 'view-home'); assert.match(await t.text('#pupLead'), /Your own little otter/);
+  await t.page.evaluate(() => document.getElementById('pupLater').click());   // "Pick later"
+  await t.page.waitForTimeout(2500);
+  // it stays on the menu: no second card, no film, and the Bloppitopia tile is there
+  assert.deepEqual(await t.page.evaluate(() => [[...document.querySelectorAll('section.view')].find((v) => !v.hidden).id, document.getElementById('pupDlg').open, !!document.querySelector('.is3-cine'), document.getElementById('hmWorld').hidden]), ['view-home', false, false, false]);
+  // Bloppitopia: the arrival starts straight away, without asking about the otter again
+  await t.page.evaluate(() => document.getElementById('hmWorld').click());
+  await t.page.waitForFunction(() => !!window.bloppitIsland3 && !!(window.bloppitIsland3().cine || window.bloppitIsland3().arrive), null, { timeout: 15000 });
+  assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), false);
+  assert.equal(await t.view(), 'view-island');
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+// a player with an otter keeps the island as the main action
 test('a finished Weekly stands on the 3D island, and can be put away and back', { skip: skip() }, async () => {
   const world = { fn: () => { localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 }));
     if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: { 'm:Little house:12': { n: 12, s: 2, k: 'quick', t: Date.now() - 864e5, c: 1 } }, log: ['m:Little house:12'], decor: [] })); } };
@@ -625,6 +650,8 @@ test('a finished Weekly stands on the 3D island, and can be put away and back', 
   assert.ok(said.length && said.every((x) => /how clean it was/.test(x) && !/quickest/.test(x)), 'the Weekly finishes with "how clean it was": ' + JSON.stringify(said));
   const key = await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1')).log.find((k) => k.startsWith('w:')));
   assert.ok(key, 'the Weekly was recorded');
+  await t.page.waitForFunction(() => document.getElementById('trialDlg').open && !document.getElementById('trIsland').hidden, null, { timeout: 30000 });
+  assert.match(await t.text('#trIsland'), /See Brickyard Cove grow/, 'a player with an otter: the island stays the main action');
   await t.page.goto(new URL('/game/?nosplash=1&lite3d=1#island', 'http://localhost:8799').href); await t.page.waitForTimeout(3000);
   const on = () => t.page.evaluate((k) => { const I = window.bloppitIsland3(); return !!(I && I.shown && I.shown.list.some((m) => m.key === k)); }, key);
   assert.equal(await t.page.evaluate(() => !!window.bloppitIsland3().ok), true, 'the 3D island');
