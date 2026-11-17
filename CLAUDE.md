@@ -211,6 +211,8 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   bricks" (front page) is fine.
 - **Launch screen**: winking Bloppit plus the "Bloppit" voice (Steff's two boys, mixed 50:50), on the website and the app.
 - **About us** is Steff's own text: light edits only.
+- **Website text runs the full width of its box** (Steff, 17 Nov 2026: the 76-character reading width of 9 Nov left the
+  right side of the cards looking empty). Don't add a `max-width` to text inside a card.
 - **Contractions** (it's, don't, can't): the game and website use them for a friendly tone with kids, which Steff
   accepts though he doesn't like them himself (9 Nov). The privacy policy and the classroom activity page stay more formal.
 - **Characters**: Bloppit the otter (Home Island, the main character; "Let's bloppit!"), the Pup (the player's otter, named
