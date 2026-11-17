@@ -282,6 +282,25 @@ test('Rotate turns the brick in hand, and the Weekly special piece turns too and
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
+test('the Weekly: the Moon rocket ends on its flame and the Ringed planet on its ring, each 24 to 48 bricks', { skip: skip() }, async () => {
+  const seed = { fn: () => { localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); } };
+  for (const [week, kind, sx] of [['2026-11-30', 'flame', 3], ['2026-12-07', 'ring', 13]]) {
+    const t = await open('?nosplash=1&welcome=0&weekly=' + week, { init: seed });
+    await t.page.waitForFunction(() => document.getElementById('pvBar') && !document.getElementById('pvBar').hidden, null, { timeout: 30000 });
+    await t.page.waitForTimeout(3000);   // the 3-2-1 countdown
+    const total = await t.page.evaluate(() => +(document.body.innerText.match(/of (\d+) placed/i) || [])[1]);
+    assert.ok(total >= 24 && total <= 48, week + ': ' + total + ' bricks');
+    for (let i = 0; i < 120; i++) { const left = await t.page.evaluate(() => { const m = document.body.innerText.match(/(\d+) of (\d+) placed/i); return m ? +m[2] - +m[1] : 99; }); if (left <= 1) break; await t.page.evaluate(() => window.bloppitPlaceRight()); await t.page.waitForTimeout(250); }
+    await t.page.waitForFunction(() => window.bloppitHold(0), null, { timeout: 15000 });   // the last step has opened
+    const last = await t.page.evaluate(() => window.bloppitHold(0));
+    assert.equal(last.sp, kind); assert.equal(last.sx, sx);
+    // nothing of the drawn piece is built before it: no brick stands in the piece's own spot
+    await t.page.evaluate(() => window.bloppitPlaceRight()); await t.page.waitForTimeout(1500);
+    assert.match(await t.page.evaluate(() => document.body.innerText), /(\d+) of \1 placed/i);
+    assert.deepEqual(t.errors, []); await t.ctx.close();
+  }
+});
+
 test('phone build page: no arrows or Place (tap the brick, Rotate turns it), the build gets the room; yellow and blue table edges mark the same sides in the booklet and the build', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0', { viewport: { width: 390, height: 664 }, touch: true });
   await t.page.evaluate(() => { document.querySelector('[data-go="otter"]').click(); document.getElementById('qpIsle').click(); }); await t.page.waitForTimeout(400);
@@ -792,7 +811,7 @@ test('Brain Trail math: age 9 in October is 4th grade, later levels stay in 4th 
 });
 
 test('the Weekly bank: each planned Monday shows its model', { skip: skip() }, async () => {
-  for (const [when, name] of [['2026-10-26T13:00:00Z', 'Jack-o’-lantern'], ['2026-11-02T14:00:00Z', 'Red boat'], ['2026-11-16T14:00:00Z', 'Bloppit and the red brick'], ['2026-11-23T14:00:00Z', 'Thanksgiving turkey'], ['2026-12-14T14:00:00Z', 'Gingerbread house']]) {
+  for (const [when, name] of [['2026-10-26T13:00:00Z', 'Jack-o’-lantern'], ['2026-11-02T14:00:00Z', 'Red boat'], ['2026-11-16T14:00:00Z', 'Bloppit and the red brick'], ['2026-11-23T14:00:00Z', 'Thanksgiving turkey'], ['2026-11-30T14:00:00Z', 'Moon rocket'], ['2026-12-07T14:00:00Z', 'Ringed planet'], ['2026-12-14T14:00:00Z', 'Snowman'], ['2026-12-21T14:00:00Z', 'Christmas tree']]) {
     const t = await open('?nosplash=1&welcome=0', { at: when });
     assert.match(await t.text('#hmDailyT'), new RegExp(name)); assert.deepEqual(t.errors, []); await t.ctx.close();
   }

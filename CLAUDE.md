@@ -134,6 +134,17 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   per feather. The clock dial is a square block that looks round only because the tower around it is the same colour
   (Steff, 10 Nov: special pieces should be unique shapes). A new kind needs an entry there, artwork in `printCanvas`
   (also its parts-box icon) and a sound in `specialIn`.
+- **Two more kinds (17 Nov 2026, built for Steff's review, not live until he approves the strips):** `flame` (3×3, the
+  Moon rocket's printed teardrop, stands on the launch pad between the fins; a rumble) and `ring` (13×1, the Ringed
+  planet's lens-shaped ring, as wide as the model: `wide` lets it span the full width and `ledge:false` adds no bricks
+  under its overhanging ends; a ping and a chime). Both use `clear` so the drawn piece comes away and the spot is empty
+  until the piece goes in, and `back:'keep'` so what is behind keeps its colours. `studSheet(rows, colours, bg)` takes a
+  background colour: white is the default and is never built, so a model with white bricks needs another one (the
+  rocket's white body vanished on white; both use a night sky).
+- **Weekly order from 30 Nov (Steff, 17 Nov 2026: 30 Nov felt too early for Christmas):** Moon rocket (30 Nov), Ringed
+  planet (7 Dec), Snowman (14 Dec), Christmas tree (21 Dec), Curled-up pup, Hot-air balloon, Striped lighthouse (11
+  Jan), Gingerbread house (18 Jan). The Snowman and Christmas tree still build poorly (puffed, no hat or face; a green
+  block) and have no special piece: proposed redraws with a top hat and a star are waiting for his word.
 - **Parallel Weeklies (Steff, 10 Nov):** one model per week carries the special piece. An app that doesn't know the kind
   (1.1.1) drops it and builds the same picture from ordinary bricks, so 1.1.1 players get a plain version automatically
   (checked in build 213's code). Draw the piece in the picture so the plain build still shows it. From 30 Nov every

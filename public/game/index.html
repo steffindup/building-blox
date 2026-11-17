@@ -3440,10 +3440,18 @@ function brickGeo(sx,sz,h=1){
 function shapeGeo(kind,sx,sz,h){
   const k='shape:'+kind+':'+sx+'x'+sz+'x'+h; if(geoCache.has(k)) return geoCache.get(k);
   const H=1.2*h-.02, rx=sx/2-.02, sh=new THREE.Shape(), N=9, steps=N*6;
+  if(kind==='flame'){   // a teardrop, round at the top (under the engine) and pointed at the bottom
+    const m=sx/2, top=H-rx; sh.moveTo(m,.02); sh.quadraticCurveTo(m-rx*.55,H*.22,m-rx,top);
+    for(let i=0;i<=24;i++){ const a=Math.PI*(1-i/24); sh.lineTo(m+Math.cos(a)*rx,top+Math.sin(a)*rx); }
+    sh.quadraticCurveTo(m+rx*.55,H*.22,m,.02);
+  } else if(kind==='ring'){   // a long flat lens
+    for(let i=0;i<=48;i++){ const a=2*Math.PI*i/48, x=sx/2+Math.cos(a)*rx, y=H/2+Math.sin(a)*H/2; i?sh.lineTo(x,y):sh.moveTo(x,y); }
+  } else {
   sh.moveTo(sx/2-rx,0);
   for(let i=0;i<=steps;i++){ const t=i/steps, a=Math.PI*(1-t), f=t*N%1, bump=1-.1*Math.pow(Math.abs(Math.cos(Math.PI*f)),3);   // the feather tips
     sh.lineTo(sx/2+Math.cos(a)*rx*bump, Math.sin(a)*H*bump); }
   sh.lineTo(sx/2+rx,0); sh.lineTo(sx/2-rx,0);
+  }
   const g=new THREE.ExtrudeGeometry(sh,{depth:sz-.04,bevelEnabled:false,curveSegments:4}); g.translate(0,0,.02); g.computeBoundingSphere();
   geoCache.set(k,g); return g;
 }
@@ -3471,6 +3479,15 @@ function printCanvas(kind){
     cols.forEach((col,i)=>{ const a=(i-(cols.length-1)/2)*(Math.PI*.98/(cols.length-1)); g.save(); g.translate(R,Y); g.rotate(a);   // a = 0 is straight up
       g.fillStyle=col; g.beginPath(); const L=2*half*.97; g.ellipse(0,-L/2,L*.16,L/2,0,0,7); g.fill(); g.fillStyle='rgba(88,42,18,.5)'; g.fillRect(-3,-L*.92,6,L*.82); g.restore(); });
     g.fillStyle='#582A12'; g.beginPath(); g.arc(R,Y,half*.4,Math.PI,0); g.fill();
+  }
+  if(kind==='flame'){   // the rocket's flame: orange with a yellow heart, round at the top and pointed at the bottom
+    const K=SPECIAL_KINDS.flame, half=256*K.cols/Math.max(K.cols,K.rows*1.2);   // half the face's width, in the square print
+    const drop=(w,top,bot,f)=>{ g.fillStyle=f; g.beginPath(); g.moveTo(R,bot); g.quadraticCurveTo(R-w*.55,bot-(bot-top)*.25,R-w,top+w);
+      g.arc(R,top+w,w,Math.PI,0); g.quadraticCurveTo(R+w*.55,bot-(bot-top)*.25,R,bot); g.fill(); };
+    drop(half*.98,4,508,'#FE8A18'); drop(half*.6,70,400,'#F2CD37'); drop(half*.26,130,300,'#FFF8D6');
+  }
+  if(kind==='ring'){   // the planet's ring, for its icon in the parts box and the booklet (the piece itself is plain lavender)
+    g.fillStyle='#AC78BA'; g.beginPath(); g.ellipse(R,R,250,46,0,0,7); g.fill(); g.fillStyle='#C9A3D4'; g.beginPath(); g.ellipse(R,R-10,236,20,0,0,7); g.fill();
   }
   if(kind==='dial'){
     const disc=(r,f)=>{ g.fillStyle=f; g.beginPath(); g.arc(R,R,r,0,7); g.fill(); };
@@ -3513,6 +3530,10 @@ const SPECIAL_KINDS={
   dial:{name:'Clock dial',cols:4,rows:4,print:true},
   brick:{name:'Bloppit’s red brick',cols:2,rows:1,colour:[201,26,9],back:'around'},
   fan:{name:'Tail feathers',cols:12,rows:5,print:true,shape:'fan',colour:[88,42,18],behind:true,clear:[[201,26,9],[254,138,24],[242,205,55]]},   // stands at the back; the feathers in front of it come away so it shows
+  // 17 Nov 2026 (Steff): the Moon rocket's flame, a teardrop between the fins that stands on the launch pad, and the
+  // Ringed planet's ring, one long lens-shaped piece as wide as the whole model (so no ledge is added under its ends)
+  flame:{name:'Rocket flame',cols:3,rows:3,print:true,shape:'flame',colour:[254,138,24],back:'keep',clear:[[254,138,24],[242,205,55]]},   // the drawn flame comes away, so the space between the fins is empty until the piece goes in
+  ring:{name:'Planet ring',cols:13,rows:1,shape:'ring',colour:[172,120,186],back:'keep',wide:true,ledge:false,clear:[[172,120,186]]},   // the drawn ring ends come away; the planet's own band stays behind the ring
 };
 const SPECIAL_NAME=Object.fromEntries(Object.entries(SPECIAL_KINDS).map(([k,v])=>[k,v.name])), SP_W=96;
 function addSpecial(m){
@@ -3520,7 +3541,7 @@ function addSpecial(m){
   const f=photos.find(p=>p.view==='front')||photos[0], smp=f&&f.sample?SAMPLES.find(x=>x.name===f.name):null, P=smp&&smp.special;
   const K=P&&SPECIAL_KINDS[P.kind]; if(!K) return; const SP_COLS=K.cols, SP_ROWS=K.rows;
   const DIAL=P.kind==='dial';   // the dial keeps its exact old placement (Big Ben)
-  if(m.kind==='picture'||m.mirror||m.paint||!f.m||!f.m.bbox||m.W<SP_COLS+(K.behind?0:2)||m.H<SP_ROWS+(DIAL?3:2)) return;
+  if(m.kind==='picture'||m.mirror||m.paint||!f.m||!f.m.bbox||m.W<SP_COLS+(K.behind||K.wide?0:2)||m.H<SP_ROWS+(DIAL?3:2)) return;
   const [x0b,y0b,x1b,y1b]=f.m.bbox, bw=x1b-x0b+1, bh=y1b-y0b+1, kx=m.W/bw, ky=1.2*m.H/bh;
   const cx=(P.cx-x0b+.5)*kx, cy=(bh-(P.cy-y0b+.5))*ky;
   const fz=K.behind?Math.min(...m.bricks.map(b=>b.z)):Math.max(...m.bricks.map(b=>b.z+b.sz))-1;   // the front layer (or the back one, for a piece that stands behind)
@@ -3546,7 +3567,7 @@ function addSpecial(m){
   const cellAt=new Set(); for(const b of [...keep,...back]) for(let dz=0;dz<b.sz;dz++)for(let dx=0;dx<b.sx;dx++) cellAt.add((b.x+dx)+','+b.y+','+(b.z+dz));
   const ledgeStep=Math.max(0,...[...keep,...back].filter(b=>b.y===Y0-1).map(b=>b.step));
   const ledgeC=([...keep,...back].find(b=>b.y===Y0-1&&b.z+b.sz>fz)||keep[0]).c;
-  if(!K.behind) for(let x=X0;x<X0+SP_COLS;x++) if(!cellAt.has(x+','+(Y0-1)+','+fz)) back.push({x,y:Y0-1,z:fz,sx:1,sz:1,c:ledgeC,step:ledgeStep});
+  if(!K.behind&&K.ledge!==false) for(let x=X0;x<X0+SP_COLS;x++) if(!cellAt.has(x+','+(Y0-1)+','+fz)) back.push({x,y:Y0-1,z:fz,sx:1,sz:1,c:ledgeC,step:ledgeStep});
   // Steps: the same order, the leftovers in their brick's step, then the special piece last
   const all=[...keep,...back], steps=[];
   m.steps.forEach((st,i)=>{ const bs=all.filter(b=>b.step===i).sort((a,b)=>a.z-b.z||a.x-b.x); if(bs.length) steps.push({...st,bricks:bs}); });
@@ -3558,7 +3579,8 @@ function addSpecial(m){
   m.steps=steps; m.special={kind:P.kind,n:1};
 }
 // The finishing touch going in: the bong, and the hands spin round to the time it is now
-function specialIn(t){ if(t.sp==='dial'){ sfx.bong&&sfx.bong(); dialSweep(); } else if(t.sp==='brick'){ sfx.star&&sfx.star(3); } else if(t.sp==='fan'){ sfx.fanfare&&sfx.fanfare(); } }
+function specialIn(t){ if(t.sp==='dial'){ sfx.bong&&sfx.bong(); dialSweep(); } else if(t.sp==='brick'){ sfx.star&&sfx.star(3); } else if(t.sp==='fan'){ sfx.fanfare&&sfx.fanfare(); }
+  else if(t.sp==='flame'){ sfx.rumble&&sfx.rumble(); } else if(t.sp==='ring'){ sfx.star&&sfx.star(3); setTimeout(()=>sfx.chime&&sfx.chime(),260); } }
 function printMat(kind){
   if(printMats.has(kind)) return printMats.get(kind);
   const t=new THREE.CanvasTexture(printCanvas(kind)); t.encoding=THREE.sRGBEncoding; t.anisotropy=4;
@@ -4796,6 +4818,9 @@ const sfx=(()=>{
       [[0,72,.11],[.13,76,.11],[.26,79,.11],[.4,84,.65]].forEach(([d,m,len])=>{ brass(c,t+d,hz(m),len,.07); marimba(c,t+d,hz(m),.1); });
       [[.4,60],[.4,64],[.4,67]].forEach(([d,m])=>brass(c,t+d,hz(m),.7,.04));
       noise(c,t+.4,1.1,{vol:.07,freq:8000,q:.5,type:'highpass',att:.01}); sparkle(c,t+.5,6,84,.05); },
+    // The rocket's engines lighting: a low rumble that swells, then a bright ping
+    rumble(){ haptic('win'); const c=ok('rumble',1.5); if(!c) return; const t=c.currentTime+.04;
+      noise(c,t,1.3,{vol:.16,freq:180,q:.7,type:'lowpass',att:.35}); noise(c,t+.15,1.0,{vol:.05,freq:900,q:.6,type:'bandpass',att:.3}); sparkle(c,t+.9,5,84,.04); },
     // A star landing: a glockenspiel ping, each star a note higher, with a twinkle
     star(n=1){ haptic('light'); const c=ok('star'+n,.3); if(!c) return; const t=c.currentTime+.02, m=[84,88,91][Math.min(2,Math.max(0,n-1))];
       glock(c,t,hz(m),.16,null,.9); glock(c,t+.05,hz(m+12),.05,null,.4); if(n>=3) sparkle(c,t+.12,5,91,.035); },
@@ -5716,7 +5741,7 @@ function cellSheet(rows,pal){ const w=rows[0].length, [c,x]=sheet(20+w*20,20+row
   rows.forEach((r,j)=>[...r].forEach((k,i)=>{ if(pal[k]){ x.fillStyle=pal[k]; x.fillRect(10+i*20,10+j*24,20.5,24.5); } })); return c; }
 // A picture drawn stud by stud: each letter is one stud (10×12 px, a brick seen from the front), '.' is empty.
 // With ws.size = the number of rows, the model comes out exactly as drawn.
-function studSheet(rows,cols){ const [c,x]=sheet(rows[0].length*10,rows.length*12,'#ffffff');
+function studSheet(rows,cols,bg='#ffffff'){ const [c,x]=sheet(rows[0].length*10,rows.length*12,bg);   // bg: the picture's background, never built (a night sky lets a model use white)
   rows.forEach((r,j)=>[...r].forEach((k,i)=>{ if(cols[k]){ x.fillStyle=cols[k]; x.fillRect(i*10,j*12,10,12); } })); return [['front',c]]; }
 function sheet(w,h,bg){const c=document.createElement('canvas'); c.width=w; c.height=h; const x=c.getContext('2d'); x.fillStyle=bg; x.fillRect(0,0,w,h);
   x.rr=(X,Y,W,H,r)=>{x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+W,Y,X+W,Y+H,r);x.arcTo(X+W,Y+H,X,Y+H,r);x.arcTo(X,Y+H,X,Y,r);x.arcTo(X,Y,X+W,Y,r);x.closePath();x.fill();};
@@ -6385,7 +6410,7 @@ const SAMPLES=[
    x.fillStyle='#F4F4F4'; x.fillRect(30,166,162,8);
    x.fillStyle='#0055BF'; x.rr(4,196,212,20,8);
    return [['front',c]]; }},
- {name:'Striped lighthouse',theme:'Ocean',weekly:'2026-12-21',beat:'The light went out. Finish it before dark.',ws:{size:10},make(){ const [c,x]=sheet(200,240,'#BFE3F5');
+ {name:'Striped lighthouse',theme:'Ocean',weekly:'2027-01-11',beat:'The light went out. Finish it before dark.',ws:{size:10},make(){ const [c,x]=sheet(200,240,'#BFE3F5');
    x.poly([[100,8],[66,48],[134,48]],'#C91A09');
    x.fillStyle='#1B2A34'; x.fillRect(70,48,60,8); x.fillRect(70,84,60,8); x.fillRect(72,56,6,28); x.fillRect(122,56,6,28);
    x.fillStyle='#F2CD37'; x.fillRect(78,56,44,28);
@@ -6417,6 +6442,16 @@ const SAMPLES=[
    // special piece, last (app 1.1.2 on; 1.1.1 doesn't know the kind and builds it as an ordinary brick, in its layer).
    return studSheet(['..D....D....','..BBBBBB....','.BBKBBKBB...','.BBBDDBBB...','..BCCCCB....','...BBBB.....','..BBBBBB....','.BBCCCCBB...','.BBDRRDBB...','..BCCCCB....','..BCCCCB.DD.','..BBBBBBDD..','..DD..DD....'],
      {B:'#AA7D55',D:'#582A12',C:'#F6D7B3',K:'#1B2A34',R:'#C91A09'}); }},
+ {name:'Moon rocket',theme:'Vehicles',weekly:'2026-11-30',beat:'Nora has spotted something bright in the night sky. Build the rocket, then light the engines!',ws:{size:17,shape:'flat',maxColors:6},special:{kind:'flame',cx:55,cy:174,r:15},make(){
+   // Drawn stud by stud (Steff, 17 Nov 2026). The rocket stands on its fins on a launch pad; the flame between the fins
+   // is the special piece, last. An app without the kind builds the flame from ordinary orange and yellow bricks.
+   return studSheet(['.....R.....','....RRR....','....RRR....','...WWWWW...','...WWWWW...','...WUUUW...','...WUUUW...','...WWWWW...','...WRRRW...','...WWWWW...','..RWWWWWR..','.RRWWWWWRR.','.RRKKKKKRR.','RRR.OOO.RRR','RR..OYO..RR','RR...Y...RR','GGGGGGGGGGG'],
+     {R:'#C91A09',W:'#F4F4F4',U:'#0055BF',K:'#6C6E68',O:'#FE8A18',Y:'#F2CD37',G:'#A0A5A9'},'#0B1026'); }},
+ {name:'Ringed planet',theme:'Fantasy',weekly:'2026-12-07',beat:'The rocket has arrived! Build the planet, then slide its ring on last.',ws:{size:11,shape:'flat',maxColors:8},special:{kind:'ring',cx:65,cy:54,r:65},make(){
+   // Drawn stud by stud (Steff, 17 Nov 2026: "with a few more colours"). The ring is the special piece, last: one long
+   // piece across the whole planet. An app without the kind builds the ring from ordinary lavender bricks.
+   return studSheet(['....MMMMM....','...CCCCCCC...','..OOOOOOOOO..','..YYYYYYYYY..','PPLLLLLLLLLPP','..AAAAAAAAA..','..OOOODDOOO..','...CCCCCCC...','....MMMMM....','......K......','....KKKKK....'],
+     {M:'#923978',C:'#FF698F',O:'#FE8A18',Y:'#F2CD37',P:'#AC78BA',L:'#F8BB3D',A:'#36AEBF',D:'#A95500',K:'#6C6E68'},'#0B1026'); }},
  {name:'Curled-up pup',theme:'Animals',weekly:'2026-12-28',beat:'A little otter fell asleep on the beach.',ws:{shape:'flat',size:8},make(){ const [c,x]=sheet(240,180,'#ffffff');
    x.oval(120,112,98,58,0,'#8B5A2B');
    x.oval(196,130,30,18,-.5,'#8B5A2B'); x.oval(206,140,16,10,-.5,'#D9B98B');
@@ -6439,7 +6474,7 @@ const SAMPLES=[
    x.fillStyle='#5E3A20'; x.fillRect(78,172,6,40); x.fillRect(116,172,6,40);
    x.fillStyle='#8B5A2B'; x.rr(66,208,68,44,8); x.fillStyle='#5E3A20'; x.fillRect(66,224,68,6);
    return [['front',c]]; }},
- {name:'Snowman',theme:'Fantasy',weekly:'2026-11-30',beat:'First frost on Bloppitopia. Pippa feels right at home. Build her a snowman!',ws:{shape:'puffed',size:10},make(){ const [c,x]=sheet(200,260,'#BFE3F5');
+ {name:'Snowman',theme:'Fantasy',weekly:'2026-12-14',beat:'First frost on Bloppitopia. Pippa feels right at home. Build her a snowman!',ws:{shape:'puffed',size:10},make(){ const [c,x]=sheet(200,260,'#BFE3F5');
    x.dot(100,196,62,'#F4F4F4'); x.dot(100,118,46,'#F4F4F4'); x.dot(100,58,34,'#F4F4F4');
    x.fillStyle='#1B2A34'; x.rr(72,24,56,10,3); x.rr(82,2,36,26,3);
    x.dot(88,52,4,'#1B2A34'); x.dot(112,52,4,'#1B2A34'); x.poly([[104,60],[132,66],[104,70]],'#FE8A18');
@@ -6447,13 +6482,13 @@ const SAMPLES=[
    x.fillStyle='#C91A09'; x.rr(66,78,68,14,6); x.rr(112,84,16,44,6);
    x.fillStyle='#5E3A20'; x.rr(36,96,30,8,3); x.rr(134,96,30,8,3);
    return [['front',c]]; }},
- {name:'Christmas tree',theme:'Fantasy',weekly:'2026-12-07',beat:'The village needs a tree. Hang the star last.',ws:{shape:'puffed',size:11},make(){ const [c,x]=sheet(200,260,'#ffffff');
+ {name:'Christmas tree',theme:'Fantasy',weekly:'2026-12-21',beat:'The village needs a tree. Hang the star last.',ws:{shape:'puffed',size:11},make(){ const [c,x]=sheet(200,260,'#ffffff');
    x.fillStyle='#5E3A20'; x.rr(84,216,32,40,4);
    x.poly([[100,66],[170,150],[30,150]],'#2E8B3A'); x.poly([[100,110],[184,200],[16,200]],'#2E8B3A'); x.poly([[100,150],[196,236],[4,236]],'#2E8B3A');
    x.poly([[100,22],[110,52],[140,56],[116,74],[122,106],[100,90],[78,106],[84,74],[60,56],[90,52]],'#F2CD37');
    [[70,138,'#C91A09'],[128,140,'#0055BF'],[100,176,'#F2CD37'],[52,190,'#0055BF'],[150,192,'#C91A09'],[88,222,'#C91A09'],[120,226,'#0055BF']].forEach(([a,b,f])=>x.dot(a,b,11,f));
    return [['front',c]]; }},
- {name:'Gingerbread house',theme:'Food',weekly:'2026-12-14',beat:'Pippa is baking for the whole island. Build the house before it’s eaten!',ws:{shape:'flat',size:11},make(){ const [c,x]=sheet(240,220,'#ffffff');
+ {name:'Gingerbread house',theme:'Food',weekly:'2027-01-18',beat:'Pippa is baking for the whole island. Build the house before it’s eaten!',ws:{shape:'flat',size:11},make(){ const [c,x]=sheet(240,220,'#ffffff');
    x.poly([[120,18],[228,98],[12,98]],'#8B5A2B'); x.fillStyle='#8B5A2B'; x.fillRect(32,98,176,112);
    x.fillStyle='#F4F4F4'; x.rr(20,90,200,14,7); x.poly([[120,18],[228,98],[220,104],[120,30],[20,104],[12,98]],'#F4F4F4');
    [[44,118],[76,118],[108,118],[140,118],[172,118],[196,118]].forEach(([a,b])=>x.dot(a,b,8,'#F4F4F4'));
@@ -8668,12 +8703,14 @@ const WEEKLY_PLAN={
   '2026-11-09':'Big Ben',   // Steff, 8 Nov 2026 (the Striped lighthouse moved to 21 Dec)
   '2026-11-16':'Bloppit and the red brick',
   '2026-11-23':'Thanksgiving turkey',
-  '2026-11-30':'Snowman',
-  '2026-12-07':'Christmas tree',
-  '2026-12-14':'Gingerbread house',
-  '2026-12-21':'Striped lighthouse',
+  '2026-11-30':'Moon rocket',     // Steff, 17 Nov 2026: 30 Nov felt too early for Christmas, so two space weeks come first
+  '2026-12-07':'Ringed planet',
+  '2026-12-14':'Snowman',
+  '2026-12-21':'Christmas tree',
   '2026-12-28':'Curled-up pup',
   '2027-01-04':'Hot-air balloon',
+  '2027-01-11':'Striped lighthouse',
+  '2027-01-18':'Gingerbread house',
 };
 // The app gets each Weekly from bloppit.com (Steff, 8 Nov 2026), so a new Weekly needs no app update. Data only, never
 // code: the model's picture(s) as PNG and its settings, published to public/weekly/ by tests/weekly-export.mjs. Only live
