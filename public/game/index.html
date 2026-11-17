@@ -4545,7 +4545,7 @@ function startLevelFilm(tr,i){ islandSetOff(TRAIL_ISLE[tr],()=>startLevel(i)); }
 // level, like Play next); one already found opens its trail's level map
 function trailGo(tr){ const isle=TRAIL_ISLE[tr]; if(mp||isleCount(isle)>0){ homeGo(tr); return; }
   const B=bestOf(gameStore(),tr), i=Math.min(levelsOf(tr).length-1,Object.keys(B).length); setTrail(tr); startLevelFilm(tr,i); }
-const filmsOpen=o=>FILMS.filter(f=>{ try{ return f.open(o); }catch(e){ return false; } });
+const filmsOpen=o=>preSail(o)?[]:FILMS.filter(f=>{ try{ return f.open(o); }catch(e){ return false; } });   // none before the player has sailed
 function renderFilmsTile(){ const n=filmsOpen(worldStore()).length, el=$('#hmFilms'); if(!el) return; el.hidden=!n; if(n){ $('#hmFilmsS').textContent=n===1?'1 film to watch again':`${n} films to watch again`; const c=$('#hmFilmsN'); if(c) c.textContent=n; } }
 let filmCur=null;
 function filmShow(f,play){ const v=$('#filmVid'); filmCur=f.id; filmSay($('#filmBox'),f,-1); v.setAttribute('poster',vidUrl(f.file,'jpg')); v.src=vidUrl(f.file,'mp4');
@@ -7863,7 +7863,7 @@ function updateMpBar(){
   if(bz){ $('#hintBtn').textContent=s.calm?'Hint':mp.hintSteps.includes(cur)?'Hint':'Hint (+2s)'; $('#hintBtn').disabled=done||(!mpMyTurn()&&!hintOn); }
   $('#mpBar').classList.toggle('calm',!!s.calm);
   $('#mpBar').classList.toggle('blitz',bz);
-  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?(cpu&&cpu.ladder!=null?(cpu.ladder>=LADDER_N?`Blitz Bay · Race ${BLITZ_RACES} of ${BLITZ_RACES}: the Grand Prix`:`Blitz Bay · Race ${cpu.ladder+1} of ${BLITZ_RACES} · ${CPU_LEVELS[s.cpuLevel].speed}`):`Blitz with Swoop · ${CPU_LEVELS[s.cpuLevel].speed}`):'Room'; $('#mpRoomBtn').textContent=mp.cpu&&s.finished?(finishNew()?'Back to the menu':'🏝️ Back to Bloppitopia'):mp.cpu?($('#mpRoomBtn').dataset.confirm?'Tap again to leave':s.solo?'Leave':'Leave race'):'Room'; $('#mpRoomBtn').classList.toggle('primary',!!(mp.cpu&&s.finished)); $('#mpRoomBtn').classList.toggle('ghost',!(mp.cpu&&s.finished)); $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
+  { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&!s.solo); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else cb.textContent=s.solo?'⏱':s.code; } $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?(cpu&&cpu.ladder!=null?(cpu.ladder>=LADDER_N?`Blitz Bay · Race ${BLITZ_RACES} of ${BLITZ_RACES}: the Grand Prix`:`Blitz Bay · Race ${cpu.ladder+1} of ${BLITZ_RACES} · ${CPU_LEVELS[s.cpuLevel].speed}`):`Blitz with Swoop · ${CPU_LEVELS[s.cpuLevel].speed}`):'Room'; $('#mpRoomBtn').textContent=mp.cpu&&s.finished?(finishNew()?'Done':'🏝️ Back to Bloppitopia'):mp.cpu?($('#mpRoomBtn').dataset.confirm?'Tap again to leave':s.solo?'Leave':'Leave race'):'Room'; $('#mpRoomBtn').classList.toggle('primary',!!(mp.cpu&&s.finished)); $('#mpRoomBtn').classList.toggle('ghost',!(mp.cpu&&s.finished)); $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
   const cp=s.players[s.turn], mine=s.turn===mp.me, left=mpLeft(s), el=$('#mpTurn');
   el.classList.toggle('mine',mine&&!s.finished&&s.started);
   if(bz&&s.solo&&s.calm) el.innerHTML=s.finished?'Finished!<small>Let’s see how clean it was</small>':`Build it clean<small>${(s.players[0].n||0)} of ${s.quota} placed</small>`;
@@ -8509,11 +8509,18 @@ async function chShare(code,kind){
   const url=chShareUrl(code), text=kind==='relay'?`I built half. Can you finish it? Bloppit Pass the Puzzle code ${code}`:`Can you beat my Bloppit time? Challenge code ${code}`;
   try{ if(navigator.share) await navigator.share({title:'Blitz challenge',text,url}); else { await navigator.clipboard.writeText(`${text} ${url}`); $('#trShare').textContent='Copied!'; setTimeout(()=>$('#trShare').textContent='Share the code',2000); } }catch(e){}
 }
+// Not sailed yet: a player who has never arrived in Bloppitopia, on a device that shows the 3D island (the drawn island
+// has no arrival, so there the old rules stay). Until they sail, the menu offers "Start here" in Bloppitopia's place, My
+// films is empty, and the otter card waits for the trip. After the arrival film, what they have earned so far (the hut,
+// Brickyard Cove after a first Weekly) rises piece by piece with its film, as it does for everyone else.
+function preSail(o){ try{ o=o||worldStore(); return !o.arrived&&!!isl3Init(); }catch(e){ return false; } }
 // A new player (no otter yet, never sailed to Bloppitopia) who starts with the Weekly, a Trail level or a race: the finish
 // card's main button goes back to the menu, not to an island they have never seen. The otter is met there, once, and
 // the arrival film waits until they tap "Start here" or Bloppitopia (Steff, 16 Nov 2026). Everyone else: the island.
-function finishNew(){ try{ const o=worldStore(); return !o.arrived&&!pupName(o); }catch(e){ return false; } }
-function finishMainText(b,label){ b.textContent=finishNew()?'Back to the menu':label; if(finishNew()) b.title=''; }
+// (17 Nov 2026, after Steff played it:) the button says "Done"; the otter is not met on the menu but where the story
+// starts, on the way to Bloppitopia; and until the player has sailed, nothing there counts as found (see preSail).
+function finishNew(){ try{ const o=worldStore(); return !o.arrived&&(preSail(o)||!pupName(o)); }catch(e){ return false; } }
+function finishMainText(b,label){ b.textContent=finishNew()?'Done':label; if(finishNew()) b.title=''; }
 function finishMainGo(){ const nw=finishNew(); track(nw?'finish_next:menu':'finish_next:island'); setTab(nw?'home':'island'); }
 let trialDone=null;
 function trialDialog(o){
@@ -8524,6 +8531,7 @@ function trialDialog(o){
   const nx=o.next?nextBuild():null; $('#trIsland').hidden=!o.next; $('#trNext').hidden=!nx;
   if(o.next) finishMainText($('#trIsland'),o.isle&&ISLES[o.isle]?`🏝️ See ${ISLES[o.isle].name} grow`:'🏝️ See Bloppitopia');
   if(nx) $('#trNext').textContent='▶ '+nx.t; $('#trDone').className=o.next?'ghost':'primary sm';
+  { const nw=!!o.next&&finishNew(); $('#trDone').hidden=nw; if(nw){ $('#trNext').hidden=false; $('#trNext').textContent='🏝️ Go to Bloppitopia'; } }   // a new player: Done (red, to the menu), Go to Bloppitopia, the card; no second Done
   const d=$('#trialDlg'); if(!d.open) d.showModal(); if(o.card) worldSound();
 }
 async function trialEnd(){
@@ -8583,7 +8591,7 @@ $('#trRetry').onclick=()=>{ if(trialDone&&trialDone.relayRetry) relayHalfDone();
 $('#trShare').onclick=()=>{ if(trialDone&&trialDone.code) chShare(trialDone.code,trialDone.relay?'relay':''); };
 const trLeave=()=>{ $('#trialDlg').close(); if(cpu&&cpu.trial) mpLeave(); };
 $('#trIsland').onclick=()=>{ trLeave(); finishMainGo(); };
-$('#trNext').onclick=()=>{ const n=nextBuild(); track('finish_next:play'); trLeave(); if(n) n.go(); else homeGo('quick'); };
+$('#trNext').onclick=()=>{ if(finishNew()){ track('finish_next:island'); trLeave(); setTab('island'); return; } const n=nextBuild(); track('finish_next:play'); trLeave(); if(n) n.go(); else homeGo('quick'); };
 $('#trDone').onclick=()=>{ if(trialDone&&trialDone.quick){ $('#trialDlg').close(); return; } $('#trialDlg').close(); const weekly=cpu&&cpu.trial&&cpu.trial.kind==='weekly', rel=trialDone&&(trialDone.relay||trialDone.card===false); if(rel){ setTab('blitz'); renderChMine(true); return; } mpLeave(); setTab(weekly?'daily':'blitz'); };
 
 // Make a challenge: build the chosen puzzle against the clock, then get a code
@@ -9205,7 +9213,7 @@ function worldToast(){
 // After a Build anything's reveal: the stars, and on the first ever finish the pup
 function worldAfterQuick(){ pupMaybe(()=>{ const o=worldStore(), g=ISL3.ok&&typeof worldNextGoal==='function'?worldNextGoal(o):null;
   trialDialog({icon:'🧱',title:'You built it!',note:quickPlay?'⚡ Quick Play: this one isn’t added to Bloppitopia.':g?(/^Next /.test(g.text)?g.text+' on Moonstone Isle.':'Next on Bloppitopia: '+g.text+'.'):'',next:true,quick:true}); }); }
-function pupMaybe(then){ const o=worldStore(); if(pupName(o)||worldCount(o)!==1||o.pupAsked){ if(then) then(); return; } o.pupAsked=true; worldSet(o); pupOpen(then); }
+function pupMaybe(then){ const o=worldStore(); if(pupName(o)||worldCount(o)!==1||o.pupAsked||preSail(o)){ if(then) then(); return; } o.pupAsked=true; worldSet(o); pupOpen(then); }
 // Meet your pup: its brick colour, then a name. Typing one is the main way; the list and "later" are there too.
 // After the first time, Bloppitopia is introduced (unless something else is already waiting: then()).
 var pupDraft={ci:0};
@@ -9308,7 +9316,7 @@ $('#iiLook').onclick=()=>{ islandIntroDone('look'); try{ $('#isWorld').scrollInt
 function renderHomeWorld(){
   const el=$('#hmWorld'), o=worldStore(), n=worldCount(o);
   // From the moment the otter has arrived (before any build), the menu leads back to the island: it's the only way there
-  if(!n&&!o.arrived){ el.hidden=true; return; }
+  if((!n&&!o.arrived)||preSail(o)){ el.hidden=true; return; }   // not sailed yet: "Start here" has this place, and nothing here counts as found
   const ps=pupStage(o), is=islandStage(o), next=PUP_STAGES[ps+1], inext=ISLAND_STAGES[is+1], nm=pupName(o);
   const pct=pupPct(o,ps);
   const pic=isl3Init()?isl3Still(o,900,620):'', isle=pic?`<img src="${pic}" alt="">`:islandSVG(o,{uid:'hm'});
@@ -11986,8 +11994,10 @@ function isl3Show(box,o){ isl3Immersive(); isl3WakeCheck(); isl3CharsLoad(o);
   // Flipper Beach now grows with Pippa's Mirror Puzzles (from 24 Oct 2026), so pieces it had from Weekly Bloppits are gone
   // until they're built again: forget them as seen so each one is revealed again when it comes back
   if(seen){ const keep=seen.filter(i=>!/^(sunrise:\d+|isle:sunrise|done:sunrise|final:all)$/.test(i)||un.includes(i)); if(keep.length<seen.length){ seen=keep; seenSet(seen); } }
-  if(seen===null){ seenSet([...un,...ACC.filter(a=>accOwned(a,o)).map(a=>'acc:'+a.id)]); ISL3.pending_acc=[]; }
-  else { const nw=un.filter(i=>!seen.includes(i));
+  // A first visit that starts with the boat (a build or two before ever sailing): keep what was earned unseen, so it
+  // rises after the landing, each island with its film. A bigger world that never saw the arrival lands as it stands.
+  if(seen===null){ const late=ISL3.arrival==='boat'&&n<=3; seenSet([...(late?[]:un),...ACC.filter(a=>accOwned(a,o)).map(a=>'acc:'+a.id)]); ISL3.pending_acc=[]; }
+  else if(ISL3.arrival!=='boat'){ const nw=un.filter(i=>!seen.includes(i));
     if(nw.length){ seenSet([...seen,...nw]); const rank=i=>i.startsWith('home:')?0:i.startsWith('isle:')?1:2; nw.sort((a,b)=>rank(a)-rank(b));
       isl3Wake(true); clearTimeout(ISL3.revealT); ISL3.revealT=setTimeout(()=>isl3Reveal(nw,o),600); return; } }
   if(ISL3.arrival==='boat') isl3Sail(o);
@@ -13047,6 +13057,8 @@ function homeContinue(){
       p:bar(o.placedN,o.nBricks),go:()=>$('#resumeGo').click()}; }
   if(model&&placedN>0&&placedN<model.bricks.length) return {t:'Continue building',s:`${placedN} of ${model.bricks.length} bricks placed`,p:bar(placedN,model.bricks.length),go:()=>setTab('build')};
   if(welcomeDue()) return {t:'Start here: meet your otter',s:'A little boat is on its way to Home Island.',p:-1,first:true,go:()=>{ track('welcome_from_menu'); if(isl3Init()){ setTab('island'); return; } if(!welcomeStart()) homeGo('library'); }};
+  // Played something first (the Weekly, a Trail, a race) but never sailed: the same "Start here" as a fresh device
+  { const w=worldStore(); if(!game&&!mp&&!pendingSave&&preSail(w)) return {t:pupName(w)||w.pupAsked?'Start here: sail to Bloppitopia':'Start here: meet your otter',s:'A little boat is on its way to Home Island.',p:-1,first:true,go:()=>{ track('welcome_from_menu'); setTab('island'); }}; }
   return null;
 }
 var homeCont;  // var, no initializer: the menu can open (from the routing above) before this line runs, and must keep what it set

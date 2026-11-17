@@ -11,10 +11,11 @@ What 1.1.5 carries so far (live on bloppit.com from the day of each change):
   device (before, the island, the otter and its name, and the Weekly record stayed in the device's storage, unseen).
   As before, the saved progress on the server stays (Grown-ups → Delete saved progress removes it), so a linked player
   can come back with a link code.
-- A new player who starts with the Weekly, Build Anything, a Trail level or a race (16 Nov 2026): with no otter yet,
-  the finish card's red button reads "Back to the menu" and goes to the menu. The otter card comes up there once and
-  closing it stays on the menu (before, it went on to the island and the 30-second arrival film, and "Pick later" was
-  asked a second time). The film plays when they tap Bloppitopia. Players with an otter see no change.
+- A new player who starts with the Weekly, Build Anything, a Trail level or a race (16 and 17 Nov 2026): the finish
+  card's red button is "Done" and goes to the menu; the Weekly card then offers "Go to Bloppitopia" and the Weekly
+  card. Until the player has sailed, the menu shows "Start here" in Bloppitopia's place and nothing there counts as
+  found (before, Brickyard Cove and two films showed as unlocked). "Start here" or "Go to Bloppitopia": the otter card,
+  the arrival film, then the hut and Brickyard Cove rise, with Bibi's film. Players who have sailed see no change.
 
 To do when it is submitted: What's New, the build number (read it in TestFlight), a play-test list. Start the review
 notes from the ones in App Store Connect, not from `listing.md`.
@@ -26,7 +27,9 @@ Play-test for the change above:
 3. A linked player removed this way: Link a player with a new code from the other device brings them back.
 
 Play-test for the new-player finish:
-4. A fresh device (or after removing the last player): play Bibi's Weekly Bloppit first. The finish card's red button
-   says "Back to the menu"; it opens the menu with "Meet your otter!". Tap Pick later: the menu stays.
-5. Tap Bloppitopia on the menu: the arrival film starts without asking about the otter again; the hut is on Home Island.
-6. A player who already has an otter: after the Weekly the red button still says "See Brickyard Cove grow".
+4. A fresh device (or after removing the last player): play Bibi's Weekly Bloppit first. The finish card shows Done
+   (red), Go to Bloppitopia and Bibi's Weekly Bloppit card. Done opens the menu: "Start here: meet your otter" is
+   there, no otter card pops up, and there is no Bloppitopia tile or My films yet.
+5. Tap Start here (or Go to Bloppitopia on the card): the otter card, the arrival film, then on Home Island the hut
+   appears and Brickyard Cove rises from the mist with Bibi's film. The menu now has the Bloppitopia tile and My films.
+6. A player who has already sailed: after the Weekly the red button still says "See Brickyard Cove grow".
