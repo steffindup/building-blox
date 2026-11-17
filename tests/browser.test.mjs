@@ -575,10 +575,13 @@ test('share links: a Weekly, a library model, and /p/start', { skip: skip() }, a
   assert.equal(await t.view(), 'view-home'); assert.match(await t.text('#hmContT'), /Start here/); assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('a New player on a device that has been played on still gets Start here; the original player does not', { skip: skip() }, async () => {
+// From 17 Nov 2026 (Steff: a player sails first) anyone who has never sailed gets "Start here" in Bloppitopia's place, so the
+// device's original player gets it too; before, the device's old counters hid it and the menu had no way to the island.
+test('a New player on a device that has been played on still gets Start here, and so does the original player who never sailed', { skip: skip() }, async () => {
   const seeded = { fn: () => localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 })) };
   const t = await open('?nosplash=1', { init: seeded });
-  assert.equal(await t.view(), 'view-home'); assert.equal(await t.page.evaluate(() => document.getElementById('hmCont').hidden), true);
+  assert.equal(await t.view(), 'view-home'); assert.equal(await t.page.evaluate(() => document.getElementById('hmCont').hidden), false); assert.match(await t.text('#hmContT'), /Start here: meet your otter/);
+  assert.equal(await t.page.evaluate(() => document.getElementById('welcomeDlg').open), false, 'no welcome card pops up for a device that has been played on');
   await t.page.evaluate(() => { document.getElementById('whoBtn').click(); document.getElementById('whoAdd').click(); });
   await t.page.evaluate(() => { document.getElementById('whoNm').value = 'Sam'; document.getElementById('whoForm').requestSubmit(); });
   await t.page.waitForLoadState('load'); await t.page.waitForTimeout(2500);
