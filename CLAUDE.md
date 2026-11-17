@@ -64,7 +64,8 @@ the **Weekly** (see below) is fetched from the site by app 1.1.1 and later (not 
 - `design/characters/`: character reference art.
 - `public/press/`: the press page (bloppit.com/press, made 12 Nov 2026): fact sheet, press images (`images/`, with
   `thumbs/` and `bloppit-press-images.zip`, which must be rebuilt when an image changes) and the launch video. Update
-  its "Current version" line with each App Store release. No lufu and no Moonstone Isle beyond the mist (Steff's launch
+  its "Current version" line with each App Store release. It also carries a press release (added 17 Nov 2026) with
+  Steff's approved quote; change its wording only with him. No lufu and no Moonstone Isle beyond the mist (Steff's launch
   rule). `marketing/launch-video/`: the locked 25-second launch videos and how they were made (its README).
   `marketing/carousel-2026-11-13/`: the six final Instagram carousel images for 13 Nov.
   `marketing/weekly-video-2026-11-16/`: the Weekly video (version 2, upright and wide) posted on 16 Nov;
