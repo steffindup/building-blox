@@ -84,7 +84,8 @@ header nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;padding-b
 main{padding-bottom:80px}
 .wrap .page-head+.actions{margin-top:8px}
 .stack{display:grid;gap:20px}
-.stack .card p,.stack .card ul,.stack .card ol{max-width:76ch}   /* cards line up with the header, the dark box and the footer; the text inside keeps a reading width (9 Nov 2026) */
+.stack .card p,.stack .card ul,.stack .card ol{max-width:76ch}
+.stack .card .note{max-width:calc(76ch * 1.0625)}   /* a note's text is 16px, the paragraphs' 17px: without this the note box ended 45px short of them (17 Nov 2026) */   /* cards line up with the header, the dark box and the footer; the text inside keeps a reading width (9 Nov 2026) */
 
 /* Cards */
 .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:30px;display:flow-root}
