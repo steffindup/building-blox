@@ -134,7 +134,8 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   per feather. The clock dial is a square block that looks round only because the tower around it is the same colour
   (Steff, 10 Nov: special pieces should be unique shapes). A new kind needs an entry there, artwork in `printCanvas`
   (also its parts-box icon) and a sound in `specialIn`.
-- **Two more kinds (17 Nov 2026, built for Steff's review, not live until he approves the strips):** `flame` (3×3, the
+- **Two more kinds (17 Nov 2026; Steff approved both Weeklies and they went live on the website the same day; they
+  reach the app with 1.1.5, and an older app builds the same pictures from ordinary bricks):** `flame` (3×3, the
   Moon rocket's printed teardrop, stands on the launch pad between the fins; a rumble) and `ring` (13×1, the Ringed
   planet's lens-shaped ring, as wide as the model: `wide` lets it span the full width and `ledge:false` adds no bricks
   under its overhanging ends; a ping and a chime). Both use `clear` so the drawn piece comes away and the spot is empty
