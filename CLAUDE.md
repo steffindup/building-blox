@@ -241,12 +241,17 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   the island option isn't available. Quick Play on a Solo tile plays that island's own puzzles in any order and keeps
   nothing; Pippa's too (her Flipper Beach puzzles, all open; the tide only applies on the island). The separate
   "any-time" mirror set (`FLIP_LEVELS`, trail `flip`) is no longer offered (Steff, 10 Nov 2026: same rules as the others).
-- **A new player who starts somewhere other than "Start here"** (Steff, 16 Nov 2026, for 1.1.5): with no otter yet and
-  never sailed (`finishNew()`), the main button on every finish card (the Weekly, Build Anything, a Trail level, a race
-  against Swoop and its banner) reads "Back to the menu" and goes to the menu, not to an island they have never seen.
-  The otter card comes up there once and closing it stays on the menu. The arrival film waits until they tap
-  Bloppitopia, and an otter already met (named or "Pick later") sails without a second card. Their first build stands
-  as the hut, so "Build Our First Home" is not offered to them. Players with an otter keep the island as the main action.
+- **A new player who starts somewhere other than "Start here"** (Steff, 16 and 17 Nov 2026, for 1.1.5): the order is
+  always otter, arrival film, Home Island, then what was earned. Until a player has sailed (`preSail()`: never arrived,
+  on a device with the 3D island) nothing in Bloppitopia counts as found: the menu shows "Start here" in Bloppitopia's
+  place (no tile, no island count, no My films), and no otter card pops up on the menu. A finish card for such a player
+  (`finishNew()`) has "Done" as its main button, which goes to the menu; the Weekly and Build Anything card then offers
+  "Go to Bloppitopia" and the Weekly card, with no second Done. "Start here" or "Go to Bloppitopia" gives the otter card
+  of the trip, the arrival film, and after the landing the hut and any island earned (Brickyard Cove after a first
+  Weekly) rise one by one, each island with its film (`isl3Show` keeps them unseen for a first visit that starts with
+  the boat, up to 3 builds; a bigger world lands as it stands). Players who have sailed keep the island as the main
+  action. Tried and dropped on 17 Nov: "Back to the menu" as the label, and meeting the otter on the menu after Done
+  (Steff: the sequence was wrong, and Brickyard Cove and two films showed as unlocked before he had sailed).
 - **"How it works" guides (Steff, 15 Nov 2026)**: four pictures with a line each (`INTROS`, `introShow`). "How Blitz
   works" opens once per player before their first race against Swoop (then the race starts); "How mirror puzzles work"
   opens before Pippa's first brick of their first mirror puzzle. A player who has raced or mirrored before is not

@@ -614,25 +614,36 @@ test('the Weekly: a brick of the wrong colour says which colour the step needs, 
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('a new player who starts with the Weekly: the finish card goes back to the menu, the otter is met once there, and the film waits for Bloppitopia', { skip: skip() }, async () => {
+test('a new player who starts with the Weekly: Done goes to the menu with nothing found yet; Start here meets the otter, sails, and then the hut and Brickyard Cove rise', { skip: skip() }, async () => {
   const t = await open('?nosplash=1#daily');   // a fresh device: no otter, never sailed
   await t.page.evaluate(() => document.getElementById('dyGo').click());
   await t.page.waitForFunction(() => (s => /Go!/.test(s) && !/Wait for Go/.test(s))(document.getElementById('status').textContent), null, { timeout: 20000 });
   for (let i = 0; i < 200; i++) { const more = await t.page.evaluate(() => window.bloppitPlaceRight()); if (!more && await t.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; await t.page.waitForTimeout(150); }
   await t.page.waitForFunction(() => document.getElementById('trialDlg').open && !document.getElementById('trIsland').hidden, null, { timeout: 30000 });
-  assert.equal(await t.text('#trIsland'), 'Back to the menu');   // not an island they have never seen
+  // the card: Done (the main button), Go to Bloppitopia, the Weekly card; no second Done (Steff, 17 Nov 2026)
+  const vis = () => t.page.evaluate(() => [...document.querySelectorAll('#trialDlg .win-btns button')].filter((b) => !b.hidden).map((b) => b.textContent.trim()));
+  assert.deepEqual(await vis(), ['Done', 'Go to Bloppitopia', 'Bibi’s Weekly Bloppit card']);
   await t.page.evaluate(() => document.getElementById('trIsland').click());
-  await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 10000 });
-  assert.equal(await t.view(), 'view-home'); assert.match(await t.text('#pupLead'), /Your own little otter/);
-  await t.page.evaluate(() => document.getElementById('pupLater').click());   // "Pick later"
-  await t.page.waitForTimeout(2500);
-  // it stays on the menu: no second card, no film, and the Bloppitopia tile is there
-  assert.deepEqual(await t.page.evaluate(() => [[...document.querySelectorAll('section.view')].find((v) => !v.hidden).id, document.getElementById('pupDlg').open, !!document.querySelector('.is3-cine'), document.getElementById('hmWorld').hidden]), ['view-home', false, false, false]);
-  // Bloppitopia: the arrival starts straight away, without asking about the otter again
-  await t.page.evaluate(() => document.getElementById('hmWorld').click());
-  await t.page.waitForFunction(() => !!window.bloppitIsland3 && !!(window.bloppitIsland3().cine || window.bloppitIsland3().arrive), null, { timeout: 15000 });
-  assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), false);
-  assert.equal(await t.view(), 'view-island');
+  await t.page.waitForFunction(() => !document.getElementById('view-home').hidden, null, { timeout: 10000 }); await t.page.waitForTimeout(1500);
+  // the menu: no otter card pops up, "Start here" stands where Bloppitopia will be, and nothing counts as found
+  assert.deepEqual(await t.page.evaluate(() => [document.getElementById('pupDlg').open, document.getElementById('hmWorld').hidden, document.getElementById('hmCont').hidden, document.getElementById('hmContT').textContent]), [false, true, false, 'Start here: meet your otter']);
+  assert.equal(await t.page.evaluate(() => !!document.querySelector('#hmFilms:not([hidden])')), false, 'no films before sailing');
+  // Start here: the otter card of the trip, then the arrival, then what was earned rises (the hut, then Brickyard Cove)
+  await t.page.evaluate(() => document.getElementById('hmCont').click());
+  await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 15000 });
+  assert.match(await t.text('#pupLead'), /about to sail to Bloppitopia/);
+  await t.page.fill('#pupIn', 'Pebble'); await t.page.evaluate(() => document.getElementById('pupLater').click());
+  await t.page.waitForFunction(() => { try { return JSON.parse(localStorage.getItem('bloppit-world-v1')).arrived === 1; } catch (e) { return false; } }, null, { timeout: 60000 });
+  const seen = []; await t.page.exposeFunction('__saw', (x) => { if (x && seen[seen.length - 1] !== x) seen.push(x); });
+  await t.page.evaluate(() => { const look = () => { const b = document.querySelector('#isWorld .is3-banner'); window.__saw(b ? b.textContent.trim() : ''); }; look(); new MutationObserver(look).observe(document.getElementById('isWorld'), { subtree: true, childList: true, characterData: true }); });
+  await t.page.waitForFunction(() => /Brickyard Cove rose from the mist/.test(document.querySelector('#isWorld .is3-banner')?.textContent || ''), null, { timeout: 40000 });
+  assert.ok(seen.some((x) => /You built your home/.test(x)), 'the hut is shown first: ' + seen.join(' | '));
+  assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), false, 'the otter is asked about once');
+  // back on the menu: Bloppitopia has its tile now, with the films
+  await t.page.waitForFunction(() => !window.bloppitIsland3().revealing, null, { timeout: 30000 });
+  await t.page.evaluate(() => document.getElementById('brandLink').click());
+  await t.page.waitForFunction(() => !document.getElementById('hmWorld').hidden && !!document.querySelector('#hmFilms:not([hidden])'), null, { timeout: 10000 });
+  assert.match(await t.text('#hmWorld .hw-tag'), /1 of 6 islands/);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
