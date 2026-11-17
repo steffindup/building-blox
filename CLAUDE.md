@@ -241,6 +241,12 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   the island option isn't available. Quick Play on a Solo tile plays that island's own puzzles in any order and keeps
   nothing; Pippa's too (her Flipper Beach puzzles, all open; the tide only applies on the island). The separate
   "any-time" mirror set (`FLIP_LEVELS`, trail `flip`) is no longer offered (Steff, 10 Nov 2026: same rules as the others).
+- **A new player who starts somewhere other than "Start here"** (Steff, 16 Nov 2026, for 1.1.5): with no otter yet and
+  never sailed (`finishNew()`), the main button on every finish card (the Weekly, Build Anything, a Trail level, a race
+  against Swoop and its banner) reads "Back to the menu" and goes to the menu, not to an island they have never seen.
+  The otter card comes up there once and closing it stays on the menu. The arrival film waits until they tap
+  Bloppitopia, and an otter already met (named or "Pick later") sails without a second card. Their first build stands
+  as the hut, so "Build Our First Home" is not offered to them. Players with an otter keep the island as the main action.
 - **"How it works" guides (Steff, 15 Nov 2026)**: four pictures with a line each (`INTROS`, `introShow`). "How Blitz
   works" opens once per player before their first race against Swoop (then the race starts); "How mirror puzzles work"
   opens before Pippa's first brick of their first mirror puzzle. A player who has raced or mirrored before is not
