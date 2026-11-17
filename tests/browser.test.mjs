@@ -282,9 +282,9 @@ test('Rotate turns the brick in hand, and the Weekly special piece turns too and
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('the Weekly: the Moon rocket ends on its flame and the Ringed planet on its ring, each 24 to 48 bricks', { skip: skip() }, async () => {
+test('the Weekly: the Moon rocket ends on its flame, the Ringed planet on its ring, the snowman on his hat and the tree on its star, each 24 to 48 bricks', { skip: skip() }, async () => {
   const seed = { fn: () => { localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); } };
-  for (const [week, kind, sx] of [['2026-11-30', 'flame', 3], ['2026-12-07', 'ring', 13]]) {
+  for (const [week, kind, sx] of [['2026-11-30', 'flame', 3], ['2026-12-07', 'ring', 13], ['2026-12-14', 'hat', 7], ['2026-12-21', 'star', 3]]) {
     const t = await open('?nosplash=1&welcome=0&weekly=' + week, { init: seed });
     await t.page.waitForFunction(() => document.getElementById('pvBar') && !document.getElementById('pvBar').hidden, null, { timeout: 30000 });
     await t.page.waitForTimeout(3000);   // the 3-2-1 countdown
@@ -811,7 +811,7 @@ test('Brain Trail math: age 9 in October is 4th grade, later levels stay in 4th 
 });
 
 test('the Weekly bank: each planned Monday shows its model', { skip: skip() }, async () => {
-  for (const [when, name] of [['2026-10-26T13:00:00Z', 'Jack-o’-lantern'], ['2026-11-02T14:00:00Z', 'Red boat'], ['2026-11-16T14:00:00Z', 'Bloppit and the red brick'], ['2026-11-23T14:00:00Z', 'Thanksgiving turkey'], ['2026-11-30T14:00:00Z', 'Moon rocket'], ['2026-12-07T14:00:00Z', 'Ringed planet'], ['2026-12-14T14:00:00Z', 'Snowman'], ['2026-12-21T14:00:00Z', 'Christmas tree']]) {
+  for (const [when, name] of [['2026-10-26T13:00:00Z', 'Jack-o’-lantern'], ['2026-11-02T14:00:00Z', 'Red boat'], ['2026-11-16T14:00:00Z', 'Bloppit and the red brick'], ['2026-11-23T14:00:00Z', 'Thanksgiving turkey'], ['2026-11-30T14:00:00Z', 'Moon rocket'], ['2026-12-07T14:00:00Z', 'Ringed planet'], ['2026-12-14T14:00:00Z', 'Snowman and his hat'], ['2026-12-21T14:00:00Z', 'Christmas tree and its star']]) {
     const t = await open('?nosplash=1&welcome=0', { at: when });
     assert.match(await t.text('#hmDailyT'), new RegExp(name)); assert.deepEqual(t.errors, []); await t.ctx.close();
   }

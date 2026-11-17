@@ -3444,6 +3444,11 @@ function shapeGeo(kind,sx,sz,h){
     const m=sx/2, top=H-rx; sh.moveTo(m,.02); sh.quadraticCurveTo(m-rx*.55,H*.22,m-rx,top);
     for(let i=0;i<=24;i++){ const a=Math.PI*(1-i/24); sh.lineTo(m+Math.cos(a)*rx,top+Math.sin(a)*rx); }
     sh.quadraticCurveTo(m+rx*.55,H*.22,m,.02);
+  } else if(kind==='hat'){   // a brim the full width, one layer tall, and a crown a stud narrower each side
+    const b=1.2-.02; sh.moveTo(.02,0); sh.lineTo(sx-.02,0); sh.lineTo(sx-.02,b); sh.lineTo(sx-1,b); sh.lineTo(sx-1,H); sh.lineTo(1,H); sh.lineTo(1,b); sh.lineTo(.02,b); sh.lineTo(.02,0);
+  } else if(kind==='star'){   // five points, standing on its two lower ones
+    const Ro=Math.min(rx,H/1.81), Ri=Ro*.42, cy=Ro*.809+.01;
+    for(let i=0;i<10;i++){ const a=Math.PI/2+i*Math.PI/5, r=i%2?Ri:Ro, x=sx/2+Math.cos(a)*r, y=cy+Math.sin(a)*r; i?sh.lineTo(x,y):sh.moveTo(x,y); } sh.closePath();
   } else if(kind==='ring'){   // a long flat lens
     for(let i=0;i<=48;i++){ const a=2*Math.PI*i/48, x=sx/2+Math.cos(a)*rx, y=H/2+Math.sin(a)*H/2; i?sh.lineTo(x,y):sh.moveTo(x,y); }
   } else {
@@ -3485,6 +3490,15 @@ function printCanvas(kind){
     const drop=(w,top,bot,f)=>{ g.fillStyle=f; g.beginPath(); g.moveTo(R,bot); g.quadraticCurveTo(R-w*.55,bot-(bot-top)*.25,R-w,top+w);
       g.arc(R,top+w,w,Math.PI,0); g.quadraticCurveTo(R+w*.55,bot-(bot-top)*.25,R,bot); g.fill(); };
     drop(half*.98,4,508,'#FE8A18'); drop(half*.6,70,400,'#F2CD37'); drop(half*.26,130,300,'#FFF8D6');
+  }
+  if(kind==='hat'){   // the top hat: black, with a red band round the crown (also its icon)
+    const K=SPECIAL_KINDS.hat, u=512/K.cols, row=1.2*u, bot=256+K.rows*row/2;
+    g.fillStyle='#1B2A34'; g.fillRect(2,bot-row,508,row); g.fillRect(u,bot-3*row,5*u,2*row+1);
+    g.fillStyle='#C91A09'; g.fillRect(u,bot-row-row*.62,5*u,row*.5);
+  }
+  if(kind==='star'){   // the tree's star, for its icon in the parts box and the booklet (the piece itself is plain yellow)
+    g.fillStyle='#F2CD37'; g.beginPath(); for(let i=0;i<10;i++){ const a=-Math.PI/2+i*Math.PI/5, r=i%2?104:246; g.lineTo(R+Math.cos(a)*r,R+16+Math.sin(a)*r); } g.closePath(); g.fill();
+    g.fillStyle='#FFF03A'; g.beginPath(); for(let i=0;i<10;i++){ const a=-Math.PI/2+i*Math.PI/5, r=i%2?50:120; g.lineTo(R+Math.cos(a)*r,R+16+Math.sin(a)*r); } g.closePath(); g.fill();
   }
   if(kind==='ring'){   // the planet's ring, for its icon in the parts box and the booklet (the piece itself is plain lavender)
     g.fillStyle='#AC78BA'; g.beginPath(); g.ellipse(R,R,250,46,0,0,7); g.fill(); g.fillStyle='#C9A3D4'; g.beginPath(); g.ellipse(R,R-10,236,20,0,0,7); g.fill();
@@ -3533,6 +3547,10 @@ const SPECIAL_KINDS={
   // 17 Nov 2026 (Steff): the Moon rocket's flame, a teardrop between the fins that stands on the launch pad, and the
   // Ringed planet's ring, one long lens-shaped piece as wide as the whole model (so no ledge is added under its ends)
   flame:{name:'Rocket flame',cols:3,rows:3,print:true,shape:'flame',colour:[254,138,24],back:'keep',clear:[[254,138,24],[242,205,55]]},   // the drawn flame comes away, so the space between the fins is empty until the piece goes in
+  // 17 Nov 2026 (Steff): the snowman's top hat (a brim with a crown, printed with its red band) and the Christmas tree's
+  // star (its own five-pointed shape). Both sit on top of the model, wider than what is under them, so no ledge is added.
+  hat:{name:'Top hat',cols:7,rows:3,print:true,shape:'hat',colour:[27,42,52],back:'keep',ledge:false,clear:[[27,42,52],[201,26,9]]},
+  star:{name:'Tree star',cols:3,rows:3,shape:'star',colour:[242,205,55],back:'keep',ledge:false,clear:[[242,205,55]]},
   ring:{name:'Planet ring',cols:13,rows:1,shape:'ring',colour:[172,120,186],back:'keep',wide:true,ledge:false,clear:[[172,120,186]]},   // the drawn ring ends come away; the planet's own band stays behind the ring
 };
 const SPECIAL_NAME=Object.fromEntries(Object.entries(SPECIAL_KINDS).map(([k,v])=>[k,v.name])), SP_W=96;
@@ -3580,6 +3598,7 @@ function addSpecial(m){
 }
 // The finishing touch going in: the bong, and the hands spin round to the time it is now
 function specialIn(t){ if(t.sp==='dial'){ sfx.bong&&sfx.bong(); dialSweep(); } else if(t.sp==='brick'){ sfx.star&&sfx.star(3); } else if(t.sp==='fan'){ sfx.fanfare&&sfx.fanfare(); }
+  else if(t.sp==='hat'){ sfx.chime&&sfx.chime(); setTimeout(()=>sfx.star&&sfx.star(2),220); } else if(t.sp==='star'){ sfx.star&&sfx.star(3); setTimeout(()=>sfx.star&&sfx.star(3),300); }
   else if(t.sp==='flame'){ sfx.rumble&&sfx.rumble(); } else if(t.sp==='ring'){ sfx.star&&sfx.star(3); setTimeout(()=>sfx.chime&&sfx.chime(),260); } }
 function printMat(kind){
   if(printMats.has(kind)) return printMats.get(kind);
@@ -6452,6 +6471,16 @@ const SAMPLES=[
    // piece across the whole planet. An app without the kind builds the ring from ordinary lavender bricks.
    return studSheet(['....MMMMM....','...CCCCCCC...','..OOOOOOOOO..','..YYYYYYYYY..','PPLLLLLLLLLPP','..AAAAAAAAA..','..OOOODDOOO..','...CCCCCCC...','....MMMMM....','......K......','....KKKKK....'],
      {M:'#923978',C:'#FF698F',O:'#FE8A18',Y:'#F2CD37',P:'#AC78BA',L:'#F8BB3D',A:'#36AEBF',D:'#A95500',K:'#6C6E68'},'#0B1026'); }},
+ {name:'Snowman and his hat',theme:'Fantasy',weekly:'2026-12-14',beat:'First frost on Bloppitopia. Pippa feels right at home. Build her a snowman, and top him off with his hat!',ws:{size:15,shape:'flat',maxColors:6},special:{kind:'hat',cx:55,cy:18,r:35},make(){
+   // Drawn stud by stud (Steff, 17 Nov 2026): the old Snowman built as a white block with no hat or face. The top hat
+   // is the special piece, last. An app without the kind builds the hat from ordinary black and red bricks.
+   return studSheet(['...KKKKK...','...KRRRK...','..KKKKKKK..','...WWWWW...','..WKWWWKW..','..WWWOOWW..','...WWWWW...','.BRRRRRRRB.','..WWWRWWW..','.WWWWKWWWW.','WWWWWWWWWWW','WWWWWKWWWWW','WWWWWWWWWWW','.WWWWWWWWW.','..WWWWWWW..'],
+     {K:'#1B2A34',R:'#C91A09',W:'#F4F4F4',O:'#FE8A18',B:'#582A12'},'#BFE3F5'); }},
+ {name:'Christmas tree and its star',theme:'Fantasy',weekly:'2026-12-21',beat:'The village needs a tree. Hang the star last.',ws:{size:15,shape:'flat',maxColors:6},special:{kind:'star',cx:65,cy:18,r:15},make(){
+   // Drawn stud by stud (Steff, 17 Nov 2026): the old Christmas tree built as a green block. The star is the special
+   // piece, last, in its own five-pointed shape. An app without the kind builds a small yellow star from ordinary bricks.
+   return studSheet(['......Y......','.....YYY.....','......Y......','.....GGG.....','....GRGGG....','...GGGGUGG...','....GGGGG....','...GGYGGGG...','..GGGGGGRGG..','...GGGGGGG...','..GUGGGGGGG..','.GGGGGRGGGYG.','GGGGGGGGGGGGG','.....TTT.....','.....TTT.....'],
+     {Y:'#F2CD37',G:'#237841',R:'#C91A09',U:'#0055BF',T:'#582A12'},'#0B1026'); }},
  {name:'Curled-up pup',theme:'Animals',weekly:'2026-12-28',beat:'A little otter fell asleep on the beach.',ws:{shape:'flat',size:8},make(){ const [c,x]=sheet(240,180,'#ffffff');
    x.oval(120,112,98,58,0,'#8B5A2B');
    x.oval(196,130,30,18,-.5,'#8B5A2B'); x.oval(206,140,16,10,-.5,'#D9B98B');
@@ -6474,7 +6503,7 @@ const SAMPLES=[
    x.fillStyle='#5E3A20'; x.fillRect(78,172,6,40); x.fillRect(116,172,6,40);
    x.fillStyle='#8B5A2B'; x.rr(66,208,68,44,8); x.fillStyle='#5E3A20'; x.fillRect(66,224,68,6);
    return [['front',c]]; }},
- {name:'Snowman',theme:'Fantasy',weekly:'2026-12-14',beat:'First frost on Bloppitopia. Pippa feels right at home. Build her a snowman!',ws:{shape:'puffed',size:10},make(){ const [c,x]=sheet(200,260,'#BFE3F5');
+ {name:'Snowman',theme:'Fantasy',hidden:true,   /* replaced as a Weekly by 'Snowman and his hat' (17 Nov 2026); kept for saved builds */ beat:'First frost on Bloppitopia. Pippa feels right at home. Build her a snowman!',ws:{shape:'puffed',size:10},make(){ const [c,x]=sheet(200,260,'#BFE3F5');
    x.dot(100,196,62,'#F4F4F4'); x.dot(100,118,46,'#F4F4F4'); x.dot(100,58,34,'#F4F4F4');
    x.fillStyle='#1B2A34'; x.rr(72,24,56,10,3); x.rr(82,2,36,26,3);
    x.dot(88,52,4,'#1B2A34'); x.dot(112,52,4,'#1B2A34'); x.poly([[104,60],[132,66],[104,70]],'#FE8A18');
@@ -6482,7 +6511,7 @@ const SAMPLES=[
    x.fillStyle='#C91A09'; x.rr(66,78,68,14,6); x.rr(112,84,16,44,6);
    x.fillStyle='#5E3A20'; x.rr(36,96,30,8,3); x.rr(134,96,30,8,3);
    return [['front',c]]; }},
- {name:'Christmas tree',theme:'Fantasy',weekly:'2026-12-21',beat:'The village needs a tree. Hang the star last.',ws:{shape:'puffed',size:11},make(){ const [c,x]=sheet(200,260,'#ffffff');
+ {name:'Christmas tree',theme:'Fantasy',hidden:true,   /* replaced as a Weekly by 'Christmas tree and its star' (17 Nov 2026); kept for saved builds */ beat:'The village needs a tree. Hang the star last.',ws:{shape:'puffed',size:11},make(){ const [c,x]=sheet(200,260,'#ffffff');
    x.fillStyle='#5E3A20'; x.rr(84,216,32,40,4);
    x.poly([[100,66],[170,150],[30,150]],'#2E8B3A'); x.poly([[100,110],[184,200],[16,200]],'#2E8B3A'); x.poly([[100,150],[196,236],[4,236]],'#2E8B3A');
    x.poly([[100,22],[110,52],[140,56],[116,74],[122,106],[100,90],[78,106],[84,74],[60,56],[90,52]],'#F2CD37');
@@ -8705,8 +8734,8 @@ const WEEKLY_PLAN={
   '2026-11-23':'Thanksgiving turkey',
   '2026-11-30':'Moon rocket',     // Steff, 17 Nov 2026: 30 Nov felt too early for Christmas, so two space weeks come first
   '2026-12-07':'Ringed planet',
-  '2026-12-14':'Snowman',
-  '2026-12-21':'Christmas tree',
+  '2026-12-14':'Snowman and his hat',
+  '2026-12-21':'Christmas tree and its star',
   '2026-12-28':'Curled-up pup',
   '2027-01-04':'Hot-air balloon',
   '2027-01-11':'Striped lighthouse',

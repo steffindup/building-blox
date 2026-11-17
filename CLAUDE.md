@@ -143,9 +143,11 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   background colour: white is the default and is never built, so a model with white bricks needs another one (the
   rocket's white body vanished on white; both use a night sky).
 - **Weekly order from 30 Nov (Steff, 17 Nov 2026: 30 Nov felt too early for Christmas):** Moon rocket (30 Nov), Ringed
-  planet (7 Dec), Snowman (14 Dec), Christmas tree (21 Dec), Curled-up pup, Hot-air balloon, Striped lighthouse (11
-  Jan), Gingerbread house (18 Jan). The Snowman and Christmas tree still build poorly (puffed, no hat or face; a green
-  block) and have no special piece: proposed redraws with a top hat and a star are waiting for his word.
+  planet (7 Dec), Snowman and his hat (14 Dec), Christmas tree and its star (21 Dec), Curled-up pup, Hot-air balloon,
+  Striped lighthouse (11 Jan), Gingerbread house (18 Jan). The two Christmas ones were redrawn stud by stud the same
+  day, with new kinds `hat` (7×3, a brim and crown printed with a red band) and `star` (3×3, five points), both
+  `ledge:false` because they sit on top of something narrower. They have new names because an app that has "Snowman"
+  or "Christmas tree" built in would use its own old model; the old two stay in `SAMPLES` as `hidden` for saved builds.
 - **Parallel Weeklies (Steff, 10 Nov):** one model per week carries the special piece. An app that doesn't know the kind
   (1.1.1) drops it and builds the same picture from ordinary bricks, so 1.1.1 players get a plain version automatically
   (checked in build 213's code). Draw the piece in the picture so the plain build still shows it. From 30 Nov every
