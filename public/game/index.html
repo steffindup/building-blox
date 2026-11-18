@@ -1126,7 +1126,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .pupdlg .pup-names{margin:0 0 8px}
 .pup-later{background:none;border:0;font:inherit;font-weight:700;font-size:14px;color:var(--muted);text-decoration:underline;cursor:pointer;padding:8px}
 .pupdlg .pup-later.primary{position:sticky;bottom:6px;z-index:2;box-shadow:0 6px 18px rgba(0,0,0,.28)}   /* Set sail! stays in view on a phone, however long the card is */
-.whobuild .field{margin-top:14px;text-align:left}.pup-age{margin:10px 0 4px}.pup-age>span{display:block;font-weight:700;font-size:14px;margin-bottom:6px}.pup-age div{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}.pup-age button{font:inherit;font-weight:700;font-size:15px;min-width:42px;padding:6px 10px;border-radius:12px;border:2px solid var(--line,#cfd8e3);background:var(--card,#fff);color:var(--ink);cursor:pointer}.pup-age button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--accent-ink,#fff)}
+.whobuild .field{margin-top:14px;text-align:left}.whobuild .note+.note{margin-top:14px}.pup-age{margin:10px 0 4px}.pup-age>span{display:block;font-weight:700;font-size:14px;margin-bottom:6px}.pup-age div{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}.pup-age button{font:inherit;font-weight:700;font-size:15px;min-width:42px;padding:6px 10px;border-radius:12px;border:2px solid var(--line,#cfd8e3);background:var(--card,#fff);color:var(--ink);cursor:pointer}.pup-age button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--accent-ink,#fff)}
 .is-intro{display:grid;gap:10px;border:3px solid var(--c-bloppit)}
 .is-intro .ii-head{display:flex;gap:12px;align-items:center}
 .is-intro{position:relative}.is-intro .ii-x{position:absolute;right:10px;top:10px;width:34px;height:34px;border-radius:50%;border:2px solid var(--line);background:var(--page);color:var(--ink);font:inherit;font-weight:800;font-size:15px;cursor:pointer;line-height:1}
@@ -9337,7 +9337,7 @@ const WHO_OFF=new URLSearchParams(location.search).get('who')==='0';   // ?who=0
 function whoBuildDue(){ const p=curPlayer(); return !WHO_OFF&&!p.whoAsked&&!(p.age&&!defaultPlayerName(p.name)); }
 function whoBuildAsk(then){ let d=$('#whoBuildDlg'); if(!d){ d=document.createElement('dialog'); d.className='windlg agedlg whobuild'; d.id='whoBuildDlg'; d.setAttribute('aria-labelledby','wbT');
     d.innerHTML=`<img src="/art/bloppit-avatar.png" alt="" width="72" height="72" style="border-radius:50%"><h2 id="wbT">Who’s building?</h2>
-      <p class="note">It’s almost time to meet your otter! Before you do, tell us about yourself. It stays on this device, and it helps Bloppit know who’s who and lets Nora pick the right maths puzzles for you.</p>
+      <p class="note">It’s almost time to meet your otter!</p><p class="note">Before you do, tell us about yourself. It stays on this device, and it helps Bloppit know who’s who and lets Nora pick the right maths puzzles for you.</p>
       <div class="field"><label for="wbName">Your name</label><input class="inp" id="wbName" maxlength="16" autocomplete="off" placeholder="Your name"></div>
       <div class="pup-age"><span>How old are you?</span><div role="group" aria-label="Your age" id="wbAge"></div></div>
       <div class="win-btns"><button class="ghost" id="wbSkip" type="button">Skip</button><button class="primary sm" id="wbNext" type="button">Next</button></div>`;
