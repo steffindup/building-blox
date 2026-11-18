@@ -1,7 +1,7 @@
 # Friday character spotlights (drafts for Steff's approval): Meet Tiny (4 Dec) and Meet Swoop (11 Dec)
 
 Steff, 18 Nov 2026: Mondays are the Weekly; Fridays spotlight a game, date, island or character ("Meet Pippa!" style).
-About 15 seconds, the launch video's music, upright and wide:
+About 15 seconds, upright and wide, with their own music (`../music/`, approved 18 Nov):
 
 1. A few seconds of that island's arrival film (Frog Forest 12.0-16.6 s; Blitz Bay 16.0-20.6 s) with "Meet Tiny!" /
    "Meet Swoop!" and a line naming the character and island.
