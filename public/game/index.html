@@ -9337,7 +9337,7 @@ const WHO_OFF=new URLSearchParams(location.search).get('who')==='0';   // ?who=0
 function whoBuildDue(){ const p=curPlayer(); return !WHO_OFF&&!p.whoAsked&&!(p.age&&!defaultPlayerName(p.name)); }
 function whoBuildAsk(then){ let d=$('#whoBuildDlg'); if(!d){ d=document.createElement('dialog'); d.className='windlg agedlg whobuild'; d.id='whoBuildDlg'; d.setAttribute('aria-labelledby','wbT');
     d.innerHTML=`<img src="/art/bloppit-avatar.png" alt="" width="72" height="72" style="border-radius:50%"><h2 id="wbT">Who’s building?</h2>
-      <p class="note">So Bloppit knows who’s who, and Nora picks maths puzzles to suit you. It stays on this device.</p>
+      <p class="note">It’s almost time to meet your otter! Before you do, tell us about yourself. It stays on this device, and it helps Bloppit know who’s who and lets Nora pick the right maths puzzles for you.</p>
       <div class="field"><label for="wbName">Your name</label><input class="inp" id="wbName" maxlength="16" autocomplete="off" placeholder="Your name"></div>
       <div class="pup-age"><span>How old are you?</span><div role="group" aria-label="Your age" id="wbAge"></div></div>
       <div class="win-btns"><button class="ghost" id="wbSkip" type="button">Skip</button><button class="primary sm" id="wbNext" type="button">Next</button></div>`;
