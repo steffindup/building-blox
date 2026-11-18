@@ -17,5 +17,5 @@ Steff's rule (18 Nov): an accessory on Bloppit where it makes sense (a Christmas
 not necessarily built from bricks. He always holds his red brick.
 
 How: ask ChatGPT for a plain solid white background, never "transparent" (it then paints a grey checkerboard into the
-picture). The browser tools can't download the file, so it is shown full-screen in the page and captured (about 830 px
+picture). The browser tools can't download the file, so it is shown full-screen in the page and captured (about 600 px
 square), and the white background is made see-through here.

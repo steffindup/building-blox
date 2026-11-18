@@ -86,13 +86,13 @@ def pill(txt,sz):
 END=Image.new('RGB',(W,H),CREAM)
 if UP:
     b=blop.resize((int(600*blop.width/blop.height),600),Image.LANCZOS); paste_c(END,b,W/2,400)
-    paste_c(END,text_layer(['Gobble. Gobble.','Bloppit.'],120,RED,False),W/2,850)
+    paste_c(END,text_layer(['Gobble.','Gobble.'],120,RED,False),W/2,850)
     l=logo.resize((520,int(520*logo.height/logo.width)),Image.LANCZOS); paste_c(END,l,W/2,1230)
     paste_c(END,text_layer(["This week in Bibi's Weekly Bloppit"],46,INK,False,fname='Nunito800'),W/2,1420)
     paste_c(END,pill('Free on iPhone and iPad',46),W/2,1540); paste_c(END,text_layer(['bloppit.com'],84,BLUE,False),W/2,1690)
 else:
     b=blop.resize((int(700*blop.width/blop.height),700),Image.LANCZOS); paste_c(END,b,520,H/2+10)
-    paste_c(END,text_layer(['Gobble. Gobble. Bloppit.'],104,RED,False),1260,200)
+    paste_c(END,text_layer(['Gobble. Gobble.'],104,RED,False),1260,200)
     l=logo.resize((520,int(520*logo.height/logo.width)),Image.LANCZOS); paste_c(END,l,1260,480)
     paste_c(END,text_layer(["This week in Bibi's Weekly Bloppit"],44,INK,False,fname='Nunito800'),1260,650)
     paste_c(END,pill('Free on iPhone and iPad',44),1260,770); paste_c(END,text_layer(['bloppit.com'],80,BLUE,False),1260,910)

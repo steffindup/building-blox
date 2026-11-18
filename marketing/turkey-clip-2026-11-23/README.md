@@ -4,7 +4,7 @@
 
 1. The turkey Weekly built brick by brick (25 bricks, about 8 a second) under "Save the tail for last."
 2. The tail goes on last and fans out from the middle, with a small pop and sparkles.
-3. End card: Steff's picture of Bloppit beside a brick-built turkey (18 Nov), "Gobble. Gobble. Bloppit.", the logo, "This week in Bibi's Weekly Bloppit", "Free on iPhone and
+3. End card: Steff's picture of Bloppit beside a brick-built turkey (18 Nov), "Gobble. Gobble." (no "Bloppit" in the line: the logo follows; Steff, 18 Nov), the logo, "This week in Bibi's Weekly Bloppit", "Free on iPhone and
    iPad", bloppit.com. Wording picked 13 Nov 2026.
 
 `how-it-was-made/capture.mjs` builds the 23 Nov Weekly in preview with "fit the whole build" on and the result card
