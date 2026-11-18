@@ -22,6 +22,7 @@ test('age maps to the US school grade, from the time of the school year', () => 
   assert.equal(M.gradeFor(8, oct), 3); assert.equal(M.gradeFor(8, apr), 2); assert.equal(M.gradeFor(8, jul), 2);
   assert.equal(M.gradeFor(6, oct), 1); assert.equal(M.gradeFor(10, oct), 5); assert.equal(M.gradeFor(13, oct), 8);
   assert.equal(M.gradeFor(4, oct), -1); assert.equal(M.gradeFor(5, oct), 0); assert.equal(M.gradeFor(15, oct), 8);
+  assert.equal(M.gradeFor(13, apr), 8, '13+ is the top grade all year (one age list, 5 to 13+: 18 Nov 2026)'); assert.equal(M.gradeFor(12, apr), 6);
   assert.equal(M.gradeFor(null, oct), 2, 'no age: 2nd grade');
 });
 

@@ -1126,7 +1126,7 @@ body.bz-jump #view-blitz{visibility:hidden}
 .pupdlg .pup-names{margin:0 0 8px}
 .pup-later{background:none;border:0;font:inherit;font-weight:700;font-size:14px;color:var(--muted);text-decoration:underline;cursor:pointer;padding:8px}
 .pupdlg .pup-later.primary{position:sticky;bottom:6px;z-index:2;box-shadow:0 6px 18px rgba(0,0,0,.28)}   /* Set sail! stays in view on a phone, however long the card is */
-.pup-age{margin:10px 0 4px}.pup-age>span{display:block;font-weight:700;font-size:14px;margin-bottom:6px}.pup-age div{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}.pup-age button{font:inherit;font-weight:700;font-size:15px;min-width:42px;padding:6px 10px;border-radius:12px;border:2px solid var(--line,#cfd8e3);background:var(--card,#fff);color:var(--ink);cursor:pointer}.pup-age button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--accent-ink,#fff)}
+.whobuild .field{margin-top:14px;text-align:left}.whobuild .note+.note{margin-top:14px}.pup-age{margin:10px 0 4px}.pup-age>span{display:block;font-weight:700;font-size:14px;margin-bottom:6px}.pup-age div{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}.pup-age button{font:inherit;font-weight:700;font-size:15px;min-width:42px;padding:6px 10px;border-radius:12px;border:2px solid var(--line,#cfd8e3);background:var(--card,#fff);color:var(--ink);cursor:pointer}.pup-age button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--accent-ink,#fff)}
 .is-intro{display:grid;gap:10px;border:3px solid var(--c-bloppit)}
 .is-intro .ii-head{display:flex;gap:12px;align-items:center}
 .is-intro{position:relative}.is-intro .ii-x{position:absolute;right:10px;top:10px;width:34px;height:34px;border-radius:50%;border:2px solid var(--line);background:var(--page);color:var(--ink);font:inherit;font-weight:800;font-size:15px;cursor:pointer;line-height:1}
@@ -2870,7 +2870,12 @@ const curPlayer=()=>players.list.find(p=>p.id===players.cur);
 const keyFor=(id,k)=>id==='p1'?k:k+':'+id;
 const pkey=k=>keyFor(players.cur,k);
 let leavingPlayer=false;  // set while switching player, so the page-unload save can't write into the new player's slot
-const AGE_OPTS=Array.from({length:12},(_,i)=>i+4).map(a=>`<option value="${a}">${a}${a===15?'+':''}</option>`).join('');
+// One age list everywhere: 5 to 13+ (Steff, 18 Nov 2026; the player form had 4 to 15+, the otter card and Nora 5 to 13+).
+// Age only sets Nora's maths, and 13+ is always the top grade. An older 4, 14 or 15 shows as 5 or 13+.
+const AGE_MIN=5, AGE_TOP=13, AGES=Array.from({length:AGE_TOP-AGE_MIN+1},(_,i)=>i+AGE_MIN);
+const ageLabel=a=>a>=AGE_TOP?AGE_TOP+'+':String(a), ageShown=a=>a?Math.min(AGE_TOP,Math.max(AGE_MIN,a)):null;
+const AGE_OPTS=AGES.map(a=>`<option value="${a}">${ageLabel(a)}</option>`).join('');
+const ageButtons=a=>AGES.map(n=>`<button type="button" data-age="${n}" aria-pressed="${ageShown(a)===n}">${ageLabel(n)}</button>`).join('');
 (() => {
 const $ = s => document.querySelector(s);
 const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
@@ -7310,7 +7315,7 @@ const MATH_TOPICS=['Counting bricks','Adding and taking away to 10','Adding and 
 const MATH_DEFAULT_GRADE=2;   // no age given: 2nd grade, and the puzzles adapt from there
 // A US school year starts around September 1. From September to February most children of a given age are in
 // grade (age - 5); from March on (and over the summer) most have had their birthday, so grade (age - 6).
-function gradeFor(age,date){ if(!age) return MATH_DEFAULT_GRADE; const m=(date||new Date()).getMonth(), sinceSep=(m-8+12)%12;
+function gradeFor(age,date){ if(!age) return MATH_DEFAULT_GRADE; if(age>=13) return 8; const m=(date||new Date()).getMonth(), sinceSep=(m-8+12)%12;
   return clamp(Math.round(age)-5-(sinceSep>=6?1:0),-1,8); }
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)), pickOne=a=>a[rnd(0,a.length-1)];
 function mathPrefs(){ const a=curPlayer().age||null; return {on:trail==='brain', age:a||8, set:!!a, grade:gradeFor(a)}; }
@@ -7490,7 +7495,7 @@ $('#mathDlg').addEventListener('close',()=>{ $('#mqLater').textContent='Not now'
 $('#bpUnlock').onclick=()=>openMath(viewPage);
 // Game tab controls
 $('#mathAge').innerHTML='<option value="" disabled>Age</option>'+AGE_OPTS;
-function syncMathUI(){ const p=mathPrefs(); $('#mathAge').value=p.set?Math.min(15,p.age):''; $('#gmMath').classList.toggle('on',p.on); $('#gmMath').hidden=!p.on;
+function syncMathUI(){ const p=mathPrefs(); $('#mathAge').value=p.set?ageShown(p.age):''; $('#gmMath').classList.toggle('on',p.on); $('#gmMath').hidden=!p.on;
   $('#mathAgeFor').textContent=curPlayer().name;
   $('#mathTier').textContent=p.set?`Starts with ${MATH_GRADES[p.grade+1]} math: ${MATH_TOPICS[p.grade+1].toLowerCase()}. Puzzles adjust as you play, and step up to ${MATH_GRADES[p.grade+2]||'harder'} topics only after a long run of right answers.`:'Choose an age to set how hard the puzzles are'; }
 $('#mathAge').addEventListener('change',e=>{ const p=mathPrefs(); p.age=+e.target.value; p.set=true; mathPrefsSet(p); syncMathUI(); });
@@ -7510,14 +7515,14 @@ function renderWhoList(){
     return `<div class="who-card${p.id===players.cur?' now':''}" role="button" tabindex="0" data-id="${p.id}" aria-label="Play as ${escapeHTML(p.name)}">
       ${p.id===players.cur?'<span class="now-tag">Playing</span>':''}<button class="who-edit" type="button" data-edit="${p.id}" aria-label="Edit ${escapeHTML(p.name)}">Edit</button>
       <span class="av" style="background:${p.color}">${initial(p.name)}</span><b>${escapeHTML(p.name)}</b>
-      <span class="meta">${p.age?`Age ${p.age}${p.age===15?'+':''} · `:''}${playerRating(p.id)} ★</span>
+      <span class="meta">${p.age?`Age ${p.age>=AGE_TOP?ageLabel(p.age):p.age} · `:''}${playerRating(p.id)} ★</span>
       <span class="meta">🐸 ${st.lv} · 🧠 ${st.blv} of ${OTTER_LEVELS.length} levels</span></div>`; }).join('');
 }
 let whoEditing=null, whoColor=AV_COLORS[0];
 function whoForm(p){
   whoEditing=p?p.id:null; $('#whoForm').hidden=false; $('#whoBtns').hidden=true; $('#whoList').hidden=true; $('#whoLinkRow').hidden=true; $('#whoFormLink').hidden=!!p;
   $('#whoFormTitle').textContent=p?`Edit ${p.name}`:'New player';
-  $('#whoNm').value=p?p.name:''; $('#whoAge').value=p&&p.age?String(p.age):'';
+  $('#whoNm').value=p?p.name:''; $('#whoAge').value=p&&p.age?String(ageShown(p.age)):'';
   whoColor=p?p.color:AV_COLORS[players.list.length%AV_COLORS.length];
   $('#whoColors').innerHTML=AV_COLORS.map(c=>`<button type="button" role="radio" aria-checked="${c===whoColor}" aria-label="Colour" style="background:${c}" data-c="${c}"></button>`).join('');
   $('#whoDel').hidden=!p;   // the only player can be removed too: the device then starts again with a new player (Steff, 16 Nov 2026)
@@ -9295,8 +9300,10 @@ function pupOpen(then,opt){
   pupDraft={ci:pupColorOf(o),out:'',name:null,has:!!has}; ISL3.pupArrival=arr;
   // On arrival: a suggested name in one tap, and an optional scarf or hat
   const sug=PUP_NAMES[Math.floor(Math.random()*PUP_NAMES.length)]; $('#pupSuggest').hidden=!arr; $('#pupSuggest').textContent=`Call it ${sug}`; $('#pupSuggest').dataset.pup=PUP_NAMES.indexOf(sug);
-  { const ag=$('#pupAge'), a=curPlayer().age; ag.hidden=!arr||!!a&&!ag.dataset.asked; ag.dataset.asked=arr&&!a?'1':(ag.dataset.asked||'');   // asked once, on arrival (Steff, 5 Nov 2026)
-    ag.querySelector('div').innerHTML=Array.from({length:9},(_,i)=>i+5).map(n=>`<button type="button" data-age="${n}" aria-pressed="${a===n||(n===13&&a>=13)}">${n===13?'13+':n}</button>`).join(''); }
+  // The player's own name and age are asked first, on the Who's building? card (Steff, 18 Nov 2026), so the otter card
+  // is only about the otter (its age row, 5 Nov 2026, stays hidden).
+  if(arr&&whoBuildDue()){ whoBuildAsk(()=>pupOpen(then,opt)); return; }
+  $('#pupAge').hidden=true;
   $('#pupOutfit').hidden=!arr; document.querySelectorAll('#pupOutfit [data-out]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.out==='')));
   $('#pupTitle').textContent=arr?'Meet your otter!':has?escapeHTML(has):'Meet your otter!';
   $('#pupLead').textContent=has?'Change its brick colour or its name.':'Your own little otter, with its own brick. Pick its colour:';
@@ -9322,8 +9329,33 @@ function pupMixSet(final){ PUP_HEX=pupMixHex($('#pupHue').value,$('#pupShade').v
 $('#pupAge').addEventListener('click',e=>{ const b=e.target.closest('[data-age]'); if(!b) return; const n=+b.dataset.age; curPlayer().age=n; playersSave(); try{ renderWho(); }catch(x){} track('age_set:'+n); sfx.chirp();
   document.querySelectorAll('#pupAge [data-age]').forEach(x=>x.setAttribute('aria-pressed',String(x===b))); });
 // "How old are you?" for a player with no age yet (Nora’s Brain Trail needs it for its maths), once, before the level starts
+// Who's building? On the first trip, before the otter card: the player's own name and age, or Skip. Most players never
+// open the player form, so they stayed "Player 1" and met the age question only on the otter card (Steff, 18 Nov 2026).
+// Asked once per player; not for a player who already has a name of their own and an age.
+const defaultPlayerName=nm=>/^Player \d+$/.test((nm||'').trim());
+const WHO_OFF=new URLSearchParams(location.search).get('who')==='0';   // ?who=0 skips the card (the browser tests add it)
+function whoBuildDue(){ const p=curPlayer(); return !WHO_OFF&&!p.whoAsked&&!(p.age&&!defaultPlayerName(p.name)); }
+function whoBuildAsk(then){ let d=$('#whoBuildDlg'); if(!d){ d=document.createElement('dialog'); d.className='windlg agedlg whobuild'; d.id='whoBuildDlg'; d.setAttribute('aria-labelledby','wbT');
+    d.innerHTML=`<img src="/art/bloppit-avatar.png" alt="" width="72" height="72" style="border-radius:50%"><h2 id="wbT">Who’s building?</h2>
+      <p class="note">It’s almost time to meet your otter!</p><p class="note">Before you do, tell us about yourself. It stays on this device, and it helps Bloppit know who’s who and lets Nora pick the right maths puzzles for you.</p>
+      <div class="field"><label for="wbName">Your name</label><input class="inp" id="wbName" maxlength="16" autocomplete="off" placeholder="Your name"></div>
+      <div class="pup-age"><span>How old are you?</span><div role="group" aria-label="Your age" id="wbAge"></div></div>
+      <div class="win-btns"><button class="ghost" id="wbSkip" type="button">Skip</button><button class="primary sm" id="wbNext" type="button">Next</button></div>`;
+    document.body.appendChild(d); }
+  const p=curPlayer(); let age=p.age||null;
+  $('#wbName').value=defaultPlayerName(p.name)?'':p.name; $('#wbAge').innerHTML=ageButtons(age);
+  $('#wbAge').onclick=e=>{ const b=e.target.closest('[data-age]'); if(!b) return; age=+b.dataset.age; sfx.chirp();
+    $('#wbAge').querySelectorAll('[data-age]').forEach(x=>x.setAttribute('aria-pressed',String(x===b))); };
+  const done=save=>{ const q=curPlayer(); q.whoAsked=1;
+    if(save){ const nm=$('#wbName').value.trim().slice(0,16); if(nm) q.name=nm; if(age) q.age=age; track('who_build:'+(nm?'name':'')+(age?'age':'')); }
+    else track('who_build:skip');
+    playersSave(); try{ renderWho(); syncMathUI(); }catch(x){} d.close(); if(then) setTimeout(then,0); };
+  $('#wbNext').onclick=()=>done(true); $('#wbSkip').onclick=()=>done(false);
+  $('#wbName').onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); done(true); } };
+  d.oncancel=e=>{ e.preventDefault(); done(false); };
+  if(!d.open) d.showModal(); }
 function ageAsk(then){ let d=$('#ageDlg'); if(!d){ d=document.createElement('dialog'); d.className='windlg agedlg'; d.id='ageDlg'; d.setAttribute('aria-labelledby','ageT');
-    d.innerHTML=`<img src="/art/head-nora.png" alt="" width="72" height="72" style="border-radius:50%"><h2 id="ageT">How old are you?</h2><p class="note">Nora picks your maths puzzles to suit you.</p><div class="pup-age"><div role="group" aria-label="Your age">${Array.from({length:9},(_,i)=>i+5).map(n=>`<button type="button" data-age="${n}">${n===13?'13+':n}</button>`).join('')}</div></div>`;
+    d.innerHTML=`<img src="/art/head-nora.png" alt="" width="72" height="72" style="border-radius:50%"><h2 id="ageT">How old are you?</h2><p class="note">Nora picks your maths puzzles to suit you.</p><div class="pup-age"><div role="group" aria-label="Your age">${ageButtons(null)}</div></div>`;
     document.body.appendChild(d); }
   d.querySelector('[role=group]').onclick=e=>{ const b=e.target.closest('[data-age]'); if(!b) return; curPlayer().age=+b.dataset.age; playersSave(); try{ renderWho(); syncMathUI(); }catch(x){} track('age_set:'+b.dataset.age); sfx.chirp(); d.close(); if(then) then(); };
   d.oncancel=e=>e.preventDefault();   // a choice is needed: the maths depends on it
@@ -12116,7 +12148,7 @@ function arr3Bit(A,spark,x,y,z,v,life,s0,s1){ const m=new THREE.SpriteMaterial({
 // The first trip: the player picks the otter's colour and name first, then it sails to Home Island (the film)
 function isl3Sail(o){ if(ISL3.cine||ISL3.arrive) return;
   if(ISL3.preNamed||pupName(o)||o.pupAsked){ ISL3.preNamed=true; isl3Arrive(o); return; }   // met already (named or "Pick later", e.g. on the menu after a first Weekly): no second card
-  if($('#pupDlg').open) return;
+  if($('#pupDlg').open||$('#whoBuildDlg')&&$('#whoBuildDlg').open) return;
   pupOpen(()=>{ ISL3.preNamed=true; if(ISL3.on&&ISL3.arrival==='boat'&&tab==='island') isl3Arrive(worldStore()); else renderIsland(); },{arrival:true,sail:true}); }
 function isl3Arrive(o){
   // the 3D otter rides the boat: wait a moment for it if it's still loading (then the drawing comes instead)

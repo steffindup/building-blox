@@ -296,6 +296,12 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   build. Players who have sailed keep the island as the main action. Tried and dropped: "Back to the menu" as the label
   and meeting the otter on the menu after Done (17 Nov), and letting what was built before sailing rise after the
   landing (17 Nov; dropped 18 Nov). Reaches the app with 1.1.6 (1.1.5, in review, still has the 17 Nov version).
+- **Who's building? and one age list** (Steff, 18 Nov 2026, for 1.1.6): on the first trip, before the otter card, a
+  card asks the player's own name and age, with Skip (`whoBuildAsk`, once per player: `whoAsked`; not shown to a player
+  who already has a name of their own and an age; `?who=0` switches it off and the browser tests add it). The otter card
+  no longer asks the age. Every age list is 5 to 13+ (`AGES`, `ageLabel`, `ageButtons`: the player form had 4 to 15+,
+  the otter card and Nora 5 to 13+); age only sets Nora's maths and 13+ is the top grade all year (`gradeFor`). An
+  older stored 4, 14 or 15 shows as 5 or 13+. Names stay on the device.
 - **"How it works" guides (Steff, 15 Nov 2026)**: four pictures with a line each (`INTROS`, `introShow`). "How Blitz
   works" opens once per player before their first race against Swoop (then the race starts); "How mirror puzzles work"
   opens before Pippa's first brick of their first mirror puzzle. A player who has raced or mirrored before is not

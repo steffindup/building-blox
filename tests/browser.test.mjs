@@ -34,7 +34,7 @@ async function open(url, { viewport = { width: 1000, height: 800 }, init, at, to
   const page = await ctx.newPage(); const errors = []; page.on('pageerror', (e) => { errors.push(e.message); if (process.env.STACKS) console.log('STACK', e.stack); });
   if (init) await page.addInitScript(init.fn, init.arg);
   if (at) await page.clock.setFixedTime(new Date(at));
-  const u = url.replace(/^([^#]*)/, (m) => m + (m.includes('?') ? '&' : '?') + 'lite3d=1' + (/films=/.test(m) ? '' : '&films=0') + (/intros=/.test(m) ? '' : '&intros=0'));   // and no first-time "how it works" guides, except in the tests about them   // a light 3D world: the test machine has no GPU; the island films only in the tests about them
+  const u = url.replace(/^([^#]*)/, (m) => m + (m.includes('?') ? '&' : '?') + 'lite3d=1' + (/films=/.test(m) ? '' : '&films=0') + (/intros=/.test(m) ? '' : '&intros=0') + (/who=/.test(m) ? '' : '&who=0'));   // and no first-time "how it works" guides, except in the tests about them   // a light 3D world: the test machine has no GPU; the island films only in the tests about them
   await page.goto(BASE + u, { waitUntil: 'load' }); await page.waitForTimeout(2500);
   return { page, ctx, errors, view: () => page.evaluate(() => [...document.querySelectorAll('section.view')].find((v) => !v.hidden)?.id), text: (sel) => page.evaluate((s) => document.querySelector(s)?.textContent.replace(/\s+/g, ' ').trim(), sel) };
 }
@@ -549,8 +549,9 @@ test('a decided race against Swoop fast-forwards: once you are done and he canno
   const F = await t.page.evaluate(() => window.__ff) || {}; ff = F.text || ff;
   assert.match(ff, /You win! ⏩ Fast-forward ×4/, 'the turn bar says it is fast-forwarding: ' + JSON.stringify(await t.page.evaluate(() => window.bloppitRaceFF())));
   { const at = F.at || [], secs = at.length > 1 ? (at[at.length - 1][0] - at[0][0]) / 1000 : 0;
-    if (secs >= 0.4) { const rate = (at[at.length - 1][1] - at[0][1]) / secs; assert.ok(rate > 2.5 && rate < 5.5, `his clock runs about 4 s a second (${rate.toFixed(1)} s over ${secs.toFixed(2)} s)`); console.log('fast-forward speed', rate.toFixed(1), 'over', secs.toFixed(2), 's'); }
-    else console.log('fast-forward was over in', secs.toFixed(2), 's: too short to time his clock'); }
+    // timed only over 1.5 s or more: on 18 Nov 2026 GitHub's busy machine read 0.9 over 0.55 s, too short to tell (here 4.3 over 3.6 s)
+    if (secs >= 1.5) { const rate = (at[at.length - 1][1] - at[0][1]) / secs; assert.ok(rate > 2.5 && rate < 5.5, `his clock runs about 4 s a second (${rate.toFixed(1)} s over ${secs.toFixed(2)} s)`); console.log('fast-forward speed', rate.toFixed(1), 'over', secs.toFixed(2), 's'); }
+    else console.log('fast-forward timed over only', secs.toFixed(2), 's: too short to time his clock'); }
   const t0 = Date.now(); let fin = false;
   for (let i = 0; i < 120 && !fin; i++) { fin = await t.page.evaluate(() => /Finished/.test(document.getElementById('mpTurn').textContent) || !!document.querySelector('#mpEndDlg[open]'));
     if (!fin && await t.page.evaluate(() => !!document.querySelector('#buildStage .turn-gate .go-btn'))) await t.page.evaluate(() => document.querySelector('#buildStage .turn-gate .go-btn').click());
@@ -633,6 +634,33 @@ test('the Weekly: a brick of the wrong colour says which colour the step needs, 
   assert.doesNotMatch(wrong.status, /second/, 'the Weekly is calm');
   const right = await t.page.evaluate((c) => window.bloppitTryBrick(c), c);
   assert.equal(right.ok, true);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('Who\'s building? on the first trip: the player\'s own name and age before the otter card, once; Skip leaves them as they were', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&who=1');
+  await t.page.evaluate(() => document.getElementById('hmCont').click());
+  await t.page.waitForFunction(() => document.getElementById('whoBuildDlg')?.open, null, { timeout: 15000 });
+  assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), false, 'the otter card waits');
+  assert.equal(await t.page.evaluate(() => [...document.querySelectorAll('#wbAge [data-age]')].map((b) => b.textContent).join(',')), '5,6,7,8,9,10,11,12,13+');
+  await t.page.fill('#wbName', 'Stian'); await t.page.evaluate(() => { document.querySelector('#wbAge [data-age="10"]').click(); document.getElementById('wbNext').click(); });
+  await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 10000 });
+  assert.equal(await t.page.evaluate(() => document.getElementById('pupAge').hidden), true, 'the otter card no longer asks the age');
+  const p = await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-players-v1')).list[0]);
+  assert.deepEqual([p.name, p.age, p.whoAsked], ['Stian', 10, 1]);
+  assert.equal(await t.text('#whoName'), 'Stian');
+  // every age list is 5 to 13+
+  assert.equal(await t.page.evaluate(() => [...document.querySelectorAll('#whoAge option')].map((o) => o.textContent).join(',')), 'Rather not say,5,6,7,8,9,10,11,12,13+');
+  assert.equal(await t.page.evaluate(() => [...document.querySelectorAll('#mathAge option')].map((o) => o.textContent).slice(1).join(',')), '5,6,7,8,9,10,11,12,13+');
+  // Skip: a second, fresh player keeps "Player 2" and no age, and isn't asked again
+  await t.page.evaluate(() => { const ps = JSON.parse(localStorage.getItem('bloppit-players-v1')); ps.list.push({ id: 'p2', name: 'Player 2', age: null, color: '#0369BD', fresh: 1 }); ps.n = 1; ps.cur = 'p2'; localStorage.setItem('bloppit-players-v1', JSON.stringify(ps)); });
+  await t.page.reload({ waitUntil: 'load' }); await t.page.waitForTimeout(2500);
+  await t.page.evaluate(() => { document.getElementById('welcomeDlg')?.open && document.getElementById('welcomeDlg').close(); document.getElementById('hmCont').click(); });
+  await t.page.waitForFunction(() => document.getElementById('whoBuildDlg')?.open, null, { timeout: 15000 });
+  await t.page.evaluate(() => document.getElementById('wbSkip').click());
+  await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 10000 });
+  const q = await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-players-v1')).list.find((x) => x.id === 'p2'));
+  assert.deepEqual([q.name, q.age, q.whoAsked], ['Player 2', null, 1]);
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
