@@ -65,7 +65,9 @@ for (const page of PAGES) {
     if (!p.includes(web)) throw new Error('build-www: the FAQ answer about where Bloppit plays has changed; update build-www.mjs');
     p = p.replace(web, 'You’re playing the iPhone and iPad app. Bloppit also plays in any web browser at bloppit.com/game.');
   }
-  if (/https:\/\/(cdn|fonts)\./.test(p) || /(href|src)="\/(site\.css|art|video)/.test(p)) throw new Error(`build-www: pages/${page}.html still points at the website`);
+  // (the folders exactly: the footer's link to the Videos page, /videos/, is a page link, hidden in the app, not a file
+  // the app lacks; the looser /video test stopped every app build after that link was added on 18 Nov 2026)
+  if (/https:\/\/(cdn|fonts)\./.test(p) || /(href|src)="\/(site\.css|art\/|video\/)/.test(p)) throw new Error(`build-www: pages/${page}.html still points at the website`);
   writeFileSync(join(www, 'pages', `${page}.html`), p);
 }
 

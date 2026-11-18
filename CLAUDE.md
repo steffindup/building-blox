@@ -441,6 +441,10 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   built means Apple has approved that version and takes no more builds for it: every build of 15 Nov 2026 failed that
   way until the repo moved from 1.1.3 to 1.1.4. Read a commit's check-runs with
   `gh api repos/steffindup/building-blox/commits/<sha>/check-runs` (that works from the sandbox).
+- **The app bundles About us, How it works, FAQ and Privacy** (`mobile/scripts/build-www.mjs`) and stops the build if one
+  still points at a website file. On 18 Nov 2026 the new footer link to the Videos page (`/videos/`) matched its
+  `/video` test and every app build failed at "Install and package the web app" until the test was made exact
+  (`art/`, `video/`). A new website link in those pages can trip it: run `node scripts/build-www.mjs` in `mobile/`.
 - **Xcode 27 by April 2027.** Apple's notice on build 230 (ITMS-90725, 18 Nov 2026): from April 2027 uploads must be
   built with the iOS 27 SDK. `codemagic.yaml` pins `xcode: 26.5` in both iOS workflows ("latest" was landing on
   overloaded machines), so move the pin to a 27 version, and test a build, well before then.
