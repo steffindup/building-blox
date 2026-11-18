@@ -1,4 +1,4 @@
-# Weekly clips (draft, for Steff's approval): Moon rocket (30 Nov) and Ringed planet (7 Dec)
+# Weekly clips (approved by Steff on 18 Nov 2026, with captions): Moon rocket (30 Nov) and Ringed planet (7 Dec)
 
 Made 18 Nov 2026 like the turkey clip (`../turkey-clip-2026-11-23/`): the Weekly built brick by brick, the special
 piece last (the flame rises from below; the ring sweeps across), then an end card with that week's Bloppit picture
