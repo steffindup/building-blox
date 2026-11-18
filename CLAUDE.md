@@ -88,6 +88,10 @@ the **Weekly** (see below) is fetched from the site by app 1.1.1 and later (not 
   `marketing/together-video-2026-11-20/`: the Play with Friends video for 20 Nov (approved 17 Nov; no turkey teaser
   and no "no chat" line, by Steff) with the scripts that made it, including `weekly-strip.mjs` for Weekly review
   strips; `marketing/together-carousel-2026-11-20/`: its six carousel images.
+- `public/videos/`: the Videos page (bloppit.com/videos, made 18 Nov 2026, linked from every footer and the press page):
+  every posted video, newest first, wide to watch and wide/upright to download (`files/`). Add a video only after it
+  has been posted (nothing early), with a poster `.jpg`; the launch and How to Play videos are reused from `press/video/`
+  and `video/`. Never a lufu film or anything beyond Moonstone's mist (launch rule).
 - `netlify.toml`: redirects (`/build` → `/game/`, `/join/CODE`, `/p/CODE` share links, `/go/CHANNEL`), headers.
 
 ## Map of `public/game/index.html`
