@@ -99,6 +99,9 @@ export function merge(server, incoming) {
       if (!y || typeof y !== 'object') continue;
       builds[k] = x ? { ...x, ...y, s: Math.max(num(x.s) ?? 0, num(y.s) ?? 0), ...((num(x.l) != null || num(y.l) != null || num(x.r) != null || num(y.r) != null) ? { l: Math.min(lost(x), lost(y)), r: Math.max(num(x.r) ?? 0, num(y.r) ?? 0) } : {}), t: Math.min(num(x.t) ?? Infinity, num(y.t) ?? Infinity), c: Math.max(num(x.c) ?? 1, num(y.c) ?? 1), ...((x.m || y.m) ? { m: 1 } : {}), ...((num(x.d) || num(y.d)) ? { d: Math.min(num(x.d) ?? Infinity, num(y.d) ?? Infinity) } : {}), ...((Number.isInteger(x.lv) || Number.isInteger(y.lv)) ? { lv: Math.min(2, Math.max(Number.isInteger(x.lv) ? x.lv : -1, Number.isInteger(y.lv) ? y.lv : -1)) } : {}) } : y;
     }
+    // pre: built before the player ever sailed, so it isn't on the island. The mark stays only if every copy has it:
+    // the same model built again after sailing (on either device) counts on the island (Steff, 18 Nov 2026).
+    for (const k of Object.keys(builds)) { const x = obj(wa.builds)[k], y = obj(wb.builds)[k]; if (x && y && !(x.pre && y.pre) && builds[k]) { builds[k] = { ...builds[k] }; delete builds[k].pre; } }
     const seen = new Set(), log = [];
     for (const k of [...(wa.log || []), ...(wb.log || [])]) if (builds[k] && !seen.has(k)) { seen.add(k); log.push(k); }
     for (const k of Object.keys(builds)) if (!seen.has(k)) { seen.add(k); log.push(k); }

@@ -286,11 +286,16 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   place (no tile, no island count, no My films), and no otter card pops up on the menu. A finish card for such a player
   (`finishNew()`) has "Done" as its main button, which goes to the menu; the Weekly and Build Anything card then offers
   "Go to Bloppitopia" and the Weekly card, with no second Done. "Start here" or "Go to Bloppitopia" gives the otter card
-  of the trip, the arrival film, and after the landing the hut and any island earned (Brickyard Cove after a first
-  Weekly) rise one by one, each island with its film (`isl3Show` keeps them unseen for a first visit that starts with
-  the boat, up to 3 builds; a bigger world lands as it stands). Players who have sailed keep the island as the main
-  action. Tried and dropped on 17 Nov: "Back to the menu" as the label, and meeting the otter on the menu after Done
-  (Steff: the sequence was wrong, and Brickyard Cove and two films showed as unlocked before he had sailed).
+  of the trip, the arrival film, and a landing exactly as on any first visit: "This is your home", Build our first home.
+  **A build finished before sailing never counts on the island** (Steff, 18 Nov 2026, after the 17 Nov version showed
+  the hut as built, played Bibi's film and opened Brickyard Cove on landing): it is marked `pre:1` in `worldFinish` and
+  keeps its stars and its Weekly record, but `onIsle`/`isleLog` leave it out of every island count (`worldCount`, the
+  home stages, `isleCount`, the models on stands, story beats, the credits roll). Built again after sailing, it counts
+  from then. The mark survives saving and linking; when two copies of a build disagree, the one without it wins (the
+  game's `worldMerge` and the server's `pup/logic.mjs`). Brickyard Cove rises with the next Weekly or Build Anything
+  build. Players who have sailed keep the island as the main action. Tried and dropped: "Back to the menu" as the label
+  and meeting the otter on the menu after Done (17 Nov), and letting what was built before sailing rise after the
+  landing (17 Nov; dropped 18 Nov). Reaches the app with 1.1.6 (1.1.5, in review, still has the 17 Nov version).
 - **"How it works" guides (Steff, 15 Nov 2026)**: four pictures with a line each (`INTROS`, `introShow`). "How Blitz
   works" opens once per player before their first race against Swoop (then the race starts); "How mirror puzzles work"
   opens before Pippa's first brick of their first mirror puzzle. A player who has raced or mirrored before is not

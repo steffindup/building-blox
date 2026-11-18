@@ -9151,6 +9151,7 @@ function worldStore(){ try{ const o=JSON.parse(localStorage.getItem(pkey(WORLD_K
 function worldMerge(a,b){
   a=a||{}; b=b||{}; const builds={...(a.builds||{})};
   for(const k of Object.keys(b.builds||{})){ const x=builds[k], y=b.builds[k]; builds[k]=x?{...x,...y,...((Number.isInteger(x.lv)||Number.isInteger(y.lv))?{lv:Math.max(Number.isInteger(x.lv)?x.lv:-1,Number.isInteger(y.lv)?y.lv:-1)}:{}),s:Math.max(x.s||0,y.s||0),...((Number.isFinite(x.l)||Number.isFinite(y.l)||Number.isFinite(x.r)||Number.isFinite(y.r))?{l:Math.min(lostOf(x),lostOf(y)),r:Math.max(rateOf(x),rateOf(y))}:{}),t:Math.min(x.t||Infinity,y.t||Infinity),c:Math.max(x.c||1,y.c||1),...((x.m||y.m)?{m:1}:{}),...((x.d||y.d)?{d:Math.min(x.d||Infinity,y.d||Infinity)}:{})}:y; }
+  for(const k of Object.keys(builds)){ const x=(a.builds||{})[k], y=(b.builds||{})[k]; if(x&&y&&!(x.pre&&y.pre)) delete builds[k].pre; }   // a copy built after sailing wins
   const log=[]; for(const k of [...(a.log||[]),...(b.log||[]),...Object.keys(builds)]) if(builds[k]&&!log.includes(k)) log.push(k);
   // The name (typed or picked) and brick colour: whichever was set last (pupAt); a later 'no name yet' never wipes one
   const later=(b.pupAt||0)>(a.pupAt||0)?b:a, other=later===b?a:b, named=w=>(cleanPupText(w.pupText)||w.pupName>=0)?w:null, nw=named(later)||named(other)||{};
@@ -9158,7 +9159,12 @@ function worldMerge(a,b){
   return {xp:Math.max(a.xp||0,b.xp||0),bonus:Math.max(a.bonus||0,b.bonus||0),builds,log,films:[...new Set([...(a.films||[]),...(b.films||[])])],bottles:[...new Set([...bottleDays(a),...bottleDays(b)])].sort(),decor:[...new Set([...(a.decor||[]),...(b.decor||[])])],paid:(()=>{ const p={...(a.paid||{})}; for(const [k,v] of Object.entries(b.paid||{})) p[k]=k in p?Math.min(p[k],v):v; return p; })(),free:[...new Set([...(a.free||[]),...(b.free||[])])],slot:{...(a.slot||{}),...(b.slot||{})},pos:{...(a.pos||{}),...(b.pos||{})},away:awayMerge(a.away,b.away),draw:[...new Map([...(b.draw||[]),...(a.draw||[])].map(d=>[d.id,d])).values()].sort((x,y)=>(y.t||0)-(x.t||0)).slice(0,12),pupName:pn==null?-1:pn,pupText:cleanPupText(nw.pupText),pupAt:Math.max(a.pupAt||0,b.pupAt||0),pupColor:pc==null?-1:pc,...(pc===PUP_MIX&&[later.pupHex,other.pupHex].find(pupHexOk)?{pupHex:[later.pupHex,other.pupHex].find(pupHexOk)}:{}),isle:(a.isle||b.isle)?1:0,arrived:(a.arrived||b.arrived)?1:0,pick:a.pick||b.pick||undefined,...(((b.wearAt||0)>(a.wearAt||0)?b:a).wear?{wear:((b.wearAt||0)>(a.wearAt||0)?b:a).wear,wearAt:Math.max(a.wearAt||0,b.wearAt||0)}:{}),pupAsked:!!(a.pupAsked||b.pupAsked)};
 }
 function worldSet(o){ try{ localStorage.setItem(pkey(WORLD_KEY),JSON.stringify(o)); }catch(e){} pupPush(); }
-const worldCount=o=>o.log.length;                                   // distinct models finished
+// A build finished before the player ever sailed to Bloppitopia (the Weekly or Build Anything first) keeps its stars and its
+// Weekly record but adds nothing to the island (Steff, 18 Nov 2026: the landing showed the hut as built, played Bibi's film
+// and opened Brickyard Cove). It is marked pre:1; built again after sailing, it counts from then.
+const onIsle=(o,k)=>{ const b=(o.builds||{})[k]; return !!b&&!b.pre; };
+const isleLog=o=>(o.log||[]).filter(k=>onIsle(o,k));
+const worldCount=o=>isleLog(o).length;                               // distinct models finished (on the island)
 // XP and bonus stars are worked out from the builds themselves (size, Weekly, From Memory), so two devices
 // playing the same pup add up correctly after a merge instead of keeping the larger of two running totals.
 // A model is worth its size: 0.55 XP a brick (at least 10). Tuned so finishing all the core content (both trails,
@@ -9215,7 +9221,7 @@ function worldFinish(kind){
   const blitz=kind==='blitz'&&mp&&mp.cpu&&!mp.state.solo;
   if(blitz&&!won) return null;
   let place=0; if(mp&&mp.state&&mp.state.mode==='blitz'&&!mp.cpu){ const sc=mpScores(mp.state), me=sc.find(p=>p.i===mp.me); if(me&&sc.filter(p=>!p.left).length>1) place=1+sc.filter(p=>!p.left&&p.ms<me.ms).length; }   // a live race between friends
-  const key=modelKey(), prev=o.builds[key], first=!prev;
+  const key=modelKey(), prev=o.builds[key], first=!prev, pre=kind!=='welcome'&&preSail(o);
   const noHint=hint+auto===0, clean=noHint&&miss===0;
   const cap=starCap(N), lost=runLost(kind), stars=Math.max(STAR_FLOOR,cap-lost), was=rateOf(prev);
   let bonus=0;
@@ -9226,6 +9232,7 @@ function worldFinish(kind){
   let dur=0; try{ dur=(mp&&mp.state&&mp.state.mode==='blitz')?((mpScores(mp.state).find(x=>x.i===mp.me)||{}).ms||0):(run.t0?Date.now()-run.t0:0); }catch(e){}
   const rec=prev?{...prev,l:Math.min(lostOf(prev),lost),c:(prev.c||1)+1}:{n:N,l:lost,k:kind,t:Date.now(),c:1}; if(memory) rec.m=1;
   rec.r=rateOf(rec); rec.s=oldScale(rec.r,starCap(rec.n));
+  if(first&&pre) rec.pre=1; else if(rec.pre&&!pre){ delete rec.pre; o.log=o.log.filter(k=>k!==key); o.log.push(key); }   // before sailing: not on the island (see onIsle)
   if(first&&typeof inLufu==='function'&&inLufu()) rec.realm='lufu';   // built in lufu's world: it stands there, not on Home Island
   if(blitz){ const lv=['easy','medium','hard'].indexOf(mp.state.cpuLevel); if(lv>=0) rec.lv=Math.max(prev&&Number.isInteger(prev.lv)?prev.lv:-1,lv); if(cpu&&cpu.boss) rec.boss=1; }   // which longtail was beaten; the Grand Prix
   if(dur>500&&dur<6*3600e3) rec.d=Math.round(prev&&prev.d?Math.min(prev.d,dur):dur);   // best time, in ms
@@ -9463,7 +9470,7 @@ function islandsNearby(){
 function islandSVG(o,opts){
   opts=opts||{}; const stage=islandStage(o), n=worldCount(o), decor=decorOut(o), thumbs=worldThumbs();
   const shown=islandModels(o);   // the models standing on the island, where the child put them
-  const weekly=o.log.filter(k=>k.startsWith('w:')).slice(-1)[0];
+  const weekly=isleLog(o).filter(k=>k.startsWith('w:')).slice(-1)[0];
   const stand=(x,y,w)=>`<ellipse cx="${x}" cy="${y+2}" rx="${w*.42}" ry="${w*.1}" fill="#000" opacity=".1"/><ellipse cx="${x}" cy="${y}" rx="${w*.4}" ry="${w*.09}" fill="#E3C99A"/>`;
   const pic=(key,x,y,w,pop)=>{ const u=worldThumb(key); if(!u) return stand(x,y,w)+`<g transform="translate(${x} ${y})"><rect x="-26" y="-30" width="52" height="30" rx="4" fill="#9AA3AD"/></g>`;
     const h=w*.75; return stand(x,y,w)+`<image class="${pop?'is-pop':''}" href="${u}" x="${x-w/2}" y="${y-h+6}" width="${w}" height="${h}" preserveAspectRatio="xMidYMax meet"/>`; };
@@ -9557,7 +9564,7 @@ const isHomeBuild=k=>k.startsWith('m:Little house:');
 function islandModelsAny(o){ return ISL3.ok?islandModels3(o):islandModels(o); }
 function islandModels(o){
   const cap=ISLAND_STAGES[islandStage(o)].slots, pos=o.pos||{}, away=o.away||{}, legacy=o.slot||{};
-  const all=o.log.filter(k=>!k.startsWith('w:')&&!isHomeBuild(k)&&o.builds[k]&&!((away[k]||0)>0)).reverse();   // newest first
+  const all=isleLog(o).filter(k=>!k.startsWith('w:')&&!isHomeBuild(k)&&o.builds[k]&&!((away[k]||0)>0)).reverse();   // newest first
   const at=k=>Array.isArray(pos[k])?pos[k]:(Number.isInteger(legacy[k])&&SLOTS[legacy[k]]?SLOTS[legacy[k]]:null);
   const show=all.slice(0,cap), list=[]; for(const k of show){ const p=at(k); if(p) list.push({key:k,x:p[0],y:p[1],placed:true}); }   // the newest builds always get the spaces
   const near=(x,y)=>list.some(m=>Math.hypot(m.x-x,m.y-y)<70), stands=SLOTS.slice(0,cap).map(([x,y],i)=>[x,y,i]);
@@ -10043,7 +10050,7 @@ function isl3Init(){
 function islandModels3(o){
   const cap=ISLAND_STAGES[islandStage(o)].slots, pos=o.pos||{}, away=o.away||{};
   // (Weekly builds too: the drawn island has a flag spot for them, the 3D one puts them on a stand like any build)
-  const all=o.log.filter(k=>!isHomeBuild(k)&&o.builds[k]&&!((away[k]||0)>0)&&o.builds[k].realm!=='lufu').reverse();
+  const all=isleLog(o).filter(k=>!isHomeBuild(k)&&o.builds[k]&&!((away[k]||0)>0)&&o.builds[k].realm!=='lufu').reverse();
   // The newest builds always get the spaces: a model you dragged somewhere keeps its spot, but never pushes a newer build off the island
   const show=all.slice(0,cap), list=[]; for(const k of show){ const p=pos[k]; if(Array.isArray(p)){ const x=P2W(p[0]), z=P2W(p[1]); if(onGrass(x,z)) list.push({key:k,x,z,placed:true}); } }
   const near=(x,z)=>list.some(m=>Math.hypot(m.x-x,m.z-z)<1.5), stands=STANDS3.slice(0,cap).map(([x,z],i)=>[x,z,i]);
@@ -10910,7 +10917,7 @@ const islesToGo=o=>{ const n=FIVE_ISLES.length-fiveDone(o); return n===1?'1 isla
 function mysteryHint(){ return mysteryOpen()?'Ready to explore: build Chapter 1, The Rowboat':`Opens when all five islands are complete (${fiveDone()} of ${FIVE_ISLES.length} so far)`; }
 // How far each island has grown
 function isleCount(id,o){
-  o=o||worldStore(); const B=Object.entries(o.builds);
+  o=o||worldStore(); const B=Object.entries(o.builds).filter(([,b])=>b&&!b.pre);
   { const tr={otterwood:'otter',brainpeak:'brain',sunrise:'sea'}[id];   // levels finished (that still exist)
     if(tr){ const b=bestOf(gameStore(),tr), L=levelsOf(tr).length; return Object.keys(b).filter(k=>/^\d+$/.test(k)&&+k<L&&b[k]>0).length; } }
   if(id==='blitzbay'){ const w=B.filter(([,b])=>b.k==='blitz'), names=new Set(BLITZ_PICKS.map(L=>L.name)), n=new Set(w.map(([k])=>names.has(k.split(':')[1])?'m:'+k.split(':')[1]:k)).size;   // a ladder race counts once, whatever size it was won at (the races grew on 15 Nov 2026)
@@ -10920,7 +10927,7 @@ function isleCount(id,o){
   return 0;
 }
 // Friend builds grow the harbour on Home Island
-const friendCount=o=>{ o=o||worldStore(); return chMine().length+Object.keys(o.builds).filter(k=>k.startsWith('r:')).length+Object.values(o.builds).filter(b=>b.k==='room'||b.k==='challenge').length+(crewMine||[]).filter(x=>x.me).length; };
+const friendCount=o=>{ o=o||worldStore(); return chMine().length+Object.keys(o.builds).filter(k=>k.startsWith('r:')&&onIsle(o,k)).length+Object.values(o.builds).filter(b=>!b.pre&&(b.k==='room'||b.k==='challenge')).length+(crewMine||[]).filter(x=>x.me).length; };
 
 /* The pieces. Each: name, the count it unlocks at, and how it's built (local coordinates on its island, grass
    top at y=TOP3). The last piece of each island is its milestone. */
@@ -11275,7 +11282,7 @@ function isl3BuildBloppitopia(o,W,add){
   // the five islands: built up to their count, or waiting in the mist
   for(const id of Object.keys(ISLES)){ const I=ISLES[id], c=isleCount(id,o), P=blob3(0,0,I.r,I.seed,26), g=new THREE.Group();
     g.add(islandBody3(P,0,0,I.seed,!!I.sand)); g.position.set(I.x,0,I.z); tag3(g,'isle:'+id); ISL3.isles[id]={x:I.x,z:I.z,r:I.r,g};
-    if(c>0){ isleBase(id,g,c); if(I.mystery) moonRecolor3(g); const ctx={creations:Object.entries(o.builds).filter(([k])=>k.startsWith('p:')).sort((a,b)=>(b[1].t||0)-(a[1].t||0)).map(([k])=>k)};
+    if(c>0){ isleBase(id,g,c); if(I.mystery) moonRecolor3(g); const ctx={creations:Object.entries(o.builds).filter(([k,b])=>k.startsWith('p:')&&!b.pre).sort((a,b)=>(b[1].t||0)-(a[1].t||0)).map(([k])=>k)};
       PIECES[id].forEach((p,i)=>{ if(c<p.at) return; const pg=new THREE.Group(); p.make(pg,c,ctx); tag3(pg,'piece:'+id+':'+i); pg.userData.piece=id+':'+i; g.add(pg); ISL3.pieces[id+':'+i]=pg; });
       if(I.mystery) moonNight3(g,I.r);   // reached by the chapter 1 rowboat (no bridge, no second boat); always night there
       else { const a=edge3(HOMEP,0,0,I.x,I.z), b=edge3(blob3(I.x,I.z,I.r,I.seed,26),I.x,I.z,0,0); W.add(tag3(bridge3(a,b,id==='brainpeak'),'isle:'+id)); }
@@ -11735,7 +11742,7 @@ function theEnd(then){
     if(S.at){ const I=ISL3.isles[S.at]; if(I) isl3FlyTo(I.x,1.2,I.z,fit({home:11,brickworks:17,blitzbay:16}[S.at]||14),1500);
       el.insertAdjacentHTML('beforeend',`<div class="te-card"><img src="/art/head-${S.img}.png" alt=""><span><b>${S.name}</b><q>${escapeHTML(S.say)}</q><small>${escapeHTML(S.got)}</small></span></div>`);
       sfx.chime&&sfx.chime(); timer=setTimeout(()=>go(i+1),6000); return; }
-    if(S.roll){ isl3FlyHome(2200); const keys=[...new Set(o.log)].filter(k=>worldThumb(k)).slice(-48), dur=reduceMotion?7:Math.max(9,Math.min(22,6+keys.length*.45));
+    if(S.roll){ isl3FlyHome(2200); const keys=[...new Set(isleLog(o))].filter(k=>worldThumb(k)).slice(-48), dur=reduceMotion?7:Math.max(9,Math.min(22,6+keys.length*.45));
       el.insertAdjacentHTML('beforeend',`<div class="te-roll"><div class="te-col" style="--d:${dur}s"><h3>Built by ${escapeHTML(who)}</h3><div class="te-pics">${keys.map(k=>`<img src="${worldThumb(k)}" alt="">`).join('')}</div><h3>with Bloppit, Tiny, Nora, Pippa, Swoop, Bibi… and lufu</h3></div></div>`);
       timer=setTimeout(()=>go(i+1),dur*1000+400); return; }
     if(S.nums){ const ts=B.map(([,b])=>b.t).filter(t=>t>0), days=new Set(ts.map(t=>new Date(t).toDateString())).size, since=ts.length?new Date(Math.min(...ts)):null;
@@ -11910,7 +11917,7 @@ function isl3Beat(o){ const seen=new Set(seenGet()||[]), n=worldCount(o), mark=i
       isl3Chrome(); setTimeout(()=>isl3AfterReveal(worldStore()),900); },ms); }; return true; };
   // 0. a mid-island film: a slot opens every MID_EVERY builds, and the next build on an island that hasn't had its
   //    mid film plays it (after its arrival, before it's complete); then its friend's line, and the camera stays there
-  const slots=Math.floor(n/MID_EVERY), had=MID_ISLES.filter(i=>seen.has('mid:'+i)).length, last=(o.log||[]).at(-1)||'', at=last?beatIsle(last,o):'home';
+  const slots=Math.floor(n/MID_EVERY), had=MID_ISLES.filter(i=>seen.has('mid:'+i)).length, last=isleLog(o).at(-1)||'', at=last?beatIsle(last,o):'home';
   if(slots>had&&MID[at]&&!seen.has('mid:'+at)&&isleCount(at,o)>0&&!isleComplete(at,o)&&ISL3.isles[at]){
     const M=MID[at], I=ISL3.isles[at], g=grpOf(M.who); mark('mid:'+at); track('beat_mid:'+at);
     const moment=()=>{ if(!ISL3.on) return; run(I.x,I.z,12,()=>{ if(g) isl3Say(g,beatSay(M.line,o),5200); sfx.chime&&sfx.chime(); },5600,false,at); };
@@ -11927,14 +11934,14 @@ function isl3Beat(o){ const seen=new Set(seenGet()||[]), n=worldCount(o), mark=i
     return run(M.x,M.z,16,()=>{ isl3Banner(`Bloppit: “${beatSay(BEAT_LIGHT[Math.min(k,BEAT_LIGHT.length)-1],o)}”`,true); },5600,true); }
   // 3. a friend you've met visits Home Island, every 5th build
   const v=Math.floor(n/5), met=Object.keys(BEAT_VISIT).filter(id=>isleCount(BEAT_HOME[id],o)>0&&grpOf(id));
-  if(v>=1&&n%5<=1&&met.length&&!seen.has('visit:'+v)){ mark('visit:'+v); const id=met[v%met.length], g=grpOf(id), B=ISL3.bloppit, last=(o.log||[]).at(-1)||'';
+  if(v>=1&&n%5<=1&&met.length&&!seen.has('visit:'+v)){ mark('visit:'+v); const id=met[v%met.length], g=grpOf(id), B=ISL3.bloppit, last=isleLog(o).at(-1)||'';
     if(!B) return false; track('beat_visit:'+id);
     g.position.set(B.position.x+1.5,0,B.position.z+.9);   // over to Home Island, beside Bloppit (back home when the island is next built)
     const L=BEAT_VISIT[id][beatIsle(last,o)]||BEAT_VISIT[id].home, b=beatName(last);
     ISL3.visit={id,tap:beatSay(L[1],o,b)};   // a tap on the visitor gives the second line, until the next build
     return run(B.position.x+.7,B.position.z+.4,9,()=>{ isl3Say(g,beatSay(L[0],o,b),5200); },5600); }
   return false; }
-window.bloppitMidWhy=()=>{ const o=worldStore(), n=worldCount(o), seen=new Set(seenGet()||[]), last=(o.log||[]).at(-1)||'', at=last?beatIsle(last,o):'home'; return {n,slots:Math.floor(n/MID_EVERY),had:MID_ISLES.filter(i=>seen.has('mid:'+i)).length,last,at,count:isleCount(at,o),complete:isleComplete(at,o),isle:!!ISL3.isles[at]}; };   // for tests
+window.bloppitMidWhy=()=>{ const o=worldStore(), n=worldCount(o), seen=new Set(seenGet()||[]), last=isleLog(o).at(-1)||'', at=last?beatIsle(last,o):'home'; return {n,slots:Math.floor(n/MID_EVERY),had:MID_ISLES.filter(i=>seen.has('mid:'+i)).length,last,at,count:isleCount(at,o),complete:isleComplete(at,o),isle:!!ISL3.isles[at]}; };   // for tests
 window.bloppitBeat=()=>({hold:!!ISL3.hold,say:(ISL3.box&&ISL3.box.querySelector('.is3-say:not([hidden])')||{}).textContent||'',banner:(ISL3.box&&ISL3.box.querySelector('.is3-banner:not([hidden])')||{}).textContent||''});   // for tests
 
 /* ---------- My Bloppit: your otter's level and outfit ----------
