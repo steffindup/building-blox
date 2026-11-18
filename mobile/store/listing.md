@@ -128,7 +128,17 @@ follow Bloppit. Apple’s limits: 15–30 s, at most 30 fps, footage from the ap
 the arrival made in the game): upload these with 1.1. Set the poster frame to Bloppit holding his red brick on the
 jetty (about 7 s in).
 
-## What’s New (1.1.4)
+## What’s New (1.1.5, sent for review 18 Nov 2026)
+
+No emoji. Approved by Steff on 18 Nov 2026. The text Apple received is in `release.json`, which is how a version is
+sent from now on (see CLAUDE.md).
+
+Four new special pieces are on their way in Bibi's Weekly Bloppit: a rocket's flame, a planet's ring, a snowman's top hat and a Christmas tree's star. Each one is the last piece of its puzzle.
+• New players who start with the Weekly, Build Anything or a race now meet their otter and sail to Bloppitopia in the right order
+• Remove player now clears everything of theirs from the device, and the last player can be removed too, for a fresh start
+• Smaller fixes
+
+## What’s New (1.1.4, live 18 Nov 2026)
 
 No emoji. Draft, 15 Nov 2026: Steff to approve.
 
