@@ -76,7 +76,7 @@ NF=20
 seq+= [('fan',j/(NF-1)) for j in range(NF)]
 seq+= [('k26',None)]*44
 NB=len(seq); NE=105; XF=8
-blop=Image.open(R+'press/images/bloppit-with-red-brick.png').convert('RGBA'); blop=blop.crop(blop.getbbox())
+blop=Image.open('/home/claude/tk/bloppit-turkey-art.png').convert('RGBA'); blop=blop.crop(blop.getbbox())   # Steff's picture, 18 Nov 2026
 logo=Image.open(R+'press/images/bloppit-logo.png').convert('RGBA'); logo=logo.crop(logo.getbbox())
 def pill(txt,sz):
     f=font(sz,'Nunito800'); w=int(ImageDraw.Draw(Image.new('L',(1,1))).textlength(txt,font=f)); h=int(sz*2.1)
@@ -85,13 +85,13 @@ def pill(txt,sz):
     d.text((im.width/2,h/2),txt,font=f,fill=INK,anchor='mm'); return im
 END=Image.new('RGB',(W,H),CREAM)
 if UP:
-    b=blop.resize((int(400*blop.width/blop.height),400),Image.LANCZOS); paste_c(END,b,W/2,470)
-    paste_c(END,text_layer(['Gobble. Gobble.','Bloppit.'],120,RED,False),W/2,880)
-    l=logo.resize((560,int(560*logo.height/logo.width)),Image.LANCZOS); paste_c(END,l,W/2,1210)
+    b=blop.resize((int(600*blop.width/blop.height),600),Image.LANCZOS); paste_c(END,b,W/2,400)
+    paste_c(END,text_layer(['Gobble. Gobble.','Bloppit.'],120,RED,False),W/2,850)
+    l=logo.resize((520,int(520*logo.height/logo.width)),Image.LANCZOS); paste_c(END,l,W/2,1230)
     paste_c(END,text_layer(["This week in Bibi's Weekly Bloppit"],46,INK,False,fname='Nunito800'),W/2,1420)
     paste_c(END,pill('Free on iPhone and iPad',46),W/2,1540); paste_c(END,text_layer(['bloppit.com'],84,BLUE,False),W/2,1690)
 else:
-    b=blop.resize((int(620*blop.width/blop.height),620),Image.LANCZOS); paste_c(END,b,520,H/2)
+    b=blop.resize((int(700*blop.width/blop.height),700),Image.LANCZOS); paste_c(END,b,520,H/2+10)
     paste_c(END,text_layer(['Gobble. Gobble. Bloppit.'],104,RED,False),1260,200)
     l=logo.resize((520,int(520*logo.height/logo.width)),Image.LANCZOS); paste_c(END,l,1260,480)
     paste_c(END,text_layer(["This week in Bibi's Weekly Bloppit"],44,INK,False,fname='Nunito800'),1260,650)
