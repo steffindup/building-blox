@@ -42,7 +42,7 @@ The home-screen name stays **Bloppit** (set by `CFBundleDisplayName` in the iOS 
 
 ## Promotional text (170)
 
-Build with Bloppit the otter, raise your pup and grow your own world of islands, Bloppitopia. A new puzzle every Monday, and Swoop the longtail to race.
+Build with Bloppit the otter, raise your pup and grow Bloppitopia, a world of islands. Meet Tiny, Nora, Pippa, Swoop and Bibi, and build a new puzzle every week.
 
 ## Description (4000)
 
@@ -189,23 +189,25 @@ Bloppitopia comes to life!
 
 ## App Review notes
 
-Paste as is: one paragraph per topic, no line breaks inside a paragraph.
+This is the text in App Store Connect: corrected on 18 Nov 2026 (current card names, the special pieces line) and pasted there by Steff the same day, on 1.1.5 while it was waiting for review. The notes carry over from one version to the next by themselves (seen with 1.1.5), so change them here and there together. 4,000 characters at most. Paste as is: one paragraph per topic, no line breaks inside a paragraph.
 
 Bloppit is a brick-building puzzle game for families and anyone who loves bricks. No account or login is needed.
 
-To try it quickly: on the menu tap the Start here card. Pick the otter’s colour and name it (type a name or tap Pick a name), then tap Set sail, or just tap Pick later. A short film shows the otter arriving by boat (Skip at the top right ends it). Tap Build our first home and tap the faded brick to place each piece of the 12-brick house; the home then appears on the island. Then on the menu tap Blitz with Swoop (under Solo), then Play on Blitz Bay (its short film can be skipped) and Start the race (works offline).
+To try it quickly: on the menu tap the Start here card. Pick the otter's colour and name it (type a name or tap Pick a name), then tap Set sail, or just tap Pick later. A short film shows the otter arriving by boat (Skip at the top right ends it). Tap Build Our First Home and tap the faded brick to place each piece of the 12-brick house; the home then appears on the island. Then on the menu tap Blitz with Swoop (under Solo), then Play on Blitz Bay (its short film can be skipped) and Start the race (works offline). Before a first race a short picture guide, How Blitz works, opens; tap Start the race on it.
 
-Films: Bloppit’s films are short clips built into the app (no streaming, except the full-length Moonstone Story, which plays from bloppit.com). Each can be skipped, and the unlocked ones are in My films on the Bloppitopia card.
+Films: Bloppit's films are short clips built into the app (no streaming, except the full-length Moonstone Story, which plays from bloppit.com). Each can be skipped, and the unlocked ones are in My films on the Bloppitopia card.
 
 Challenges: on the menu tap Play with Friends (under Together), then Race a Friend, then Make a challenge, build the puzzle, and you get a 6-letter code; type that code into Join a Game (Got a code?) on another device (the website bloppit.com/game works too) to race the same puzzle.
 
-Bibi’s Weekly Bloppit: tap Bibi’s Weekly Bloppit on the menu. Each week we count finishes and clean finishes (no names), and a top-100 board shows generated names only (a grown-up can switch it off). The time and misses are sent only to check it's a real finish and aren't kept. Counts are deleted after 8 weeks.
+Bibi's Weekly Bloppit: tap Bibi's Weekly Bloppit on the menu. Each week's puzzle is downloaded from bloppit.com as data only (a picture and build settings, never code); offline, the app uses the puzzles built into it. The server counts a finish, whether it was clean and the stars earned, under the anonymous progress code. The time and misses are sent only to check it's a real finish and aren't kept. The weekly top-100 board shows generated names only (never a typed name). It is on by default, and a grown-up can switch it off in the Grown-ups corner. Counts are deleted after 8 weeks.
 
-Progress (scores, finished models, stars, outfits, the otter’s name as a number from a fixed list) is saved under an anonymous progress code minted by our server. A name the player types for the otter stays on the device, with one exception from 1.1.4: when a parent makes a link code in the Grown-ups corner, the player's name and the typed otter name travel with that code to the parent's other device. Our server keeps them with the code only, never with the progress, and deletes them when the code is used or with the expired code (72 hours). Grown-ups corner (behind the parental gate) shows the link code and the Family Link QR, and can delete the record.
+Rewards: Stars and Galaxy Blocks are earned only, by finishing builds. There are no in-app purchases, ads or loot boxes. Some puzzles end on a special piece (a clock face, a turkey's tail, a rocket's flame). The clock piece on the Big Ben model shows the device's own clock, which is never sent.
+
+Progress (scores, finished models, stars, outfits, the otter's name as a number from a fixed list) is saved under an anonymous progress code minted by our server. A name the player types for the otter stays on the device, with one exception from 1.1.4: when a parent makes a link code in the Grown-ups corner, the player's name and the typed otter name travel with that code to the parent's other device. Our server keeps them with the code only, never with the progress, and deletes them when the code is used or with the expired code (72 hours). Grown-ups corner (behind the parental gate) shows the link code and the Family Link QR, and can delete the record.
 
 Usage counts: the app adds one to a daily count for a few events (a build started or finished, the arrival seen) with the country from the request and whether it was the app or the website. There is no identifier for the player or the device, and nothing is shared with anyone.
 
-Rooms (Team Build, live races): friends join with a 5-letter code and the host lets them in. Players appear under generated labels ("Brave Otter 214"); typed names are never shown to other players or sent to a room. Pass the Puzzle: one friend builds half a model, the other finishes it from a code; inside a crew, the same model goes round every member in turn. Crews (Together page, up to six per player): a group of friends the maker lets in one by one, with a live Crew Quick Game, Pass the Puzzle and a Crew Mega Build (a big puzzle every member’s bricks go to); the board only takes fixed phrases and stickers under generated names.
+Rooms (Team Build, live races): friends join with a 5-letter code and the host lets them in. Players appear under generated labels ("Brave Otter 214"); typed names are never shown to other players or sent to a room. Pass the Puzzle: one friend builds half a model, the other finishes it from a code. Crews (Together page): a shared lighthouse goal for an approved group; the maker lets each member in; the board only takes fixed phrases and stickers under generated names; report on every post; parents can remove a player from any crew in the Grown-ups corner.
 
 There is no chat and no voice: players in a room only place bricks. Links out of the app and sharing an invite are behind a parental gate (type a number written in words as digits).
 

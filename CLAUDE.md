@@ -47,7 +47,7 @@ Bermuda), so time is short and decisions are his.
 
 **Releasing a version without App Store Connect (set up 18 Nov 2026, Steff: he wants the app to follow the website
 with fewer manual steps; first used for 1.1.5 on 18 Nov 2026: the workflow built build 230, uploaded it and finished
-green in about 10 minutes; whether Apple shows it as Waiting for Review was left for Steff's email to confirm):** a release is the file `mobile/store/release.json`,
+green in about 10 minutes, and Apple showed 1.1.5 as Waiting for Review with the review notes of 1.1.4 carried over. The notes and the promotional text can still be edited while a version waits: Steff corrected both that day, and `mobile/store/listing.md` holds the same text):** a release is the file `mobile/store/release.json`,
 `{"version":"1.1.5","whats_new":"…","replace_waiting":false}`. A push whose last commit changes that file starts
 Codemagic's "iOS to App Store review" workflow: it builds that version, submits it for review with the What's New
 text, and Apple releases it on approval. To make one when Steff says "release it": (1) check no "iOS to TestFlight"
