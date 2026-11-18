@@ -86,6 +86,6 @@ if STILLS:
     picks=[50,NA+20,NA+100,NA+NB-10,NA+NB+40]; ims=[frame(g) for g in picks]; tw=240 if UP else 420; th=int(tw*H/W)
     s=Image.new('RGB',(tw*len(ims),th)); [s.paste(im.resize((tw,th)),(k*tw,0)) for k,im in enumerate(ims)]; s.save(OUT,quality=85); print('frames',TOTAL,TOTAL/30); sys.exit()
 dur=TOTAL/30
-p=subprocess.Popen(['ffmpeg','-v','error','-y','-f','rawvideo','-pix_fmt','rgb24','-s',f'{W}x{H}','-r','30','-i','-','-i',P+'music.wav','-t',f'{dur:.3f}','-af',f'afade=t=out:st={dur-1.2:.2f}:d=1.2','-c:v','libx264','-preset','medium','-crf','18','-pix_fmt','yuv420p','-c:a','aac','-b:a','192k','-movflags','+faststart',OUT],stdin=subprocess.PIPE)
+p=subprocess.Popen(['ffmpeg','-v','error','-y','-f','rawvideo','-pix_fmt','rgb24','-s',f'{W}x{H}','-r','30','-i','-','-ss',f'{24.6-dur:.2f}','-i',P+'music.wav','-t',f'{dur:.3f}','-af',f'afade=t=out:st={dur-0.6:.2f}:d=0.6','-c:v','libx264','-preset','medium','-crf','18','-pix_fmt','yuv420p','-c:a','aac','-b:a','192k','-movflags','+faststart',OUT],stdin=subprocess.PIPE)
 for g in range(TOTAL): p.stdin.write(frame(g).tobytes())
 p.stdin.close(); p.wait(); print('done',OUT,TOTAL,dur)
