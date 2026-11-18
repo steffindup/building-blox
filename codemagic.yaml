@@ -52,6 +52,12 @@ workflows:
           npm run sync
       - name: Set up code signing
         script: xcode-project use-profiles --project "$XCODE_PROJECT"
+      - name: Set the version
+        script: |
+          # The project's version, or the next one once that version has been sent for review (mobile/scripts/release.mjs)
+          V=$(node mobile/scripts/release.mjs build-version "$XCODE_PROJECT/project.pbxproj")
+          echo "This build is version $V"
+          sed -i '' "s/MARKETING_VERSION = [0-9.]*;/MARKETING_VERSION = $V;/g" "$XCODE_PROJECT/project.pbxproj"
       - name: Bump the build number
         script: |
           LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" || echo 0)
@@ -65,6 +71,92 @@ workflows:
       app_store_connect:
         auth: integration
         submit_to_testflight: true
+      email:
+        recipients:
+          - steffindup@gmail.com
+        notify:
+          success: true
+          failure: true
+
+  # A release: builds the version named in mobile/store/release.json and sends it to App Store review with that file's
+  # What's New text. Apple releases it when it is approved. It starts when a push changes that file and nothing else
+  # needs doing in App Store Connect (Steff, 18 Nov 2026: he wants the app to follow the website without the manual
+  # steps). How to make a release: mobile/scripts/release.mjs and CLAUDE.md.
+  #  - Push the release file as a commit of its own, when no "iOS to TestFlight" build is running: two builds at once
+  #    would ask for the same build number.
+  #  - A version still waiting for review is left alone unless the file says "replace_waiting": true.
+  #  - The key "Bloppit ASC" needs the App Manager role (or Admin) to submit for review.
+  ios-release:
+    name: iOS to App Store review
+    instance_type: mac_mini_m2
+    max_build_duration: 75
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+    when:
+      changeset: # codemagic.yaml always counts too, so the first step checks that the release file itself changed
+        includes:
+          - 'mobile/store/release.json'
+    integrations:
+      app_store_connect: Bloppit ASC
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.bloppit.app
+      vars:
+        APP_STORE_APPLE_ID: 6821449219
+        XCODE_PROJECT: mobile/ios/App/App.xcodeproj
+        XCODE_SCHEME: App
+      node: 22
+      xcode: 26.5
+    scripts:
+      - name: Is this push a release?
+        script: |
+          if git diff --name-only HEAD~1 HEAD 2>/dev/null | grep -qx 'mobile/store/release.json'; then
+            V=$(node mobile/scripts/release.mjs check "$XCODE_PROJECT/project.pbxproj")   # stops the build with the reason if the file can't be sent
+            echo "Releasing version $V"
+            echo "$V" > /tmp/release-version
+          else
+            echo "The release file did not change in this commit: nothing to send to Apple."
+            touch /tmp/no-release
+          fi
+      - name: Install and package the web app into the iOS project
+        script: |
+          if [ -f /tmp/no-release ]; then exit 0; fi
+          cd mobile
+          npm ci
+          npm run sync
+      - name: Set up code signing
+        script: |
+          if [ -f /tmp/no-release ]; then exit 0; fi
+          xcode-project use-profiles --project "$XCODE_PROJECT"
+      - name: Set the version and the build number
+        script: |
+          if [ -f /tmp/no-release ]; then exit 0; fi
+          V=$(cat /tmp/release-version)
+          sed -i '' "s/MARKETING_VERSION = [0-9.]*;/MARKETING_VERSION = $V;/g" "$XCODE_PROJECT/project.pbxproj"
+          LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" || echo 0)
+          sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]*;/CURRENT_PROJECT_VERSION = $((LATEST + 1));/g" "$XCODE_PROJECT/project.pbxproj"
+          echo "Version $V, build $((LATEST + 1))"
+      - name: Build the .ipa
+        script: |
+          if [ -f /tmp/no-release ]; then exit 0; fi
+          xcode-project build-ipa --project "$XCODE_PROJECT" --scheme "$XCODE_SCHEME"
+      - name: Upload it and submit it for App Store review
+        script: |
+          if [ -f /tmp/no-release ]; then exit 0; fi
+          WHATS_NEW="$(node mobile/scripts/release.mjs whats-new)"
+          ARGS=(--path build/ios/ipa/*.ipa --app-store --release-type AFTER_APPROVAL --whats-new "$WHATS_NEW" --max-build-processing-wait 40)
+          if [ "$(node mobile/scripts/release.mjs replace-waiting)" = "yes" ]; then ARGS+=(--cancel-previous-submissions); fi
+          app-store-connect publish "${ARGS[@]}"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
       email:
         recipients:
           - steffindup@gmail.com

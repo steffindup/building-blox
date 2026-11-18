@@ -45,6 +45,20 @@ Bermuda), so time is short and decisions are his.
 | `public/game/` or `mobile/` | Codemagic also builds the iOS app and uploads it to **TestFlight** automatically (`codemagic.yaml`). |
 | | The **App Store** only gets it when Steff submits a new version himself (manual release). |
 
+**Releasing a version without App Store Connect (set up 18 Nov 2026, Steff: he wants the app to follow the website
+with fewer manual steps; not yet proven by a real run):** a release is the file `mobile/store/release.json`,
+`{"version":"1.1.5","whats_new":"…","replace_waiting":false}`. A push whose last commit changes that file starts
+Codemagic's "iOS to App Store review" workflow: it builds that version, submits it for review with the What's New
+text, and Apple releases it on approval. To make one when Steff says "release it": (1) check no "iOS to TestFlight"
+build is running (two builds at once ask for the same build number); (2) write the What's New and get his yes on the
+wording; (3) commit the file alone and push. `replace_waiting:true` lets it take the place of a version still waiting
+for review: only when he asks, since it pulls that version out of review. Once a version is in the release file,
+TestFlight builds move to the next version by themselves (`mobile/scripts/release.mjs`, tested by
+`tests/release.test.mjs`), so the manual bump after a release is no longer needed for iOS (Android's `VERSION_NAME`
+in `codemagic.yaml` and `build.gradle` still is). The first real run must be watched: whether the new version keeps
+the review notes of the last one, and that the key "Bloppit ASC" has the App Manager role. Promotional text and
+screenshots are still changed in App Store Connect.
+
 So a game fix is live on the website at once but reaches App Store players only with the next app release. Exception:
 the **Weekly** (see below) is fetched from the site by app 1.1.1 and later (not 1.1), so a new Weekly needs no app release.
 
@@ -166,7 +180,7 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
 
 ## Testing
 
-- Fast tests: `node --test tests/math.test.mjs tests/server.test.mjs` (62 tests, seconds). Run them always.
+- Fast tests: `node --test tests/math.test.mjs tests/server.test.mjs tests/release.test.mjs` (seconds). Run them always.
 - Browser tests: `PLAYWRIGHT_CHROMIUM=<chrome> PLAYWRIGHT_ARGS="--use-gl=angle --use-angle=swiftshader
   --enable-unsafe-swiftshader --ignore-gpu-blocklist" node --test --test-concurrency=1 tests/browser.test.mjs`.
   - In the Claude cloud sandbox Chromium is at `/opt/pw-browsers/chromium-1243/real/chrome-linux64/chrome` (older

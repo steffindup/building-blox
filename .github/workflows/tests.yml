@@ -25,7 +25,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: node --test tests/server.test.mjs tests/math.test.mjs tests/films.test.mjs
+      - run: node --test tests/server.test.mjs tests/math.test.mjs tests/films.test.mjs tests/release.test.mjs
 
   weekly-data:
     name: The app's Weekly data is up to date
