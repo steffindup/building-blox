@@ -636,7 +636,7 @@ test('the Weekly: a brick of the wrong colour says which colour the step needs, 
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('a new player who starts with the Weekly: Done goes to the menu with nothing found yet; Start here meets the otter, sails, and then the hut and Brickyard Cove rise', { skip: skip() }, async () => {
+test('a new player who starts with the Weekly: Done goes to the menu with nothing found yet; Start here meets the otter, sails, and lands to build the first home, with the Weekly kept off the island', { skip: skip() }, async () => {
   const t = await open('?nosplash=1#daily');   // a fresh device: no otter, never sailed
   await t.page.evaluate(() => document.getElementById('dyGo').click());
   await t.page.waitForFunction(() => (s => /Go!/.test(s) && !/Wait for Go/.test(s))(document.getElementById('status').textContent), null, { timeout: 20000 });
@@ -650,7 +650,9 @@ test('a new player who starts with the Weekly: Done goes to the menu with nothin
   // the menu: no otter card pops up, "Start here" stands where Bloppitopia will be, and nothing counts as found
   assert.deepEqual(await t.page.evaluate(() => [document.getElementById('pupDlg').open, document.getElementById('hmWorld').hidden, document.getElementById('hmCont').hidden, document.getElementById('hmContT').textContent]), [false, true, false, 'Start here: meet your otter']);
   assert.equal(await t.page.evaluate(() => !!document.querySelector('#hmFilms:not([hidden])')), false, 'no films before sailing');
-  // Start here: the otter card of the trip, then the arrival, then what was earned rises (the hut, then Brickyard Cove)
+  // Start here: the otter card of the trip, then the arrival, then the first home to build, as on any first visit.
+  // The Weekly built before sailing keeps its stars but adds nothing to the island: no hut, no Brickyard Cove, no Bibi
+  // film (Steff, 18 Nov 2026).
   await t.page.evaluate(() => document.getElementById('hmCont').click());
   await t.page.waitForFunction(() => document.getElementById('pupDlg').open, null, { timeout: 15000 });
   assert.match(await t.text('#pupLead'), /about to sail to Bloppitopia/);
@@ -658,14 +660,20 @@ test('a new player who starts with the Weekly: Done goes to the menu with nothin
   await t.page.waitForFunction(() => { try { return JSON.parse(localStorage.getItem('bloppit-world-v1')).arrived === 1; } catch (e) { return false; } }, null, { timeout: 60000 });
   const seen = []; await t.page.exposeFunction('__saw', (x) => { if (x && seen[seen.length - 1] !== x) seen.push(x); });
   await t.page.evaluate(() => { const look = () => { const b = document.querySelector('#isWorld .is3-banner'); window.__saw(b ? b.textContent.trim() : ''); }; look(); new MutationObserver(look).observe(document.getElementById('isWorld'), { subtree: true, childList: true, characterData: true }); });
-  await t.page.waitForFunction(() => /Brickyard Cove rose from the mist/.test(document.querySelector('#isWorld .is3-banner')?.textContent || ''), null, { timeout: 40000 });
-  assert.ok(seen.some((x) => /You built your home/.test(x)), 'the hut is shown first: ' + seen.join(' | '));
+  await t.page.waitForFunction(() => /This is your home/.test(document.querySelector('#isWorld .is3-banner')?.textContent || ''), null, { timeout: 40000 });
+  await t.page.waitForTimeout(4000);   // long enough for anything that would rise after the landing
+  assert.ok(!seen.some((x) => /You built your home|rose from the mist/.test(x)), 'nothing rises after the landing: ' + seen.join(' | '));
+  assert.match(await t.text('#isWorld .is3-play'), /Build our first home/i);
   assert.equal(await t.page.evaluate(() => document.getElementById('pupDlg').open), false, 'the otter is asked about once');
-  // back on the menu: Bloppitopia has its tile now, with the films
-  await t.page.waitForFunction(() => !window.bloppitIsland3().revealing, null, { timeout: 30000 });
+  const w = await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1')));
+  const wk = Object.keys(w.builds).find((k) => k.startsWith('w:'));
+  assert.ok(wk && w.builds[wk].pre === 1, 'the Weekly is kept, marked as built before sailing');
+  assert.ok(!(w.films || []).some((f) => /brick/i.test(f)), 'no Brickyard Cove film: ' + JSON.stringify(w.films));
+  // back on the menu: Bloppitopia has its tile, with no island found yet; the Weekly keeps its stars
   await t.page.evaluate(() => document.getElementById('brandLink').click());
-  await t.page.waitForFunction(() => !document.getElementById('hmWorld').hidden && !!document.querySelector('#hmFilms:not([hidden])'), null, { timeout: 10000 });
-  assert.match(await t.text('#hmWorld .hw-tag'), /1 of 6 islands/);
+  await t.page.waitForFunction(() => !document.getElementById('hmWorld').hidden, null, { timeout: 10000 });
+  assert.match(await t.text('#hmWorld .hw-tag'), /0 of 6 islands/);
+  assert.ok(await t.page.evaluate(() => window.bloppitWorld().stars > 0), 'the Weekly\'s stars are kept');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
