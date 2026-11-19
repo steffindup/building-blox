@@ -232,7 +232,8 @@ export async function handle(method, query, body, store) {
       if (g.members.length < 2) return { error: 'Pass the Puzzle needs at least two in the crew.', status: 409 };
       if (g.pass && !g.pass.done) return { error: 'Your crew is already passing a puzzle round. Finish that one first.', status: 409 };
       const order = [pid, ...g.members.map((m) => m.id).filter((id) => id !== pid)];
-      const chunk = Math.max(1, Math.ceil(steps / order.length));
+      const asked = Math.floor(Number(body.chunk));   // steps a turn, picked by the starter (19 Nov 2026); older apps send none: shared evenly
+      const chunk = asked >= 1 && asked < steps ? asked : Math.max(1, Math.ceil(steps / order.length));
       g.pass = { id: rand(8, ALPHABET), title: String(body.title || 'Puzzle').slice(0, 24), nBricks, steps, chunk, order, turn: 1 % order.length, page: Math.min(to, steps - 1),
         moves, by: pid, at: now, done: false, history: [{ id: pid, from: 0, to: Math.min(to, steps - 1), at: now }] };
     });

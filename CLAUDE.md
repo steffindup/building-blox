@@ -345,6 +345,11 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   new one with the Harbour picture.
   A player can leave a crew on its own page ("Leave this crew", tap twice; Steff, 19 Nov 2026); the Grown-ups corner's
   "Take out" stays. The last builder out ends the crew.
+  **Pass the Puzzle in a crew (Steff, 19 Nov 2026):** the starter picks the steps in each turn (2 to 10, or "Share it
+  evenly"; `chunk` in `pass-start`, older apps send none and get the even share); the message line counts the steps
+  left ("3 steps to go, then it passes on"); Done on "Passed on!" goes back to the crew (`trialDialog({crew})`,
+  `crewBackTo`), not the Blitz page; anyone in the crew can open it read-only with "See it so far" (`pass.role='look'`:
+  `tryPlace` and `autoPlace` refuse). Both versions of Pass the Puzzle say "steps", as the build screen does.
 - **Steff's name in public text is "Steffin du Preez"** (19 Nov 2026), e.g. the press page.
 - **Photo to build** (Build Anything, "Add a photo"; redone 11 Nov 2026 after a 50-photo test): a photo becomes a flat tile
   picture in three sizes, Small (about 135 tiles, the default), Medium (about 250), Big (about 490): the size is a number

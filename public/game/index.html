@@ -5177,8 +5177,9 @@ function tryPlace(){
   if(isLocked(cur)){ setStatus('This page is locked. Solve Bloppit’s maths puzzle to open it.','err'); openMath(cur); return; }
   if(mp&&!mpMyTurn()){ setStatus(mpTurnText(),'err'); return; }
   if(model.mirror&&model.steps[cur]&&model.steps[cur].pippa&&!pippaBusy){ setStatus('🐧 Pippa: “Wait for me! I’m still building my side.”'); return; }
-  if(relay&&relay.role==='first'&&cur>=relay.half){ setStatus('That page is your friend’s. Your half is done!','err'); relayHalfDone(); return; }
-  if(pass&&cur>=pass.to&&pass.to<model.steps.length){ setStatus('Those pages are for the rest of your crew. Yours are done!','err'); passPagesDone(); return; }
+  if(relay&&relay.role==='first'&&cur>=relay.half){ setStatus('Those steps are your friend’s. Your half is done!','err'); relayHalfDone(); return; }
+  if(pass&&pass.role==='look'){ setStatus(pass.who?`Just looking: it’s ${pass.who}’s turn to build.`:'Just looking at the puzzle so far.','err'); return; }
+  if(pass&&cur>=pass.to&&pass.to<model.steps.length){ setStatus('Those steps are for the rest of your crew. Yours are done!','err'); passPagesDone(); return; }
   if(mp&&mp.cpu&&Date.now()<mp.state.turnStart){ setStatus('Wait for Go!','err'); return; }
   if(mp&&mp.posting>=mpLeft(mp.state)){ setStatus(mpBlitz()&&(mp.state.players[mp.me].n||0)+mp.posting>=mp.state.quota?'That was your last brick. Wait for the others to finish.':'That was your last brick this turn.','ok'); return; }
   const s=model.steps[cur], {ax,az}=lastAnchor;
@@ -5227,7 +5228,7 @@ function placeBrick(t,ax,az){
   busy=true; ghostGroup.visible=false; lastAnchor=null;
   setStatus(`Step ${cur+1} done!`,'ok'); updateBuildUI();
   setTimeout(()=>{ busy=false; if(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))) cur++; follow=true; if(game||mp) hintOn=false;
-    setStatus(cur>=model.steps.length?'Every step complete. Great build!':`On to step ${cur+1}.${model.steps[cur].hang?' These clip on underneath the bricks above.':''}${held?'':' Open the parts box for the next brick.'}`, cur>=model.steps.length?'ok':'');
+    setStatus(cur>=model.steps.length?'Every step complete. Great build!':pass&&pass.role!=='look'&&cur<pass.to?`On to step ${cur+1}. ${passLeftText()}`:`On to step ${cur+1}.${model.steps[cur].hang?' These clip on underneath the bricks above.':''}${held?'':' Open the parts box for the next brick.'}`, cur>=model.steps.length?'ok':'');
     updateBuildUI(); frameBuild(true,false); pippaTurn();   // each new step: back to looking at it
     if(relay&&relay.role==='first'&&cur>=relay.half&&cur<model.steps.length){ relayHalfDone(); return; }
     if(pass&&cur>=pass.to&&cur<model.steps.length){ passPagesDone(); return; }
@@ -5263,6 +5264,7 @@ function autoPlace(){
   if(busy||!model||cur>=model.steps.length||mpBlitz()) return;
   if(isLocked(cur)){ setStatus('This page is locked. Solve Bloppit’s maths puzzle to open it.','err'); openMath(cur); return; }
   if(mp&&!mpMyTurn()){ setStatus(mpTurnText(),'err'); return; }
+  if(pass&&pass.role==='look'){ setStatus(pass.who?`Just looking: it’s ${pass.who}’s turn to build.`:'Just looking at the puzzle so far.','err'); return; }
   const s=model.steps[cur]; let o,t;
   if(off){ o=off; t=s.bricks.find(b=>!placed.has(b)); }
   else if(cands.length){ o=cands[0]; t=s.bricks.find(b=>!o.used.has(b)); }
@@ -8667,7 +8669,9 @@ $('#trShare').onclick=()=>{ if(trialDone&&trialDone.code) chShare(trialDone.code
 const trLeave=()=>{ $('#trialDlg').close(); if(cpu&&cpu.trial) mpLeave(); };
 $('#trIsland').onclick=()=>{ trLeave(); finishMainGo(); };
 $('#trNext').onclick=()=>{ if(finishNew()){ track('finish_next:island'); trLeave(); setTab('island'); return; } const n=nextBuild(); track('finish_next:play'); trLeave(); if(n) n.go(); else homeGo('quick'); };
-$('#trDone').onclick=()=>{ if(trialDone&&trialDone.quick){ $('#trialDlg').close(); return; } $('#trialDlg').close(); const weekly=cpu&&cpu.trial&&cpu.trial.kind==='weekly', rel=trialDone&&(trialDone.relay||trialDone.card===false); if(rel){ setTab('blitz'); renderChMine(true); return; } mpLeave(); setTab(weekly?'daily':'blitz'); };
+$('#trDone').onclick=()=>{ if(trialDone&&trialDone.quick){ $('#trialDlg').close(); return; }
+  if(trialDone&&trialDone.crew){ $('#trialDlg').close(); crewBackTo(trialDone.crew); return; }   // Pass the Puzzle in a crew: back to that crew, not the Blitz page (Steff, 19 Nov 2026)
+  $('#trialDlg').close(); const weekly=cpu&&cpu.trial&&cpu.trial.kind==='weekly', rel=trialDone&&(trialDone.relay||trialDone.card===false); if(rel){ setTab('blitz'); renderChMine(true); return; } mpLeave(); setTab(weekly?'daily':'blitz'); };
 
 // Make a challenge: build the chosen puzzle against the clock, then get a code
 $('#bzChMake').onclick=async()=>{
@@ -12684,19 +12688,27 @@ async function renderBoard(){
    island. Built on the relay. Crew Quick Game: a member starts a Team Build; its room code shows on the crew. */
 var pass=null;   // {role:'start'|'turn', crew, id?, from, to, moves:[], title, sent?}
 let crewLiveFor='';
-function passStart(crewCode,choice,nMembers){
+// per: steps in each turn, picked by whoever starts it (Steff, 19 Nov 2026); 0 shares the steps evenly between the builders
+function passStart(crewCode,choice,nMembers,per){
   const title=mpUseModel(choice); if(game) endGame(); if(mp) mpLeave(); dismissResume();
-  const N=model.steps.length; if(N<nMembers+1) throw new Error(`Pick a bigger puzzle: at least ${nMembers+1} pages for ${nMembers} builders.`);
-  const to=Math.min(N-1,Math.max(1,Math.ceil(N/nMembers)));
+  const N=model.steps.length;
+  if(per>0&&N<=per) throw new Error(`This puzzle has ${N} steps. Pick a bigger puzzle, or fewer steps for each turn.`);
+  if(!per&&N<nMembers+1) throw new Error(`Pick a bigger puzzle: at least ${nMembers+1} steps for ${nMembers} builders.`);
+  const chunk=per>0?per:Math.max(1,Math.ceil(N/nMembers)), to=Math.min(N-1,chunk);
   resetBuild(); rebuildPlaced();
-  pass={role:'start',crew:crewCode,from:0,to,moves:[],title:niceName(title)};
+  pass={role:'start',crew:crewCode,from:0,to,chunk,moves:[],title:niceName(title)};
   track('pass_started'); setTab('build'); updateBuildUI();
-  setStatus(`Pass the Puzzle! You build pages 1 to ${to}; then it goes round your crew.`,'ok');
+  setStatus(`Pass the Puzzle! You build steps 1 to ${to}: ${passLeftText()}`,'ok');
 }
+// "3 steps to go, then it passes on": in the message line, never over the build (Steff, 19 Nov 2026)
+function passLeftText(){ const q=pass; if(!q||q.role==='look') return ''; const left=Math.max(0,q.to-cur), last=q.to>=model.steps.length;
+  return `${left} ${left===1?'step':'steps'} to go${last?' to finish it for the crew.':', then it passes on.'}`; }
 function rebuildPlaced(){ placedGroup.clear(); placedBoxes=[]; placed=new Set(); off=null; cands=[]; placedN=0; cur=0; drops=[]; busy=false; }
-async function passOpenTurn(crewCode){
+// look: anyone in the crew can see the puzzle as it stands, without building (Steff, 19 Nov 2026: after passing it on he
+// couldn't get back into it at all)
+async function passOpenTurn(crewCode,look){
   crewMsg('Loading the puzzle…');
-  const j=await crewApi('GET',null,`?code=${crewCode}&pass=1`); const Q=j.pass; if(!Q.myTurn){ crewMsg('It isn’t your turn yet.','err'); return; }
+  const j=await crewApi('GET',null,`?code=${crewCode}&pass=1`); const Q=j.pass; if(!look&&!Q.myTurn){ crewMsg('It isn’t your turn yet.','err'); return; }
   const ds=await Promise.all(j.model.photos.map(p=>loadPng(p.png)));
   if(game) endGame(); if(mp) mpLeave(); dismissResume();
   photos=j.model.photos.map((p,i)=>({id:++pid,name:p.name,view:p.view,sample:true,d:ds[i],png:p.png,m:null}));
@@ -12706,21 +12718,25 @@ async function passOpenTurn(crewCode){
   for(const mv of j.moves) applyMoveCore(mv);
   while(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))) cur++;
   reconcilePieces(); run={miss:0,hints:new Set(),auto:0,memory:false,trouble:new Map()};
+  if(look){ pass={role:'look',crew:crewCode,id:Q.id,from:Q.page,to:Q.steps,moves:[],title:Q.title,who:Q.myTurn?'':Q.turnLabel};
+    track('pass_look'); setTab('build'); updateBuildUI(); frameBuild(false);
+    setStatus(`${Q.title}: ${Q.page} of ${Q.steps} steps built. ${Q.myTurn?'It’s your turn: open it from your crew to build.':`Next to build: ${Q.turnLabel}.`}`,'ok'); return; }
   const to=Math.min(Q.steps,Q.page+Q.chunk);
   pass={role:'turn',crew:crewCode,id:Q.id,from:Q.page,to,moves:[],title:Q.title};
   track('pass_turn'); setTab('build'); updateBuildUI(); frameBuild(false);
-  setStatus(to>=Q.steps?`The last pages are yours: ${Q.page+1} to ${Q.steps}. Finish it for the crew!`:`Your turn: pages ${Q.page+1} to ${to}. Then it passes on.`,'ok');
+  setStatus(to>=Q.steps?`The last steps are yours: ${Q.page+1} to ${Q.steps}. ${passLeftText()}`:`Your turn: steps ${Q.page+1} to ${to}. ${passLeftText()}`,'ok');
 }
+async function crewBackTo(code){ setTab('mp','crews'); try{ crewMineAt=0; await renderCrews(true); const g=crewMine.find(x=>x.code===code); if(g) renderCrew(g); }catch(e){} }
 async function passPagesDone(){
   const q=pass; if(!q||q.sent) return; q.sent=true;
   const last=q.to>=model.steps.length;
-  if(!last) trialDialog({icon:'🧩',title:'Your pages are done!',note:'Passing the puzzle to your crew…'});
+  if(!last) trialDialog({icon:'🧩',title:'Your steps are done!',note:'Passing the puzzle to your crew…'});
   try{
-    if(q.role==='start') await crewApi('POST',{action:'pass-start',code:q.crew,title:q.title,nBricks:model.bricks.length,steps:model.steps.length,to:q.to,moves:q.moves,
+    if(q.role==='start') await crewApi('POST',{action:'pass-start',code:q.crew,title:q.title,nBricks:model.bricks.length,steps:model.steps.length,to:q.to,chunk:q.chunk,moves:q.moves,
       model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
     else await crewApi('POST',{action:'pass-turn',code:q.crew,id:q.id,to:q.to,moves:q.moves});
     crewMineAt=0;
-    if(!last) trialDialog({icon:'🧩',title:'Passed on!',note:`You built pages ${q.from+1} to ${q.to}. Your crew can see whose turn it is on the crew page.`,card:false});
+    if(!last) trialDialog({icon:'🧩',title:'Passed on!',note:`You built steps ${q.from+1} to ${q.to}. Your crew can see whose turn it is on the crew page.`,card:false,crew:q.crew});
   }catch(e){ q.sent=false; trialDialog({icon:'😕',title:'Couldn’t pass the puzzle on',note:e.message}); }
   if(!last) pass=null;
 }
@@ -12740,7 +12756,8 @@ $('#crewOpen').addEventListener('click',async e=>{
     try{ await crewApi('POST',{action:'leave',code:b.dataset.crewLeave}); track('crew_left'); crewMineAt=0; await renderCrews(true); crewMode('list');
       crewMsg(last?`You left ${nm}. You were its last builder, so the crew is gone.`:`You left ${nm}.`,'ok'); }
     catch(x){ b.disabled=false; crewMsg(x.message,'err'); } return; }
-  if(b.dataset.passStart){ try{ passStart(code,$('#crewPassModel').value,g?g.members.length:2); }catch(x){ crewMsg(x.message,'err'); } return; }
+  if(b.dataset.passLook){ try{ await passOpenTurn(code,true); }catch(x){ crewMsg(x.message,'err'); } return; }
+  if(b.dataset.passStart){ try{ passStart(code,$('#crewPassModel').value,g?g.members.length:2,+$('#crewPassPer').value); }catch(x){ crewMsg(x.message,'err'); } return; }
   if(b.dataset.passGo){ try{ await passOpenTurn(code); }catch(x){ crewMsg(x.message,'err'); } return; }
   if(b.dataset.crewLiveStart){ crewLiveFor=code; track('crew_live_start'); setTab('mp','start'); mpMsg('Pick a puzzle and make the room: your crew will see it.'); return; }
   if(b.dataset.crewLive){ track('crew_live_join'); setTab('mp','join'); $('#mpCodeIn').value=b.dataset.crewLive; const n=$('#mpName2'); if(n&&!n.value) n.focus(); else $('#mpJoin').click(); return; }
@@ -12871,15 +12888,17 @@ function renderCrew(g){
       :`<p class="note">Play live now: start a Crew Quick Game and everyone in the crew sees it here, ready to join.</p><div class="win-btns" style="justify-content:flex-start"><button class="primary sm" type="button" data-crew-live-start="1">Start a Crew Quick Game</button></div>`}</section>`;
   // Pass the Puzzle: one model passed round the crew, each building their share of pages in turn
   const Q=g.pass, open=Q&&!Q.done;
-  const hist=Q?`<ol class="pass-hist">${Q.history.map(h=>`<li>${h.me?'You':escapeHTML(h.label)}: pages ${h.from+1} to ${h.to}</li>`).join('')}</ol>`:'';
+  const hist=Q?`<ol class="pass-hist">${Q.history.map(h=>`<li>${h.me?'You':escapeHTML(h.label)}: steps ${h.from+1} to ${h.to}</li>`).join('')}</ol>`:'';
   const pass=!mine?'':`<section class="crew-game"><h3>Pass the Puzzle</h3>
-      ${open?`<p class="note"><b>${escapeHTML(Q.title)}</b> · ${Q.page} of ${Q.steps} pages built</p><div class="bar"><i style="width:${Math.max(2,Math.round(100*Q.page/Q.steps))}%"></i></div>${hist}
-        ${Q.myTurn?`<p class="note"><b>Your turn!</b> Build pages ${Q.page+1} to ${Math.min(Q.steps,Q.page+Q.chunk)}, then it passes on.</p><div class="win-btns" style="justify-content:flex-start"><button class="primary sm" type="button" data-pass-go="1">Build my pages</button></div>`
-          :`<p class="note">Waiting for ${escapeHTML(Q.turnLabel)} to build the next pages.</p>`}`
+      ${open?`<p class="note"><b>${escapeHTML(Q.title)}</b> · ${Q.page} of ${Q.steps} steps built · ${Q.chunk} ${Q.chunk===1?'step':'steps'} a turn</p><div class="bar"><i style="width:${Math.max(2,Math.round(100*Q.page/Q.steps))}%"></i></div>${hist}
+        ${Q.myTurn?`<p class="note"><b>Your turn!</b> Build steps ${Q.page+1} to ${Math.min(Q.steps,Q.page+Q.chunk)}, then it passes on.</p><div class="win-btns" style="justify-content:flex-start"><button class="primary sm" type="button" data-pass-go="1">Build my steps</button></div>`
+          :`<p class="note">Waiting for ${escapeHTML(Q.turnLabel)} to build the next steps.</p><div class="win-btns" style="justify-content:flex-start"><button class="ghost" type="button" data-pass-look="1">See it so far</button></div>`}`
       :`${Q&&Q.done?`<p class="note"><b>${escapeHTML(Q.title)}</b>: finished together! It’s on everyone’s island.</p>${hist}`:''}
         ${g.members.length<2?'<p class="note">Pass the Puzzle needs at least two in the crew. Share the code to bring a friend in.</p>'
-        :`<p class="note">Pick a puzzle and build the first pages. Then it passes round the crew, each of the ${g.members.length} builders taking a turn.</p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap"><select class="inp" id="crewPassModel" style="flex:1;min-width:180px" aria-label="Puzzle to pass round"></select><button class="primary sm" type="button" data-pass-start="1">Start Pass the Puzzle</button></div>`}`}</section>`;
+        :`<p class="note">Pick a puzzle and how many steps each turn lasts, then build the first turn. Then it passes round the crew, each of the ${g.members.length} builders taking a turn.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><select class="inp" id="crewPassModel" style="flex:1;min-width:180px" aria-label="Puzzle to pass round"></select>
+          <select class="inp" id="crewPassPer" style="flex:0 1 190px" aria-label="Steps in each turn">${[2,3,4,5,6,8,10].map(n=>`<option value="${n}"${n===4?' selected':''}>${n} steps a turn</option>`).join('')}<option value="0">Share it evenly</option></select>
+          <button class="primary sm" type="button" data-pass-start="1">Start Pass the Puzzle</button></div>`}`}</section>`;
   // Crew Mega Build: the big puzzle everyone's bricks go to
   const mega=`<section class="crew-game"><h3>Crew Mega Build</h3><div class="crew-mega">${crewPuzzleSVG(g.puzzle,g.total/g.goal)}<div>
       <p class="note" style="margin:0"><b>${escapeHTML(P.name)}</b>: ${g.pct>=100?'finished! 🎉':g.total?(g.pct?g.pct+'% built':'just started'):'not started yet'}</p>
@@ -12949,9 +12968,9 @@ setTimeout(()=>{ const me=curPlayer(); if(me&&me.pup) renderCrews(true).catch(()
 var relay=null;   // {role:'first'|'second', half, code?, moves:[]}
 function relayStart(choice){
   const title=mpUseModel(choice); if(game) endGame(); if(mp) mpLeave(); dismissResume();
-  const N=model.steps.length; if(N<4) throw new Error('Pick a bigger puzzle to pass (at least 4 pages).');
+  const N=model.steps.length; if(N<4) throw new Error('Pick a bigger puzzle to pass (at least 4 steps).');
   relay={role:'first',half:Math.ceil(N/2),moves:[],title:niceName(title)};
-  track('relay_started'); setTab('build'); setStatus(`Pass the Puzzle! You build pages 1 to ${relay.half}; your friend builds ${relay.half+1} to ${N}.`,'ok'); updateBuildUI();
+  track('relay_started'); setTab('build'); setStatus(`Pass the Puzzle! You build steps 1 to ${relay.half}; your friend builds ${relay.half+1} to ${N}.`,'ok'); updateBuildUI();
 }
 async function relayHalfDone(){
   if(!relay||relay.role!=='first'||relay.sent) return; relay.sent=true;
@@ -12961,7 +12980,7 @@ async function relayHalfDone(){
     const j=await chApi('POST',{action:'relay',title:relay.title,nBricks:model.bricks.length,steps:N,half,moves:relay.moves,miss:run.miss,hint:run.hints.size+run.auto,
       model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
     chRemember(j.code,relay.title,j.runId,'relay'); worldThumbSave('r:'+j.code);
-    trialDialog({icon:'🔁',title:'Your half is done!',code:j.code,note:`Send this code to a friend. They type it into Got a code? on the Blitz page and build pages ${half+1} to ${N}. When they finish, the model lands on both your islands.`,relay:true});
+    trialDialog({icon:'🔁',title:'Your half is done!',code:j.code,note:`Send this code to a friend. They type it into Got a code? on the Blitz page and build steps ${half+1} to ${N}. When they finish, the model lands on both your islands.`,relay:true});
   }catch(e){ relay.sent=false; trialDialog({icon:'😕',title:'Couldn’t make the code',note:e.message,retry:true,relayRetry:true}); }
 }
 async function relayOpen(c,m){
@@ -12972,7 +12991,7 @@ async function relayOpen(c,m){
   if(!model||model.bricks.length!==c.nBricks||model.steps.length!==c.steps) throw new Error('This puzzle was passed with a different version of Bloppit. Ask your friend to pass it again.');
   const who=c.first.me?'You':escapeHTML(c.first.label), left=c.steps-c.half;
   box.hidden=false;
-  box.innerHTML=`<div class="ch-top"><img alt="" src="${photos[0].png}"><div><span class="tag">Pass the Puzzle ${c.code}</span><h2>${c.done?'Finished together!':c.first.me?'Waiting for your friend':`${who} passed you a puzzle`}</h2><p class="note" style="margin:0">${escapeHTML(c.title)} · ${c.nBricks} bricks · ${who} built pages 1 to ${c.half}${c.done?`, ${c.second.me?'you':escapeHTML(c.second.label)} built the rest`:`. ${left} page${left===1?'':'s'} to go.`}</p></div></div>
+  box.innerHTML=`<div class="ch-top"><img alt="" src="${photos[0].png}"><div><span class="tag">Pass the Puzzle ${c.code}</span><h2>${c.done?'Finished together!':c.first.me?'Waiting for your friend':`${who} passed you a puzzle`}</h2><p class="note" style="margin:0">${escapeHTML(c.title)} · ${c.nBricks} bricks · ${who} built steps 1 to ${c.half}${c.done?`, ${c.second.me?'you':escapeHTML(c.second.label)} built the rest`:`. ${left} step${left===1?'':'s'} to go.`}</p></div></div>
     <div class="win-btns" style="justify-content:flex-start">${c.done||c.first.me?'':'<button class="primary" id="relGo" type="button">Finish it! 🔁</button>'}${c.first.me&&!c.done?'<button class="ghost" id="chShareBtn" type="button">Share the code</button>':''}<button class="ghost" id="chClose" type="button">Close</button></div>`;
   box.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'});
   $('#chClose').onclick=()=>{ box.hidden=true; };
@@ -12985,7 +13004,7 @@ async function relayOpen(c,m){
     while(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))) cur++;
     reconcilePieces(); run={miss:0,hints:new Set(),auto:0,memory:false,trouble:new Map()};
     track('relay_joined'); setTab('build'); updateBuildUI(); frameBuild(false);
-    setStatus(`${who} built pages 1 to ${c.half}. Your turn: pages ${c.half+1} to ${c.steps}.`,'ok');
+    setStatus(`${who} built steps 1 to ${c.half}. Your turn: steps ${c.half+1} to ${c.steps}.`,'ok');
   };
 }
 async function relayDone(){

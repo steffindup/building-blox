@@ -2183,10 +2183,23 @@ test('a crew: Pass the Puzzle goes round (first pages, then the next builder fin
   await crews(a); await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);
   await a.page.evaluate(() => document.querySelector('[data-crew-ok]').click()); await a.page.waitForTimeout(1500);
   // A starts Pass the Puzzle with a ready-made puzzle and builds the first pages
-  await a.page.evaluate(() => document.querySelector('[data-pass-start]').click()); await a.page.waitForTimeout(1200);
-  assert.equal(await a.view(), 'view-build'); assert.match(await a.text('#status'), /Pass the Puzzle! You build pages 1 to/);
-  for (let i = 0; i < 80; i++) { await autoPlace(a.page, 1); if (await a.page.evaluate(() => document.getElementById('trialDlg').open && /Passed on/.test(document.getElementById('trTitle').textContent))) break; }
-  assert.match(await a.text('#trTitle'), /Passed on/);
+  // the starter picks the steps in each turn (19 Nov 2026); "Share it evenly" here, so B finishes it in one turn
+  assert.equal(await a.page.evaluate(() => document.getElementById('crewPassPer').value), '4');
+  await a.page.evaluate(() => { document.getElementById('crewPassPer').value = '0'; document.querySelector('[data-pass-start]').click(); }); await a.page.waitForTimeout(1200);
+  assert.equal(await a.view(), 'view-build'); assert.match(await a.text('#status'), /Pass the Puzzle! You build steps 1 to \d+: \d+ steps? to go, then it passes on\./);
+  let sawLeft = false;
+  for (let i = 0; i < 80; i++) { await autoPlace(a.page, 1); if (/On to step \d+\. \d+ steps? to go, then it passes on/.test(await a.text('#status'))) sawLeft = true;
+    if (await a.page.evaluate(() => document.getElementById('trialDlg').open && /Passed on/.test(document.getElementById('trTitle').textContent))) break; }
+  assert.match(await a.text('#trTitle'), /Passed on/); assert.ok(sawLeft, 'the message line counts the steps left');
+  // Done goes back to the crew, not the Blitz page
+  await a.page.evaluate(() => document.getElementById('trDone').click()); await a.page.waitForTimeout(2500);
+  assert.equal(await a.view(), 'view-mp'); assert.match(await a.text('#crewOpen'), /Waiting for .* to build the next steps/);
+  // and A can look at it while it's B's turn, without building
+  await a.page.evaluate(() => document.querySelector('[data-pass-look]').click()); await a.page.waitForTimeout(2500);
+  assert.equal(await a.view(), 'view-build'); assert.match(await a.text('#status'), /steps built\. Next to build:/);
+  const n0 = await a.page.evaluate(() => window.bloppitPlacedBoxes ? window.bloppitPlacedBoxes().length : -1);
+  await autoPlace(a.page, 1); await a.page.waitForTimeout(800);
+  assert.equal(await a.page.evaluate(() => window.bloppitPlacedBoxes ? window.bloppitPlacedBoxes().length : -1), n0, 'just looking: no brick goes in');
   // B sees it's their turn, builds the rest and finishes it
   await crews(b); await b.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await b.page.waitForTimeout(800);
   assert.match(await b.text('#crewOpen'), /Your turn!/);
