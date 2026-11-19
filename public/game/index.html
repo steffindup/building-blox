@@ -7624,8 +7624,12 @@ function pupApply(id,d){
 function pupHasProgress(d){ if(d.world&&d.world.builds&&Object.keys(d.world.builds).length) return true; return !!((d.game&&((d.game.best&&Object.keys(d.game.best).length)||(d.game.bbest&&Object.keys(d.game.bbest).length)||(d.game.sbest&&Object.keys(d.game.sbest).length)||(d.game.fbest&&Object.keys(d.game.fbest).length)))||(d.daily&&Object.keys(d.daily.days||{}).length)||(d.weekly&&Object.keys(d.weekly.days||{}).length)); }
 // Push this device's record; the server merges it with what it holds and sends the merged record back.
 function pupPush(){ if(leavingPlayer) return; clearTimeout(pupTimer); pupTimer=setTimeout(pupSync,1500); }
-async function pupSync(){
-  if(pupBusy){ pupAgain=true; return; } pupBusy=true;
+// A second caller while a sync is on its way waits for it, so it sees the Player Unique ID that sync makes (19 Nov 2026: a crew
+// link opened at start-up asked before the start-up sync had finished and was told to finish a build first)
+let pupRun=null;
+async function pupSync(){ if(pupBusy){ pupAgain=true; if(pupRun) await pupRun; return; } pupRun=pupSyncNow(); try{ await pupRun; } finally{ pupRun=null; } }
+async function pupSyncNow(){
+  pupBusy=true;
   const me=curPlayer(), id=players.cur, local=pupLocal(id);
   try{
     if(!me.pup){
@@ -7910,7 +7914,7 @@ function mpApply(s){
   if(placedN!==n0){ reconcilePieces(); updateBuildUI(); if(cur!==cur0||n0===0) frameBuild(true); }
   if(s.started&&!s.finished&&mp.lastTurn!==s.turn){
     mp.lastTurn=s.turn;
-    if(s.solo){ if(!(mp.cpu&&Date.now()<s.turnStart)) setStatus(s.calm?'Go! Take your time. Place every brick in the right spot.':'Go! Your clock is running. Place every brick as fast as you can.','ok'); }   // during the 3-2-1 the countdown says Go! itself (it said Go! ~3 s early, and placing was refused)
+    if(s.solo){ if(!(mp.cpu&&Date.now()<s.turnStart)) setStatus(s.calm?'Take your time. Place every brick in the right spot.':'Go! Your clock is running. Place every brick as fast as you can.','ok'); }   // during the 3-2-1 the countdown says Go! itself (it said Go! ~3 s early, and placing was refused)
     else if(s.turn===mp.me) setStatus(s.mode==='blitz'?(mpLeft(s)<3?`Your turn! Your clock is running. Place ${mpLeft(s)===1?'your last brick':`up to ${mpLeft(s)} bricks`}.`:'Your turn! Your clock is running. Place 1, 2 or 3 bricks, then tap Done.'):`Your turn! Place ${s.perTurn} brick${s.perTurn>1?'s':''}.`,'ok');
     else setStatus(`${s.players[s.turn].name}’s turn. Get your next bricks ready in the parts box.`);
   }
@@ -8160,7 +8164,8 @@ async function joinSixCode(code){
   try{ const r=await fetch(API_BASE+'/api/challenge?code='+code,{cache:'no-store'}); kind=r.ok?'challenge':r.status===404?'crew':''; }
   catch(e){ mpMsg('Couldn’t reach Bloppit. Check your internet connection.','err'); return; }
   if(kind==='challenge'){ mpMsg(''); setTab('blitz','friend'); $('#bzCodeIn').value=code; chOpen(code); return; }
-  if(kind==='crew'){ mpMsg(''); setTab('mp','crews'); crewMode('join'); $('#crewCodeIn').value=code; $('#crewJoin').click(); return; }
+  if(kind==='crew'){ mpMsg(''); setTab('mp','crews'); await renderCrews(true);   // first the player's save on the server (a crew link can be the first thing a device opens), then the crew
+    crewMode('join'); $('#crewCodeIn').value=code; $('#crewJoin').click(); return; }
   mpMsg('Bloppit didn’t answer. Please try again.','err');
 }
 $('#mpJoin').onclick=async()=>{
@@ -8544,7 +8549,8 @@ async function trialStart(info,name){
 }
 // Before the countdown: the race is set up and the clock is parked until the child taps Let's go! (it used to run 3-2-1
 // straight away, while they were still finding the parts box)
-function cpuReady(){ const s=cpu&&cpu.s; if(!s) return; if(s.calm){ cpuCountdown(); return; }
+function cpuReady(){ const s=cpu&&cpu.s; if(!s) return;
+  if(s.calm){ s.turnStart=Date.now(); cpuSend(); setStatus('Take your time. Place every brick in the right spot.','ok'); return; }   // the Weekly has no clock, so no 3-2-1: building starts at once (Steff, 19 Nov 2026)
   s.turnStart=Date.now()+864e5; cpuSend(); setStatus('Ready? Your clock starts when you tap Let’s go!');
   const st=$('#buildStage'); st.querySelector('.go-gate')?.remove(); const g=document.createElement('div'); g.className='go-gate ready-gate';
   const vs=!s.solo, lvl=vs?CPU_LEVELS[s.cpuLevel]:null;
@@ -12745,7 +12751,7 @@ const CREW_MAX=6;   // crews a player can be in (MAX_GROUPS_PER_PUP on the serve
 const CREW_WORDS=[
   ['Brave','Happy','Speedy','Sunny','Clever','Mighty','Jolly','Lucky','Busy','Bright','Cosy','Tiny','Giant','Bouncy','Starry','Sparkly','Golden','Silver','Bold','Calm','Super','Wild','Snappy','Merry'],
   ['Otter','Puffin','Turtle','Frog','Penguin','Longtail','Lion','Heron','Dolphin','Octopus','Starfish','Crab','Seal','Whale','Seahorse','Brick','Lighthouse','Island','Harbour','Rocket','Rainbow','Comet','Coral','Moon'],
-  ['Crew','Club','Squad','Team','Gang','Patrol','Builders','Buddies','Society','Pack','Band','Explorers']];
+  ['Crew','Club','Squad','Team','Gang','Patrol','Builders','Buddies','Society','Pack','Band','Explorers','Tribe']];
 const crewNamePicked=()=>[0,1,2].map(i=>+$('#crewW'+i).value);
 function crewNameShow(){ $('#crewNameSee').textContent=crewNamePicked().map((k,i)=>CREW_WORDS[i][k]).join(' '); }
 function crewNameRoll(){ [0,1,2].forEach(i=>{ $('#crewW'+i).value=String(Math.floor(Math.random()*CREW_WORDS[i].length)); }); crewNameShow(); }
@@ -12892,7 +12898,8 @@ async function crewDo(body,ok){ try{ const j=await crewApi('POST',body); crewMin
 $('#crewNew').onclick=()=>{ crewMode('make'); };
 $('#crewHave').onclick=()=>{ crewMode('join'); requestAnimationFrame(()=>$('#crewCodeIn').focus()); };
 document.querySelectorAll('[data-crew-back]').forEach(b=>b.addEventListener('click',()=>crewMode('list')));
-$('#crewMake').onclick=()=>{ track('crew_made'); const pz=document.querySelector('#crewPick input:checked'); crewDo({action:'create',name:crewNamePicked(),puzzle:pz?+pz.value:0}); };
+$('#crewMake').onclick=async()=>{ const b=$('#crewMake'); if(b.disabled) return; b.disabled=true;   // one crew per tap: a second tap while the first was on its way made a second crew (19 Nov 2026)
+  try{ track('crew_made'); const pz=document.querySelector('#crewPick input:checked'); await crewDo({action:'create',name:crewNamePicked(),puzzle:pz?+pz.value:0}); } finally{ b.disabled=false; } };
 $('#crewJoin').onclick=async()=>{ const code=$('#crewCodeIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''); if(code.length!==6){ crewMsg('Crew codes have 6 letters and numbers.','err'); return; }
   try{ const j=await crewApi('GET',null,`?code=${code}`); renderCrew(j.group); }catch(e){ crewMsg(e.message,'err'); } };
 $('#crewCodeIn').addEventListener('input',e=>{ e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
@@ -12900,7 +12907,9 @@ $('#crewList').addEventListener('click',e=>{ const b=e.target.closest('[data-cre
 $('#crewOpen').addEventListener('click',async e=>{
   const t=e.target.closest('button'); if(!t) return; const code=crewOpenCode;
   if(t.id==='crewClose'){ crewMode('list'); renderCrews(true); return; }
-  if(t.dataset.crewShare){ if(APP&&!await gate.ask('Sharing sends your crew code to another app.')) return; const text=`Join my Bloppit crew! Code ${code}`, url=`https://bloppit.com/game/#together`; try{ if(navigator.share) await navigator.share({title:'Bloppit crew',text,url}); else { await navigator.clipboard.writeText(`${text} ${url}`); t.textContent='Copied!'; } }catch(x){} return; }
+  if(t.dataset.crewShare){ if(APP&&!await gate.ask('Sharing sends your crew code to another app.')) return; const g=crewMine.find(x=>x.code===code), nm=g&&g.name?`, the ${g.name}`:'';
+    const text=`Join my Bloppit crew${nm}! Tap the link, or in Bloppit tap Your Crews, then Join a crew with a code, and type ${code}`, url=`https://bloppit.com/join/${code}`;   // the link opens the crew's join page (Steff, 19 Nov 2026)
+    try{ if(navigator.share) await navigator.share({title:'Bloppit crew',text,url}); else { await navigator.clipboard.writeText(`${text} ${url}`); t.textContent='Copied!'; } }catch(x){} return; }
   if(t.dataset.crewJoin){ track('crew_join_asked'); crewDo({action:'join',code}); return; }
   if(t.dataset.crewOk){ crewDo({action:'approve',code,k:t.dataset.crewOk}); return; }
   if(t.dataset.crewNo){ crewDo({action:'deny',code,k:t.dataset.crewNo}); return; }
@@ -13142,6 +13151,7 @@ $('#wcPupGo').onclick=()=>{ const d=$('#welcomeDlg'); d.close(); endReveal(true)
   if(code&&!q&&!chq) try{ history.replaceState(null,'',location.pathname); }catch(e){}
   const pcode=usp.get('p'), xcode=usp.get('x');
   if(pcode){ try{ history.replaceState(null,'',location.pathname); }catch(e){} shareOpen(pcode,xcode); }
+  else if(code.length===6&&!q){ try{ history.replaceState(null,'',location.pathname); }catch(e){} setTimeout(()=>joinSixCode(code),0); }   // bloppit.com/join/CODE: a challenge or a crew (crew links from 19 Nov 2026)
   else if(chq.length===6&&!q){ setTab('blitz'); $('#bzCodeIn').value=chq; setTimeout(()=>chOpen(chq),0); try{ history.replaceState(null,'',location.pathname); }catch(e){} }
   else if(q){
     $('#mpCodeIn').value=q; setTab('mp','join');   // the join form itself (it used to land on the Together hub with the form hidden)

@@ -319,3 +319,14 @@ test('pup: Pippa’s puzzles from an older save (no seaV) move to their new plac
   assert.deepEqual(seaMigrate({ seaV: 2, sbest: { 3: 1 } }).sbest, { 3: 1 }, 'a new-order save is left alone');
   assert.deepEqual(seaMigrate({ best: { 1: 2 } }), { best: { 1: 2 }, seaV: 2 }, 'no Pippa scores: just marked');
 });
+
+test('crews: a second identical "Make the crew" in a row gives back the same crew; another name makes a new one; Tribe is a word', async () => {
+  mem.clear(); const A = 'f'.repeat(24);
+  const a = await group('POST', { pid: A }, { action: 'create', name: [22, 14, 2], puzzle: 0 }, store); assert.equal(a.body.group.name, 'Snappy Seahorse Squad');
+  const b = await group('POST', { pid: A }, { action: 'create', name: [22, 14, 2], puzzle: 0 }, store);   // the double tap of 19 Nov 2026
+  assert.equal(b.status, 200); assert.equal(b.body.group.code, a.body.group.code);
+  assert.equal((await group('GET', { pid: A, mine: 1 }, null, store)).body.groups.length, 1);
+  const t = await group('POST', { pid: A }, { action: 'create', name: [0, 1, 12], puzzle: 0 }, store); assert.equal(t.body.group.name, 'Brave Puffin Tribe');
+  assert.notEqual(t.body.group.code, a.body.group.code);
+  assert.equal((await group('GET', { pid: A, mine: 1 }, null, store)).body.groups.length, 2);
+});

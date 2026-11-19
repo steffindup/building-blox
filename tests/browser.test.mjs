@@ -262,7 +262,7 @@ test('Rotate turns the brick in hand, and the Weekly special piece turns too and
   const seed = { fn: () => { localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); } };
   const t = await open('?nosplash=1&welcome=0&weekly=2026-11-09', { init: seed });   // Big Ben, as a preview (any date)
   await t.page.waitForFunction(() => document.getElementById('pvBar') && !document.getElementById('pvBar').hidden, null, { timeout: 30000 });
-  await t.page.waitForTimeout(3000);   // the 3-2-1 countdown
+  await t.page.waitForFunction(() => /Take your time/.test(document.getElementById('status').textContent), null, { timeout: 20000 });   // the Weekly starts at once (no 3-2-1)
   // a brick that isn't square: Rotate swaps its length and width, twice brings it back
   const k = await t.page.evaluate(() => { for (let i = 0; i < 40; i++) { const h = window.bloppitHold(i); if (!h) return -1; if (h.sx !== h.sz) return i; } return -1; });
   assert.ok(k >= 0, 'a non-square brick in the first step');
@@ -287,7 +287,7 @@ test('the Weekly: the Moon rocket ends on its flame, the Ringed planet on its ri
   for (const [week, kind, sx] of [['2026-11-30', 'flame', 3], ['2026-12-07', 'ring', 13], ['2026-12-14', 'hat', 7], ['2026-12-21', 'star', 3]]) {
     const t = await open('?nosplash=1&welcome=0&weekly=' + week, { init: seed });
     await t.page.waitForFunction(() => document.getElementById('pvBar') && !document.getElementById('pvBar').hidden, null, { timeout: 30000 });
-    await t.page.waitForTimeout(3000);   // the 3-2-1 countdown
+    await t.page.waitForFunction(() => /Take your time/.test(document.getElementById('status').textContent), null, { timeout: 20000 });   // the Weekly starts at once (no 3-2-1)
     const total = await t.page.evaluate(() => +(document.body.innerText.match(/of (\d+) placed/i) || [])[1]);
     assert.ok(total >= 24 && total <= 48, week + ': ' + total + ' bricks');
     for (let i = 0; i < 120; i++) { const left = await t.page.evaluate(() => { const m = document.body.innerText.match(/(\d+) of (\d+) placed/i); return m ? +m[2] - +m[1] : 99; }); if (left <= 1) break; await t.page.evaluate(() => window.bloppitPlaceRight()); await t.page.waitForTimeout(250); }
@@ -626,7 +626,9 @@ test('the Weekly: a brick of the wrong colour says which colour the step needs, 
   const seeded = { fn: () => localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 })) };
   const t = await open('?nosplash=1#daily', { init: seeded, viewport: { width: 402, height: 874 }, touch: true });
   await t.page.evaluate(() => document.getElementById('dyGo').click());
-  await t.page.waitForFunction(() => (s => /Go!/.test(s) && !/Wait for Go/.test(s))(document.getElementById('status').textContent), null, { timeout: 20000 });
+  await t.page.waitForFunction(() => /Take your time/.test(document.getElementById('status').textContent), null, { timeout: 20000 });
+  // no 3-2-1 before a Weekly: it has no clock, so the first brick goes in at once (Steff, 19 Nov 2026)
+  assert.doesNotMatch(await t.text('#status'), /Get ready|Go!/);
   // the first brick of this step, held in a colour it isn't (White, or Light Grey if the brick is White)
   const c = await t.page.evaluate(() => window.bloppitPeek().c);
   const wrong = await t.page.evaluate((c) => window.bloppitTryBrick(c === 0 ? 1 : 0), c);
@@ -667,7 +669,7 @@ test('Who\'s building? on the first trip: the player\'s own name and age before 
 test('a new player who starts with the Weekly: Done goes to the menu with nothing found yet; Start here meets the otter, sails, and lands to build the first home, with the Weekly kept off the island', { skip: skip() }, async () => {
   const t = await open('?nosplash=1#daily');   // a fresh device: no otter, never sailed
   await t.page.evaluate(() => document.getElementById('dyGo').click());
-  await t.page.waitForFunction(() => (s => /Go!/.test(s) && !/Wait for Go/.test(s))(document.getElementById('status').textContent), null, { timeout: 20000 });
+  await t.page.waitForFunction(() => /Take your time/.test(document.getElementById('status').textContent), null, { timeout: 20000 });
   for (let i = 0; i < 200; i++) { const more = await t.page.evaluate(() => window.bloppitPlaceRight()); if (!more && await t.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; await t.page.waitForTimeout(150); }
   await t.page.waitForFunction(() => document.getElementById('trialDlg').open && !document.getElementById('trIsland').hidden, null, { timeout: 30000 });
   // the card: Done (the main button), Go to Bloppitopia, the Weekly card; no second Done (Steff, 17 Nov 2026)
@@ -711,7 +713,7 @@ test('a finished Weekly stands on the 3D island, and can be put away and back', 
     if (!localStorage.getItem('bloppit-world-v1')) localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: { 'm:Little house:12': { n: 12, s: 2, k: 'quick', t: Date.now() - 864e5, c: 1 } }, log: ['m:Little house:12'], decor: [] })); } };
   const t = await open('?nosplash=1#daily', { init: world });
   await t.page.evaluate(() => document.getElementById('dyGo').click());
-  await t.page.waitForFunction(() => (s => /Go!/.test(s) && !/Wait for Go/.test(s))(document.getElementById('status').textContent), null, { timeout: 20000 });
+  await t.page.waitForFunction(() => /Take your time/.test(document.getElementById('status').textContent), null, { timeout: 20000 });
   await t.page.evaluate(() => { window.__said = []; const el = document.getElementById('status'); new MutationObserver(() => window.__said.push(el.textContent)).observe(el, { childList: true, characterData: true, subtree: true }); });
   for (let i = 0; i < 200; i++) { const more = await t.page.evaluate(() => window.bloppitPlaceRight()); if (!more && await t.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; await t.page.waitForTimeout(150); }
   await t.page.waitForTimeout(3000);
@@ -2128,6 +2130,34 @@ test('Together is one category: the menu has Play with Friends and Your Crews, t
   await t.page.evaluate(() => document.querySelector('#view-mp .hub [data-sub="start"]').click()); await t.page.waitForTimeout(500);
   assert.equal(await vis('.tg-switch'), false); assert.equal(await vis('#view-mp>.char-hero'), false); assert.match(await t.text('#view-mp>.crumb[data-up]'), /Together/);
   assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
+test('a crew: two quick taps on Make the crew make one crew; Share sends the crew name and a link that opens its join page', { skip: skip() }, async () => {
+  const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = [];
+    for (let i = 0; i < 3; i++) { const k = `m:Model${i}:10`; builds[k] = { n: 10, s: 2, t: 1e12 + i, c: 1, k: 'quick' }; log.push(k); }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, pick: 'tree' }));
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 }));
+    window.__shared = null; Object.defineProperty(navigator, 'share', { value: async (d) => { window.__shared = d; }, configurable: true }); } };
+  const a = await open('?nosplash=1&chars3d=0', { init: seed });
+  await a.page.evaluate(() => window.bloppitHome()); await a.page.evaluate(() => document.querySelector('.hm-tile[data-go="crew"]').click()); await a.page.waitForTimeout(1500);
+  await a.page.evaluate(() => document.getElementById('crewNew').click());
+  await a.page.evaluate(() => { [22, 14, 12].forEach((k, i) => { const el = document.getElementById('crewW' + i); el.value = String(k); el.dispatchEvent(new Event('change')); }); });
+  assert.match(await a.text('#crewNameSee'), /Snappy Seahorse Tribe/);
+  await a.page.evaluate(() => { document.getElementById('crewMake').click(); document.getElementById('crewMake').click(); });   // a double tap
+  await a.page.waitForFunction(() => /[A-Z0-9]{6}/.test(document.querySelector('#crewOpen .cc')?.textContent || ''), null, { timeout: 15000 });
+  await a.page.waitForTimeout(1500);
+  const code = await a.page.evaluate(() => document.querySelector('#crewOpen .cc').textContent.trim());
+  await a.page.evaluate(() => document.querySelector('[data-crew-share]').click()); await a.page.waitForTimeout(500);
+  const sh = await a.page.evaluate(() => window.__shared);
+  assert.match(sh.text, /^Join my Bloppit crew, the Snappy Seahorse Tribe! .*Your Crews.*Join a crew with a code/); assert.ok(sh.text.endsWith(code));
+  assert.equal(sh.url, 'https://bloppit.com/join/' + code);
+  await a.page.evaluate(() => document.getElementById('crewClose').click()); await a.page.waitForTimeout(1500);
+  assert.equal(await a.page.evaluate(() => document.querySelectorAll('#crewList [data-crew]').length), 1, 'one crew, not two');
+  // a friend taps the link (bloppit.com/join/CODE comes in as ?code=CODE): the crew's join page opens
+  const b = await open('?nosplash=1&chars3d=0&code=' + code, { init: seed });
+  await b.page.waitForSelector('[data-crew-join]', { timeout: 20000 });
+  assert.match(await b.text('#crewOpen'), /Snappy Seahorse Tribe/);
+  assert.deepEqual(a.errors, []); assert.deepEqual(b.errors, []); await a.ctx.close(); await b.ctx.close();
 });
 
 test('a crew: Pass the Puzzle goes round (first pages, then the next builder finishes it); a Crew Quick Game shows on the crew', { skip: skip() }, async () => {

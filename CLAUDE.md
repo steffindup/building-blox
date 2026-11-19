@@ -332,6 +332,14 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
 - **Blitz**: a "Let's go" before the clock starts; a wrong brick adds 1 second; the race-o-meter. In Bloppitopia, a clear
   next race that gets harder; the Grand Prix counts in the counter (race x of 20). Targets for a child: Warm-up won almost
   always, Steady about 75%, Full throttle 50%, Grand Prix 40%. In Pippa's boss level the Pup still mirrors Pippa.
+- **The Weekly has no 3-2-1** (Steff, 19 Nov 2026): it has no clock, so building starts at once with "Take your time…". The
+  countdown stays for races against Swoop and timed builds.
+- **Crews (19 Nov 2026)**: "Tribe" was added to the third name list (append only, in the game and in `group/logic.mjs`; the
+  server sends the name as words, so older apps show it). Share sends the crew's name and `bloppit.com/join/CODE`, which
+  opens the crew's join page (a 6-character `?code=` goes through `joinSixCode`: a challenge or a crew). Make the crew is
+  disabled while it runs, and the server gives back the same crew when an identical one was made by the same player in
+  the last 10 minutes (Steff had two after one tap on a slow connection). `pupSync` called while a sync is running now
+  waits for it (it used to return at once, with no Player Unique ID yet).
 - **Photo to build** (Build Anything, "Add a photo"; redone 11 Nov 2026 after a 50-photo test): a photo becomes a flat tile
   picture in three sizes, Small (about 135 tiles, the default), Medium (about 250), Big (about 490): the size is a number
   of tiles, so a tall photo and a wide one are the same build. At most 8 flat colours, no speckle (`photoPicture`); a

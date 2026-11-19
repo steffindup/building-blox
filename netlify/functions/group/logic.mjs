@@ -16,7 +16,7 @@ export const GROUP_NAMES = ['Otter Crew', 'Brick Buddies', 'Lighthouse Builders'
 export const CREW_WORDS = [
   ['Brave', 'Happy', 'Speedy', 'Sunny', 'Clever', 'Mighty', 'Jolly', 'Lucky', 'Busy', 'Bright', 'Cosy', 'Tiny', 'Giant', 'Bouncy', 'Starry', 'Sparkly', 'Golden', 'Silver', 'Bold', 'Calm', 'Super', 'Wild', 'Snappy', 'Merry'],
   ['Otter', 'Puffin', 'Turtle', 'Frog', 'Penguin', 'Longtail', 'Lion', 'Heron', 'Dolphin', 'Octopus', 'Starfish', 'Crab', 'Seal', 'Whale', 'Seahorse', 'Brick', 'Lighthouse', 'Island', 'Harbour', 'Rocket', 'Rainbow', 'Comet', 'Coral', 'Moon'],
-  ['Crew', 'Club', 'Squad', 'Team', 'Gang', 'Patrol', 'Builders', 'Buddies', 'Society', 'Pack', 'Band', 'Explorers'],
+  ['Crew', 'Club', 'Squad', 'Team', 'Gang', 'Patrol', 'Builders', 'Buddies', 'Society', 'Pack', 'Band', 'Explorers', 'Tribe'],
 ];
 export const crewWords = (n) => Array.isArray(n) && n.length === 3 && n.every((k, i) => Number.isInteger(k) && k >= 0 && k < CREW_WORDS[i].length);
 export const nameOf = (g) => crewWords(g.name) ? g.name.map((k, i) => CREW_WORDS[i][k]).join(' ') : (GROUP_NAMES[g.name] || GROUP_NAMES[0]);
@@ -48,6 +48,7 @@ function publicPass(g, pid) {
     turnLabel: turnId ? labelFor(turnId) : '', byLabel: labelFor(p.by), byMe: p.by === pid, inIt: p.order.includes(pid), at: p.at,
     history: p.history.map((h) => ({ label: labelFor(h.id), me: h.id === pid, from: h.from, to: h.to, at: h.at })) };
 }
+const TWIN_MS = 10 * 60e3;   // a second identical crew within 10 minutes is taken as the same tap
 const MAX_MEMBERS = 24, MAX_PENDING = 12, MAX_POSTS = 40, MUTE_AT = 3, MAX_GROUPS_PER_PUP = 6;
 
 const rand = (n, chars) => { let s = ''; const a = new Uint32Array(n); crypto.getRandomValues(a); for (const v of a) s += chars[v % chars.length]; return s; };
@@ -135,7 +136,14 @@ export async function handle(method, query, body, store) {
     if (!(Array.isArray(name) ? crewWords(name) : name >= 0 && name < GROUP_NAMES.length)) return { status: 400, body: { error: 'Pick your crew’s name from the lists.' } };
     const puzzle = body.puzzle == null ? SUGGESTED_PUZZLE : Math.floor(Number(body.puzzle));
     if (!(puzzle >= 0 && puzzle < PUZZLE_COUNT)) return { status: 400, body: { error: 'Pick a crew puzzle from the list.' } };
-    if ((await listFor(store, pid)).length >= MAX_GROUPS_PER_PUP) return { status: 409, body: { error: `You can be in ${MAX_GROUPS_PER_PUP} crews at most.` } };
+    const mine = await listFor(store, pid);
+    // The same crew asked for twice in a row (a double tap, or a tap again on a slow connection) is the same crew:
+    // answer with the one just made instead of making a second (Steff had two Snappy Seahorse Squads, 19 Nov 2026)
+    for (const c of mine) {
+      const r = await store.get(gKey(c)); const g0 = r && r.data;
+      if (g0 && g0.creator === pid && now - g0.created < TWIN_MS && JSON.stringify(g0.name) === JSON.stringify(name) && g0.puzzle === puzzle) return { status: 200, body: { group: publicGroup(g0, pid) } };
+    }
+    if (mine.length >= MAX_GROUPS_PER_PUP) return { status: 409, body: { error: `You can be in ${MAX_GROUPS_PER_PUP} crews at most.` } };
     for (let i = 0; i < 10; i++) {
       const code = rand(6, ALPHABET);
       const g = { code, name, puzzle, base: 0, done: [], creator: pid, created: now, updated: now, members: [{ id: pid, joined: now, bricks: 0, builds: 0 }], pending: [], posts: [], reports: [] };
