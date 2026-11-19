@@ -952,7 +952,7 @@ test('a relay: one friend builds half, the other finishes, both islands get the 
   assert.deepEqual(a.errors, []); await a.ctx.close();
 });
 
-test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the board, a report hides it', { skip: skip() }, async () => {
+test('a crew: make, ask to join, let in, a build elsewhere leaves the Mega Build alone, a phrase on the board, a report hides it', { skip: skip() }, async () => {
   // Each player needs builds behind them: the crew card gets their save onto the server (a pup) before a crew can be made
   const mkPlayer = async () => { const t = await open('?nosplash=1&chars3d=0', { init: { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = [];
       for (let i = 0; i < 3; i++) { const k = `m:Model${i}:10`; builds[k] = { n: 10, s: 2, t: 1e12 + i, c: 1, k: 'quick' }; log.push(k); }
@@ -987,8 +987,8 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   for (let i = 0; i < 40; i++) { await autoPlace(b.page, 1); if (await b.page.evaluate(() => /Every step complete/.test(document.getElementById('status').textContent))) break; }
   await b.page.waitForFunction(() => document.getElementById('winDlg').open, null, { timeout: 15000 }); await b.page.evaluate(() => document.getElementById('winDlg').close());
   await hub(b); await b.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await b.page.waitForTimeout(800);
-  assert.match(await b.text('#crewOpen'), /10 of 2,000 bricks/);
-  assert.match(await b.text('#crewOpen'), /Space Station: just started/);
+  // a build elsewhere doesn't go into the Mega Build any more: it's built brick by brick (19 Nov 2026)
+  assert.match(await b.text('#crewOpen'), /Space Station: not started yet · \d+ tiles/); assert.doesNotMatch(await b.text('#crewOpen'), /2,000 bricks/);
   await b.page.evaluate(() => document.querySelector('[data-crew-say="0"]').click()); await b.page.waitForTimeout(1200);
   assert.match(await b.text('#crewFeed'), /Nice clean build!/);
   // Crew news: A sees a dot on the menu's Your Crews tile and a New chip, then what happened since; opening the crew clears it
@@ -997,7 +997,7 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   for (const sel of ['#tab-mp', '#tgCrews']) assert.equal(await a.page.evaluate((s) => { const d = document.querySelector(`${s} .news-dot`); return !!d && !d.hidden; }, sel), true, `and on ${sel}`);   // the Together tab and the switch's Your Crews half
   assert.match(await a.text('#crewList'), /New/);
   await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);
-  const since = await a.text('#crewOpen .crew-since'); assert.match(since, /Since you were last here/); assert.match(since, /added 10 bricks/); assert.match(since, /1 new on the crew board/);
+  const since = await a.text('#crewOpen .crew-since'); assert.match(since, /Since you were last here/); assert.doesNotMatch(since, /added 10 bricks/); assert.match(since, /1 new on the crew board/);
   assert.equal(await a.page.evaluate(() => document.querySelector('.hm-tile[data-go="crew"] .news-dot').hidden), true);
   assert.match(await a.text('#crewFeed'), /Nice clean build!/);
   await a.page.evaluate(() => document.querySelector('[data-crew-report]').click()); await a.page.evaluate(() => document.querySelector('[data-crew-report]').click()); await a.page.waitForTimeout(1200);
@@ -2217,6 +2217,68 @@ test('a crew: Pass the Puzzle goes round (first pages, then the next builder fin
   await crews(b); await b.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await b.page.waitForTimeout(800);
   assert.match(await b.text('#crewOpen'), /started a game/);
   assert.deepEqual(a.errors, []); assert.deepEqual(b.errors, []); await a.ctx.close(); await b.ctx.close();
+});
+
+test('the Crew Mega Build is a real build: one builder starts it, another carries on where the crew left off, and each sees the other’s bricks (19 Nov 2026)', { skip: skip() }, async () => {
+  const mk = () => open('?nosplash=1&welcome=0&chars3d=0', { init: { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = [];
+    for (let i = 0; i < 3; i++) { const k = `m:Model${i}:10`; builds[k] = { n: 10, s: 2, t: 1e12 + i, c: 1, k: 'quick' }; log.push(k); }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, pick: 'tree' }));
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); } } });
+  const a = await mk(), b = await mk();
+  const crews = async (t) => { await t.page.evaluate(() => window.bloppitHome()); await t.page.evaluate(() => document.querySelector('.hm-tile[data-go="crew"]').click()); await t.page.waitForTimeout(1500); };
+  await crews(a); await a.page.evaluate(() => document.getElementById('crewNew').click()); await a.page.evaluate(() => document.getElementById('crewMake').click());
+  await a.page.waitForFunction(() => /[A-Z0-9]{6}/.test(document.querySelector('#crewOpen .cc')?.textContent || ''), null, { timeout: 15000 });
+  const code = await a.page.evaluate(() => document.querySelector('#crewOpen .cc').textContent.trim());
+  // the Mega Build card: tiles, not bricks from other games, and a button to build it
+  const card = await a.text('#crewOpen'); assert.match(card, /not started yet · \d+ tiles/); assert.doesNotMatch(card, /in any game/);
+  const N = +card.match(/not started yet · (\d+) tiles/)[1]; assert.ok(N > 100 && N < 700, 'a big picture: ' + N);
+  await crews(b); await b.page.evaluate((c) => { document.getElementById('crewCodeIn').value = c; document.getElementById('crewJoin').click(); }, code);
+  await b.page.waitForSelector('[data-crew-join]', { timeout: 15000 }); await b.page.evaluate(() => document.querySelector('[data-crew-join]').click()); await b.page.waitForTimeout(1200);
+  await crews(a); await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(800);
+  await a.page.evaluate(() => document.querySelector('[data-crew-ok]').click()); await a.page.waitForTimeout(1500);
+  // A starts building: a brick picture of N tiles
+  await a.page.evaluate(() => document.querySelector('[data-mega-go]').click()); await a.page.waitForTimeout(2500);
+  assert.equal(await a.view(), 'view-build'); assert.match(await a.text('#status'), new RegExp(`Mega Build: 0 of ${N} tiles in`));
+  await autoPlace(a.page, 5); await a.page.waitForTimeout(3500);   // saved a moment after the bricks go in
+  const placedA = await a.page.evaluate(() => window.bloppitPlacedBoxes().length); assert.equal(placedA, 5);
+  // B opens it: carries on from the crew's 5 tiles, places 3 more
+  await crews(b); await b.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await b.page.waitForTimeout(800);
+  assert.match(await b.text('#crewOpen'), new RegExp(`5 of ${N} tiles built`)); assert.match(await b.text('#crewOpen'), /Carry on building/);
+  await b.page.evaluate(() => document.querySelector('[data-mega-go]').click()); await b.page.waitForTimeout(2500);
+  assert.match(await b.text('#status'), new RegExp(`Mega Build: 5 of ${N} tiles in`));
+  assert.equal(await b.page.evaluate(() => window.bloppitPlacedBoxes().length), 5, 'the crew’s tiles are already in');
+  await autoPlace(b.page, 3); await b.page.waitForTimeout(3500);
+  // A, still on their build, places the next tile: B already placed that one, so it counts once, and the save brings
+  // B's other two into A's build
+  await autoPlace(a.page, 1); await a.page.waitForFunction(() => window.bloppitPlacedBoxes().length >= 8, null, { timeout: 15000 });
+  assert.equal(await a.page.evaluate(() => window.bloppitPlacedBoxes().length), 8);
+  // the crew page: 8 tiles, and each builder's count
+  await crews(a); await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(1200);
+  const page = await a.text('#crewOpen'); assert.match(page, new RegExp(`8 of ${N} tiles built`)); assert.match(page, /You’ve put in 5\./);
+  assert.match(await a.text('#crewList'), new RegExp(`8 of ${N} tiles`));
+  assert.deepEqual(a.errors, []); assert.deepEqual(b.errors, []); await a.ctx.close(); await b.ctx.close();
+});
+
+test('the Crew Mega Build: the last tile finishes it for the crew, it goes on the island, and the maker picks the next one (19 Nov 2026)', { skip: skip() }, async () => {
+  const a = await open('?nosplash=1&welcome=0&chars3d=0', { init: { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = [];
+    for (let i = 0; i < 3; i++) { const k = `m:Model${i}:10`; builds[k] = { n: 10, s: 2, t: 1e12 + i, c: 1, k: 'quick' }; log.push(k); }
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, pick: 'tree' }));
+    localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 3, finished: 3, welcome: 1 })); } } });
+  await a.page.evaluate(() => window.bloppitHome()); await a.page.evaluate(() => document.querySelector('.hm-tile[data-go="crew"]').click()); await a.page.waitForTimeout(1500);
+  await a.page.evaluate(() => document.getElementById('crewNew').click()); await a.page.evaluate(() => document.getElementById('crewMake').click());
+  await a.page.waitForSelector('[data-mega-go]', { timeout: 15000 });
+  await a.page.evaluate(() => document.querySelector('[data-mega-go]').click()); await a.page.waitForTimeout(2500);
+  // every tile, quickly (a test hook that places the right brick, as a tap would)
+  await a.page.evaluate(async () => { for (let i = 0; i < 4000; i++) { if (document.getElementById('trialDlg').open) break; if (!window.bloppitPlaceRight()) await new Promise((r) => setTimeout(r, 60)); } });
+  await a.page.waitForFunction(() => document.getElementById('trialDlg').open && /Mega Build finished/.test(document.getElementById('trTitle').textContent), null, { timeout: 30000 });
+  const w = JSON.parse(await a.page.evaluate(() => localStorage.getItem('bloppit-world-v1'))); assert.ok(w.log.some((k) => /^p:[A-Z0-9]{6}:m0$/.test(k)), w.log.join(','));
+  // Done: back to the crew, finished, and the maker picks the next one
+  await a.page.evaluate(() => document.getElementById('trDone').click()); await a.page.waitForTimeout(2500);
+  assert.equal(await a.view(), 'view-mp'); const pg = await a.text('#crewOpen');
+  assert.match(pg, /Bloppit Harbour: finished!/); assert.match(pg, /Bloppit Harbour is finished!/); assert.match(pg, /Pick the crew’s next Mega Build/); assert.doesNotMatch(pg, /Carry on building/);
+  await a.page.evaluate(() => { document.querySelector('.crew-next input[value="5"]').click(); document.querySelector('[data-crew-pz]').click(); }); await a.page.waitForTimeout(2000);
+  assert.match(await a.text('#crewOpen'), /Pirate Ship: not started yet/);
+  assert.deepEqual(a.errors, []); await a.ctx.close();
 });
 
 test('Link a player: a code works once; tapping Link again with the code that just worked says it worked, not "expired" (15 Nov 2026)', { skip: skip() }, async () => {

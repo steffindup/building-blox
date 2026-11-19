@@ -27,7 +27,12 @@ export const GOAL_BRICKS = 2000;                   // a crew puzzle: 2,000 brick
 // when making the crew (the first is suggested), and picks the next once it's finished. (Steff, 7 Nov 2026)
 export const PUZZLE_COUNT = 10, SUGGESTED_PUZZLE = 0;
 const puzzleOf = (g) => (Number.isInteger(g.puzzle) && g.puzzle >= 0 && g.puzzle < PUZZLE_COUNT ? g.puzzle : SUGGESTED_PUZZLE);
-const progressOf = (g) => g.members.reduce((a, m) => a + m.bricks, 0) - (g.base || 0);   // bricks towards this puzzle
+const progressOf = (g) => g.members.reduce((a, m) => a + m.bricks, 0) - (g.base || 0);   // bricks towards this puzzle (before 19 Nov 2026)
+// The Crew Mega Build is a real build (Steff, 19 Nov 2026): the crew's picture as a brick picture, which anyone in the
+// crew builds as much and as long as they like, carrying on where the crew left off. g.mega = {puzzle, n (bricks),
+// steps, moves: [{b, x, z, by}], done, last}. Bricks from other games no longer count towards it.
+const megaOf = (g) => (g.mega && g.mega.puzzle === puzzleOf(g) ? g.mega : null);
+const megaPlaced = (g) => { const m = megaOf(g); return m ? m.moves.length : 0; };
 // Inside a crew (Steff, 7 Nov 2026): a Crew Quick Game (a live room any member starts; the others see it and join),
 // Pass the Puzzle (one model passed round the crew over days, each member building their share of pages in turn) and
 // the Crew Mega Build (the big puzzle above).
@@ -60,13 +65,16 @@ const memberKey = (pid) => `gmember/${pid}`;            // the crews a pup is in
 export function publicGroup(g, pid) {
   const me = g.members.find((m) => m.id === pid);
   const creator = g.members.find((m) => m.id === g.creator);
-  const members = g.members.map((m) => ({ label: labelFor(m.id), bricks: m.bricks, builds: m.builds, joined: m.joined, me: m.id === pid, creator: m.id === g.creator, muted: !!m.muted }))
+  const mg = megaOf(g), by = new Map(); if (mg) for (const mv of mg.moves) by.set(mv.by, (by.get(mv.by) || 0) + 1);
+  // bricks: what each builder has put into this Mega Build (older apps show the same number)
+  const members = g.members.map((m) => ({ label: labelFor(m.id), bricks: by.get(m.id) || 0, builds: m.builds, joined: m.joined, me: m.id === pid, creator: m.id === g.creator, muted: !!m.muted }))
     .sort((a, b) => b.bricks - a.bricks);
   const posts = g.posts.filter((p) => !(p.reports || []).includes(pid))
     .map((p) => ({ id: p.id, label: labelFor(p.by), me: p.by === pid, phrase: p.phrase, sticker: p.sticker, at: p.at, reported: (p.reports || []).length > 0 && g.creator === pid }));
-  const total = Math.min(GOAL_BRICKS, Math.max(0, progressOf(g)));
-  return { code: g.code, name: nameOf(g), nameIdx: g.name, puzzle: puzzleOf(g), done: g.done || [], goal: GOAL_BRICKS, total,
-    pct: Math.min(100, Math.floor(100 * total / GOAL_BRICKS)),
+  const goal = mg && mg.n ? mg.n : GOAL_BRICKS, total = mg ? mg.moves.length : 0;
+  return { code: g.code, name: nameOf(g), nameIdx: g.name, puzzle: puzzleOf(g), done: g.done || [], goal, total,
+    pct: mg && mg.done ? 100 : Math.min(99, Math.floor(100 * total / goal)),
+    mega: { n: mg ? mg.n : 0, steps: mg ? mg.steps : 0, placed: total, done: !!(mg && mg.done), mine: mg ? (by.get(pid) || 0) : 0, lastMe: !!(mg && mg.done && mg.last === pid), helped: !!(mg && by.get(pid)) },
     builds: g.members.reduce((a, m) => a + m.builds, 0), created: g.created, members, posts, me: me ? { creator: g.creator === pid, muted: !!me.muted } : null,
     pending: g.creator === pid ? (g.pending || []).map((w) => ({ k: w.k, label: labelFor(w.id), at: w.at })) : undefined,
     pendingMe: (g.pending || []).some((w) => w.id === pid), creatorLabel: creator ? labelFor(creator.id) : '',
@@ -123,6 +131,11 @@ export async function handle(method, query, body, store) {
       if (!g.pass) return { status: 404, body: { error: 'This crew has no Pass the Puzzle yet.' } };
       const m = await store.get(passModelKey(code)); if (!m) return { status: 404, body: { error: 'The puzzle has gone. Start a new one.' } };
       return { status: 200, body: { pass: publicPass(g, pid), moves: g.pass.moves, model: m.data } };
+    }
+    if (query.mega) {
+      const g = r.data; if (!g.members.some((m) => m.id === pid)) return { status: 403, body: { error: 'You’re not in this crew.' } };
+      const mg = megaOf(g);
+      return { status: 200, body: { mega: { puzzle: puzzleOf(g), n: mg ? mg.n : 0, steps: mg ? mg.steps : 0, moves: mg ? mg.moves.map(({ b, x, z }) => ({ b, x, z })) : [], done: !!(mg && mg.done) } } };
     }
     return { status: 200, body: { group: publicGroup(r.data, pid) } };
   }
@@ -200,12 +213,32 @@ export async function handle(method, query, body, store) {
     const puzzle = Math.floor(Number(body.puzzle)); if (!(puzzle >= 0 && puzzle < PUZZLE_COUNT)) return { status: 400, body: { error: 'Pick a crew puzzle from the list.' } };
     const r = await update(store, code, (g) => {
       if (g.creator !== pid) return { error: 'Only the crew’s maker can do that.', status: 403 };
-      const prog = progressOf(g);
-      if (prog >= GOAL_BRICKS) { g.done = [...(g.done || []), puzzleOf(g)]; g.base = (g.base || 0) + GOAL_BRICKS; }   // extra bricks carry over
-      else if (prog > 0) return { error: 'The crew has started this puzzle. Finish it first, then pick the next one.', status: 409 };
-      g.puzzle = puzzle;
+      const mg = megaOf(g);
+      if (mg && !mg.done && mg.moves.length) return { error: 'The crew has started this Mega Build. Finish it first, then pick the next one.', status: 409 };
+      g.puzzle = puzzle; g.mega = null;
     });
     return r.status === 200 ? { status: 200, body: { group: publicGroup(r.body.group, pid) } } : r;
+  }
+  if (a === 'mega-add') {
+    // Bricks placed in the Mega Build: each brick goes in once (two builders at once: the first one counts)
+    const puzzle = Math.floor(Number(body.puzzle)), n = Math.floor(Number(body.n)), steps = Math.floor(Number(body.steps));
+    if (!(n > 1 && n < 5000) || !(steps > 0 && steps < 5000)) return { status: 400, body: { error: 'Bad Mega Build size.' } };
+    const moves = cleanMoves(body.moves, n);
+    const r = await update(store, code, (g) => {
+      if (!g.members.some((m) => m.id === pid)) return { error: 'You’re not in this crew.', status: 403 };
+      if (puzzle !== puzzleOf(g)) return { error: 'Your crew’s Mega Build has changed. Open the crew again.', status: 409 };
+      if (!megaOf(g)) g.mega = { puzzle, n, steps, moves: [], done: false, at: now };
+      const mg = g.mega;
+      if (mg.n !== n || mg.steps !== steps) return { error: 'This Mega Build was started with a different version of Bloppit. Update Bloppit to carry on.', status: 409 };
+      if (mg.done) return;
+      const have = new Set(mg.moves.map((m) => m.b));
+      for (const mv of moves) if (!have.has(mv.b)) { have.add(mv.b); mg.moves.push({ ...mv, by: pid }); }
+      mg.at = now;
+      if (mg.moves.length >= mg.n) { mg.done = true; mg.last = pid; g.done = [...(g.done || []), puzzle]; }
+    });
+    if (r.status !== 200) return r;
+    const g = r.body.group, mg = megaOf(g);
+    return { status: 200, body: { group: publicGroup(g, pid), moves: mg ? mg.moves.map(({ b, x, z }) => ({ b, x, z })) : [] } };
   }
   if (a === 'live') {
     // A member started a Crew Quick Game: the room's code shows on the crew for the others (the host still lets each one in)

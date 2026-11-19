@@ -350,6 +350,17 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   left ("3 steps to go, then it passes on"); Done on "Passed on!" goes back to the crew (`trialDialog({crew})`,
   `crewBackTo`), not the Blitz page; anyone in the crew can open it read-only with "See it so far" (`pass.role='look'`:
   `tryPlace` and `autoPlace` refuse). Both versions of Pass the Puzzle say "steps", as the build screen does.
+  **The Crew Mega Build is a real build (Steff, 19 Nov 2026):** the crew's picture (`CREW_PUZZLES`, 28 x 22) becomes a
+  brick picture of tiles on a baseplate (`megaPicture`, `megaSettings`: kind `picture`, about 210 to 260 tiles, row by
+  row from the top). Anyone in the crew taps Start building / Carry on building (`megaOpen`), carries on where the crew
+  left off and builds as long as they like; each tile goes to the server about 2 seconds after it's placed
+  (`megaQueue`/`megaSave`, action `mega-add`, and on leaving the build or the page), and the answer brings the other
+  builders' tiles in (`megaMerge`; the same tile from two builders counts once). Bricks from other games no longer
+  count (the server still takes `contribute` from older apps and ignores it for the Mega Build); a builder's `bricks`
+  is now their tiles in this Mega Build. The server keeps `g.mega = {puzzle, n, steps, moves, done, last}` and refuses
+  a model of another size (another app version). The last tile finishes it: everyone who helped gets it on their
+  island (`p:CODE:mN`, `megaCredit`/`megaCreditFor`), and the maker picks the next one. Existing crews started again
+  from zero. The crew picture fills from the top row, as it's built.
 - **Steff's name in public text is "Steffin du Preez"** (19 Nov 2026), e.g. the press page.
 - **Photo to build** (Build Anything, "Add a photo"; redone 11 Nov 2026 after a 50-photo test): a photo becomes a flat tile
   picture in three sizes, Small (about 135 tiles, the default), Medium (about 250), Big (about 490): the size is a number

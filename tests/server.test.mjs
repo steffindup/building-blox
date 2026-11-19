@@ -118,7 +118,7 @@ test('crew: create → join (pending) → approve → contribute → post → re
   const g1 = await group('GET', { pid: A, code }, null, store); assert.equal(g1.body.group.pending.length, 1);
   const ap = await group('POST', { pid: A }, { action: 'approve', code, k: g1.body.group.pending[0].k }, store); assert.equal(ap.body.group.members.length, 2);
   const mine = await group('GET', { pid: B, mine: 1 }, null, store); assert.equal(mine.body.groups.length, 1);
-  const ct = await group('POST', { pid: B }, { action: 'contribute', code, bricks: 48 }, store); assert.equal(ct.body.group.total, 48); assert.equal(ct.body.group.pct, 2);
+  const ct = await group('POST', { pid: B }, { action: 'contribute', code, bricks: 48 }, store); assert.equal(ct.status, 200); assert.equal(ct.body.group.total, 0);   // other games no longer fill the Mega Build (19 Nov 2026)
   const p = await group('POST', { pid: B }, { action: 'post', code, phrase: 0 }, store); assert.equal(p.body.group.posts[0].phrase, 0); assert.match(p.body.group.posts[0].label, /^[A-Z][a-z]+ [A-Z][a-z]+ \d{3}$/);
   const postId = p.body.group.posts[0].id;
   const r1 = await group('POST', { pid: A }, { action: 'report', code, post: postId }, store); assert.equal(r1.body.group.posts.length, 0);   // hidden for the reporter
@@ -153,12 +153,23 @@ test('crew puzzle: suggested by default, chosen at making, fixed once started, n
   await group('POST', { pid: B }, { action: 'join', code }, store);
   const k = (await group('GET', { pid: A, code }, null, store)).body.group.pending[0].k; await group('POST', { pid: A }, { action: 'approve', code, k }, store);
   assert.equal((await group('POST', { pid: B }, { action: 'puzzle', code, puzzle: 1 }, store)).status, 403);   // only the maker
-  await group('POST', { pid: B }, { action: 'contribute', code, bricks: 900 }, store);
+  await group('POST', { pid: B }, { action: 'contribute', code, bricks: 900 }, store);   // a build elsewhere: doesn't start the Mega Build
+  assert.equal((await group('POST', { pid: A }, { action: 'puzzle', code, puzzle: 3 }, store)).status, 200);
+  // the Mega Build is built brick by brick (19 Nov 2026): B places two, then it can't be changed
+  const add = (who, moves, extra = {}) => group('POST', { pid: who }, { action: 'mega-add', code, puzzle: 3, n: 4, steps: 2, moves, ...extra }, store);
+  const b1 = await add(B, [{ b: 0, x: 0, z: 0 }, { b: 1, x: 1, z: 0 }]); assert.equal(b1.status, 200); assert.equal(b1.body.group.total, 2); assert.equal(b1.body.group.mega.mine, 2);
   assert.equal((await group('POST', { pid: A }, { action: 'puzzle', code, puzzle: 1 }, store)).status, 409);   // started: finish it first
-  await group('POST', { pid: A }, { action: 'contribute', code, bricks: 1300 }, store);
-  const f = (await group('GET', { pid: A, code }, null, store)).body.group; assert.equal(f.pct, 100); assert.equal(f.total, 2000);
+  assert.equal((await add(A, [{ b: 2, x: 2, z: 0 }], { puzzle: 1 })).status, 409);   // not the crew's Mega Build
+  assert.equal((await add(A, [{ b: 2, x: 2, z: 0 }], { n: 5 })).status, 409);   // another version's model
+  // the same brick from two builders counts once; the moves come back for the other device
+  const a1 = await add(A, [{ b: 1, x: 1, z: 0 }, { b: 2, x: 2, z: 0 }]); assert.equal(a1.body.group.total, 3); assert.equal(a1.body.moves.length, 3);
+  assert.deepEqual(a1.body.group.members.map((m) => m.bricks).sort(), [1, 2]);
+  const got = (await group('GET', { pid: B, code, mega: 1 }, null, store)).body.mega; assert.equal(got.moves.length, 3); assert.equal(got.n, 4);
+  assert.equal((await group('GET', { pid: 'c'.repeat(24), code, mega: 1 }, null, store)).status, 403);
+  const a2 = await add(A, [{ b: 3, x: 3, z: 0 }]); const f = a2.body.group;
+  assert.equal(f.pct, 100); assert.equal(f.mega.done, true); assert.equal(f.mega.lastMe, true); assert.deepEqual(f.done, [3]);
   const n = (await group('POST', { pid: A }, { action: 'puzzle', code, puzzle: 1 }, store)).body.group;
-  assert.equal(n.puzzle, 1); assert.deepEqual(n.done, [3]); assert.equal(n.total, 200);   // the extra 200 bricks carry over
+  assert.equal(n.puzzle, 1); assert.deepEqual(n.done, [3]); assert.equal(n.total, 0); assert.equal(n.mega.placed, 0);   // the next one starts empty
 });
 
 test('crew games: a Crew Quick Game shows for the crew; Pass the Puzzle goes round in turns and finishes', async () => {

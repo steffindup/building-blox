@@ -4447,6 +4447,7 @@ function setupPlay(m){
   resetBuild();
 }
 function resetBuild(){
+  if(mega){ const q=mega; mega=null; clearTimeout(q.timer); megaSave(q); }   // a new build: what's waiting goes to the crew first
   relay=null; pass=null;
   $('#trayNote').textContent=TILES?'Tiles go on the dark baseplate. Row 1 is the top of the picture, at the far edge. Follow the yellow outline in the booklet.':'Your first brick can go anywhere on the table. The rest of the model builds out from it. Drag the see-through brick to move it; drag anywhere else to turn the view.';
   placedGroup.clear(); ghostGroup.clear(); hintGroup.clear();
@@ -5204,6 +5205,7 @@ function placeBrick(t,ax,az){
   if(mp) mpSendMove(t,ax,az,autoBusy);
   if(relay) relay.moves.push({b:model.bricks.indexOf(t),x:ax,z:az});
   if(pass) pass.moves.push({b:model.bricks.indexOf(t),x:ax,z:az});
+  if(mega) megaQueue({b:model.bricks.indexOf(t),x:ax,z:az});
   placedN++; placedBoxes.push({x:ax,y:t.y*1.2,z:az,sx:t.sx,sz:t.sz});
   const pc=model.paint&&sel?sel.c:t.c; if(model.paint) model.paint.set(t.x+','+t.y+','+t.z+','+t.sx+','+t.sz,pc);
   const ms=withPrint(new THREE.Mesh(pieceGeo(t),mat(pc)),t); ms.position.set(ax,t.y*1.2,az); placedGroup.add(ms);
@@ -5233,6 +5235,7 @@ function placeBrick(t,ax,az){
     if(relay&&relay.role==='first'&&cur>=relay.half&&cur<model.steps.length){ relayHalfDone(); return; }
     if(pass&&cur>=pass.to&&cur<model.steps.length){ passPagesDone(); return; }
     if(pass&&cur>=model.steps.length) passPagesDone();   // the last pages: the model is finished, for the whole crew
+    if(mega&&cur>=model.steps.length){ megaFinish(); return; }
     if(cur>=model.steps.length&&!mp){ buildFinished(game?'trail':relay&&relay.role==='second'?'relay':'quick'); setTimeout(()=>playReveal(game?winLevel:welcomeOn()?welcomeDone:relay&&relay.role==='second'?relayDone:worldAfterQuick),350); } }, 700);
 }
 // Pippa's half of a mirror build: she places her bricks herself (free, never a hint), then it's your turn to reflect them
@@ -12726,6 +12729,62 @@ async function passOpenTurn(crewCode,look){
   track('pass_turn'); setTab('build'); updateBuildUI(); frameBuild(false);
   setStatus(to>=Q.steps?`The last steps are yours: ${Q.page+1} to ${Q.steps}. ${passLeftText()}`:`Your turn: steps ${Q.page+1} to ${to}. ${passLeftText()}`,'ok');
 }
+/* ---------- The Crew Mega Build, a real build (Steff, 19 Nov 2026) ----------
+   The crew's picture as a brick picture (tiles on a baseplate, row by row). Anyone in the crew opens it, carries on where
+   the crew left off and builds as much as they like; each brick goes to the server a moment after it's placed (two
+   builders at once: each brick counts once, and the other's bricks appear). Bricks from other games don't count. */
+var mega=null;   // {crew, puzzle, n, steps, title, have:Set, pending:[], timer, saving, fin}
+const megaSizes={};
+function megaPicture(i){ const P=CREW_PUZZLES[i]||CREW_PUZZLES[0], W=P.rows[0].length, H=P.rows.length;
+  const c=document.createElement('canvas'); c.width=W; c.height=H; const x=c.getContext('2d');
+  for(let j=0;j<H;j++) for(let k=0;k<W;k++){ const n=parseInt((CREW_PAL[P.rows[j][k]]||'#9FC3E9').slice(1),16); x.fillStyle=PALETTE[nearest(n>>16,(n>>8)&255,n&255,true)][1]; x.fillRect(k,j,1,1); }
+  return {name:P.name,c,W}; }
+const megaSettings=(W)=>({kind:'picture',pw:W,pcol:32,psec:Math.ceil(W/2),size:24,shape:'flat',thick:1,tol:48,maxColors:32,gray:true});
+// How many tiles a crew picture has, before anyone has opened it (worked out on this device, once)
+function megaSize(i){ if(megaSizes[i]) return megaSizes[i]; const pic=megaPicture(i), keepP=photos, keepS={...S};
+  try{ Object.assign(S,megaSettings(pic.W)); photos=[{id:0,name:pic.name,view:'front',sample:true,d:canvasData(pic.c),m:null}]; photos[0].m=computeMask(photos[0].d,S.tol);
+    const m=buildModel(); megaSizes[i]=m&&m.bricks?m.bricks.length:0; }catch(e){ megaSizes[i]=0; } photos=keepP; Object.assign(S,keepS); return megaSizes[i]; }
+function megaTiles(g){ const M=g.mega||{}, n=M.n||megaSize(g.puzzle)||g.goal||1, placed=M.placed||0, done=!!M.done;
+  return {n,placed,done,mine:M.mine||0,pct:done?100:Math.min(99,Math.floor(100*placed/n))}; }
+async function megaOpen(code){
+  crewMsg('Loading the Mega Build…');
+  const j=await crewApi('GET',null,`?code=${code}&mega=1`), M=j.mega;
+  if(M.done){ crewMsg('This Mega Build is finished. Pick the next one on the crew page.','ok'); return; }
+  if(game) endGame(); if(mp) mpLeave(); dismissResume();
+  const pic=megaPicture(M.puzzle);
+  photos=[{id:++pid,name:pic.name,view:'front',sample:true,d:canvasData(pic.c),png:pic.c.toDataURL('image/png'),m:null}];
+  setControls(megaSettings(pic.W)); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild(); crewMsg('');
+  if(!model){ crewMsg('Couldn’t make the Mega Build just now.','err'); return; }
+  if(M.n&&(model.bricks.length!==M.n||model.steps.length!==M.steps)){ crewMsg('Your crew started this Mega Build with a different version of Bloppit. Update Bloppit to carry on.','err'); return; }
+  rebuildPlaced();
+  const have=new Set(); for(const mv of M.moves){ applyMoveCore(mv); have.add(mv.b); }
+  megaAdvance(); reconcilePieces(); run={miss:0,hints:new Set(),auto:0,memory:false,trouble:new Map()};
+  mega={crew:code,puzzle:M.puzzle,n:model.bricks.length,steps:model.steps.length,title:pic.name,have,pending:[],timer:0,saving:false,fin:false};
+  track('mega_open'); setTab('build'); updateBuildUI(); frameBuild(false);
+  setStatus(`${pic.name}, your crew’s Mega Build: ${have.size} of ${mega.n} tiles in. Build as much as you like; it saves as you go.`,'ok');
+}
+function megaAdvance(){ while(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))) cur++; }
+const megaLater=(q,ms)=>{ clearTimeout(q.timer); q.timer=setTimeout(()=>{ q.timer=0; megaSave(q); },ms); };
+function megaQueue(mv){ const q=mega; if(!q) return; q.have.add(mv.b); q.pending.push(mv); megaLater(q,2000); }
+async function megaSave(q){ if(!q||q.saving||!q.pending.length) return; q.saving=true; const send=q.pending.splice(0);
+  try{ const j=await crewApi('POST',{action:'mega-add',code:q.crew,puzzle:q.puzzle,n:q.n,steps:q.steps,moves:send}); crewMineAt=0; megaMerge(q,j.moves||[]); }
+  catch(e){ q.pending.unshift(...send); if(mega===q) setStatus('Couldn’t save to your crew just now. Trying again…','err'); q.saving=false; megaLater(q,8000); return; }
+  q.saving=false; if(q.pending.length&&!q.timer) megaLater(q,1500); }
+// Bricks the rest of the crew placed meanwhile appear in your build
+function megaMerge(q,moves){ if(mega!==q||!model) return; let added=0;
+  for(const mv of moves){ if(q.have.has(mv.b)) continue; q.have.add(mv.b); applyMoveCore(mv); added++; }
+  if(!added) return; const was=cur; megaAdvance(); reconcilePieces(); updateBuildUI();
+  if(cur!==was&&cur<model.steps.length) setStatus(`Your crew built some of this too. On to step ${cur+1}.`,'ok');
+  if(cur>=model.steps.length) megaFinish(); }
+addEventListener('pagehide',()=>{ if(mega) megaSave(mega); });
+function megaCredit(code,puzzle,n){ const o=worldStore(), key=`p:${code}:m${puzzle}`; if(o.builds[key]) return false;
+  o.builds[key]={n,s:3,k:'pass',t:Date.now(),c:1}; o.log.push(key); worldSet(o); worldStrips(); renderHome(); return true; }
+// Everyone who put tiles in gets the finished picture on their island (the finisher gets it at the finish)
+function megaCreditFor(g){ const M=g&&g.mega; if(!M||!M.done||!M.helped) return; if(megaCredit(g.code,g.puzzle,M.n)) track('mega_credit'); }
+async function megaFinish(){ const q=mega; if(!q||q.fin) return; q.fin=true; clearTimeout(q.timer); q.timer=0;
+  while(q.saving) await new Promise(r=>setTimeout(r,200)); await megaSave(q);
+  megaCredit(q.crew,q.puzzle,q.n); track('mega_finished');
+  setTimeout(()=>playReveal(()=>trialDialog({icon:'🏆',title:'Mega Build finished!',note:`Your crew built the ${q.title} together. It’s on your island now, and on the island of everyone who helped.`,card:false,crew:q.crew})),350); }
 async function crewBackTo(code){ setTab('mp','crews'); try{ crewMineAt=0; await renderCrews(true); const g=crewMine.find(x=>x.code===code); if(g) renderCrew(g); }catch(e){} }
 async function passPagesDone(){
   const q=pass; if(!q||q.sent) return; q.sent=true;
@@ -12756,6 +12815,7 @@ $('#crewOpen').addEventListener('click',async e=>{
     try{ await crewApi('POST',{action:'leave',code:b.dataset.crewLeave}); track('crew_left'); crewMineAt=0; await renderCrews(true); crewMode('list');
       crewMsg(last?`You left ${nm}. You were its last builder, so the crew is gone.`:`You left ${nm}.`,'ok'); }
     catch(x){ b.disabled=false; crewMsg(x.message,'err'); } return; }
+  if(b.dataset.megaGo){ try{ await megaOpen(code); }catch(x){ crewMsg(x.message,'err'); } return; }
   if(b.dataset.passLook){ try{ await passOpenTurn(code,true); }catch(x){ crewMsg(x.message,'err'); } return; }
   if(b.dataset.passStart){ try{ passStart(code,$('#crewPassModel').value,g?g.members.length:2,+$('#crewPassPer').value); }catch(x){ crewMsg(x.message,'err'); } return; }
   if(b.dataset.passGo){ try{ await passOpenTurn(code); }catch(x){ crewMsg(x.message,'err'); } return; }
@@ -12803,7 +12863,7 @@ async function crewApi(method,body,query=''){
 function crewPuzzleSVG(i,frac=1,label){
   const P=CREW_PUZZLES[i]||CREW_PUZZLES[0], H=P.rows.length, W=P.rows[0].length, N=W*H, placed=Math.floor(Math.max(0,Math.min(1,frac))*N);
   let out='', k=0;
-  for(let y=H-1;y>=0;y--) for(let x=0;x<W;x++,k++){ const c=CREW_PAL[P.rows[y][x]]||'#ccc', on=k<placed;
+  for(let y=0;y<H;y++) for(let x=0;x<W;x++,k++){ const c=CREW_PAL[P.rows[y][x]]||'#ccc', on=k<placed;   // top row first, as the Mega Build is built
     out+=`<g${on?'':' opacity=".22"'}><rect x="${x*10+.5}" y="${y*10+.5}" width="9" height="9" rx="1.6" fill="${c}"/>${on?`<circle cx="${x*10+5}" cy="${y*10+5}" r="2.6" fill="${c}" stroke="#000" stroke-opacity=".16" stroke-width=".8"/>`:''}</g>`; }
   return `<svg class="crew-pz" viewBox="0 0 ${W*10} ${H*10}" role="img" aria-label="${escapeHTML(label||`${P.name}, ${Math.round(frac*100)}% built`)}"><rect width="${W*10}" height="${H*10}" rx="6" fill="#E9EEF3"/>${out}</svg>`;
 }
@@ -12833,7 +12893,7 @@ function crewNews(g){
     for(const m of g.members){ if(m.me) continue; const was=s.m[m.label];
       if(was==null) out.push(`${m.label} joined the crew`); else if(m.bricks>was) out.push(`${m.label} added ${(m.bricks-was).toLocaleString()} brick${m.bricks-was===1?'':'s'}`); }
     const P=CREW_PUZZLES[g.puzzle]||CREW_PUZZLES[0];
-    if((g.done||[]).length>s.d) out.push(`${(CREW_PUZZLES[g.done[g.done.length-1]]||P).name} was finished, and ${P.name} is next`);
+    if((g.done||[]).length>s.d) out.push(g.mega&&g.mega.done?`${P.name} is finished! 🎉`:`${(CREW_PUZZLES[g.done[g.done.length-1]]||P).name} was finished, and ${P.name} is next`);   // a finished Mega Build stays until the maker picks the next
     else if(g.pct>=100&&s.t<g.goal) out.push(`${P.name} is finished! 🎉`);
     else if(g.total>s.t) out.push(g.pct?`${P.name} is now ${g.pct}% built`:`${P.name} has been started`);
     const nb=g.posts.filter(x=>!x.me&&!s.p.includes(x.id)).length; if(nb) out.push(`${nb} new on the crew board`);
@@ -12870,9 +12930,10 @@ async function renderCrews(force){
   const n=crewMine.length, full=n>=CREW_MAX;
   $('#crewCount').hidden=!n; $('#crewCount').textContent=`Your crews · ${n} of ${CREW_MAX}`;
   $('#crewList').innerHTML=n?crewMine.map(g=>{ const P=CREW_PUZZLES[g.puzzle]||CREW_PUZZLES[0], news=crewNews(g);
-    return `<button class="crew-tile" type="button" data-crew="${g.code}">${crewPuzzleSVG(g.puzzle,g.total/g.goal)}<span class="ct-txt"><b>${escapeHTML(g.name)}</b>${news?'<em class="crew-new">New</em>':''}
+    const T=megaTiles(g);
+    return `<button class="crew-tile" type="button" data-crew="${g.code}">${crewPuzzleSVG(g.puzzle,T.n?T.placed/T.n:0)}<span class="ct-txt"><b>${escapeHTML(g.name)}</b>${news?'<em class="crew-new">New</em>':''}
       <span class="ct-meta">${g.members.length} builder${g.members.length===1?'':'s'} · ${escapeHTML(P.name)}${g.pendingMe?' · waiting to be let in':''}${g.pending&&g.pending.length?` · <b>${g.pending.length} waiting to join</b>`:''}</span>
-      <span class="bar"><i style="width:${Math.max(2,g.pct)}%"></i></span><span class="ct-meta">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks</span></span></button>`; }).join('')
+      <span class="bar"><i style="width:${Math.max(2,T.pct)}%"></i></span><span class="ct-meta">${T.done?'Mega Build finished 🎉':`${T.placed.toLocaleString()} of ${T.n.toLocaleString()} tiles`}</span></span></button>`; }).join('')
     :`<div class="crew-empty"><b>No crews yet</b><span>A crew is a group of friends you build with again and again: a Crew Quick Game to play live, Pass the Puzzle round the crew, and a Crew Mega Build you all add bricks to.</span></div>`;
   $('#crewNew').disabled=full; $('#crewNew').textContent=full?`You’re in ${CREW_MAX} crews, the most`:'+ Make a new crew';
   if(crewOpenCode){ const g=crewMine.find(x=>x.code===crewOpenCode); if(g) renderCrew(g); }
@@ -12899,12 +12960,14 @@ function renderCrew(g){
         <div style="display:flex;gap:8px;flex-wrap:wrap"><select class="inp" id="crewPassModel" style="flex:1;min-width:180px" aria-label="Puzzle to pass round"></select>
           <select class="inp" id="crewPassPer" style="flex:0 1 190px" aria-label="Steps in each turn">${[2,3,4,5,6,8,10].map(n=>`<option value="${n}"${n===4?' selected':''}>${n} steps a turn</option>`).join('')}<option value="0">Share it evenly</option></select>
           <button class="primary sm" type="button" data-pass-start="1">Start Pass the Puzzle</button></div>`}`}</section>`;
-  // Crew Mega Build: the big puzzle everyone's bricks go to
-  const mega=`<section class="crew-game"><h3>Crew Mega Build</h3><div class="crew-mega">${crewPuzzleSVG(g.puzzle,g.total/g.goal)}<div>
-      <p class="note" style="margin:0"><b>${escapeHTML(P.name)}</b>: ${g.pct>=100?'finished! 🎉':g.total?(g.pct?g.pct+'% built':'just started'):'not started yet'}</p>
-      <p class="note" style="margin:4px 0 0">${g.total.toLocaleString()} of ${g.goal.toLocaleString()} bricks · every brick anyone in the crew builds, in any game, goes here.</p>
-      <div class="bar"><i style="width:${Math.max(2,g.pct)}%"></i></div></div></div>
-    ${maker&&(g.pct>=100||!g.total)?`<div class="crew-next"><b>${g.pct>=100?'Pick the crew’s next Mega Build':'Change the crew’s Mega Build'}</b><span class="note">${g.pct>=100?'Well built, crew! Bricks built from now on go to the next one.':'You can change it until someone builds.'}</span><div class="crew-pick">${crewPickHTML(g.pct>=100?-1:g.puzzle,g.done.concat(g.pct>=100?[g.puzzle]:[]))}</div><button class="primary sm" type="button" data-crew-pz="1">${g.pct>=100?'Start this one':'Use this one'}</button></div>`:''}</section>`;
+  // Crew Mega Build: a big brick picture the crew builds together, brick by brick (Steff, 19 Nov 2026)
+  const T=megaTiles(g);
+  const mega=`<section class="crew-game"><h3>Crew Mega Build</h3><div class="crew-mega">${crewPuzzleSVG(g.puzzle,T.n?T.placed/T.n:0)}<div>
+      <p class="note" style="margin:0"><b>${escapeHTML(P.name)}</b>: ${T.done?'finished! 🎉':T.placed?`${T.placed.toLocaleString()} of ${T.n.toLocaleString()} tiles built`:`not started yet · ${T.n.toLocaleString()} tiles`}</p>
+      <p class="note" style="margin:4px 0 0">${T.done?'Built together by your crew.':'A big brick picture your crew builds together. Anyone can build as much as they like, and the next builder carries on from there.'}${T.mine?` You’ve put in ${T.mine.toLocaleString()}.`:''}</p>
+      <div class="bar"><i style="width:${Math.max(2,T.pct)}%"></i></div>
+      ${!T.done&&mine?`<div class="win-btns" style="justify-content:flex-start;margin-top:8px"><button class="primary sm" type="button" data-mega-go="1">${T.placed?'Carry on building':'Start building'}</button></div>`:''}</div></div>
+    ${maker&&(T.done||!T.placed)?`<div class="crew-next"><b>${T.done?'Pick the crew’s next Mega Build':'Change the crew’s Mega Build'}</b><span class="note">${T.done?'Well built, crew! Pick the next picture to build together.':'You can change it until someone builds.'}</span><div class="crew-pick">${crewPickHTML(T.done?-1:g.puzzle,g.done)}</div><button class="primary sm" type="button" data-crew-pz="1">${T.done?'Start this one':'Use this one'}</button></div>`:''}</section>`;
   box.innerHTML=`<button class="crumb" id="crewClose" type="button">‹ Your Crews</button><div class="crew-top"><div><h2>${escapeHTML(g.name)} <span class="cc">${g.code}</span></h2>
       <p class="note" style="margin:4px 0 0">${g.members.length} builder${g.members.length===1?'':'s'} · ${g.builds} build${g.builds===1?'':'s'}${!mine?` · ${escapeHTML(P.name)} Mega Build`:''}</p></div>
       <div class="win-btns" style="justify-content:flex-start">${mine?`<button class="ghost" type="button" data-crew-share="${g.code}">Share the code</button>`:g.pendingMe?'<span class="note">Waiting for the crew’s maker to let you in.</span>':`<button class="primary sm" type="button" data-crew-join="${g.code}">Ask to join</button>`}</div></div>
@@ -12917,7 +12980,7 @@ function renderCrew(g){
       <p class="note" style="margin:6px 0 0">Only these phrases and stickers can be sent. Report hides a post for you and tells the crew’s maker; three reports pause the sender.</p></div>`:''}
     ${mine?`<div class="win-btns" style="justify-content:flex-start"><button class="ghost" type="button" data-crew-leave="${g.code}">Leave this crew</button></div>`:''}`;   // a player can leave by themselves (Steff, 19 Nov 2026); a grown-up still can in the Grown-ups corner
   if($('#crewPassModel')){ mpModelOptions('#crewPassModel'); const o=$('#crewPassModel').querySelector('optgroup[label="Medium"] option'); if(o) $('#crewPassModel').value=o.value; }
-  passCredit(g);
+  passCredit(g); megaCreditFor(g);
   scrollTo(0,0);
   if(mine){ const i=crewMine.findIndex(x=>x.code===g.code); if(i>=0) crewMine[i]=g; crewSeenSet(g); crewDots(); }   // opened: it's all seen now
 }
