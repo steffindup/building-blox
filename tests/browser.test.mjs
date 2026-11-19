@@ -2132,7 +2132,7 @@ test('Together is one category: the menu has Play with Friends and Your Crews, t
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('a crew: two quick taps on Make the crew make one crew; Share sends the crew name and a link that opens its join page', { skip: skip() }, async () => {
+test('a crew: two quick taps on Make the crew make one crew; Share sends the crew name and a link that opens its join page; Leave this crew', { skip: skip() }, async () => {
   const seed = { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = [];
     for (let i = 0; i < 3; i++) { const k = `m:Model${i}:10`; builds[k] = { n: 10, s: 2, t: 1e12 + i, c: 1, k: 'quick' }; log.push(k); }
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 30, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, isle: 1, arrived: 1, pick: 'tree' }));
@@ -2157,6 +2157,13 @@ test('a crew: two quick taps on Make the crew make one crew; Share sends the cre
   const b = await open('?nosplash=1&chars3d=0&code=' + code, { init: seed });
   await b.page.waitForSelector('[data-crew-join]', { timeout: 20000 });
   assert.match(await b.text('#crewOpen'), /Snappy Seahorse Tribe/);
+  // the maker leaves by themselves, on the crew's own page: the first tap asks, the second leaves; the last builder out ends the crew (Steff, 19 Nov 2026)
+  await a.page.evaluate(() => document.querySelector('#crewList [data-crew]').click()); await a.page.waitForSelector('[data-crew-leave]');
+  await a.page.evaluate(() => document.querySelector('[data-crew-leave]').click());
+  assert.equal(await a.text('[data-crew-leave]'), 'Tap again to leave');
+  await a.page.evaluate(() => document.querySelector('[data-crew-leave]').click());
+  await a.page.waitForFunction(() => /the crew is gone/.test(document.getElementById('crewMsg').textContent), null, { timeout: 15000 });
+  assert.equal(await a.page.evaluate(() => document.querySelectorAll('#crewList [data-crew]').length), 0);
   assert.deepEqual(a.errors, []); assert.deepEqual(b.errors, []); await a.ctx.close(); await b.ctx.close();
 });
 

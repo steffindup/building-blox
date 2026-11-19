@@ -343,6 +343,8 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   Ten Mega Builds from 19 Nov 2026 (six added: Castle, Pirate Ship, Coral Reef, Steam Train, Treehouse, Volcano
   Island; drawn in `design/mega-builds/`); `PUZZLE_COUNT` in `group/logic.mjs` matches. An older app shows a crew on a
   new one with the Harbour picture.
+  A player can leave a crew on its own page ("Leave this crew", tap twice; Steff, 19 Nov 2026); the Grown-ups corner's
+  "Take out" stays. The last builder out ends the crew.
 - **Steff's name in public text is "Steffin du Preez"** (19 Nov 2026), e.g. the press page.
 - **Photo to build** (Build Anything, "Add a photo"; redone 11 Nov 2026 after a 50-photo test): a photo becomes a flat tile
   picture in three sizes, Small (about 135 tiles, the default), Medium (about 250), Big (about 490): the size is a number

@@ -12734,6 +12734,12 @@ function passCredit(g){
 }
 $('#crewOpen').addEventListener('click',async e=>{
   const b=e.target.closest('button'); if(!b) return; const code=crewOpenCode, g=crewMine.find(x=>x.code===code);
+  if(b.dataset.crewLeave){   // tap twice: the first tap asks
+    if(!b.dataset.confirm){ b.dataset.confirm='1'; b.textContent='Tap again to leave'; setTimeout(()=>{ if(b.isConnected){ delete b.dataset.confirm; b.textContent='Leave this crew'; } },4000); return; }
+    b.disabled=true; const nm=g?g.name:'the crew', last=g&&g.members.length<=1;
+    try{ await crewApi('POST',{action:'leave',code:b.dataset.crewLeave}); track('crew_left'); crewMineAt=0; await renderCrews(true); crewMode('list');
+      crewMsg(last?`You left ${nm}. You were its last builder, so the crew is gone.`:`You left ${nm}.`,'ok'); }
+    catch(x){ b.disabled=false; crewMsg(x.message,'err'); } return; }
   if(b.dataset.passStart){ try{ passStart(code,$('#crewPassModel').value,g?g.members.length:2); }catch(x){ crewMsg(x.message,'err'); } return; }
   if(b.dataset.passGo){ try{ await passOpenTurn(code); }catch(x){ crewMsg(x.message,'err'); } return; }
   if(b.dataset.crewLiveStart){ crewLiveFor=code; track('crew_live_start'); setTab('mp','start'); mpMsg('Pick a puzzle and make the room: your crew will see it.'); return; }
@@ -12889,7 +12895,8 @@ function renderCrew(g){
     <div><b>Builders</b><div class="crew-members" style="margin-top:6px">${g.members.map(m=>`<span class="${m.me?'me':''}${m.muted?' muted':''}">${escapeHTML(m.label)}${m.me?' (you)':''}${m.creator?' · maker':''} · ${m.bricks}${maker&&!m.me?` <button class="rep" type="button" data-crew-kick="${escapeHTML(m.label)}" title="Take out of the crew">✕</button>`:''}${maker&&m.muted?` <button class="rep" type="button" data-crew-unmute="${escapeHTML(m.label)}">unpause</button>`:''}</span>`).join('')}</div></div>
     ${mine?`<div><b>Crew board</b><div class="crew-feed no-di" id="crewFeed">${g.posts.length?g.posts.slice().reverse().map(p=>`<div class="crew-post${p.me?' me':''}"><span class="who">${p.me?'You':escapeHTML(p.label)}</span><span class="what${p.sticker!=null?' st':''}">${p.sticker!=null?CREW_STICKERS[p.sticker]||'':escapeHTML(CREW_PHRASES[p.phrase]||'')}</span>${p.me?'':`<button class="rep" type="button" data-crew-report="${p.id}">Report</button>`}</div>`).join(''):'<p class="note">Nothing on the board yet.</p>'}</div>
       ${g.me.muted?'<p class="note">Your posts here are paused while a report is looked at.</p>':`<div class="crew-say no-di">${CREW_PHRASES.map((t,i)=>`<button type="button" data-crew-say="${i}">${escapeHTML(t)}</button>`).join('')}${CREW_STICKERS.map((t,i)=>`<button class="st" type="button" data-crew-st="${i}">${t}</button>`).join('')}</div>`}
-      <p class="note" style="margin:6px 0 0">Only these phrases and stickers can be sent. Report hides a post for you and tells the crew’s maker; three reports pause the sender.</p></div>`:''}`;
+      <p class="note" style="margin:6px 0 0">Only these phrases and stickers can be sent. Report hides a post for you and tells the crew’s maker; three reports pause the sender.</p></div>`:''}
+    ${mine?`<div class="win-btns" style="justify-content:flex-start"><button class="ghost" type="button" data-crew-leave="${g.code}">Leave this crew</button></div>`:''}`;   // a player can leave by themselves (Steff, 19 Nov 2026); a grown-up still can in the Grown-ups corner
   if($('#crewPassModel')){ mpModelOptions('#crewPassModel'); const o=$('#crewPassModel').querySelector('optgroup[label="Medium"] option'); if(o) $('#crewPassModel').value=o.value; }
   passCredit(g);
   scrollTo(0,0);
