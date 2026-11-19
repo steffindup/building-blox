@@ -25,7 +25,7 @@ export const STICKERS = ['🦦', '🧱', '⭐', '🏝️', '🎉', '👏', '🔥
 export const GOAL_BRICKS = 2000;                   // a crew puzzle: 2,000 bricks built together finish it
 // The crew puzzles (drawn in public/game/index.html, CREW_PUZZLES): large and only for crews. The maker picks one
 // when making the crew (the first is suggested), and picks the next once it's finished. (Steff, 7 Nov 2026)
-export const PUZZLE_COUNT = 4, SUGGESTED_PUZZLE = 0;
+export const PUZZLE_COUNT = 10, SUGGESTED_PUZZLE = 0;
 const puzzleOf = (g) => (Number.isInteger(g.puzzle) && g.puzzle >= 0 && g.puzzle < PUZZLE_COUNT ? g.puzzle : SUGGESTED_PUZZLE);
 const progressOf = (g) => g.members.reduce((a, m) => a + m.bricks, 0) - (g.base || 0);   // bricks towards this puzzle
 // Inside a crew (Steff, 7 Nov 2026): a Crew Quick Game (a live room any member starts; the others see it and join),

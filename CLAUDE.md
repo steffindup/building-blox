@@ -340,6 +340,10 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   disabled while it runs, and the server gives back the same crew when an identical one was made by the same player in
   the last 10 minutes (Steff had two after one tap on a slow connection). `pupSync` called while a sync is running now
   waits for it (it used to return at once, with no Player Unique ID yet).
+  Ten Mega Builds from 19 Nov 2026 (six added: Castle, Pirate Ship, Coral Reef, Steam Train, Treehouse, Volcano
+  Island; drawn in `design/mega-builds/`); `PUZZLE_COUNT` in `group/logic.mjs` matches. An older app shows a crew on a
+  new one with the Harbour picture.
+- **Steff's name in public text is "Steffin du Preez"** (19 Nov 2026), e.g. the press page.
 - **Photo to build** (Build Anything, "Add a photo"; redone 11 Nov 2026 after a 50-photo test): a photo becomes a flat tile
   picture in three sizes, Small (about 135 tiles, the default), Medium (about 250), Big (about 490): the size is a number
   of tiles, so a tall photo and a wide one are the same build. At most 8 flat colours, no speckle (`photoPicture`); a

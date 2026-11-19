@@ -971,7 +971,7 @@ test('a crew: make, ask to join, let in, a build adds bricks, a phrase on the bo
   const code = await a.page.evaluate(() => document.querySelector('#crewOpen .cc')?.textContent); assert.match(code || '', /^[A-Z0-9]{6}$/);
   assert.match(await a.text('#crewOpen h2'), /Brave Puffin Patrol/);   // the crew's own name, picked word by word
   assert.match(await a.text('#crewOpen'), /Space Station: not started yet/);   // the puzzle picked when making the crew
-  assert.equal(await a.page.evaluate(() => document.querySelectorAll('#crewPick .crew-pzopt').length), 4);
+  assert.equal(await a.page.evaluate(() => document.querySelectorAll('#crewPick .crew-pzopt').length), 10);
   await hub(b);
   await b.page.evaluate((c) => { document.getElementById('crewCodeIn').value = c; document.getElementById('crewJoin').click(); }, code); await b.page.waitForSelector('[data-crew-join]', { timeout: 15000 });
   await b.page.evaluate(() => document.querySelector('[data-crew-join]').click()); await b.page.waitForTimeout(1200);

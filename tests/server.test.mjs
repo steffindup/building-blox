@@ -147,7 +147,7 @@ test('crew puzzle: suggested by default, chosen at making, fixed once started, n
   mem.clear();
   const A = 'a'.repeat(24), B = 'b'.repeat(24);
   const d = await group('POST', { pid: A }, { action: 'create', name: 0 }, store); assert.equal(d.body.group.puzzle, 0);
-  assert.equal((await group('POST', { pid: A }, { action: 'create', name: 0, puzzle: 9 }, store)).status, 400);
+  assert.equal((await group('POST', { pid: A }, { action: 'create', name: 0, puzzle: 10 }, store)).status, 400);
   const c = await group('POST', { pid: A }, { action: 'create', name: 1, puzzle: 2 }, store); const code = c.body.group.code; assert.equal(c.body.group.puzzle, 2);
   assert.equal((await group('POST', { pid: A }, { action: 'puzzle', code, puzzle: 3 }, store)).body.group.puzzle, 3);   // before anyone builds: free to change
   await group('POST', { pid: B }, { action: 'join', code }, store);
