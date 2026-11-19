@@ -489,8 +489,12 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
 - **A push to `main` cancels a running TestFlight build, even a push that builds nothing** (19 Nov 2026: a notes-only
   commit pushed two minutes after the iPhone Duo fix cancelled its TestFlight build; `cancel_previous_builds`). Push
   notes with the work, or wait until the build has finished (`gh api …/commits/<sha>/check-runs`).
-- **Codemagic did not start a build for a push to the branch `xcode-27`** (19 Nov 2026), although its workflow names
-  that branch: the check has to be started by hand in Codemagic (branch `xcode-27`, "iOS build check on Xcode 27").
+- **The Xcode 27 check builds sat in Codemagic's queue and never started** (19 Nov 2026). A push to `xcode-27` did
+  start one (it shows in Codemagic, but builds started by hand or on a branch may not show on GitHub); it waited about
+  18 minutes for a machine, and because builds run one at a time, the TestFlight build of `main` waited behind it until
+  it was cancelled. A second one, started by hand, was still queued after 30 minutes. Before relying on Xcode 27.2 on
+  `mac_mini_m2`, check in Codemagic that such a build gets a machine (perhaps `mac_mini_m4`), and never leave one queued
+  ahead of a release.
 - **Xcode 27 by April 2027.** Apple's notice on build 230 (ITMS-90725, 18 Nov 2026): from April 2027 uploads must be
   built with the iOS 27 SDK. `codemagic.yaml` pins `xcode: 26.5` in both iOS workflows ("latest" was landing on
   overloaded machines), so move the pin to a 27 version, and test a build, well before then.
