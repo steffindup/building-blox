@@ -225,7 +225,7 @@ test('Real hands: Big Ben built start to finish with clicks only (parts box, Tak
   const seed = { fn: () => { localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); } };
   const t = await open('?nosplash=1&welcome=0&weekly=2026-11-09', { init: seed, viewport: { width: 1100, height: 850 } });
   const { page } = t;
-  await page.waitForFunction(() => /^Go!/.test(document.getElementById('status').textContent), null, { timeout: 30000 });
+  await page.waitForFunction(() => /^(Go!|Take your time)/.test(document.getElementById('status').textContent), null, { timeout: 30000 });
   const placed = () => page.evaluate(() => { const m = document.body.innerText.match(/(\d+) of (\d+) placed/i); return m ? [+m[1], +m[2]] : null; });
   let turned = 0, dial = false;
   for (let guard = 0; guard < 80; guard++) {
