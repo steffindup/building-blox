@@ -486,6 +486,11 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   still points at a website file. On 18 Nov 2026 the new footer link to the Videos page (`/videos/`) matched its
   `/video` test and every app build failed at "Install and package the web app" until the test was made exact
   (`art/`, `video/`). A new website link in those pages can trip it: run `node scripts/build-www.mjs` in `mobile/`.
+- **A push to `main` cancels a running TestFlight build, even a push that builds nothing** (19 Nov 2026: a notes-only
+  commit pushed two minutes after the iPhone Duo fix cancelled its TestFlight build; `cancel_previous_builds`). Push
+  notes with the work, or wait until the build has finished (`gh api …/commits/<sha>/check-runs`).
+- **Codemagic did not start a build for a push to the branch `xcode-27`** (19 Nov 2026), although its workflow names
+  that branch: the check has to be started by hand in Codemagic (branch `xcode-27`, "iOS build check on Xcode 27").
 - **Xcode 27 by April 2027.** Apple's notice on build 230 (ITMS-90725, 18 Nov 2026): from April 2027 uploads must be
   built with the iOS 27 SDK. `codemagic.yaml` pins `xcode: 26.5` in both iOS workflows ("latest" was landing on
   overloaded machines), so move the pin to a 27 version, and test a build, well before then.
