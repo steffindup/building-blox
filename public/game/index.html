@@ -377,8 +377,9 @@ body.on-build .appfoot{display:none}
 }
 /* holding a brick on a short screen: the progress line steps aside for the arrows and Place */
 @media (max-width:900px) and (max-height:760px){ body.on-build .playcol>.card:has(#placePad:not([hidden])) .tray-foot,body.on-build .playcol>.card:has(#placePad:not([hidden])) #handNote{display:none} body.on-build .playcol>#buildStage{min-height:160px} }
-/* phones held sideways: booklet on the left, the build on the right, one slim header */
-@media (max-height:500px) and (min-width:560px){
+/* phones held sideways, and a wide screen that isn't tall (iPhone Duo open, 890 x 626; Steff, 19 Nov 2026): booklet on
+   the left, the build on the right, one slim header */
+@media (max-height:500px) and (min-width:560px),(min-width:700px) and (max-width:900px) and (min-aspect-ratio:4/3){
   body.on-build .build-grid{display:grid!important;grid-template-columns:minmax(200px,32%) minmax(0,1fr);gap:10px}
   body.on-build .build-grid>.bookpane{overflow:auto;max-height:100%;align-self:start}
   body.on-build .build-grid .bp-head{display:none}

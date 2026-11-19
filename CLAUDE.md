@@ -328,6 +328,11 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
 - **Phones (build area 760px wide or less)**: the camera frames the build above the message and Bloppit (`bottomCover`
   in `playFit`); Bloppit's words are hidden (his reactions stay; a "Play next" bubble still
   shows); a long message folds to one line after 4.5 s. Mirror puzzles frame both halves.
+- **iPhone Duo** (Apple's foldable, Oct 2026; checked 19 Nov 2026): folded 466 x 678 points (outer 1398 x 2034 px),
+  open 890 x 626 (inner 2670 x 1878 px, wider than tall), both at 3x. The same app runs on it. Open, the build page puts
+  the booklet beside the build (the "phones held sideways" rule now also covers 700 to 900 wide screens at 4:3 or wider);
+  folded and open upright it stacks as on a phone. Folding mid-build keeps the brick in hand. A browser test covers all
+  three sizes.
 - **My films**: an island's arrival film is listed once the island is found, even if it played on setting off.
 - **Blitz**: a "Let's go" before the clock starts; a wrong brick adds 1 second; the race-o-meter. In Bloppitopia, a clear
   next race that gets harder; the Grand Prix counts in the counter (race x of 20). Targets for a child: Warm-up won almost

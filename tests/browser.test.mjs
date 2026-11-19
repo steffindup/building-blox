@@ -2281,6 +2281,26 @@ test('the Crew Mega Build: the last tile finishes it for the crew, it goes on th
   assert.deepEqual(a.errors, []); await a.ctx.close();
 });
 
+test('iPhone Duo: the build page fits folded (466 x 678), open (890 x 626) and open upright; folding mid-build keeps the brick in hand (19 Nov 2026)', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0&chars3d=0', { viewport: { width: 466, height: 678 }, touch: true, init: { fn: () => { if (localStorage.getItem('bloppit-world-v1')) return;
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); } } });
+  await t.page.evaluate(() => { window.bloppitHome(); document.querySelector('[data-go="otter"]').click(); }); await t.page.waitForTimeout(600);
+  await t.page.evaluate(() => document.getElementById('qpIsle')?.click()); await t.page.waitForTimeout(600);
+  await t.page.evaluate(() => [...document.querySelectorAll('#view-game button')].find((x) => /Heart/.test(x.textContent) && x.offsetParent)?.click()); await t.page.waitForTimeout(800);
+  await t.page.evaluate(() => [...document.querySelectorAll('button')].find((x) => /^(Play|Start|Build)/.test(x.textContent.trim()) && x.offsetParent)?.click()); await t.page.waitForTimeout(1500);
+  assert.equal(await t.view(), 'view-build'); await autoPlace(t.page, 2);
+  await t.page.evaluate(() => window.bloppitHold(0)); await t.page.waitForTimeout(400); const held = await t.page.evaluate(() => JSON.stringify(window.bloppitSel()));
+  const fit = () => t.page.evaluate(() => { const st = document.getElementById('buildStage').getBoundingClientRect(), bx = document.getElementById('openBox').getBoundingClientRect(), bk = document.getElementById('bpCard').getBoundingClientRect();
+    return { w: Math.round(st.width), h: Math.round(st.height), box: bx.bottom <= innerHeight + 1 && bx.width > 0, scroll: document.documentElement.scrollHeight > innerHeight + 2, side: bk.right <= st.left + 2 }; });
+  for (const [w, h, side] of [[466, 678, false], [890, 626, true], [626, 890, false], [466, 678, false]]) {
+    await t.page.setViewportSize({ width: w, height: h }); await t.page.waitForTimeout(1200); const f = await fit();
+    assert.ok(f.box && !f.scroll, `${w}x${h}: the Parts box on the screen, no scrolling ${JSON.stringify(f)}`);
+    assert.ok(f.h >= 300, `${w}x${h}: room to build ${JSON.stringify(f)}`); assert.equal(f.side, side, `${w}x${h}: booklet beside the build only when open and wide`);
+    assert.equal(await t.page.evaluate(() => JSON.stringify(window.bloppitSel())), held, 'the brick in hand stays');
+  }
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('Link a player: a code works once; tapping Link again with the code that just worked says it worked, not "expired" (15 Nov 2026)', { skip: skip() }, async () => {
   const t = await open('?nosplash=1&welcome=0');
   // another device's player on the server, and a link code for it
