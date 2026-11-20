@@ -43,7 +43,7 @@ workflows:
         XCODE_PROJECT: mobile/ios/App/App.xcodeproj
         XCODE_SCHEME: App
       node: 22
-      xcode: 26.5 # pinned: "latest" has been landing on overloaded build machines
+      xcode: 27.2 # pinned: "latest" has been landing on overloaded build machines. 27.x builds with the iOS 27 SDK: the whole iPhone Duo screen, and Apple requires it from April 2027
     scripts:
       - name: Install and package the web app into the iOS project
         script: |
@@ -112,7 +112,7 @@ workflows:
         XCODE_PROJECT: mobile/ios/App/App.xcodeproj
         XCODE_SCHEME: App
       node: 22
-      xcode: 26.5
+      xcode: 27.2
     scripts:
       - name: Is this push a release?
         script: |
@@ -173,6 +173,52 @@ workflows:
   #  3. Later, to send builds to Google Play automatically: make a Google Cloud service account with access to the
   #     app in Play Console, put its JSON key in an environment group "google_play" as GCLOUD_SERVICE_ACCOUNT_CREDENTIALS,
   #     then switch on the two commented blocks below (triggering and google_play publishing).
+  # A test build on Xcode 27 (19 Nov 2026): runs only for pushes to the branch xcode-27, builds the .ipa and sends it
+  # nowhere (no TestFlight, no review), so it can be tried while 1.1.6 is still to be released on Xcode 26.5.
+  ios-xcode27-check:
+    name: iOS build check on Xcode 27 (not uploaded)
+    instance_type: mac_mini_m2
+    max_build_duration: 45
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: xcode-27
+          include: true
+          source: true
+      cancel_previous_builds: true
+    integrations:
+      app_store_connect: Bloppit ASC
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.bloppit.app
+      vars:
+        XCODE_PROJECT: mobile/ios/App/App.xcodeproj
+        XCODE_SCHEME: App
+      node: 22
+      xcode: 27.2
+    scripts:
+      - name: Install and package the web app into the iOS project
+        script: |
+          cd mobile
+          npm ci
+          npm run sync
+      - name: Set up code signing
+        script: xcode-project use-profiles --project "$XCODE_PROJECT"
+      - name: Build the .ipa
+        script: xcode-project build-ipa --project "$XCODE_PROJECT" --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      email:
+        recipients:
+          - steffindup@gmail.com
+        notify:
+          success: false
+          failure: true
+
   android-play:
     name: Android for Google Play
     instance_type: linux_x2
@@ -201,7 +247,7 @@ workflows:
       #   - google_play            # GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
       vars:
         PACKAGE_NAME: com.bloppit.app
-        VERSION_NAME: "1.1.5"    # keep in step with the iOS MARKETING_VERSION
+        VERSION_NAME: "1.1.7"    # keep in step with the iOS MARKETING_VERSION
       node: 22
       java: 21
     scripts:
