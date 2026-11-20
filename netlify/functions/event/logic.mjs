@@ -3,7 +3,8 @@
 // device, no pup code, no user agent, no timestamps finer than the day. That is what lets the privacy policy say
 // "simple counts with nothing in them about any one child" and keeps the counts inside COPPA's internal-operations
 // exception. One blob per UTC day: ev/YYYY-MM-DD -> { day, n: { event: count }, c: { event: { CC: count } },
-// p: { event: { web: count, app: count } } } (which one sent it: the website or the iPhone/iPad app).
+// p: { event: { web: count, app: count, android: count } } } (which one sent it: the website, the iPhone/iPad app or the
+// Android app).
 //
 // Store adapter: get(key) -> { data, etag } | null; set(key, data, { onlyIfMatch?, onlyIfNew? }) -> { modified }.
 
@@ -48,7 +49,7 @@ export async function handle(method, query, body, store, opts = {}) {
   if (method !== 'POST') return { status: 405, body: { error: 'Method not allowed' } };
   const events = cleanEvents(body && (body.events || [body.e]));
   if (!events.length) return { status: 400, body: { error: 'No events.' } };
-  const country = cleanCountry(opts.country), plat = body && body.p === 'app' ? 'app' : 'web';
+  const country = cleanCountry(opts.country), plat = body && (body.p === 'app' || body.p === 'android') ? body.p : 'web';   // 'app' = the iPhone/iPad app, 'android' = the Android app (from 20 Nov 2026)
   const day = dayOf(now);
   for (let i = 0; i < 8; i++) {
     const r = await store.get(evKey(day));

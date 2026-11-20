@@ -231,16 +231,17 @@ test('family key: create → attach two pups → list → restore → delete one
 });
 
 import { handle as event } from '../netlify/functions/event/logic.mjs';
-test('events: counts only, split by country and by app or website; reading needs the key', async () => {
+test('events: counts only, split by country and by iPhone app, Android app or website; reading needs the key', async () => {
   const st = (() => { const m = new Map(); return { async get(k) { return m.has(k) ? { data: JSON.parse(m.get(k)), etag: 'x' } : null; }, async set(k, d) { m.set(k, JSON.stringify(d)); return { modified: true }; } }; })();
   await event('POST', {}, { events: ['open_day', 'first_open'], p: 'app' }, st, { country: 'BM' });
   await event('POST', {}, { events: ['open_day', 'Bad Name!'] }, st, { country: 'US' });
   await event('POST', {}, { events: ['open_day'], p: 'spaceship' }, st, { country: 'BM' });
+  await event('POST', {}, { events: ['open_day'], p: 'android' }, st, { country: 'US' });
   assert.equal((await event('GET', {}, null, st, { key: 'nope', adminKey: 'k' })).status, 403);
   const r = await event('GET', {}, null, st, { key: 'k', adminKey: 'k' });
-  assert.equal(r.body.totals.open_day, 3); assert.equal(r.body.totals.first_open, 1); assert.equal(r.body.totals['Bad Name!'], undefined);
-  assert.deepEqual(r.body.byPlatform.open_day, { app: 1, web: 2 });
-  const today = r.body.days[r.body.days.length - 1]; assert.deepEqual(today.c.open_day, { BM: 2, US: 1 });
+  assert.equal(r.body.totals.open_day, 4); assert.equal(r.body.totals.first_open, 1); assert.equal(r.body.totals['Bad Name!'], undefined);
+  assert.deepEqual(r.body.byPlatform.open_day, { app: 1, web: 2, android: 1 });
+  const today = r.body.days[r.body.days.length - 1]; assert.deepEqual(today.c.open_day, { BM: 2, US: 2 });
 });
 
 test('pup: outfit (latest wins, only clean ids and colour numbers), the ten-build choice and the arrival are kept', () => {

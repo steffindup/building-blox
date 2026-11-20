@@ -11,13 +11,13 @@
    browser. Counts only: nothing here is about any one child or device. */
 .viz-root{color-scheme:light;
   --page:#f9f9f7;--surface-1:#fcfcfb;--text-primary:#0b0b0b;--text-secondary:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;
-  --border:rgba(11,11,11,.10);--series-1:#2a78d6;--series-2:#eb6834;--seq:#2a78d6;--good:#006300;--crit:#d03b3b}
+  --border:rgba(11,11,11,.10);--series-1:#2a78d6;--series-2:#eb6834;--series-3:#1a9e6e;--seq:#2a78d6;--good:#006300;--crit:#d03b3b}
 @media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])) .viz-root{color-scheme:dark;
   --page:#0d0d0d;--surface-1:#1a1a19;--text-primary:#f0efec;--text-secondary:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--axis:#383835;
-  --border:rgba(255,255,255,.10);--series-1:#3987e5;--series-2:#d95926;--seq:#3987e5;--good:#0ca30c;--crit:#e66767}}
+  --border:rgba(255,255,255,.10);--series-1:#3987e5;--series-2:#d95926;--series-3:#2bb583;--seq:#3987e5;--good:#0ca30c;--crit:#e66767}}
 :root[data-theme="dark"] .viz-root{color-scheme:dark;
   --page:#0d0d0d;--surface-1:#1a1a19;--text-primary:#f0efec;--text-secondary:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--axis:#383835;
-  --border:rgba(255,255,255,.10);--series-1:#3987e5;--series-2:#d95926;--seq:#3987e5;--good:#0ca30c;--crit:#e66767}
+  --border:rgba(255,255,255,.10);--series-1:#3987e5;--series-2:#d95926;--series-3:#2bb583;--seq:#3987e5;--good:#0ca30c;--crit:#e66767}
 html,body{margin:0}
 body{background:#f9f9f7}
 @media (prefers-color-scheme:dark){body{background:#0d0d0d}}
@@ -89,7 +89,7 @@ details summary{cursor:pointer;color:var(--text-secondary);font-size:13px}
   <div id="dash" hidden>
     <div class="row" role="group" aria-label="Filters" style="margin-bottom:16px">
       <div class="seg" id="range" role="group" aria-label="Date range"><button type="button" data-d="7" aria-pressed="false">Last 7 days</button><button type="button" data-d="30" aria-pressed="true">Last 30 days</button><button type="button" data-d="90" aria-pressed="false">Last 90 days</button></div>
-      <div class="seg" id="plat" role="group" aria-label="App or website"><button type="button" data-p="all" aria-pressed="true">All</button><button type="button" data-p="app" aria-pressed="false">App</button><button type="button" data-p="web" aria-pressed="false">Website</button></div>
+      <div class="seg" id="plat" role="group" aria-label="Which app, or the website"><button type="button" data-p="all" aria-pressed="true">All</button><button type="button" data-p="app" aria-pressed="false">iPhone app</button><button type="button" data-p="android" aria-pressed="false">Android app</button><button type="button" data-p="web" aria-pressed="false">Website</button></div>
       <span class="sub" id="asOf"></span>
     </div>
 
@@ -155,8 +155,8 @@ details summary{cursor:pointer;color:var(--text-secondary);font-size:13px}
     $('#asOf').textContent=dayStr(state.data.from)+' – '+dayStr(state.data.to)+' (UTC days)';
     // headline: average players a day (open_day), with the platform split in the note
     var opens=total('open_day'); $('#hero').textContent=fmt(opens/Math.max(1,n));
-    var app=D.reduce(function(a,d){ return a+((d.p&&d.p.open_day&&d.p.open_day.app)||0); },0), web=D.reduce(function(a,d){ return a+((d.p&&d.p.open_day&&d.p.open_day.web)||0); },0);
-    $('#heroNote').textContent=state.plat==='all'?(fmt(app)+' app · '+fmt(web)+' website player-days in '+n+' days'):(fmt(opens)+' player-days in '+n+' days');
+    var sum=function(k){ return D.reduce(function(a,d){ return a+((d.p&&d.p.open_day&&d.p.open_day[k])||0); },0); }, app=sum('app'), andr=sum('android'), web=sum('web');
+    $('#heroNote').textContent=state.plat==='all'?(fmt(app)+' iPhone app · '+(andr?fmt(andr)+' Android app · ':'')+fmt(web)+' website player-days in '+n+' days'):(fmt(opens)+' player-days in '+n+' days');
     // tiles
     var T=$('#tiles'); T.textContent='';
     var first=total('first_open');
@@ -172,7 +172,8 @@ details summary{cursor:pointer;color:var(--text-secondary);font-size:13px}
   // Players each day: one line per platform (or one line when filtered), crosshair + tooltip
   function line(){
     var box=$('#line'); box.textContent=''; var D=state.data.days;
-    var series=state.plat==='all'?[{k:'app',name:'App',c:'var(--series-1)'},{k:'web',name:'Website',c:'var(--series-2)'}]:[{k:state.plat,name:state.plat==='app'?'App':'Website',c:'var(--series-1)'}];
+    var NAMES={app:'iPhone app',android:'Android app',web:'Website'};
+    var series=state.plat==='all'?[{k:'app',name:'iPhone app',c:'var(--series-1)'},{k:'web',name:'Website',c:'var(--series-2)'}].concat(state.data.days.some(function(d){ return d.p&&d.p.open_day&&d.p.open_day.android; })?[{k:'android',name:'Android app',c:'var(--series-3)'}]:[]):[{k:state.plat,name:NAMES[state.plat],c:'var(--series-1)'}];
     var val=function(d,k){ var p=d.p&&d.p.open_day; return (p&&p[k])||0; };
     var leg=$('#lineLegend'); leg.textContent=''; if(series.length>1) series.forEach(function(s){ var sp=el('span'); var i=el('i'); i.style.background=s.c; sp.appendChild(i); sp.appendChild(document.createTextNode(s.name)); leg.appendChild(sp); });
     var W=Math.max(320,box.clientWidth||1000),H=W<560?220:260,L=40,R=W<560?78:84,Tp=10,B=26, max=1;

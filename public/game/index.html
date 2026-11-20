@@ -7724,9 +7724,10 @@ function track(...names){
   for(const n of names) if(n&&!evQueue.includes(n)) evQueue.push(n);
   clearTimeout(evTimer); evTimer=setTimeout(evFlush,800);
 }
+function evAndroid(){ try{ return !!(window.Capacitor&&Capacitor.getPlatform&&Capacitor.getPlatform()==='android'); }catch(e){ return false; } }
 function evFlush(){
   const events=evQueue.splice(0,5); if(!events.length) return;
-  const body=JSON.stringify({events,p:APP?'app':'web'});   // which one: the app or the website (nothing else about the device)
+  const body=JSON.stringify({events,p:APP?(evAndroid()?'android':'app'):'web'});   // which one: the iPhone/iPad app, the Android app or the website (nothing else about the device)
   try{ if(!APP&&navigator.sendBeacon&&navigator.sendBeacon(API_BASE+'/api/event',new Blob([body],{type:'application/json'}))) return; }catch(e){}
   fetch(API_BASE+'/api/event',{method:'POST',headers:{'content-type':'application/json'},body,keepalive:true}).catch(()=>{});
   if(evQueue.length) evTimer=setTimeout(evFlush,800);
