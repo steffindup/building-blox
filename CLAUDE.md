@@ -365,6 +365,10 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   finished. `passes` is the list for the game; `pass` is the one an older app shows (your turn first). Turns go round
   the picked builders in join order; someone who left is skipped. "Your turn in Pass the Puzzle" stays crew news (the
   dot) until you've built.
+  **Pass the Puzzle with one friend (Race a Friend): the first player picks how many steps they build (Steff, 21 Nov
+  2026):** "You build half" (the default) or 2 to 10 steps (`#bzRelayPer`, `relayStart(choice, per)`); the code's `half`
+  carries the split, which the server and older apps already took, so an older app finishes from the right step.
+  The wording says "Your part is done!" and "built steps 1 to N", not "half".
   **A bar above a crew build (21 Nov 2026):** Pass the Puzzle and the Mega Build show `#crewBar` (crew pink, above the
   build like the Trail bar, never over it): what it is, whose turn ("Your turn · steps 3 to 6" or "Just looking. It's
   X's turn"), and "‹ Back to the crew" ("‹ Back" on phones), which asks once if steps of this turn aren't passed on.

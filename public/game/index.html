@@ -847,6 +847,9 @@ body.on-build .playcol>.turn-banner{margin:0 0 3px}   /* the build page's column
 .bz-join{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
 .bz-off{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;margin:0}
 .gamebar.mpbar{position:relative;border-color:#5A93DB}
+.bz-relay-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.bz-relay-row .inp{flex:0 1 220px;margin:0}
+.bz-relay-row .primary{margin:0}
 .gamebar.crewbar{flex-wrap:nowrap;gap:10px;padding:7px 10px 7px 14px;border-color:var(--c-crew)}
 .crewbar .cb-txt{min-width:0;flex:1}
 .crewbar .cb-txt strong{display:block;font-size:16px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -2495,8 +2498,10 @@ body:not(.on-home) .brand .wob{display:none}   /* "World of Bricks" only on the 
       </div>
       <div class="card bz-card" id="bzRelayCard">
         <h2><span aria-hidden="true">🔁</span>Pass the Puzzle to a friend</h2>
-        <p class="note" style="margin:0">Not a race: build the first half of a model, send the code, and your friend builds the rest. The finished model lands on both your islands.</p>
-        <button class="primary" id="bzRelayGo" type="button">🔁 Pass the Puzzle</button>
+        <p class="note" style="margin:0">Not a race: build the first steps of a model, send the code, and your friend builds the rest. The finished model lands on both your islands.</p>
+        <div class="bz-relay-row"><select class="inp" id="bzRelayPer" aria-label="How many steps you build">
+          <option value="0" selected>You build half</option><option value="2">You build 2 steps</option><option value="3">You build 3 steps</option><option value="4">You build 4 steps</option><option value="5">You build 5 steps</option><option value="6">You build 6 steps</option><option value="8">You build 8 steps</option><option value="10">You build 10 steps</option></select>
+        <button class="primary" id="bzRelayGo" type="button">🔁 Pass the Puzzle</button></div>
         <p class="note" style="margin:8px 0 0">Got a Pass the Puzzle code? Type it into <b>Got a code?</b> above, or into Join a Game.</p>
       </div>
     </div>
@@ -5218,7 +5223,7 @@ function tryPlace(){
   if(mpCountingDown()){ setStatus('Get ready… wait for Go!','err'); return; }
   if(mp&&!mpMyTurn()){ setStatus(mpTurnText(),'err'); return; }
   if(model.mirror&&model.steps[cur]&&model.steps[cur].pippa&&!pippaBusy){ setStatus('🐧 Pippa: “Wait for me! I’m still building my side.”'); return; }
-  if(relay&&relay.role==='first'&&cur>=relay.half){ setStatus('Those steps are your friend’s. Your half is done!','err'); relayHalfDone(); return; }
+  if(relay&&relay.role==='first'&&cur>=relay.half){ setStatus('Those steps are your friend’s. Your part is done!','err'); relayHalfDone(); return; }
   if(pass&&pass.role==='look'){ setStatus(pass.who?`Just looking: it’s ${pass.who}’s turn to build.`:'Just looking at the puzzle so far.','ok'); return; }
   if(pass&&cur>=pass.to&&pass.to<model.steps.length){ setStatus('Those steps are for the rest of your crew. Yours are done!','err'); passPagesDone(); return; }
   if(mp&&mp.cpu&&Date.now()<mp.state.turnStart){ setStatus('Wait for Go!','err'); return; }
@@ -8642,7 +8647,7 @@ function chRows(c){ const medals=['🥇','🥈','🥉'];
 function chShareUrl(code){ return `https://bloppit.com/join/${code}`; }
 async function chShare(code,kind){
   if(APP&&!await gate.ask('Sharing sends your challenge code to another app.')) return;
-  const url=chShareUrl(code), text=kind==='relay'?`I built half. Can you finish it? Bloppit Pass the Puzzle code ${code}`:`Can you beat my Bloppit time? Challenge code ${code}`;
+  const url=chShareUrl(code), text=kind==='relay'?`I started a puzzle. Can you finish it? Bloppit Pass the Puzzle code ${code}`:`Can you beat my Bloppit time? Challenge code ${code}`;
   try{ if(navigator.share) await navigator.share({title:'Blitz challenge',text,url}); else { await navigator.clipboard.writeText(`${text} ${url}`); $('#trShare').textContent='Copied!'; setTimeout(()=>$('#trShare').textContent='Share the code',2000); } }catch(e){}
 }
 // Not sailed yet: a player who has never arrived in Bloppitopia, on a device that shows the 3D island (the drawn island
@@ -13135,21 +13140,24 @@ setTimeout(()=>{ const me=curPlayer(); if(me&&me.pup) renderCrews(true).catch(()
    code, the second player opens the code, sees those bricks in place and builds the rest. Both islands get the
    model: the second on finishing, the first when they next look at "Your challenges". Nothing typed crosses. */
 var relay=null;   // {role:'first'|'second', half, code?, moves:[]}
-function relayStart(choice){
+// per: the steps the first player builds, picked on the card (Steff, 21 Nov 2026); 0 = half. The code carries the
+// split, so an older app finishes it from the right step.
+function relayStart(choice,per){
   const title=mpUseModel(choice); if(game) endGame(); if(mp) mpLeave(); dismissResume();
   const N=model.steps.length; if(N<4) throw new Error('Pick a bigger puzzle to pass (at least 4 steps).');
-  relay={role:'first',half:Math.ceil(N/2),moves:[],title:niceName(title)};
+  if(per>0&&per>=N) throw new Error(`This puzzle has ${N} steps. Pick a bigger puzzle, or fewer steps for you.`);
+  relay={role:'first',half:per>0?per:Math.ceil(N/2),moves:[],title:niceName(title)};
   track('relay_started'); setTab('build'); setStatus(`Pass the Puzzle! You build steps 1 to ${relay.half}; your friend builds ${relay.half+1} to ${N}.`,'ok'); updateBuildUI();
 }
 async function relayHalfDone(){
   if(!relay||relay.role!=='first'||relay.sent) return; relay.sent=true;
   const half=relay.half, N=model.steps.length;
-  trialDialog({icon:'🔁',title:'Your half is done!',note:'Making a code for your friend…'});
+  trialDialog({icon:'🔁',title:'Your part is done!',note:'Making a code for your friend…'});
   try{
     const j=await chApi('POST',{action:'relay',title:relay.title,nBricks:model.bricks.length,steps:N,half,moves:relay.moves,miss:run.miss,hint:run.hints.size+run.auto,
       model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
     chRemember(j.code,relay.title,j.runId,'relay'); worldThumbSave('r:'+j.code);
-    trialDialog({icon:'🔁',title:'Your half is done!',code:j.code,note:`Send this code to a friend. They type it into Join a Game in Together and build steps ${half+1} to ${N}. When they finish, the model lands on both your islands.`,relay:true});
+    trialDialog({icon:'🔁',title:'Your part is done!',code:j.code,note:`Send this code to a friend. They type it into Join a Game in Together and build steps ${half+1} to ${N}. When they finish, the model lands on both your islands.`,relay:true});
   }catch(e){ relay.sent=false; trialDialog({icon:'😕',title:'Couldn’t make the code',note:e.message,retry:true,relayRetry:true}); }
 }
 async function relayOpen(c,m){
@@ -13180,7 +13188,7 @@ async function relayDone(){
   const r=relay; if(!r||r.role!=='second'||r.sent) return; r.sent=true;
   trialDialog({icon:'🔁',title:'Finished together!',note:'Telling your friend…'});
   try{ const j=await chApi('POST',{action:'relay-finish',code:r.code,moves:r.moves,miss:run.miss,hint:run.hints.size+run.auto}); chRemember(r.code,r.title,j.runId,'relay');
-    trialDialog({icon:'🔁',title:'Finished together!',note:`${escapeHTML(j.challenge.first.label)} built the first half, you built the rest. The ${escapeHTML(r.title)} is on both your islands now.`,card:false}); }
+    trialDialog({icon:'🔁',title:'Finished together!',note:`${escapeHTML(j.challenge.first.label)} built steps 1 to ${j.challenge.half}, you built the rest. The ${escapeHTML(r.title)} is on both your islands now.`,card:false}); }
   catch(e){ trialDialog({icon:'🔁',title:'Finished together!',note:`The model is on your island. Your friend couldn’t be told just now (${e.message}); open the code again later to try again.`}); }
   relay=null;
 }
@@ -13195,7 +13203,7 @@ function relayCredit(c){
   worldLast={key,kind:'relay',stars,cap,best:stars,gained:stars,xp:0,bonus:0,first:true,clean,noHint:c.first.hint===0,before,after,pupUp:after.pup>before.pup,islandUp:after.island>before.island,total:worldStars(o),count:worldCount(o)};
   track('relay_finished_first'); worldStrips(); trialDialog({icon:'🔁',title:'Your passed puzzle is finished!',note:`${escapeHTML(c.second.label)} built the rest of the ${escapeHTML(c.title)}. It’s on your island now.`,card:false}); worldSound(); renderHome();
 }
-$('#bzRelayGo').onclick=()=>{ try{ relayStart($('#bzModel').value); }catch(e){ mpMsg(e.message,'err'); } };
+$('#bzRelayGo').onclick=()=>{ try{ relayStart($('#bzModel').value,+$('#bzRelayPer').value); }catch(e){ mpMsg(e.message,'err'); } };
 
 /* ---------- Play Next: what to build next, with a picture ---------- */
 // The next unfinished Tiny’s Frog Trail level, then Nora’s Brain Trail, then the first library model not yet built.
