@@ -7567,7 +7567,7 @@ $('#whoForm').addEventListener('submit',e=>{ e.preventDefault();
 // Everything a player keeps on this device. A key read or written with pkey(…) must be in this list (a test checks it).
 // The first player's keys have no player id in them, so they can only be cleared by name; the others end in ":" + id.
 function playerWipe(id){
-  const keys=[GAME_KEY,SAVE_KEY,DAILY_KEY,WEEKLY_KEY,WORLD_KEY,MYS_SAVE_KEY,INTRO_KEY,PACE_KEY,BZ_LEVEL_KEY,CH_KEY,SEEN_KEY,REALM_KEY,LUFU_HI_KEY,LASTSEEN_KEY,BOARD_KEY,NEXT_KEY];
+  const keys=[GAME_KEY,SAVE_KEY,DAILY_KEY,WEEKLY_KEY,WORLD_KEY,MYS_SAVE_KEY,INTRO_KEY,PACE_KEY,BZ_LEVEL_KEY,CH_KEY,SEEN_KEY,REALM_KEY,LUFU_HI_KEY,LASTSEEN_KEY,BOARD_KEY,NEXT_KEY,CH_SEEN];
   try{ for(const k of keys) localStorage.removeItem(keyFor(id,k));
     if(id!=='p1') for(const k of Object.keys(localStorage)) if(k.endsWith(':'+id)) localStorage.removeItem(k); }catch(e){}
 }
