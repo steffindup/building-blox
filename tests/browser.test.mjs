@@ -923,6 +923,23 @@ test('Bloppitopia renders every stage in 3D (models, buildings, the islands near
   await t.ctx.close();
 });
 
+test('phone: a Trail level starts with the thing to do, short enough not to fold; a folded message opens again on a tap (21 Nov 2026)', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0', { viewport: { width: 390, height: 844 }, touch: true, init: { fn: () => localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 })) } });
+  await t.page.evaluate(() => window.bloppitLevel('otter', 0)); await t.page.waitForTimeout(1500);
+  assert.equal(await t.view(), 'view-build');
+  const st = await t.text('#status'); assert.match(st, /Open the parts box to build the /); assert.ok(st.length <= 60, `short enough not to fold: "${st}"`);
+  await t.page.waitForTimeout(5000); assert.equal(await t.page.evaluate(() => document.getElementById('status').classList.contains('brief')), false, 'a short message never folds');
+  // a long one folds after 4.5 s; a tap opens it in full
+  await t.page.evaluate(() => { const b = document.getElementById('hintBtn'); b.click(); }); await t.page.waitForTimeout(300);
+  const long = await t.page.evaluate(() => document.getElementById('status').textContent.length);
+  if (long > 60) {
+    await t.page.waitForFunction(() => document.getElementById('status').classList.contains('brief'), null, { timeout: 8000 });
+    await t.page.locator('#status').click();
+    assert.equal(await t.page.evaluate(() => document.getElementById('status').classList.contains('brief')), false, 'open again after a tap');
+  }
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('a relay: one friend builds the steps they picked, the other finishes, both islands get the model', { skip: skip() }, async () => {
   const seeded = { fn: () => localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 })) };
   const a = await open('?nosplash=1&welcome=0#blitz', { init: seeded });
@@ -1348,7 +1365,8 @@ test('Frog Forest arrival film: Play next to Frog Trail level 1 plays it first, 
   await t.page.waitForFunction(() => document.querySelector('.is3-film video').currentTime > .3, null, { timeout: 15000 });
   await t.page.evaluate(() => document.querySelector('.is3-film .cn-skip').click());
   // then the puzzle: Frog Trail level 1
-  await t.page.waitForFunction(() => [...document.querySelectorAll('section.view')].find((v) => !v.hidden)?.id === 'view-build' && /Level 1/.test(document.getElementById('status').textContent), null, { timeout: 15000 });
+  await t.page.waitForFunction(() => [...document.querySelectorAll('section.view')].find((v) => !v.hidden)?.id === 'view-build' && /Open the parts box to build the /.test(document.getElementById('status').textContent), null, { timeout: 15000 });
+  assert.match(await t.text('#gameBar'), /\b1\b/, 'the level is in the bar above');
   assert.deepEqual(await t.page.evaluate(() => JSON.parse(localStorage.getItem('bloppit-world-v1')).films), ['frog-arrival']);
   // finishing level 1 raises Frog Forest from the mist, without the film again
   await t.page.evaluate(() => { const g = { best: { 0: 3 } }; localStorage.setItem('building-blox-game-v1', JSON.stringify(g)); location.hash = ''; });

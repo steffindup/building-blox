@@ -573,7 +573,7 @@ button .nb-pic+span{display:inline-grid;text-align:left;line-height:1.1}button .
   #buildStage .buddy .bud-say:has(.bud-next){display:block;font-size:12.5px;padding:5px 8px;margin-bottom:12px}
   #buildStage .buddy .bud-say:has(.bud-next) .callout{display:none}
   #buildStage .status{bottom:12px;max-width:calc(100% - 100px)}
-  #buildStage .status.brief{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #buildStage .status.brief{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;pointer-events:auto}
   /* Swoop's turn on a phone: he stood on top of the message, and the message only repeated the turn row under the
      build ("Swoop's turn. Get your next bricks ready"). No message over the build while he builds (Steff, 15 Nov 2026). */
   #buildStage.cpu-turn .status{display:none}}
@@ -1484,7 +1484,7 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .is3-label.is3-hl{background:var(--c-bloppit)}
 .is3-label.is3-act{pointer-events:auto;cursor:pointer;border:0;font:inherit;background:var(--accent);color:var(--accent-ink);padding:6px 14px 7px;border-radius:14px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 4px 14px rgba(0,0,0,.3)}.is3-label.is3-act b{font-size:15px}@media (min-width:700px){.is3-label.is3-act b{font-size:18px}}
 .is3-label.is3-myst{background:rgba(40,32,78,.8)}.is3-label.is3-myst b{letter-spacing:.04em}.is3-label.is3-myst b,.is3-label.is3-myst small{font-size:inherit}.is3-label.is3-myst{font-size:10.5px}@media (min-width:700px){.is3-label.is3-myst{font-size:12px}}
-.is3-bar{display:block;width:100%;min-width:70px;height:4px;margin:3px 0 1px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden}.is3-bar>i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#AC78BA,#E9DFFF)}.is3-label.is3-hl b{font-size:18px}
+.is3-bar{display:block;width:100%;min-width:70px;height:4px;margin:3px 0 1px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden}.is3-bar>i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#AC78BA,#E9DFFF)}/* Home Island's label: red (Bloppit and Bloppitopia's colour), the same size as the others (Steff, 21 Nov 2026: it was much bigger) */
 .is3-help{position:absolute;right:10px;bottom:10px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.85);font-size:12px;font-weight:800;color:#14202C;pointer-events:none}
 .is-a11y{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .is-a11y:focus-within{position:static;width:auto;height:auto;clip:auto;white-space:normal;display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px}
@@ -4503,6 +4503,9 @@ function resetBuild(){
   updateBuildUI(); frameBuild(false,false);
 }
 let statusBriefT=null;
+// A message folded to one line on a phone opens in full again when tapped, then folds again (21 Nov 2026)
+$('#status').addEventListener('click',()=>{ const el=$('#status'); if(!el.classList.contains('brief')) return; el.classList.remove('brief'); coverChanged();
+  clearTimeout(statusBriefT); statusBriefT=setTimeout(()=>{ el.classList.add('brief'); coverChanged(); },6000); });
 function setStatus(t,kind){const el=$('#status'); el.textContent=t||''; el.dataset.kind=kind||''; el.classList.remove('brief');
   clearTimeout(statusBriefT); if(t&&t.length>60) statusBriefT=setTimeout(()=>{ el.classList.add('brief'); coverChanged(); },4500); coverChanged();}
 const curOff=()=>off||(cands.length?cands[0]:null);
@@ -7187,7 +7190,7 @@ function startLevel(i,noAsk){
   if(trail==='brain'&&model) game.math={v:2,tier:mathRung(mp_.grade,i,mathAdj(),mathUp()),grade:mp_.grade,locks:mathLocks(i,model.steps.length),solved:[],pts:0,q:{},right:0,miss:0};
   setTab('build'); updateGameBar();
   if(model&&model.mirror){ setTimeout(pippaTurn,700); }
-  if(model&&model.paint) setStatus(`🎨 The Festival Clock, in your colours! Pippa builds her side first, and you mirror it in any colours you like.`,'ok'); else if(model&&model.mirror) setStatus(`🐧 Pippa’s puzzle ${i+1}: a mirror build! Pippa builds her side, then you copy her on yours.`,'ok'); else setStatus(trail==='sea'?`🐧 Pippa’s puzzle ${i+1}: build ${/^Pippa/.test(L.name)?'':'the '}${L.name}! Open the parts box to pick up bricks.`:`${TRAILS[trail].icon} Level ${i+1}: build the ${L.name}! Open the parts box to pick up bricks.`,'ok');
+  if(model&&model.paint) setStatus(`🎨 The Festival Clock, in your colours! Pippa builds her side first, and you mirror it in any colours you like.`,'ok'); else if(model&&model.mirror) setStatus(`🐧 Pippa’s puzzle ${i+1}: a mirror build! Pippa builds her side, then you copy her on yours.`,'ok'); else setStatus(trail==='sea'?`🐧 Open the parts box to build ${/^Pippa/.test(L.name)?'':'the '}${L.name}!`:`${TRAILS[trail].icon} Open the parts box to build the ${L.name}!`,'ok');   // the thing to do first, short enough not to fold on a phone (Steff, 21 Nov 2026: "Open the pa…" was cut off); the level and its name are in the bar above
   saveNow();
 }
 function endGame(){
