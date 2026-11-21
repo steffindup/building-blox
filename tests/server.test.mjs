@@ -186,13 +186,62 @@ test('crew games: a Crew Quick Game shows for the crew; Pass the Puzzle goes rou
   const mv = (n) => Array.from({ length: n }, (_, i) => ({ b: i, x: i, z: 0 }));
   const s = await group('POST', { pid: A }, { action: 'pass-start', code, title: 'Boat', nBricks: 30, steps: 9, to: 3, moves: mv(3), model }, store);
   assert.equal(s.status, 200); const p0 = s.body.group.pass; assert.equal(p0.chunk, 3); assert.equal(p0.page, 3); assert.equal(p0.byMe, true); assert.equal(p0.myTurn, false);
-  assert.equal((await group('POST', { pid: A }, { action: 'pass-start', code, title: 'X', nBricks: 30, steps: 9, to: 3, moves: mv(3), model }, store)).status, 409);   // one at a time
   const pb = (await group('GET', { pid: B, code }, null, store)).body.group.pass; assert.equal(pb.myTurn, true);
   assert.equal((await group('POST', { pid: C }, { action: 'pass-turn', code, id: pb.id, to: 6, moves: mv(3) }, store)).status, 409);   // not C's turn
   const g = await group('GET', { pid: B, code, pass: 1 }, null, store); assert.equal(g.body.moves.length, 3); assert.equal(g.body.model.name, 'Boat');
   assert.equal((await group('POST', { pid: B }, { action: 'pass-turn', code, id: pb.id, to: 6, moves: mv(3) }, store)).body.group.pass.page, 6);
   const end = (await group('POST', { pid: C }, { action: 'pass-turn', code, id: pb.id, to: 9, moves: mv(3) }, store)).body.group.pass;
   assert.equal(end.done, true); assert.equal(end.history.length, 3); assert.equal(end.history[2].me, true);
+});
+
+test('Pass the Puzzle: the starter picks who takes part, and several go round a crew at once (21 Nov 2026)', async () => {
+  mem.clear();
+  const A = 'a'.repeat(24), B = 'b'.repeat(24), C = 'c'.repeat(24);
+  const code = (await group('POST', { pid: A }, { action: 'create', name: 0 }, store)).body.group.code;
+  for (const P of [B, C]) { await group('POST', { pid: P }, { action: 'join', code }, store); const k = (await group('GET', { pid: A, code }, null, store)).body.group.pending[0].k; await group('POST', { pid: A }, { action: 'approve', code, k }, store); }
+  const model = (n) => ({ name: n, S: {}, photos: [{ name: n, view: 'front', png: 'data:image/png;base64,AAAA' }] });
+  const mv = (n) => Array.from({ length: n }, (_, i) => ({ b: i, x: i, z: 0 }));
+  const labels = (await group('GET', { pid: A, code }, null, store)).body.group.members.reduce((o, m) => { o[m.me ? 'A' : '?'] = m.label; return o; }, {});
+  const lab = async (P) => (await group('GET', { pid: P, code }, null, store)).body.group.members.find((m) => m.me).label;
+  const lB = await lab(B), lC = await lab(C); assert.ok(labels.A);
+  // A passes the Boat to C only; B passes the Kite to A and C; both go round at once
+  const s1 = await group('POST', { pid: A }, { action: 'pass-start', code, title: 'Boat', nBricks: 30, steps: 6, to: 3, chunk: 3, players: [lC], moves: mv(3), model: model('Boat') }, store);
+  assert.equal(s1.status, 200); const boat = s1.body.id;
+  assert.equal((await group('POST', { pid: A }, { action: 'pass-start', code, title: 'X', nBricks: 30, steps: 6, to: 3, players: [], moves: mv(3), model: model('X') }, store)).status, 400, 'nobody picked');
+  const s2 = await group('POST', { pid: B }, { action: 'pass-start', code, title: 'Kite', nBricks: 20, steps: 4, to: 2, moves: mv(2), model: model('Kite') }, store);   // an older app: no list, everyone
+  assert.equal(s2.status, 200); const kite = s2.body.id;
+  let gC = (await group('GET', { pid: C, code }, null, store)).body.group;
+  assert.equal(gC.passes.length, 2); assert.equal(gC.passes.filter((p) => p.myTurn).length, 1, 'C: the Boat is C\'s turn, the Kite goes to A first');
+  const pB = (await group('GET', { pid: B, code }, null, store)).body.group.passes.find((p) => p.id === boat);
+  assert.equal(pB.inIt, false); assert.deepEqual(pB.builders.map((x) => x.label), [labels.A, lC]);
+  assert.equal((await group('POST', { pid: B }, { action: 'pass-turn', code, id: boat, to: 6, moves: mv(3) }, store)).status, 409, 'B isn\'t in the Boat');
+  // each one opens with its own model
+  assert.equal((await group('GET', { pid: C, code, pass: 1, id: kite }, null, store)).body.model.name, 'Kite');
+  assert.equal((await group('GET', { pid: C, code, pass: 1, id: boat }, null, store)).body.model.name, 'Boat');
+  // an older app sees one: the one that's its turn
+  assert.equal(gC.pass.id, boat); assert.equal((await group('GET', { pid: C, code, pass: 1 }, null, store)).body.model.name, 'Boat');
+  const fin = await group('POST', { pid: C }, { action: 'pass-turn', code, id: boat, to: 6, moves: mv(3) }, store);
+  assert.equal(fin.body.group.passes.find((p) => p.id === boat).done, true); assert.equal(fin.body.group.passes.find((p) => p.id === kite).done, false);
+  // up to five going round at once
+  for (let i = 0; i < 4; i++) assert.equal((await group('POST', { pid: A }, { action: 'pass-start', code, title: 'P' + i, nBricks: 30, steps: 6, to: 3, moves: mv(3), model: model('P') }, store)).status, 200);
+  const six = await group('POST', { pid: A }, { action: 'pass-start', code, title: 'Six', nBricks: 30, steps: 6, to: 3, moves: mv(3), model: model('P') }, store);
+  assert.equal(six.status, 409); assert.match(six.body.error, /5 puzzles going round/);
+});
+
+test('Pass the Puzzle: a crew\'s one puzzle from before 21 Nov still goes round', async () => {
+  mem.clear();
+  const A = 'a'.repeat(24), B = 'b'.repeat(24);
+  const code = (await group('POST', { pid: A }, { action: 'create', name: 0 }, store)).body.group.code;
+  await group('POST', { pid: B }, { action: 'join', code }, store); const k = (await group('GET', { pid: A, code }, null, store)).body.group.pending[0].k; await group('POST', { pid: A }, { action: 'approve', code, k }, store);
+  // write it as the old server did: g.pass, and the model under the crew's one key
+  const key = `group/${code}`, raw = mem.get(key); assert.ok(raw, 'the crew is stored under ' + key);
+  const g = JSON.parse(raw.d);
+  g.pass = { id: 'OLDPASS1', title: 'Old', nBricks: 10, steps: 4, chunk: 2, order: [A, B], turn: 1, page: 2, moves: [{ b: 0, x: 0, z: 0 }], by: A, at: 1, done: false, history: [{ id: A, from: 0, to: 2, at: 1 }] };
+  await store.set(key, g, {}); await store.set(`gpass/${code}`, { name: 'Old', S: {}, photos: [{ name: 'Old', png: 'x' }] }, {});
+  const gB = (await group('GET', { pid: B, code }, null, store)).body.group; assert.equal(gB.passes.length, 1); assert.equal(gB.passes[0].myTurn, true);
+  assert.equal((await group('GET', { pid: B, code, pass: 1, id: 'OLDPASS1' }, null, store)).body.model.name, 'Old');
+  const end = await group('POST', { pid: B }, { action: 'pass-turn', code, id: 'OLDPASS1', to: 4, moves: [{ b: 1, x: 1, z: 0 }] }, store);
+  assert.equal(end.status, 200); assert.equal(end.body.group.passes[0].done, true);
 });
 
 import { handle as challenge } from '../netlify/functions/challenge/logic.mjs';

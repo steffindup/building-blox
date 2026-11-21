@@ -358,6 +358,17 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   left ("3 steps to go, then it passes on"); Done on "Passed on!" goes back to the crew (`trialDialog({crew})`,
   `crewBackTo`), not the Blitz page; anyone in the crew can open it read-only with "See it so far" (`pass.role='look'`:
   `tryPlace` and `autoPlace` refuse). Both versions of Pass the Puzzle say "steps", as the build screen does.
+  **Pass the Puzzle: picked builders, several at once (Steff, 21 Nov 2026):** the starter ticks who takes part (every
+  other builder ticked by default; `players`, their labels, in `pass-start`; older apps send none and everyone takes
+  part). Up to five go round a crew at once (`MAX_OPEN_PASSES`); the server keeps `g.passes` (a crew's one `g.pass` from
+  before is read as the first), each with its own model key (`p.mk`; an old one uses `gpass/CODE`), and the last six
+  finished. `passes` is the list for the game; `pass` is the one an older app shows (your turn first). Turns go round
+  the picked builders in join order; someone who left is skipped. "Your turn in Pass the Puzzle" stays crew news (the
+  dot) until you've built.
+  **A bar above a crew build (21 Nov 2026):** Pass the Puzzle and the Mega Build show `#crewBar` (crew pink, above the
+  build like the Trail bar, never over it): what it is, whose turn ("Your turn · steps 3 to 6" or "Just looking. It's
+  X's turn"), and "‹ Back to the crew" ("‹ Back" on phones), which asks once if steps of this turn aren't passed on.
+  Just looking (`body.pass-look`) has no hand, parts box, Hint or Place one.
   **The Crew Mega Build is a real build (Steff, 19 Nov 2026):** the crew's picture (`CREW_PUZZLES`, 28 x 22) becomes a
   brick picture of tiles on a baseplate (`megaPicture`, `megaSettings`: kind `picture`, about 210 to 260 tiles, row by
   row from the top). Anyone in the crew taps Start building / Carry on building (`megaOpen`), carries on where the crew

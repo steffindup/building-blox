@@ -2189,8 +2189,17 @@ test('a crew: Pass the Puzzle goes round (first pages, then the next builder fin
   // A starts Pass the Puzzle with a ready-made puzzle and builds the first pages
   // the starter picks the steps in each turn (19 Nov 2026); "Share it evenly" here, so B finishes it in one turn
   assert.equal(await a.page.evaluate(() => document.getElementById('crewPassPer').value), '4');
+  // who takes part: every other builder, ticked (21 Nov 2026); with nobody ticked it says so
+  assert.equal(await a.page.evaluate(() => document.querySelectorAll('#crewOpen [data-pass-who]:checked').length), 1);
+  await a.page.evaluate(() => { document.querySelector('[data-pass-who]').checked = false; document.querySelector('[data-pass-start]').click(); }); await a.page.waitForTimeout(400);
+  assert.equal(await a.view(), 'view-mp'); assert.match(await a.text('#crewMsg'), /Pick at least one friend/);
+  await a.page.evaluate(() => { document.querySelector('[data-pass-who]').checked = true; });
   await a.page.evaluate(() => { document.getElementById('crewPassPer').value = '0'; document.querySelector('[data-pass-start]').click(); }); await a.page.waitForTimeout(1200);
   assert.equal(await a.view(), 'view-build'); assert.match(await a.text('#status'), /Pass the Puzzle! You build steps 1 to \d+: \d+ steps? to go, then it passes on\./);
+  // the bar above the build: whose turn, and the way back; Together stays lit, not Brickyard Cove
+  assert.equal(await a.page.evaluate(() => document.getElementById('crewBar').hidden), false);
+  assert.match(await a.text('#crewBar'), /Pass the Puzzle: .*Your turn · steps 1 to \d+.*Back to the crew/s);
+  assert.equal(await a.page.evaluate(() => document.getElementById('tab-mp').getAttribute('aria-selected')), 'true');
   let sawLeft = false;
   for (let i = 0; i < 80; i++) { await autoPlace(a.page, 1); if (/On to step \d+\. \d+ steps? to go, then it passes on/.test(await a.text('#status'))) sawLeft = true;
     if (await a.page.evaluate(() => document.getElementById('trialDlg').open && /Passed on/.test(document.getElementById('trTitle').textContent))) break; }
@@ -2201,9 +2210,16 @@ test('a crew: Pass the Puzzle goes round (first pages, then the next builder fin
   // and A can look at it while it's B's turn, without building
   await a.page.evaluate(() => document.querySelector('[data-pass-look]').click()); await a.page.waitForTimeout(2500);
   assert.equal(await a.view(), 'view-build'); assert.match(await a.text('#status'), /steps built\. Next to build:/);
+  // just looking is clear from the start: the bar says whose turn, and there's no hand, parts box, Hint or Place one
+  assert.match(await a.text('#crewBar'), /Just looking\. It’s .+’s turn to build\./);
+  assert.deepEqual(await a.page.evaluate(() => ['#hintBtn', '#autoBtn', '#openBox'].map((q) => document.querySelector(q).offsetParent !== null)), [false, false, false]);
   const n0 = await a.page.evaluate(() => window.bloppitPlacedBoxes ? window.bloppitPlacedBoxes().length : -1);
   await autoPlace(a.page, 1); await a.page.waitForTimeout(800);
   assert.equal(await a.page.evaluate(() => window.bloppitPlacedBoxes ? window.bloppitPlacedBoxes().length : -1), n0, 'just looking: no brick goes in');
+  // Back to the crew
+  await a.page.evaluate(() => document.getElementById('cbBack').click()); await a.page.waitForTimeout(1500);
+  assert.equal(await a.view(), 'view-mp'); assert.match(await a.text('#crewOpen'), /Waiting for .* to build the next steps/);
+  assert.equal(await a.page.evaluate(() => document.body.classList.contains('pass-look')), false);
   // B sees it's their turn, builds the rest and finishes it
   await crews(b); await b.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await b.page.waitForTimeout(800);
   assert.match(await b.text('#crewOpen'), /Your turn!/);
@@ -2245,6 +2261,7 @@ test('the Crew Mega Build is a real build: one builder starts it, another carrie
   assert.equal(await a.view(), 'view-build'); assert.match(await a.text('#status'), new RegExp(`Mega Build: 0 of ${N} tiles in`));
   await autoPlace(a.page, 5); await a.page.waitForTimeout(3500);   // saved a moment after the bricks go in
   const placedA = await a.page.evaluate(() => window.bloppitPlacedBoxes().length); assert.equal(placedA, 5);
+  assert.match(await a.text('#crewBar'), new RegExp(`Crew Mega Build: .*5 of ${N} tiles in.*Back to the crew`, 's'));
   // B opens it: carries on from the crew's 5 tiles, places 3 more
   await crews(b); await b.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await b.page.waitForTimeout(800);
   assert.match(await b.text('#crewOpen'), new RegExp(`5 of ${N} tiles built`)); assert.match(await b.text('#crewOpen'), /Carry on building/);
@@ -2256,8 +2273,9 @@ test('the Crew Mega Build is a real build: one builder starts it, another carrie
   // B's other two into A's build
   await autoPlace(a.page, 1); await a.page.waitForFunction(() => window.bloppitPlacedBoxes().length >= 8, null, { timeout: 15000 });
   assert.equal(await a.page.evaluate(() => window.bloppitPlacedBoxes().length), 8);
-  // the crew page: 8 tiles, and each builder's count
-  await crews(a); await a.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await a.page.waitForTimeout(1200);
+  // the crew page (through Back to the crew): 8 tiles, and each builder's count
+  await a.page.evaluate(() => document.getElementById('cbBack').click()); await a.page.waitForTimeout(1800);
+  assert.equal(await a.view(), 'view-mp');
   const page = await a.text('#crewOpen'); assert.match(page, new RegExp(`8 of ${N} tiles built`)); assert.match(page, /You’ve put in 5\./);
   assert.match(await a.text('#crewList'), new RegExp(`8 of ${N} tiles`));
   assert.deepEqual(a.errors, []); assert.deepEqual(b.errors, []); await a.ctx.close(); await b.ctx.close();
