@@ -2393,7 +2393,6 @@ body:not(.on-home) .brand .wob{display:none}   /* "World of Bricks" only on the 
   <div class="mp-forms" id="mpForms">
     <div class="card" id="mpStartCard">
       <h2>Start a game</h2>
-      <div class="field"><label for="mpName1">Your name <small class="note">(stays on this device; friends see a made-up name)</small></label><input class="inp" id="mpName1" maxlength="16" autocomplete="nickname" placeholder="e.g. Sam"></div>
       <div class="field bz-puzzle"><span class="lbl">Puzzle</span>
         <div class="bzp"><img id="mpPzThumb" alt=""><div class="bzp-txt"><b id="mpPzName"></b><span class="note" id="mpPzInfo"></span></div></div>
         <div class="bzp-btns"><button class="ghost" id="mpLib" type="button">📚 Library</button><button class="ghost" id="mpPhoto" type="button">📸 Your photo</button>
@@ -2411,7 +2410,6 @@ body:not(.on-home) .brand .wob{display:none}   /* "World of Bricks" only on the 
     <div class="card" id="mpJoinCard">
       <h2>Join a Game</h2>
       <div class="field"><label for="mpCodeIn">Got a code?</label><input class="inp code" id="mpCodeIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCDE"><small class="note" style="display:block;margin-top:4px">A room code (5 letters and numbers) or a challenge, Pass the Puzzle or crew code (6).</small></div>
-      <div class="field"><label for="mpName2">Your name <small class="note">(stays on this device; friends see a made-up name)</small></label><input class="inp" id="mpName2" maxlength="16" autocomplete="nickname" placeholder="e.g. Sam"></div>
       <button class="primary" id="mpJoin" type="button">Join</button>
       <p class="note" id="mpRejoinNote" hidden></p>
     </div>
@@ -8073,7 +8071,7 @@ function mpLeave(){ cpuGateGone(); { const pv=document.getElementById('pvBar'); 
   updateGameBar(); updateBuildUI();
 }
 async function mpJoin(code,name,playerId){
-  const res=await mpApi('POST',{action:'join',code,name,playerId});
+  const res=await mpApi('POST',{action:'join',code,playerId});   // no name: the server gives a made-up one
   if(res.waiting){ mpWaitStart(res,name); return; }
   await mpEnter(res,false,name);
 }
@@ -8140,7 +8138,6 @@ async function renderMpView(){
     // Start on a ready-made puzzle, unless you've just picked your own (or had one picked already)
     if(mpKeepPick){ mpKeepPick=false; $('#mpModel').value='cur'; } else if(!usePicked&&$('#mpModel').value==='cur') $('#mpModel').value=TOGETHER_DEFAULT_PICK;
     renderMpPuzzle();
-    { const n2=(nm||bzOtterName()).slice(0,16); if(n2){ if(!$('#mpName1').value) $('#mpName1').value=n2; if(!$('#mpName2').value) $('#mpName2').value=n2; } }
     const st=mpStored(), note=$('#mpRejoinNote');
     note.hidden=!st;
     if(st){ note.innerHTML=`You were in room <b>${escapeHTML(st.code)}</b>. <button class="ghost" id="mpRejoin" type="button">Rejoin it</button>`;
@@ -8210,14 +8207,16 @@ async function mpMake(mode,name,choice){
   const title=mpUseModel(choice);
   const perTurn=mode==='blitz'?3:+document.querySelector('input[name=perTurn]:checked').value;
   const level=/^\d+$/.test(choice)?+choice:(game?game.lvl:null);
-  const res=await mpApi('POST',{action:'create',name,mode,perTurn,nBricks:model.bricks.length,title,level,
+  const res=await mpApi('POST',{action:'create',mode,perTurn,nBricks:model.bricks.length,title,level,
     model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
   mpRememberName(name);
   await mpEnter(res,true,name); renderMpView();
   if(crewLiveFor&&mp&&mp.code){ const c=crewLiveFor; crewLiveFor=''; crewApi('POST',{action:'live',code:c,room:mp.code}).catch(()=>{}); }
 }
 $('#mpCreate').onclick=async()=>{
-  const name=$('#mpName1').value.trim()||mpName()||bzOtterName()||'Builder';   // like a race: no name to type (friends only ever see a made-up name)
+  // No name box (Steff, 21 Nov 2026): friends only ever see the made-up name the server gives, and so do you, so a typed
+  // name did nothing. The name below stays on this device; it is never sent.
+  const name=mpName()||bzOtterName()||'Builder';
   const btn=$('#mpCreate'); btn.disabled=true; mpMsg('');
   try{ await mpMake('classic',name,$('#mpModel').value); }
   catch(e){ mpMsg(e.message,'err'); }
@@ -8236,7 +8235,7 @@ async function joinSixCode(code){
   mpMsg('Bloppit didn’t answer. Please try again.','err');
 }
 $('#mpJoin').onclick=async()=>{
-  const code=$('#mpCodeIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''), name=$('#mpName2').value.trim()||mpName()||bzOtterName()||'Builder';
+  const code=$('#mpCodeIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''), name=mpName()||bzOtterName()||'Builder';   // stays on this device
   if(code.length===6){ joinSixCode(code); return; }
   if(code.length!==5){ mpMsg('Codes have 5 letters and numbers (a room) or 6 (a challenge, a Pass the Puzzle or a crew).','err'); $('#mpCodeIn').focus(); return; }
   const btn=$('#mpJoin'); btn.disabled=true; mpMsg('Joining…');
@@ -12922,7 +12921,7 @@ $('#crewOpen').addEventListener('click',async e=>{
   if(b.dataset.passStart){ try{ passStart(code,$('#crewPassModel').value,[...document.querySelectorAll('#crewOpen [data-pass-who]:checked')].map(i=>i.value),+$('#crewPassPer').value); }catch(x){ crewMsg(x.message,'err'); } return; }
   if(b.dataset.passGo){ try{ await passOpenTurn(code,false,b.dataset.passGo); }catch(x){ crewMsg(x.message,'err'); } return; }
   if(b.dataset.crewLiveStart){ crewLiveFor=code; track('crew_live_start'); setTab('mp','start'); mpMsg('Pick a puzzle and make the room: your crew will see it.'); return; }
-  if(b.dataset.crewLive){ track('crew_live_join'); setTab('mp','join'); $('#mpCodeIn').value=b.dataset.crewLive; const n=$('#mpName2'); if(n&&!n.value) n.focus(); else $('#mpJoin').click(); return; }
+  if(b.dataset.crewLive){ track('crew_live_join'); setTab('mp','join'); $('#mpCodeIn').value=b.dataset.crewLive; $('#mpJoin').click(); return; }
   if(b.dataset.crewLiveEnd){ crewDo({action:'live-end',code}); return; }
 });
 document.addEventListener('click',e=>{ if(e.target.closest('[data-go-race]')) homeGo('friend'); });
@@ -13360,7 +13359,7 @@ $('#wcPupGo').onclick=()=>{ const d=$('#welcomeDlg'); d.close(); endReveal(true)
   else if(q){
     $('#mpCodeIn').value=q; setTab('mp','join');   // the join form itself (it used to land on the Together hub with the form hidden)
     const st=mpStored();
-    if(!(st&&st.code===q)) requestAnimationFrame(()=>{ const n=$('#mpName2'); if(n&&!n.value) n.focus(); else $('#mpJoin').focus(); });
+    if(!(st&&st.code===q)) requestAnimationFrame(()=>{ $('#mpJoin').focus(); });
     if(st&&st.code===q) mpJoin(q,st.name,st.playerId).then(()=>renderMpView()).catch(e=>{ mpMsg(e.message,'err'); mpStore(null); renderMpView(); });
   } else homeRoute();
 }

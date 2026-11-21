@@ -1967,14 +1967,14 @@ async function tMakeRoom(t, perTurn = 5) {
   // a second room in the same test: the (hidden) code of the last room is still on the page until the new room arrives,
   // so wait for a code that is new. Before, the guest was sometimes sent to the old, finished room and never knocked.
   const old = await tCode(t);
-  await t.page.evaluate((pt) => { document.getElementById('mpName1').value = ''; document.getElementById('pt' + pt)?.click(); document.getElementById('mpCreate').click(); }, perTurn);   // no name needed (21 Nov 2026)
+  await t.page.evaluate((pt) => { document.getElementById('pt' + pt)?.click(); document.getElementById('mpCreate').click(); }, perTurn);   // no name box (21 Nov 2026)
   await t.page.waitForFunction((old) => { const c = document.getElementById('mpBigCode')?.textContent.trim() || ''; return /^[A-Z0-9]{5}$/.test(c) && c !== old; }, old, { timeout: 15000 });
   assert.match(await t.page.evaluate(() => document.querySelector('#mpRoom .mp-room-top .note').textContent), /tap Together, then Join a Game, and enter this code/);
   return tCode(t);
 }
 async function tJoin(t, code) {
   await t.page.evaluate(() => (document.querySelector('.hm-tile[data-go="mp"]').click(), document.querySelector('#view-mp .hub [data-sub="join"]').click())); await t.page.waitForTimeout(500);
-  await t.page.fill('#mpCodeIn', code); await t.page.fill('#mpName2', 'Guest'); await t.page.evaluate(() => document.getElementById('mpJoin').click()); await t.page.waitForTimeout(1500);
+  await t.page.fill('#mpCodeIn', code); await t.page.evaluate(() => document.getElementById('mpJoin').click()); await t.page.waitForTimeout(1500);
 }
 async function tAdmitStart(host) {
   await host.page.waitForSelector('[data-admit]', { state: 'attached', timeout: 30000 });
@@ -1997,8 +1997,8 @@ test('Together: a room invite link opens the join form with the code in (not the
   const a = await open(T_OPEN); const code = await tMakeRoom(a);
   const b = await open(T_OPEN + '&room=' + code, { viewport: { width: 390, height: 844 }, touch: true });
   assert.equal(await b.page.inputValue('#mpCodeIn'), code);
-  assert.ok(await b.page.locator('#mpName2').isVisible(), 'the name box shows'); assert.ok(await b.page.locator('#mpJoin').isVisible(), 'Join shows');
-  await b.page.fill('#mpName2', 'Phone'); await b.page.evaluate(() => document.getElementById('mpJoin').click()); await b.page.waitForTimeout(1500);
+  assert.equal(await b.page.locator('#view-mp input[autocomplete="nickname"]:visible').count(), 0, 'no name box on Team Build (21 Nov 2026)'); assert.ok(await b.page.locator('#mpJoin').isVisible(), 'Join shows');
+  await b.page.evaluate(() => document.getElementById('mpJoin').click()); await b.page.waitForTimeout(1500);
   assert.ok(await b.page.locator('#mpWaitBox').isVisible(), 'knocking');
   assert.deepEqual(a.errors, []); assert.deepEqual(b.errors, []); await a.ctx.close(); await b.ctx.close();
 });
@@ -2236,7 +2236,7 @@ test('a crew: Pass the Puzzle goes round (first pages, then the next builder fin
   const wa = JSON.parse(await a.page.evaluate(() => localStorage.getItem('bloppit-world-v1'))); assert.ok(wa.log.some((k) => /^p:/.test(k)), wa.log.join(','));
   // A Crew Quick Game: A makes a Team Build room from the crew; B sees "started a game"
   await a.page.evaluate(() => document.querySelector('[data-crew-live-start]').click()); await a.page.waitForTimeout(800);
-  await a.page.evaluate(() => { document.getElementById('mpName1').value = 'A'; document.getElementById('mpCreate').click(); }); await a.page.waitForTimeout(2500);
+  await a.page.evaluate(() => { document.getElementById('mpCreate').click(); }); await a.page.waitForTimeout(2500);
   await crews(b); await b.page.evaluate((c) => document.querySelector(`[data-crew="${c}"]`).click(), code); await b.page.waitForTimeout(800);
   assert.match(await b.text('#crewOpen'), /started a game/);
   assert.deepEqual(a.errors, []); assert.deepEqual(b.errors, []); await a.ctx.close(); await b.ctx.close();

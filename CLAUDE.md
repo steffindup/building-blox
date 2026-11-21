@@ -369,6 +369,10 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   2026):** "You build half" (the default) or 2 to 10 steps (`#bzRelayPer`, `relayStart(choice, per)`); the code's `half`
   carries the split, which the server and older apps already took, so an older app finishes from the right step.
   The wording says "Your part is done!" and "built steps 1 to N", not "half".
+  **No name box on Team Build (Steff, 21 Nov 2026):** the server gives every player a made-up name and ignored a typed
+  one, and your own screen shows the made-up name too, so the box did nothing; it's gone from Make a room and Join, and
+  no name is sent to the room server any more. The race name ("Racing as …", Race a Friend) stays: it shows in races
+  against Swoop on the device.
   **A bar above a crew build (21 Nov 2026):** Pass the Puzzle and the Mega Build show `#crewBar` (crew pink, above the
   build like the Trail bar, never over it): what it is, whose turn ("Your turn · steps 3 to 6" or "Just looking. It's
   X's turn"), and "‹ Back to the crew" ("‹ Back" on phones), which asks once if steps of this turn aren't passed on.
