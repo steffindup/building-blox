@@ -478,6 +478,10 @@ body.on-build .appfoot{display:none}
   body.on-build #mpBar .rm-chips,body.on-box #mpBar .rm-chips{flex-wrap:nowrap;gap:6px}
   body.on-build #mpBar .rm-chip,body.on-box #mpBar .rm-chip{flex:1 1 0;min-width:0;overflow:hidden}
   body.on-build #mpBar #mpCodeBadge{width:30px;height:30px}
+  /* a room code is 5 letters: it fits in a narrow badge instead of being cut to 2 (21 Nov 2026) */
+  body.on-build #mpBar #mpCodeBadge:not(.face),body.on-box #mpBar #mpCodeBadge:not(.face){width:auto;min-width:30px;padding:0 6px;font-size:12px;letter-spacing:.04em}
+  /* the turn line keeps clear of the Room / End my turn buttons in the corner (they overlapped, 21 Nov 2026) */
+  body.on-build #mpBar .mp-turn,body.on-box #mpBar .mp-turn{margin-right:var(--btnw,80px)}
   body.on-build #mpBar .gb-btns{position:absolute;right:8px;top:6px;margin:0}
   body.on-build #mpBar .gb-btns button{padding:3px 10px;font-size:12px;min-height:0}
 }
@@ -843,6 +847,7 @@ body.on-build .playcol>.turn-banner{margin:0 0 3px}   /* the build page's column
 .bz-join{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
 .bz-off{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;margin:0}
 .gamebar.mpbar{position:relative;border-color:#5A93DB}
+.mp-dot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:middle}
 .gb-badge.mp-code{width:auto;padding:0 10px;font-size:18px;letter-spacing:.08em;background:var(--c-together);color:#fff}
 .gb-badge.mp-code.face{width:44px;height:44px;padding:0;background:#E8F1F8;overflow:hidden;border-radius:12px}.gb-badge.mp-code.face img{width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block}
 .mp-turn{font-family:var(--f-display);font-size:20px;line-height:1.15;min-width:180px}
@@ -1510,7 +1515,7 @@ body:has(#view-island.immersive:not([hidden])) .top{top:0;transform:none!importa
 .pass-hist{margin:0;padding-left:20px;font-size:13.5px;color:var(--muted)}
 .hub-sec{margin:4px 0 6px}
 .news-dot{position:absolute;top:-3px;right:-3px;width:14px;height:14px;border-radius:50%;background:#D62F2A;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.25);pointer-events:none;z-index:2}
-.news-dot[hidden]{display:none}#tab-mp,.t-crew{position:relative}.t-crew .news-dot{top:10px;right:10px;width:16px;height:16px}
+.news-dot[hidden]{display:none}.hm-tile .fr-dot{top:10px;right:10px;width:16px;height:16px}#tab-mp,.t-crew{position:relative}.t-crew .news-dot{top:10px;right:10px;width:16px;height:16px}
 .crew-new{font-style:normal;font-size:11px;font-weight:800;background:#D62F2A;color:#fff;border-radius:999px;padding:1px 8px;vertical-align:2px}
 .crew-since{display:grid;gap:2px;margin:8px 0 0;padding:8px 12px;border-radius:12px;background:var(--callout);font-size:14px}.crew-since b{font-size:13px}
 .crew-pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:6px}
@@ -1786,9 +1791,9 @@ body.film-on{overflow:hidden}
 .bzp-btns{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:8px;align-items:center}
 @media (max-width:520px){.bzp-btns{grid-template-columns:1fr 1fr}.bzp-btns select{grid-column:1 / -1}}
 .bz-card.hl{outline:3px solid #F4BC22;outline-offset:3px}
-.bz-live summary{cursor:pointer;font-weight:800;color:var(--muted)}
-.bz-live[open] summary{margin-bottom:6px}
-.bz-live .note{margin:0 0 8px}
+.bz-live{display:grid;gap:6px;justify-items:start;padding:10px 0;border-top:1px dashed var(--line)}.bz-live:first-of-type{border-top:0;padding-top:0}
+.bz-live h3{margin:0;font-size:17px}
+.bz-live .note{margin:0}
 .ch-preview{display:grid;gap:10px}
 .ch-preview .ch-top{display:flex;gap:12px;align-items:center}
 .ch-preview img{width:72px;height:72px;border-radius:12px;background:#fff;object-fit:contain}
@@ -2359,7 +2364,7 @@ body:not(.on-home) .brand .wob{display:none}   /* "World of Bricks" only on the 
   <div class="mp-forms" id="mpForms">
     <div class="card" id="mpStartCard">
       <h2>Start a game</h2>
-      <div class="field"><label for="mpName1">Your name <small class="note">(stays on this device; friends see an otter name)</small></label><input class="inp" id="mpName1" maxlength="16" autocomplete="nickname" placeholder="e.g. Sam"></div>
+      <div class="field"><label for="mpName1">Your name <small class="note">(stays on this device; friends see a made-up name)</small></label><input class="inp" id="mpName1" maxlength="16" autocomplete="nickname" placeholder="e.g. Sam"></div>
       <div class="field bz-puzzle"><span class="lbl">Puzzle</span>
         <div class="bzp"><img id="mpPzThumb" alt=""><div class="bzp-txt"><b id="mpPzName"></b><span class="note" id="mpPzInfo"></span></div></div>
         <div class="bzp-btns"><button class="ghost" id="mpLib" type="button">📚 Library</button><button class="ghost" id="mpPhoto" type="button">📸 Your photo</button>
@@ -2377,7 +2382,7 @@ body:not(.on-home) .brand .wob{display:none}   /* "World of Bricks" only on the 
     <div class="card" id="mpJoinCard">
       <h2>Join a Game</h2>
       <div class="field"><label for="mpCodeIn">Got a code?</label><input class="inp code" id="mpCodeIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCDE"><small class="note" style="display:block;margin-top:4px">A room code (5 letters and numbers) or a challenge, Pass the Puzzle or crew code (6).</small></div>
-      <div class="field"><label for="mpName2">Your name <small class="note">(stays on this device; friends see an otter name)</small></label><input class="inp" id="mpName2" maxlength="16" autocomplete="nickname" placeholder="e.g. Sam"></div>
+      <div class="field"><label for="mpName2">Your name <small class="note">(stays on this device; friends see a made-up name)</small></label><input class="inp" id="mpName2" maxlength="16" autocomplete="nickname" placeholder="e.g. Sam"></div>
       <button class="primary" id="mpJoin" type="button">Join</button>
       <p class="note" id="mpRejoinNote" hidden></p>
     </div>
@@ -2391,7 +2396,7 @@ body:not(.on-home) .brand .wob{display:none}   /* "World of Bricks" only on the 
   </div>
   <div class="card mp-room" id="mpRoom" hidden>
     <div class="mp-room-top">
-      <div><span class="tag">Room code</span><div class="mp-bigcode" id="mpBigCode"></div><p class="note">Others open <b id="mpSite"></b>, tap <b id="mpWhere">🧩 Together</b> and enter this code.</p></div>
+      <div><span class="tag">Room code</span><div class="mp-bigcode" id="mpBigCode"></div><p class="note">Others open <b id="mpSite"></b>, tap <b>Together</b>, then <b id="mpWhere">Join a Game</b>, and enter this code.</p></div>
       <div class="mp-share"><button class="ghost" id="mpCopy" type="button">Copy invite link</button></div>
     </div>
     <div class="mp-room-model"><img id="mpThumb" alt=""><div><strong id="mpModelName"></strong><div class="note" id="mpModelInfo"></div></div></div>
@@ -2422,7 +2427,7 @@ body:not(.on-home) .brand .wob{display:none}   /* "World of Bricks" only on the 
   <div id="bzForms" style="display:grid;gap:16px">
     <div class="card bz-setup">
       <p class="note bz-as" id="bzAs" hidden>Racing as <b id="bzAsN"></b> <button class="ghost sm-link" id="bzAsCh" type="button">Change</button></p>
-      <div class="field" id="bzNameF"><label for="bzName">Your name in the race <small class="note">(stays on this device; friends see an otter name)</small></label><input class="inp" id="bzName" maxlength="16" autocomplete="nickname" placeholder="e.g. Sam"></div>
+      <div class="field" id="bzNameF"><label for="bzName">Your name in the race <small class="note">(stays on this device; friends see a made-up name)</small></label><input class="inp" id="bzName" maxlength="16" autocomplete="nickname" placeholder="e.g. Sam"></div>
       <div class="field bz-puzzle"><span class="lbl">Puzzle</span>
         <div class="bzp"><img id="bzThumb" alt=""><div class="bzp-txt"><b id="bzPzName"></b><span class="note" id="bzPzInfo"></span></div></div>
         <div class="bzp-btns"><button class="ghost" id="bzLib" type="button">📚 Library</button><button class="ghost" id="bzPhoto" type="button">📸 Your photo</button>
@@ -2443,26 +2448,30 @@ body:not(.on-home) .brand .wob{display:none}   /* "World of Bricks" only on the 
           <p class="note" id="bzLevelNote" style="margin:6px 0 0"></p></div>
         <button class="primary" id="bzCpuGo" type="button">Start the race</button>
       </div>
-      <div class="card bz-card" id="bzRelayCard">
-        <h2><span aria-hidden="true">🔁</span>Pass the Puzzle to a friend</h2>
-        <p class="note" style="margin:0">Build the first half of a model, send the code, and your friend builds the rest. The finished model lands on both your islands.</p>
-        <button class="primary" id="bzRelayGo" type="button">🔁 Pass the Puzzle</button>
-        <p class="note" style="margin:8px 0 0">Got a Pass the Puzzle code? Type it into <b>Got a code?</b> under Race a Friend, or into Join a Game on the menu.</p>
-      </div>
       <div class="card bz-card" id="bzFriendCard">
-        <h2><span aria-hidden="true">🤝</span>Make a challenge</h2>
-        <p class="note" style="margin:0">Build the whole puzzle as fast as you can, then send your code to a friend. They race your time whenever they like. Names never travel: on a friend’s screen you are a generated name like Brave Otter 214.</p>
+        <h2><span aria-hidden="true">🤝</span>Race a friend</h2>
         <p class="bz-off" id="bzOff" hidden></p>
-        <button class="primary" id="bzChMake" type="button">📨 Make a challenge</button>
+        <div class="bz-live">
+          <h3>Race live now</h3>
+          <p class="note">Everyone plays at the same time on their own device, taking turns. Friends join with the room code, and you let them in.</p>
+          <button class="primary" id="bzMake" type="button">Make a live race room</button>
+        </div>
+        <div class="bz-live">
+          <h3>Send a challenge</h3>
+          <p class="note">Build the whole puzzle as fast as you can, then send your code to a friend. They race your time whenever they like. Names never travel: on a friend’s screen you are a made-up name like Brave Otter 214.</p>
+          <button class="primary" id="bzChMake" type="button">📨 Make a challenge</button>
+        </div>
         <div class="bz-or">
           <div class="bz-join"><div class="field" style="margin:0"><label for="bzCodeIn">Got a code?</label><input class="inp code" id="bzCodeIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC123"></div>
             <button class="primary" id="bzJoin" type="button">Go</button></div>
-          <p class="note" style="margin:6px 0 0">Works for every code: challenges have 6 characters, live races and Team Build rooms have 5.</p>
+          <p class="note" style="margin:6px 0 0">Works for every code: challenges and Pass the Puzzle have 6 characters, live races and Team Build rooms have 5.</p>
         </div>
-        <details class="bz-live"><summary>Race live in a room instead</summary>
-          <p class="note">Everyone plays at the same time on their own device, taking turns. Friends join with the room code, and you let them in.</p>
-          <button class="ghost" id="bzMake" type="button">Make a live race room</button>
-        </details>
+      </div>
+      <div class="card bz-card" id="bzRelayCard">
+        <h2><span aria-hidden="true">🔁</span>Pass the Puzzle to a friend</h2>
+        <p class="note" style="margin:0">Not a race: build the first half of a model, send the code, and your friend builds the rest. The finished model lands on both your islands.</p>
+        <button class="primary" id="bzRelayGo" type="button">🔁 Pass the Puzzle</button>
+        <p class="note" style="margin:8px 0 0">Got a Pass the Puzzle code? Type it into <b>Got a code?</b> above, or into Join a Game.</p>
       </div>
     </div>
     <div class="card ch-preview" id="chPreview" hidden></div>
@@ -4029,8 +4038,9 @@ function tabsSync(t){ const sec=sectionOf(t===undefined?tab:t), tr=typeof trail!
     // the Weekly Bloppit is Bibi's: the Brickyard Cove tab
     b.setAttribute('aria-selected',on); }); }
 function sectionOf(t){
-  if(t==='blitz'&&!mp&&!mpw&&subOf.blitz==='friend') return 'mp';   // Race a Friend lives in Together (Steff, 8 Nov 2026)
-  if(t==='build'||t==='box'||t==='booklet'){ if(typeof welcomeOn==='function'&&welcomeOn()) return 'island'; if(game) return 'game'; if(typeof mysOn==='function'&&mysOn()) return 'island'; if(mp) return trialOn()&&mp.state.calm?'daily':mpHomeTab(); return 'create'; }
+  if(t==='blitz'&&((!mp&&!mpw&&subOf.blitz==='friend')||(mp&&!mp.cpu)||mpw)) return 'mp';   // Race a Friend lives in Together (Steff, 8 Nov 2026)
+  if(t==='build'||t==='box'||t==='booklet'){ if(typeof welcomeOn==='function'&&welcomeOn()) return 'island'; if(game) return 'game'; if(typeof mysOn==='function'&&mysOn()) return 'island'; if(relay||(typeof pass!=='undefined'&&pass)||(typeof mega!=='undefined'&&mega)) return 'mp';   // games with friends stay in Together (21 Nov 2026)
+    if(mp){ if(trialOn()&&mp.state.calm) return 'daily'; if(mp.cpu&&!(cpu&&cpu.trial)) return 'blitz'; return 'mp'; } return 'create'; }
   return t==='home'?'':t;
 }
 const MP_TEAM_NOTE='Build one puzzle together on different phones, tablets or computers. Take turns placing a few bricks each. Everyone sees the model grow live. Friends join with the room code, and you let them in.',
@@ -4077,7 +4087,7 @@ function setTab(t,sub){ if(t!=='island'&&typeof ISL3!=='undefined') ISL3.thenCha
   document.body.classList.toggle('on-box',t==='box');
   if(t==='box'){ scrollTo(0,0); $('.top').classList.remove('tucked'); requestAnimationFrame(buildFit); }
   if(t==='build'){ scrollTo(0,0); $('.top').classList.remove('tucked'); buildFit(); }
-  if(t==='home'){ homeSeen=true; renderer.domElement.remove(); renderHome(); scrollTo(0,0); $('.top').classList.remove('tucked'); }
+  if(t==='home'){ homeSeen=true; renderer.domElement.remove(); renderHome(); scrollTo(0,0); $('.top').classList.remove('tucked'); try{ chNewsCheck(); }catch(e){} }
   // Once the menu has been shown it offers "Continue building", so the Welcome back banner isn't needed
   $('#resume').hidden=!pendingSave||homeSeen;
   $('#mpBar').hidden=!(mp&&mp.state&&mp.state.started&&(t==='build'||t==='box'));
@@ -5177,6 +5187,7 @@ function wrongBrickMsg(){
 function tryPlace(){
   if(!sel||!lastAnchor||busy) return;
   if(isLocked(cur)){ setStatus('This page is locked. Solve Bloppit’s maths puzzle to open it.','err'); openMath(cur); return; }
+  if(mpCountingDown()){ setStatus('Get ready… wait for Go!','err'); return; }
   if(mp&&!mpMyTurn()){ setStatus(mpTurnText(),'err'); return; }
   if(model.mirror&&model.steps[cur]&&model.steps[cur].pippa&&!pippaBusy){ setStatus('🐧 Pippa: “Wait for me! I’m still building my side.”'); return; }
   if(relay&&relay.role==='first'&&cur>=relay.half){ setStatus('Those steps are your friend’s. Your half is done!','err'); relayHalfDone(); return; }
@@ -5231,7 +5242,7 @@ function placeBrick(t,ax,az){
   busy=true; ghostGroup.visible=false; lastAnchor=null;
   setStatus(`Step ${cur+1} done!`,'ok'); updateBuildUI();
   setTimeout(()=>{ busy=false; if(cur<model.steps.length&&model.steps[cur].bricks.every(b=>placed.has(b))) cur++; follow=true; if(game||mp) hintOn=false;
-    setStatus(cur>=model.steps.length?'Every step complete. Great build!':pass&&pass.role!=='look'&&cur<pass.to?`On to step ${cur+1}. ${passLeftText()}`:`On to step ${cur+1}.${model.steps[cur].hang?' These clip on underneath the bricks above.':''}${held?'':' Open the parts box for the next brick.'}`, cur>=model.steps.length?'ok':'');
+    setStatus(cur>=model.steps.length?(mp&&!mp.cpu&&mp.state&&mp.state.mode!=='blitz'?'Finished! You built it together.':'Every step complete. Great build!'):pass&&pass.role!=='look'&&cur<pass.to?`On to step ${cur+1}. ${passLeftText()}`:`On to step ${cur+1}.${model.steps[cur].hang?' These clip on underneath the bricks above.':''}${held?'':' Open the parts box for the next brick.'}`, cur>=model.steps.length?'ok':'');
     updateBuildUI(); frameBuild(true,false); pippaTurn();   // each new step: back to looking at it
     if(relay&&relay.role==='first'&&cur>=relay.half&&cur<model.steps.length){ relayHalfDone(); return; }
     if(pass&&cur>=pass.to&&cur<model.steps.length){ passPagesDone(); return; }
@@ -7116,8 +7127,8 @@ function updateGameBar(){
     const st=runRating(); $('#gbPts').innerHTML=starNum(st,runCap()); $('#gbOf').textContent='';
     const bits=[]; if(run.hints.size) bits.push(`Hints ${run.hints.size}`); if(run.auto) bits.push(`Placed for you ${run.auto}`); if(run.miss) bits.push(`Wrong bricks ${run.miss}`);
     $('#gbCosts').innerHTML=bits.length?bits.map(b=>`<span>${b}</span>`).join(''):'<span>No help used yet</span>'; return; }
-  $('#hintBtn').textContent=(mp&&mp.state&&mp.state.mode==='blitz')?(mp.hintSteps.includes(cur)?'Hint':'Hint (+2s)'):mp?'Hint (−5)':'Hint';
-  $('#autoBtn').innerHTML=mp?'Place one<span class="lg"> for me</span> (−10)':'Place one<span class="lg"> for me</span>';
+  $('#hintBtn').textContent=(mp&&mp.state&&mp.state.mode==='blitz')?(mp.hintSteps.includes(cur)?'Hint':'Hint (+2s)'):'Hint';   // Team Build has no points: ★ only, like every build (Steff, 21 Nov 2026)
+  $('#autoBtn').innerHTML='Place one<span class="lg"> for me</span>';
   if(!on) return;
   const LV=levelsOf(gameTrail()), L=LV[game.lvl], p=game.pen;
   // Where you are: the trail (with its friend) and the island it grows
@@ -7801,6 +7812,13 @@ function mpLeft(s){ const me=s.players[mp.me]||{}, l=s.perTurn-s.turnPlaced; ret
 function mpFlash(t){ const f=$('#mpFlash'); f.textContent=t; f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); }
 function mpTick(){ const s=mp&&mp.state; if(!s||s.mode!=='blitz') return; document.querySelectorAll('[data-clk]').forEach(el=>{ el.textContent=fmtTime(mpTime(s,+el.dataset.clk)); });
   if(!s.finished&&document.querySelector('#mpPlayers .rm-mini')){ const L=raceLead(s), k=L&&L.decided?'d'+L.lead.i:''; if(k!==(mp.rmKey||'')){ mp.rmKey=k; $('#mpPlayers').innerHTML=raceMeter(s); } } }   // a clock passing the winner's time decides the race
+// A race (with friends, on the server's clock) is still counting down to Go!
+const mpCountingDown=()=>!!(mp&&!mp.cpu&&mp.state&&mp.state.mode==='blitz'&&mp.state.started&&!mp.state.finished&&Date.now()+(mp.skew||0)<mp.state.turnStart);
+function roomCountdown(){ const me=mp;
+  const show=()=>{ if(!mp||mp!==me||!mp.state) return; const s=mp.state, left=Math.ceil((s.turnStart-Date.now()-(mp.skew||0))/1000);
+    if(left>0){ mpFlash(String(left)); setStatus(`Get ready… ${left}`); sfx.chirp(); setTimeout(show,Math.max(50,s.turnStart-(mp.skew||0)-Date.now()-(left-1)*1000)); }
+    else { mpFlash('Go!'); sfx.chime(); if(s.turn===mp.me){ haptic('medium'); setStatus('Go! Your clock is running. Place 1, 2 or 3 bricks, then tap Done.','ok'); } else setStatus(`Go! ${s.players[s.turn].name} goes first. Get your bricks ready in the parts box.`); updateMpBar(); } };
+  setTimeout(show,150); }
 const mpMyTurn=()=>!!(mp&&mp.state&&mp.state.started&&!mp.state.finished&&mp.state.turn===mp.me);
 function mpTurnText(){ const s=mp&&mp.state; if(!s||!s.started) return 'Waiting for the game to start.'; if(s.finished) return 'The model is finished!';
   if(mp.cpu&&s.quota&&(s.players[mp.me]||{}).n>=s.quota) return '';   /* the turn bar already says it (one line, Steff 6 Nov 2026) */ return `It’s ${s.players[s.turn].name}’s turn. Get your bricks ready in the parts box.`; }
@@ -7919,9 +7937,16 @@ function mpApply(s){
   mp.applied=s.moves.length;
   if(!mp.posting&&placedN!==s.moves.length) mpResync();
   if(placedN!==n0){ reconcilePieces(); updateBuildUI(); if(cur!==cur0||n0===0) frameBuild(true); }
+  // A race between friends starts with 3-2-1 Go! (the server parks the first clock 3 s ahead; before, the first racer's
+  // clock ran from the moment the host tapped Start, while their screen was still loading; 21 Nov 2026)
+  const cd=mpCountingDown();
+  if(cd&&!mp.cdOn){ mp.cdOn=true; roomCountdown(); }
   if(s.started&&!s.finished&&mp.lastTurn!==s.turn){
-    mp.lastTurn=s.turn;
-    if(s.solo){ if(!(mp.cpu&&Date.now()<s.turnStart)) setStatus(s.calm?'Take your time. Place every brick in the right spot.':'Go! Your clock is running. Place every brick as fast as you can.','ok'); }   // during the 3-2-1 the countdown says Go! itself (it said Go! ~3 s early, and placing was refused)
+    const first=mp.lastTurn===-1; mp.lastTurn=s.turn;
+    // It's your turn: a chime and a buzz, so a child who put the phone down knows (friends' games only; 21 Nov 2026)
+    if(!s.solo&&!mp.cpu&&s.turn===mp.me&&!(first&&cd)){ sfx.chime(); haptic('medium'); }
+    if(cd){}   // the countdown says what to do
+    else if(s.solo){ if(!(mp.cpu&&Date.now()<s.turnStart)) setStatus(s.calm?'Take your time. Place every brick in the right spot.':'Go! Your clock is running. Place every brick as fast as you can.','ok'); }   // during the 3-2-1 the countdown says Go! itself (it said Go! ~3 s early, and placing was refused)
     else if(s.turn===mp.me) setStatus(s.mode==='blitz'?(mpLeft(s)<3?`Your turn! Your clock is running. Place ${mpLeft(s)===1?'your last brick':`up to ${mpLeft(s)} bricks`}.`:'Your turn! Your clock is running. Place 1, 2 or 3 bricks, then tap Done.'):`Your turn! Place ${s.perTurn} brick${s.perTurn>1?'s':''}.`,'ok');
     else setStatus(`${s.players[s.turn].name}’s turn. Get your next bricks ready in the parts box.`);
   }
@@ -7950,13 +7975,15 @@ function updateMpBar(){
   else if(bz&&s.solo) el.innerHTML=s.finished?'Finished!<small>Let’s see your time</small>':`Go go go!<small>${(s.players[0].n||0)} of ${s.quota} placed</small>`;
   else if(bz) el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Shortest time wins</small>':mine?`Your turn! Go!<small>${s.turnPlaced?`${s.turnPlaced} placed · up to ${left} more, or tap Done`:left<3?`Place up to ${left} brick${left===1?'':'s'} (${left===1?'your last one':'your last ones'})`:'Place 1, 2 or 3 bricks, then tap Done'}</small>`:mp.cpu?`${CPU_LEVELS[s.cpuLevel].name}’s turn<small>${s.turnPlaced?`${s.turnPlaced} placed · `:'Thinking… '}${(s.players[mp.me]||{}).n>=s.quota?'You’re done! Now he finishes his bricks':'his clock is running'}</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} placed · their clock is running${cp.stale?' · hasn’t been seen for a while':''}</small>`;
   else el.innerHTML=!s.started?'Waiting to start':s.finished?'Finished!<small>Built together</small>':mine?`Your turn!<small>Place ${left} more brick${left===1?'':'s'}</small>`:`${escapeHTML(cp.name)}’s turn<small>${s.turnPlaced} of ${s.perTurn} placed${cp.stale?' · hasn’t been seen for a while':''}</small>`;
+  if(bz&&!s.calm&&s.started&&!s.finished&&Date.now()+(mp.cpu?0:(mp.skew||0))<s.turnStart) el.innerHTML='Get ready…<small>The clock starts on Go!</small>';   // not "Go go go!" during the 3-2-1 (21 Nov 2026)
   if(bz&&!s.solo&&s.quota&&s.started) $('#mpPlayers').innerHTML=raceMeter(s);
-  else $('#mpPlayers').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.i===s.turn&&s.started&&!s.finished?' now':''}${p.stale||p.left?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.left?' · left':''} ${bz?`<b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${s.quota?`<span class="mi" style="color:var(--muted)" title="Bricks placed">${p.done?'✓':`${p.n}/${s.quota}`}</span>`:''}${p.miss?`<span class="mi" title="Misses">✕${p.miss}</span>`:''}${p.hint?`<span class="mi" title="Hints" style="color:var(--muted)">💡${p.hint}</span>`:''}`:`<b>${p.score}</b>`}</span>`).join('');
+  else $('#mpPlayers').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.i===s.turn&&s.started&&!s.finished?' now':''}${p.stale||p.left?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.left?' · left':''} ${bz?`<b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>${s.quota?`<span class="mi" style="color:var(--muted)" title="Bricks placed">${p.done?'✓':`${p.n}/${s.quota}`}</span>`:''}${p.miss?`<span class="mi" title="Misses">✕${p.miss}</span>`:''}${p.hint?`<span class="mi" title="Hints" style="color:var(--muted)">💡${p.hint}</span>`:''}`:s.started?`<b title="Bricks placed">${p.own}</b>`:''}</span>`).join('');
   updateVoiceUI();
   turnBanner(s); $('#mpBar').classList.toggle('tb-on',!!(bz&&mp.cpu&&!s.solo&&s.started&&!s.finished));   // the turn row under the build carries the turn and Done
   $('#mpEndTurn').textContent=bz?'Done':'End my turn';
   $('#mpEndTurn').hidden=!(mine&&s.started&&!s.finished&&s.turnPlaced>0)||!!s.solo;
   $('#mpSkip').hidden=!(!mine&&s.started&&!s.finished&&cp.stale);
+  { const bb=$('#mpBar .gb-btns'); $('#mpBar').style.setProperty('--btnw',((bb&&bb.offsetWidth)||70)+10+'px'); }
 }
 async function mpPoll(){
   if(!mp||mp.posting||mp.polling) return;
@@ -8080,7 +8107,7 @@ async function renderMpView(){
     // Start on a ready-made puzzle, unless you've just picked your own (or had one picked already)
     if(mpKeepPick){ mpKeepPick=false; $('#mpModel').value='cur'; } else if(!usePicked&&$('#mpModel').value==='cur') $('#mpModel').value=TOGETHER_DEFAULT_PICK;
     renderMpPuzzle();
-    if(nm){ if(!$('#mpName1').value) $('#mpName1').value=nm; if(!$('#mpName2').value) $('#mpName2').value=nm; }
+    { const n2=(nm||bzOtterName()).slice(0,16); if(n2){ if(!$('#mpName1').value) $('#mpName1').value=n2; if(!$('#mpName2').value) $('#mpName2').value=n2; } }
     const st=mpStored(), note=$('#mpRejoinNote');
     note.hidden=!st;
     if(st){ note.innerHTML=`You were in room <b>${escapeHTML(st.code)}</b>. <button class="ghost" id="mpRejoin" type="button">Rejoin it</button>`;
@@ -8091,14 +8118,14 @@ async function renderMpView(){
   const bz=s.mode==='blitz', cpuOn=!!mp.cpu;
   $('.mp-room-top').hidden=cpuOn;
   $('#mpBigCode').textContent=s.code; $('#mpSite').textContent=APP?'bloppit.com/game':location.host+location.pathname.replace(/\/$/,'');
-  $('#mpWhere').textContent=bz?'⚡ Blitz':'🧩 Team Build';
+  $('#mpWhere').textContent='Join a Game';
   const p0=photos[0]; if(p0) $('#mpThumb').src=p0.png||(p0.png=p0.d.canvas.toDataURL('image/png'));
   $('#mpModelName').textContent=s.title;
   $('#mpModelInfo').innerHTML=s.solo?`<span class="blitz-tag">${escapeHTML(s.label)}</span>${s.nBricks} bricks, all yours. Your clock runs until the last brick is in. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
     :cpuOn?`<span class="blitz-tag">Blitz with Swoop · ${CPU_LEVELS[s.cpuLevel].speed}</span>${s.nBricks} bricks · you each place ${s.quota} · 1 to 3 bricks a turn. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
-    :bz?`<span class="blitz-tag">⚡ Race a Friend</span>${s.nBricks} bricks · ${s.quota?`everyone places ${s.quota}`:`split evenly between ${s.players.length} player${s.players.length===1?'':'s'}: ${Math.floor(s.nBricks/s.players.length)} each`} · 1 to 3 bricks a turn, against the clock. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
+    :bz?`<span class="blitz-tag">⚡ Race a Friend</span> ${s.nBricks} bricks · ${s.quota?`everyone places ${s.quota}`:s.players.length<2?'shared out evenly when the race starts':`split evenly between ${s.players.length} players: ${Math.floor(s.nBricks/s.players.length)} each`} · 1 to 3 bricks a turn, against the clock. A hint adds 2 seconds; each miss adds 1 second.${s.started?` ${s.moves.length} placed so far.`:''}`
     :`${s.nBricks} bricks · ${s.perTurn} brick${s.perTurn>1?'s':''} per turn${s.started?` · ${s.moves.length} placed so far`:''}`;
-  $('#mpList').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.stale||p.left?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.left?' · left':''}${p.i===s.host&&!cpuOn?' · made the room':''}${s.started?(bz?` <b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>`:` <b>${p.score}</b>`):''}</span>`).join('');
+  $('#mpList').innerHTML=mpScores(s).map(p=>`<span class="mp-pl${p.stale||p.left?' away':''}" data-pl="${p.i}"><i style="background:${p.color}"></i>${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.left?' · left':''}${p.i===s.host&&!cpuOn?' · made the room':''}${s.started?(bz?` <b class="clk" data-clk="${p.i}">${fmtTime(p.ms)}</b>`:` <b title="Bricks placed">${p.own}</b>`):''}</span>`).join('');
   const host=mp.me===s.host;
   $('#mpStart').hidden=!(host&&!s.started); $('#mpStart').textContent=s.players.length<2?'Start (just you so far)':`Start the game (${s.players.length} players)`;
   $('#mpGoBuild').hidden=!s.started; $('#mpGoBuild').textContent=cpuOn?'Back to the race':'Back to the build';
@@ -8110,10 +8137,10 @@ async function renderMpView(){
 function mpShowEnd(){
   if(!mp||!mp.state) return;
   if(mp.state.mode==='blitz') return mpShowBlitzEnd();
-  const s=mp.state, sc=mpScores(s).sort((a,b)=>(a.left-b.left)||(b.score-a.score)), pl=mpPlaces(sc,(q,p)=>q.score>p.score);
+  const s=mp.state, sc=mpScores(s).sort((a,b)=>a.left-b.left);   // a team: no places, medals or points (Steff, 21 Nov 2026)
   $('#mpEndTitle').textContent=`${s.title}: built together!`; $('#mpEndNew').textContent='New game';
-  $('#mpEndRows').innerHTML=sc.map((p,k)=>`<div${pl[k]===1?' class="first"':''}><span>${MP_MEDAL[pl[k]]||''} ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.left?' · left':''}</span><span>${p.own} brick${p.own===1?'':'s'} · ${p.score} pts</span></div>`).join('');
-  $('#mpEndNote').textContent=`${s.nBricks} bricks placed by ${s.players.length} player${s.players.length>1?'s':''}. Each brick you place is worth 10 points; hints and “place one for me” cost points. Wrong spots are free: just try again.`;
+  $('#mpEndRows').innerHTML=sc.map(p=>`<div><span><i class="mp-dot" style="background:${escapeHTML(p.color)}"></i> ${escapeHTML(p.name)}${p.i===mp.me?' (you)':''}${p.left?' · left':''}</span><span>${p.own} brick${p.own===1?'':'s'}</span></div>`).join('');
+  $('#mpEndNote').textContent=`${s.nBricks} bricks, built together by ${s.players.length} player${s.players.length>1?'s':''}. It’s on everyone’s island now.`;
   { const o=worldStore(); cheer3($('#mpEndChars'),hasPup(o)?['bloppit','pup']:'bloppit',['cheer','happy_hop']); }
   $('#mpEndDlg').showModal(); worldSound();
 }
@@ -8157,7 +8184,7 @@ async function mpMake(mode,name,choice){
   if(crewLiveFor&&mp&&mp.code){ const c=crewLiveFor; crewLiveFor=''; crewApi('POST',{action:'live',code:c,room:mp.code}).catch(()=>{}); }
 }
 $('#mpCreate').onclick=async()=>{
-  const name=$('#mpName1').value.trim(); if(!name){ mpMsg('Type your name first.','err'); $('#mpName1').focus(); return; }
+  const name=$('#mpName1').value.trim()||mpName()||bzOtterName()||'Builder';   // like a race: no name to type (friends only ever see a made-up name)
   const btn=$('#mpCreate'); btn.disabled=true; mpMsg('');
   try{ await mpMake('classic',name,$('#mpModel').value); }
   catch(e){ mpMsg(e.message,'err'); }
@@ -8176,10 +8203,9 @@ async function joinSixCode(code){
   mpMsg('Bloppit didn’t answer. Please try again.','err');
 }
 $('#mpJoin').onclick=async()=>{
-  const code=$('#mpCodeIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''), name=$('#mpName2').value.trim();
+  const code=$('#mpCodeIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''), name=$('#mpName2').value.trim()||mpName()||bzOtterName()||'Builder';
   if(code.length===6){ joinSixCode(code); return; }
   if(code.length!==5){ mpMsg('Codes have 5 letters and numbers (a room) or 6 (a challenge, a Pass the Puzzle or a crew).','err'); $('#mpCodeIn').focus(); return; }
-  if(!name){ mpMsg('Type your name first.','err'); $('#mpName2').focus(); return; }
   const btn=$('#mpJoin'); btn.disabled=true; mpMsg('Joining…');
   try{ const st=mpStored(); mpRememberName(name); await mpJoin(code,name,st&&st.code===code?st.playerId:undefined); mpMsg(''); renderMpView(); }
   catch(e){ mpMsg(e.message,'err'); }
@@ -8487,7 +8513,7 @@ function cpuCountdown(){
   const show=()=>{ if(!cpu||cpu.s!==s||!mp||!mp.cpu) return;
     const left=Math.ceil((t0-Date.now())/1000);
     if(left>0){ mpFlash(String(left)); setStatus(`Get ready… ${left}`); sfx.chirp(); setTimeout(show,Math.max(50,t0-Date.now()-(left-1)*1000)); }
-    else { mpFlash('Go!'); sfx.chime(); setStatus(s.calm?'Go! Take your time. Place every brick in the right spot.':s.solo?'Go! Your clock is running. Place every brick as fast as you can.':'Go! Your clock is running. Place 1, 2 or 3 bricks, then tap Done.','ok'); } };
+    else { mpFlash('Go!'); sfx.chime(); updateMpBar(); setStatus(s.calm?'Go! Take your time. Place every brick in the right spot.':s.solo?'Go! Your clock is running. Place every brick as fast as you can.':'Go! Your clock is running. Place 1, 2 or 3 bricks, then tap Done.','ok'); } };
   setTimeout(show,250);
 }
 $('#bzCpuGo').onclick=async()=>{
@@ -8635,7 +8661,7 @@ async function trialEnd(){
         const j=await chApi('POST',{action:'create',title:info.title,nBricks:model.bricks.length,ms:r.ms,miss:r.miss,hint:r.hint,
           model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
         chRemember(j.code,info.title,j.runId);
-        trialDialog({icon:'📨',title:'Your challenge is ready!',code:j.code,rows:missRow+timeRow,note:`Send this code to a friend. They type it into Got a code? on the Blitz page and race your ${fmtTime(t)}. Up to 12 people can play it, for 30 days.`});
+        trialDialog({icon:'📨',title:'Your challenge is ready!',code:j.code,rows:missRow+timeRow,note:`Send this code to a friend. They type it into Join a Game in Together and race your ${fmtTime(t)}. Up to 12 people can play it, for 30 days.`});
       }catch(e){ trialDialog({icon:'😕',title:'Couldn’t make the challenge',rows:missRow+timeRow,note:e.message,retry:true}); }
     } else if(info.kind==='run'){
       trialDialog({icon:'⏱',title:'Sending your time…',rows:missRow+timeRow});
@@ -8700,7 +8726,7 @@ async function chOpen(code){
     mpModelOptions('#bzModel'); $('#bzModel').value='cur'; renderBzPuzzle(); mpMsg('');
     if(!model||model.bricks.length!==c.nBricks) throw new Error('This challenge was made with a different version of Bloppit. Ask your friend to make a new one.');
     const maker=c.runs.find(r=>r.maker)||c.runs[0], best=c.runs[0];
-    box.hidden=false;
+    box.hidden=false; setTimeout(()=>{ try{ box.scrollIntoView({block:'start',behavior:reduceMotion?'auto':'smooth'}); }catch(e){} },80);   // it sits under the other cards: bring it into view (21 Nov 2026)
     box.innerHTML=`<div class="ch-top"><img alt="" src="${photos[0].png}"><div><span class="tag">Challenge ${c.code}</span><h2>${escapeHTML(maker.name)} challenged you!</h2><p class="note" style="margin:0">${escapeHTML(c.title)} · ${c.nBricks} bricks · build the whole puzzle as fast as you can</p></div></div>
       <div class="win-rows">${chRows(c)}</div>
       <p class="note" style="margin:0">Time to beat: <b>${fmtTime(totalMs(best))}</b>. A hint adds 2 seconds, and each miss adds 1 second.</p>
@@ -8729,8 +8755,27 @@ async function renderChMine(force){
     const what=c.runs.length<2?'Nobody has raced it yet':lead.me?'You’re in the lead! 🏆':`${escapeHTML(lead.name)} is in the lead${meIdx>=0?` · you’re ${ordinal(meIdx+1)}`:''}`;
     return `<div class="ch-row"><b class="cc">${c.code}</b><div><b>${escapeHTML(c.title)}</b><p class="note">${c.runs.length} player${c.runs.length===1?'':'s'} · ${what}</p></div><button class="ghost" type="button" data-ch="${c.code}">Open</button></div>`; }).join('');
   card.hidden=!rows||!!mp; $('#chMineList').innerHTML=rows;
+  chSeenSet(res); chDots(false);
 }
 $('#chMineList').addEventListener('click',e=>{ const b=e.target.closest('[data-ch]'); if(b) chOpen(b.dataset.ch); });
+// News about your challenges and passed puzzles (Steff, 21 Nov 2026: the maker only heard about it on the Race page).
+// A dot on the menu's Play with Friends tile and on Race a Friend when someone has raced your challenge or finished
+// your passed puzzle since you last looked; looking at Race a Friend clears it. Checked now and then from the menu.
+const CH_SEEN='bloppit-ch-seen-v1'; let chNewsAt=0;
+const chSig=c=>!c?'':c.kind==='relay'?(c.done?'done':'wait'):String(c.runs.length);
+function chSeenGet(){ try{ return JSON.parse(localStorage.getItem(pkey(CH_SEEN)))||{}; }catch(e){ return {}; } }
+function chSeenSet(res){ const o=chSeenGet(); res.forEach(c=>{ if(c) o[c.code]=chSig(c); }); try{ localStorage.setItem(pkey(CH_SEEN),JSON.stringify(o)); }catch(e){} }
+function chDots(on){ ['.hm-tile[data-go="mp"]','#view-mp .hub [data-go-race]'].forEach(sel=>document.querySelectorAll(sel).forEach(el=>{ let d=el.querySelector(':scope>.fr-dot');
+  if(!d){ d=document.createElement('i'); d.className='news-dot fr-dot'; d.setAttribute('aria-hidden','true'); el.appendChild(d); } d.hidden=!on; })); }
+async function chNewsCheck(){
+  const list=chMine().slice(0,5); if(!list.length){ chDots(false); return; }
+  if(Date.now()-chNewsAt<60000) return; chNewsAt=Date.now();
+  const seen=chSeenGet();
+  try{ const res=await Promise.all(list.map(x=>chApi('GET',null,`?code=${x.code}&runs=${x.runs.join(',')}`).then(j=>j.challenge).catch(()=>null)));
+    chDots(res.some(c=>c&&seen[c.code]!==undefined&&seen[c.code]!==chSig(c)));
+    res.forEach(c=>{ if(c&&seen[c.code]===undefined){ seen[c.code]=chSig(c); } }); try{ localStorage.setItem(pkey(CH_SEEN),JSON.stringify(seen)); }catch(e){} }catch(e){}
+}
+
 
 /* ---------- Weekly Bloppit ---------- */
 // One puzzle a week, the same for everybody, changing at midnight US Eastern on Sunday night (it was Monday 8 am until
@@ -13045,7 +13090,7 @@ async function relayHalfDone(){
     const j=await chApi('POST',{action:'relay',title:relay.title,nBricks:model.bricks.length,steps:N,half,moves:relay.moves,miss:run.miss,hint:run.hints.size+run.auto,
       model:{name:model.name,S:{...S},photos:photos.map(p=>({name:p.name,view:p.view,png:p.png||(p.png=p.d.canvas.toDataURL('image/png'))}))}});
     chRemember(j.code,relay.title,j.runId,'relay'); worldThumbSave('r:'+j.code);
-    trialDialog({icon:'🔁',title:'Your half is done!',code:j.code,note:`Send this code to a friend. They type it into Got a code? on the Blitz page and build steps ${half+1} to ${N}. When they finish, the model lands on both your islands.`,relay:true});
+    trialDialog({icon:'🔁',title:'Your half is done!',code:j.code,note:`Send this code to a friend. They type it into Join a Game in Together and build steps ${half+1} to ${N}. When they finish, the model lands on both your islands.`,relay:true});
   }catch(e){ relay.sent=false; trialDialog({icon:'😕',title:'Couldn’t make the code',note:e.message,retry:true,relayRetry:true}); }
 }
 async function relayOpen(c,m){
@@ -13055,7 +13100,7 @@ async function relayOpen(c,m){
   setControls(m.model.S); photos.forEach(p=>p.m=computeMask(p.d,S.tol)); renderPhotos(); clearTimeout(timer); rebuild(); mpMsg('');
   if(!model||model.bricks.length!==c.nBricks||model.steps.length!==c.steps) throw new Error('This puzzle was passed with a different version of Bloppit. Ask your friend to pass it again.');
   const who=c.first.me?'You':escapeHTML(c.first.label), left=c.steps-c.half;
-  box.hidden=false;
+  box.hidden=false; setTimeout(()=>{ try{ box.scrollIntoView({block:'start',behavior:reduceMotion?'auto':'smooth'}); }catch(e){} },80);   // it sits under the other cards: bring it into view (21 Nov 2026)
   box.innerHTML=`<div class="ch-top"><img alt="" src="${photos[0].png}"><div><span class="tag">Pass the Puzzle ${c.code}</span><h2>${c.done?'Finished together!':c.first.me?'Waiting for your friend':`${who} passed you a puzzle`}</h2><p class="note" style="margin:0">${escapeHTML(c.title)} · ${c.nBricks} bricks · ${who} built steps 1 to ${c.half}${c.done?`, ${c.second.me?'you':escapeHTML(c.second.label)} built the rest`:`. ${left} step${left===1?'':'s'} to go.`}</p></div></div>
     <div class="win-btns" style="justify-content:flex-start">${c.done||c.first.me?'':'<button class="primary" id="relGo" type="button">Finish it! 🔁</button>'}${c.first.me&&!c.done?'<button class="ghost" id="chShareBtn" type="button">Share the code</button>':''}<button class="ghost" id="chClose" type="button">Close</button></div>`;
   box.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'});
@@ -13275,7 +13320,7 @@ function renderHome(){
   const w=$('#hmWho'); if(w) w.onclick=()=>$('#whoBtn').click();
   homeCont=homeContinue(); $('#hmCont').hidden=!homeCont;
   { const c=$('#hmCont'), q=$('#hmQuick'), h=$('#hmHow'), w=homeCont&&homeCont.first?q:h; if(c.nextElementSibling!==w) w.parentNode.insertBefore(c,w); }   // first visit: "Start here" leads, above Quick play
-  renderHomeWorld(); renderFilmsTile(); setTimeout(()=>{ try{ crewNewsCheck(); }catch(e){} },0);   // after start-up: the crew code below is ready by then
+  renderHomeWorld(); renderFilmsTile(); setTimeout(()=>{ try{ crewNewsCheck(); chNewsCheck(); }catch(e){} },0);   // after start-up: the crew code below is ready by then
   if(tab==='home') pupMaybe(()=>{});  // the first finish anywhere (the Weekly, a Trail level, a race) meets the pup on the way back to the menu, and stays on the menu (Steff, 16 Nov 2026)
   if(homeCont){ $('#hmContT').textContent=homeCont.t; $('#hmContS').textContent=homeCont.s;
     $('#hmContBar').hidden=homeCont.p<0; $('#hmContBar i').style.width=Math.max(4,homeCont.p)+'%'; $('#hmCont').classList.toggle('first',!!homeCont.first); }

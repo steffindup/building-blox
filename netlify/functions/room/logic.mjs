@@ -6,6 +6,7 @@
 const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 const COLORS = ['#D2352B', '#0055BF', '#237841', '#F08A00'];
 const MAX_PLAYERS = 4;
+export const COUNTDOWN_MS = 3000;   // a race's 3-2-1 before the first clock runs
 const STALE_MS = 45_000;          // a player not seen for this long can be skipped
 const ROOM_TTL_MS = 3 * 86400_000; // rooms are forgotten after 3 days without activity
 const MAX_MODEL_CHARS = 2_500_000;
@@ -234,7 +235,8 @@ export async function handle(method, query, body, store) {
           if (s.quota < 1) return { error: 'This model doesn’t have enough bricks for everyone. Pick a bigger one.', status: 409 };
           s.players.forEach((p) => { p.n = 0; p.ms = 0; p.miss = 0; p.hint = 0; });
         }
-        s.started = true; s.turn = 0; s.turnPlaced = 0; s.turnStart = Date.now();
+        // A race starts with 3-2-1 Go!: the first clock is parked 3 s ahead (21 Nov 2026). A team build starts at once.
+        s.started = true; s.turn = 0; s.turnPlaced = 0; s.turnStart = Date.now() + (blitz(s) ? COUNTDOWN_MS : 0);
       }
       return {};
     }, pid);
@@ -301,6 +303,7 @@ export async function handle(method, query, body, store) {
       if (!s.started) return { error: 'The game hasn’t started yet.', status: 409 };
       if (s.finished) return { error: 'The model is already finished.', status: 409 };
       if (i !== s.turn) return { error: `It’s ${s.players[s.turn].name}’s turn.`, status: 409 };
+      if (blitz(s) && Date.now() < s.turnStart) return { error: 'Get ready… wait for Go!', status: 409 };
       const b = Math.floor(Number(body.b));
       if (!(b >= 0 && b < s.nBricks)) return { error: 'Unknown brick.', status: 400 };
       if (s.moves.some((m) => m.b === b)) return { error: 'That brick is already placed.', status: 409 };

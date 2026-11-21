@@ -303,6 +303,11 @@ test('room: a started race takes nobody new; a race finishes when everyone still
   const late = await room('POST', {}, { action: 'join', code: r.code, name: 'Late' }, store);
   assert.match(late.body.error || '', /already started/); assert.equal((await r.state()).players.length, 3);
   let s = await r.state(); assert.equal(s.quota, 4);
+  // a race starts with 3-2-1 Go!: the first clock is parked 3 s ahead and no brick goes in before Go
+  assert.ok(s.turnStart > Date.now() + 2000, 'the first clock starts after the countdown');
+  const early = await r.move(0, 0); assert.match(early.body.error || '', /wait for Go/);
+  const realNow = Date.now; Date.now = () => realNow() + 3500;
+  try {
   for (let b = 0; b < 3; b++) await r.move(0, b);                // a Blitz turn is 3 bricks → player 1
   assert.equal((await r.state()).turn, 1);
   await r.leave(1);                                             // player 1 leaves on their turn → player 2
@@ -313,6 +318,7 @@ test('room: a started race takes nobody new; a race finishes when everyone still
   assert.equal((await r.state()).turn, 2);
   await r.move(2, 7);                                           // player 2's share done: everyone still in is done
   s = await r.state(); assert.equal(s.finished, true, 'done without the player who left'); assert.equal(s.moves.length, 12, 'Bloppit puts in the rest');
+  } finally { Date.now = realNow; }
 });
 test('room: a full room counts only the players still in', async () => {
   mem.clear();

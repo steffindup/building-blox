@@ -366,6 +366,19 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   a model of another size (another app version). The last tile finishes it: everyone who helped gets it on their
   island (`p:CODE:mN`, `megaCredit`/`megaCreditFor`), and the maker picks the next one. Existing crews started again
   from zero. The crew picture fills from the top row, as it's built.
+- **Play with Friends check and fixes (Steff, 21 Nov 2026, "fix all and go with your proposals"):** the lobby says
+  friends tap Together, then Join a Game; the room code fits its badge on a phone; the turn line keeps clear of the
+  corner buttons (`--btnw`, measured in `updateMpBar`); a chime and a buzz when it becomes your turn in a game with
+  friends; a live race with friends starts with 3-2-1 Go! (the server parks the first `turnStart` 3 s ahead,
+  `COUNTDOWN_MS` in `room/logic.mjs`, and refuses a brick before Go; `roomCountdown`, `mpCountingDown`; older apps
+  just get "wait for Go!" if they place early); games with friends (rooms, challenges, Pass the Puzzle, crews) keep the
+  Together tab during the build (`sectionOf`); **Team Build has no points and no medals** (bricks each, ★ as in every
+  build; hint and Place one cost ★ like anywhere); no name to type for Team Build (the otter's name, as in races); the
+  name boxes say friends see "a made-up name" (the names are any animal, not otters); codes say "Join a Game in
+  Together", not "the Blitz page"; Race a Friend's card puts Race live now first, then Send a challenge, then Pass the
+  Puzzle (marked "Not a race"); everyone reads the same finish line; the header says "Get ready…" during a countdown;
+  a received challenge scrolls into view; a dot on Play with Friends and Race a Friend when someone raced your
+  challenge or finished your passed puzzle (`chNewsCheck`, per player `bloppit-ch-seen-v1`, cleared by the Race page).
 - **Steff's name in public text is "Steffin du Preez"** (19 Nov 2026), e.g. the press page.
 - **Photo to build** (Build Anything, "Add a photo"; redone 11 Nov 2026 after a 50-photo test): a photo becomes a flat tile
   picture in three sizes, Small (about 135 tiles, the default), Medium (about 250), Big (about 490): the size is a number

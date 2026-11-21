@@ -1964,8 +1964,9 @@ async function tMakeRoom(t, perTurn = 5) {
   // a second room in the same test: the (hidden) code of the last room is still on the page until the new room arrives,
   // so wait for a code that is new. Before, the guest was sometimes sent to the old, finished room and never knocked.
   const old = await tCode(t);
-  await t.page.evaluate((pt) => { document.getElementById('mpName1').value = 'Host'; document.getElementById('pt' + pt)?.click(); document.getElementById('mpCreate').click(); }, perTurn);
+  await t.page.evaluate((pt) => { document.getElementById('mpName1').value = ''; document.getElementById('pt' + pt)?.click(); document.getElementById('mpCreate').click(); }, perTurn);   // no name needed (21 Nov 2026)
   await t.page.waitForFunction((old) => { const c = document.getElementById('mpBigCode')?.textContent.trim() || ''; return /^[A-Z0-9]{5}$/.test(c) && c !== old; }, old, { timeout: 15000 });
+  assert.match(await t.page.evaluate(() => document.querySelector('#mpRoom .mp-room-top .note').textContent), /tap Together, then Join a Game, and enter this code/);
   return tCode(t);
 }
 async function tJoin(t, code) {
@@ -2019,13 +2020,15 @@ test('Together: Join a game takes every code: a challenge code opens the challen
   assert.deepEqual(a.errors, []); assert.deepEqual(b.errors, []); await a.ctx.close(); await b.ctx.close();
 });
 
-test('Together: tied scores share a medal; a host who taps Leave room is skipped and the guest plays on', { skip: skip() }, async () => {
+test('Together: a Team Build ends with no medals or points (bricks each, ★ as in every build); a host who taps Leave room is skipped and the guest plays on', { skip: skip() }, async () => {
   const a = await open(T_OPEN), b = await open(T_OPEN);
   let code = await tMakeRoom(a, 5); await tJoin(b, code); await tAdmitStart(a);
   const end = await tPlay([a, b], code); assert.equal(end.finished, true);
   await a.page.waitForTimeout(2500);
   const rows = await a.page.evaluate(() => [...document.querySelectorAll('#mpEndRows > div')].map((d) => d.textContent));
-  if (end.nBricks % 10 === 0) assert.equal(rows.filter((r) => r.includes('🥇')).length, 2, 'equal points, both gold: ' + rows.join(' | '));
+  assert.equal(rows.length, 2); assert.ok(rows.every((r) => /\d+ bricks?$/.test(r.trim()) && !/pts|🥇|🥈/.test(r)), 'bricks each, no medals or points: ' + rows.join(' | '));
+  assert.doesNotMatch(await a.text('#mpEndNote'), /points/); assert.equal(await a.text('#hintBtn'), 'Hint');
+  assert.equal(await a.text('#status'), await b.text('#status'), 'both read the same finish line');
   await a.page.evaluate(() => document.getElementById('mpEndNew').click()); await b.page.evaluate(() => document.getElementById('mpEndNew').click()); await a.page.waitForTimeout(800);
   // a new room: the host leaves on their own turn
   code = await tMakeRoom(a, 10); await tJoin(b, code); await tAdmitStart(a);
@@ -2044,6 +2047,7 @@ test('Together: a live race between friends: only the winner sees Race won; a la
   const code = await tCode(a);
   await b.page.fill('#bzCodeIn', code); await b.page.evaluate(() => document.getElementById('bzJoin').click()); await b.page.waitForTimeout(1500);
   await tAdmitStart(a);
+  for (const t of [a, b]) assert.equal(await t.page.evaluate(() => document.getElementById('tab-mp').getAttribute('aria-selected')), 'true', 'a race with friends stays in Together (it showed Blitz Bay)');
   const late = await open(T_OPEN); await late.page.evaluate(() => document.querySelector('.hm-tile[data-go="mp"]').click()); await late.page.waitForTimeout(400); await late.page.evaluate(() => document.querySelector('[data-go-race]').click()); await late.page.waitForTimeout(600);
   await late.page.evaluate((c) => { document.getElementById('bzName').value = 'Late'; document.getElementById('bzCodeIn').value = c; document.getElementById('bzJoin').click(); }, code); await late.page.waitForTimeout(2000);
   assert.match(await late.text('#mpMsg'), /already started/); assert.equal(await late.page.locator('#mpWaitBox').isVisible(), false);
