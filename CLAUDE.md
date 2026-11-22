@@ -350,7 +350,7 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
 - **Back (Steff, 22 Nov 2026: "a full back button test")**: one rule on the website (browser Back) and in the app
   (Android's back button, `appBack`): an open card closes first (on the website each card gets a history step of its
   own, by wrapping `showModal`; a card closed by its own button takes its step back, or hands it to the page it opens,
-  `cardBackT`); a finish card takes its way out (a Trail level's → Level map, the others → Done); otherwise Back goes to
+  `cardBackT`; a card opened again while already open gets no second step, and a close only steps back over a card's own step, or it once went back twice, off the page); a finish card takes its way out (a Trail level's → Level map, the others → Done); otherwise Back goes to
   the page you came from (`navGo`; the app keeps the same steps in `appNav`), skipping a finished build; a crew's own
   page is a step (`#crew`), so a crew → Your Crews → the page before; in a room with friends the first Back says "Press
   Back again to leave the room" and the second leaves. Before this, Back from Your Crews, a crew or an open card left

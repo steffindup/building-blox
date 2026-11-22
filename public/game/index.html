@@ -4212,11 +4212,12 @@ function navCloseCard(){
 const navHere=()=>tab==='mp'&&subOf.mp==='crews'&&crewOpenCode?'#crew':navHash(tab)?'#'+navHash(tab):'';
 // On the website a card gets a step of its own, so Back closes it rather than leaving the page (or Bloppit)
 if(!APP) try{ const sm=HTMLDialogElement.prototype.showModal;
-  HTMLDialogElement.prototype.showModal=function(){ const r=sm.apply(this,arguments);
-    if(navReady){ try{ history.pushState({bloppit:tab,card:this.id||1},'',location.href); cardEntries++; }catch(e){}
+  HTMLDialogElement.prototype.showModal=function(){ const was=this.open, r=sm.apply(this,arguments);
+    if(navReady&&!was&&this.open){   // a card opened again while open gets no second step (22 Nov 2026: closing it then went back twice, off the page) try{ history.pushState({bloppit:tab,card:this.id||1},'',location.href); cardEntries++; }catch(e){}
+      const isCard=()=>!!(history.state&&history.state.card);   // only ever step back over a card's own step, never off the page
       this.addEventListener('close',()=>{ if(navFromBack||cardEntries<=0) return; cardEntries--;
-        if(document.querySelector('dialog[open]')) { navIgnore++; history.back(); return; }   // another card is still open
-        clearTimeout(cardBackT); cardBackT=setTimeout(()=>{ cardBackT=null; navIgnore++; history.back(); },0); },{once:true}); }
+        if(document.querySelector('dialog[open]')) { if(isCard()){ navIgnore++; history.back(); } return; }   // another card is still open
+        clearTimeout(cardBackT); cardBackT=setTimeout(()=>{ cardBackT=null; if(isCard()){ navIgnore++; history.back(); } },0); },{once:true}); }
     return r; }; }catch(e){}
 window.addEventListener('popstate',()=>{
   if(APP||!navReady) return;
