@@ -211,6 +211,15 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   `tMakeRoom` now waits for a new code; (3) checking a random animation at one instant: Bloppit's blink takes 1/6 s
   every 3 to 6 s, so "eyes open after 30 s" failed about one run in eight: `bloppitLids` now lets a blink finish first.
   They hid a real failure on 11 Nov (shared drawings), so a red run on GitHub must be read, not waved through.
+- **QC: no text is cut off** (Steff, 21 Nov 2026: "add a QC check for incomplete text boxes"). Three browser tests (a
+  phone 390, a small phone 360, a computer 1280) walk the main screens and dialogs (`clipWalk` in `browser.test.mjs`) and
+  run `tests/clipscan.js` on each: it fails on text shortened with "…", cut by a box that hides overflow (tight line
+  heights clip the tails of g, p, y: give one-line labels `line-height` 1.25 or more), clamped to fewer lines, running
+  off the side of the screen, or hidden behind something solid stacked on top (it briefly makes everything respond to
+  taps so hit-testing follows what's painted). Text in a box that scrolls doesn't count. Approved exceptions:
+  the top tab row (it scrolls, with arrows) and a phone's folded build message (a tap opens it). **When a new screen
+  or dialog is added, add a step for it to `clipWalk`.** Prefer letting text wrap over "…" or line clamps; island
+  labels keep clear of the map's buttons and cards and hide rather than sit half under one.
 - **"Real hands" test** builds Big Ben with clicks only (parts box, Take, Rotate, click the spot), like a child. It found
   that the last bricks sat under the tool buttons; `playFit()` now shifts the camera so the model stays clear of them.
   Hooks that place bricks for you prove less: prefer real clicks for anything about the build controls.
@@ -342,6 +351,10 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   always, Steady about 75%, Full throttle 50%, Grand Prix 40%. In Pippa's boss level the Pup still mirrors Pippa.
 - **The Weekly has no 3-2-1** (Steff, 19 Nov 2026): it has no clock, so building starts at once with "Take your time…". The
   countdown stays for races against Swoop and timed builds.
+  **A half-built Weekly stays a Weekly (21 Nov 2026):** tapping a Trail tab mid-Weekly used to open the Blitz page and
+  call it a race ("Back to the race", a running clock). Now it goes back to the Weekly page (`mpHomeTab`, `weeklyOn()`),
+  which offers "Back to the build" and "Start again" and says how many bricks are placed; the bar shows Bibi, not ⏱,
+  and no clock beside the player; if the race page ever shows it, it says "No clock" and "Stop building".
 - **Crews (19 Nov 2026)**: "Tribe" was added to the third name list (append only, in the game and in `group/logic.mjs`; the
   server sends the name as words, so older apps show it). Share sends the crew's name and `bloppit.com/join/CODE`, which
   opens the crew's join page (a 6-character `?code=` goes through `joinSixCode`: a challenge or a crew). Make the crew is

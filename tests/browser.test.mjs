@@ -40,6 +40,87 @@ async function open(url, { viewport = { width: 1000, height: 800 }, init, at, to
 }
 const autoPlace = async (page, n) => { for (let i = 0; i < n; i++) { await page.evaluate(() => document.getElementById('autoBtn')?.click()); await page.waitForTimeout(1100); } };
 
+// QC: no text is cut off (Steff, 21 Nov 2026: "add a QC check for incomplete text boxes"). Walks the main screens and
+// dialogs at a phone, a small phone and a computer size and fails on any text that is clipped: shortened with "…",
+// cut by a box that hides what overflows, clamped to fewer lines, or running off the side of the screen. Text in a
+// box that scrolls doesn't count (it can be reached). Two approved exceptions: the top tab row (it scrolls, with
+// arrows) and a long build message folded to one line on a phone (a tap opens it again).
+const CLIP_SCAN = readFileSync(new URL('./clipscan.js', import.meta.url), 'utf8');
+const CLIP_SKIP = ['#tabs', '.tabs', '#buildStage .status.brief'];
+async function clipWalk(viewport, touch) {
+  const seed = () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; ['Heart', 'Frog', 'Boat', 'Kite'].forEach((n, i) => { const k = `m:${n}:10`; builds[k] = { n: 10, s: 3, l: 0, t: 1e12 + i, c: 1, k: 'quick' }; log.push(k); });
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds, log, decor: [], films: ['arrival'] })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 4, finished: 4, welcome: 1 })); };
+  const t = await open('?nosplash=1&welcome=0', { viewport, touch, init: { fn: seed } });
+  await t.page.addScriptTag({ content: CLIP_SCAN });
+  const found = [];
+  const step = async (name, fn, wait = 900, arg) => { await t.page.evaluate(fn, arg); await t.page.waitForTimeout(wait);
+    for (const f of await t.page.evaluate((skip) => window.__clipScan({ skip }), CLIP_SKIP)) found.push(`${name}: "${f.text}" (${f.where}, cut ${f.how} by ${f.cutBy})`); };
+  const close = () => t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close()));
+  await step('home', () => window.bloppitHome());
+  for (const tb of ['quick', 'island', 'game', 'brain', 'sea', 'blitz', 'cove', 'mp']) { await step('tab ' + tb, (tb) => document.getElementById('tab-' + tb).click(), tb === 'island' ? 3500 : 1500, tb); await close(); }   // the island's labels settle once the 3D view has its size   // a tab can open its own card; a child closes it before the next tap
+  await step('Play with Friends', () => { window.bloppitHome(); document.querySelector('.hm-tile[data-go="mp"]').click(); });
+  await step('Race a Friend', () => document.querySelector('[data-go-race]').click());
+  await step('Team Build', () => { window.bloppitHome(); document.querySelector('.hm-tile[data-go="mp"]').click(); document.querySelector('.hm-tile[data-sub="start"]').click(); });
+  await step('Team Build lobby', () => document.getElementById('mpCreate').click(), 2500);
+  await step('left the room', () => document.getElementById('mpLeave').click(), 1200);
+  await step('Join a Game', () => { window.bloppitHome(); document.querySelector('.hm-tile[data-go="mp"]').click(); document.querySelector('.hm-tile[data-sub="join"]').click(); });
+  await step('Your Crews', () => { window.bloppitHome(); document.querySelector('.hm-tile[data-go="crew"]').click(); }, 1500);
+  await step('new crew', () => document.getElementById('crewNew').click());
+  await step('crew page', async () => { document.getElementById('crewMake').click(); for (let i = 0; i < 40 && !/[A-Z0-9]{6}/.test(document.querySelector('#crewOpen .cc')?.textContent || ''); i++) await new Promise((r) => setTimeout(r, 200)); }, 1200);
+  await step('Weekly page', () => { window.bloppitHome(); document.querySelector('[data-go="daily"]').click(); }, 1500);
+  await step('Weekly build', () => document.getElementById('dyGo').click(), 3500);
+  await step('Weekly halfway, back on its page', async () => { for (let i = 0; i < 4; i++) { window.bloppitPlaceRight(); await new Promise((r) => setTimeout(r, 150)); } document.getElementById('tab-game').click(); }, 1500);
+  await step('player menu', () => document.getElementById('whoBtn').click());
+  await step('Grown-ups', () => document.getElementById('whoGrown').click(), 1500); await close();
+  await step('How to Play', () => { window.bloppitHome(); document.getElementById('hmHow').click(); }, 1500); await close();
+  await step('Trail build', () => window.bloppitLevel('otter', 0), 2000);
+  await step('Trail build, later', () => 0, 5000);
+  await step('parts box', () => document.getElementById('openBox').click(), 1200);
+  await step('mirror puzzle', () => window.bloppitLevel('sea', 0), 2500);
+  await step('Trail finish card', async () => { window.bloppitLevel('otter', 1); for (let i = 0; i < 150; i++) { const d = document.querySelector('dialog[open]'); if (d && d.id !== 'mathDlg') break; if (d) d.close(); window.bloppitPlaceRight(); await new Promise((r) => setTimeout(r, 100)); } await new Promise((r) => setTimeout(r, 6500)); }, 1000); await close();
+  await step('Bloppitopia', () => document.getElementById('tab-island').click(), 3000);
+  await step('Build Anything', () => document.getElementById('tab-cove').click(), 1500);
+  await step('Blitz race against Swoop', async () => { document.getElementById('tab-blitz').click(); await new Promise((r) => setTimeout(r, 800)); document.getElementById('bzCpuGo').click(); await new Promise((r) => setTimeout(r, 3500)); [...document.querySelectorAll('button')].find((b) => /Let.s go/.test(b.textContent) && b.offsetParent)?.click(); }, 4500);
+  const errors = t.errors.slice(); await t.ctx.close();
+  return { found, errors };
+}
+for (const [label, vp, touch] of [['a phone', { width: 390, height: 844 }, true], ['a small phone', { width: 360, height: 740 }, true], ['a computer', { width: 1280, height: 800 }, false]]) {
+  test(`QC: no text is cut off on any main screen, on ${label} (21 Nov 2026)`, { skip: skip(), timeout: 240000 }, async () => {
+    const { found, errors } = await clipWalk(vp, touch);
+    assert.deepEqual(found, [], 'text cut off:\n' + found.join('\n'));
+    assert.deepEqual(errors, []);
+  });
+}
+
+test('a half-built Weekly stays a Weekly: Frog Forest goes back to its page, with Back to the build and Start again, and never a clock (21 Nov 2026)', { skip: skip() }, async () => {
+  const t = await open('?nosplash=1&welcome=0', { viewport: { width: 390, height: 844 }, touch: true, init: { fn: () => { localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: {}, log: [], decor: [] })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 2, finished: 2, welcome: 1 })); } } });
+  await t.page.evaluate(() => { window.bloppitHome(); document.querySelector('[data-go="daily"]').click(); }); await t.page.waitForTimeout(1200);
+  await t.page.evaluate(() => document.getElementById('dyGo').click()); await t.page.waitForFunction(() => document.getElementById('mpBar') && !document.getElementById('mpBar').hidden, null, { timeout: 15000 });
+  for (let i = 0; i < 3; i++) { await t.page.evaluate(() => window.bloppitPlaceRight()); await t.page.waitForTimeout(400); }
+  const n = +(await t.text('#mpBar')).match(/(\d+) of \d+ placed/)[1]; assert.ok(n >= 1);
+  // the bar: Bibi, not a clock; no "Room" button
+  assert.equal(await t.page.evaluate(() => !!document.querySelector('#mpCodeBadge img[alt="Bibi"]')), true);
+  assert.doesNotMatch(await t.text('#mpBar'), /⏱|Room\b/); assert.equal(await t.page.evaluate(() => document.querySelectorAll('#mpBar [data-clk]').length), 0, 'no clock in the bar');
+  // like a child: Frog Forest, mid-Weekly
+  await t.page.evaluate(() => document.getElementById('tab-game').click()); await t.page.waitForTimeout(1200);
+  assert.equal(await t.view(), 'view-daily', 'back on the Weekly page, not Blitz');
+  assert.match(await t.text('#dyMsg'), /Finish this week’s Bloppit, or tap Start again here, to play the levels/);
+  assert.equal(await t.text('#dyGo'), 'Back to the build'); assert.equal(await t.page.evaluate(() => document.getElementById('dyAgain').hidden), false);
+  assert.match(await t.text('#dyInfo'), new RegExp(`You’ve placed ${n} of \\d+\\.`));
+  // Back to the build carries on where it was
+  await t.page.evaluate(() => document.getElementById('dyGo').click()); await t.page.waitForTimeout(1200);
+  assert.equal(await t.view(), 'view-build'); assert.match(await t.text('#mpBar'), new RegExp(`\\D${n} of \\d+ placed`));
+  // the race page, if a child goes there, doesn't call it a race or show a clock
+  await t.page.evaluate(() => document.getElementById('tab-blitz').click()); await t.page.waitForTimeout(1000);
+  const lobby = await t.page.evaluate(() => document.getElementById('mpModelInfo')?.offsetParent ? document.getElementById('mpModelInfo').textContent + ' | ' + document.getElementById('mpGoBuild').textContent + ' | ' + document.getElementById('mpLeave').textContent + ' | ' + document.getElementById('mpList').textContent : '');
+  if (lobby) { assert.doesNotMatch(lobby, /clock|race|seconds|\d:\d\d/i); assert.match(lobby, /No clock/); }
+  // Start again starts from the first brick
+  await t.page.evaluate(() => { window.bloppitHome(); document.querySelector('[data-go="daily"]').click(); }); await t.page.waitForTimeout(1000);
+  await t.page.evaluate(() => document.getElementById('dyAgain').click()); await t.page.waitForTimeout(3000);
+  assert.equal(await t.view(), 'view-build'); assert.match(await t.text('#mpBar'), /\D0 of \d+ placed/);
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('first visit: name the otter first, then the arrival film, which can be skipped straight to the home', { skip: skip() }, async () => {
   const t = await open('?nosplash=1');
   await t.page.evaluate(() => document.getElementById('hmCont').click());
