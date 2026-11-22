@@ -43,8 +43,9 @@ const autoPlace = async (page, n) => { for (let i = 0; i < n; i++) { await page.
 // QC: no text is cut off (Steff, 21 Nov 2026: "add a QC check for incomplete text boxes"). Walks the main screens and
 // dialogs at a phone, a small phone and a computer size and fails on any text that is clipped: shortened with "…",
 // cut by a box that hides what overflows, clamped to fewer lines, or running off the side of the screen. Text in a
-// box that scrolls doesn't count (it can be reached). Two approved exceptions: the top tab row (it scrolls, with
-// arrows) and a long build message folded to one line on a phone (a tap opens it again).
+// box that scrolls doesn't count (it can be reached), nor the arrows at the ends of a row that scrolls sideways (the
+// parts box's sort buttons). Approved exceptions: the top tab row (it scrolls, with arrows) and a long build message
+// folded to one line on a phone (a tap opens it again).
 const CLIP_SCAN = readFileSync(new URL('./clipscan.js', import.meta.url), 'utf8');
 const CLIP_SKIP = ['#tabs', '.tabs', '#buildStage .status.brief'];
 async function clipWalk(viewport, touch) {
@@ -54,7 +55,7 @@ async function clipWalk(viewport, touch) {
   await t.page.addScriptTag({ content: CLIP_SCAN });
   const found = [];
   const step = async (name, fn, wait = 900, arg) => { await t.page.evaluate(fn, arg); await t.page.waitForTimeout(wait);
-    for (const f of await t.page.evaluate((skip) => window.__clipScan({ skip }), CLIP_SKIP)) found.push(`${name}: "${f.text}" (${f.where}, cut ${f.how} by ${f.cutBy})`); };
+    for (const f of await t.page.evaluate((skip) => window.__clipScan({ skip, overOk: ['.sa-arr', '.tabs-arr'] }), CLIP_SKIP)) found.push(`${name}: "${f.text}" (${f.where}, cut ${f.how} by ${f.cutBy})`); };
   const close = () => t.page.evaluate(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close()));
   await step('home', () => window.bloppitHome());
   for (const tb of ['quick', 'island', 'game', 'brain', 'sea', 'blitz', 'cove', 'mp']) { await step('tab ' + tb, (tb) => document.getElementById('tab-' + tb).click(), tb === 'island' ? 3500 : 1500, tb); await close(); }   // the island's labels settle once the 3D view has its size   // a tab can open its own card; a child closes it before the next tap

@@ -216,8 +216,10 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   run `tests/clipscan.js` on each: it fails on text shortened with "…", cut by a box that hides overflow (tight line
   heights clip the tails of g, p, y: give one-line labels `line-height` 1.25 or more), clamped to fewer lines, running
   off the side of the screen, or hidden behind something solid stacked on top (it briefly makes everything respond to
-  taps so hit-testing follows what's painted). Text in a box that scrolls doesn't count. Approved exceptions:
-  the top tab row (it scrolls, with arrows) and a phone's folded build message (a tap opens it). **When a new screen
+  taps so hit-testing follows what's painted). Text in a box that scrolls doesn't count, nor the arrows at the ends of a row that scrolls sideways (the parts box's
+  sort buttons, `overOk`). Approved exceptions: the top tab row (it scrolls, with arrows) and a phone's folded build
+  message (a tap opens it). The full local run takes about an hour here; the story-beats test once timed out late in it
+  (98 s) and passed alone and on GitHub: a slow sandbox, not the game. **When a new screen
   or dialog is added, add a step for it to `clipWalk`.** Prefer letting text wrap over "…" or line clamps; island
   labels keep clear of the map's buttons and cards and hide rather than sit half under one.
 - **"Real hands" test** builds Big Ben with clicks only (parts box, Take, Rotate, click the spot), like a child. It found

@@ -57,7 +57,7 @@ window.__clipScan = function (opts = {}) {
         for (const x of xs) { if (x < 0 || x > innerWidth || ys < 0 || ys > innerHeight) continue;
           const stack = document.elementsFromPoint(x, ys), k = stack.findIndex((e) => e === host || host.contains(e));   // the text's own element (its parents are always further down the stack)
           if (k <= 0) continue;   // on top, or lets taps through (can't tell): fine
-          const over = stack.slice(0, k).find((e) => { const cs = getComputedStyle(e); return cs.backgroundColor !== 'rgba(0, 0, 0, 0)' && !/rgba\(.*, 0\)$/.test(cs.backgroundColor) || ['IMG', 'CANVAS', 'VIDEO'].includes(e.tagName); });
+          const over = stack.slice(0, k).find((e) => { if ((opts.overOk || []).some((q) => e.closest(q))) return false; const cs = getComputedStyle(e); return cs.backgroundColor !== 'rgba(0, 0, 0, 0)' && !/rgba\(.*, 0\)$/.test(cs.backgroundColor) || ['IMG', 'CANVAS', 'VIDEO'].includes(e.tagName); });
           if (over) { hidden++; by = over; } }
         if (hidden >= 2) { const key = 'cov|' + path(host) + '|' + t; if (!seen.has(key)) { seen.add(key); out.push({ where: path(host), text: t.slice(0, 90), cutBy: label(by), how: 'covered' }); } break; }
       }
