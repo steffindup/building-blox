@@ -1981,15 +1981,60 @@ test('mid-island films: every 15 builds a slot opens, and the next build on an i
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 
-test('app back button (Android): a card closes first, then a page goes to the menu, then the app goes to the background', { skip: skip() }, async () => {
-  const t = await open('?nosplash=1');
-  await t.page.evaluate(() => document.getElementById('tab-game').click()); await t.page.waitForTimeout(400);
-  assert.equal(await t.page.evaluate(() => window.bloppitAppBack()), 'menu');
-  await t.page.waitForTimeout(300);
-  assert.equal(await t.page.evaluate(() => window.bloppitAppBack()), 'background');
-  await t.page.evaluate(() => { const d = document.querySelector('dialog'); d.showModal(); });
-  assert.equal(await t.page.evaluate(() => window.bloppitAppBack()), 'card');
-  assert.equal(await t.page.evaluate(() => !!document.querySelector('dialog[open]')), false);
+// Back, on the website and with Android's back button (Steff, 22 Nov 2026: "a full back button test"): a card closes
+// first; otherwise the page you came from; a room asks once before leaving; a finished build is skipped.
+const backSeed = () => { if (localStorage.getItem('bloppit-world-v1')) return; localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds: { 'm:Heart:10': { n: 10, s: 3, t: 1e12, c: 1, k: 'quick' } }, log: ['m:Heart:10'], decor: [] })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 4, finished: 4, welcome: 1 })); };
+const backWhere = (t) => t.page.evaluate(() => { const v = [...document.querySelectorAll('section.view')].find((x) => !x.hidden); const vis = (e) => e && e.offsetParent !== null; const h = v ? [...v.querySelectorAll('h2')].find(vis) : null; return { view: v ? v.id : '', h: (h ? h.textContent : '').trim(), card: [...document.querySelectorAll('dialog[open]')].pop()?.id || '' }; });
+async function backJourneys(t, back) {
+  const W = (ms) => t.page.waitForTimeout(ms), ev = (fn) => t.page.evaluate(fn);
+  // a Trail level: Back goes to its level map, then the menu
+  await ev(() => document.getElementById('tab-game').click()); await W(800); await ev(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close()));
+  await ev(() => window.bloppitLevel('otter', 0)); await W(1500);
+  await back(); assert.equal((await backWhere(t)).view, 'view-game', 'a level → its level map');
+  await back(); assert.equal((await backWhere(t)).view, 'view-home', 'then the menu');
+  // a card over a page: Back closes the card and stays on the page
+  await ev(() => document.getElementById('tab-game').click()); await W(800); await ev(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close()));
+  await ev(() => document.getElementById('whoBtn').click()); await W(500);
+  assert.equal((await backWhere(t)).card, 'whoDlg');
+  await back(); let w = await backWhere(t); assert.equal(w.card, ''); assert.equal(w.view, 'view-game', 'the card closed, still on the page');
+  await back(); assert.equal((await backWhere(t)).view, 'view-home');
+  // a crew: Back goes to Your Crews, then on, and never out of Bloppit
+  await ev(() => document.querySelector('.hm-tile[data-go="crew"]').click()); await W(1200);
+  await ev(() => document.getElementById('crewNew').click()); await W(300);
+  await ev(async () => { document.getElementById('crewMake').click(); for (let i = 0; i < 50 && !/[A-Z0-9]{6}/.test(document.querySelector('#crewOpen .cc')?.textContent || ''); i++) await new Promise((r) => setTimeout(r, 200)); }); await W(600);
+  assert.equal(await ev(() => document.querySelector('.crews-page').dataset.mode), 'crew');
+  await back(); assert.equal(await ev(() => document.querySelector('.crews-page').dataset.mode), 'list', 'a crew → Your Crews');
+  await back(); assert.equal((await backWhere(t)).view, 'view-home', 'Your Crews → the menu');
+  // a Team Build room: the first Back says so and stays, the second leaves the room
+  await ev(() => { document.querySelector('.hm-tile[data-go="mp"]').click(); }); await W(500);
+  await ev(() => document.querySelector('.hm-tile[data-sub="start"]').click()); await W(400);
+  await ev(() => document.getElementById('mpCreate').click()); await t.page.waitForFunction(() => /^[A-Z0-9]{5}$/.test(document.getElementById('mpBigCode')?.textContent.trim() || ''), null, { timeout: 15000 });
+  await back(); await W(300); assert.match(await t.text('#mpMsg'), /Press Back again to leave the room/); assert.equal(await ev(() => !document.getElementById('mpRoom').hidden), true, 'still in the room');
+  await back(); await W(800); assert.equal(await ev(() => document.getElementById('mpRoom').hidden), true, 'left the room');
+  // a finish card: Back takes its way out (the level map), and the finished build is skipped after that
+  await ev(() => { window.bloppitHome(); document.getElementById('tab-game').click(); }); await W(800); await ev(() => document.querySelectorAll('dialog[open]').forEach((d) => d.close()));
+  await ev(async () => { window.bloppitLevel('otter', 1); for (let i = 0; i < 150; i++) { const d = document.querySelector('dialog[open]'); if (d && d.id !== 'mathDlg') break; if (d) d.close(); window.bloppitPlaceRight(); await new Promise((r) => setTimeout(r, 100)); } });
+  await t.page.waitForFunction(() => document.getElementById('winDlg').open, null, { timeout: 20000 });
+  await back(); w = await backWhere(t); assert.equal(w.card, ''); assert.equal(w.view, 'view-game', 'the finish card → the level map');
+  await back(); assert.notEqual((await backWhere(t)).view, 'view-build', 'never back into a finished build');
+}
+test('Back on the website: a card closes first, then the page before; a crew → Your Crews; a room asks once; never out of Bloppit by surprise (22 Nov 2026)', { skip: skip(), timeout: 180000 }, async () => {
+  const t = await open('?nosplash=1&welcome=0', { viewport: { width: 390, height: 844 }, touch: true, init: { fn: backSeed } });
+  await backJourneys(t, async () => { await t.page.goBack(); await t.page.waitForTimeout(900); assert.match(t.page.url(), /\/game\//, 'still in Bloppit'); });
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+test('Back in the app (Android): the same steps as the website, then the menu, then the app goes to the background (22 Nov 2026)', { skip: skip(), timeout: 180000 }, async () => {
+  const t = await open('?nosplash=1&welcome=0', { viewport: { width: 390, height: 844 }, touch: true, init: { fn: backSeed } });
+  // the game as the app runs it, which talks to bloppit.com: send that to the test server
+  await t.page.addInitScript(() => { window.BLOPPIT_APP = true; });
+  const base = new URL(t.page.url()).origin;
+  await t.ctx.route('https://bloppit.com/**', async (r) => { const q = r.request(); const res = await fetch(q.url().replace('https://bloppit.com', base), { method: q.method(), headers: q.headers(), body: q.postData() || undefined }); r.fulfill({ status: res.status, headers: Object.fromEntries(res.headers), body: Buffer.from(await res.arrayBuffer()) }); });
+  await t.page.reload(); await t.page.waitForTimeout(2000);
+  await backJourneys(t, async () => { await t.page.evaluate(() => window.bloppitAppBack()); await t.page.waitForTimeout(900); });
+  // on the menu: Back puts the app in the background
+  await t.page.evaluate(() => { document.querySelectorAll('dialog[open]').forEach((d) => d.close()); window.bloppitHome(); });
+  let r = ''; for (let i = 0; i < 8 && r !== 'background'; i++) r = await t.page.evaluate(() => window.bloppitAppBack());
+  assert.equal(r, 'background');
   assert.deepEqual(t.errors, []); await t.ctx.close();
 });
 

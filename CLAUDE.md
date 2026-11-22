@@ -347,6 +347,15 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   the booklet beside the build (the "phones held sideways" rule now also covers 700 to 900 wide screens at 4:3 or wider);
   folded and open upright it stacks as on a phone. Folding mid-build keeps the brick in hand. A browser test covers all
   three sizes.
+- **Back (Steff, 22 Nov 2026: "a full back button test")**: one rule on the website (browser Back) and in the app
+  (Android's back button, `appBack`): an open card closes first (on the website each card gets a history step of its
+  own, by wrapping `showModal`; a card closed by its own button takes its step back, or hands it to the page it opens,
+  `cardBackT`); a finish card takes its way out (a Trail level's → Level map, the others → Done); otherwise Back goes to
+  the page you came from (`navGo`; the app keeps the same steps in `appNav`), skipping a finished build; a crew's own
+  page is a step (`#crew`), so a crew → Your Crews → the page before; in a room with friends the first Back says "Press
+  Back again to leave the room" and the second leaves. Before this, Back from Your Crews, a crew or an open card left
+  Bloppit on the website, and in the app every page went straight to the menu. Two browser tests ("Back on the
+  website…", "Back in the app…") walk the journeys; the in-game ‹ buttons go to the page above.
 - **My films**: an island's arrival film is listed once the island is found, even if it played on setting off.
 - **Blitz**: a "Let's go" before the clock starts; a wrong brick adds 1 second; the race-o-meter. In Bloppitopia, a clear
   next race that gets harder; the Grand Prix counts in the counter (race x of 20). Targets for a child: Warm-up won almost

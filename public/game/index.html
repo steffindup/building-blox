@@ -4139,42 +4139,96 @@ function setTab(t,sub){ if(t!=='island'&&typeof ISL3!=='undefined') ISL3.thenCha
   saveSoon();
   navNote(t);
 }
-/* Browser Back and Forward on the website: each page gets its own address (/game/ is the menu, /game/#blitz, #daily, …),
-   so Back goes to the page before instead of leaving Bloppit. The App Store app has no Back button, so it skips this. */
+/* Back, on the website and with Android's back button, one rule (22 Nov 2026, Steff: "a full back button test"):
+   a card that is open closes first; otherwise Back goes to the page you came from (a level → its level map, a crew →
+   Your Crews → the page before); in a room with friends it asks once before leaving. On the website each page has its
+   own address (/game/ is the menu, /game/#blitz, #daily, …) and the browser keeps the steps; the app keeps the same steps
+   itself (appNav). Before this, Back from Your Crews, a crew or an open card left Bloppit on the website, and in the app
+   every page went straight to the menu. */
 const NAV_HASH={home:'',create:'photos',build:'build',box:'build',booklet:'booklet',game:'trails',mp:'together',blitz:'blitz',daily:'daily',island:'island'};
-const SUB_HASH={game:{hub:'trails',otter:'otter',brain:'brain',sea:'pippa'},blitz:{hub:'blitz',cpu:'blitz-bloppit',friend:'blitz-friend'},mp:{hub:'together',start:'together-start',join:'together-join'}};
+const SUB_HASH={game:{hub:'trails',otter:'otter',brain:'brain',sea:'pippa'},blitz:{hub:'blitz',cpu:'blitz-bloppit',friend:'blitz-friend'},mp:{hub:'together',start:'together-start',join:'together-join',crews:'crews'}};
 const navHash=t=>SUB_HASH[t]?SUB_HASH[t][subOf[t]]:NAV_HASH[t];
 // Address → [page, part]
 function hashPage(h){
   for(const [t,m] of Object.entries(SUB_HASH)) for(const [s,hh] of Object.entries(m)) if(h===hh) return [t,s];
-  const t={photos:'create',create:'create',quick:'create',build:'build',booklet:'booklet',game:['game','hub'],'play-together':['mp','hub'],crews:['mp','crews'],daily:'daily',island:'island'}[h];
+  const t={photos:'create',create:'create',quick:'create',build:'build',booklet:'booklet',game:['game','hub'],'play-together':['mp','hub'],crews:['mp','crews'],crew:['mp','crews'],daily:'daily',island:'island'}[h];
   return Array.isArray(t)?t:[t||'home'];
 }
 var navReady=false, navFromBack=false;  // var: setTab runs during start-up, before this line
+var appNav=[], navIgnore=0, cardEntries=0, cardBackT=null, roomBackArmed=false, crewLastCode='';
 function navNote(t){
-  if(APP||!navReady||navFromBack) return;
+  if(!navReady||navFromBack) return;
   const h=navHash(t); if(h===undefined) return;
-  const want=h?'#'+h:'', cur=location.hash==='#home'?'':location.hash;
-  if(cur===want) return;
-  try{ history.pushState({bloppit:t},'',location.pathname+location.search+want); }catch(e){}
+  navPush(h?'#'+h:'');
+}
+function navPush(want){
+  if(APP){ if(appNav[appNav.length-1]!==want){ appNav.push(want); if(appNav.length>40) appNav.shift(); } return; }
+  // a card that has just closed and a page opened straight after: the page takes the card's step (no back-and-forth)
+  if(cardBackT){ clearTimeout(cardBackT); cardBackT=null; try{ history.replaceState({bloppit:tab},'',location.pathname+location.search+want); }catch(e){} return; }
+  const cur=location.hash==='#home'?'':location.hash; if(cur===want) return;
+  try{ history.pushState({bloppit:tab},'',location.pathname+location.search+want); }catch(e){}
 }
 function navStart(){
-  if(APP) return;
-  const h=navHash(tab); try{ history.replaceState({bloppit:tab},'',location.pathname+location.search+(h?'#'+h:'')); }catch(e){}
+  const h=navHash(tab);
+  if(APP) appNav=[h?'#'+h:''];
+  else try{ history.replaceState({bloppit:tab},'',location.pathname+location.search+(h?'#'+h:'')); }catch(e){}
   navReady=true;
 }
-window.addEventListener('popstate',()=>{
-  if(APP||!navReady) return;
-  const h=location.hash.slice(1).toLowerCase();
+// Go to the page an address names, as Back does. 'stay' when Back is held (leaving a room needs a second press).
+function navGo(h){
   let [t,sub]=hashPage(h);
   if((t==='build'||t==='booklet')&&!model) t='home';
+  // a build that is finished: nothing to go back to there, so Back goes on to the page before it
+  if((t==='build'||t==='booklet')&&model&&cur>=model.steps.length&&!mp) return 'skip';
   // Going back to the puzzle page would leave a room or a level; show the menu instead (it offers "Continue").
   if(t==='create'&&(mp||game)) t='home';
   if(t==='game'&&mp) t=mpHomeTab();
-  document.querySelectorAll('dialog[open]').forEach(d=>{ try{ d.close(); }catch(e){} });
-  navFromBack=true; try{ if(t!==tab||(sub&&sub!==subOf[t])) setTab(t,sub); } finally{ navFromBack=false; }
+  // In a room with friends, away from the build: the first Back says so, the second leaves the room
+  if(mp&&!mp.cpu&&tab!=='build'&&tab!=='box'&&tab!=='booklet'&&t!=='build'&&t!=='booklet'){
+    if(!roomBackArmed){ roomBackArmed=true; setTimeout(()=>roomBackArmed=false,4000); mpMsg('Press Back again to leave the room.'); return 'stay'; }
+    roomBackArmed=false; mpLeave();
+  }
+  navFromBack=true;
+  try{
+    if(t!==tab||(sub&&sub!==subOf[t])) setTab(t,sub);
+    if(t==='mp'&&sub==='crews'){   // a crew's own page, or the list of crews
+      if(h==='crew'&&crewLastCode){ const g=crewMine.find(x=>x.code===crewLastCode); if(g) renderCrew(g); }
+      else if(crewOpenCode) crewMode('list');
+    }
+  } finally{ navFromBack=false; }
+}
+// A card that is open: Back closes it, as Escape does, and stays on the page
+function navCloseCard(){
+  const ds=[...document.querySelectorAll('dialog[open]')]; if(!ds.length) return false;
+  const d=ds[ds.length-1], ev=new Event('cancel',{cancelable:true}); navFromBack=true;
+  try{
+    // a finish card: Back does what its way out does (a level → Level map; a race, the Weekly, a challenge → Done), not leave the finished build behind
+    if(d.id==='winDlg') $('#winMap').click();
+    else if(d.id==='trialDlg'&&!$('#trDone').hidden) $('#trDone').click();
+    else { d.dispatchEvent(ev); if(!ev.defaultPrevented&&d.open) d.close(); }
+  } finally{ navFromBack=false; }
+  return true;
+}
+const navHere=()=>tab==='mp'&&subOf.mp==='crews'&&crewOpenCode?'#crew':navHash(tab)?'#'+navHash(tab):'';
+// On the website a card gets a step of its own, so Back closes it rather than leaving the page (or Bloppit)
+if(!APP) try{ const sm=HTMLDialogElement.prototype.showModal;
+  HTMLDialogElement.prototype.showModal=function(){ const r=sm.apply(this,arguments);
+    if(navReady){ try{ history.pushState({bloppit:tab,card:this.id||1},'',location.href); cardEntries++; }catch(e){}
+      this.addEventListener('close',()=>{ if(navFromBack||cardEntries<=0) return; cardEntries--;
+        if(document.querySelector('dialog[open]')) { navIgnore++; history.back(); return; }   // another card is still open
+        clearTimeout(cardBackT); cardBackT=setTimeout(()=>{ cardBackT=null; navIgnore++; history.back(); },0); },{once:true}); }
+    return r; }; }catch(e){}
+window.addEventListener('popstate',()=>{
+  if(APP||!navReady) return;
+  if(navIgnore>0){ navIgnore--; return; }   // a card closed by its own button took its step back
+  if(document.querySelector('dialog[open]')){ const own=cardEntries>0; if(own) cardEntries--; navCloseCard();
+    try{ history[own?'replaceState':'pushState']({bloppit:tab},'',location.pathname+location.search+navHere()); }catch(e){}   // the page the card left us on
+    return; }
+  const h=location.hash.slice(1).toLowerCase(), from=tab, r=navGo(h);
+  if(r==='skip'){ history.back(); return; }
+  if(r==='stay'){ const hh=navHash(from); try{ history.pushState({bloppit:from},'',location.pathname+location.search+(hh?'#'+hh:'')); }catch(e){} return; }
   // If we ended up somewhere other than the address says, fix the address (without adding a history step).
-  const want=navHash(tab)?'#'+navHash(tab):'';
+  const want=navHere();
   if((location.hash==='#home'?'':location.hash)!==want) try{ history.replaceState({bloppit:tab},'',location.pathname+location.search+want); }catch(e){}
 });
 // Android's back button in the app (the app has no browser history): like Escape, one step at a time.
@@ -4184,9 +4238,16 @@ function appBack(){
   if(document.fullscreenElement){ try{ document.exitFullscreen(); }catch(e){} return 'fullscreen'; }
   const skip=[...document.querySelectorAll('.cn-skip')].find(b=>b.getClientRects().length);
   if(skip){ skip.click(); return 'film'; }
-  const ds=[...document.querySelectorAll('dialog[open]')];
-  if(ds.length){ const d=ds[ds.length-1], ev=new Event('cancel',{cancelable:true}); d.dispatchEvent(ev); if(!ev.defaultPrevented&&d.open) d.close(); return 'card'; }
-  if(tab!=='home'){ quickPlaySet(false); setTab(tab==='game'&&mp?mpHomeTab():'home'); return 'menu'; }
+  if(navCloseCard()){ const h=navHere(); if(appNav[appNav.length-1]!==h) appNav.push(h); return 'card'; }
+  // the page before, as on the website (22 Nov 2026: every page used to go straight to the menu)
+  if(appNav.length>1){ const here=appNav.pop(); quickPlaySet(false);
+    let r=navGo(appNav[appNav.length-1].slice(1));
+    while(r==='skip'&&appNav.length>1){ appNav.pop(); r=navGo(appNav[appNav.length-1].slice(1)); }
+    if(r==='skip'){ appNav=['']; setTab('home'); return 'menu'; }
+    if(r==='stay'){ appNav.push(here); return 'stay'; }
+    const h=navHere(); if(appNav[appNav.length-1]!==h) appNav[appNav.length-1]=h;   // where it really landed
+    return 'back'; }
+  if(tab!=='home'){ quickPlaySet(false); setTab(tab==='game'&&mp?mpHomeTab():'home'); appNav=['']; return 'menu'; }
   try{ Capacitor.Plugins.App.minimizeApp(); }catch(e){}
   return 'background';
 }
@@ -13056,6 +13117,7 @@ async function renderCrews(force){
   crewDots();
 }
 function renderCrew(g){
+  if(crewOpenCode!==g.code&&!navFromBack&&navReady){ crewLastCode=g.code; navPush('#crew'); }   // opening a crew: Back goes to Your Crews
   crewOpenCode=g.code; const box=$('#crewOpen'); box.hidden=false; $('.crews-page').dataset.mode='crew'; crewMsg('');
   const mine=!!g.me, maker=mine&&g.me.creator, news=crewNews(g), P=CREW_PUZZLES[g.puzzle]||CREW_PUZZLES[0];
   // Crew Quick Game: a live room a member started; the others jump in (the host still lets each one in)
