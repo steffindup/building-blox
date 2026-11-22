@@ -877,6 +877,14 @@ body.pass-look #hintBtn,body.pass-look #autoBtn,body.pass-look .playcol>.card{di
 .mp-turn{font-family:var(--f-display);font-size:20px;line-height:1.15;min-width:180px}
 .mp-turn small{display:block;font-family:var(--f-body);font-size:13px;font-weight:700;color:var(--muted)}
 .mp-turn.mine{color:var(--accent)}
+/* the Weekly (a solo build with no clock): one slim row, name on the left, "Build it clean · 3 of 26" on the right; the
+   player chip only repeated the count (Steff, 22 Nov 2026: the tile took a third of a phone above the build) */
+.gamebar.mpbar.solo-calm{flex-wrap:nowrap;gap:10px;padding:6px 12px}
+.gamebar.mpbar.solo-calm #mpPlayers{display:none}
+.gamebar.mpbar.solo-calm .gb-lvl{min-width:0;flex:1 1 auto}
+.gamebar.mpbar.solo-calm .gb-lvl strong{font-size:18px;line-height:1.25}
+.gamebar.mpbar.solo-calm .mp-turn{min-width:0;flex:0 0 auto;margin:0 0 0 auto!important;text-align:right;font-size:16px;line-height:1.25}
+.gamebar.mpbar.solo-calm .mp-turn small{font-size:12px;line-height:1.25}
 .mp-players{display:flex;flex-wrap:wrap;gap:6px}
 .race-meter{display:grid;gap:4px;min-width:min(100%,420px);flex:1 1 420px}.rm-head{font-size:12px;font-weight:700;opacity:.85}.rm-head b{font-family:var(--f-display);font-weight:400;font-size:14px;letter-spacing:.02em}
 .rm-lane{display:grid;grid-template-columns:minmax(64px,max-content) minmax(120px,1fr) auto auto auto;gap:8px;align-items:center;font-size:13px;font-weight:800;padding:2px 6px;border-radius:10px}
@@ -8065,6 +8073,7 @@ function updateMpBar(){
   if(bz){ $('#hintBtn').textContent=s.calm?'Hint':mp.hintSteps.includes(cur)?'Hint':'Hint (+2s)'; $('#hintBtn').disabled=done||(!mpMyTurn()&&!hintOn); }
   $('#mpBar').classList.toggle('calm',!!s.calm);
   $('#mpBar').classList.toggle('blitz',bz);
+  $('#mpBar').classList.toggle('solo-calm',!!(s.solo&&s.calm));
   { const cb=$('#mpCodeBadge'); cb.classList.toggle('face',!!mp.cpu&&(!s.solo||!!s.calm)); if(mp.cpu&&!s.solo) cb.innerHTML=GULL_HEAD(s.cpuLevel); else if(s.solo&&s.calm) cb.innerHTML='<img src="/art/head-bibi.png" alt="Bibi" width="34" height="34">'; else cb.textContent=s.solo?'⏱':s.code; }   /* the Weekly shows Bibi, not a clock (it has none) */ $('#mpBar .gb-lvl .tag').textContent=s.solo?s.label:mp.cpu?(cpu&&cpu.ladder!=null?(cpu.ladder>=LADDER_N?`Blitz Bay · Race ${BLITZ_RACES} of ${BLITZ_RACES}: the Grand Prix`:`Blitz Bay · Race ${cpu.ladder+1} of ${BLITZ_RACES} · ${CPU_LEVELS[s.cpuLevel].speed}`):`Blitz with Swoop · ${CPU_LEVELS[s.cpuLevel].speed}`):'Room'; $('#mpRoomBtn').textContent=mp.cpu&&s.finished?(finishNew()?'Done':'🏝️ Back to Bloppitopia'):mp.cpu?($('#mpRoomBtn').dataset.confirm?'Tap again to leave':s.solo?'Leave':'Leave race'):'Room'; $('#mpRoomBtn').classList.toggle('primary',!!(mp.cpu&&s.finished)); $('#mpRoomBtn').classList.toggle('ghost',!(mp.cpu&&s.finished)); $('#mpRoomBtn').hidden=!!s.calm; $('#mpTitle').innerHTML=(bz&&!s.calm?'<span class="blitz-tag">⚡ Blitz</span>':'')+escapeHTML(s.title);
   const cp=s.players[s.turn], mine=s.turn===mp.me, left=mpLeft(s), el=$('#mpTurn');
   el.classList.toggle('mine',mine&&!s.finished&&s.started);

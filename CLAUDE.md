@@ -362,6 +362,9 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   always, Steady about 75%, Full throttle 50%, Grand Prix 40%. In Pippa's boss level the Pup still mirrors Pippa.
 - **The Weekly has no 3-2-1** (Steff, 19 Nov 2026): it has no clock, so building starts at once with "Take your time…". The
   countdown stays for races against Swoop and timed builds.
+  **The Weekly's bar above the build is one slim row** (Steff, 22 Nov 2026: the tile was too big on a phone): Bibi and
+  the name on the left, "Build it clean / 3 of 26 placed" on the right, no player chip (`.mpbar.solo-calm`). It saves
+  about 75px of build on a phone.
   **A half-built Weekly stays a Weekly (21 Nov 2026):** tapping a Trail tab mid-Weekly used to open the Blitz page and
   call it a race ("Back to the race", a running clock). Now it goes back to the Weekly page (`mpHomeTab`, `weeklyOn()`),
   which offers "Back to the build" and "Start again" and says how many bricks are placed; the bar shows Bibi, not ⏱,
