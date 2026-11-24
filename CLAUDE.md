@@ -357,6 +357,18 @@ Internal island ids differ from their names: `otterwood` = Frog Forest (Tiny), `
   Bloppit on the website, and in the app every page went straight to the menu. Two browser tests ("Back on the
   website…", "Back in the app…") walk the journeys; the in-game ‹ buttons go to the page above.
 - **My films**: an island's arrival film is listed once the island is found, even if it played on setting off.
+- **Play now on an island's page (Steff, 24 Nov 2026):** under the character banner of Tiny's and Nora's Trails, Pippa's
+  puzzles, Blitz with Swoop and Build Anything, a red "Play now" starts that island's next build, the same one its Play
+  button in Bloppitopia starts (`heroPlaySync`, `HERO_ISLE`, `isleNext`). Hidden when nothing is ready (Pippa's next
+  puzzle still out at sea), in Race a Friend, and during a game with friends.
+- **The islands glow in the sea (Steff, 24 Nov 2026):** each found island has a soft halo in its friend's colour
+  (`ISLE_GLOW`, `isleGlow3`): Frog Forest green, Brainpeak blue, Flipper Beach yellow, Blitz Bay blue,
+  Brickyard Cove orange, Moonstone Isle lavender. Nora's navy and Swoop's blue are lifted so they show on the blue sea
+  (Swoop's is still the faintest by day). Islands in the mist don't glow, and nor does Home Island (Steff took its red out the same day). Softer at night (`isl3Tod`).
+- **Special pieces on the island (24 Nov 2026):** the island's copy of a model (`bloppit-shapes-v1`) keeps a special
+  piece's kind, height and print in `s`, marked `v:2`; `model3` draws it with `pieceGeo` and `printMesh`. Before, the
+  turkey's tail stood on its stand as a flat brown brick. A copy saved before then of a game model with a special piece
+  is built again in idle moments (`isl3ShapesLater`). A player's own photo or drawing has no special piece.
 - **Blitz**: a "Let's go" before the clock starts; a wrong brick adds 1 second; the race-o-meter. In Bloppitopia, a clear
   next race that gets harder; the Grand Prix counts in the counter (race x of 20). Targets for a child: Warm-up won almost
   always, Steady about 75%, Full throttle 50%, Grand Prix 40%. In Pippa's boss level the Pup still mirrors Pippa.

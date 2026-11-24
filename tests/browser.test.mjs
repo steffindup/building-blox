@@ -937,6 +937,36 @@ test('the Weekly bank: each planned Monday shows its model', { skip: skip() }, a
   }
 });
 
+test('island pages: Play now under the banner starts that island’s next build; Bloppitopia: found islands glow (not Home Island), misty ones don’t; a special piece keeps its shape on the island (24 Nov 2026)', { skip: skip() }, async () => {
+  const seed = () => { if (localStorage.getItem('bloppit-world-v1')) return; const builds = {}, log = []; ['Heart', 'Frog', 'Boat', 'Kite'].forEach((n, i) => { const k = `m:${n}:10`; builds[k] = { n: 10, s: 3, l: 0, t: 1e12 + i, c: 1, k: 'quick' }; log.push(k); });
+    localStorage.setItem('bloppit-world-v1', JSON.stringify({ arrived: 1, pupAsked: true, pupName: 2, builds, log, decor: [], films: ['arrival'] })); localStorage.setItem('bloppit-ev-v1', JSON.stringify({ started: 4, finished: 4, welcome: 1 })); };
+  const t = await open('?nosplash=1&welcome=0', { viewport: { width: 390, height: 844 }, touch: true, init: { fn: seed } });
+  const playNow = () => t.page.evaluate(() => [...document.querySelectorAll('.ch-play')].filter((x) => !x.hidden && x.offsetParent).map((x) => x.textContent));
+  await t.page.evaluate(() => document.getElementById('tab-game').click()); await t.page.waitForTimeout(1200);
+  assert.match((await playNow()).join(), /Play now.*Tiny’s Frog Trail level 1: Heart/);
+  await t.page.evaluate(() => document.getElementById('tab-cove').click()); await t.page.waitForTimeout(1200);
+  assert.match((await playNow()).join(), /Play now.*library/);
+  await t.page.evaluate(() => document.getElementById('tab-sea').click()); await t.page.waitForTimeout(1200);
+  assert.deepEqual(await playNow(), [], 'nothing washed ashore yet: no Play now on Pippa’s page');
+  await t.page.evaluate(() => document.getElementById('tab-game').click()); await t.page.waitForTimeout(1200);
+  await t.page.evaluate(() => [...document.querySelectorAll('.ch-play')].find((x) => !x.hidden && x.offsetParent).click());
+  await t.page.waitForFunction(() => !document.getElementById('view-build').hidden, null, { timeout: 15000 });
+  assert.match(await t.text('#gameBar'), /Heart/);
+  // the glow: Brickyard Cove (found), not the islands in the mist, and not Home Island
+  await t.page.evaluate(() => { window.bloppitHome(); document.getElementById('tab-island').click(); }); await t.page.waitForTimeout(3500);
+  assert.deepEqual(await t.page.evaluate(() => window.bloppitIsleGlows()), ['brickworks']);
+  // a special piece keeps its kind, height and print in the island's copy; a copy saved before this is built again with it
+  const w = await t.page.evaluate(() => { const k = 'w:2026-11-23', o = JSON.parse(localStorage.getItem('bloppit-world-v1')); o.builds[k] = { n: 26, l: 0, k: 'weekly', t: 2e12, c: 1 }; o.log.push(k); localStorage.setItem('bloppit-world-v1', JSON.stringify(o));
+    localStorage.setItem('bloppit-shapes-v1', JSON.stringify({ [k]: { p: 0, b: [0, 0, 0, 1, 1, 9], t: 2e12 } })); return k; });   // an old copy: one plain brick, no v
+  await t.page.reload(); await t.page.waitForTimeout(2500);
+  await t.page.evaluate(() => document.getElementById('tab-island').click());
+  await t.page.waitForFunction((k) => { const s = JSON.parse(localStorage.getItem('bloppit-shapes-v1') || '{}')[k]; return s && s.v === 2; }, w, { timeout: 40000 });
+  const sh = await t.page.evaluate((k) => JSON.parse(localStorage.getItem('bloppit-shapes-v1'))[k], w);
+  assert.equal(sh.s.length, 1); assert.equal(sh.s[0].sp, 'fan'); assert.ok(sh.s[0].h > 1, 'the tail is taller than a brick'); assert.ok(sh.s[0].print, 'and printed');
+  await t.page.waitForFunction((k) => { const m = window.bloppitModel3(k); return m && m.pieces === 1 && m.prints === 1; }, w, { timeout: 15000 });
+  assert.deepEqual(t.errors, []); await t.ctx.close();
+});
+
 test('island Play: Bloppitopia keeps the recommended next play; an island plays its own next step; a complete one offers Back to Bloppitopia or Play anyway', { skip: skip() }, async () => {
   const seed = (n) => { const builds = {}, log = [], best = {}; for (let i = 0; i < n; i++) { const k = `t:otter:${i}`; builds[k] = { n: 40, s: 3, t: 1e12 + i, c: 1 }; log.push(k); best[i] = 3; }
     localStorage.setItem('bloppit-world-v1', JSON.stringify({ xp: 50, bonus: 0, builds, log, decor: [], pupName: 3, pupAsked: true, pick: 'treehouse', isle: 1, arrived: 1 }));

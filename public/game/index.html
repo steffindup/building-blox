@@ -1857,6 +1857,7 @@ body.film-on{overflow:hidden}
 #tab-mp .n.n2{position:relative;width:40px!important}#tab-mp .n.n2 img{position:absolute;top:0;width:28px;height:28px}#tab-mp .n.n2 img:first-child{left:0}#tab-mp .n.n2 img:last-child{right:0;transform:scaleX(-1)}   /* Together: two Bloppits, facing each other */
 #tab-sea{--tc:var(--c-pippa)}#tab-cove{--tc:var(--c-bibi)}#tab-game{--tc:var(--c-tiny)}
 /* The character at the top of each page */
+.ch-play{display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;max-width:520px;margin:12px auto 4px;padding:12px 20px 14px;line-height:1.25}.ch-play span{font-size:21px}.ch-play small{font-size:14px;font-weight:700;opacity:.92;white-space:normal}   /* Play now under an island page's banner (Steff, 24 Nov 2026) */
 .char-hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 20px;align-items:center;border-radius:20px;padding:14px 24px 14px 14px;background:linear-gradient(115deg,var(--h1),var(--h2));color:var(--hink,#fff);box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer;min-width:0;overflow:hidden}
 #view-create>.char-hero{grid-column:1/-1}
 .char-hero .ch-art,.char-hero .c3-wrap{width:120px;height:132px;object-fit:contain;display:block;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}
@@ -4061,8 +4062,19 @@ const HERO={
   create:{who:'bibi',art:'/art/char-bibi.png',isle:'Brickyard Cove',title:'Build Anything with Bibi',line:'Build it bold!',desc:'Bibi’s workshop: turn a photo, a drawing or a library model into bricks and build it your way.',c:['#FFAA55','#DD5F1C']},
   blitz:{who:'swoop',art:'/art/longtail-swoop.png',isle:'Blitz Bay',title:'Blitz with Swoop',line:'Ready, set, snap!',desc:'A head-to-head brick race against Swoop or a friend. Shortest time wins.',c:['#5DB4F2','#1F6FC4']},
   mp:{who:['pup','pup'],art:'/art/hero-together.png',isle:'Friendship Harbour',title:'Together',line:'Every build is better with a friend!',desc:'Play with Friends for a game right now, with a code. Your Crews for the friends you build with again and again.',c:['#B9A2F7','#6E4FD6']}};
+// Play now (Steff, 24 Nov 2026): under an island's banner, a button straight into that island's next build, the same one
+// its Play button in Bloppitopia would start (Tiny's and Nora's next level, Pippa's next puzzle once it's washed ashore,
+// Swoop's next race, Bibi's next library model). Hidden when the island has nothing ready.
+const HERO_ISLE={otter:'otterwood',brain:'brainpeak',sea:'sunrise',blitz:'blitzbay',create:'brickworks'};
+function heroPlaySync(el,key){
+  let b=el.nextElementSibling; if(!(b&&b.classList.contains('ch-play'))){ b=document.createElement('button'); b.type='button'; b.className='primary ch-play'; b.hidden=true; el.after(b);
+    b.addEventListener('click',()=>{ const c=b._c; if(!c) return; try{ sfx.click&&sfx.click(); }catch(e){} nextMark(c.kind); c.go(); }); }
+  const isle=key&&HERO_ISLE[key], blitzOk=key!=='blitz'||!(typeof subOf!=='undefined'&&subOf.blitz==='friend');
+  let c=null; try{ c=isle&&blitzOk&&!mp?isleNext(isle):null; }catch(e){}
+  b._c=c; b.hidden=!c; if(c) b.innerHTML=`<span>▶ Play now</span><small>${escapeHTML(c.t.replace(/^From the library: /,'Next from the library: '))}</small>`;
+}
 function heroSync(t){ t=t===undefined?tab:t; const el=document.querySelector(`[data-hero="${t}"]`); if(!el) return;
-  const key=t==='game'?subOf.game:t, H=HERO[key]; el.hidden=!H; if(!H) return;
+  const key=t==='game'?subOf.game:t, H=HERO[key]; el.hidden=!H; heroPlaySync(el,H?key:null); if(!H) return;
   if(el.dataset.k===key) return; el.dataset.k=key;
   el.style.setProperty('--h1',H.c[0]); el.style.setProperty('--h2',H.c[1]); el.style.setProperty('--hink',H.ink||'#fff');
   el.querySelector('.ch-isle').textContent='🏝️ '+H.isle; el.querySelector('.ch-title').textContent=H.title; el.querySelector('.ch-line').textContent=H.line; el.querySelector('.ch-desc').textContent=H.desc;
@@ -7390,7 +7402,7 @@ function renderGameMap(){
   const pct=trail==='sea'?progressPct(worldStore()):0;
   { const tip=quickPlay&&trail!=='flip'?`⚡ Quick Play: any ${trail==='sea'?'puzzle':'level'}, in any order. Nothing is added to Bloppitopia. To grow ${ISLES[TRAIL_ISLE[trail]].name}, play it from the island.`:trail==='flip'?'Pippa builds one half of each puzzle, and you build the other half, flipped like a reflection. Twelve to try, in any order. (Flipper Beach in Bloppitopia has its own set.)':trail==='sea'?`You’re ${pct}% of the way through Bloppitopia. A new puzzle washes ashore about every 8%.`:'';   // the hero says the rest (no repeats, Steff 5 Nov 2026)
     $('#gmIntro').textContent=tip; $('#gmIntro').hidden=!tip; $('#gmHow').hidden=!(trail==='sea'||trail==='flip'); }
-  { const ts=trailStars(trail); $('#gmTotal').textContent=`${ts} ★`; $('#gmWho').textContent=`${curPlayer().name}’s ${T.name} stars`;  } syncMathUI();
+  { const ts=trailStars(trail); $('#gmTotal').textContent=`${ts} ★`; $('#gmWho').textContent=`${curPlayer().name}’s stars on ${T.name}`;  } syncMathUI();
   $('#gmDone').textContent=`${done.length} of ${levelsOf(trail).length} ${trail==='sea'?'Flipper Beach puzzles built':trail==='flip'?'any-time puzzles built':'levels done'}`;
   $('#gmLevels').innerHTML=levelsOf(trail).map((L,i)=>{
     const best=B[i], ashore=trail!=='sea'||seaWashed(i), open=trail==='flip'||quickPlay||i<=unlocked&&(ashore||!!best), cur_=game&&game.lvl===i&&gameTrail()===trail;
@@ -7618,7 +7630,7 @@ $('#bpUnlock').onclick=()=>openMath(viewPage);
 $('#mathAge').innerHTML='<option value="" disabled>Age</option>'+AGE_OPTS;
 function syncMathUI(){ const p=mathPrefs(); $('#mathAge').value=p.set?ageShown(p.age):''; $('#gmMath').classList.toggle('on',p.on); $('#gmMath').hidden=!p.on;
   $('#mathAgeFor').textContent=curPlayer().name;
-  $('#mathTier').textContent=p.set?`Starts with ${MATH_GRADES[p.grade+1]} math: ${MATH_TOPICS[p.grade+1].toLowerCase()}. Puzzles adjust as you play, and step up to ${MATH_GRADES[p.grade+2]||'harder'} topics only after a long run of right answers.`:'Choose an age to set how hard the puzzles are'; }
+  $('#mathTier').textContent=p.set?`Starts with ${MATH_GRADES[p.grade+1]} maths: ${MATH_TOPICS[p.grade+1].toLowerCase()}. Puzzles adjust as you play, and step up to ${MATH_GRADES[p.grade+2]||'harder'} topics only after a long run of right answers.`:'Choose an age to set how hard the puzzles are'; }
 $('#mathAge').addEventListener('change',e=>{ const p=mathPrefs(); p.age=+e.target.value; p.set=true; mathPrefsSet(p); syncMathUI(); });
 syncMathUI();
 
@@ -9963,11 +9975,14 @@ function destinations(){
 var ISL3={ok:null,filmDone:{}};   // var: the page switcher can look at it before this line runs
 const SHAPE_KEY='bloppit-shapes-v1';
 function worldShapes(){ try{ return JSON.parse(localStorage.getItem(SHAPE_KEY))||{}; }catch(e){ return {}; } }
-// The bricks of the model just finished, kept small: x y z sx sz c for each brick (local only, newest 40)
+// The bricks of the model just finished, kept small: x y z sx sz c for each brick (local only, newest 40). A special piece
+// (the turkey's tail, Big Ben's clock…) also goes in `s` with its kind, height and print, so the island draws it as it is,
+// not as a flat brick (Steff, 24 Nov 2026). v:2 marks a shape saved with them.
+const shapeSpecials=bricks=>{ const out=[]; bricks.forEach((r,i)=>{ if(r.sp) out.push({i,sp:r.sp,h:r.h||1,...(r.print?{print:r.print}:{})}); }); return out; };
 function worldShapeSave(key){
   try{ if(!model||!model.bricks||!model.bricks.length) return;
     const b=[]; for(const r of model.bricks) b.push(r.x,r.y,r.z,r.sx,r.sz,r.c);
-    const t=worldShapes(); t[key]={p:model.kind==='picture'?1:0,b,t:Date.now()};
+    const t=worldShapes(); t[key]={p:model.kind==='picture'?1:0,b,t:Date.now(),v:2}; const sp=shapeSpecials(model.bricks); if(sp.length) t[key].s=sp;
     const keys=Object.keys(t).sort((a,c)=>t[c].t-t[a].t).slice(0,40), keep={}; for(const k of keys) keep[k]=t[k];
     localStorage.setItem(SHAPE_KEY,JSON.stringify(keep)); }catch(e){}
 }
@@ -9998,13 +10013,14 @@ function shapeBuild(c){
 }
 function shapeKeep(key,mm,t){
   try{ const b=[]; for(const r of mm.bricks) b.push(r.x,r.y,r.z,r.sx,r.sz,r.c);
-    const all=worldShapes(); all[key]={p:0,b,t:t||Date.now()};
+    const all=worldShapes(); all[key]={p:0,b,t:t||Date.now(),v:2}; const sp=shapeSpecials(mm.bricks); if(sp.length) all[key].s=sp;
     const keys=Object.keys(all).sort((a,c)=>all[c].t-all[a].t).slice(0,40), keep={}; for(const k of keys) keep[k]=all[k];
     localStorage.setItem(SHAPE_KEY,JSON.stringify(keep)); return !!keep[key]; }catch(e){ return false; }
 }
 function isl3ShapesLater(list){
   const o=worldStore(), have=worldShapes();
-  const todo=list.filter(m=>!(have[m.key]&&have[m.key].b&&have[m.key].b.length>=6)&&!SHAPE_MISS.has(m.key)).map(m=>({key:m.key,tries:shapeRecipes(m.key)}));
+  const old=k=>{ const h=have[k]; return h&&h.b&&h.b.length>=6&&!h.v&&shapeRecipes(k).some(c=>c.smp&&c.smp.special); };   // saved before 24 Nov 2026 without its special piece: build it again
+  const todo=list.filter(m=>(!(have[m.key]&&have[m.key].b&&have[m.key].b.length>=6)||old(m.key))&&!SHAPE_MISS.has(m.key)).map(m=>({key:m.key,tries:shapeRecipes(m.key)}));
   for(const x of todo) if(!x.tries.length) SHAPE_MISS.add(x.key);
   ISL3.shapeQ=todo.filter(x=>x.tries.length); if(!ISL3.shapeQ.length||ISL3.shapeOn) return; ISL3.shapeOn=1;
   const later=f=>window.requestIdleCallback?requestIdleCallback(f,{timeout:2000}):setTimeout(f,150);
@@ -10025,6 +10041,10 @@ function isl3SwapModel(key){
   ISL3.shadowDirty=true; try{ isl3Pop(g); }catch(e){}
 }
 window.bloppitShapeKeys=()=>Object.keys(worldShapes());   // for tests
+window.bloppitModel3=key=>{ let g=null; if(ISL3.world) ISL3.world.traverse(x=>{ if(!g&&x.userData&&x.userData.info==='model:'+key) g=x; }); if(!g) return null;   // for tests: a model on the island, its special pieces, prints and where it is on screen
+  let pieces=0, prints=0; g.traverse(x=>{ if(x.isMesh&&!x.isInstancedMesh&&x.geometry&&x.parent&&x.parent.parent&&x.parent.parent.parent===g&&!x.userData.print) pieces++; if(x.userData&&x.userData.print) prints++; });
+  const v=g.getWorldPosition(new THREE.Vector3()); v.y+=1; v.project(ISL3.cam); const r=ISL3.r.domElement.getBoundingClientRect();
+  return {pieces,prints,x:r.left+(v.x+1)/2*r.width,y:r.top+(1-v.y)/2*r.height}; };
 // Positions are kept as whole numbers 0..1000 (the record's format): world -20..20 → 0..1000
 const W2P=v=>Math.round((v+20)*25), P2W=v=>v/25-20;
 // The islands: soft blobs. Bloppitopia in the middle; the others around it.
@@ -10205,10 +10225,14 @@ function model3(key){
   const sh=worldShapes()[key], g=new THREE.Group();
   g.add(cyl3(.62,.68,.14,10,'#E8E2D6',0,TOP3,0));   // the stand
   if(sh&&sh.b&&sh.b.length>=6){
-    const tile=!!sh.p, groups=new Map(); let minX=1e9,maxX=-1e9,minZ=1e9,maxZ=-1e9,maxY=0;
-    for(let i=0;i<sh.b.length;i+=6){ const [x,y,z,sx,sz,c]=sh.b.slice(i,i+6); const k=sx+'x'+sz+'|'+c; if(!groups.has(k)) groups.set(k,[]); groups.get(k).push([x,y,z]);
-      minX=Math.min(minX,x); maxX=Math.max(maxX,x+sx); minZ=Math.min(minZ,z); maxZ=Math.max(maxZ,z+sz); maxY=Math.max(maxY,(y+1)*(tile?.4:1.2)); }
+    const tile=!!sh.p, groups=new Map(), spec=new Map((sh.s||[]).map(q=>[q.i,q])), pieces=[]; let minX=1e9,maxX=-1e9,minZ=1e9,maxZ=-1e9,maxY=0;
+    for(let i=0;i<sh.b.length;i+=6){ const [x,y,z,sx,sz,c]=sh.b.slice(i,i+6), q=spec.get(i/6);
+      if(q&&!tile) pieces.push({x,y,z,sx,sz,c,sp:q.sp,h:q.h>1?q.h:undefined,print:q.print});   // a special piece: its own shape, height and print
+      else { const k=sx+'x'+sz+'|'+c; if(!groups.has(k)) groups.set(k,[]); groups.get(k).push([x,y,z]); }
+      minX=Math.min(minX,x); maxX=Math.max(maxX,x+sx); minZ=Math.min(minZ,z); maxZ=Math.max(maxZ,z+sz); maxY=Math.max(maxY,(y+(q&&q.h||1))*(tile?.4:1.2)); }
     const inner=new THREE.Group(), M=new THREE.Matrix4();
+    for(const b of pieces){ const ms=new THREE.Mesh(pieceGeo(b),mat(b.c)); ms.position.set(b.x,b.y*1.2,b.z); ms.castShadow=true; ms.receiveShadow=true;
+      const pm=printMesh(b); if(pm) ms.add(pm); inner.add(ms); }
     for(const [k,list] of groups){ const [s,c]=k.split('|'), [sx,sz]=s.split('x').map(Number);
       const im=new THREE.InstancedMesh(brick3(sx,sz,tile),mat(+c),list.length); list.forEach(([x,y,z],i)=>{ M.makeTranslation(x,y*(tile?.4:1.2),z); im.setMatrixAt(i,M); }); im.castShadow=true; im.receiveShadow=true; inner.add(im); }
     const W=maxX-minX, D=maxZ-minZ;
@@ -11465,6 +11489,19 @@ function isl3Build(o){ ISL3.shadowDirty=true;
   ISL3.anim=[]; ISL3.sc.traverse(x=>{ const u=x.userData; if(AK.some(k=>u[k]!=null&&u[k]!==false)) ISL3.anim.push(x); });
   isl3Labels(); isl3Tod(true); isl3Kick();
 }
+// Each found island glows softly in the sea, in its friend's colour (Steff, 24 Nov 2026; not Home Island, he asked for its red
+// to go the same day): Frog Forest Tiny's green, Brainpeak Nora's blue, Flipper Beach Pippa's yellow, Blitz Bay Swoop's blue, Brickyard Cove Bibi's
+// orange, Moonstone Isle lufu's lavender. Nora's navy and Swoop's blue are lifted a little so they show on the blue sea.
+// Islands still in the mist don't glow (they'd give away whose they are).
+const ISLE_GLOW={otterwood:'#7DBE2E',brainpeak:'#3E63C2',sunrise:'#F4BC22',blitzbay:'#5FA8F0',brickworks:'#E9772A',moonstone:'#8A6FD1'};
+function isleGlow3(id,r){
+  const c=ISLE_GLOW[id]; if(!c) return null; ISL3.glowMats=ISL3.glowMats||{};
+  let m=ISL3.glowMats[c]; if(!m){ const cv=document.createElement('canvas'); cv.width=cv.height=128; const x=cv.getContext('2d'), g=x.createRadialGradient(64,64,0,64,64,64);
+    g.addColorStop(0,c+'00'); g.addColorStop(.5,c+'E6'); g.addColorStop(.64,c+'B3'); g.addColorStop(.82,c+'40'); g.addColorStop(1,c+'00'); x.fillStyle=g; x.fillRect(0,0,128,128);
+    const t=new THREE.CanvasTexture(cv); t.encoding=THREE.sRGBEncoding; m=ISL3.glowMats[c]=new THREE.MeshBasicMaterial({map:t,transparent:true,depthWrite:false,fog:false,opacity:1-(ISL3.night||0)*.5}); }
+  const d=new THREE.Mesh(new THREE.PlaneGeometry(r*3.3,r*3.3),m); d.rotation.x=-Math.PI/2; d.position.y=-1.27; d.renderOrder=-1; d.userData.glow=id; d.raycast=()=>{}; return d;
+}
+window.bloppitIsleGlows=dbg=>{ const out=[]; if(ISL3.world) ISL3.world.traverse(x=>{ if(x.userData&&x.userData.glow) out.push(dbg?[x.userData.glow,x.visible,x.parent.visible,x.material.opacity,x.getWorldPosition(new THREE.Vector3()).y]:x.userData.glow); }); return dbg?out:out.sort(); };   // for tests
 function isl3BuildBloppitopia(o,W,add){
   // Home Island
   add(islandBody3(HOMEP,0,0,1.3,true),'land:beach');
@@ -11490,7 +11527,7 @@ function isl3BuildBloppitopia(o,W,add){
   // the five islands: built up to their count, or waiting in the mist
   for(const id of Object.keys(ISLES)){ const I=ISLES[id], c=isleCount(id,o), P=blob3(0,0,I.r,I.seed,26), g=new THREE.Group();
     g.add(islandBody3(P,0,0,I.seed,!!I.sand)); g.position.set(I.x,0,I.z); tag3(g,'isle:'+id); ISL3.isles[id]={x:I.x,z:I.z,r:I.r,g};
-    if(c>0){ isleBase(id,g,c); if(I.mystery) moonRecolor3(g); const ctx={creations:Object.entries(o.builds).filter(([k,b])=>k.startsWith('p:')&&!b.pre).sort((a,b)=>(b[1].t||0)-(a[1].t||0)).map(([k])=>k)};
+    if(c>0){ isleBase(id,g,c); if(I.mystery) moonRecolor3(g); { const gl=isleGlow3(id,I.r); if(gl) g.add(gl); } const ctx={creations:Object.entries(o.builds).filter(([k,b])=>k.startsWith('p:')&&!b.pre).sort((a,b)=>(b[1].t||0)-(a[1].t||0)).map(([k])=>k)};
       PIECES[id].forEach((p,i)=>{ if(c<p.at) return; const pg=new THREE.Group(); p.make(pg,c,ctx); tag3(pg,'piece:'+id+':'+i); pg.userData.piece=id+':'+i; g.add(pg); ISL3.pieces[id+':'+i]=pg; });
       if(I.mystery) moonNight3(g,I.r);   // reached by the chapter 1 rowboat (no bridge, no second boat); always night there
       else { const a=edge3(HOMEP,0,0,I.x,I.z), b=edge3(blob3(I.x,I.z,I.r,I.seed,26),I.x,I.z,0,0); W.add(tag3(bridge3(a,b,id==='brainpeak'),'isle:'+id)); }
@@ -11790,6 +11827,7 @@ function isl3Tod(force){ if(ISL3.lufu){ lufuTod(); return; } const h=isl3Hour();
   ISL3.sun.intensity=num(A[2],B[2]); ISL3.sun.color.copy(col(A[3],B[3])); ISL3.hemi.intensity=num(A[4],B[4]); ISL3.sea.material.color.copy(col(A[5],B[5]));
   const night=num(A[6],B[6]); ISL3.night=night; const a=(h-6)/12*Math.PI; ISL3.sun.position.set(-Math.cos(a)*26,Math.max(8,Math.sin(Math.max(.15,Math.min(Math.PI-.15,a)))*32),14);
   for(const m of Object.values(ISL3.glows||{})) m.emissiveIntensity=.35+night*1.6;
+  for(const m of Object.values(ISL3.glowMats||{})) m.opacity=1-night*.5;   // the islands' glow in the sea: softer after dark, when the sea is dark
   // windows light up after dark (they share materials, so this lights every window in the world)
   for(const c of ['#6FB7E8','#FFF0B0','#FFE9A8']){ const m=m3(c); if(!m.userData.win){ m.userData.win=1; m.emissive=new THREE.Color('#FFC24A').convertSRGBToLinear(); } m.emissiveIntensity=night*1.25; }
   // the characters are pictures, not lit by the sun: dim and cool them as it gets dark
